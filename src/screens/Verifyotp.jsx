@@ -52,7 +52,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 //import pic4 from '../assets/images/authentication/pic4.png';
-import pic4 from '../assets/Splashscreen.jpg';
+import pic4 from '../assets/background.jpg';
 import Logoname from '../constants/Logoname';
 import CompanyVersion from '../constants/CompanyVersion';
 

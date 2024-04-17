@@ -65,7 +65,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Swiper from 'swiper';
-import Images from '../assets/category.png'
+// import Images from '../assets/category.png'
 
 const OfferBanner = () => {
     const [banners, setBanners] = useState([]);
@@ -135,7 +135,7 @@ const OfferBanner = () => {
                             <div className="dz-media rounded-md">
                                 <img
                                     src={bannerUrl}
-                                    alt={Images}
+                                    // alt={Images}
                                     style={{ width: '100%', height: '160px', borderRadius: '10px' }} // Apply custom styling to the image
                                 />
                             </div>

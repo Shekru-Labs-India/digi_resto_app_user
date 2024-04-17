@@ -152,10 +152,13 @@ function App() {
         <Route path="/TrackOrder" element={<TrackOrder />} />
         <Route path="/Product" element={<Product />} />
         <Route path="/ProductDetails" element={<ProductDetails />} />
+        {/* <Route path="/ProductDetails/:menu_id" component={ProductDetails} /> */}
         <Route path="/Search" element={<Search />} />
         {/* Set default route to Signinscreen */}
         <Route path="/Signinscreen" element={<Signinscreen />} />
         <Route path="/" element={<WelcomeScreen />} />
+        {/* <Route path="/ProductDetails/:menu_id" component={ProductDetails} /> */}
+
       </Routes>
    
   );

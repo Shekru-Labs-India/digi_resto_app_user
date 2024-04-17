@@ -44,7 +44,7 @@ const HomeScreen = () => {
                     <OfferBanner/>
                     <FeaturedArea/>
                     
-                    <PopularProducts/>
+                    {/* <PopularProducts/> */}
                     <ProductCard/>
                     {/* <PeopleAlsoViewed/> */}
                     {/* <ItemsCart/> */}

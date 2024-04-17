@@ -1,24 +1,29 @@
 
 
 
+
+
+
 // import React, { useState, useEffect } from 'react';
 // import { Link, useNavigate } from 'react-router-dom';
-// import heartIcon from '../assets/images/heart-regular-24 (1).png'; 
+// import { useLocation } from 'react-router-dom';
+// import heartIcon from '../assets/images/heart-regular-24 (1).png';
 
 // const ProductDetails = () => {
 //   const [productDetails, setProductDetails] = useState(null);
 //   const [isLiked, setIsLiked] = useState(false);
 //   const [quantity, setQuantity] = useState(0);
-//   const [showQuantityError, setShowQuantityError] = useState(false); // State to manage showing quantity error
+//   const [showQuantityError, setShowQuantityError] = useState(false);
 //   const navigate = useNavigate();
 //   const [cartItemsCount, setCartItemsCount] = useState(0);
+//   const [customer_id] = useState(1); // Set a default customer_id (for testing)
 
-//  // Utility function to convert a string to title case
-//  const toTitleCase = (str) => {
-//   return str.replace(/\w\S*/g, function(txt) {
-//     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-//   });
-// };
+//   // Utility function to convert a string to title case
+//   const toTitleCase = (str) => {
+//     return str.replace(/\w\S*/g, function(txt) {
+//       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+//     });
+//   };
 
 //   useEffect(() => {
 //     const fetchProductDetails = async () => {
@@ -30,7 +35,7 @@
 //           },
 //           body: JSON.stringify({
 //             restaurant_id: 13,
-//             menu_id: 8
+//             menu_id: 12
 //           })
 //         });
 
@@ -40,9 +45,6 @@
 //             const { name, veg_nonveg, spicy_index, price, description, image } = data.lists;
 //             const oldPrice = Math.floor(price * 1.1);
 //             setProductDetails({ name, veg_nonveg, spicy_index, price, oldPrice, description, image });
-
-
-            
 //           } else {
 //             console.error('Invalid data format:', data);
 //           }
@@ -58,26 +60,44 @@
 //   }, []);
 
 //   useEffect(() => {
-//     // Retrieve cart items from localStorage and update cartItemsCount
 //     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 //     setCartItemsCount(cartItems.length);
 //   }, []);
 
-//   const handleLikeClick = () => {
+//   const handleLikeClick = async () => {
 //     setIsLiked(!isLiked);
+//     try {
+//       const response = await fetch('http://194.195.116.199/user_api/save_favourite_menu', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//           restaurant_id: 13,
+//           menu_id: 8,
+//           customer_id: customer_id
+//         })
+//       });
+
+//       if (response.ok) {
+//         console.log('Product added to favorites successfully!');
+//         navigate('/Wishlist');
+//         // Optionally, you can update local state or perform additional actions upon success
+//       } else {
+//         console.error('Failed to add product to favorites.');
+//       }
+//     } catch (error) {
+//       console.error('Error adding product to favorites:', error);
+//     }
 //   };
-
-
 
 //   const handleAddToCart = () => {
 //     if (quantity === 0) {
-//       setShowQuantityError(true); // Show quantity error message
+//       setShowQuantityError(true);
 //       return;
 //     }
 
 //     if (!productDetails) return;
-
-  
 
 //     const cartItem = { ...productDetails, quantity };
 //     let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -85,7 +105,6 @@
 //     localStorage.setItem('cartItems', JSON.stringify(cartItems));
 
 //     setCartItemsCount(cartItems.length);
-//     // Navigate to Cart screen after adding to cart
 //     navigate('/Cart');
 //   };
 
@@ -96,17 +115,17 @@
 //   const decrementQuantity = () => {
 //     if (quantity > 0) {
 //       setQuantity((prevQuantity) => prevQuantity - 1);
-//       setShowQuantityError(false); // Reset quantity error when decrementing
+//       setShowQuantityError(false);
 //     }
 //   };
 
 //   if (!productDetails) {
 //     return <div>Loading...</div>;
 //   }
+
 //   const handleBack = () => {
 //     navigate(-1);
 //   };
- 
 
 //   return (
 //     <div className="page-wrapper">
@@ -129,9 +148,9 @@
 //         </div>
 //       </header>
 
-//       <main className="page-content space-top p-b80">
-//         <div className="container">
-//           <div className="dz-product-preview">
+//       <main className="page-content p-b80">
+       
+//           {/* <div className="dz-product-preview"> */}
 //             <div className="swiper product-detail-swiper">
 //               <div className="product-detail-image img">
 //                 <img
@@ -144,29 +163,26 @@
 //                 <div className="swiper-pagination style-1"></div>
 //               </div>
 //             </div>
-//           </div>
+//           {/* </div> */}
+//           <div className="container">
 //           <div className="dz-product-detail">
 //             <div className="detail-content">
-//               <h3 className="title">{toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})</h3>
+//               <h3 className="title">{toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})<i
+//                   className={`bx bx-heart ${isLiked ? 'text-red' : ''}`}
+//                   onClick={handleLikeClick}
+//                   style={{ marginLeft: '210px', fontSize: '23px', cursor: 'pointer' ,position:'fixed'}}
+//                 ></i></h3>
+              
 //               <ul className="dz-top-meta mb-2">
 //                 <li className="dz-review">
 //                   <i className='bx bxs-star staricons'></i>
 //                   <span className="r-rating">4.5</span>
 //                   <span className="r-status">(470)</span>
 //                 </li>
-//                 <i
-//                   className={`bx bx-heart bx-xs ${isLiked ? 'text-red' : ''}`}
-//                   onClick={handleLikeClick}
-//                   style={{ opacity: isLiked ? 1 : 'ee0a0a' }} // Set opacity based on isLiked state
-//                 ></i>
-//  {/* <img
-//                   className="heart-icon"
-//                   src={heartIcon}
-//                   alt="Heart Icon"
-//                   onClick={handleLikeClick}
-               
-//                 /> */}
                 
+
+
+
 //               </ul>
 //             </div>
 //             <div className="item-wrapper">
@@ -175,7 +191,6 @@
 //                   <h6 className="dz-name">Price:</h6>
 //                   <span className="price">₹{productDetails.price}<del>₹{productDetails.oldPrice}</del></span>
 //                 </div>
-               
 //               </div>
 //               <div className="description">
 //                 <h6 className="sub-title">Spicy Index:</h6>
@@ -188,11 +203,10 @@
 //             </div>
 //           </div>
 //         </div>
-       
 //       </main>
-     
+
 //       <div className="footer-fixed-btn bottom-0">
-//       {showQuantityError && <p style={{ color: 'red' ,textAlign:'center'}}>Please select a quantity.</p>}
+//         {showQuantityError && <p style={{ color: 'red', textAlign: 'center' }}>Please select a quantity.</p>}
 //         <div className="d-flex align-items-center gap-2 justify-content-between">
 //           <div className="dz-stepper1 input-group">
 //             <div className="dz-stepper1" onClick={decrementQuantity}>
@@ -221,21 +235,18 @@
 // export default ProductDetails;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import heartIcon from '../assets/images/heart-regular-24 (1).png';
 
-const ProductDetails = () => {
+const ProductDetails = ({ restaurantId, menuId }) => {
   const [productDetails, setProductDetails] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(0);
   const [showQuantityError, setShowQuantityError] = useState(false);
   const navigate = useNavigate();
   const [cartItemsCount, setCartItemsCount] = useState(0);
-  const [customer_id] = useState(1); // Set a default customer_id (for testing)
+  const [customerId] = useState(1); // Default customer_id (for testing)
 
-  // Utility function to convert a string to title case
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -251,8 +262,8 @@ const ProductDetails = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id: 13,
-            menu_id: 8
+            restaurant_id: restaurantId,
+            menu_id: menuId
           })
         });
 
@@ -274,7 +285,7 @@ const ProductDetails = () => {
     };
 
     fetchProductDetails();
-  }, []);
+  }, [restaurantId, menuId]);
 
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -290,16 +301,15 @@ const ProductDetails = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          restaurant_id: 13,
-          menu_id: 8,
-          customer_id: customer_id
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: customerId
         })
       });
 
       if (response.ok) {
         console.log('Product added to favorites successfully!');
         navigate('/Wishlist');
-        // Optionally, you can update local state or perform additional actions upon success
       } else {
         console.error('Failed to add product to favorites.');
       }
@@ -366,40 +376,28 @@ const ProductDetails = () => {
       </header>
 
       <main className="page-content p-b80">
-       
-          {/* <div className="dz-product-preview"> */}
-            <div className="swiper product-detail-swiper">
-              <div className="product-detail-image img">
-                <img
-                  className="product-detail-image"
-                  src={productDetails.image}
-                  alt={productDetails.name}
-                />
-              </div>
-              <div className="swiper-btn p-t15">
-                <div className="swiper-pagination style-1"></div>
-              </div>
-            </div>
-          {/* </div> */}
-          <div className="container">
+        <div className="swiper product-detail-swiper">
+          <div className="product-detail-image img">
+            <img
+              className="product-detail-image"
+              src={productDetails.image}
+              alt={productDetails.name}
+            />
+          </div>
+          <div className="swiper-btn p-t15">
+            <div className="swiper-pagination style-1"></div>
+          </div>
+        </div>
+        <div className="container">
           <div className="dz-product-detail">
             <div className="detail-content">
-              <h3 className="title">{toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})<i
-                  className={`bx bx-heart ${isLiked ? 'text-red' : ''}`}
-                  onClick={handleLikeClick}
-                  style={{ marginLeft: '210px', fontSize: '23px', cursor: 'pointer' ,position:'fixed'}}
-                ></i></h3>
-              
+              <h3 className="title">{toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})</h3>
               <ul className="dz-top-meta mb-2">
                 <li className="dz-review">
                   <i className='bx bxs-star staricons'></i>
                   <span className="r-rating">4.5</span>
                   <span className="r-status">(470)</span>
                 </li>
-                
-
-
-
               </ul>
             </div>
             <div className="item-wrapper">

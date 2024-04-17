@@ -33,12 +33,11 @@
 //                             <h5 className="title"><a href="product-detail.html">Royal Bluebell Bliss (M)</a></h5>
 //                             <ul className="dz-meta">
 //                                 <li className="dz-price">$80<del>$95</del></li>
-                            
+
 //                             </ul>
 //                             <span className="dz-off">Category Name</span>
 //                         </div>
 
-                        
 //                     </div>
 
 //                     <div className="dz-card list-style style-3 m-b30">
@@ -51,12 +50,11 @@
 //                             <h5 className="title"><a href="product-detail.html">Royal Bluebell Bliss (M)</a></h5>
 //                             <ul className="dz-meta">
 //                                 <li className="dz-price">$80<del>$95</del></li>
-                            
+
 //                             </ul>
 //                             <span className="dz-off">Category Name</span>
 //                         </div>
 
-                        
 //                     </div>
 
 //                     <div className="order-status">
@@ -103,17 +101,16 @@
 
 // export default TrackOrder;
 
-
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import product from '../assets/images/product/product4/1.png';
-
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import images from "../assets/MenuDefault.png";
+import SigninButton from "../constants/SigninButton";
 const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
-
+  const navigate = useNavigate();
   // Utility function to convert a string to title case
   const toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, function(txt) {
+    return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
@@ -121,28 +118,31 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch('http://194.195.116.199/user_api/get_order_details', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            order_number: 490211 // Assuming you want to fetch details for order number 499163
-          })
-        });
+        const response = await fetch(
+          "http://194.195.116.199/user_api/get_order_details",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              order_number: 490211, // Assuming you want to fetch details for order number 499163
+            }),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && data.lists) {
             setOrderDetails(data.lists);
           } else {
-            console.error('Invalid data format:', data);
+            console.error("Invalid data format:", data);
           }
         } else {
-          console.error('Network response was not ok.');
+          console.error("Network response was not ok.");
         }
       } catch (error) {
-        console.error('Error fetching order details:', error);
+        console.error("Error fetching order details:", error);
       }
     };
 
@@ -152,6 +152,7 @@ const TrackOrder = () => {
   if (!orderDetails) {
     return <div>Loading...</div>; // Render loading state until data is fetched
   }
+  const userData = JSON.parse(localStorage.getItem("userData"));
 
   return (
     <div className="page-wrapper">
@@ -160,7 +161,7 @@ const TrackOrder = () => {
         <div className="header-content">
           <div className="left-content">
             <Link to="/MyOrder" className="back-btn dz-icon icon-fill icon-sm">
-              <i className='bx bx-arrow-back' ></i>
+              <i className="bx bx-arrow-back"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -173,43 +174,73 @@ const TrackOrder = () => {
 
       {/* Main Content Start */}
       <main className="page-content space-top">
+      {userData ? (
         <div className="container">
+        
           {/* Menu Details Section */}
           <section>
             <h4 className="title">Order Menu</h4>
             {orderDetails.menu_details.map((menu) => (
-              <div key={menu.menu_id} className="dz-card list-style style-3 m-b30">
+              <div
+                key={menu.menu_id}
+                className="dz-card list-style style-3 m-b30"
+              >
                 <div className="dz-media">
-                  <img src={menu.image} alt={menu.name} />
+                  {/* <img src={menu.image} alt={menu.name} /> */}
+                  <img
+                    src={menu.image}
+                    alt={menu.name}
+                    onError={(e) => {
+                      e.target.src = images; // Set local image source on error
+                      e.target.style.width = "80px"; // Example: Set width of the local image
+                      e.target.style.height = "80px"; // Example: Set height of the local image
+                    }}
+                  />
                 </div>
                 <div className="dz-content">
                   <h5 className="title">{toTitleCase(menu.name)}</h5>
                   <ul className="dz-meta">
                     {/* <li className="dz-price">{menu.quantity} x ₹{menu.price}</li> */}
-                    <li className="timeline-date">{menu.quantity} x ₹{menu.price}</li>
+                    <li className="timeline-date">
+                      {menu.quantity} x ₹{menu.price}
+                    </li>
                   </ul>
-                  <p className="timeline-text">{toTitleCase(menu.spicy_index)} | {toTitleCase(menu.veg_nonveg)}</p>
+                  <p className="timeline-text">
+                    {toTitleCase(menu.spicy_index)} |{" "}
+                    {toTitleCase(menu.veg_nonveg)}
+                  </p>
                 </div>
               </div>
             ))}
           </section>
 
           {/* Order Details Section */}
-          <section>
+          <section className="track-order-section">
             <h4 className="title">Track Order</h4>
             <ul className="dz-timeline style-2">
               <li className="timeline-item active">
                 <div className="active-box">
                   <h6 className="timeline-title">
-                    <span className="title">{toTitleCase(orderDetails.order_details.restaurant_name)}</span>
-                    <span className="timeline-date">₹{orderDetails.order_details.total_bill}</span>
+                    <span className="title">
+                      {toTitleCase(orderDetails.order_details.restaurant_name)}
+                    </span>
+                    <span className="timeline-date">
+                      ₹{orderDetails.order_details.total_bill}
+                    </span>
                   </h6>
-                  <p className="timeline-text">{toTitleCase(orderDetails.order_details.order_status)}</p>
+                  <p className="timeline-text">
+                    {toTitleCase(orderDetails.order_details.order_status)}
+                  </p>
                 </div>
               </li>
             </ul>
           </section>
+           
         </div>
+      ) : (
+          
+        <SigninButton></SigninButton>
+        )}
       </main>
       {/* Main Content End */}
     </div>

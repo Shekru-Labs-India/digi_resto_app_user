@@ -1,43 +1,16 @@
-// import React from 'react';
-// import { Link } from 'react-router-dom';
+import React from "react";
+import { useNavigate, Link } from "react-router-dom";
+import images from "../assets/MenuDefault.png";
 
-// const Productcartwishlist = ({ imageUrl, productName, price, oldPrice, restaurantName, onRemove }) => {
-//   const handleRemoveClick = () => {
-//     // Call the onRemove callback function passed from the parent component
-//     onRemove();
-//   };
-
-//   return (
-//     <div className="col-12">
-//       <div className="dz-card list-style style-3">
-//         <div className="dz-media">
-//           <a href="product-detail.html">
-//             <img src={imageUrl} alt={productName} />
-//           </a>
-//         </div>
-//         <div className="dz-content">
-//           <h5 className="title"><a href="product-detail.html">{productName}</a></h5>
-//           <ul className="dz-meta">
-//             <li className="dz-price">₹{price}<del>₹{oldPrice}</del></li>
-//             <li className="dz-review"> <span>{restaurantName} </span></li>
-//           </ul>
-//           {/* Handle the Remove button click */}
-//           <div onClick={handleRemoveClick} className="remove-text">Remove </div>
-//           <Link to="/Cart" className="cart-btn">  <i className='bx bx-cart bx-sm' ></i></Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Productcartwishlist;
-
-
-
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-
-const Productcartwishlist = ({ image, name, price, oldPrice, restaurantName, onRemove, onAddToCart }) => {
+const Productcartwishlist = ({
+  image,
+  name,
+  price,
+  oldPrice,
+  restaurantName,
+  onRemove,
+  onAddToCart,
+}) => {
   const handleRemoveClick = () => {
     // Call the onRemove callback function passed from the parent component
     onRemove();
@@ -50,38 +23,60 @@ const Productcartwishlist = ({ image, name, price, oldPrice, restaurantName, onR
       name,
       price,
       oldPrice,
-      restaurantName
+      restaurantName,
     };
 
     // Call the onAddToCart callback function passed from the parent component
     onAddToCart(item);
-    navigate('/Cart');
+    navigate("/Cart");
   };
 
   return (
     <div className="col-12">
       <div className="dz-card list-style style-3">
         <div className="dz-media">
-          <a href="product-detail.html">
-            <img src={image} alt={name} />
-          </a>
+          <Link to="/ProductDetails">
+            {/* <img src={image} alt={name} /> */}
+
+            <img
+            style={{width:'100px',height:'100px'}}
+              src={image}
+              alt={name}
+              onError={(e) => {
+                e.target.src = images; // Set local image source on error
+                e.target.style.width = "100px"; // Example: Set width of the local image
+                e.target.style.height = "100px"; // Example: Set height of the local image
+              }}
+            />
+          </Link>
         </div>
         <div className="dz-content">
-          <h5 className="title"><a href="product-detail.html">{name}</a></h5>
+          <h5 className="title">
+            <Link to="/ProductDetails"></Link>
+          </h5>
+          <div>
+              <span>{restaurantName} </span>
+            </div> 
           <ul className="dz-meta">
-            <li className="dz-price">₹{price}<del>₹{oldPrice}</del></li>
-            <li className="dz-review"> <span>{restaurantName} </span></li>
-          </ul>
+            <li className="dz-price">
+              ₹{price}
+              <del>₹{oldPrice}</del>
+            </li>
+            </ul>
+           
+          
           {/* Handle the Remove button click */}
-          <div onClick={handleRemoveClick} className="remove-text">Remove</div>
+          <div onClick={handleRemoveClick} className="remove-text">
+            Remove
+          </div>
           {/* Handle the Add to Cart button click */}
           <div onClick={handleAddToCartClick} className="cart-btn">
-            <i className='bx bx-cart bx-sm'></i>
+            <i className="bx bx-cart bx-sm"></i>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Productcartwishlist;

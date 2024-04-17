@@ -16557,6 +16557,8 @@
           background: var(--bg-white);
           border-radius: var(--border-radius);
           padding: 10px 15px;
+          height: 300px;
+          width: 250px;
           opacity: 0.4; }
         .dz-timeline.style-2 .timeline-item:last-child::before {
           content: none; }
@@ -18303,7 +18305,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background-image: url("../Splashscreen.jpg");
+    background-image: url("../splash2.jpg");
     top: 0;
     left: 0;
     width: 100%;
@@ -19186,3 +19188,7 @@
     height: 50px; /* Adjusted height for the "Track order" link */
     
   }
+  .date-picker-container {
+    width: 1000%; /* Adjust width as needed */
+}
+

@@ -122,9 +122,7 @@ const PopularProducts = () => {
             spaceBetween: 10,
         });
 
-        return () => {
-            swiper.destroy();
-        };
+        
     }, [menuCategories]); // Re-run effect when menuCategories changes
 
     return (
