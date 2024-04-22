@@ -76,7 +76,7 @@ const Cart = () => {
                 <h5 className="title">Your Cart is Empty</h5>
                 <p>Add items to your cart from the product details page.</p>
                 <Link
-                  to="/ProductDetails"
+                  to="/Product"
                   className="btn btn-outline-primary btn-sm"
                 >
                   Return to Shop
@@ -97,6 +97,7 @@ const Cart = () => {
                 
                 <div className="dz-cart-list m-b10 ">
                   <div className="dz-media">
+                  <Link to={`/ProductDetails/${item.menu_id}`}>
                     <img
                       style={{
                         width: "100%",
@@ -111,6 +112,7 @@ const Cart = () => {
                         e.target.style.height = "100%"; // Example: Set height of the local image
                       }}
                     />
+                    </Link>
                   </div>
                   <div className="dz-content">
                     <h5 className="title">{item.name}</h5>

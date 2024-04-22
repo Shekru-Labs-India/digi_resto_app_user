@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+ import React, { useState, useEffect } from "react";
+ import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 
@@ -8,6 +8,12 @@ const ProductCard = () => {
   const navigate = useNavigate();
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+
+  const isMenuItemInCart = (menuId) => {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    return cartItems.some((item) => item.menu_id === menuId);
+  };
 
   const handleCategorySelect = (categoryName) => {
     setSelectedCategory(categoryName);
@@ -30,7 +36,7 @@ const ProductCard = () => {
   const handleLikeClick = async (restaurantId, menuId, customerId) => {
     try {
       const response = await fetch(
-        "http://194.195.116.199/user_api/save_favourite_menu",
+        "https://menumitra.com/user_api/save_favourite_menu",
         {
           method: "POST",
           headers: {
@@ -43,9 +49,18 @@ const ProductCard = () => {
           }),
         }
       );
-
+  
       if (response.ok) {
-        // Handle success response as needed
+        // Update the menuList state to reflect the new is_favourite value
+        const updatedMenuList = menuList.map((menuItem) => {
+          if (menuItem.menu_id === menuId) {
+            return { ...menuItem, is_favourite: menuItem.is_favourite === "1" ? "0" : "1" };
+          }
+          return menuItem;
+        });
+  
+        setMenuList(updatedMenuList);
+  
         console.log("Item added to favorites successfully");
         navigate("/Wishlist");
       } else {
@@ -55,31 +70,60 @@ const ProductCard = () => {
       console.error("Error adding item to favorites:", error);
     }
   };
+  
 
   const handleAddToCartClick = (menu) => {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // Check if the menu item is already in the cart
+    const isAlreadyInCart = cartItems.some((item) => item.menu_id === menu.menu_id);
+  
+    if (isAlreadyInCart) {
+      // Handle scenario where item is already in the cart (e.g., display message)
+      alert("This item is already in the cart!"); 
+      return; // Exit the function early
+    }
+  
+    // If the menu item is not already in the cart, add it
     const cartItem = {
       image: menu.image,
       name: menu.name,
       price: menu.price,
       oldPrice: menu.oldPrice,
-      quantity: 1, // Default quantity is 1
+      quantity: 1,
+      menu_id: menu.menu_id,
     };
-
-    // Simulate adding to local storage (replace with your logic)
-    const updatedCartItems =
-      JSON.parse(localStorage.getItem("cartItems")) || [];
-    updatedCartItems.push(cartItem);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
+  
+    const updatedCartItems = [...cartItems, cartItem];
+    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+  
+    // Update menuList state to reflect cart changes
+    // const updatedMenuList = menuList.map((menuItem) => {
+    //   if (menuItem.menu_id === menu.menu_id) {
+    //     return { ...menuItem, isInCart: true };
+    //   }
+    //   return menuItem;
+    // });
+    const updatedMenuList = menuList.map((menuItem) => {
+      if (menuItem.menu_id === menu.menu_id) {
+        return { ...menuItem, is_favourite: "1"};
+      }
+      return menuItem;
+    });
+    
+  
+    setMenuList(updatedMenuList);
+  
     // Navigate to Cart screen
-    navigate("/Cart");
+    navigate('/Cart');
   };
+  
 
   useEffect(() => {
-    const fetchMenuData = async () => {
+    const fetchMenuData = async (restaurantCode, categoryId) => {
       try {
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_menu_by_cat",
+          "https://menumitra.com/user_api/get_menu_by_cat",
           {
             method: "POST",
             headers: {
@@ -87,7 +131,7 @@ const ProductCard = () => {
             },
             body: JSON.stringify({
               restaurant_code: 611447,
-              cat_id: 18,
+              cat_id: 19,
             }),
           }
         );
@@ -131,7 +175,7 @@ const ProductCard = () => {
         };
 
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_category_list",
+          "https://menumitra.com/user_api/get_category_list",
           requestOptions
         );
 
@@ -178,11 +222,9 @@ const ProductCard = () => {
         </div>
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            <div
-              className={`category-btn swiper-slide ${
-                selectedCategory === null ? "active" : ""
-              }`}
-              onClick={() => handleCategorySelect(null)} // Set selectedCategory to null for "ALL"
+          <div
+              className={`category-btn swiper-slide  ${selectedCategory === null ? "active" : ""}`}
+              onClick={() => handleCategorySelect(null)}
             >
               All
             </div>
@@ -216,6 +258,7 @@ const ProductCard = () => {
                 alt="Menu Item"
                 style={{ height: "150px" }}
               /> */}
+               <Link to={`/ProductDetails/${menu.menu_id}`}>
                 <img
                   src={menu.image}
                   alt={menu.name}
@@ -224,17 +267,43 @@ const ProductCard = () => {
                     e.target.src = images; // Set local image source on error
                   }}
                 />
+                </Link>
               </div>
               <div className="dz-content">
-                <span className="product-title">
-                  {menu.category}
+                {/* <span className="product-title">
+                  {menu.category} */}
 
-                  <i
+                  {/* <i
                     className="bx bx-heart bx-sm"
                     style={{ marginLeft: "77px" }}
                     onClick={() => handleLikeClick(13, menu.menu_id, 1)} // Customize with your parameters
-                  ></i>
-                </span>
+                  ></i> */}
+                   {/* <i
+            className={menu.is_favourite === "1" ? "bx bxs-heart" : "bx bx-heart bx-sm"}
+            style={{ marginLeft: "77px", color: menu.is_favourite === "1" ? "#e90e0e" : "" }}
+            onClick={() => handleLikeClick(13, menu.menu_id, 1)}
+          ></i>
+                </span> */}
+
+<div className="detail-content" style={{ position: 'relative' }}>
+  <h3 className="product-title">
+  {menu.category} 
+  </h3>
+  <i
+className={menu.is_favourite === "1" ? "bx bxs-heart" : "bx bx-heart bx-sm"}
+
+onClick={() => handleLikeClick(13, menu.menu_id, 1)}
+
+    style={{
+      position: 'absolute',
+      top: '0',
+      right: '0',
+      fontSize: '23px',
+      cursor: 'pointer',
+      marginLeft: "77px", color: menu.is_favourite === "1" ? "#e90e0e" : ""
+    }}
+  ></i>
+</div>
                 <h4 className="item-name">
                   <Link
                     to={{
@@ -258,9 +327,14 @@ const ProductCard = () => {
                   </div>
                   <div
                     onClick={() => handleAddToCartClick(menu)}
-                    className="cart-btn btn-outline-primary"
+                    className="cart-btn"
                   >
-                    <i className="bx bx-cart bx-sm"></i>
+                     {isMenuItemInCart(menu.menu_id) ? (
+                      <i className="bx bxs-cart bx-sm"></i> // Already in cart
+                    ) : (
+                      <i className="bx bx-cart-add bx-sm"></i> // Add to cart
+                    )}
+                  
                   </div>
                 </div>
               </div>
@@ -273,3 +347,5 @@ const ProductCard = () => {
 };
 
 export default ProductCard;
+
+

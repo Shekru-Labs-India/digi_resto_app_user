@@ -2,18 +2,29 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const EditProfile = () => {
-    // Retrieve user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('userData')) || {};
-    const { name, mobile, dob } = userData;
-
-    const [newName, setNewName] = useState(name || '');
-    const [newMobile, setNewMobile] = useState(mobile || '');
-    const [newDob, setNewDob] = useState(dob || '');
+    const [userData, setUserData] = useState({});
+    const [newName, setNewName] = useState('');
+    const [newMobile, setNewMobile] = useState('');
+    const [newDob, setNewDob] = useState('');
     const [error, setError] = useState('');
+
+
+
+  
+    useEffect(() => {
+        // Retrieve user data from localStorage when the component mounts
+        const storedUserData = JSON.parse(localStorage.getItem('userData')) || {};
+        setUserData(storedUserData);
+
+        // Set initial values for form fields
+        setNewName(storedUserData.name || '');
+        setNewMobile(storedUserData.mobile || '');
+        setNewDob(storedUserData.dob || '');
+    }, []);
 
     const handleUpdateProfile = async () => {
         try {
@@ -40,10 +51,8 @@ const EditProfile = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Handle success scenario (e.g., show success message)
                 console.log('Profile updated successfully!');
             } else {
-                // Handle failure scenario (e.g., display error message)
                 setError('Profile update failed. Please try again.');
             }
         } catch (error) {
@@ -51,10 +60,15 @@ const EditProfile = () => {
             setError('Profile update failed. Please try again.');
         }
     };
+    const toTitleCase = (str) => {
+        return str.replace(/\w\S*/g, function (txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+      };
+    
 
     return (
         <div className="page-wrapper">
-            {/* Header */}
             <header className="header header-fixed style-3">
                 <div className="header-content">
                     <div className="left-content">
@@ -68,9 +82,6 @@ const EditProfile = () => {
                     <div className="right-content"></div>
                 </div>
             </header>
-            {/* Header end */}
-
-            {/* Main Content Start */}
             <main className="page-content space-top p-b80">
                 <div className="container">
                     <div className="edit-profile">
@@ -83,7 +94,7 @@ const EditProfile = () => {
                                 id="name"
                                 className="form-control"
                                 placeholder="Enter Full Name"
-                                value={newName}
+                                value={toTitleCase(newName)}
                                 onChange={(e) => setNewName(e.target.value)}
                             />
                         </div>
@@ -95,9 +106,9 @@ const EditProfile = () => {
                                 type="tel"
                                 id="phone"
                                 className="form-control"
-                            disabled
                                 value={newMobile}
                                 onChange={(e) => setNewMobile(e.target.value)}
+                                disabled  // assuming mobile number should not be editable
                             />
                         </div>
                         <div className="mb-3">
@@ -113,7 +124,6 @@ const EditProfile = () => {
                                 onChange={(e) => setNewDob(e.target.value)}
                             />
                         </div>
-                        {/* Error handling */}
                         {error && <p className="text-danger">{error}</p>}
                         <button
                             type="button"
@@ -125,7 +135,6 @@ const EditProfile = () => {
                     </div>
                 </div>
             </main>
-            {/* Main Content End */}
         </div>
     );
 };

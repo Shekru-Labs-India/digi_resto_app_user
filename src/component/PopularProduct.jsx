@@ -1,65 +1,4 @@
-// import React, { useEffect } from 'react';
-// import { Link } from 'react-router-dom';
-// import Swiper from 'swiper';
-// import ProductCard from './ProductCart';
 
-
-// const PopularProducts = () => {
-//     useEffect(() => {
-//         const swiper = new Swiper('.category-slide', {
-//             slidesPerView: 'auto',
-//             spaceBetween: 10,
-//         });
-
-//         return () => {
-//             swiper.destroy();
-//         };
-//     }, []);
-
-//     return (
-//         <div className="dz-box">
-//             <div className="title-bar">
-//                 <h5 className="title p-r50">Menu Category</h5>
-//                 <Link to="/Product"><i class='bx bx-right-arrow-alt bx-sm'></i></Link>
-//             </div>
-//             <div className="swiper category-slide">
-//                 <div className="swiper-wrapper">
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Trees</Link>
-//                     </div>
-//                     <div className="swiper-slide">
-//                         <Link to="/category" className="category-btn">Shrubs</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Herbs</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Vines</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Ferns</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Herbs</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Vines</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Ferns</Link>
-//                     </div>
-//                     <div className="swiper-slide">    
-//                         <Link to="/category" className="category-btn">Herbs</Link>
-//                     </div>
-//                 </div>
-//             </div>
-//             {/* <ProductCard/>  */}
-//         </div>
-       
-//     );
-// };
-
-// export default PopularProducts;
 
 
 import React, { useEffect, useState } from 'react';
@@ -89,7 +28,7 @@ const PopularProducts = () => {
                     })
                 };
 
-                const response = await fetch('http://194.195.116.199/user_api/get_category_list', requestOptions);
+                const response = await fetch('https://menumitra.com/user_api/get_category_list', requestOptions);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

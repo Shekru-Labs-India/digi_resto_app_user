@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
+import { Link } from "react-router-dom";
 
 const FeaturedArea = () => {
   const [menuLists, setMenuLists] = useState([]);
@@ -16,7 +17,7 @@ const FeaturedArea = () => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_product_list_with_offer",
+          "https://menumitra.com/user_api/get_product_list_with_offer",
           {
             method: "POST",
             headers: {
@@ -76,21 +77,22 @@ const FeaturedArea = () => {
                                             height: '200px', // Set a fixed height for the image
                                             objectFit: 'cover', // Ensure the image covers the entire space
                                         }} /> */}
-
-                  <img
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: "cover",
-                    }}
-                    src={menu.image}
-                    alt={menu.name}
-                    onError={(e) => {
-                      e.target.src = images; // Set local image source on error
-                      // e.target.style.width = '80px'; // Example: Set width of the local image
-                      // e.target.style.height = '80px'; // Example: Set height of the local image
-                    }}
-                  />
+                  <Link to={`/ProductDetails/${menu.menu_id}`}>
+                    <img
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      src={menu.image}
+                      alt={menu.name}
+                      onError={(e) => {
+                        e.target.src = images; // Set local image source on error
+                        // e.target.style.width = '80px'; // Example: Set width of the local image
+                        // e.target.style.height = '80px'; // Example: Set height of the local image
+                      }}
+                    />
+                  </Link>
                 </div>
 
                 <div className="dz-content">

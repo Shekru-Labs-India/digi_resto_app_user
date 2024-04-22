@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useParams,useNavigate} from 'react-router-dom';
 import product from '../assets/images/product/product4/1.png';
 
 const Review = () => {
   const [rating, setRating] = useState(4);
   const [reviewText, setReviewText] = useState('');
-
+  const { order_number } = useParams();
   const handleRatingChange = (newRating) => {
     setRating(newRating);
   };

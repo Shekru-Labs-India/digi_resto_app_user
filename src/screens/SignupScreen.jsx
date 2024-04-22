@@ -187,7 +187,7 @@ const Signupscreen = () => {
         e.preventDefault();
 
         try {
-            const url = 'http://194.195.116.199/user_api/account_signup';
+            const url = 'https://menumitra.com/user_api/account_signup';
             const requestOptions = {
                 method: 'POST',
                 headers: {

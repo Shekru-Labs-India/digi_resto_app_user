@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { AccountCircle } from '@material-ui/icons';
+
 import Sidebar from './Sidebar'; // Import your Sidebar component
-import avatar from '../assets/images/avatar/1.png';
+
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

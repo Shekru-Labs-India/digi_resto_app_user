@@ -64,7 +64,7 @@ const Verifyotp = () => {
     const handleVerify = async () => {
         try {
             const mobile = 8965432111; // Use the mobile number you want to send
-            const url = 'http://194.195.116.199/user_api/account_verify_otp';
+            const url = 'https://menumitra.com/user_api/account_verify_otp';
             const requestOptions = {
                 method: 'POST',
                 headers: {

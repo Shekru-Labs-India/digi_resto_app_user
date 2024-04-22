@@ -165,33 +165,7 @@ const Search = () => {
         });
     };
 
-    const handleMenuDetails = async (menuId) => {
-        try {
-            const response = await fetch('http://194.195.116.199/user_api/get_menu_details', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    restaurant_id: 13,
-                    menu_id: menuId
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Navigate to ProductDetails with the fetched menu details
-                // You can push the data to the ProductDetails route
-                // Replace '/ProductDetails' with your actual route path for ProductDetails
-                navigate('/ProductDetails', { state: { menuDetails: data } });
-            } else {
-                console.error('Failed to fetch menu details');
-            }
-        } catch (error) {
-            console.error('Error fetching menu details:', error);
-        }
-    };
-
+   
     useEffect(() => {
         const fetchSearchedMenu = async () => {
             if (searchTerm.trim() === '') {
@@ -202,7 +176,7 @@ const Search = () => {
             setIsLoading(true);
 
             try {
-                const response = await fetch('http://194.195.116.199/user_api/search_menu', {
+                const response = await fetch('https://menumitra.com/user_api/search_menu', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -276,8 +250,9 @@ const Search = () => {
                     {searchedMenu.map((menu) => (
                         <div className="swiper-slide search-content1" key={menu.menu_id}>
                             {/* Use onClick to fetch menu details and navigate to ProductDetails */}
-                            <div className="cart-list style-2" onClick={() => handleMenuDetails(menu.menu_id)}>
+                            <div className="cart-list style-2" >
                                 <div className="dz-media media-75">
+                                <Link to={`/ProductDetails/${menu.menu_id}`}>
                                     <img
                                         style={{
                                             width: '100%',
@@ -293,6 +268,7 @@ const Search = () => {
                                             e.target.style.height = '80px'; // Example: Set height of the local image
                                         }}
                                     />
+                                    </Link>
                                 </div>
                                 <div className="dz-content">
                                     <h6 className="title">{menu.name}</h6>

@@ -102,13 +102,16 @@
 // export default TrackOrder;
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
+import Bottom from "../component/bottom";
+
 const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const navigate = useNavigate();
-  // Utility function to convert a string to title case
+  const { order_number } = useParams();
+
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -116,17 +119,17 @@ const TrackOrder = () => {
   };
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchOrderDetails = async (orderNumber) => {
       try {
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_order_details",
+          "https://menumitra.com/user_api/get_order_details",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              order_number: 490211, // Assuming you want to fetch details for order number 499163
+              order_number: orderNumber,
             }),
           }
         );
@@ -146,17 +149,17 @@ const TrackOrder = () => {
       }
     };
 
-    fetchOrderDetails();
-  }, []); // Empty dependency array ensures the effect runs only once
+    fetchOrderDetails(order_number);
+  }, [order_number]);
 
   if (!orderDetails) {
-    return <div>Loading...</div>; // Render loading state until data is fetched
+    return <div>Loading...</div>;
   }
+
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   return (
     <div className="page-wrapper">
-      {/* Header */}
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
@@ -170,79 +173,72 @@ const TrackOrder = () => {
           <div className="right-content"></div>
         </div>
       </header>
-      {/* Header End */}
 
-      {/* Main Content Start */}
       <main className="page-content space-top">
-      {userData ? (
-        <div className="container">
-        
-          {/* Menu Details Section */}
-          <section>
-            <h4 className="title">Order Menu</h4>
-            {orderDetails.menu_details.map((menu) => (
-              <div
-                key={menu.menu_id}
-                className="dz-card list-style style-3 m-b30"
-              >
-                <div className="dz-media">
-                  {/* <img src={menu.image} alt={menu.name} /> */}
-                  <img
-                    src={menu.image}
-                    alt={menu.name}
-                    onError={(e) => {
-                      e.target.src = images; // Set local image source on error
-                      e.target.style.width = "80px"; // Example: Set width of the local image
-                      e.target.style.height = "80px"; // Example: Set height of the local image
-                    }}
-                  />
+        {userData ? (
+          <div className="container">
+            <section>
+              <h4 className="title">Order Menu</h4>
+              {orderDetails.menu_details.map((menu) => (
+                <div
+                  key={menu.menu_id}
+                  className="dz-card list-style style-3 m-b30"
+                >
+                  <div className="dz-media">
+                    <img
+                    style={{height:'100px',width:'100px'}}
+                      src={menu.image}
+                      alt={menu.name}
+                      onError={(e) => {
+                        e.target.src = images;
+                        e.target.style.width = "80px";
+                        e.target.style.height = "80px";
+                      }}
+                    />
+                  </div>
+                  <div className="dz-content">
+                    <h5 className="title">{toTitleCase(menu.name)}</h5>
+                    <ul className="dz-meta">
+                      <li className="timeline-date">
+                        {menu.quantity} x ₹{menu.price}
+                      </li>
+                    </ul>
+                    <p className="timeline-text">
+                      {toTitleCase(menu.spicy_index)} |{" "}
+                      {toTitleCase(menu.veg_nonveg)}
+                    </p>
+                  </div>
                 </div>
-                <div className="dz-content">
-                  <h5 className="title">{toTitleCase(menu.name)}</h5>
-                  <ul className="dz-meta">
-                    {/* <li className="dz-price">{menu.quantity} x ₹{menu.price}</li> */}
-                    <li className="timeline-date">
-                      {menu.quantity} x ₹{menu.price}
-                    </li>
-                  </ul>
-                  <p className="timeline-text">
-                    {toTitleCase(menu.spicy_index)} |{" "}
-                    {toTitleCase(menu.veg_nonveg)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </section>
+              ))}
+            </section>
 
-          {/* Order Details Section */}
-          <section className="track-order-section">
-            <h4 className="title">Track Order</h4>
-            <ul className="dz-timeline style-2">
-              <li className="timeline-item active">
-                <div className="active-box">
-                  <h6 className="timeline-title">
-                    <span className="title">
-                      {toTitleCase(orderDetails.order_details.restaurant_name)}
-                    </span>
-                    <span className="timeline-date">
-                      ₹{orderDetails.order_details.total_bill}
-                    </span>
-                  </h6>
-                  <p className="timeline-text">
-                    {toTitleCase(orderDetails.order_details.order_status)}
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </section>
-           
-        </div>
-      ) : (
-          
-        <SigninButton></SigninButton>
+            <section >
+              <h4 className="title">Track Order</h4>
+              <ul  className="dz-card list-style style-3 m-b30">
+                <li className="timeline-item active">
+                  <div className="dz-content1">
+                    {/* <h6 className="dz-content"> */}
+                      <span className="title">
+                        {toTitleCase(orderDetails.order_details.restaurant_name)}
+                      </span>
+                      <br></br>
+                      <span className="timeline-date">
+                        ₹{orderDetails.order_details.total_bill}
+                      </span>
+                    {/* </h6> */}
+                    <p className="timeline-text">
+                      {toTitleCase(orderDetails.order_details.order_status)}
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </section>
+          </div>
+        ) : (
+          <SigninButton />
         )}
       </main>
-      {/* Main Content End */}
+      <Bottom></Bottom>
     </div>
   );
 };

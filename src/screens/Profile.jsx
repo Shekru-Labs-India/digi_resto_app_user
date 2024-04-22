@@ -190,6 +190,12 @@ const Profile = () => {
     navigate("/Signinscreen");
   };
 
+  const toTitleCase = (str) => {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
+
   if (!userData) {
     // User is not logged in, render restricted version of profile
     return (
@@ -320,7 +326,7 @@ const Profile = () => {
                   <i className="bx bx-user-circle bx-md" style={{ fontSize: "20px", marginTop: "9px" }}></i>
                 </div>
                 <h4 className="name mb-0">
-                  <span className="greetings">Hello,</span> {userData.name || "User"}
+                <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span>
                 </h4>
               </div>
             </div>

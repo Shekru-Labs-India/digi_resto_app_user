@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swiper from "swiper";
@@ -6,8 +9,14 @@ import images from "../assets/MenuDefault.png";
 
 const NearbyArea = () => {
   const swiperRef = useRef(null);
-  const [menuItems, setMenuItems] = useState([]);
+  const [menuItems, setMenuItems] = useState(() => {
+    const storedItems = localStorage.getItem("menuItems");
+    return storedItems ? JSON.parse(storedItems) : [];
+  });
+
+  const [cartItems, setCartItems] = useState([]); 
   const navigate = useNavigate();
+
   useEffect(() => {
     const swiper = new Swiper(".product-swiper", {
       loop: true,
@@ -32,11 +41,15 @@ const NearbyArea = () => {
     };
   }, []);
 
+  const toTitleCase = (str) => {
+    return str.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  };
+
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_special_menu_list",
+          "https://menumitra.com/user_api/get_special_menu_list",
           {
             method: "POST",
             headers: {
@@ -56,8 +69,12 @@ const NearbyArea = () => {
             const formattedMenuItems = data.MenuList.map((menu) => ({
               ...menu,
               oldPrice: Math.floor(menu.price * 1.1),
+              is_favourite: false, // Initialize is_favourite state
             }));
+
+            // Update state and store in local storage
             setMenuItems(formattedMenuItems);
+            localStorage.setItem("menuItems", JSON.stringify(formattedMenuItems));
           } else {
             console.error("Invalid menu data format:", data);
           }
@@ -72,34 +89,10 @@ const NearbyArea = () => {
     fetchMenuData();
   }, []);
 
-  const toTitleCase = (str) => {
-    return str.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-  };
-
-
-  const handleAddToCartClick = (menuItem) => {
-    const cartItem = {
-      image: menuItem.image,
-      name: menuItem.name,
-      price: menuItem.price,
-      oldPrice: menuItem.oldPrice,
-      quantity: 1, // Default quantity is 1
-    };
-
-    // Simulate adding to local storage (replace with your logic)
-    const updatedCartItems =
-      JSON.parse(localStorage.getItem("cartItems")) || [];
-    updatedCartItems.push(cartItem);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-    // Navigate to Cart screen
-    navigate("/Cart");
-  };
-
   const handleLikeClick = async (restaurantId, menuId, customerId) => {
     try {
       const response = await fetch(
-        "http://194.195.116.199/user_api/save_favourite_menu",
+        "https://menumitra.com/user_api/save_favourite_menu",
         {
           method: "POST",
           headers: {
@@ -112,18 +105,62 @@ const NearbyArea = () => {
           }),
         }
       );
+  
       if (response.ok) {
-        // Handle success response as needed
-        console.log("Item added to favorites successfully");
-        navigate("/Wishlist");
+        // Update the state based on the current state
+        setMenuItems((prevMenuItems) => {
+          return prevMenuItems.map((menuItem) =>
+            menuItem.menu_id === menuId
+              ? { ...menuItem, is_favourite: !menuItem.is_favourite }
+              : menuItem
+          );
+        });
+  
+        // Display a message indicating whether the item was added or removed from favorites
+        const updatedMenuItem = menuItems.find((item) => item.menu_id === menuId);
+        if (updatedMenuItem && updatedMenuItem.is_favourite) {
+          alert("Added to favorites!");
+        }
       } else {
-        console.error("Failed to add item to favorites");
+        console.error("Failed to add/remove item from favorites");
       }
     } catch (error) {
-      console.error("Error adding item to favorites:", error);
+      console.error("Error adding/removing item from favorites:", error);
     }
   };
+  
+  
+  
 
+  const handleAddToCartClick = (menuItem) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    const isAlreadyInCart = cartItems.some((item) => item.menu_id === menuItem.menu_id);
+
+    if (isAlreadyInCart) {
+      alert("This item is already in the cart!");
+      return;
+    }
+
+    const cartItem = {
+      image: menuItem.image,
+      name: menuItem.name,
+      price: menuItem.price,
+      oldPrice: menuItem.oldPrice,
+      quantity: 1,
+      menu_id: menuItem.menu_id,
+    };
+
+    const updatedCartItems = [...cartItems, cartItem];
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+
+    navigate('/Cart');
+  };
+
+  const isMenuItemInCart = (menuId) => {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    return cartItems.some((item) => item.menu_id === menuId);
+  };
 
   return (
     <div className="dz-box style-2 nearby-area">
@@ -137,42 +174,68 @@ const NearbyArea = () => {
           {menuItems.map((menuItem, index) => (
             <div className="swiper-slide col-6" key={index}>
               <div className="row g-3 grid-style-1">
-                <div >
-                <div className="card-item style-6">
+                <div>
+                  <div className="card-item style-6">
+                    <div className="dz-media">
+                      <Link to={`/ProductDetails/${menuItem.menu_id}`}>
+                        <img
+                          src={menuItem.image}
+                          style={{ height: "150px", width: "400px" }}
+                          onError={(e) => {
+                            e.target.src = images; // Set local image source on error
+                          }}
+                        />
+                      </Link>
+                    </div>
+                    <div className="dz-content">
+                      {/* <span className="product-title">
+                        {toTitleCase(menuItem.menu_cat_name)}
+                        <i
+  className={`bx ${menuItem.is_favourite ? 'bxs-heart text-red' : 'bx-heart'} bx-sm`}
+  onClick={() => handleLikeClick(13, menuItem.menu_id, 1)}
+></i>
+                      </span> */}
 
-                  <div className="dz-media">
-                    <img src={menuItem.image}  style={{ height: "150px",width:'400px' }}
-                  onError={(e) => {
-                    e.target.src = images; // Set local image source on error
-                  }}
-                />
-                  </div>
-                  <div className="dz-content">
-                    <span className="product-title">
-                      {toTitleCase(menuItem.menu_cat_name)}
-                      <i className="bx bx-heart bx-sm" 
-                      style={{ marginLeft: "70px" }}  
-                      onClick={() => handleLikeClick(13, menuItem.menu_id, 1)}></i>
-                    </span>
-                    <h4 className="item-name">
-                      <a href="product-detail.html">{toTitleCase(menuItem.name)}</a>
-                    </h4>
-                    <div className="offer-code">Spicy Level: {toTitleCase(menuItem.spicy_index)}</div>
-                    <div className="footer-wrapper">
-                      <div className="price-wrapper">
-                        <h6 className="current-price">₹{menuItem.price}</h6>
-                        <span className="old-price">₹{menuItem.oldPrice}</span>
+<div className="detail-content" style={{ position: 'relative' }}>
+  <h3 className="product-title">
+  {toTitleCase(menuItem.menu_cat_name)} 
+  </h3>
+  <i
+
+className={`bx ${menuItem.is_favourite ? 'bxs-heart text-red' : 'bx-heart'} bx-sm`}
+onClick={() => handleLikeClick(13, menuItem.menu_id, 1)}
+
+    style={{
+      position: 'absolute',
+      top: '0',
+      right: '0',
+      fontSize: '23px',
+      cursor: 'pointer',
+    }}
+  ></i>
+</div>
+                      <h4 className="item-name">
+                        <a href="product-detail.html">
+                          {toTitleCase(menuItem.name)}
+                        </a>
+                      </h4>
+                      <div className="offer-code">
+                        Spicy Level: {toTitleCase(menuItem.spicy_index)}
                       </div>
                       <div
-                       onClick={() => handleAddToCartClick(menuItem)} 
-                      className="cart-btn btn-outline-primary">
-                        <i className="bx bx-cart bx-sm"></i>
+                        onClick={() => handleAddToCartClick(menuItem)}
+                        className="cart-btn"
+                      >
+                        {isMenuItemInCart(menuItem.menu_id) ? (
+                          <i className="bx bxs-cart bx-sm"></i>
+                        ) : (
+                          <i className="bx bx-cart-add bx-sm"></i>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           ))}
         </div>
