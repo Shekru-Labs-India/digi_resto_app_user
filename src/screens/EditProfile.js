@@ -11,7 +11,7 @@ const EditProfile = () => {
     const [newMobile, setNewMobile] = useState('');
     const [newDob, setNewDob] = useState('');
     const [error, setError] = useState('');
-
+    const [successMessage, setSuccessMessage] = useState('');
 
 
   
@@ -21,14 +21,14 @@ const EditProfile = () => {
         setUserData(storedUserData);
 
         // Set initial values for form fields
+       
         setNewName(storedUserData.name || '');
         setNewMobile(storedUserData.mobile || '');
         setNewDob(storedUserData.dob || '');
     }, []);
-
     const handleUpdateProfile = async () => {
         try {
-            const url = 'http://194.195.116.199/user_api/account_profile_update';
+            const url = 'https://menumitra.com/user_api/account_profile_update';
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -41,17 +41,27 @@ const EditProfile = () => {
                     mobile: newMobile,
                 }),
             };
-
+    
+            console.log('Request Body:', requestOptions.body);
+    
             const response = await fetch(url, requestOptions);
-
+    
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
             }
-
+    
             const data = await response.json();
-
-            if (data.success) {
-                console.log('Profile updated successfully!');
+            console.log('Response Data:', data);
+    
+            if (data.st === 1) {
+                setUserData(prevUserData => ({
+                    ...prevUserData,
+                    name: newName,
+                    dob: newDob,
+                    mobile: newMobile,
+                }));
+                setError(''); // Clear any previous error messages
+                setSuccessMessage('Profile updated successfully!');
             } else {
                 setError('Profile update failed. Please try again.');
             }
@@ -60,6 +70,10 @@ const EditProfile = () => {
             setError('Profile update failed. Please try again.');
         }
     };
+    
+    
+    
+    
     const toTitleCase = (str) => {
         return str.replace(/\w\S*/g, function (txt) {
           return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();

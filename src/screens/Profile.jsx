@@ -190,12 +190,26 @@ const Profile = () => {
     navigate("/Signinscreen");
   };
 
+  // const toTitleCase = (str) => {
+  //   return str.replace(/\w\S*/g, function (txt) {
+  //     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  //   });
+  // };
   const toTitleCase = (str) => {
+    if (!str) {
+      return ""; // Return empty string if str is undefined or null
+    }
+  
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
-
+  const getFirstName = (name) => {
+    if (!name) return ""; // Return empty string if name is undefined or null
+    const words = name.split(" ");
+    return words[0]; // Return the first word
+  };
+  
   if (!userData) {
     // User is not logged in, render restricted version of profile
     return (
@@ -204,10 +218,10 @@ const Profile = () => {
           <div className="header-content">
             <div className="left-content">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <a className="header-logo" href="index.html" style={{ marginRight: "10px" }}>
-                  <img className="logo logo-dark" src={applogo} alt="logo" style={{ width: "40px", height: "40px" }} />
-                  <img className="logo logo-white d-none" src={applogo} alt="logo" />
-                </a>
+                <div className="header-logo"  style={{ marginRight: "10px" }}>
+                  <img className="logo logo-dark" src={applogo} alt="logo" style={{ width: "50px", height: "50px" }} />
+                  <img className="logo logo-white d-none" src={applogo} alt="logo"  style={{ width: "50px", height: "50px" }}/>
+                </div>
                 <span style={{ fontSize: "18px", fontWeight: "bold" }}>MenuMitra</span>
               </div>
             </div>
@@ -244,7 +258,7 @@ const Profile = () => {
                   </Link>
                 </li>
                 <li className="col-6">
-                  <Link to="/TrackOrder">
+                  <Link to="/OrderTracking">
                     <i className="bx bxs-truck iconboxi"></i> Track order
                   </Link>
                 </li>
@@ -284,23 +298,24 @@ const Profile = () => {
         <div className="header-content">
           <div className="left-content">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <a
+              <div
                 className="header-logo"
-                href="index.html"
+               
                 style={{ marginRight: "10px" }}
               >
                 <img
                   className="logo logo-dark"
                   src={applogo}
                   alt="logo"
-                  style={{ width: "40px", height: "40px" }}
+                  style={{ width: "50px", height: "50px" }}
                 />
                 <img
                   className="logo logo-white d-none"
                   src={applogo}
                   alt="logo"
+                  style={{ width: "50px", height: "50px" }}
                 />
-              </a>
+              </div>
               <span style={{ fontSize: "18px", fontWeight: "bold" }}>
                 MenuMitra
               </span>
@@ -326,7 +341,8 @@ const Profile = () => {
                   <i className="bx bx-user-circle bx-md" style={{ fontSize: "20px", marginTop: "9px" }}></i>
                 </div>
                 <h4 className="name mb-0">
-                <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span>
+                {/* <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span> */}
+                <div className="greetings">Hello, {toTitleCase(getFirstName(userData.name)) || 'User'}</div>
                 </h4>
               </div>
             </div>
@@ -348,7 +364,7 @@ const Profile = () => {
                   </Link>
                 </li>
                 <li className="col-6">
-                  <Link to="/TrackOrder">
+                  <Link to="/OrderTracking">
                     <i className="bx bxs-truck iconboxi"></i> Track order
                   </Link>
                 </li>

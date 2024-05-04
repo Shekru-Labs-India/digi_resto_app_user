@@ -19195,3 +19195,6 @@
 .dz-content1{
   padding-left: 20px;
 }
+.activeCategoryBtn {
+  color:var(--bs-list-group-active-bg);  /* Set your desired styling for the active category button */
+}

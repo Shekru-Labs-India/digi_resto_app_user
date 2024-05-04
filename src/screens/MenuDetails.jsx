@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import images from "../assets/MenuDefault.png";
 import heartIcon from '../assets/images/heart-regular-24 (1).png';
-
+import { useRestaurantId } from '../context/RestaurantIdContext';
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
@@ -13,13 +13,19 @@ const MenuDetails = () => {
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [customer_id] = useState(1); // Set a default customer_id (for testing)
   const { menuId } = useParams(); // Extract menu_id from URL parameters
-
+  const userData = JSON.parse(localStorage.getItem('userData'));
   // Utility function to convert a string to title case
+  const { restaurantId } = useRestaurantId();
   const toTitleCase = (str) => {
+    if (!str) {
+      return ''; // Handle undefined or null input gracefully
+    }
+  
     return str.replace(/\w\S*/g, function(txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
+  
 
   // Fetch product details based on menuId
   const fetchProductDetails = async (menuId) => {
@@ -30,13 +36,14 @@ const MenuDetails = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          restaurant_id: 13,
+          restaurant_id: restaurantId,
           menu_id: menuId
         })
       });
 
       if (response.ok) {
         const data = await response.json();
+       
         if (data.st === 1 && data.lists) {
           const { name, veg_nonveg, spicy_index, price, description, image, is_favourite } = data.lists;
           const oldPrice = Math.floor(price * 1.1);
@@ -71,7 +78,7 @@ const MenuDetails = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          restaurant_id: 13,
+          restaurant_id: restaurantId,
           menu_id: menuId,
           customer_id: customer_id
         })
@@ -147,7 +154,7 @@ const MenuDetails = () => {
           <div className="right-content">
             <Link to="/Cart" className="notification-badge dz-icon icon-sm icon-fill">
               <i className='bx bx-cart bx-sm'></i>
-              <span className="badge badge-danger">{cartItemsCount}</span>
+              {userData &&    <span className="badge badge-danger">{cartItemsCount}</span>}
             </Link>
           </div>
         </div>
@@ -190,6 +197,7 @@ const MenuDetails = () => {
   <h3 className="title">
     {toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})
   </h3>
+  {userData ? (
   <i
      className={`bx ${isFavorite ? 'bx bxs-heart' : 'bx-heart'} `}
      onClick={() => handleLikeClick(menuId)}
@@ -202,6 +210,17 @@ const MenuDetails = () => {
       color: isFavorite ? '#f10b0b' : 'inherit'
     }}
   ></i>
+  ):( <i
+    className= " bx bx-heart"
+  
+    style={{
+      position: "absolute",
+      top: "0",
+      right: "0",
+      fontSize: "23px",
+      cursor: "pointer",
+    }}
+  ></i>)}
 </div>
 
             <div className="item-wrapper">
@@ -223,8 +242,14 @@ const MenuDetails = () => {
           </div>
         </div>
       </main>
-      {shouldDisplayFooter && (
+     
+  
+    
+   
+
+                {shouldDisplayFooter && (
         <div className="footer-fixed-btn bottom-0">
+          
           {showQuantityError && <p style={{ color: 'red', textAlign: 'center' }}>Please select a quantity.</p>}
           <div className="d-flex align-items-center gap-2 justify-content-between">
             <div className="dz-stepper1 input-group">
@@ -247,6 +272,7 @@ const MenuDetails = () => {
           </div>
         </div>
       )}
+      
     </div>
   );
 };

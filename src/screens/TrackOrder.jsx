@@ -111,7 +111,9 @@ const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const navigate = useNavigate();
   const { order_number } = useParams();
-
+  const handleBack = () => {
+    navigate(-1);
+  };
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -163,7 +165,7 @@ const TrackOrder = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/MyOrder" className="back-btn dz-icon icon-fill icon-sm">
+            <Link to="" className="back-btn dz-icon icon-fill icon-sm" onClick={handleBack}>
               <i className="bx bx-arrow-back"></i>
             </Link>
           </div>
@@ -180,21 +182,20 @@ const TrackOrder = () => {
             <section>
               <h4 className="title">Order Menu</h4>
               {orderDetails.menu_details.map((menu) => (
-                <div
-                  key={menu.menu_id}
-                  className="dz-card list-style style-3 m-b30"
-                >
+                <div key={menu.menu_id} className="dz-card list-style style-3 m-b30">
                   <div className="dz-media">
-                    <img
-                    style={{height:'100px',width:'100px'}}
-                      src={menu.image}
-                      alt={menu.name}
-                      onError={(e) => {
-                        e.target.src = images;
-                        e.target.style.width = "80px";
-                        e.target.style.height = "80px";
-                      }}
-                    />
+                    <Link to={`/ProductDetails/${menu.menu_id}`}>
+                      <img
+                        style={{ height: '100px', width: '100px' }}
+                        src={menu.image}
+                        alt={menu.name}
+                        onError={(e) => {
+                          e.target.src = images;
+                          e.target.style.width = "80px";
+                          e.target.style.height = "80px";
+                        }}
+                      />
+                    </Link>
                   </div>
                   <div className="dz-content">
                     <h5 className="title">{toTitleCase(menu.name)}</h5>
@@ -204,28 +205,25 @@ const TrackOrder = () => {
                       </li>
                     </ul>
                     <p className="timeline-text">
-                      {toTitleCase(menu.spicy_index)} |{" "}
-                      {toTitleCase(menu.veg_nonveg)}
+                      {toTitleCase(menu.spicy_index)} | {toTitleCase(menu.veg_nonveg)}
                     </p>
                   </div>
                 </div>
               ))}
             </section>
 
-            <section >
+            <section>
               <h4 className="title">Track Order</h4>
-              <ul  className="dz-card list-style style-3 m-b30">
+              <ul className="dz-card list-style style-3 m-b30">
                 <li className="timeline-item active">
                   <div className="dz-content1">
-                    {/* <h6 className="dz-content"> */}
-                      <span className="title">
-                        {toTitleCase(orderDetails.order_details.restaurant_name)}
-                      </span>
-                      <br></br>
-                      <span className="timeline-date">
-                        ₹{orderDetails.order_details.total_bill}
-                      </span>
-                    {/* </h6> */}
+                    <span className="title">
+                      {toTitleCase(orderDetails.order_details.restaurant_name)}
+                    </span>
+                    <br></br>
+                    <span className="timeline-date">
+                      ₹{orderDetails.order_details.total_bill}
+                    </span>
                     <p className="timeline-text">
                       {toTitleCase(orderDetails.order_details.order_status)}
                     </p>

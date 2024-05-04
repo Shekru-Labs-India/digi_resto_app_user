@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
-
+import { useRestaurantId } from '../context/RestaurantIdContext';
 const FeaturedArea = () => {
   const [menuLists, setMenuLists] = useState([]);
-
+  const { restaurantId } = useRestaurantId();
   // Utility function to convert string to title case
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -24,7 +24,7 @@ const FeaturedArea = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              restaurant_id: 13, // Specify your restaurant ID here
+              restaurant_id: restaurantId, // Specify your restaurant ID here
             }),
           }
         );
@@ -62,7 +62,7 @@ const FeaturedArea = () => {
     };
 
     fetchMenuData();
-  }, []);
+  }, [ restaurantId]);
 
   return (
     <div className="dz-box style-3">

@@ -1,19 +1,16 @@
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SigninButton from '../constants/SigninButton';
-
+import { useRestaurantId } from '../context/RestaurantIdContext';
 const MyOrder = () => {
   
 
   const [activeTab, setActiveTab] = useState('ongoing');
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
-
+  const { restaurantId } = useRestaurantId();
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  const customerId = userData ? userData.customer_id : null;
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
@@ -27,9 +24,9 @@ const MyOrder = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id: 13,
+            restaurant_id:  restaurantId,
             order_status: activeTab === 'ongoing' ? 'Ongoing' : 'Completed',
-            customer_id: 1
+            customer_id: customerId
           })
         });
 
@@ -48,10 +45,12 @@ const MyOrder = () => {
       }
     };
 
-    fetchOrders();
-  }, [activeTab]);
+    if (customerId) {
+      fetchOrders();
+    }
+  }, [activeTab, customerId, restaurantId]);
 
-  const userData = JSON.parse(localStorage.getItem('userData'));
+
   
 
 
@@ -127,7 +126,10 @@ const OrdersTab = ({ orders, type }) => {
     navigate(reviewPageUrl); // Navigate to the review page
   };
 
-
+  const handleTrackOrderClick = (orderNumber) => {
+    // Navigate to the track order screen with the order number
+    navigate(`/TrackOrder/${orderNumber}`);
+  };
 
   
   return (
@@ -159,13 +161,21 @@ const OrdersTab = ({ orders, type }) => {
               </ul>
               <span className="dz-off">{order.restaurant_name}</span>
               </Link>
-              <button
-               
-                className="info-btn btn btn-primary btn-sm btn-xs font-13"
-                onClick={() => handleReviewClick(order.order_number)}
-              >
-                {type === 'ongoing' ? 'Track Order' : 'Write Review'}
-              </button>
+              {type === 'ongoing' ? (
+        <button
+          className="info-btn btn btn-primary btn-sm btn-xs font-13"
+          onClick={() => handleTrackOrderClick(order.order_number)}
+        >
+          Track Order
+        </button>
+      ) : (
+        <button
+          className="info-btn btn btn-primary btn-sm btn-xs font-13"
+          onClick={() => handleReviewClick(order.order_number)}
+        >
+          Write Review
+        </button>
+      )}
            
             </div>
            

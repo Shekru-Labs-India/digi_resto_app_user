@@ -147,13 +147,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import images from '../assets/MenuDefault.png';
+import { useRestaurantId } from '../context/RestaurantIdContext';
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchedMenu, setSearchedMenu] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate(); // Access the navigate function using useNavigate
-
+    const { restaurantId } = useRestaurantId();
     const handleSearch = async (event) => {
         const term = event.target.value;
         setSearchTerm(term);
@@ -182,7 +183,7 @@ const Search = () => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        restaurant_id: 13,
+                        restaurant_id:restaurantId,
                         keyword: searchTerm.trim()
                     })
                 });
@@ -207,7 +208,7 @@ const Search = () => {
         };
 
         fetchSearchedMenu();
-    }, [searchTerm]);
+    }, [searchTerm, restaurantId]);
 
     const handleClearAll = () => {
         setSearchedMenu([]);

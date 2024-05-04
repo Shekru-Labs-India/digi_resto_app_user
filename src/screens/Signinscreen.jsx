@@ -163,6 +163,7 @@ const Signinscreen = () => {
           name: data.customer_details.name,
           dob: data.customer_details.dob,
           mobile: mobile,
+          customer_id: data.customer_details.customer_id,
         };
         localStorage.setItem("userData", JSON.stringify(userData));
 

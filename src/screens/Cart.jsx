@@ -46,12 +46,10 @@ const Cart = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link
-              to="/HomeScreen"
-              className="back-btn dz-icon icon-fill icon-sm"
-            >
-              <i className="bx bx-arrow-back"></i>
-            </Link>
+          <Link to="/HomeScreen" className="back-btn dz-icon icon-fill icon-sm" onClick={() => navigate(-1)}>
+  <i className='bx bx-arrow-back'></i>
+</Link>
+
           </div>
           <div className="mid-content">
             <h5 className="title">

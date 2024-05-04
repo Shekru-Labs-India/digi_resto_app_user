@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link ,useParams,useNavigate} from 'react-router-dom';
 import product from '../assets/images/product/product4/1.png';
-
+import { useRestaurantId } from '../context/RestaurantIdContext';
 const Review = () => {
   const [rating, setRating] = useState(4);
   const [reviewText, setReviewText] = useState('');
   const { order_number } = useParams();
+  const { restaurantId } = useRestaurantId();
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  const customerId = userData ? userData.customer_id : null;
   const handleRatingChange = (newRating) => {
     setRating(newRating);
   };
@@ -16,15 +19,15 @@ const Review = () => {
 
   const handleSubmitReview = async () => {
     const requestData = {
-      restaurant_id: 13,
+      restaurant_id: restaurantId,
       order_id: 3, // Replace with the actual order ID
-      customer_id: 1, // Replace with the actual customer ID
+      customer_id:customerId, // Replace with the actual customer ID
       rating: rating,
       review: reviewText
     };
 
     try {
-      const response = await fetch('http://194.195.116.199/user_api/create_review', {
+      const response = await fetch('https://menumitra.com/user_api/create_review', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -2,23 +2,23 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Bottom from "../component/bottom";
 import images from "../assets/category.png";
-
+import { useRestaurantId } from "../context/RestaurantIdContext";
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [totalCategoriesCount, setTotalCategoriesCount] = useState(0);
-
+  const { restaurantId } = useRestaurantId(); 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://194.195.116.199/user_api/get_category_list",
+          "https://menumitra.com/user_api/get_category_list",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              restaurant_id: 13, // Provide the restaurant_id for the API request
+              restaurant_id: restaurantId, // Provide the restaurant_id for the API request
             }),
           }
         );
@@ -40,7 +40,7 @@ const Category = () => {
     };
 
     fetchCategories();
-  }, []); // Empty dependency array ensures the effect runs only once
+  }, [restaurantId]); // Empty dependency array ensures the effect runs only once
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -84,7 +84,7 @@ const Category = () => {
                 <div className="dz-card style-4 text-center">
                   <h6 className="title">
                     <Link to="/Product">
-                      {toTitleCase(category.name)} (10)
+                      {toTitleCase(category.name)} ({category.menu_count})
                     </Link>
                   </h6>
                   <div className="dz-media">
