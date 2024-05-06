@@ -50,7 +50,7 @@ const Product = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ restaurant_id: restaurantId, cat_id: "all" }),
+            body: JSON.stringify({ restaurant_id: 13, cat_id: "all" }),
           }
         );
 
@@ -90,7 +90,7 @@ const Product = () => {
     };
 
     fetchMenuData();
-  }, [restaurantId]);
+  }, []);
 
   const handleLikeClick = async (restaurantId, menuId, customerId) => {
     try {

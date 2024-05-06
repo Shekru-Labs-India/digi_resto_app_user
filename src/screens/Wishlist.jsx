@@ -208,13 +208,14 @@ const Wishlist = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            customer_id: customerId
+            customer_id: 1
           })
         });
-
+  
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && Array.isArray(data.lists)) {
+            console.log(data.lists); // Check the structure of the lists array
             const updatedMenuList = data.lists.map(menu => ({
               ...menu,
               oldPrice: Math.floor(menu.price * 1.1)
@@ -223,18 +224,20 @@ const Wishlist = () => {
           } else {
             console.error('Invalid data format:', data);
           }
+          
         } else {
-          console.error('Network response was not ok.');
+          console.error('Network response was not ok:', response.statusText);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
-    if (customerId) { // Fetch menu data only if customerId is available
+  
+ // Fetch menu data only if customerId is available
       fetchMenuData();
-    }
-  }, [customerId]);
+ 
+  }, []);
+  
 console.log(customerId)
   const handleRemoveItemClick = (index, restaurantId, menuId, customerId) => {
     removeItem(index, restaurantId, menuId, customerId);

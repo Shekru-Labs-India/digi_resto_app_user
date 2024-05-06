@@ -36,7 +36,7 @@ const MenuDetails = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          restaurant_id: 13,
           menu_id: menuId
         })
       });
@@ -78,9 +78,9 @@ const MenuDetails = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          restaurant_id: 13,
           menu_id: menuId,
-          customer_id: customer_id
+          customer_id: 1
         })
       });
 

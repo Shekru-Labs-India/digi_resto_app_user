@@ -9,9 +9,9 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to="/HomeScreen"
+          to="/HomeScreen/611447"
           className={
-            location.pathname === "/HomeScreen" ? "nav-link active" : "nav-link"
+            location.pathname === "/HomeScreen/611447" ? "nav-link active" : "nav-link"
           }
         >
           {/* <Home style={{ color: location.pathname === '/HomeScreen' ? 'white' : 'black' }} /> */}

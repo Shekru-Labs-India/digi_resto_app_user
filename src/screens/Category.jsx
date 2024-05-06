@@ -18,7 +18,7 @@ const Category = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              restaurant_id: restaurantId, // Provide the restaurant_id for the API request
+              restaurant_id: 13, // Provide the restaurant_id for the API request
             }),
           }
         );
@@ -54,7 +54,7 @@ const Category = () => {
         <div className="header-content">
           <div className="left-content">
             <Link
-              to="/HomeScreen"
+              to="/HomeScreen/611447"
               className="back-btn dz-icon icon-fill icon-sm"
             >
               <i className="bx bx-arrow-back"></i>
