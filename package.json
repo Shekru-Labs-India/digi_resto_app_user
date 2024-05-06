@@ -1,6 +1,7 @@
 {
   "name": "food",
   "version": "0.1.0",
+  "homepage": "https://Shekru-Labs-India.github.io/digi_resto_app_user",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.4",
@@ -19,6 +20,8 @@
     "wow.js": "^1.2.2"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -43,6 +46,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "gh-pages": "^6.1.1"
   }
 }
