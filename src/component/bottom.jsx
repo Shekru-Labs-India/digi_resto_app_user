@@ -1,21 +1,91 @@
+
+
+
+// import React from "react";
+// import { Link, useLocation } from "react-router-dom";
+// import { useRestaurantId } from '../context/RestaurantIdContext';
+
+// const Bottom = () => {
+//   const location = useLocation();
+//   const { restaurantCode } = useRestaurantId();
+
+//   return (
+//     <div className="menubar-area footer-fixed">
+//       <div className="toolbar-inner menubar-nav">
+//         <Link
+//           to={`/HomeScreen/${347279}`}
+//           className={
+//             location.pathname === `/HomeScreen/${347279}` ? "nav-link active" : "nav-link"
+//           }
+//         >
+//           <i className="bx bx-home-alt bx-sm"></i>
+//           <span className="name">Home</span>
+//         </Link>
+//         <Link
+//           to="/Wishlist"
+//           className={
+//             location.pathname === "/Wishlist" ? "nav-link active" : "nav-link"
+//           }
+//         >
+//           <i className="bx bx-heart bx-sm"></i>
+//           <span className="name">Favourite</span>
+//         </Link>
+//         <Link
+//           to="/Cart"
+//           className={
+//             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
+//           }
+//         >
+//           <i className="bx bx-cart bx-sm"></i>
+//           <span className="name">Cart</span>
+//         </Link>
+//         <Link
+//           to="/Search"
+          // className={
+          //   location.pathname === "/Search" ? "nav-link active" : "nav-link"
+          // }
+//         >
+//           <i className="bx bx-search bx-sm"></i>
+//           <span className="name">Search</span>
+//         </Link>
+//         <Link
+//           to="/Profile"
+//           className={
+//             location.pathname === "/Profile" ? "nav-link active" : "nav-link"
+//           }
+//         >
+//           {/* <Person style={{ color: location.pathname === '/Profile' ? 'white' : 'black' }} /> */}
+//           <i class="bx bx-user bx-sm"></i>
+//           <span className="name">Profile</span>
+//         </Link>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Bottom;
+
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-
+import { useRestaurantId } from '../context/RestaurantIdContext';
 
 const Bottom = () => {
   const location = useLocation();
+  const { restaurantCode } = useRestaurantId();
+
+  console.log("Restaurant Code in Bottom:", restaurantCode); // Debugging line
 
   return (
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to="/HomeScreen/611447"
+          to={`/HomeScreen/${483452}`}
           className={
-            location.pathname === "/HomeScreen/611447" ? "nav-link active" : "nav-link"
+            location.pathname === `/HomeScreen/${483452}` ? "nav-link active" : "nav-link"
           }
         >
-          {/* <Home style={{ color: location.pathname === '/HomeScreen' ? 'white' : 'black' }} /> */}
-          <i class="bx bx-home-alt bx-sm"></i>
+          <i className="bx bx-home-alt bx-sm"></i>
           <span className="name">Home</span>
         </Link>
         <Link
@@ -24,8 +94,7 @@ const Bottom = () => {
             location.pathname === "/Wishlist" ? "nav-link active" : "nav-link"
           }
         >
-          {/* <Favorite style={{ color: location.pathname === '/Wishlist' ? 'white' : 'black' }} /> */}
-          <i class="bx bx-heart bx-sm"></i>
+          <i className="bx bx-heart bx-sm"></i>
           <span className="name">Favourite</span>
         </Link>
         <Link
@@ -34,34 +103,25 @@ const Bottom = () => {
             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
           }
         >
-          {/* <ShoppingCart style={{ color: location.pathname === '/Cart' ? 'white' : 'black' }} /> */}
-          <i class="bx bx-cart bx-sm"></i>
+          <i className="bx bx-cart bx-sm"></i>
           <span className="name">Cart</span>
         </Link>
-        {/* <Link to="/Category" className={location.pathname === '/Category' ? 'nav-link active' : 'nav-link'}>
-          <Description style={{ color: location.pathname === '/Category' ? 'white' : 'black' }} /> 
-          <i class='bx bx-category bx-sm' ></i>
-          <span className="name">Category</span>
-        </Link> */}
         <Link
           to="/Search"
           className={
             location.pathname === "/Search" ? "nav-link active" : "nav-link"
           }
         >
-          {/* <Description style={{ color: location.pathname === '/Category' ? 'white' : 'black' }} /> */}
-          <i class="bx bx-search bx-sm"></i>
+          <i className="bx bx-search bx-sm"></i>
           <span className="name">Search</span>
         </Link>
-
         <Link
           to="/Profile"
           className={
             location.pathname === "/Profile" ? "nav-link active" : "nav-link"
           }
         >
-          {/* <Person style={{ color: location.pathname === '/Profile' ? 'white' : 'black' }} /> */}
-          <i class="bx bx-user bx-sm"></i>
+          <i className="bx bx-user bx-sm"></i>
           <span className="name">Profile</span>
         </Link>
       </div>
@@ -70,3 +130,4 @@ const Bottom = () => {
 };
 
 export default Bottom;
+

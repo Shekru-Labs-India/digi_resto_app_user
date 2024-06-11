@@ -386,7 +386,7 @@ const Profile = () => {
                   </Link>
                 </li>
                 <li>
-                  <a href="notification.html" class="item-content item-link">
+                  <a href="" class="item-content item-link">
                     <div class="list-icon">
                       {/* <i class="fi fi-rr-bell"></i> */}
                       <i class="bx bx-bell"></i>
@@ -404,14 +404,14 @@ const Profile = () => {
             <div className="dz-list style-1">
               <ul>
                 <li>
-                  <a href="faq.html" className="item-content item-link">
+                  <Link to="/Faq" className="item-content item-link">
                     <div className="list-icon">
                       <i className="bx bx-chat bx-sm"></i>
                     </div>
                     <div className="dz-inner">
-                      <span className="title">Questions & Answers</span>
+                      <span className="title">FAQ's</span>
                     </div>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

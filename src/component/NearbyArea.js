@@ -319,6 +319,16 @@ const NearbyArea = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem('userData'));
+  const [customerId, setCustomerId] = useState(null);
+
+  useEffect(() => {
+    // Fetch customerId from localStorage or state
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setCustomerId(userData.customer_id);
+    }
+  }, []);
   useEffect(() => {
     const swiper = new Swiper(".product-swiper", {
       loop: true,
@@ -363,19 +373,20 @@ const NearbyArea = () => {
             }),
           }
         );
-
+  
         if (response.ok) {
           const data = await response.json();
           console.log("API response data:", data);
-
+  
           if (data.st === 1 && Array.isArray(data.MenuList)) {
             const formattedMenuItems = data.MenuList.map((menu) => ({
               ...menu,
               oldPrice: Math.floor(menu.price * 1.1),
               is_favourite: menu.is_favourite === 1,
             }));
-
+  
             setMenuItems(formattedMenuItems);
+            localStorage.setItem("menuItems", JSON.stringify(formattedMenuItems));
           } else {
             console.error("Invalid menu data format:", data);
           }
@@ -386,15 +397,15 @@ const NearbyArea = () => {
         console.error("Error fetching menu data:", error);
       }
     };
-
+  
+    // Fetch menu data whenever restaurantId changes
     if (restaurantId) {
       fetchMenuData();
     }
   }, [restaurantId]);
+  
 
- 
-
-  const handleLikeClick = async (restaurantId, menuId, customerId) => {
+  const handleLikeClick = async (menuId) => {
     try {
       const response = await fetch("https://menumitra.com/user_api/save_favourite_menu", {
         method: "POST",
@@ -402,14 +413,13 @@ const NearbyArea = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          restaurant_id: restaurantId, // Use the dynamically fetched restaurantId
           menu_id: menuId,
           customer_id: customerId,
         }),
       });
-
+  
       if (response.ok) {
-        // Toggle is_favourite locally
         const updatedMenuItems = menuItems.map((menuItem) =>
           menuItem.menu_id === menuId ? { ...menuItem, is_favourite: !menuItem.is_favourite } : menuItem
         );
@@ -422,6 +432,7 @@ const NearbyArea = () => {
       console.error("Error adding/removing item from favorites:", error);
     }
   };
+  
 
   const handleAddToCartClick = (menuItem) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -468,7 +479,7 @@ const NearbyArea = () => {
                     <div className="dz-media">
                       <Link to={`/ProductDetails/${menuItem.menu_id}`}>
                         <img
-                          src={menuItem.image}
+                          src={menuItem.image || images}
                           style={{ height: "150px", width: "400px" }}
                           onError={(e) => {
                             e.target.src = images; // Set local image source on error
@@ -479,45 +490,52 @@ const NearbyArea = () => {
                     <div className="dz-content">
                       <div className="detail-content" style={{ position: "relative" }}>
                         <h3 className="product-title">{toTitleCase(menuItem.menu_cat_name)}</h3>
-                        {userData ? ( <i
-                          className={`bx ${menuItem.is_favourite ? "bxs-heart text-red" : "bx-heart"} bx-sm`}
-                          onClick={() => handleLikeClick(13, menuItem.menu_id, 1)}
-                          style={{
-                            position: "absolute",
-                            top: "0",
-                            right: "0",
-                            fontSize: "23px",
-                            cursor: "pointer",
-                          }}
-                        ></i>):( <i
-                          className= " bx bx-heart"
-                        
-                          style={{
-                            position: "absolute",
-                            top: "0",
-                            right: "0",
-                            fontSize: "23px",
-                            cursor: "pointer",
-                          }}
-                        ></i>)}
+                        {userData ? (
+                         <i
+                         className={`bx ${menuItem.is_favourite ? "bxs-heart text-red" : "bx-heart"} bx-sm`}
+                         onClick={() => handleLikeClick(menuItem.menu_id)}
+                         style={{
+                           position: "absolute",
+                           top: "0",
+                           right: "0",
+                           fontSize: "23px",
+                           cursor: "pointer",
+                         }}
+                       ></i>
+                       
+                        ) : (
+                          <i
+                            className="bx bx-heart"
+                            style={{
+                              position: "absolute",
+                              top: "0",
+                              right: "0",
+                              fontSize: "23px",
+                              cursor: "pointer",
+                            }}
+                          ></i>
+                        )}
                       </div>
                       <h4 className="item-name">
                         <a href="product-detail.html">{toTitleCase(menuItem.name)}</a>
                       </h4>
-                      <div className="offer-code">Spicy Level: {toTitleCase(menuItem.spicy_index)}</div>
+                      <div className="offer-code">{toTitleCase(menuItem.spicy_index)}</div>
                       <div className="footer-wrapper">
                         <div className="price-wrapper">
                           <h6 className="current-price">₹{menuItem.price}</h6>
                           <span className="old-price">₹{menuItem.oldPrice}</span>
                         </div>
-                        {userData ? ( <div onClick={() => handleAddToCartClick(menuItem)} className="cart-btn">
-                          {isMenuItemInCart(menuItem.menu_id) ? (
-                            <i className="bx bxs-cart bx-sm"></i>
-                          ) : (
-                            <i className="bx bx-cart-add bx-sm"></i>
-                          )}
-                        </div>
-):(   <i className="bx bx-cart-add bx-sm"></i>)}
+                        {userData ? (
+                          <div onClick={() => handleAddToCartClick(menuItem)} className="cart-btn">
+                            {isMenuItemInCart(menuItem.menu_id) ? (
+                              <i className="bx bxs-cart bx-sm"></i>
+                            ) : (
+                              <i className="bx bx-cart-add bx-sm"></i>
+                            )}
+                          </div>
+                        ) : (
+                          <i className="bx bx-cart-add bx-sm"></i>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -532,6 +550,3 @@ const NearbyArea = () => {
 };
 
 export default NearbyArea;
-
-
-

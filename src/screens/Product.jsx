@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { Link } from "react-router-dom";
+
 import { useRestaurantId } from '../context/RestaurantIdContext';
 const Product = () => {
   const [menuList, setMenuList] = useState([]);
@@ -20,8 +21,11 @@ const Product = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId();
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  
+  console.log("Restaurant ID:", restaurantId);
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryCounts, setCategoryCounts] = useState({});
   // useEffect(() => {
   //   const swiper = new Swiper(".category-slide", {
   //     slidesPerView: "auto",
@@ -50,10 +54,10 @@ const Product = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ restaurant_id: 13, cat_id: "all" }),
+            body: JSON.stringify({ restaurant_id:restaurantId, cat_id: "all" }),
           }
         );
-
+console.log( restaurantId)
         if (!response.ok) {
           throw new Error("Failed to fetch menu data");
         }
@@ -78,9 +82,17 @@ const Product = () => {
           }));
 
           setCategories(formattedCategories);
+  // Calculate category counts
+  const counts = { All: formattedMenuList.length };
+  formattedMenuList.forEach((item) => {
+    counts[item.category] = (counts[item.category] || 0) + 1;
+  });
+  setCategoryCounts(counts);
 
+  // Initially, display all menu items
+  setFilteredMenuList(formattedMenuList);
           // Initially, display all menu items
-          setFilteredMenuList(formattedMenuList);
+    
         } else {
           throw new Error("API request unsuccessful");
         }
@@ -90,8 +102,9 @@ const Product = () => {
     };
 
     fetchMenuData();
-  }, []);
-
+  }, [ restaurantId,]);
+  
+ 
   const handleLikeClick = async (restaurantId, menuId, customerId) => {
     try {
       const response = await fetch(
@@ -108,7 +121,7 @@ const Product = () => {
           }),
         }
       );
-
+console.log(restaurantId)
       if (response.ok) {
         // Toggle is_favourite locally
         const updatedMenuList = menuList.map((menuItem) =>
@@ -259,18 +272,22 @@ const Product = () => {
   const handlePriceFilter = () => {
     // Filter menu items based on the selected price range
     const filteredItems = menuList.filter(
-      (item) => item.price >= 100 // Filter items with price greater than or equal to 100
+      (item) => item.price >= priceRange.min && item.price <= priceRange.max
     );
-
+  
     // Update the filteredMenuList state with the filtered items
     setFilteredMenuList(filteredItems);
-
+  
     // Close the filter menu after applying the filter
     setFilterOpen(false);
   };
+  
+  
 
   return (
     <div className={`page-wrapper ${sortByOpen || filterOpen ? "open" : ""}`}>
+      
+
       {/* Header */}
       <header className="header header-fixed style-3 ">
         <div className="header-content">
@@ -314,18 +331,21 @@ const Product = () => {
         >
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
-              <div
-                className={`category-btn swiper-slide ${
-                  selectedCategory === null ? "active" : ""
-                }`}
-                onClick={() => handleCategoryFilter(null)}
-                style={{
-                  backgroundColor: selectedCategory === null ? "#0D775E" : "",
-                  color: selectedCategory === null ? "#ffffff" : "",
-                }}
-              >
-                All
-              </div>
+            {categories && categories.length > 0 && ( // Check if categories exists and has data
+  <div
+    className={`category-btn swiper-slide ${
+      selectedCategory === null ? "active" : ""
+    }`}
+    onClick={() => handleCategoryFilter(null)}
+    style={{
+      backgroundColor: selectedCategory === null ? "#0D775E" : "",
+      color: selectedCategory === null ? "#ffffff" : "",
+    }}
+  >
+    All ({categoryCounts.All})
+  </div>
+)}
+
 
               {/* Other Category Buttons */}
               {categories.map((category) => (
@@ -334,7 +354,7 @@ const Product = () => {
                     className="category-btn"
                     onClick={() => handleCategoryFilter(category.name)}
                   >
-                    {category.name}
+                     {category.name} ({categoryCounts[category.name] || 0})
                   </div>
                 </div>
               ))}
@@ -350,13 +370,14 @@ const Product = () => {
                 <div className="card-item style-6">
                   <div className="dz-media">
                     <Link to={`/ProductDetails/${menuItem.menu_id}`}>
-                      <img
-                        src={menuItem.image}
-                        style={{ height: "150px" }}
-                        onError={(e) => {
-                          e.target.src = images;
-                        }}
-                      />
+                    <img
+            src={menuItem.image || images} // Use default image if image is null
+            alt={menuItem.name}
+            style={{ height: "150px" }}
+            onError={(e) => {
+              e.target.src = images; // Set local image source on error
+            }}
+          />
                     </Link>
                   </div>
 
@@ -401,7 +422,7 @@ const Product = () => {
 
                     <h4 className="item-name">{menuItem.name}</h4>
                     <div className="offer-code">
-                      Spicy Level: {menuItem.spicy_index}
+                       {menuItem.spicy_index}
                     </div>
                     <div className="footer-wrapper">
                       <div className="price-wrapper">
@@ -585,13 +606,13 @@ const Product = () => {
                   <span>₹{priceRange.max}</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                  <a
-                    onClick={handlePriceFilter}
-                    className="btn btn-primary btn-thin w-50 rounded-xl"
-                    style={{ marginLeft: "180px" }}
-                  >
-                    Apply
-                  </a>
+                <a
+  onClick={handlePriceFilter}
+  className="btn btn-primary btn-thin w-50 rounded-xl"
+  style={{ marginLeft: "180px" }}
+>
+  Apply
+</a>
                   {/* <a onClick={handleResetFilter} className="btn btn-white btn-thin w-100 rounded-xl">
                   Reset
                 </a> */}

@@ -8,7 +8,7 @@ import { useRestaurantId } from '../context/RestaurantIdContext';
 
 const PopularProducts = () => {
     const [menuCategories, setMenuCategories] = useState([]);
-
+    const { restaurantId } = useRestaurantId();
     // Utility function to convert string to title case
     const toTitleCase = (str) => {
         return str.replace(/\w\S*/g, function(txt) {
@@ -25,7 +25,7 @@ const PopularProducts = () => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        restaurant_id: 13
+                        restaurant_id: restaurantId
                     })
                 };
 
@@ -54,7 +54,7 @@ const PopularProducts = () => {
         };
 
         fetchMenuCategories();
-    }, []);
+    }, [restaurantId]);
 
     useEffect(() => {
         const swiper = new Swiper('.category-slide', {

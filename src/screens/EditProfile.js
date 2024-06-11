@@ -1,9 +1,9 @@
 
 
 
-
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate} from 'react-router-dom';
+import Bottom from '../component/bottom';
 
 const EditProfile = () => {
     const [userData, setUserData] = useState({});
@@ -12,22 +12,23 @@ const EditProfile = () => {
     const [newDob, setNewDob] = useState('');
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-
-
-  
+    const [loading, setLoading] = useState(false); 
+    const navigate = useNavigate(); 
     useEffect(() => {
         // Retrieve user data from localStorage when the component mounts
         const storedUserData = JSON.parse(localStorage.getItem('userData')) || {};
         setUserData(storedUserData);
 
         // Set initial values for form fields
-       
         setNewName(storedUserData.name || '');
         setNewMobile(storedUserData.mobile || '');
         setNewDob(storedUserData.dob || '');
     }, []);
+
     const handleUpdateProfile = async () => {
         try {
+            setLoading(true); // Set loading to true before API call
+
             const url = 'https://menumitra.com/user_api/account_profile_update';
             const requestOptions = {
                 method: 'POST',
@@ -41,45 +42,53 @@ const EditProfile = () => {
                     mobile: newMobile,
                 }),
             };
-    
+
             console.log('Request Body:', requestOptions.body);
-    
+
             const response = await fetch(url, requestOptions);
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
             }
-    
+
             const data = await response.json();
             console.log('Response Data:', data);
-    
+
             if (data.st === 1) {
-                setUserData(prevUserData => ({
-                    ...prevUserData,
+                const updatedUserData = {
+                    ...userData,
                     name: newName,
                     dob: newDob,
                     mobile: newMobile,
-                }));
+                };
+
+                // Update localStorage with the new user data
+                localStorage.setItem('userData', JSON.stringify(updatedUserData));
+
+                // Update state with the new user data
+                setUserData(updatedUserData);
                 setError(''); // Clear any previous error messages
                 setSuccessMessage('Profile updated successfully!');
+                setTimeout(() => {
+                    navigate('/Profile');
+                }, 2000); // Navigate to Profile screen after 5 seconds
+            
             } else {
                 setError('Profile update failed. Please try again.');
             }
         } catch (error) {
             console.error('Error updating profile:', error);
             setError('Profile update failed. Please try again.');
+        } finally {
+            setLoading(false); // Set loading to false after API call
         }
     };
-    
-    
-    
-    
+
     const toTitleCase = (str) => {
         return str.replace(/\w\S*/g, function (txt) {
-          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
-      };
-    
+    };
 
     return (
         <div className="page-wrapper">
@@ -98,6 +107,15 @@ const EditProfile = () => {
             </header>
             <main className="page-content space-top p-b80">
                 <div className="container">
+                {loading ? (
+                        <div id="preloader">
+                            <div className="loader">
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
                     <div className="edit-profile">
                         <div className="mb-3">
                             <label className="form-label" htmlFor="name">
@@ -139,6 +157,7 @@ const EditProfile = () => {
                             />
                         </div>
                         {error && <p className="text-danger">{error}</p>}
+                        {successMessage && <p className="text-success">{successMessage}</p>}
                         <button
                             type="button"
                             className="btn btn-lg btn-thin rounded-xl btn-primary w-100"
@@ -147,8 +166,10 @@ const EditProfile = () => {
                             Update Profile
                         </button>
                     </div>
+                      )}
                 </div>
             </main>
+            <Bottom></Bottom>
         </div>
     );
 };

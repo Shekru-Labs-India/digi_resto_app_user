@@ -1,7 +1,8 @@
 {
   "name": "food",
   "version": "0.1.0",
-  "homepage": "https://Shekru-Labs-India.github.io/digi_resto_app_user",
+
+"homepage": "https://Shekru-Labs-India.github.io/digi_resto_app_user",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.4",

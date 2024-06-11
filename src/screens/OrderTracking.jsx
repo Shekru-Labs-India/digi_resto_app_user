@@ -9,21 +9,24 @@ const  OrderTracking = () => {
   const userData = JSON.parse(localStorage.getItem('userData'));
   const customerId = userData ? userData.customer_id : null;
   const { restaurantId } = useRestaurantId();
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchOngoingOrders = async () => {
       try {
+        setLoading(true); 
         const response = await fetch('https://menumitra.com/user_api/get_order_list', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            restaurant_id:restaurantId,
             order_status: 'Ongoing', // Fetch ongoing orders only
             customer_id: customerId
           })
         });
-
+console.log(restaurantId)
+console.log(customerId)
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && data.lists) {
@@ -36,6 +39,8 @@ const  OrderTracking = () => {
         }
       } catch (error) {
         console.error('Error fetching orders:', error);
+      } finally {
+        setLoading(false); // Set loading to false after API call
       }
     };
 
@@ -65,6 +70,16 @@ const  OrderTracking = () => {
       
       <main className="page-content space-top p-b70">
         <div className="container">
+        {loading ? (
+            <div id="preloader">
+              <div className="loader">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
         {userData ? (
             // User is authenticated, render ongoing orders
             <div className="default-tab style-2">
@@ -81,6 +96,8 @@ const  OrderTracking = () => {
               ) : (
                 // User is not authenticated, render sign-in button
               <SigninButton></SigninButton>
+          )}
+            </>
           )}
         </div>
       </main>

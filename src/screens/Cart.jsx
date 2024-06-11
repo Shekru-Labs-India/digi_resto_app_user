@@ -193,11 +193,14 @@
 // };
 
 // export default Cart;
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import images from "../assets/MenuDefault.png";
 import SigninButton from '../constants/SigninButton';
 import { useRestaurantId } from '../context/RestaurantIdContext';
+import Bottom from "../component/bottom";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -251,14 +254,16 @@ const Cart = () => {
   };
 
   const userData = JSON.parse(localStorage.getItem('userData'));
-
+  const handleBack = () => {
+    navigate(-1); // Navigate back to the previous screen
+  };
   return (
-    <div className="page-wrapper full-height">
+    <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
       {/* Header */}
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/HomeScreen" className="back-btn dz-icon icon-fill icon-sm" onClick={() => navigate(-1)}>
+          <Link to ="/Wishlist" className="back-btn dz-icon icon-fill icon-sm" >
               <i className='bx bx-arrow-back'></i>
             </Link>
           </div>
@@ -284,7 +289,7 @@ const Cart = () => {
                 <h5 className="title">Your Cart is Empty</h5>
                 <p>Add items to your cart from the product details page.</p>
                 <Link
-                  to="/Product"
+                  to="/Category"
                   className="btn btn-outline-primary btn-sm"
                 >
                   Return to Shop
@@ -294,14 +299,16 @@ const Cart = () => {
           </div>
         </main>
       ) : (
-        <main className="page-content space-top p-b100">
+        <main className="page-content space-top p-b200">
           {userData ? (
             <div className="container overflow-hidden">
               {cartItems.map((item, index) => (
                 <div key={index} className="m-b5 dz-flex-box">
-                  <div className="dz-cart-list m-b10">
+                   
+                  <div className="dz-cart-list m-b30">
                     <div className="dz-media">
-                      <img
+                    <Link to={`/ProductDetails/${item.menu_id}`}>
+                      {/* <img
                         style={{
                           width: "100%",
                           height: "110px",
@@ -312,8 +319,24 @@ const Cart = () => {
                         onError={(e) => {
                           e.target.src = images;
                         }}
-                      />
+                      /> */}
+                                       <img
+            src={item.image || images} // Use default image if image is null
+            alt={item.name}
+            style={{
+              width: "100%",
+              height: "110px",
+              objectFit: "cover",
+            }}
+            onError={(e) => {
+              e.target.src = images; // Set local image source on error
+            }}
+          />
+                      </Link>
                     </div>
+                    
+                    <div>
+                  
                     <div className="dz-content">
                       <h5 className="title">{item.name}</h5>
                       <ul className="dz-meta">
@@ -322,6 +345,8 @@ const Cart = () => {
                           <del>₹{item.oldPrice}</del>
                         </li>
                       </ul>
+                      
+                      </div>
                       <div className="d-flex align-items-center">
                         <div className="dz-stepper style-2">
                           <div className="dz-stepper2 input-group">
@@ -345,6 +370,7 @@ const Cart = () => {
                             </div>
                           </div>
                         </div>
+                       
                         <div
                           className="remove"
                           onClick={() => removeFromCart(index)}
@@ -354,6 +380,7 @@ const Cart = () => {
                       </div>
                     </div>
                   </div>
+               
                 </div>
               ))}
             </div>
@@ -365,7 +392,7 @@ const Cart = () => {
 
       {/* Footer Fixed Button */}
       {userData && (
-        <div className="footer-fixed-btn bottom-0">
+        <div className="footer-fixed-btn bottom-40">
           <ul className="total-prize">
             <li className="name">Subtotal</li>
             <li className="prize">₹{calculateSubtotal()}</li>
@@ -379,8 +406,10 @@ const Cart = () => {
               Proceed to Buy &nbsp; <b> ({cartItems.length} items)</b>
             </Link>
           )}
+            
         </div>
       )}
+    <Bottom></Bottom>
     </div>
   );
 };

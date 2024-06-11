@@ -12081,7 +12081,7 @@
         font-weight: 500;
         border-bottom: 1px solid var(--border-color); }
         .accordion.dz-accordion .accordion-item .accordion-header .accordion-button:after {
-          content: "\e842";
+          /* content: "\e842"; */
           font-family: 'feather' !important;
           background-image: unset;
           width: 20px;
@@ -19148,7 +19148,7 @@
     width: 100%; /* Set the width to 100% of its container */
     max-height: 100%; /* Ensure the image does not exceed its container height */
    height: 330px;
-   width: 800px;
+   width: 600px;
     /* Remove height property to maintain aspect ratio based on width */
 }
 

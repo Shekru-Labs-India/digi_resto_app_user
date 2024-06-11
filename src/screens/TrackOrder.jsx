@@ -109,6 +109,7 @@ import Bottom from "../component/bottom";
 
 const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { order_number } = useParams();
   const handleBack = () => {
@@ -123,6 +124,7 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchOrderDetails = async (orderNumber) => {
       try {
+        setLoading(true);
         const response = await fetch(
           "https://menumitra.com/user_api/get_order_details",
           {
@@ -148,6 +150,8 @@ const TrackOrder = () => {
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
+      }finally {
+        setLoading(false); // Set loading to false after API call
       }
     };
 
@@ -177,6 +181,16 @@ const TrackOrder = () => {
       </header>
 
       <main className="page-content space-top">
+      {loading ? (
+          <div id="preloader">
+            <div className="loader">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         {userData ? (
           <div className="container">
             <section>
@@ -184,10 +198,10 @@ const TrackOrder = () => {
               {orderDetails.menu_details.map((menu) => (
                 <div key={menu.menu_id} className="dz-card list-style style-3 m-b30">
                   <div className="dz-media">
-                    <Link to={`/ProductDetails/${menu.menu_id}`}>
+                   
                       <img
                         style={{ height: '100px', width: '100px' }}
-                        src={menu.image}
+                        src={menu.image  || images}
                         alt={menu.name}
                         onError={(e) => {
                           e.target.src = images;
@@ -195,7 +209,7 @@ const TrackOrder = () => {
                           e.target.style.height = "80px";
                         }}
                       />
-                    </Link>
+                    
                   </div>
                   <div className="dz-content">
                     <h5 className="title">{toTitleCase(menu.name)}</h5>
@@ -234,6 +248,8 @@ const TrackOrder = () => {
           </div>
         ) : (
           <SigninButton />
+        )}
+          </>
         )}
       </main>
       <Bottom></Bottom>

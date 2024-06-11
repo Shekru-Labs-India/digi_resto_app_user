@@ -158,13 +158,18 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
+import Bottom from "../component/bottom";
+
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const cartItems = location.state?.cartItems || [];
-  const { restaurantId } = useRestaurantId();
+  const { restaurantId } = useRestaurantId(); // Get restaurantId from context
+  console.log("Restaurant ID:", restaurantId);
+
   const userData = JSON.parse(localStorage.getItem('userData'));
   const customerId = userData ? userData.customer_id : null;
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -175,22 +180,21 @@ const Checkout = () => {
       menu_id: item.menu_id,
       quantity: item.quantity,
     }));
-  console.log(orderItems)
+
     const orderData = {
-      customer_id: customerId, 
-      restaurant_id:restaurantId,
+      customer_id: customerId,
+      restaurant_id: restaurantId, // Use restaurantId from context
       notes: notes,
-   
       order_items: orderItems,
     };
-    console.log(cartItems)
+
     try {
       const response = await fetch('https://menumitra.com/user_api/create_order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(customerId)
+        body: JSON.stringify(orderData)
       });
   
       if (response.ok) {
@@ -211,7 +215,6 @@ const Checkout = () => {
       alert('Failed to submit order. Please try again.');
     }
   };
- 
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -259,15 +262,15 @@ const Checkout = () => {
                   <li key={index} className="list-group-items">
                     <div className="list-content">
                       <h5 className="title">{item.name}</h5>
-                      <p className="about">
-                        {item.quantity}x₹{item.price.toFixed(2)}
-                        <span
-                          className="price"
-                          style={{ fontWeight: "bold", marginLeft: "220px" }}
+                      <ul className="total-prize">
+                        <li className="name">{item.quantity}x₹{item.price}</li>
+                        <li
+                          className="prize"
+                          style={{ fontWeight: "bold", textAlign:"left"}}
                         >
-                          ₹{(item.quantity * item.price).toFixed(2)}
-                        </span>
-                      </p>
+                          ₹{(item.quantity * item.price)}
+                        </li>
+                      </ul>
                     </div>
                   </li>
                 ))
@@ -279,7 +282,7 @@ const Checkout = () => {
         </div>
       </main>
 
-      <div className="footer-fixed-btn bottom-0">
+      <div className="footer-fixed-btn bottom-40">
         <ul className="total-prize">
           <li className="name">Subtotal</li>
           <li className="prize">₹{calculateTotal()}</li>
@@ -291,6 +294,7 @@ const Checkout = () => {
           Submit Order
         </button>
       </div>
+      <Bottom />
     </div>
   );
 };
