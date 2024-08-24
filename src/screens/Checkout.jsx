@@ -154,11 +154,10 @@
 
 // export default Checkout;
 
-
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useRestaurantId } from '../context/RestaurantIdContext';
-import Bottom from "../component/bottom";
+import { useRestaurantId } from '../context/RestaurantIdContext'; // Correct import
+import Bottom from "../components/Bottom";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -299,4 +298,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout;
+export default Checkout; // Ensure Checkout is exported

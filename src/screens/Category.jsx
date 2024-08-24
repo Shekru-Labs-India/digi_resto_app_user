@@ -129,7 +129,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import Bottom from "../component/bottom";
+import Bottom from "../components/Bottom";
 import images from "../assets/category.png";
 import { useRestaurantId } from '../context/RestaurantIdContext';
 
@@ -194,7 +194,7 @@ const Category = () => {
 
   return (
     <div className="page-wrapper">
-      {loading ? (
+      {/* {loading ? (
         <div id="preloader">
           <div className="loader">
             <div className="spinner-border text-primary" role="status">
@@ -202,7 +202,7 @@ const Category = () => {
             </div>
           </div>
         </div>
-      ) : (
+      ) : ( */}
         <>
           {/* Header */}
           <header className="header header-fixed style-3">

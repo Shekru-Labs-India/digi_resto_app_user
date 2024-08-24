@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SigninButton from '../constants/SigninButton';
-import Bottom from '../component/bottom';
+import Bottom from '../components/Bottom';
 import { useRestaurantId } from '../context/RestaurantIdContext';
 const  OrderTracking = () => {
   const [orders, setOrders] = useState([]);

@@ -74,7 +74,7 @@ const PopularProducts = () => {
             <div className="swiper category-slide">
                 <div className="swiper-wrapper">
                     {menuCategories.map((category) => (
-                        <div className="swiper-slide" key={category.menu_cat_id}>
+                        <div className="swiper-slide" key={category.menu_cat_id}>   
                             <Link to={`/category/${category.menu_cat_id}`} className="category-btn">{category.name}</Link>
                         </div>
                     ))}

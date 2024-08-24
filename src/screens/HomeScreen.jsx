@@ -1,67 +1,31 @@
-import React, { useState } from 'react';
-import '../assets/css/style.css'; // Replace '../path/to/external.css' with the actual path to your CSS file
-import Sidebar from '../component/Sidebar';
-// import MySwiper from '../component/Myswiper';
-import Bottom from '../component/bottom';
-import { Search } from '@material-ui/icons';
+import React from "react";
+import "../styles/global.css"; // Ensure this path is correct and file exists
+import Sidebar from "../components/Sidebar";
+import Bottom from "../components/Bottom";
+import OfferBanner from "../components/OfferBanner";
+import FeaturedArea from "../components/FeaturedArea";
+import ProductCart from "../components/ProductCart";
+import NearbyArea from "../components/NearbyArea";
+import { useParams } from "react-router-dom"; // Import useParams to get the restaurantCode
 
-
-import Plantcategory from '../component/Plantcategory';
-import Header from '../component/Header';
-import FeaturedArea from '../component/FeaturedArea';
-import OfferBanner from '../component/OfferBanner';
-import PopularProducts from '../component/PopularProduct';
-import ProductCart from '../component/ProductCart';
-import PeopleAlsoViewed from '../component/PeopleAlsoViewed';
-import ItemsCart from '../component/ItemsCart';
-import NearbyArea from '../component/NearbyArea';
-import ProductCard from '../component/ProductCart';
 const HomeScreen = () => {
-
-   
+  const { restaurantCode } = useParams(); // Get restaurantCode from the URL
+  console.log("Rendering HomeScreen with restaurantCode:", restaurantCode);
 
   return (
-    <div>
-       
-       <div className="page-wrapper">
-        {/* <Header></Header> */}
-        <Sidebar></Sidebar> 
-
-            {/* Main Content Start */}
-            <main className="page-content p-t100 p-b70">
-                <div className="container overflow-hidden pt-0">
-                    {/* SearchBox */}
-                    {/* <div className="search-box">
-                        <div className="input-group">
-                            <input type="search" placeholder="Search" className="form-control" />
-                            <span className="input-group-text">
-                            
-                                <i class='bx bx-search-alt icon-search' ></i>
-                            </span>
-                        </div>
-                    </div> */}
-                    {/* SearchBox */}
-                    <OfferBanner/>
-                    <FeaturedArea/>
-                    
-                    {/* <PopularProducts/> */}
-                    <ProductCard/>
-                    {/* <PeopleAlsoViewed/> */}
-                    {/* <ItemsCart/> */}
-                    <NearbyArea/>
-                </div>
-               
-            </main>
-           
-            {/* Main Content End */}
-        
-       
-{/* <MySwiper></MySwiper>
-        <Plantcategory></Plantcategory> */}
-
-        <Bottom></Bottom>
+    <div className="page-wrapper">
+      <Sidebar />
+      <main className="page-content p-t100 p-b70">
+        <div className="container overflow-hidden pt-0">
+          <OfferBanner />
+          <FeaturedArea />
+          <ProductCart restaurantId="2" />{" "}
+          {/* Pass restaurantCode as restaurantId */}
+          <NearbyArea />
         </div>
-        </div>
+      </main>
+      <Bottom restaurantCode="824679" /> {/* Pass restaurantCode to Bottom */}
+    </div>
   );
 };
 

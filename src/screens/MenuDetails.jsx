@@ -314,10 +314,19 @@
 // };
 
 // export default MenuDetails;
-import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
-import { useRestaurantId } from '../context/RestaurantIdContext';
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
@@ -328,26 +337,24 @@ const MenuDetails = () => {
   const navigate = useNavigate();
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const { menuId } = useParams(); // Extract menu_id from URL parameters
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userData = JSON.parse(localStorage.getItem("userData")) || {}; // Default to an empty object if not found
   const { restaurantId } = useRestaurantId();
 
- 
   const [customerId, setCustomerId] = useState(null);
 
   useEffect(() => {
-    const storedUserData = localStorage.getItem('userData');
+    const storedUserData = localStorage.getItem("userData");
     if (storedUserData) {
       const userData = JSON.parse(storedUserData);
       setCustomerId(userData.customer_id);
     }
   }, []);
-  
-  
+
   const toTitleCase = (str) => {
     if (!str) {
-      return ''; // Handle undefined or null input gracefully
+      return ""; // Handle undefined or null input gracefully
     }
-    return str.replace(/\w\S*/g, function(txt) {
+    return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
@@ -355,73 +362,98 @@ const MenuDetails = () => {
   // Fetch product details based on menuId
   const fetchProductDetails = async (menuId) => {
     try {
-      const response = await fetch('https://menumitra.com/user_api/get_menu_details', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        })
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_menu_details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: 2, // Hardcoded restaurant ID
+            menu_id: menuId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
 
         if (data.st === 1 && data.lists) {
-          const { name, veg_nonveg, spicy_index, price, description, image, is_favourite, menu_cat_name } = data.lists;
+          const {
+            name,
+            veg_nonveg,
+            spicy_index,
+            price,
+            description,
+            image,
+            is_favourite,
+            menu_cat_name,
+          } = data.lists;
           const oldPrice = Math.floor(price * 1.1);
-          setProductDetails({ name, veg_nonveg, spicy_index, price, oldPrice, description, image, menu_cat_name });
+          setProductDetails({
+            name,
+            veg_nonveg,
+            spicy_index,
+            price,
+            oldPrice,
+            description,
+            image,
+            menu_cat_name,
+          });
           setIsFavorite(is_favourite === 1); // Update favorite status based on API response
         } else {
-          console.error('Invalid data format:', data);
+          console.error("Invalid data format:", data);
         }
       } else {
-        console.error('Network response was not ok.');
+        console.error("Network response was not ok.");
       }
     } catch (error) {
-      console.error('Error fetching product details:', error);
+      console.error("Error fetching product details:", error);
     }
   };
 
   useEffect(() => {
     fetchProductDetails(menuId); // Fetch product details when component mounts or menuId changes
-  }, [menuId, restaurantId]);
+  }, [menuId]);
 
   useEffect(() => {
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     setCartItemsCount(cartItems.length);
   }, []);
 
   const handleLikeClick = async () => {
     setIsLiked(!isLiked); // Toggle the liked state locally
-  
+
     try {
-      const response = await fetch('https://menumitra.com/user_api/save_favourite_menu', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId,
-          customer_id: customerId // Pass the customer_id from state
-        })
-      });
-  
+      const response = await fetch(
+        "https://menumitra.com/user_api/save_favourite_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: 2, // Hardcoded restaurant ID
+            menu_id: menuId,
+            customer_id: customerId, // Pass the customer_id from state
+          }),
+        }
+      );
+
       if (response.ok) {
-        console.log(`Product (menu_id: ${menuId}) added to favorites successfully!`);
+        console.log(
+          `Product (menu_id: ${menuId}) added to favorites successfully!`
+        );
         setIsFavorite(!isFavorite); // Toggle the favorite state locally
-        navigate('/Wishlist'); // Navigate to the wishlist page after successful save
+        navigate("/Wishlist"); // Navigate to the wishlist page after successful save
       } else {
-        console.error('Failed to add product to favorites.');
+        console.error("Failed to add product to favorites.");
       }
     } catch (error) {
-      console.error('Error adding product to favorites:', error);
+      console.error("Error adding product to favorites:", error);
     }
   };
-  
 
   const handleAddToCart = () => {
     if (quantity === 0) {
@@ -437,15 +469,15 @@ const MenuDetails = () => {
     }
 
     const cartItem = { ...productDetails, quantity };
-    let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     cartItems.push(cartItem);
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
     // Update cart item count immediately
     setCartItemsCount(cartItems.length);
 
     // Navigate to the cart page
-    navigate('/Cart');
+    navigate("/Cart");
   };
 
   const incrementQuantity = () => {
@@ -473,7 +505,7 @@ const MenuDetails = () => {
   };
 
   const isMenuItemInCart = () => {
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === parseInt(menuId));
   };
 
@@ -484,17 +516,25 @@ const MenuDetails = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <div className="back-btn dz-icon icon-fill icon-sm" onClick={handleBack}>
-              <i className='bx bx-arrow-back'></i>
+            <div
+              className="back-btn dz-icon icon-fill icon-sm"
+              onClick={handleBack}
+            >
+              <i className="bx bx-arrow-back"></i>
             </div>
           </div>
           <div className="mid-content">
             <h5 className="title">Product Details</h5>
           </div>
           <div className="right-content">
-            <Link to="/Cart" className="notification-badge dz-icon icon-sm icon-fill">
-              <i className='bx bx-cart bx-sm'></i>
-              {userData && <span className="badge badge-danger">{cartItemsCount}</span>}
+            <Link
+              to="/Cart"
+              className="notification-badge dz-icon icon-sm icon-fill"
+            >
+              <i className="bx bx-cart bx-sm"></i>
+              {userData && (
+                <span className="badge badge-danger">{cartItemsCount}</span>
+              )}
             </Link>
           </div>
         </div>
@@ -518,25 +558,32 @@ const MenuDetails = () => {
         </div>
         <div className="container">
           <div className="dz-product-detail">
-            <div className="detail-content" style={{ position: 'relative' }}>
-              {productDetails.menu_cat_name && <h3 className="product-title">{productDetails.menu_cat_name}</h3>}
+            <div className="detail-content" style={{ position: "relative" }}>
+              {productDetails.menu_cat_name && (
+                <h3 className="product-title">
+                  {productDetails.menu_cat_name}
+                </h3>
+              )}
               <h3 className="title">
-                {toTitleCase(productDetails.name)} ({toTitleCase(productDetails.veg_nonveg)})
+                {toTitleCase(productDetails.name)} (
+                {toTitleCase(productDetails.veg_nonveg)})
               </h3>
-              {userData ? (
-               <i
-               className={`bx ${isFavorite ? 'bxs-heart text-red' : 'bx-heart'} bx-sm`}
-               onClick={handleLikeClick}
-               style={{
-                 position: 'absolute',
-                 top: '0',
-                 right: '0',
-                 fontSize: '23px',
-                 cursor: 'pointer'
-               }}
-             ></i>
-             
-              ) : (
+              {userData && (
+                <i
+                  className={`bx ${
+                    isFavorite ? "bxs-heart text-red" : "bx-heart"
+                  } bx-sm`}
+                  onClick={handleLikeClick}
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    right: "0",
+                    fontSize: "23px",
+                    cursor: "pointer",
+                  }}
+                ></i>
+              )}
+              {!userData && (
                 <i
                   className="bx bx-heart"
                   style={{
@@ -554,50 +601,49 @@ const MenuDetails = () => {
               <div className="dz-meta-items">
                 <div className="dz-price m-r60">
                   <h6 className="sub-title">Price:</h6>
-                  <span className="price">₹{productDetails.price}<del>₹{productDetails.oldPrice}</del></span>
+                  <span className="price">
+                    ₹{productDetails.price}
+                    <del>₹{productDetails.oldPrice}</del>
+                  </span>
                 </div>
               </div>
               {productDetails.spicy_index && (
                 <div className="description">
                   <h6 className="sub-title"></h6>
-                  <h6 className="sub-title">{toTitleCase(productDetails.spicy_index)}</h6>
+                  <h6 className="title">Spicy Index</h6>
+                  <span className="price">{productDetails.spicy_index}</span>
                 </div>
               )}
-              {productDetails.description && (
-                <div className="description">
-                  <h6 className="sub-title">Description:</h6>
-                  <p className="mb-0">{toTitleCase(productDetails.description)}</p>
-                </div>
-              )}
+              <div className="description">
+                <h6 className="sub-title">Description:</h6>
+                <p className="desc">{productDetails.description}</p>
+              </div>
             </div>
           </div>
         </div>
-      </main>
 
-      {shouldDisplayFooter && (
-        <div className="footer-fixed-btn bottom-0">
-          {showQuantityError && <p style={{ color: 'red', textAlign: 'center' }}>Please select a quantity.</p>}
-          <div className="d-flex align-items-center gap-2 justify-content-between">
-            <div className="dz-stepper1 input-group">
-              <div className="dz-stepper1" onClick={decrementQuantity}>
-                <i className="bx bx-minus"></i>
+        {shouldDisplayFooter && (
+          <footer className="footer">
+            <div className="footer-content">
+              <div className="quantity-control">
+                <button onClick={decrementQuantity} className="quantity-btn">
+                  -
+                </button>
+                <span className="quantity">{quantity}</span>
+                <button onClick={incrementQuantity} className="quantity-btn">
+                  +
+                </button>
+                {showQuantityError && (
+                  <p className="error">Please select a valid quantity.</p>
+                )}
               </div>
-              <input
-                className="form-control stepper-input1 text-center"
-                type="text"
-                value={quantity}
-                readOnly
-              />
-              <div className="dz-stepper1" onClick={incrementQuantity}>
-                <i className="bx bx-plus"></i>
-              </div>
+              <button onClick={handleAddToCart} className="add-to-cart-btn">
+                Add to Cart
+              </button>
             </div>
-            <button onClick={handleAddToCart} className="btn btn-primary btn-lg btn-thin rounded-xl gap-3 w-100">
-              <i className='bx bx-cart-add bx-sm'></i>Add to Cart
-            </button>
-          </div>
-        </div>
-      )}
+          </footer>
+        )}
+      </main>
     </div>
   );
 };

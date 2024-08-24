@@ -134,18 +134,17 @@
 
 // export default FeaturedArea;
 
-
 import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
-import { useRestaurantId } from '../context/RestaurantIdContext';
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const FeaturedArea = () => {
   const [menuLists, setMenuLists] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { restaurantId } = useRestaurantId();
 
-  // Utility function to convert string to title case
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -158,8 +157,10 @@ const FeaturedArea = () => {
     const fetchMenuData = async (retryCount = 0) => {
       try {
         if (!restaurantId) {
-          throw new Error("Restaurant ID is not available");
+          console.log("Restaurant ID is not available yet.");
+          return;
         }
+
         const response = await fetch(
           "https://menumitra.com/user_api/get_product_list_with_offer",
           {
@@ -172,6 +173,7 @@ const FeaturedArea = () => {
             }),
           }
         );
+
         console.log("Restaurant ID:", restaurantId);
 
         if (!response.ok) {
@@ -185,11 +187,12 @@ const FeaturedArea = () => {
             name: toTitleCase(menu.name),
             menu_cat_name: toTitleCase(menu.menu_cat_name),
           }));
+
           if (isMounted) {
             setMenuLists(formattedMenuLists);
+            setLoading(false);
           }
 
-          // Initialize Swiper after setting menu data
           new Swiper(".featured-swiper", {
             slidesPerView: "auto",
             spaceBetween: 20,
@@ -201,22 +204,31 @@ const FeaturedArea = () => {
           });
         } else {
           console.error("API Error:", data.msg);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         if (retryCount < 3) {
           console.log(`Retrying... (${retryCount + 1})`);
           fetchMenuData(retryCount + 1);
+        } else {
+          setLoading(false);
         }
       }
     };
 
-    fetchMenuData();
+    if (restaurantId) {
+      fetchMenuData();
+    }
 
     return () => {
       isMounted = false;
     };
   }, [restaurantId]);
+
+  if (loading) {
+    return <div></div>;
+  }
 
   return (
     <div className="dz-box style-3">
@@ -233,10 +245,10 @@ const FeaturedArea = () => {
                         height: "100%",
                         objectFit: "cover",
                       }}
-                      src={menu.image || images} // Use default image if menu.image is null
+                      src={menu.image || images}
                       alt={menu.name}
                       onError={(e) => {
-                        e.target.src = images; // Set local image source on error
+                        e.target.src = images;
                       }}
                     />
                   </div>

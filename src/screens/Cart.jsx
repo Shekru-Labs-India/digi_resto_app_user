@@ -200,7 +200,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import images from "../assets/MenuDefault.png";
 import SigninButton from '../constants/SigninButton';
 import { useRestaurantId } from '../context/RestaurantIdContext';
-import Bottom from "../component/bottom";
+import Bottom from "../components/Bottom";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);

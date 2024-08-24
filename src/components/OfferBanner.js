@@ -399,7 +399,7 @@ const OfferBanner = () => {
 
     return (
         <div className="dz-box style-3">
-            {loading ? (
+            {/* {loading ? (
                 <div id="preloader">
                     <div className="loader">
                         <div className="spinner-border text-primary" role="status">
@@ -407,7 +407,7 @@ const OfferBanner = () => {
                         </div>
                     </div>
                 </div>
-            ) : (
+            ) : ( */}
                 <div className="swiper featured-swiper2">
                     <div className="swiper-wrapper">
                         {banners.map((bannerUrl, index) => (
@@ -422,7 +422,7 @@ const OfferBanner = () => {
                         ))}
                     </div>
                 </div>
-            )}
+           
         </div>
     );
 };

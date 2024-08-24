@@ -295,7 +295,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import images from '../assets/MenuDefault.png';
-import Bottom from '../component/bottom';
+import Bottom from '../components/Bottom';
 import { useRestaurantId } from '../context/RestaurantIdContext';
 
 

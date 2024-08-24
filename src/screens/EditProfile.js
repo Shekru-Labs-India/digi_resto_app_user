@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link ,useNavigate} from 'react-router-dom';
-import Bottom from '../component/bottom';
+import Bottom from '../components/Bottom';
 
 const EditProfile = () => {
     const [userData, setUserData] = useState({});
@@ -91,86 +91,84 @@ const EditProfile = () => {
     };
 
     return (
-        <div className="page-wrapper">
-            <header className="header header-fixed style-3">
-                <div className="header-content">
-                    <div className="left-content">
-                        <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-                            <i className="bx bx-arrow-back"></i>
-                        </Link>
-                    </div>
-                    <div className="mid-content">
-                        <h5 className="title">Edit Profile</h5>
-                    </div>
-                    <div className="right-content"></div>
+      <div className="page-wrapper">
+        <header className="header header-fixed style-3">
+          <div className="header-content">
+            <div className="left-content">
+              <Link
+                to="/Profile"
+                className="back-btn dz-icon icon-fill icon-sm"
+              >
+                <i className="bx bx-arrow-back"></i>
+              </Link>
+            </div>
+            <div className="mid-content">
+              <h5 className="title">Edit Profile</h5>
+            </div>
+            <div className="right-content"></div>
+          </div>
+        </header>
+        <main className="page-content space-top p-b80">
+          <div className="container">
+            <>
+              <div className="edit-profile">
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="name">
+                    <span className="required-star">*</span> Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    className="form-control"
+                    placeholder="Enter Full Name"
+                    value={toTitleCase(newName)}
+                    onChange={(e) => setNewName(e.target.value)}
+                  />
                 </div>
-            </header>
-            <main className="page-content space-top p-b80">
-                <div className="container">
-                {loading ? (
-                        <div id="preloader">
-                            <div className="loader">
-                                <div className="spinner-border text-primary" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                    <div className="edit-profile">
-                        <div className="mb-3">
-                            <label className="form-label" htmlFor="name">
-                                <span className="required-star">*</span> Full Name
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                className="form-control"
-                                placeholder="Enter Full Name"
-                                value={toTitleCase(newName)}
-                                onChange={(e) => setNewName(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label" htmlFor="phone">
-                                <span className="required-star">*</span> Mobile Number
-                            </label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                className="form-control"
-                                value={newMobile}
-                                onChange={(e) => setNewMobile(e.target.value)}
-                                disabled  // assuming mobile number should not be editable
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label" htmlFor="dob">
-                                <span className="required-star">*</span> Date of Birth
-                            </label>
-                            <input
-                                type="date"
-                                id="dob"
-                                className="form-control"
-                                placeholder="Enter DOB"
-                                value={newDob}
-                                onChange={(e) => setNewDob(e.target.value)}
-                            />
-                        </div>
-                        {error && <p className="text-danger">{error}</p>}
-                        {successMessage && <p className="text-success">{successMessage}</p>}
-                        <button
-                            type="button"
-                            className="btn btn-lg btn-thin rounded-xl btn-primary w-100"
-                            onClick={handleUpdateProfile}
-                        >
-                            Update Profile
-                        </button>
-                    </div>
-                      )}
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="phone">
+                    <span className="required-star">*</span> Mobile Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    className="form-control"
+                    value={newMobile}
+                    onChange={(e) => setNewMobile(e.target.value)}
+                    disabled // assuming mobile number should not be editable
+                  />
                 </div>
-            </main>
-            <Bottom></Bottom>
-        </div>
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="dob">
+                    <span className="required-star">*</span> Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    id="dob"
+                    className="form-control"
+                    placeholder="Enter DOB"
+                    value={newDob}
+                    onChange={(e) => setNewDob(e.target.value)}
+                  />
+                </div>
+                {error && <p className="text-danger">{error}</p>}
+                {successMessage && (
+                  <p className="text-success">{successMessage}</p>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-lg btn-thin rounded-xl btn-primary w-100"
+                  onClick={handleUpdateProfile}
+                >
+                  Update Profile
+                </button>
+              </div>
+            </>
+          </div>
+        </main>
+
+        <Bottom></Bottom>
+      </div>
     );
 };
 

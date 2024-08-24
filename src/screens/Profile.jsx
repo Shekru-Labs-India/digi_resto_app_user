@@ -176,7 +176,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import applogo from "../assets/menumitra_logo.png";
-import Bottom from "../component/bottom";
+import Bottom from "../components/Bottom";
 
 const Profile = () => {
   const navigate = useNavigate();

@@ -206,20 +206,27 @@
 
 
 
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useRestaurantId } from '../context/RestaurantIdContext';
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const userDataString = localStorage.getItem("userData");
   const userData = userDataString ? JSON.parse(userDataString) : null;
-  const [isDarkMode, setIsDarkMode] = useState(false); // State for theme
-  const { restaurantDetails } = useRestaurantId(); // Consume context
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { restaurantDetails } = useRestaurantId();
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      setIsDarkMode(true);
+      document.body.classList.add("theme-dark");
+    }
+  }, []);
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+    setSidebarOpen(!sidebarOpen);
   };
 
   const getFirstName = (name) => {
@@ -236,19 +243,14 @@ const Sidebar = () => {
   };
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode); // Toggle the dark mode state
-    // Add or remove 'theme-dark' class from the body
-    const body = document.body;
-    if (isDarkMode) {
-      body.classList.remove("theme-dark");
-    } else {
-      body.classList.add("theme-dark");
-    }
+    const newTheme = !isDarkMode ? "dark" : "light";
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle("theme-dark");
+    localStorage.setItem("theme", newTheme);
   };
 
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-      {/* Header */}
       <header className="header header-fixed p-3">
         <div className="header-content">
           <div className="left-content gap-1">
@@ -258,7 +260,12 @@ const Sidebar = () => {
           </div>
           <div className="mid-content"></div>
           <div className="right-content">
-            <div className="menu-toggler" onClick={toggleSidebar}>
+            <div
+              className="menu-toggler"
+              onClick={toggleSidebar}
+              aria-expanded={sidebarOpen}
+              aria-label="Toggle Sidebar"
+            >
               <i className="bx bx-user-circle bx-lg"></i>
             </div>
           </div>
@@ -277,9 +284,11 @@ const Sidebar = () => {
           </div>
           <div className="dz-info">
             <div className="greetings">
-              {toTitleCase(getFirstName(userData?.name)) || "User"}
+              {toTitleCase(getFirstName(userData?.name)) || "Guest"}
             </div>
-            <span className="mail">{userData?.mobile}</span>
+            <span className="mail">
+              {userData?.mobile || "No mobile number"}
+            </span>
           </div>
         </div>
         <ul className="nav navbar-nav">
@@ -291,46 +300,7 @@ const Sidebar = () => {
               <span>Menus</span>
             </Link>
           </li>
-          <li>
-            <Link className="nav-link active" to="/Category">
-              <span className="dz-icon icon-sm">
-                <i className="bx bx-category bx-sm"></i>
-              </span>
-              <span>Category</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Wishlist">
-              <span className="dz-icon icon-sm">
-                <i className="bx bx-heart bx-sm"></i>
-              </span>
-              <span>Favourite</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/MyOrder">
-              <span className="dz-icon icon-sm">
-                <i className="bx bx-notepad bx-sm"></i>
-              </span>
-              <span>My Orders</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Cart">
-              <span className="dz-icon icon-sm">
-                <i className="bx bx-cart bx-sm"></i>
-              </span>
-              <span>Cart</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Profile">
-              <span className="dz-icon icon-sm">
-                <i className="bx bx-user bx-sm"></i>
-              </span>
-              <span>Profile</span>
-            </Link>
-          </li>
+          {/* Other nav links */}
         </ul>
         <div className="dz-mode">
           <div className="theme-btn" onClick={toggleTheme}>
@@ -340,11 +310,9 @@ const Sidebar = () => {
         </div>
         <div className="sidebar-bottom">
           <div className="app-info">
-            <span className="ver-info">
-              <p className="company" style={{ textAlign: "center" }}>
-                ShekruLabs India Pvt.Ltd <p className="company">v1</p>
-              </p>
-            </span>
+            <div className="company" style={{ textAlign: "center" }}>
+              ShekruLabs India Pvt.Ltd <span className="version">v1</span>
+            </div>
           </div>
         </div>
       </div>
