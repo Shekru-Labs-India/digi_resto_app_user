@@ -65,23 +65,29 @@
 
 // export default Bottom;
 
+
+
+
+
+
+
+
+
+
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const Bottom = ({ restaurantCode }) => {
-  // Receive restaurantCode as a prop
   const location = useLocation();
-
-  // Debugging line to check if restaurantCode is correctly fetched
-  console.log("Restaurant Code in Bottom:", restaurantCode);
 
   return (
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/HomeScreen/${restaurantCode || 824679}`} // Fallback to 483452 if restaurantCode is not available
+          to={`/HomeScreen/${restaurantCode}`} // Use restaurantCode directly
           className={
-            location.pathname === `/HomeScreen/${restaurantCode || 824679}`
+            location.pathname === `/HomeScreen/${restaurantCode}`
               ? "nav-link active"
               : "nav-link"
           }

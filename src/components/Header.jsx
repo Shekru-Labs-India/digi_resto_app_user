@@ -27,7 +27,7 @@ const Header = () => {
             </div>
             <div className="mid-content"></div>
             <div className="right-content">
-              <a href="" className="menu-toggler" onClick={toggleSidebar}>
+              <a href="/" className="menu-toggler" onClick={toggleSidebar}>
                 <div className="media">
                    <div className="media-45 rounded-md"> 
                     {/* <img className="rounded-md" src={avatar} alt="" /> */}

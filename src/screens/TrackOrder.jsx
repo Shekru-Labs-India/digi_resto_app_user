@@ -105,7 +105,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
-import Bottom from "../components/Bottom";
+import Bottom from "../component/bottom";
 
 const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);

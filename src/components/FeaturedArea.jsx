@@ -134,7 +134,33 @@
 
 // export default FeaturedArea;
 
-import React, { useEffect, useState } from "react";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+jsx
+import React, { useEffect, useState, useRef } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
@@ -143,7 +169,9 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 const FeaturedArea = () => {
   const [menuLists, setMenuLists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { restaurantId } = useRestaurantId();
+  const swiperRef = useRef(null);
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -191,20 +219,22 @@ const FeaturedArea = () => {
           if (isMounted) {
             setMenuLists(formattedMenuLists);
             setLoading(false);
-          }
+            setError(null);
 
-          new Swiper(".featured-swiper", {
-            slidesPerView: "auto",
-            spaceBetween: 20,
-            loop: true,
-            autoplay: {
-              delay: 2500,
-              disableOnInteraction: false,
-            },
-          });
+            if (!swiperRef.current) {
+              swiperRef.current = new Swiper(".featured-swiper", {
+                slidesPerView: "auto",
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                  delay: 2500,
+                  disableOnInteraction: false,
+                },
+              });
+            }
+          }
         } else {
-          console.error("API Error:", data.msg);
-          setLoading(false);
+          throw new Error(data.msg || "Failed to fetch menu data");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -212,14 +242,15 @@ const FeaturedArea = () => {
           console.log(`Retrying... (${retryCount + 1})`);
           fetchMenuData(retryCount + 1);
         } else {
-          setLoading(false);
+          if (isMounted) {
+            setLoading(false);
+            setError("Failed to fetch menu data. Please try again later.");
+          }
         }
       }
     };
 
-    if (restaurantId) {
-      fetchMenuData();
-    }
+    fetchMenuData();
 
     return () => {
       isMounted = false;
@@ -227,7 +258,11 @@ const FeaturedArea = () => {
   }, [restaurantId]);
 
   if (loading) {
-    return <div></div>;
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (

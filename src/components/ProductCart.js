@@ -311,13 +311,9 @@
 
 
 
-
-
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
-import Swiper from "swiper";
 
 const ProductCart = ({ restaurantId }) => {
   const [menuList, setMenuList] = useState([]);
@@ -343,6 +339,15 @@ const ProductCart = ({ restaurantId }) => {
       console.error("Restaurant ID is not available");
     }
   }, [restaurantId]);
+
+  const fetchWithTimeout = (url, options, timeout = 5000) => {
+    return Promise.race([
+      fetch(url, options),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timed out")), timeout)
+      ),
+    ]);
+  };
 
   const fetchMenuCategories = async () => {
     setLoading(true);
@@ -439,15 +444,6 @@ const ProductCart = ({ restaurantId }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchWithTimeout = (url, options, timeout = 5000) => {
-    return Promise.race([
-      fetch(url, options),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Request timed out")), timeout)
-      ),
-    ]);
   };
 
   const handleCategorySelect = (categoryId) => {

@@ -328,13 +328,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import images from '../assets/MenuDefault.png';
-import Bottom from '../components/Bottom';
+import Bottom from '../component/bottom';
 import SigninButton from '../constants/SigninButton';
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   const userData = JSON.parse(localStorage.getItem('userData'));
   const customerId = userData ? userData.customer_id : null;
@@ -369,8 +369,14 @@ const Wishlist = () => {
 
   const addToCart = (item) => {
     const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-    const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    const itemInCart = cartItems.find(cartItem => cartItem.menu_id === item.menu_id);
+
+    if (!itemInCart) {
+      const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    } else {
+      console.log('Item already in cart');
+    }
   };
 
   const isMenuItemInCart = (menuId) => {
@@ -428,8 +434,12 @@ const Wishlist = () => {
   };
 
   const handleAddToCartClick = (item) => {
-    addToCart(item);
-    navigate('/Cart');
+    if (!isMenuItemInCart(item.menu_id)) {
+      addToCart(item);
+      navigate('/Cart');
+    } else {
+      console.log('Item is already in the cart');
+    }
   };
 
   return (
@@ -493,7 +503,7 @@ const Wishlist = () => {
                               {menu.oldPrice && <del>₹{menu.oldPrice}</del>}
                             </li>
                           </ul>
-                          <div onClick={() => handleRemoveItemClick(index, menu.restaurant_id, menu.menu_id, 1)} className="remove-text">
+                          <div onClick={() => handleRemoveItemClick(index, menu.restaurant_id, menu.menu_id, customerId)} className="remove-text">
                             Remove
                           </div>
                           <div onClick={() => handleAddToCartClick(menu)} className="cart-btn">
@@ -522,4 +532,3 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
-

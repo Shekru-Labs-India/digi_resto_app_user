@@ -19198,3 +19198,76 @@
 .activeCategoryBtn {
   color:var(--bs-list-group-active-bg);  /* Set your desired styling for the active category button */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.category-panel {
+  margin-bottom: 20px;
+}
+
+.category-list {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.category-list button {
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #000;
+}
+
+.category-list button.active {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-grid .product-card {
+  flex: 1 1 calc(50% - 20px); /* Adjust this based on your desired layout */
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+}
+
+.arrow-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0 10px;
+}
