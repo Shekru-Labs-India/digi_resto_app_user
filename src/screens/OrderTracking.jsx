@@ -20,7 +20,7 @@ const  OrderTracking = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id:restaurantId,
+            restaurant_id:2,
             order_status: 'Ongoing', // Fetch ongoing orders only
             customer_id: customerId
           })

@@ -17176,6 +17176,7 @@
       font-weight: 500;
       color: #F14336; }
     .dz-card .remove-text {
+      cursor: pointer;
       font-size: 15px;
       color: #E72E2E; }
     .dz-card .cart-btn {

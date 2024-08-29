@@ -504,7 +504,7 @@ const Wishlist = () => {
                             </li>
                           </ul>
                           <div onClick={() => handleRemoveItemClick(index, menu.restaurant_id, menu.menu_id, customerId)} className="remove-text">
-                            Remove
+                            Remove this
                           </div>
                           <div onClick={() => handleAddToCartClick(menu)} className="cart-btn">
                             {isMenuItemInCart(menu.menu_id) ? (

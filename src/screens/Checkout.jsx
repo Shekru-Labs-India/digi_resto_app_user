@@ -183,7 +183,7 @@ const Checkout = () => {
 
     const orderData = {
       customer_id: customerId,
-      restaurant_id: restaurantId, // Use restaurantId from context
+      restaurant_id: 2, // Use restaurantId from context
       notes: notes,
       order_items: orderItems,
     };
