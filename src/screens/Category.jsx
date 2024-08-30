@@ -131,6 +131,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Bottom from "../component/bottom";
 import images from "../assets/category.png";
+import defaultImg from "../assets/MenuDefault.png"
 import { useRestaurantId } from '../context/RestaurantIdContext';
 
 const Category = () => {
@@ -208,13 +209,17 @@ const Category = () => {
           <header className="header header-fixed style-3">
             <div className="header-content">
               <div className="left-content">
-                <Link to="/HomeScreen/347279" className="back-btn dz-icon icon-fill icon-sm">
+                <Link
+                  to="/HomeScreen/347279"
+                  className="back-btn dz-icon icon-fill icon-sm"
+                >
                   <i className="bx bx-arrow-back"></i>
                 </Link>
               </div>
               <div className="mid-content">
                 <h5 className="title">
-                  Category <span className="items-badge">{totalCategoriesCount}</span>
+                  Category{" "}
+                  <span className="items-badge">{totalCategoriesCount}</span>
                 </h5>
               </div>
               <div className="right-content">
@@ -247,11 +252,11 @@ const Category = () => {
                           onClick={() => handleCategoryClick(category)}
                         >
                           <img
-                            src={category.image || images} // Use default image if image is null
+                            src={category.image || defaultImg} // Use default image if image is null
                             alt={category.name}
                             style={{ height: "150px" }}
                             onError={(e) => {
-                              e.target.src = images; // Set local image source on error
+                              e.target.src = defaultImg; // Set local image source on error
                             }}
                           />
                         </Link>

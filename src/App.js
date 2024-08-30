@@ -73,6 +73,29 @@
 // export default App;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
@@ -129,12 +152,33 @@ function App() {
         <Route path="/ProductDetails/:menuId" element={<RestaurantIdProvider><MenuDetails /></RestaurantIdProvider>} />
         <Route path="/TrackOrder/:order_number" element={<RestaurantIdProvider><TrackOrder /></RestaurantIdProvider>} />
         <Route path="/Review/:order_number/:restaurantCode" element={<RestaurantIdProvider><Review /></RestaurantIdProvider>} />
+          
+      
+
       </Routes>
     </RestaurantIdProvider>
   );
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

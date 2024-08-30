@@ -135,6 +135,23 @@
 // export default FeaturedArea;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
