@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
-import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const ProductCard = () => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // Default set to null for 'All'
-  const [customerId, setCustomerId] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const navigate = useNavigate();
-  const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId();
-
-  useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      setCustomerId(userData.customer_id);
-    }
-  }, []);
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const customerId = userData ? userData.customer_id : null;
 
   useEffect(() => {
     const fetchMenuCategories = async () => {
@@ -49,8 +41,8 @@ const ProductCard = () => {
             name: toTitleCase(category.name),
           }));
           setMenuCategories(formattedCategories);
-          setSelectedCategoryId(null); // Ensure "All" is selected by default
-          fetchMenuData(null); // Fetch all menu items initially
+          setSelectedCategoryId(null);
+          fetchMenuData(null);
         } else {
           console.error("Categories fetch error:", data.msg);
           setMenuCategories([]);
@@ -73,61 +65,107 @@ const ProductCard = () => {
       slidesPerView: "auto",
       spaceBetween: 10,
     });
-    // Ensure Swiper is destroyed on component unmount
     return () => swiper.destroy(true, true);
   }, [menuCategories]);
 
-  const fetchMenuData = async (categoryId) => {
-    try {
-      const requestBody = {
-        restaurant_id: restaurantId,
-        cat_id: categoryId === null ? "all" : categoryId.toString(),
-      };
+const fetchMenuData = async (categoryId) => {
+  try {
+    const requestBody = {
+      restaurant_id: restaurantId,
+      cat_id: categoryId === null ? "all" : categoryId.toString(),
+    };
 
-      console.log("Fetching menu data with request:", requestBody); // Debugging line
-
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_menu_by_cat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1) {
-          const formattedMenuList = data.menu_list.map((menu) => ({
-            ...menu,
-            image: menu.image,
-            category: toTitleCase(menu.category),
-            name: toTitleCase(menu.name),
-            oldPrice: Math.floor(menu.price * 1.1),
-            is_favourite: menu.is_favourite === 1,
-          }));
-          setMenuList(formattedMenuList);
-          localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
-          console.log("Fetched menu data:", formattedMenuList); // Debugging line
-        } else {
-          console.error("API Error:", data.msg);
-          setMenuList([]); // Set an empty list if there's an error
-        }
-      } else {
-        console.error("Network response was not ok.");
-        setMenuList([]); // Handle network errors by clearing the list
+    const response = await fetch(
+      "https://menumitra.com/user_api/get_menu_by_cat",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setMenuList([]); // Ensure menu list is empty if fetching fails
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.st === 1) {
+        const formattedMenuList = data.menu_list.map((menu) => ({
+          ...menu,
+          image: menu.image,
+          category: toTitleCase(menu.category),
+          name: toTitleCase(menu.name),
+          oldPrice: Math.floor(menu.price * 1.1),
+          is_favourite: menu.is_favourite === 1, // Changed to boolean
+        }));
+        setMenuList(formattedMenuList);
+        localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
+      } else {
+        console.error("API Error:", data.msg);
+        setMenuList([]);
+      }
+    } else {
+      console.error("Network response was not ok.");
+      setMenuList([]);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    setMenuList([]);
+  }
+};
+
+const handleLikeClick = async (menuId) => {
+  if (!customerId || !restaurantId) {
+    console.error("Missing required data");
+    return;
+  }
+
+  const menuItem = menuList.find((item) => item.menu_id === menuId);
+  const isFavorite = menuItem.is_favourite; // Use boolean directly
+
+  const apiUrl = isFavorite
+    ? "https://menumitra.com/user_api/delete_favourite_menu"
+    : "https://menumitra.com/user_api/save_favourite_menu";
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        restaurant_id: restaurantId,
+        menu_id: menuId,
+        customer_id: customerId,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.st === 1) {
+        const updatedMenuList = menuList.map((item) =>
+          item.menu_id === menuId
+            ? { ...item, is_favourite: !isFavorite } // Toggle boolean value
+            : item
+        );
+        setMenuList(updatedMenuList);
+        console.log(
+          isFavorite ? "Removed from favorites" : "Added to favorites"
+        );
+      } else {
+        console.error("Failed to update favorite status:", data.msg);
+      }
+    } else {
+      console.error("Network response was not ok");
+    }
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+  }
+};
+
 
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategoryId(categoryId); // Update the state to reflect the selected category
-    fetchMenuData(categoryId); // Fetch items for the selected category
+    setSelectedCategoryId(categoryId);
+    fetchMenuData(categoryId);
   };
 
   const toTitleCase = (str) => {
@@ -136,59 +174,19 @@ const ProductCard = () => {
     });
   };
 
-  const handleLikeClick = async (restaurantId, menuId) => {
-    if (!customerId) {
-      console.error("Customer ID is missing");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/save_favourite_menu",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const updatedMenuList = menuList.map((menuItem) =>
-          menuItem.menu_id === menuId
-            ? { ...menuItem, is_favourite: !menuItem.is_favourite }
-            : menuItem
-        );
-        setMenuList(updatedMenuList);
-        localStorage.setItem("menuItems", JSON.stringify(updatedMenuList));
-      } else {
-        console.error("Failed to add/remove item from favorites");
-      }
-    } catch (error) {
-      console.error("Error adding/removing item from favorites:", error);
-    }
-  };
-
   const handleAddToCartClick = (menu) => {
-    console.log("Add to cart clicked for:", menu); // Debug: Check if function is called and which menu item
-
+    console.log("Add to cart clicked for:", menu);
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const isAlreadyInCart = cartItems.some(
       (item) => item.menu_id === menu.menu_id
     );
 
     if (isAlreadyInCart) {
-      console.log("Item is already in the cart:", menu.menu_id); // Debug: Check if the item is recognized as already in the cart
+      console.log("Item is already in the cart:", menu.menu_id);
       alert("This item is already in the cart!");
       return;
     }
 
-    // Creating the cart item to be added
     const cartItem = {
       image: menu.image,
       name: menu.name,
@@ -200,7 +198,7 @@ const ProductCard = () => {
 
     const updatedCartItems = [...cartItems, cartItem];
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-    console.log("Updated cart items:", updatedCartItems); // Debug: Check updated cart items in local storage
+    console.log("Updated cart items:", updatedCartItems);
 
     const updatedMenuList = menuList.map((menuItem) => {
       if (menuItem.menu_id === menu.menu_id) {
@@ -297,9 +295,7 @@ const ProductCard = () => {
                         className={`bx ${
                           menu.is_favourite ? "bxs-heart text-red" : "bx-heart"
                         } bx-sm`}
-                        onClick={() =>
-                          handleLikeClick(restaurantId, menu.menu_id)
-                        }
+                        onClick={() => handleLikeClick(menu.menu_id)}
                         style={{
                           position: "absolute",
                           top: "0",

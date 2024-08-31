@@ -343,7 +343,6 @@
 
 
 
-
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -351,7 +350,6 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showQuantityError, setShowQuantityError] = useState(false);
@@ -360,6 +358,7 @@ const MenuDetails = () => {
   const { menuId } = useParams();
   const { restaurantId } = useRestaurantId();
   const [customerId, setCustomerId] = useState(null);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
   // Fetch customer ID from localStorage on component mount
   useEffect(() => {
@@ -392,6 +391,7 @@ const MenuDetails = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
+            customer_id: customerId,
           }),
         }
       );
@@ -419,6 +419,7 @@ const MenuDetails = () => {
             description,
             image,
             menu_cat_name,
+            menu_id: menuId,
           });
           setIsFavorite(is_favourite === 1); // Update favorite status based on API response
         } else {
@@ -433,10 +434,10 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (menuId) {
-      fetchProductDetails(menuId); // Fetch product details when component mounts or menuId changes
+    if (menuId && restaurantId && customerId !== null) {
+      fetchProductDetails(menuId); // Fetch product details when component mounts or dependencies change
     }
-  }, [menuId, restaurantId]);
+  }, [menuId, restaurantId, customerId]);
 
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -444,40 +445,49 @@ const MenuDetails = () => {
   }, []);
 
   const handleLikeClick = async () => {
-    if (!customerId) {
-      console.error("Customer ID is not available.");
+    if (!customerId || !restaurantId || !menuId) {
+      console.error("Missing required IDs");
       return;
     }
 
-    setIsLiked(!isLiked); // Toggle the liked state locally
+    setIsFavoriteLoading(true);
 
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/save_favourite_menu",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
-          }),
-        }
-      );
+      const apiUrl = isFavorite
+        ? "https://menumitra.com/user_api/delete_favourite_menu"
+        : "https://menumitra.com/user_api/save_favourite_menu";
 
-      if (response.ok) {
-        console.log(
-          `Product (menu_id: ${menuId}) added to favorites successfully!`
-        );
-        setIsFavorite(!isFavorite); // Toggle the favorite state locally
-        navigate("/Wishlist"); // Navigate to the wishlist page after successful save
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: customerId,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API Response:", data); // Log the response for debugging
+
+      if (data.st === 1) {
+        setIsFavorite(!isFavorite);
+        console.log("Favorite status updated successfully");
+      } else if (data.st === 2 && !isFavorite) {
+        console.log("Menu already in wishlist");
+        setIsFavorite(true);
+      } else if (data.st === 2 && isFavorite) {
+        console.log("Menu already removed from wishlist");
+        setIsFavorite(false);
       } else {
-        console.error("Failed to add product to favorites.");
+        console.error("Failed to update favorite status:", data.msg);
       }
     } catch (error) {
-      console.error("Error adding product to favorites:", error);
+      console.error("Error updating favorite status:", error);
+    } finally {
+      setIsFavoriteLoading(false);
     }
   };
 
@@ -487,22 +497,15 @@ const MenuDetails = () => {
       return;
     }
 
-    if (!productDetails) return;
-
-    if (isMenuItemInCart()) {
-      // Item is already in the cart, do not add it again
-      return;
-    }
+    if (!productDetails || isMenuItemInCart()) return;
 
     const cartItem = { ...productDetails, quantity };
     let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     cartItems.push(cartItem);
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
 
-    // Update cart item count immediately
     setCartItemsCount(cartItems.length);
 
-    // Navigate to the cart page
     navigate("/Cart");
   };
 
@@ -531,7 +534,7 @@ const MenuDetails = () => {
     return cartItems.some((item) => item.menu_id === parseInt(menuId));
   };
 
-  const shouldDisplayFooter = !isMenuItemInCart() && !isLiked;
+  const shouldDisplayFooter = !isMenuItemInCart();
 
   if (!productDetails) {
     return <div>Loading...</div>;
@@ -594,7 +597,7 @@ const MenuDetails = () => {
                 {toTitleCase(productDetails.name)} (
                 {toTitleCase(productDetails.veg_nonveg)})
               </h3>
-              {customerId ? (
+              {customerId && (
                 <i
                   className={`bx ${
                     isFavorite ? "bxs-heart text-red" : "bx-heart"
@@ -607,46 +610,53 @@ const MenuDetails = () => {
                     fontSize: "23px",
                     cursor: "pointer",
                   }}
-                ></i>
-              ) : (
-                <i
-                  className="bx bx-heart"
-                  style={{
-                    position: "absolute",
-                    top: "0",
-                    right: "0",
-                    fontSize: "23px",
-                    cursor: "pointer",
-                  }}
-                ></i>
+                >
+                  {isFavoriteLoading && (
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                    />
+                  )}
+                </i>
               )}
             </div>
 
-            <div className="item-wrapper">
-              <div className="dz-meta-items">
-                <div className="dz-price m-r60">
-                  <h6 className="sub-title">Price:</h6>
-                  <span className="price">
-                    ₹{productDetails.price}
-                    <del>₹{productDetails.oldPrice}</del>
-                  </span>
-                </div>
+            <div className="d-flex">
+              <h4 className="price">{productDetails.price}</h4>
+              <h4 className="price-old ms-2">{productDetails.oldPrice}</h4>
+            </div>
+            <div className="product-info">
+              <div className="desc">
+                <p>{productDetails.description}</p>
               </div>
-              {productDetails.spicy_index && (
-                <div className="description">
-                  <h6 className="sub-title">Spicy Index:</h6>
-                  <h6 className="sub-title">
-                    {toTitleCase(productDetails.spicy_index)}
-                  </h6>
+              <div className="product-meta">
+                <span>Spicy: {productDetails.spicy_index}</span>
+              </div>
+              <div className="d-flex align-items-center justify-content-between py-4">
+                <div className="btn-group btn-quantity">
+                  <button
+                    className="btn btn-light btn-sm"
+                    onClick={decrementQuantity}
+                  >
+                    <i className="fa fa-minus"></i>
+                  </button>
+                  <span className="btn btn-light btn-sm">{quantity}</span>
+                  <button
+                    className="btn btn-light btn-sm"
+                    onClick={incrementQuantity}
+                  >
+                    <i className="fa fa-plus"></i>
+                  </button>
                 </div>
-              )}
-              {productDetails.description && (
-                <div className="description">
-                  <h6 className="sub-title">Description:</h6>
-                  <p className="mb-0">
-                    {toTitleCase(productDetails.description)}
-                  </p>
-                </div>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={handleAddToCart}
+                >
+                  Add To Cart
+                </button>
+              </div>
+              {showQuantityError && (
+                <div className="text-danger">Please add a quantity.</div>
               )}
             </div>
           </div>
@@ -654,35 +664,19 @@ const MenuDetails = () => {
       </main>
 
       {shouldDisplayFooter && (
-        <div className="footer-fixed-btn bottom-0">
-          {showQuantityError && (
-            <p style={{ color: "red", textAlign: "center" }}>
-              Please select a quantity.
-            </p>
-          )}
-          <div className="d-flex align-items-center gap-2 justify-content-between">
-            <div className="dz-stepper1 input-group">
-              <div className="dz-stepper1" onClick={decrementQuantity}>
-                <i className="bx bx-minus"></i>
-              </div>
-              <input
-                className="form-control stepper-input1 text-center"
-                type="text"
-                value={quantity}
-                readOnly
-              />
-              <div className="dz-stepper1" onClick={incrementQuantity}>
-                <i className="bx bx-plus"></i>
-              </div>
+        <footer className="footer fixed">
+          <div className="container">
+            <div className="d-flex align-items-center justify-content-between">
+              <button className="btn btn-light">More Menu</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/Cart")}
+              >
+                Go to Cart
+              </button>
             </div>
-            <button
-              onClick={handleAddToCart}
-              className="btn btn-primary btn-lg btn-thin rounded-xl gap-3 w-100"
-            >
-              <i className="bx bx-cart-add bx-sm"></i>Add to Cart
-            </button>
           </div>
-        </div>
+        </footer>
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 const Product = () => {
   const [menuList, setMenuList] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   const [categories, setCategories] = useState([]);
   const [cartItemsCount, setCartItemsCount] = useState(0);
@@ -26,16 +27,7 @@ const Product = () => {
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryCounts, setCategoryCounts] = useState({});
-  // useEffect(() => {
-  //   const swiper = new Swiper(".category-slide", {
-  //     slidesPerView: "auto",
-  //     spaceBetween: 10,
-  //   });
-
-  //   return () => {
-  //     swiper.destroy();
-  //   };
-  // }, []);
+  const [favoriteCats, setFavoriteCats] = useState([]);
 
   useEffect(() => {
     const swiper = new Swiper(".category-slide", {
@@ -106,38 +98,70 @@ const Product = () => {
     fetchMenuData();
   }, [restaurantId]);
 
-  const handleLikeClick = async (restaurantId, menuId, customerId) => {
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/save_favourite_menu",
-        {
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!userData || !restaurantId) return;
+
+      try {
+        const response = await fetch("https://menumitra.com/user_api/get_favourite_list", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
+            customer_id: userData.customer_id,
           }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.st === 1 && data.lists) {
+            setFavorites(data.lists);
+          }
         }
-      );
-      console.log(restaurantId);
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, [restaurantId, userData]);
+
+  const handleLikeClick = async (menuId) => {
+    if (!userData || !restaurantId) return;
+
+    const isFavorite = favorites.some(fav => fav.menu_id === menuId);
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/delete_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: userData.customer_id,
+        }),
+      });
+
       if (response.ok) {
-        // Toggle is_favourite locally
-        const updatedMenuList = menuList.map((menuItem) =>
-          menuItem.menu_id === menuId
-            ? { ...menuItem, is_favourite: !menuItem.is_favourite }
-            : menuItem
-        );
-        setMenuList(updatedMenuList);
-        localStorage.setItem("menuItems", JSON.stringify(updatedMenuList));
-        navigate("/Wishlist");
-      } else {
-        console.error("Failed to add/remove item from favorites");
+        const data = await response.json();
+        if (data.st === 1) {
+          if (isFavorite) {
+            setFavorites(favorites.filter(fav => fav.menu_id !== menuId));
+          } else {
+            const menuItem = menuList.find(item => item.menu_id === menuId);
+            setFavorites([...favorites, menuItem]);
+          }
+        }
       }
     } catch (error) {
-      console.error("Error adding/removing item from favorites:", error);
+      console.error("Error updating favorite status:", error);
     }
   };
 
@@ -259,9 +283,6 @@ const Product = () => {
   const handleBack = () => {
     navigate(-1);
   };
-  // const handleFilterToggle = () => {
-  //   setFilterOpen(!filterOpen);
-  // };
   const toTitleCase = (text) => {
     if (!text) {
       return ""; // Handle undefined or null input gracefully
@@ -283,6 +304,14 @@ const Product = () => {
     setFilterOpen(false);
   };
 
+  const toggleFavoriteCategory = (categoryName) => {
+    setFavoriteCats(prev => 
+      prev.includes(categoryName) 
+        ? prev.filter(cat => cat !== categoryName)
+        : [...prev, categoryName]
+    );
+  };
+
   return (
     <div className={`page-wrapper ${sortByOpen || filterOpen ? "open" : ""}`}>
       {/* Header */}
@@ -299,7 +328,6 @@ const Product = () => {
           <div className="mid-content">
             <h5 className="title">
               Menu
-              {/* <span className="items-badge">{menuList.length}</span> */}
             </h5>
           </div>
           <div className="right-content">
@@ -329,7 +357,7 @@ const Product = () => {
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
               {categories &&
-                categories.length > 0 && ( // Check if categories exists and has data
+                categories.length > 0 && (
                   <div
                     className={`category-btn swiper-slide ${
                       selectedCategory === null ? "active" : ""
@@ -342,17 +370,40 @@ const Product = () => {
                     }}
                   >
                     All ({categoryCounts.All})
+                    <i
+                      className={`bx ${favoriteCats.includes('All') ? 'bxs-heart' : 'bx-heart'}`}
+                      style={{ marginLeft: '5px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavoriteCategory('All');
+                      }}
+                    ></i>
                   </div>
-                )}
+              )}
 
               {/* Other Category Buttons */}
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
-                    className="category-btn"
+                    className={`category-btn ${
+                      selectedCategory === category.name ? "active" : ""
+                    }`}
                     onClick={() => handleCategoryFilter(category.name)}
+                    style={{
+                      backgroundColor:
+                        selectedCategory === category.name ? "#0D775E" : "",
+                      color: selectedCategory === category.name ? "#ffffff" : "",
+                    }}
                   >
                     {category.name} ({categoryCounts[category.name] || 0})
+                    <i
+                      className={`bx ${favoriteCats.includes(category.name) ? 'bxs-heart' : 'bx-heart'}`}
+                      style={{ marginLeft: '5px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavoriteCategory(category.name);
+                      }}
+                    ></i>
                   </div>
                 </div>
               ))}
@@ -388,20 +439,15 @@ const Product = () => {
 
                       {userData ? (
                         <i
-                          className={`bx ${
-                            menuItem.is_favourite
-                              ? "bxs-heart text-red"
-                              : "bx-heart"
-                          } bx-sm`}
-                          onClick={() =>
-                            handleLikeClick(13, menuItem.menu_id, 1)
-                          }
+                          className={`bx ${favorites.some(fav => fav.menu_id === menuItem.menu_id) ? "bxs-heart" : "bx-heart"} bx-sm`}
+                          onClick={() => handleLikeClick(menuItem.menu_id)}
                           style={{
                             position: "absolute",
                             top: "0",
                             right: "0",
                             fontSize: "23px",
                             cursor: "pointer",
+                            color: favorites.some(fav => fav.menu_id === menuItem.menu_id) ? "red" : "inherit"
                           }}
                         ></i>
                       ) : (
@@ -609,9 +655,6 @@ const Product = () => {
                   >
                     Apply
                   </a>
-                  {/* <a onClick={handleResetFilter} className="btn btn-white btn-thin w-100 rounded-xl">
-                  Reset
-                </a> */}
                 </div>
 
                 <div className="footer fixed">
