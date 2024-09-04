@@ -1,11 +1,16 @@
 {
   "files": {
-    "main.css": "/digi_resto_app_user/static/css/main.2642947b.css",
-    "main.js": "/digi_resto_app_user/static/js/main.946f3bb6.js",
+    "main.css": "/digi_resto_app_user/static/css/main.44df2bff.css",
+    "main.js": "/digi_resto_app_user/static/js/main.ece6388e.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
+    "static/media/remixicon.svg?t=1718271040674": "/digi_resto_app_user/static/media/remixicon.f38690bdde29bddbc211.svg",
+    "static/media/remixicon.eot?t=1718271040674": "/digi_resto_app_user/static/media/remixicon.d87042cf9a3f67d1cab2.eot",
+    "static/media/remixicon.ttf?t=1718271040674": "/digi_resto_app_user/static/media/remixicon.88da6179288d7835c2f0.ttf",
     "static/media/splash2.jpg": "/digi_resto_app_user/static/media/splash2.bf9840bff9ed4548a01a.jpg",
     "static/media/pic5.png": "/digi_resto_app_user/static/media/pic5.3f5bce42b8c666877f3d.png",
     "static/media/pic3.png": "/digi_resto_app_user/static/media/pic3.848a9823519ceb308173.png",
+    "static/media/remixicon.woff?t=1718271040674": "/digi_resto_app_user/static/media/remixicon.1bdc36c90398c9d667d1.woff",
+    "static/media/remixicon.woff2?t=1718271040674": "/digi_resto_app_user/static/media/remixicon.8aece9ab0de67b79cfda.woff2",
     "static/media/background.jpg": "/digi_resto_app_user/static/media/background.779f81d1eb8c2285dca9.jpg",
     "static/media/menumitra_logo.png": "/digi_resto_app_user/static/media/menumitra_logo.a56371be055f50213a02.png",
     "static/media/1.png": "/digi_resto_app_user/static/media/1.f797d7fbf167a51b7038.png",
@@ -13,12 +18,12 @@
     "static/media/category.png": "/digi_resto_app_user/static/media/category.a11c202d86ebd356162e.png",
     "static/media/wave.svg": "/digi_resto_app_user/static/media/wave.d71cd8ede0bc135abc345b708cdc47ac.svg",
     "index.html": "/digi_resto_app_user/index.html",
-    "main.2642947b.css.map": "/digi_resto_app_user/static/css/main.2642947b.css.map",
-    "main.946f3bb6.js.map": "/digi_resto_app_user/static/js/main.946f3bb6.js.map",
+    "main.44df2bff.css.map": "/digi_resto_app_user/static/css/main.44df2bff.css.map",
+    "main.ece6388e.js.map": "/digi_resto_app_user/static/js/main.ece6388e.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2642947b.css",
-    "static/js/main.946f3bb6.js"
+    "static/css/main.44df2bff.css",
+    "static/js/main.ece6388e.js"
   ]
 }
