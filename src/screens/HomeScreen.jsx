@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../assets/css/style.css";
+import "../assets/css/custom.css";
 import Sidebar from "../component/Sidebar";
 import Bottom from "../component/bottom";
 import OfferBanner from "../component/OfferBanner";

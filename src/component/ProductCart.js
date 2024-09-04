@@ -40,7 +40,7 @@ const ProductCard = () => {
             ...category,
             name: toTitleCase(category.name),
           }));
-          setMenuCategories(formattedCategories);
+          setMenuCategories(formattedCategories); //
           setSelectedCategoryId(null);
           fetchMenuData(null);
         } else {
@@ -308,7 +308,23 @@ const handleLikeClick = async (menuId) => {
                   </div>
                   {menu.name && <h4 className="item-name">{menu.name}</h4>}
                   {menu.spicy_index && (
-                    <div className="offer-code">{menu.spicy_index}
+                    <div className="offer-code">
+                      {/* Displaying the spicy index using icons */}
+                      {Array.from({ length: 5 }).map((_, index) =>
+                        index < menu.spicy_index ? (
+                          <i
+                            className="ri-fire-fill"
+                            style={{ fontSize: "20px" }}
+                            key={index}
+                          ></i>
+                        ) : (
+                          <i
+                            className="ri-fire-line"
+                            style={{ fontSize: "20px" }}
+                            key={index}
+                          ></i>
+                        )
+                      )}
                     </div>
                   )}
                   <div className="footer-wrapper">
@@ -323,7 +339,6 @@ const handleLikeClick = async (menuId) => {
                           className="cart-btn"
                         >
                           {isMenuItemInCart(menu.menu_id) ? (
-                            // <i className="bx bxs-cart bx-sm"></i>
                             <i className="ri-shopping-cart-2-fill bx-sm"></i>
                           ) : (
                             <i className="ri-shopping-cart-2-line bx-sm"></i>
@@ -347,3 +362,5 @@ const handleLikeClick = async (menuId) => {
 };
 
 export default ProductCard;
+
+

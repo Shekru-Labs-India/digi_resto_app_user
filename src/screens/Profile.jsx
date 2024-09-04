@@ -175,7 +175,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import applogo from "../assets/menumitra_logo.png";
+import applogo from "../assets/logos/Menu Mitra logo 3.png";
 import Bottom from "../component/bottom";
 
 const Profile = () => {
