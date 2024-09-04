@@ -327,7 +327,7 @@ const Profile = () => {
               onClick={handleLogout}
               className="d-flex align-items-center gap-2 font-10 text-danger"
             >
-              <i className="bx bx-log-out bx-rotate-180 bx-md"></i>
+              <i className="bx bx-log-out bx-rotate-180 bx-md" style={{cursor:"pointer"}}></i>
             </div>
           </div>
         </div>

@@ -265,7 +265,7 @@ const Sidebar = () => {
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
       {/* Header */}
-      <header className="header header-fixed p-3">
+      <header  eader className="header header-fixed p-3">
         <div className="header-content">
           <div className="left-content gap-1">
             <h3 className="title font-w300">

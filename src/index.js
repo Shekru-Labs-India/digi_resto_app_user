@@ -7,6 +7,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { RestaurantIdProvider } from './context/RestaurantIdContext';
+import "remixicon/fonts/remixicon.css";
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

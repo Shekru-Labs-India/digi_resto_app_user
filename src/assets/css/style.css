@@ -17175,10 +17175,15 @@
     .dz-card .dz-off {
       font-weight: 500;
       color: #F14336; }
+      
     .dz-card .remove-text {
       cursor: pointer;
       font-size: 15px;
-      color: #E72E2E; }
+      /* color: #E72E2E;  */
+      color: var(--text-light);
+    }
+
+      
     .dz-card .cart-btn {
       width: 40px;
       height: 40px;
