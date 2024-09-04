@@ -294,15 +294,11 @@ const Profile = () => {
   // User is logged in, render full profile page
   return (
     <div className="page-wrapper">
-           <header className="header header-fixed style-3">
+      <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <div
-                className="header-logo"
-               
-                style={{ marginRight: "10px" }}
-              >
+              <div className="header-logo" style={{ marginRight: "10px" }}>
                 <img
                   className="logo logo-dark"
                   src={applogo}
@@ -327,7 +323,10 @@ const Profile = () => {
               onClick={handleLogout}
               className="d-flex align-items-center gap-2 font-10 text-danger"
             >
-              <i className="bx bx-log-out bx-rotate-180 bx-md" style={{cursor:"pointer"}}></i>
+              <i
+                className="bx bx-log-out bx-rotate-180 bx-md"
+                style={{ cursor: "pointer" }}
+              ></i>
             </div>
           </div>
         </div>
@@ -338,11 +337,16 @@ const Profile = () => {
             <div className="main-profile">
               <div className="media">
                 <div className="media-40 me-2 user-image">
-                  <i className="bx bx-user-circle bx-md" style={{ fontSize: "20px", marginTop: "9px" }}></i>
+                  <i
+                    className="bx bx-user-circle bx-md"
+                    style={{ fontSize: "20px", marginTop: "9px" }}
+                  ></i>
                 </div>
                 <h4 className="name mb-0">
-                {/* <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span> */}
-                <div className="greetings">Hello, {toTitleCase(getFirstName(userData.name)) || 'User'}</div>
+                  {/* <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span> */}
+                  <div className="greetings">
+                    Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
+                  </div>
                 </h4>
               </div>
             </div>
@@ -365,7 +369,7 @@ const Profile = () => {
                 </li>
                 <li className="col-6">
                   <Link to="/OrderTracking">
-                    <i className="bx bxs-truck iconboxi"></i> Track order
+                    <i className="ri-truck-line iconboxi"></i> Track order
                   </Link>
                 </li>
               </ul>

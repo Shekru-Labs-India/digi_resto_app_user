@@ -192,7 +192,7 @@ const handleLikeClick = async (menuId) => {
       name: menu.name,
       price: menu.price,
       oldPrice: menu.oldPrice,
-      quantity: 1,
+      quantity: 3,
       menu_id: menu.menu_id,
     };
 
@@ -308,7 +308,8 @@ const handleLikeClick = async (menuId) => {
                   </div>
                   {menu.name && <h4 className="item-name">{menu.name}</h4>}
                   {menu.spicy_index && (
-                    <div className="offer-code">{menu.spicy_index}</div>
+                    <div className="offer-code">{menu.spicy_index}
+                    </div>
                   )}
                   <div className="footer-wrapper">
                     <div className="price-wrapper">
@@ -322,13 +323,14 @@ const handleLikeClick = async (menuId) => {
                           className="cart-btn"
                         >
                           {isMenuItemInCart(menu.menu_id) ? (
-                            <i className="bx bxs-cart bx-sm"></i>
+                            // <i className="bx bxs-cart bx-sm"></i>
+                            <i className="ri-shopping-cart-2-fill bx-sm"></i>
                           ) : (
-                            <i className="bx bx-cart-add bx-sm"></i>
+                            <i className="ri-shopping-cart-2-line bx-sm"></i>
                           )}
                         </div>
                       ) : (
-                        <i className="bx bx-cart-add bx-sm"></i>
+                        <i className="ri-shopping-cart-2-line bx-sm"></i>
                       )}
                     </div>
                   </div>

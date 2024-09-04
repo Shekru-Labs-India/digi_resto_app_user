@@ -213,16 +213,16 @@ const Wishlist = () => {
                             </li>
                             <li>
                               <i
-                                class="ri-store-2-line"
+                                className="ri-restaurant-line"
                                 style={{
                                   paddingLeft: "20px",
                                   fontSize: "18px",
                                 }}
                               >
                                 {" "}
-                                {menu.restaurant_name}{" "}
                                 {/* Use dynamic restaurant name */}
                               </i>
+                                {menu.restaurant_name}{" "}
                             </li>
                           </ul>
 
