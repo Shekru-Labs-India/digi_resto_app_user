@@ -279,13 +279,13 @@ const NearbyArea = () => {
                             className="cart-btn"
                           >
                             {isMenuItemInCart(menuItem.menu_id) ? (
-                              <i className="bx bxs-cart bx-sm"></i>
+                              <i className="ri-shopping-cart-2-fill bx-sm"></i>
                             ) : (
-                              <i className="bx bx-cart-add bx-sm"></i>
+                              <i className="ri-shopping-cart-2-line bx-sm"></i>
                             )}
                           </div>
                         ) : (
-                          <i className="bx bx-cart-add bx-sm"></i>
+                          <i className="ri-shopping-cart-2-line bx-sm"></i>
                         )}
                       </div>
                     </div>

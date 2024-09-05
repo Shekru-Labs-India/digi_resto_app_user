@@ -222,7 +222,7 @@ const Wishlist = () => {
                                 {" "}
                                 {/* Use dynamic restaurant name */}
                               </i>
-                                {menu.restaurant_name}{" "}
+                              {menu.restaurant_name}{" "}
                             </li>
                           </ul>
 
@@ -259,9 +259,9 @@ const Wishlist = () => {
                             }}
                           >
                             {isMenuItemInCart(menu.menu_id) ? (
-                              <i className="bx bxs-cart bx-sm"></i>
+                              <i className="ri-shopping-cart-2-fill bx-sm"></i>
                             ) : (
-                              <i className="bx bx-cart-add bx-sm"></i>
+                              <i className="ri-shopping-cart-2-line bx-sm"></i>
                             )}
                           </div>
                         </div>

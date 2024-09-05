@@ -105,7 +105,9 @@ const Bottom = () => {
         <Link
           to={`/HomeScreen/${824679}`}
           className={
-            location.pathname === `/HomeScreen/${824679}` ? "nav-link active" : "nav-link"
+            location.pathname === `/HomeScreen/${824679}`
+              ? "nav-link active"
+              : "nav-link"
           }
         >
           <i className="bx bx-home-alt bx-sm"></i>
@@ -126,7 +128,7 @@ const Bottom = () => {
             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="bx bx-cart bx-sm"></i>
+          <i className="ri-shopping-cart-2-line bx-sm"></i>
           <span className="name">Cart</span>
         </Link>
         <Link
