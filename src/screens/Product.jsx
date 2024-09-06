@@ -23,6 +23,7 @@ const Product = () => {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId();
+  const [sortCriteria, setSortCriteria] = useState(null);
 
   const toTitleCase = (text) => {
     if (!text) return ""; // Return an empty string if the input is null or undefined
@@ -226,24 +227,35 @@ const Product = () => {
     }
   };
 
-  const sortMenuByPrice = () => {
-    const selectedSortOrder = document.querySelector(
-      'input[name="sortRadio"]:checked'
-    ).id;
+  const handleSort = (criteria) => {
+    setSortCriteria(criteria);
+  };
 
-    const sortedMenu = [...filteredMenuList];
-
-    if (selectedSortOrder === "sortRadio1") {
-      sortedMenu.sort(
-        (a, b) => a.name.localeCompare(b.name) || a.price - b.price
-      );
-    } else if (selectedSortOrder === "sortRadio2") {
-      sortedMenu.sort(
-        (a, b) => a.price - b.price || a.name.localeCompare(b.name)
-      );
+  const applySort = () => {
+    let sortedList = [...filteredMenuList];
+    switch (sortCriteria) {
+      case 'popularity':
+        // Assuming there's a 'popularity' field in the menu items
+        sortedList.sort((a, b) => b.popularity - a.popularity);
+        break;
+      case 'discount':
+        // Assuming there's a 'discount' field in the menu items
+        sortedList.sort((a, b) => b.discount - a.discount);
+        break;
+      case 'priceHighToLow':
+        sortedList.sort((a, b) => b.price - a.price);
+        break;
+      case 'priceLowToHigh':
+        sortedList.sort((a, b) => a.price - b.price);
+        break;
+      case 'rating':
+        // Assuming there's a 'rating' field in the menu items
+        sortedList.sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        break;
     }
-
-    setFilteredMenuList(sortedMenu);
+    setFilteredMenuList(sortedList);
     setSortByOpen(false);
   };
 
@@ -518,77 +530,52 @@ const Product = () => {
                 <i className="bx bx-x bx-sm"></i>
               </button>
             </div>
-            <div className="offcanvas-body ">
+            <div className="offcanvas-body">
               <div className="dz-sorting">
-                <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i
-                    className="ri-star-line"
-                    style={{ marginRight: "10px" }}
-                  ></i>
-                  Popularity
-                </ul>
-                <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i
-                    className="ri-discount-percent-line"
-                    style={{ marginRight: "10px" }}
-                  ></i>
-                  Discount
-                </ul>
-                <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i
-                    className="ri-price-tag-line"
-                    style={{ marginRight: "10px" }}
-                  ></i>
-                  Price High to Low
-                </ul>
-                <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i
-                    className="ri-price-tag-line"
-                    style={{ marginRight: "10px" }}
-                  ></i>
-                  Price Low to High
-                </ul>
-                <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i
-                    className="ri-bard-line"
-                    style={{ marginRight: "10px" }}
-                  ></i>
-                  Customer Rating
+                <ul className="list-unstyled mb-0">
+                  {[
+                    { key: 'popularity', icon: 'ri-star-line', label: 'Popularity' },
+                    { key: 'discount', icon: 'ri-discount-percent-line', label: 'Discount' },
+                    { key: 'priceHighToLow', icon: 'ri-arrow-up-line', label: 'Price High to Low' },
+                    { key: 'priceLowToHigh', icon: 'ri-arrow-down-line', label: 'Price Low to High' },
+                    { key: 'rating', icon: 'ri-star-half-line', label: 'Customer Rating' }
+                  ].map(({ key, icon, label }) => (
+                    <li 
+                      key={key}
+                      className={`sort-item ${sortCriteria === key ? 'active' : ''}`} 
+                      onClick={() => handleSort(key)}
+                      style={{
+                        backgroundColor: sortCriteria === key ? '#0D775E' : 'transparent',
+                        color: sortCriteria === key ? '#ffffff' : 'inherit',
+                        padding: '10px 15px',
+                        borderRadius: '8px',
+                        marginBottom: '10px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <i className={`${icon} me-2`} style={{ fontSize: '18px' }}></i>
+                      {label}
+                    </li>
+                  ))}
                 </ul>
               </div>
-              <div className="d-flex flex-wrap gap-2 ">
-                <div className="form-check style-2">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="sortRadio"
-                    id="sortRadio1"
-                    defaultChecked
-                  />
-                  <label className="form-check-label" htmlFor="sortRadio1">
-                    Sort by Name
-                  </label>
-                </div>
-                <div className="form-check style-2">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="sortRadio"
-                    id="sortRadio2"
-                  />
-                  <label className="form-check-label" htmlFor="sortRadio2">
-                    Sort by Price
-                  </label>
-                </div>
+              <div className="d-flex justify-content-between mt-4">
+                <button
+                  onClick={() => setSortByOpen(false)}
+                  className="btn btn-outline-secondary w-45 rounded-xl"
+                  style={{ borderColor: '#0D775E', color: '#0D775E' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applySort}
+                  className="btn btn-primary w-45 rounded-xl"
+                  style={{ backgroundColor: '#0D775E', borderColor: '#0D775E' }}
+                >
+                  Apply
+                </button>
               </div>
-              <br></br>
-              <button
-                onClick={sortMenuByPrice}
-                className="btn btn-primary btn-thin w-50 rounded-xl"
-                style={{ marginLeft: "180px" }}
-              >
-                Apply
-              </button>
             </div>
           </div>
         )}
@@ -614,7 +601,7 @@ const Product = () => {
               <div className="swiper category-slide">
                 <h5 className="sub-title">Category</h5>
                 <div className="swiper-wrapper">
-                  {categories && categories.length > 0 && (
+                  {/* {categories && categories.length > 0 && (
                     <div
                       className={`category-btn swiper-slide ${
                         selectedCategory === null ? "active" : ""
@@ -628,7 +615,7 @@ const Product = () => {
                     >
                       All
                     </div>
-                  )}
+                  )} */}
 
                   {categories.map((category) => (
                     <div key={category.menu_cat_id} className="swiper-slide">
@@ -644,7 +631,7 @@ const Product = () => {
                             selectedCategory === category.name ? "#ffffff" : "",
                         }}
                       >
-                        {category.name} ({categoryCounts[category.name] || 0})
+                        {category.name}
                       </div>
                     </div>
                   ))}
@@ -671,12 +658,12 @@ const Product = () => {
                         color: "#0D775E",
                         width: "100%",
                         "& .MuiSlider-thumb": {
-                          backgroundColor: "#ffffff",
+                          backgroundColor: "#0D775E",
                           border: "2px solid #0D775E",
                         },
                         "& .MuiSlider-rail": {
                           height: 4,
-                          backgroundColor: "#e0e0e0",
+                          backgroundColor: "#9ec8be",
                         },
                         "& .MuiSlider-track": {
                           height: 4,
