@@ -5,10 +5,7 @@ import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import RangeSlider from "./RangeSlider";
-import SliderDemo from "./SliderDemo";
-import Slider from '@mui/material/Slider';
-import Category from './Category';
+import Slider from "@mui/material/Slider";
 
 const Product = () => {
   const [menuList, setMenuList] = useState([]);
@@ -26,6 +23,11 @@ const Product = () => {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId();
+
+  const toTitleCase = (text) => {
+    if (!text) return ""; // Return an empty string if the input is null or undefined
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   // Fetch menu data
   const fetchMenuData = useCallback(async () => {
@@ -54,8 +56,8 @@ const Product = () => {
       if (data.st === 1) {
         const formattedMenuList = data.MenuList.map((menuItem) => ({
           ...menuItem,
-          name: toTitleCase(menuItem.name),
-          category: toTitleCase(menuItem.menu_cat_name),
+          name: toTitleCase(menuItem.name || ""),
+          category: toTitleCase(menuItem.menu_cat_name || ""),
           oldPrice: Math.floor(menuItem.price * 1.1),
           is_favourite: menuItem.is_favourite === 1,
         }));
@@ -65,7 +67,7 @@ const Product = () => {
 
         const formattedCategories = data.MenuCatList.map((category) => ({
           ...category,
-          name: toTitleCase(category.name),
+          name: toTitleCase(category.name || ""),
         }));
 
         setCategories(formattedCategories);
@@ -88,16 +90,19 @@ const Product = () => {
     if (!userData || !restaurantId) return;
 
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_favourite_list", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          customer_id: userData.customer_id,
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_favourite_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: userData.customer_id,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -120,7 +125,7 @@ const Product = () => {
       });
     }
     return () => {
-      if (swiper && typeof swiper.destroy === 'function') {
+      if (swiper && typeof swiper.destroy === "function") {
         swiper.destroy(true, true);
       }
     };
@@ -130,8 +135,7 @@ const Product = () => {
   useEffect(() => {
     fetchMenuData();
     fetchFavorites();
-  }, []);
-  // }, [fetchMenuData, fetchFavorites]);
+  }, [fetchMenuData, fetchFavorites]);
 
   // Update cart items count on component mount
   useEffect(() => {
@@ -214,7 +218,9 @@ const Product = () => {
     } else {
       setSelectedCategory(categoryName);
       const filteredItems = menuList.filter(
-        (item) => toTitleCase(item.menu_cat_name) === toTitleCase(categoryName)
+        (item) =>
+          toTitleCase(item.menu_cat_name || "") ===
+          toTitleCase(categoryName || "")
       );
       setFilteredMenuList(filteredItems);
     }
@@ -228,17 +234,17 @@ const Product = () => {
     const sortedMenu = [...filteredMenuList];
 
     if (selectedSortOrder === "sortRadio1") {
-      sortedMenu.sort((a, b) => a.name.localeCompare(b.name) || a.price - b.price);
+      sortedMenu.sort(
+        (a, b) => a.name.localeCompare(b.name) || a.price - b.price
+      );
     } else if (selectedSortOrder === "sortRadio2") {
-      sortedMenu.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name));
+      sortedMenu.sort(
+        (a, b) => a.price - b.price || a.name.localeCompare(b.name)
+      );
     }
 
     setFilteredMenuList(sortedMenu);
     setSortByOpen(false);
-  };
-
-  const toTitleCase = (text) => {
-    return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   const handlePriceFilter = () => {
@@ -313,7 +319,6 @@ const Product = () => {
                   }}
                 >
                   All ({categoryCounts.All})
-                  {/* All ({categoryCounts.All}) */}
                   <i
                     className={`bx ${
                       favoriteCats.includes("All") ? "bxs-heart" : "bx-heart"
@@ -370,7 +375,7 @@ const Product = () => {
                     <Link to={`/ProductDetails/${menuItem.menu_id}`}>
                       <img
                         src={menuItem.image || images}
-                        alt={menuItem.name}
+                        alt={menuItem.name || "Menu item"}
                         style={{ height: "150px" }}
                         onError={(e) => {
                           e.target.src = images;
@@ -516,32 +521,38 @@ const Product = () => {
             <div className="offcanvas-body ">
               <div className="dz-sorting">
                 <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i class="ri-star-line" style={{ marginRight: "10px" }}></i>
+                  <i
+                    className="ri-star-line"
+                    style={{ marginRight: "10px" }}
+                  ></i>
                   Popularity
                 </ul>
                 <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
                   <i
-                    class="ri-discount-percent-line"
+                    className="ri-discount-percent-line"
                     style={{ marginRight: "10px" }}
                   ></i>
                   Discount
                 </ul>
                 <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
                   <i
-                    class="ri-price-tag-line"
+                    className="ri-price-tag-line"
                     style={{ marginRight: "10px" }}
                   ></i>
                   Price High to Low
                 </ul>
                 <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
                   <i
-                    class="ri-price-tag-line"
+                    className="ri-price-tag-line"
                     style={{ marginRight: "10px" }}
                   ></i>
                   Price Low to High
                 </ul>
                 <ul className="list-unstyled mb-0" style={{ fontSize: "20px" }}>
-                  <i class="ri-bard-line" style={{ marginRight: "10px" }}></i>
+                  <i
+                    className="ri-bard-line"
+                    style={{ marginRight: "10px" }}
+                  ></i>
                   Customer Rating
                 </ul>
               </div>
@@ -615,20 +626,7 @@ const Product = () => {
                         color: selectedCategory === null ? "#ffffff" : "",
                       }}
                     >
-                      All 
-                      
-                      {/* <i
-                        className={`bx ${
-                          favoriteCats.includes("All")
-                            ? "bxs-heart"
-                            : "bx-heart"
-                        }`}
-                        style={{ marginLeft: "5px", cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavoriteCategory("All");
-                        }}
-                      ></i> */}
+                      All
                     </div>
                   )}
 
@@ -646,19 +644,7 @@ const Product = () => {
                             selectedCategory === category.name ? "#ffffff" : "",
                         }}
                       >
-                        {category.name}
-                        {/* <i
-                          className={`bx ${
-                            favoriteCats.includes(category.name)
-                              ? "bxs-heart"
-                              : "bx-heart"
-                          }`}
-                          style={{ marginLeft: "5px", cursor: "pointer" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavoriteCategory(category.name);
-                          }}
-                        ></i> */}
+                        {category.name} ({categoryCounts[category.name] || 0})
                       </div>
                     </div>
                   ))}
@@ -692,53 +678,69 @@ const Product = () => {
                           height: 4,
                           backgroundColor: "#e0e0e0",
                         },
-                        '& .MuiSlider-track': {
+                        "& .MuiSlider-track": {
                           height: 4,
                         },
                       }}
                     />
-                    <div className="price-labels" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                    <div
+                      className="price-labels"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "10px",
+                      }}
+                    >
                       <span>₹{priceRange[0]}</span>
                       <span>₹{priceRange[1]}</span>
                     </div>
                   </div>
                 </div>
-                  <div className="filter-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', padding: '0 20px' }}>
-                    <button 
-                      onClick={handlePriceFilter} 
-                      className="apply-btn" 
-                      style={{ 
-                        padding: '12px 20px', 
-                        backgroundColor: '#0D775E', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '8px', 
-                        width: '100%',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Apply
-                    </button>
-                    <button 
-                      onClick={() => setPriceRange([100, 1000])} 
-                      className="reset-btn" 
-                      style={{ 
-                        padding: '12px 20px', 
-                        backgroundColor: '#f0f0f0', 
-                        color: '#333',
-                        border: '1px solid #ccc', 
-                        borderRadius: '8px', 
-                        width: '100%',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Reset
-                    </button>
-                  </div>
+                <div
+                  className="filter-buttons"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "0 20px",
+                  }}
+                >
+                  <button
+                    onClick={handlePriceFilter}
+                    className="apply-btn"
+                    style={{
+                      padding: "12px 20px",
+                      backgroundColor: "#0D775E",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      width: "100%",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Apply
+                  </button>
+                  <button
+                    onClick={() => setPriceRange([100, 1000])}
+                    className="reset-btn"
+                    style={{
+                      padding: "12px 20px",
+                      backgroundColor: "#f0f0f0",
+                      color: "#333",
+                      border: "1px solid #ccc",
+                      borderRadius: "8px",
+                      width: "100%",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -752,3 +754,4 @@ const Product = () => {
 };
 
 export default Product;
+
