@@ -261,7 +261,7 @@ const FeaturedArea = () => {
                     <h6 className="title">{menu.name}</h6>
                     <ul className="dz-meta">
                       {/* <li className="dz-price"> */}
-                      <li className="dz-price">
+                      <li className="dz-price" style={{ color: "#4E74FC" }}>
                         ₹{menu.price} <del>₹{Math.floor(menu.price * 1.1)}</del>
                       </li>
                     </ul>

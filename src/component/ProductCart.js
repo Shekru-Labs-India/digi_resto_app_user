@@ -40,9 +40,9 @@ const ProductCard = () => {
             ...category,
             name: toTitleCase(category.name),
           }));
-          setMenuCategories(formattedCategories); //
-          setSelectedCategoryId(null);
-          fetchMenuData(null);
+          setMenuCategories(formattedCategories);
+          setSelectedCategoryId(null); // Set to null initially
+          fetchMenuData(null); // Fetch all menu items
         } else {
           console.error("Categories fetch error:", data.msg);
           setMenuCategories([]);
@@ -68,100 +68,99 @@ const ProductCard = () => {
     return () => swiper.destroy(true, true);
   }, [menuCategories]);
 
-const fetchMenuData = async (categoryId) => {
-  try {
-    const requestBody = {
-      restaurant_id: restaurantId,
-      cat_id: categoryId === null ? "all" : categoryId.toString(),
-    };
+  const fetchMenuData = async (categoryId) => {
+    try {
+      const requestBody = {
+        restaurant_id: restaurantId,
+        cat_id: categoryId === null ? "all" : categoryId.toString(),
+      };
 
-    const response = await fetch(
-      "https://menumitra.com/user_api/get_menu_by_cat",
-      {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_menu_by_cat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          const formattedMenuList = data.menu_list.map((menu) => ({
+            ...menu,
+            image: menu.image,
+            category: toTitleCase(menu.category),
+            name: toTitleCase(menu.name),
+            oldPrice: Math.floor(menu.price * 1.1),
+            is_favourite: menu.is_favourite === 1, // Changed to boolean
+          }));
+          setMenuList(formattedMenuList);
+          localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
+        } else {
+          console.error("API Error:", data.msg);
+          setMenuList([]);
+        }
+      } else {
+        console.error("Network response was not ok.");
+        setMenuList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setMenuList([]);
+    }
+  };
+
+  const handleLikeClick = async (menuId) => {
+    if (!customerId || !restaurantId) {
+      console.error("Missing required data");
+      return;
+    }
+
+    const menuItem = menuList.find((item) => item.menu_id === menuId);
+    const isFavorite = menuItem.is_favourite; // Use boolean directly
+
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/delete_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
+
+    try {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody),
-      }
-    );
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: customerId,
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.st === 1) {
-        const formattedMenuList = data.menu_list.map((menu) => ({
-          ...menu,
-          image: menu.image,
-          category: toTitleCase(menu.category),
-          name: toTitleCase(menu.name),
-          oldPrice: Math.floor(menu.price * 1.1),
-          is_favourite: menu.is_favourite === 1, // Changed to boolean
-        }));
-        setMenuList(formattedMenuList);
-        localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          const updatedMenuList = menuList.map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite } // Toggle boolean value
+              : item
+          );
+          setMenuList(updatedMenuList);
+          console.log(
+            isFavorite ? "Removed from favorites" : "Added to favorites"
+          );
+        } else {
+          console.error("Failed to update favorite status:", data.msg);
+        }
       } else {
-        console.error("API Error:", data.msg);
-        setMenuList([]);
+        console.error("Network response was not ok");
       }
-    } else {
-      console.error("Network response was not ok.");
-      setMenuList([]);
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
     }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    setMenuList([]);
-  }
-};
-
-const handleLikeClick = async (menuId) => {
-  if (!customerId || !restaurantId) {
-    console.error("Missing required data");
-    return;
-  }
-
-  const menuItem = menuList.find((item) => item.menu_id === menuId);
-  const isFavorite = menuItem.is_favourite; // Use boolean directly
-
-  const apiUrl = isFavorite
-    ? "https://menumitra.com/user_api/delete_favourite_menu"
-    : "https://menumitra.com/user_api/save_favourite_menu";
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        restaurant_id: restaurantId,
-        menu_id: menuId,
-        customer_id: customerId,
-      }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.st === 1) {
-        const updatedMenuList = menuList.map((item) =>
-          item.menu_id === menuId
-            ? { ...item, is_favourite: !isFavorite } // Toggle boolean value
-            : item
-        );
-        setMenuList(updatedMenuList);
-        console.log(
-          isFavorite ? "Removed from favorites" : "Added to favorites"
-        );
-      } else {
-        console.error("Failed to update favorite status:", data.msg);
-      }
-    } else {
-      console.error("Network response was not ok");
-    }
-  } catch (error) {
-    console.error("Error updating favorite status:", error);
-  }
-};
-
+  };
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
@@ -259,7 +258,8 @@ const handleLikeClick = async (menuId) => {
                         : "",
                   }}
                 >
-                  {category.name}
+                  {category.name} ({category.menu_count}){" "}
+                  {/* Display menu count */}
                 </div>
               </div>
             ))}
@@ -289,7 +289,13 @@ const handleLikeClick = async (menuId) => {
                     className="detail-content"
                     style={{ position: "relative" }}
                   >
-                    <h3 className="product-title">{menu.category}</h3>
+                    <h3 className="product-title">
+                      <i
+                        class="ri-restaurant-line"
+                        style={{ paddingRight: "5px" }}
+                      ></i>
+                      {menu.category}
+                    </h3>
                     {userData && (
                       <i
                         className={`bx ${
@@ -362,5 +368,3 @@ const handleLikeClick = async (menuId) => {
 };
 
 export default ProductCard;
-
-

@@ -343,10 +343,24 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import 'remixicon/fonts/remixicon.css';
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
@@ -541,63 +555,86 @@ const MenuDetails = () => {
   }
 
   return (
-    <div className="page-wrapper">
-      <header className="header header-fixed style-3">
-        <div className="header-content">
-          <div className="left-content">
-            <div
-              className="back-btn dz-icon icon-fill icon-sm"
-              onClick={handleBack}
-            >
-              <i className="bx bx-arrow-back"></i>
+    <>
+      <div className="page-wrapper">
+        <header className="header header-fixed style-3">
+          <div className="header-content">
+            <div className="left-content">
+              <div
+                className="back-btn dz-icon icon-fill icon-sm"
+                onClick={handleBack}
+              >
+                <i className="bx bx-arrow-back"></i>
+              </div>
+            </div>
+            <div className="mid-content">
+              <h5 className="title">Product Details</h5>
+            </div>
+            <div className="right-content">
+              <Link
+                to="/Cart"
+                className="notification-badge dz-icon icon-sm icon-fill"
+              >
+                <i className="bx bx-cart bx-sm"></i>
+                {cartItemsCount > 0 && (
+                  <span className="badge badge-danger">{cartItemsCount}</span>
+                )}
+              </Link>
             </div>
           </div>
-          <div className="mid-content">
-            <h5 className="title">Product Details</h5>
-          </div>
-          <div className="right-content">
-            <Link
-              to="/Cart"
-              className="notification-badge dz-icon icon-sm icon-fill"
-            >
-              <i className="bx bx-cart bx-sm"></i>
-              {cartItemsCount > 0 && (
-                <span className="badge badge-danger">{cartItemsCount}</span>
-              )}
-            </Link>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="page-content p-b80">
-        <div className="swiper product-detail-swiper">
-          <div className="product-detail-image img">
-            <img
-              className="product-detail-image"
-              src={productDetails.image || images} // Use default image if image is null
-              alt={productDetails.name}
-              onError={(e) => {
-                e.target.src = images;
-              }}
-            />
+        <main className="page-content p-b80">
+          <div className="swiper product-detail-swiper">
+            <div className="product-detail-image img">
+              <img
+                className="product-detail-image"
+                src={productDetails.image || images} // Use default image if image is null
+                alt={productDetails.name}
+                onError={(e) => {
+                  e.target.src = images;
+                }}
+              />
+            </div>
+            <div className="swiper-btn p-t15">
+              <div className="swiper-pagination style-1"></div>
+            </div>
           </div>
-          <div className="swiper-btn p-t15">
-            <div className="swiper-pagination style-1"></div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="dz-product-detail">
-            <div className="detail-content" style={{ position: "relative" }}>
-              {productDetails.menu_cat_name && (
-                <h3 className="product-title">
-                  {productDetails.menu_cat_name}
-                </h3>
-              )}
-              <h3 className="title">
-                {toTitleCase(productDetails.name)} (
-                {toTitleCase(productDetails.veg_nonveg)})
-              </h3>
-              {customerId && (
+          <div className="container">
+            <div className="dz-product-detail">
+              <div className="detail-content" style={{ position: "relative" }}>
+                {productDetails.menu_cat_name && (
+                  <h3 className="product-title">
+                    {/* {productDetails.menu_cat_name} */}
+                  </h3>
+                )}
+                <h4 className="title">
+                  {toTitleCase(productDetails.name)} (
+                  {toTitleCase(productDetails.veg_nonveg)})
+                  {/* ---quantity------- */}
+                  <div
+                    className="btn-group btn-quantity"
+                    style={{ paddingLeft: "50px" }}
+                  >
+                    <button
+                      className="btn btn-light btn-sm"
+                      onClick={decrementQuantity}
+                    >
+                      <i className="ri-subtract-line"></i>
+                    </button>
+                    <span className="btn btn-light btn-sm">{quantity}</span>
+                    <button
+                      className="btn btn-light btn-sm"
+                      onClick={incrementQuantity}
+                    >
+                      <i className="ri-add-line"></i>
+                    </button>
+                  </div>
+                </h4>
+
+                {/* like button  */}
+
+                {/* {customerId && (
                 <i
                   className={`bx ${
                     isFavorite ? "bxs-heart text-red" : "bx-heart"
@@ -618,52 +655,95 @@ const MenuDetails = () => {
                     />
                   )}
                 </i>
-              )}
-            </div>
+              )} */}
+              </div>
+              <div className="rating-container">
+                <i className="ri-star-half-line star" />
+                <span className="rating-text">
+                  4.9 <span className="rating-count">(570)</span>
+                </span>
+                <span className="separator">|</span>
+                <span className="time">
+                  <i className="ri-timer-line timer-icon" />
+                  8-10 Min
+                </span>
+                <span className="separator">|</span>
+              </div>
 
-            <div className="d-flex">
-              <h4 className="price">{productDetails.price}</h4>
-              <h4 className="price-old ms-2">{productDetails.oldPrice}</h4>
-            </div>
-            <div className="product-info">
-              <div className="desc">
-                <p>{productDetails.description}</p>
-              </div>
               <div className="product-meta">
-                <span>Spicy: {productDetails.spicy_index}</span>
+                {/* <span>Spiciness Level:</span> */}
+                {productDetails.spicy_index && (
+                  <div className="spicy-index">
+                    {Array.from({ length: 5 }).map((_, index) =>
+                      index < productDetails.spicy_index ? (
+                        <i
+                          key={index}
+                          className="ri-fire-fill"
+                          style={{ fontSize: "20px", color: "#eb8e57" }}
+                        ></i>
+                      ) : (
+                        <i
+                          key={index}
+                          className="ri-fire-line"
+                          style={{ fontSize: "20px", color: "#eb8e57" }}
+                        ></i>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="d-flex align-items-center justify-content-between py-4">
-                <div className="btn-group btn-quantity">
+
+              <div className="d-flex">
+                <h4 className="price">{productDetails.price}</h4>
+                <h4
+                  className="price-old  ms-2"
+                  style={{ textDecoration: "line-through", color: "#a5a5a5" }}
+                >
+                  {productDetails.oldPrice}
+                </h4>
+              </div>
+              <div className="product-info">
+                <h4 className="">Description</h4>
+                <div className="desc">
+                  <p>{productDetails.description}</p>
+                </div>
+
+                <div className="d-flex align-items-center justify-content-between py-4">
+                  {/* <div className="btn-group btn-quantity">
                   <button
                     className="btn btn-light btn-sm"
                     onClick={decrementQuantity}
                   >
-                    <i className="fa fa-minus"></i>
+                    <i className="ri-subtract-line"></i>
                   </button>
                   <span className="btn btn-light btn-sm">{quantity}</span>
                   <button
                     className="btn btn-light btn-sm"
                     onClick={incrementQuantity}
                   >
-                    <i className="fa fa-plus"></i>
+                    <i className="ri-add-line"></i>
                   </button>
+                </div> */}
+                  {/* <button
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAddToCart}
+                  >
+                    <i
+                      class="ri-shopping-cart-line"
+                      style={{ fontSize: "25px", paddingRight: "10px" }}
+                    ></i>
+                    Add To Cart
+                  </button> */}
                 </div>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={handleAddToCart}
-                >
-                  Add To Cart
-                </button>
+                {showQuantityError && (
+                  <div className="text-danger">Please add a quantity.</div>
+                )}
               </div>
-              {showQuantityError && (
-                <div className="text-danger">Please add a quantity.</div>
-              )}
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      {shouldDisplayFooter && (
+        {/* {shouldDisplayFooter && (
         <footer className="footer fixed">
           <div className="container">
             <div className="d-flex align-items-center justify-content-between">
@@ -677,8 +757,11 @@ const MenuDetails = () => {
             </div>
           </div>
         </footer>
-      )}
-    </div>
+      )} */}
+      
+      </div>
+      
+    </>
   );
 };
 

@@ -110,7 +110,7 @@ const Bottom = () => {
               : "nav-link"
           }
         >
-          <i className="bx bx-home-alt bx-sm"></i>
+          <i className="ri-home-2-line bx-sm"></i>
           <span className="name">Home</span>
         </Link>
         <Link
@@ -119,7 +119,7 @@ const Bottom = () => {
             location.pathname === "/Wishlist" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="bx bx-heart bx-sm"></i>
+          <i className="ri-heart-line bx-sm"></i>
           <span className="name">Favourite</span>
         </Link>
         <Link
@@ -137,7 +137,7 @@ const Bottom = () => {
             location.pathname === "/Search" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="bx bx-search bx-sm"></i>
+          <i className="ri-search-line bx-sm"></i>
           <span className="name">Search</span>
         </Link>
         <Link
@@ -146,7 +146,7 @@ const Bottom = () => {
             location.pathname === "/Profile" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="bx bx-user bx-sm"></i>
+          <i className="ri-account-circle-line bx-sm"></i>
           <span className="name">Profile</span>
         </Link>
       </div>

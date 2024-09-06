@@ -17158,10 +17158,12 @@
       align-items: center;
       gap: 6px;
       line-height: 1; }
+
       .dz-card .dz-meta li {
         display: inline-flex;
         align-items: center;
         gap: 3px; }
+        
       .dz-card .dz-meta .dz-review span {
         font-size: 12px;
         color: var(--text-light); }
@@ -17308,10 +17310,12 @@
       display: flex;
       align-items: center;
       gap: 10px; }
+
       .cart-list .dz-meta li {
         display: inline-flex;
         align-items: center;
         gap: 4px; }
+
       .cart-list .dz-meta .dz-price {
         font-size: 16px;
         font-weight: 600;

@@ -127,6 +127,34 @@
 // export default Category;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Bottom from "../component/bottom";

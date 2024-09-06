@@ -207,13 +207,16 @@ const Wishlist = () => {
                           </h5>
 
                           <ul className="dz-meta">
-                            <li className="dz-price">
+                            <li
+                              className="dz-price"
+                              style={{ color: "#4E74FC" }}
+                            >
                               ₹{menu.price}
                               {menu.oldPrice && <del>₹{menu.oldPrice}</del>}
                             </li>
                             <li>
                               <i
-                                className="ri-restaurant-line"
+                                className="ri-store-2-line"
                                 style={{
                                   paddingLeft: "20px",
                                   fontSize: "18px",
