@@ -234,21 +234,21 @@ const Product = () => {
   const applySort = () => {
     let sortedList = [...filteredMenuList];
     switch (sortCriteria) {
-      case 'popularity':
+      case "popularity":
         // Assuming there's a 'popularity' field in the menu items
         sortedList.sort((a, b) => b.popularity - a.popularity);
         break;
-      case 'discount':
+      case "discount":
         // Assuming there's a 'discount' field in the menu items
         sortedList.sort((a, b) => b.discount - a.discount);
         break;
-      case 'priceHighToLow':
+      case "priceHighToLow":
         sortedList.sort((a, b) => b.price - a.price);
         break;
-      case 'priceLowToHigh':
+      case "priceLowToHigh":
         sortedList.sort((a, b) => a.price - b.price);
         break;
-      case 'rating':
+      case "rating":
         // Assuming there's a 'rating' field in the menu items
         sortedList.sort((a, b) => b.rating - a.rating);
         break;
@@ -534,27 +534,53 @@ const Product = () => {
               <div className="dz-sorting">
                 <ul className="list-unstyled mb-0">
                   {[
-                    { key: 'popularity', icon: 'ri-star-line', label: 'Popularity' },
-                    { key: 'discount', icon: 'ri-discount-percent-line', label: 'Discount' },
-                    { key: 'priceHighToLow', icon: 'ri-arrow-up-line', label: 'Price High to Low' },
-                    { key: 'priceLowToHigh', icon: 'ri-arrow-down-line', label: 'Price Low to High' },
-                    { key: 'rating', icon: 'ri-star-half-line', label: 'Customer Rating' }
+                    // {
+                    //   key: "popularity",
+                    //   icon: "ri-star-line",
+                    //   label: "Popularity",
+                    // },
+                    {
+                      key: "discount",
+                      icon: "ri-discount-percent-line",
+                      label: "Discount",
+                    },
+                    {
+                      key: "priceHighToLow",
+                      icon: "ri-arrow-up-line",
+                      label: "Price High to Low",
+                    },
+                    {
+                      key: "priceLowToHigh",
+                      icon: "ri-arrow-down-line",
+                      label: "Price Low to High",
+                    },
+                    // {
+                    //   key: "rating",
+                    //   icon: "ri-star-half-line",
+                    //   label: "Customer Rating",
+                    // },
                   ].map(({ key, icon, label }) => (
-                    <li 
+                    <li
                       key={key}
-                      className={`sort-item ${sortCriteria === key ? 'active' : ''}`} 
+                      className={`sort-item ${
+                        sortCriteria === key ? "active" : ""
+                      }`}
                       onClick={() => handleSort(key)}
                       style={{
-                        backgroundColor: sortCriteria === key ? '#0D775E' : 'transparent',
-                        color: sortCriteria === key ? '#ffffff' : 'inherit',
-                        padding: '10px 15px',
-                        borderRadius: '8px',
-                        marginBottom: '10px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
+                        backgroundColor:
+                          sortCriteria === key ? "#0D775E" : "transparent",
+                        color: sortCriteria === key ? "#ffffff" : "inherit",
+                        padding: "10px 15px",
+                        borderRadius: "8px",
+                        marginBottom: "10px",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease",
                       }}
                     >
-                      <i className={`${icon} me-2`} style={{ fontSize: '18px' }}></i>
+                      <i
+                        className={`${icon} me-2`}
+                        style={{ fontSize: "18px" }}
+                      ></i>
                       {label}
                     </li>
                   ))}
@@ -564,14 +590,14 @@ const Product = () => {
                 <button
                   onClick={() => setSortByOpen(false)}
                   className="btn btn-outline-secondary w-45 rounded-xl"
-                  style={{ borderColor: '#0D775E', color: '#0D775E' }}
+                  style={{ borderColor: "#0D775E", color: "#0D775E" }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={applySort}
                   className="btn btn-primary w-45 rounded-xl"
-                  style={{ backgroundColor: '#0D775E', borderColor: '#0D775E' }}
+                  style={{ backgroundColor: "#0D775E", borderColor: "#0D775E" }}
                 >
                   Apply
                 </button>
@@ -741,4 +767,3 @@ const Product = () => {
 };
 
 export default Product;
-
