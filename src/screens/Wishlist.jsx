@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const { restaurantId } = useRestaurantId();
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
@@ -18,12 +20,6 @@ const Wishlist = () => {
     menuId,
     customerId
   ) => {
-    const requestData = {
-      restaurant_id: restaurantId,
-      menu_id: menuId,
-      customer_id: customerId,
-    };
-
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/delete_favourite_menu",
@@ -32,7 +28,11 @@ const Wishlist = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestData),
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: customerId,
+          }),
         }
       );
 
@@ -76,8 +76,13 @@ const Wishlist = () => {
   };
 
   useEffect(() => {
-    const fetchMenuData = async (customerId) => {
-      setLoading(true); // Set loading to true before the API call
+    const fetchFavoriteItems = async () => {
+      if (!customerId || !restaurantId) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
       try {
         const response = await fetch(
           "https://menumitra.com/user_api/get_favourite_list",
@@ -88,6 +93,7 @@ const Wishlist = () => {
             },
             body: JSON.stringify({
               customer_id: customerId,
+              restaurant_id: restaurantId,
             }),
           }
         );
@@ -95,11 +101,7 @@ const Wishlist = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && Array.isArray(data.lists)) {
-            const updatedMenuList = data.lists.map((menu) => ({
-              ...menu,
-              oldPrice: Math.floor(menu.price * 1.1),
-            }));
-            setMenuList(updatedMenuList);
+            setMenuList(data.lists);
           } else {
             console.error("Invalid data format:", data);
           }
@@ -107,17 +109,14 @@ const Wishlist = () => {
           console.error("Network response was not ok:", response.statusText);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching favorite items:", error);
       } finally {
-        setLoading(false); // Set loading to false after the API call
+        setLoading(false);
       }
     };
 
-    // Fetch menu data only if customerId is available
-    if (customerId) {
-      fetchMenuData(customerId);
-    }
-  }, [customerId]);
+    fetchFavoriteItems();
+  }, [customerId, restaurantId]);
 
   const handleRemoveItemClick = (index, restaurantId, menuId, customerId) => {
     removeItem(index, restaurantId, menuId, customerId);
@@ -152,7 +151,7 @@ const Wishlist = () => {
                   className="back-btn dz-icon icon-fill icon-sm"
                   onClick={() => navigate(-1)}
                 >
-                  <i className="bx bx-arrow-back"></i>
+                  <i className="ri-arrow-left-line"></i>
                 </Link>
               </div>
               <div className="mid-content">
@@ -165,7 +164,7 @@ const Wishlist = () => {
               </div>
               <div className="right-content">
                 <Link to="/Search" className="dz-icon icon-fill icon-sm">
-                  <i className="bx bx-search-alt-2"></i>
+                  <i className="ri-search-line"></i>
                 </Link>
               </div>
             </div>
@@ -247,7 +246,10 @@ const Wishlist = () => {
                               cursor: "pointer",
                             }}
                           >
-                            <i className="bx bx-x bx-sm"></i>
+                            <i
+                              className="ri-close-line"
+                              style={{ fontSize: "18px" }}
+                            ></i>
                           </div>
 
                           {/* Cart Icon */}

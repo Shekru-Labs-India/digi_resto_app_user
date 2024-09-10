@@ -1,5 +1,5 @@
 import React from 'react'
-import applogo from '../assets/menumitra_logo.png';
+import applogo from "../assets/logos/Menu Mitra logo 1.png";
 const Logoname = () => {
   return (
     <div className='logotitle' style={{ textAlign: 'center' }}>

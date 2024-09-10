@@ -265,17 +265,22 @@ const Sidebar = () => {
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
       {/* Header */}
-      <header  eader className="header header-fixed p-3">
+      <header eader className="header header-fixed p-3">
         <div className="header-content">
           <div className="left-content gap-1">
             <h3 className="title font-w300">
+              <i class="ri-store-2-line" style={{ paddingRight: "10px" }}></i>
               {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
             </h3>
           </div>
           <div className="mid-content"></div>
           <div className="right-content">
             <div className="menu-toggler" onClick={toggleSidebar}>
-              <i className="bx bx-user-circle bx-lg"></i>
+              {/* <i className="bx bx-user-circle bx-lg"></i> */}
+              <i
+                class="ri-account-circle-line"
+                style={{ fontSize: "48px" }}
+              ></i>
             </div>
           </div>
         </div>
@@ -289,7 +294,10 @@ const Sidebar = () => {
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
           <div className="dz-media">
-            <i className="bx bx-user-circle bx-lg"></i>
+            <i
+              className="ri-account-circle-line"
+              style={{ fontSize: "45px" }}
+            ></i>
           </div>
           <div className="dz-info">
             <div className="greetings">
@@ -302,7 +310,10 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Product">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-dish bx-sm"></i>
+                <i
+                  className="ri-menu-search-line"
+                  style={{ fontSize: "25px" }}
+                ></i>
               </span>
               <span>Menus</span>
             </Link>
@@ -310,7 +321,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Category">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-category bx-sm"></i>
+                <i className="ri-list-check-2" style={{ fontSize: "25px" }}></i>
               </span>
               <span>Category</span>
             </Link>
@@ -318,7 +329,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-heart bx-sm"></i>
+                <i className="ri-heart-line" style={{ fontSize: "25px" }}></i>
               </span>
               <span>Favourite</span>
             </Link>
@@ -326,7 +337,10 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/MyOrder">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-notepad bx-sm"></i>
+                <i
+                  className="ri-restaurant-line"
+                  style={{ fontSize: "25px" }}
+                ></i>
               </span>
               <span>My Orders</span>
             </Link>
@@ -334,7 +348,10 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Cart">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-cart bx-sm"></i>
+                <i
+                  className="ri-shopping-cart-2-line"
+                  style={{ fontSize: "25px" }}
+                ></i>
               </span>
               <span>Cart</span>
             </Link>
@@ -342,7 +359,11 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Profile">
               <span className="dz-icon icon-sm">
-                <i className="bx bx-user bx-sm"></i>
+                <i
+                  className="ri-account-circle-line"
+                  style={{ fontSize: "25px" }}
+                  s
+                ></i>
               </span>
               <span>Profile</span>
             </Link>
@@ -350,8 +371,16 @@ const Sidebar = () => {
         </ul>
         <div className="dz-mode">
           <div className="theme-btn" onClick={toggleTheme}>
-            <i className={`bx ${isDarkMode ? "bx-sun" : "bx-moon"} sun`}></i>
-            <i className={`bx ${isDarkMode ? "bx-moon" : "bx-sun"} moon`}></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-sun-line" : "ri-moon-line"
+              } sun`}
+            ></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-moon-line" : "ri-sun-line"
+              } moon`}
+            ></i>
           </div>
         </div>
         <div className="sidebar-bottom">

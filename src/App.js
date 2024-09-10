@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
 import Signinscreen from './screens/Signinscreen';
 import Signupscreen from './screens/SignupScreen';
@@ -24,6 +24,9 @@ import { RestaurantIdProvider } from './context/RestaurantIdContext';
 import Faq from './screens/Faq';
 
 function App() {
+  const { restaurantCode } = useParams();
+  console.log("Current restaurant code in URL:", restaurantCode);
+
   return (
     <RestaurantIdProvider>
       <Routes>
@@ -31,8 +34,8 @@ function App() {
         <Route path="/HomeScreen/:restaurantCode" element={ <RestaurantIdProvider><HomeScreen /></RestaurantIdProvider>} />
         
         {/* Default route for HomeScreen with a default restaurant code */}
-        <Route path="/HomeScreen" element={<Navigate to="/HomeScreen/824679" replace />} />
-        <Route path="/" element={<Navigate to="/HomeScreen/824679" replace />} />
+        <Route path="/HomeScreen" element={<Navigate to="/HomeScreen/143061" replace />} />
+        <Route path="/" element={<Navigate to="/HomeScreen/143061" replace />} />
         {/* Other routes */}
         <Route path="/Signinscreen" element={<Signinscreen />} />
         

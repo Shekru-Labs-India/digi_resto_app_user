@@ -11,7 +11,7 @@ const Faq = () => {
         <div className="header-content">
           <div className="left-content">
             <div onClick={() => navigate(-1)} className="back-btn dz-icon icon-fill icon-sm">
-              <i className="bx bx-arrow-back"></i>
+              <i className="ri-arrow-left-line"></i>
             </div>
           </div>
           <div className="mid-content"><h5 className="title">FAQ's</h5></div>

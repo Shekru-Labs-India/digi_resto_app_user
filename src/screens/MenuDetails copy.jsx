@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
-import { useRestaurantId } from '../context/RestaurantIdContext';
-import { useCart } from '../hooks/useCart';
+import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import Devider from "../component/Devider";
+import { useCart } from "../hooks/useCart";
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
@@ -18,7 +19,6 @@ const MenuDetails = () => {
   const { restaurantId } = useRestaurantId();
   const [customerId, setCustomerId] = useState(null);
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
-  const { addToCart, cartItems } = useCart();
 
   // Fetch customer ID from localStorage on component mount
   useEffect(() => {
@@ -81,7 +81,7 @@ const MenuDetails = () => {
             menu_cat_name,
             menu_id: menuId,
           });
-          setIsFavorite(is_favourite === 1);
+          setIsFavorite(is_favourite === 1); // Update favorite status based on API response
         } else {
           console.error("Invalid data format:", data);
         }
@@ -95,7 +95,7 @@ const MenuDetails = () => {
 
   useEffect(() => {
     if (menuId && restaurantId && customerId !== null) {
-      fetchProductDetails(menuId);
+      fetchProductDetails(menuId); // Fetch product details when component mounts or dependencies change
     }
   }, [menuId, restaurantId, customerId]);
 
@@ -130,7 +130,7 @@ const MenuDetails = () => {
       });
 
       const data = await response.json();
-      console.log("API Response:", data);
+      console.log("API Response:", data); // Log the response for debugging
 
       if (data.st === 1) {
         setIsFavorite(!isFavorite);
@@ -152,9 +152,20 @@ const MenuDetails = () => {
   };
 
   const handleAddToCart = () => {
-    if (quantity === 0 || !productDetails) return;
+    if (quantity === 0) {
+      setShowQuantityError(true);
+      return;
+    }
 
-    addToCart({ ...productDetails, quantity });
+    if (!productDetails || isMenuItemInCart()) return;
+
+    const cartItem = { ...productDetails, quantity };
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    cartItems.push(cartItem);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+    setCartItemsCount(cartItems.length);
+
     navigate("/Cart");
   };
 
@@ -178,7 +189,12 @@ const MenuDetails = () => {
     navigate(-1);
   };
 
-  const shouldDisplayFooter = !cartItems.some(item => item.menu_id === productDetails?.menu_id);
+  const isMenuItemInCart = () => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    return cartItems.some((item) => item.menu_id === parseInt(menuId));
+  };
+
+  const shouldDisplayFooter = !isMenuItemInCart();
 
   if (!productDetails) {
     return <div>Loading...</div>;
@@ -219,7 +235,7 @@ const MenuDetails = () => {
             <div className="product-detail-image img">
               <img
                 className="product-detail-image"
-                src={productDetails.image || images}
+                src={productDetails.image || images} // Use default image if image is null
                 alt={productDetails.name}
                 onError={(e) => {
                   e.target.src = images;
@@ -292,9 +308,48 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* like button  */}
+
+                {/* {customerId && (
+                <i
+                  className={`bx ${
+                    isFavorite ? "bxs-heart text-red" : "bx-heart"
+                  } bx-sm`}
+                  onClick={handleLikeClick}
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    right: "0",
+                    fontSize: "23px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {isFavoriteLoading && (
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                    />
+                  )}
+                </i>
+              )} */}
               </div>
 
+              {/* <div className="rating-container">
+                <i className="ri-star-half-line star" />
+                <span className="rating-text">
+                  4.9 <span className="rating-count">(570)</span>
+                </span>
+                <span className="separator">|</span>
+                <span className="time">
+                  <i className="ri-timer-line timer-icon" />
+                  8-10 Min
+                </span>
+                <span className="separator">|</span>
+              </div> */}
+
               <div className="product-meta">
+                {/* <span>Spiciness Level:</span> */}
                 {productDetails.spicy_index && (
                   <div
                     className="spicy-index"
@@ -319,11 +374,37 @@ const MenuDetails = () => {
                 )}
               </div>
               <div className="product-info">
+                {/* <h4 className="">Description</h4> */}
                 <div className="desc">
                   <p>{productDetails.description}</p>
                 </div>
 
                 <div className="d-flex align-items-center justify-content-between py-4">
+                  {/* <div className="btn-group btn-quantity">
+                  <button
+                    className="btn btn-light btn-sm"
+                    onClick={decrementQuantity}
+                  >
+                    <i className="ri-subtract-line"></i>
+                  </button>
+                  <span className="btn btn-light btn-sm">{quantity}</span>
+                  <button
+                    className="btn btn-light btn-sm"
+                    onClick={incrementQuantity}
+                  >
+                    <i className="ri-add-line"></i>
+                  </button>
+                </div> */}
+                  {/* <button
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAddToCart}
+                  >
+                    <i
+                      class="ri-shopping-cart-line"
+                      style={{ fontSize: "25px", paddingRight: "10px" }}
+                    ></i>
+                    Add To Cart
+                  </button> */}
                 </div>
                 {showQuantityError && (
                   <div className="text-danger">Please add a quantity.</div>
@@ -333,10 +414,12 @@ const MenuDetails = () => {
           </div>
         </main>
         <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <Devider />
-            </div>
+
+        <div className="row">
+          <div className="col-12">
+        <Devider />
+
+        </div>
           </div>
         </div>
 
@@ -362,13 +445,14 @@ const MenuDetails = () => {
                         position: "relative",
                       }}
                     >
+                      {/* {productDetails.oldPrice} */}
                     </span>
                   </div>
                 </div>
                 <button
                   className="btn btn-primary"
                   style={{ borderRadius: "100px" }}
-                  onClick={handleAddToCart}
+                  onClick={() => navigate("/Cart")}
                 >
                   <i
                     className="ri-shopping-cart-2-line"

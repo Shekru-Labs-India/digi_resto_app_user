@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Swiper from "swiper";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
-import { RiFireFill, RiFireLine } from "react-icons/ri"; // Import Remixicon icons
+// import { RiFireFill, RiFireLine } from "react-icons/ri"; // Import Remixicon icons
 
 const NearbyArea = () => {
   const swiperRef = useRef(null);
@@ -187,13 +187,21 @@ const NearbyArea = () => {
   };
 
   const renderSpiceIcons = (spicyIndex) => {
-    const fullIcons = Array.from({ length: spicyIndex }, (_, i) => (
-      <RiFireFill key={`full-${i}`} />
-    ));
-    const emptyIcons = Array.from({ length: 5 - spicyIndex }, (_, i) => (
-      <RiFireLine key={`line-${i}`} />
-    ));
-    return [...fullIcons, ...emptyIcons];
+    return Array.from({ length: 5 }).map((_, index) =>
+      index < spicyIndex ? (
+        <i
+          className="ri-fire-fill"
+          style={{ fontSize: "13px" }}
+          key={index}
+        ></i>
+      ) : (
+        <i
+          className="ri-fire-line"
+          style={{ fontSize: "12px", color: "#0000001a" }}
+          key={index}
+        ></i>
+      )
+    );
   };
 
   return (
@@ -226,15 +234,25 @@ const NearbyArea = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                        <h3 className="product-title">
+                        {/* <h3 className="product-title">
                           {toTitleCase(menuItem.menu_cat_name)}
-                        </h3>
+                        </h3> */}
+                        <div
+                          className="dz-quantity detail-content"
+                          style={{ fontSize: "12px" }}
+                        >
+                          <i
+                            class="ri-restaurant-line"
+                            style={{ paddingRight: "5px" }}
+                          ></i>
+                          {toTitleCase(menuItem.menu_cat_name)}
+                        </div>
                         {userData ? (
                           <i
                             className={`bx ${
                               menuItem.is_favourite
-                                ? "bxs-heart text-red"
-                                : "bx-heart"
+                                ? "ri-heart-fill text-red"
+                                : "ri-heart-line"
                             } bx-sm`}
                             onClick={() => handleLikeClick(menuItem.menu_id)}
                             style={{
@@ -279,13 +297,22 @@ const NearbyArea = () => {
                             className="cart-btn"
                           >
                             {isMenuItemInCart(menuItem.menu_id) ? (
-                              <i className="ri-shopping-cart-2-fill bx-sm"></i>
+                              <i
+                                className="ri-shopping-cart-2-fill"
+                                style={{ fontSize: "25px" }}
+                              ></i>
                             ) : (
-                              <i className="ri-shopping-cart-2-line bx-sm"></i>
+                              <i
+                                className="ri-shopping-cart-2-line"
+                                style={{ fontSize: "25px" }}
+                              ></i>
                             )}
                           </div>
                         ) : (
-                          <i className="ri-shopping-cart-2-line bx-sm"></i>
+                          <i
+                            className="ri-shopping-cart-2-line"
+                            style={{ fontSize: "25px" }}
+                          ></i>
                         )}
                       </div>
                     </div>

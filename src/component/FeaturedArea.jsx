@@ -152,6 +152,7 @@
 
 
 
+
 import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
@@ -265,7 +266,16 @@ const FeaturedArea = () => {
                         ₹{menu.price} <del>₹{Math.floor(menu.price * 1.1)}</del>
                       </li>
                     </ul>
-                    <div className="dz-quantity">{menu.menu_cat_name}</div>
+                    <div
+                      className="dz-quantity detail-content"
+                      style={{ fontSize: "12px" }}
+                    >
+                      <i
+                        class="ri-restaurant-line"
+                        style={{ paddingRight: "5px" }}
+                      ></i>
+                      {menu.menu_cat_name}
+                    </div>
                   </div>
                 </div>
               </Link>

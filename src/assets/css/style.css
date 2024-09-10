@@ -1,100 +1,37 @@
-/* 	=========================
-	Template Name 	 : PlantZone
-	Author			 : DexignZone
-	Version			 : 1.0
-	Author Portfolio : https://themeforest.net/user/dexignzone/portfolio
-	=========================
-	
-	=========================
-	[Table of Contents]
-	=========================
-	==============
-	  SCSS Start
-	==============
-	1. Abstracts
-        1.1 _mixin
-        1.2 _variable
-        1.3 _abstracts
+body {
+  margin: 0;
+  font-family: 'Poppins','sans-serif';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* 
+cateHov:hover {
+   color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+    text-decoration: underline; }
+    a:hover {
+      --bs-link-color-rgb: var(--bs-link-hover-color-rgb);
+} */
 
-    2. Bootstrap 
-        2.1 Here goes all official bootstrap scss files
 
-    3. Global/Base
-        3.1 _fonts
-        3.2 _reset
-        3.3 _shortcode 
 
-    4. Layout
-        4.1 footer
-        4.2 header
-			4.2.1 _header-global
-			4.2.1 _header-sidebar
-		4.3 theme
 
-    5. Components
-        5.1 ui
-			5.1.1	_ui-accordion 
-			5.1.2	_ui-action-sheet 
-			5.1.4	_ui-alert 
-			5.1.5	_ui-avatar 
-			5.1.6	_ui-badge 
-			5.1.7	_ui-breadcrumb 
-			5.1.8	_ui-button 
-			5.1.9	_ui-card 
-			5.1.10 	_ui-chip 
-			5.1.11 	_ui-divider 
-			5.1.12 	_ui-dropdown 
-			5.1.13 	_ui-form 
-			5.1.14 	_ui-lightgallery 
-			5.1.15 	_ui-list-group 
-			5.1.16 	_ui-media 
-			5.1.17 	_ui-modal 
-			5.1.18 	_ui-nouislider 
-			5.1.19 	_ui-pagination 
-			5.1.20 	_ui-popover 
-			5.1.21 	_ui-progressbar 
-			5.1.22 	_ui-radio 
-			5.1.23 	_ui-scrollspy 
-			5.1.24 	_ui-spinner 
-			5.1.25 	_ui-stepper 
-			5.1.26 	_ui-swiper 
-			5.1.27 	_ui-switch 
-			5.1.28 	_ui-tab 
-			5.1.29 	_ui-table 
-			5.1.30 	_ui-timeline 
-			5.1.31	_ui-toast 
-		
-		5.2 uc
-			5.2.1	_dz-card
-			5.2.2	_dz-icon
-			5.2.3	_pull-data
-	
-    6. Pages
-        6.1  _splashcreen
-        6.2  _welcome
-        6.3  _authentication
-        6.4  _home
-        6.5  _cart
-        6.6  _notification
-		6.7  _message
-        6.8  _payment
-        6.9  _product-detail
-        6.10 _profile
-        
-		
-	7. PreLoader 
-	
-	==============
-	  SCSS End
-	==============
-========================= */
-/*==== 1. Abstracts ====*/
- /* @import url("../icons/flaticon-uicons/css/regular/all.css");
- @import url("../icons/fontawesome/css/all.min.css"); */
-/* @import url("../icons/feather/css/iconfont.css"); */
-/* @import url("../icons/flaticon/css/flaticon.css"); */
-/* @import url("../icons/themify-icons/css/themify-icons.css");   */
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+.category-text {
+  font-size: 12px;
+  color: black;
+}
+
+.category-text:hover {
+  color: #0d775e;
+}
+
+hr.dotted {
+  border-top: 3px dotted #000000;
+  margin-bottom: 80px; /* Adjust margins as needed */
+  position: relative;
+  /* top:10px; */
+  bottom:120px
+}
+
 :root {
   --primary: #0D775E;
   --primary-hover: #17d3a7;
@@ -110,12 +47,10 @@
   --rgba-primary-7: rgba(13, 119, 94, 0.7);
   --rgba-primary-8: rgba(13, 119, 94, 0.8);
   --rgba-primary-9: rgba(13, 119, 94, 0.9);
-  /* --font-family-title: Jost, sans-serif;
-  --font-family-sub-title: Jost, sans-serif;
-  --font-family-base: Jost, sans-serif; */
-  --font-family-title: 'Lato'; /* Change font family to Lato */
-  --font-family-sub-title: 'Lato'; /* Change font family to Lato */
-  --font-family-base: 'Lato';
+ 
+  --font-family-title: 'Poppins'; /* Change font family to Poppins */
+  --font-family-sub-title: 'Poppins'; /* Change font family to Poppins */
+  --font-family-base: 'Poppins';
   --box-shadow: 0px 0 40px 0 rgba(0, 0, 0, 0.1);
   --border-radius-xl: 20px;
   --border-radius-md: 15px;
@@ -324,7 +259,7 @@
   
   body {
     margin: 0;
-    font-family: "Lato", sans-serif;
+    font-family: "Poppins", sans-serif;
     font-size: var(--bs-body-font-size);
     font-weight: var(--bs-body-font-weight);
     line-height: var(--bs-body-line-height);
@@ -1802,7 +1737,8 @@
       padding: 0; }
     .form-control::placeholder {
       color: var(--bs-secondary-color);
-      opacity: 1; }
+      opacity: 1; 
+      font-family: Poppins;}
     .form-control:disabled {
       background-color: var(--bs-secondary-bg);
       opacity: 1; }

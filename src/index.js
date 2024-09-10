@@ -3,11 +3,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter,BrowserRouter } from 'react-router-dom';
-import './index.css';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { RestaurantIdProvider } from './context/RestaurantIdContext';
-import "remixicon/fonts/remixicon.css";
+
 
 
 

@@ -11,6 +11,10 @@ const  OrderTracking = () => {
   const { restaurantId } = useRestaurantId();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    console.log("OrderTracking component received new restaurant ID:", restaurantId);
+  }, [restaurantId]);
+
+  useEffect(() => {
     const fetchOngoingOrders = async () => {
       try {
         setLoading(true); 
@@ -20,8 +24,8 @@ const  OrderTracking = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id:2,
-            order_status: 'Ongoing', // Fetch ongoing orders only
+            restaurant_id: restaurantId, // Change this line
+            order_status: 'Ongoing',
             customer_id: customerId
           })
         });
@@ -44,9 +48,10 @@ console.log(customerId)
       }
     };
 
-    fetchOngoingOrders();
-  }, [customerId]); 
-
+    if (customerId && restaurantId) { // Add restaurantId check
+      fetchOngoingOrders();
+    }
+  }, [customerId, restaurantId]); // Add restaurantId to dependency array
 
   const handleBack = () => {
     navigate(-1);
@@ -58,7 +63,7 @@ console.log(customerId)
         <div className="header-content">
           <div className="left-content">
             <Link to="" className="back-btn dz-icon icon-fill icon-sm"  onClick={handleBack}>
-              <i className="bx bx-arrow-back"></i>
+              <i className="ri-arrow-left-line"></i>
             </Link>
           </div>
           <div className="mid-content">

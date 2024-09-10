@@ -96,7 +96,7 @@ const EditProfile = () => {
                 <div className="header-content">
                     <div className="left-content">
                         <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-                            <i className="bx bx-arrow-back"></i>
+                            <i className="ri-arrow-left-line"></i>
                         </Link>
                     </div>
                     <div className="mid-content">
@@ -169,7 +169,7 @@ const EditProfile = () => {
                       )}
                 </div>
             </main>
-            <Bottom></Bottom>
+        <Bottom />
         </div>
     );
 };

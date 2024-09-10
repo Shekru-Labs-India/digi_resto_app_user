@@ -74,7 +74,7 @@
 //                 <div className="header-content">
 //                     <div className="search-area">
 //                         <Link to="/HomeScreen" className="back-btn icon-fill dz-icon">
-//                             <i className='bx bx-arrow-back'></i>
+//                             <i className='ri-arrow-left-line'></i>
 //                         </Link>
 //                         <div className="input w-100">
 //                             <input
@@ -222,7 +222,7 @@
 //                 <div className="header-content">
 //                     <div className="search-area">
 //                     <div onClick={() => navigate(-1)} className="back-btn icon-fill dz-icon">
-//                             <i className='bx bx-arrow-back'></i>
+//                             <i className='ri-arrow-left-line'></i>
 //                         </div>
 //                         <div className="input w-100">
 //                             <input
@@ -403,7 +403,7 @@ const Search = () => {
                 <div className="header-content">
                     <div className="search-area">
                         <div onClick={() => navigate(-1)} className="back-btn icon-fill dz-icon">
-                            <i className='bx bx-arrow-back'></i>
+                            <i className='ri-arrow-left-line'></i>
                         </div>
                         <div className="input w-100">
                             <input

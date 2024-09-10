@@ -58,7 +58,7 @@
 //               to="/HomeScreen/347279"
 //               className="back-btn dz-icon icon-fill icon-sm"
 //             >
-//               <i className="bx bx-arrow-back"></i>
+//               <i className="ri-arrow-left-line"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -241,7 +241,7 @@ const Category = () => {
                   to="/HomeScreen/347279"
                   className="back-btn dz-icon icon-fill icon-sm"
                 >
-                  <i className="bx bx-arrow-back"></i>
+                  <i className="ri-arrow-left-line"></i>
                 </Link>
               </div>
               <div className="mid-content">
@@ -251,7 +251,7 @@ const Category = () => {
                 </h5>
               </div>
               <div className="right-content">
-                <Link to="/Search" className="dz-icon icon-fill icon-sm">
+                <Link to="/Search" className="ri-search-line" style={{fontSize:"18px"}}>
                   <i className="bx bx-search-alt-2"></i>
                 </Link>
               </div>

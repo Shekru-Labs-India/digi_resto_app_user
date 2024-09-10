@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SigninButton from '../constants/SigninButton';
@@ -13,7 +10,7 @@ const MyOrder = () => {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  console.log("Restaurant ID:", restaurantId);
+  console.log("MyOrder component received new restaurant ID:", restaurantId);
   const userData = JSON.parse(localStorage.getItem('userData'));
   const customerId = userData ? userData.customer_id : null;
   const [loading, setLoading] = useState(true);
@@ -31,7 +28,7 @@ const MyOrder = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            restaurant_id: 2,
+            restaurant_id: restaurantId, // Change this line
             order_status: activeTab === 'ongoing' ? 'Ongoing' : 'Completed',
             customer_id: customerId
           })
@@ -56,7 +53,7 @@ console.log(customerId)
       }
     };
 
-    if (customerId) {
+    if (customerId && restaurantId) { // Add restaurantId check
       fetchOrders();
     }
   }, [activeTab, customerId, restaurantId]);
@@ -73,20 +70,23 @@ console.log(customerId)
         <div className="header-content">
           <div className="left-content">
             <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-              <i className="bx bx-arrow-back"></i>
+              <i className="ri-arrow-left-line"></i>
             </Link>
           </div>
           <div className="mid-content">
             <h5 className="title">My Order</h5>
           </div>
           <div className="right-content">
-            <Link to={`/HomeScreen/${347279}`} className="dz-icon icon-sm icon-fill">
-              <i className="bx bx-home-alt bx-sm"></i>
+            <Link
+              to={`/HomeScreen/${347279}`}
+              className="dz-icon icon-sm icon-fill"
+            >
+              <i className="ri-home-2-line"></i>
             </Link>
           </div>
         </div>
       </header>
-      
+
       <main className="page-content space-top p-b70">
         <div className="container">
           {loading ? (
@@ -104,13 +104,31 @@ console.log(customerId)
                 <div className="default-tab style-2">
                   <div className="dz-tabs">
                     <ul className="nav nav-tabs" role="tablist">
-                      <li className={`nav-item ${activeTab === 'ongoing' ? 'active' : ''}`}>
-                        <button className={`nav-link ${activeTab === 'ongoing' ? 'active' : ''}`} onClick={() => handleTabChange('ongoing')}>
+                      <li
+                        className={`nav-item ${
+                          activeTab === "ongoing" ? "active" : ""
+                        }`}
+                      >
+                        <button
+                          className={`nav-link ${
+                            activeTab === "ongoing" ? "active" : ""
+                          }`}
+                          onClick={() => handleTabChange("ongoing")}
+                        >
                           Ongoing
                         </button>
                       </li>
-                      <li className={`nav-item ${activeTab === 'completed' ? 'active' : ''}`}>
-                        <button className={`nav-link ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => handleTabChange('completed')}>
+                      <li
+                        className={`nav-item ${
+                          activeTab === "completed" ? "active" : ""
+                        }`}
+                      >
+                        <button
+                          className={`nav-link ${
+                            activeTab === "completed" ? "active" : ""
+                          }`}
+                          onClick={() => handleTabChange("completed")}
+                        >
                           Completed
                         </button>
                       </li>
@@ -118,10 +136,22 @@ console.log(customerId)
                   </div>
 
                   <div className="tab-content">
-                    <div className={`tab-pane fade ${activeTab === 'ongoing' ? 'show active' : ''}`} id="home" role="tabpanel">
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "ongoing" ? "show active" : ""
+                      }`}
+                      id="home"
+                      role="tabpanel"
+                    >
                       <OrdersTab orders={orders} type="ongoing" />
                     </div>
-                    <div className={`tab-pane fade ${activeTab === 'completed' ? 'show active' : ''}`} id="profile" role="tabpanel">
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "completed" ? "show active" : ""
+                      }`}
+                      id="profile"
+                      role="tabpanel"
+                    >
                       <OrdersTab orders={orders} type="Completed" />
                     </div>
                   </div>
@@ -134,8 +164,6 @@ console.log(customerId)
           )}
         </div>
       </main>
-
-     
     </div>
   );
 };
