@@ -4,10 +4,8 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash"; // Make sure to install lodash
-import { useCart } from '../hooks/useCart';
 
 const ProductCard = () => {
-  const { cartItems, addToCart } = useCart();
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -71,6 +69,8 @@ const ProductCard = () => {
           cat_id: categoryId === null ? "all" : categoryId.toString(),
         };
 
+        console.log("Fetching menu data with:", requestBody);
+
         const response = await fetch(
           "https://menumitra.com/user_api/get_menu_by_cat",
           {
@@ -82,28 +82,35 @@ const ProductCard = () => {
           }
         );
 
+        const data = await response.json();
+        console.log("API Response:", data);
+
         if (response.ok) {
-          const data = await response.json();
           if (data.st === 1) {
-            const formattedMenuList = data.menu_list.map((menu) => ({
-              ...menu,
-              image: menu.image,
-              category: toTitleCase(menu.category),
-              name: toTitleCase(menu.name),
-              oldPrice: Math.floor(menu.price * 1.1),
-              is_favourite: menu.is_favourite === 1, // Changed to boolean
-            }));
-            setMenuList(formattedMenuList);
-            localStorage.setItem(
-              "menuItems",
-              JSON.stringify(formattedMenuList)
-            );
+            if (Array.isArray(data.menu_list) && data.menu_list.length > 0) {
+              const formattedMenuList = data.menu_list.map((menu) => ({
+                ...menu,
+                image: menu.image,
+                category: toTitleCase(menu.category),
+                name: toTitleCase(menu.name),
+                oldPrice: Math.floor(menu.price * 1.1),
+                is_favourite: menu.is_favourite === 1,
+              }));
+              setMenuList(formattedMenuList);
+              localStorage.setItem(
+                "menuItems",
+                JSON.stringify(formattedMenuList)
+              );
+            } else {
+              console.log("No menu items found for the given category");
+              setMenuList([]);
+            }
           } else {
             console.error("API Error:", data.msg);
             setMenuList([]);
           }
         } else {
-          console.error("Network response was not ok.");
+          console.error("Network response was not ok. Status:", response.status);
           setMenuList([]);
         }
       } catch (error) {
@@ -212,30 +219,51 @@ const ProductCard = () => {
 
   const handleAddToCartClick = (menu) => {
     console.log("Adding to cart:", menu);
-    const isAlreadyInCart = cartItems.some(
-      (item) => item.menu_id === menu.menu_id
-    );
+    try {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      console.log("Current cart items:", cartItems);
 
-    if (isAlreadyInCart) {
-      console.log("Item already in cart");
-      alert("This item is already in the cart!");
-      return;
+      const isAlreadyInCart = cartItems.some(
+        (item) => item.menu_id === menu.menu_id
+      );
+
+      if (isAlreadyInCart) {
+        console.log("Item already in cart");
+        alert("This item is already in the cart!");
+        return;
+      }
+
+      const cartItem = {
+        image: menu.image,
+        name: menu.name,
+        price: menu.price,
+        oldPrice: menu.oldPrice,
+        quantity: 1,
+        menu_id: menu.menu_id,
+      };
+
+      const updatedCartItems = [...cartItems, cartItem];
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      console.log("Updated cart items:", updatedCartItems);
+      
+      // Verify that the item was added to localStorage
+      const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      console.log("Stored cart items after update:", storedCartItems);
+
+      if (storedCartItems.length === updatedCartItems.length) {
+        console.log("Cart item successfully added to localStorage");
+      } else {
+        console.error("Failed to add cart item to localStorage");
+      }
+
+      navigate("/Cart");
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
     }
-
-    const cartItem = {
-      image: menu.image,
-      name: menu.name,
-      price: menu.price,
-      oldPrice: menu.oldPrice,
-      quantity: 1,
-      menu_id: menu.menu_id,
-    };
-
-    addToCart(cartItem);
-    navigate("/Cart");
   };
 
   const isMenuItemInCart = (menuId) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
 

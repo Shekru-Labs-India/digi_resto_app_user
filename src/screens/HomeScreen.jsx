@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import "../assets/css/style.css";
 import "../assets/css/custom.css";
 import Sidebar from "../component/Sidebar";
@@ -8,9 +9,16 @@ import FeaturedArea from "../component/FeaturedArea";
 import NearbyArea from "../component/NearbyArea";
 import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-const HomeScreen = () => {
 
-   
+const HomeScreen = () => {
+  const { restaurantCode } = useParams();
+  const { setRestaurantCode } = useRestaurantId();
+
+  useEffect(() => {
+    if (restaurantCode) {
+      setRestaurantCode(restaurantCode);
+    }
+  }, [restaurantCode, setRestaurantCode]);
 
   return (
     <div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
+import Bottom from "../component/bottom";
 // import { useRestaurantId } from "./context/RestaurantIdContext";
 
 const Checkout = () => {
@@ -148,7 +149,7 @@ const Checkout = () => {
         </div>
       </main>
 
-      <div className="footer-fixed-btn bottom-0">
+      <div className="footer-fixed-btn bottom-40">
         <ul className="total-prize">
           <li className="name">Subtotal</li>
           <li className="prize">₹{calculateTotal()}</li>
@@ -161,6 +162,7 @@ const Checkout = () => {
           Submit Order
         </Link>
       </div>
+      <Bottom></Bottom>
     </div>
   );
 };

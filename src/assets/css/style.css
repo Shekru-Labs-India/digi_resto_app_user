@@ -11711,7 +11711,7 @@ hr.dotted {
   .footer-fixed-btn {
     position: fixed;
     background-color: var(--bg-white);
-    bottom: 60px;
+    bottom: 80px;
     left: 50%;
     width: 100%;
     max-width: 600px;

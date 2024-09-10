@@ -147,6 +147,8 @@ const Product = () => {
     setCartItemsCount(cartItems.length);
   }, []);
 
+  
+
   const handleLikeClick = async (menuId) => {
     if (!userData || !restaurantId) return;
 
@@ -335,31 +337,18 @@ const Product = () => {
         >
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
-              {categories && categories.length > 0 && (
-                <div
-                  className={`category-btn swiper-slide ${
-                    selectedCategory === null ? "active" : ""
-                  }`}
-                  onClick={() => handleCategoryFilter(null)}
-                  style={{
-                    backgroundColor: selectedCategory === null ? "#0D775E" : "",
-                    color: selectedCategory === null ? "#ffffff" : "",
-                  }}
-                >
-                  All ({categoryCounts.All})
-                  {/* <i
-                    className={`ri-heart-${
-                      favoriteCats.includes("All") ? "fill" : "line"
-                    }`}
-                    style={{ marginLeft: "5px", cursor: "pointer" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavoriteCategory("All");
-                    }}
-                  ></i> */}
-                </div>
-              )}
-
+              <div
+                className={`category-btn swiper-slide ${
+                  selectedCategory === null ? "active" : ""
+                }`}
+                onClick={() => handleCategoryFilter(null)}
+                style={{
+                  backgroundColor: selectedCategory === null ? "#0D775E" : "",
+                  color: selectedCategory === null ? "#ffffff" : "",
+                }}
+              >
+                All ({categoryCounts.All})
+              </div>
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
@@ -375,16 +364,6 @@ const Product = () => {
                     }}
                   >
                     {category.name} ({categoryCounts[category.name] || 0})
-                    {/* <i
-                      className={`ri-heart-${
-                        favoriteCats.includes(category.name) ? "fill" : "line"
-                      }`}
-                      style={{ marginLeft: "5px", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavoriteCategory(category.name);
-                      }}
-                    ></i> */}
                   </div>
                 </div>
               ))}
@@ -486,7 +465,7 @@ const Product = () => {
                         >
                           {isMenuItemInCart(menuItem.menu_id) ? (
                             <i
-                              className="ri-shopping-cart-2-line"
+                              className="ri-shopping-cart-2-fill"
                               style={{ fontSize: "25px" }}
                             ></i>
                           ) : (

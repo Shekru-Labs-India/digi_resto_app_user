@@ -12,6 +12,13 @@ const Cart = () => {
   const [localCartItems, setLocalCartItems] = useState([]);
   const { restaurantId } = useRestaurantId();
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
+
+  const handleRemoveClick = (index, item) => {
+    setItemToRemove({ index, item });
+    setShowPopup(true);
+  };
 
   useEffect(() => {
     const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -65,6 +72,8 @@ const Cart = () => {
     navigate(-1); // Navigate back to the previous screen
   };
 
+  console.log("Current restaurantId:", restaurantId);
+
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
       {/* Header */}
@@ -109,84 +118,124 @@ const Cart = () => {
       ) : (
         <main className="page-content space-top p-b200">
           {userData ? (
-            <div className="container overflow-hidden">
+            <div className="container">
               {displayCartItems.map((item, index) => (
-                <div key={index} className="m-b5 dz-flex-box">
-                  <div className="dz-cart-list m-b30">
-                    <div className="dz-media">
+                <div
+                  key={index}
+                  className="card mb-3"
+                  style={{
+                    borderRadius: "15px",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <div className="row g-0">
+                    <div className="col-4" style={{ padding: "10px" }}>
                       <Link to={`/ProductDetails/${item.menu_id}`}>
                         <img
-                          src={item.image || images} // Use default image if image is null
+                          src={item.image || images}
                           alt={item.name}
                           style={{
-                            width: "100%",
                             height: "110px",
+                            width: "100%",
                             objectFit: "cover",
+                            borderRadius: "10px",
                           }}
                           onError={(e) => {
-                            e.target.src = images; // Set local image source on error
+                            e.target.src = images;
                           }}
                         />
                       </Link>
                     </div>
-
-                    <div>
-                      <div className="dz-content">
-                        <h5 className="title">{item.name}</h5>
-                        <ul className="dz-meta">
-                          <li className="current-price">
-                            <span
-                              style={{
-                                color: "#4E74FC",
-                                fontSize: "18px",
-                                marginBottom: "0",
-                                marginRight: "10px",
-                              }}
-                            >
-                              ₹{item.price}
-                            </span>
-                            <del
-                              style={{
-                                position: "relative",
-                                fontSize: "13px",
-                                color: "#a5a5a5",
-                                textDecoration: "line-through",
-                              }}
-                            >
-                              ₹{item.oldPrice}
-                            </del>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <div className="dz-stepper style-2">
-                          <div className="dz-stepper2 input-group">
-                            <div className="dz-stepper2">
-                              <i
-                                className="ri-subtract-line"
-                                onClick={() => decrementQuantity(index)}
-                              ></i>
-                            </div>
-                            <input
-                              className="form-control stepper-input1 text-center"
-                              type="text"
-                              value={item.quantity}
-                              readOnly
-                            />
-                            <div className="dz-stepper2">
-                              <i
-                                className="ri-add-line"
-                                onClick={() => incrementQuantity(index)}
-                              ></i>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div
-                          className="remove"
-                          onClick={() => removeFromCart(index)}
+                    <div className="col-8">
+                      <div className="card-body" style={{ padding: "10px" }}>
+                        <h5
+                          className="title"
+                          style={{ fontSize: "18px", marginBottom: "5px" }}
                         >
-                          <i className="ri-delete-bin-6-line"></i>
+                          {item.name}
+                        </h5>
+                        <p className="mb-2">
+                          <span
+                            style={{
+                              color: "#4E74FC",
+                              fontSize: "18px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ₹{item.price}
+                          </span>
+                          <del
+                            style={{
+                              fontSize: "14px",
+                              color: "#a5a5a5",
+                              marginLeft: "5px",
+                            }}
+                          >
+                            ₹{item.oldPrice}
+                          </del>
+                        </p>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: "10px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              border: "1px solid #e0e0e0",
+                              borderRadius: "20px",
+                            }}
+                          >
+                            <button
+                              onClick={() => decrementQuantity(index)}
+                              style={{
+                                border: "none",
+                                background: "none",
+                                padding: "5px 10px",
+                                fontSize: "18px",
+                              }}
+                            >
+                              -
+                            </button>
+                            <span
+                              style={{ padding: "0 10px", fontSize: "16px" }}
+                            >
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => incrementQuantity(index)}
+                              style={{
+                                border: "none",
+                                background: "none",
+                                padding: "5px 10px",
+                                fontSize: "18px",
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div
+                            onClick={() => removeFromCart(index)}
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              backgroundColor: "#FFE5E5",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <i
+                              className="ri-delete-bin-6-line"
+                              style={{ color: "#FF4D4F", fontSize: "20px" }}
+                            ></i>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -195,7 +244,7 @@ const Cart = () => {
               ))}
             </div>
           ) : (
-            <SigninButton></SigninButton>
+            <SigninButton />
           )}
         </main>
       )}
