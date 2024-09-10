@@ -33,6 +33,7 @@ export const RestaurantIdProvider = ({ children }) => {
             if (data.st === 1 && data.restaurant_details) {
               setRestaurantDetails(data.restaurant_details);
               setRestaurantId(data.restaurant_details.restaurant_id);
+              console.log("Restaurant ID set:", data.restaurant_details.restaurant_id);
             } else {
               throw new Error("Invalid response format");
             }
@@ -51,9 +52,9 @@ export const RestaurantIdProvider = ({ children }) => {
   }, [restaurantCode]);
 
   const value = {
-    restaurantId,
-    setRestaurantId,
     restaurantDetails,
+    restaurantId,
+    restaurantCode,
     setRestaurantCode,
   };
 

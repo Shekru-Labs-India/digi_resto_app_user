@@ -16,6 +16,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (restaurantCode) {
+      console.log("Setting restaurant code:", restaurantCode);
       setRestaurantCode(restaurantCode);
     }
   }, [restaurantCode, setRestaurantCode]);
