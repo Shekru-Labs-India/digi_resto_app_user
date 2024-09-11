@@ -256,7 +256,6 @@ const Category = () => {
                   className="ri-search-line"
                   style={{ fontSize: "18px" }}
                 >
-                  <i className="ri-search-line"></i>
                 </Link>
               </div>
             </div>

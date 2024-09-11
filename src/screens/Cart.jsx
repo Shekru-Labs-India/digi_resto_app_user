@@ -116,7 +116,7 @@ const Cart = () => {
           </div>
         </main>
       ) : (
-        <main className="page-content space-top p-b200">
+        <main className="page-content space-top p-b200" style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
           {userData ? (
             <div className="container">
               {displayCartItems.map((item, index) => (
@@ -251,20 +251,22 @@ const Cart = () => {
 
       {/* Footer Fixed Button */}
       {userData && (
-        <div className="footer-fixed-btn bottom-40">
-          <ul className="total-prize">
-            <li className="name">Subtotal</li>
-            <li className="prize">₹{calculateSubtotal()}</li>
-          </ul>
-          {displayCartItems.length > 0 && (
-            <Link
-              to="/Checkout"
-              state={{ cartItems: displayCartItems }}
-              className="btn btn-lg btn-thin rounded-xl btn-primary w-100"
-            >
-              Proceed to Buy &nbsp; <b> ({displayCartItems.length} items)</b>
-            </Link>
-          )}
+        <div className="footer-fixed-bottom">
+          <div className="container">
+            <ul className="total-prize">
+              <li className="name">Subtotal</li>
+              <li className="prize">₹{calculateSubtotal()}</li>
+            </ul>
+            {displayCartItems.length > 0 && (
+              <Link
+                to="/Checkout"
+                state={{ cartItems: displayCartItems }}
+                className="btn btn-lg btn-thin rounded-xl btn-primary w-100"
+              >
+                Proceed to Buy &nbsp; <b> ({displayCartItems.length} items)</b>
+              </Link>
+            )}
+          </div>
         </div>
       )}
       <Bottom></Bottom>

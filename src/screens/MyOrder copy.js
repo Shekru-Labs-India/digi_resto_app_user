@@ -168,58 +168,106 @@ const OrdersTab = ({ orders, type }) => {
   const filteredOrders = orders.filter(
     (order) => order.order_status.toLowerCase() === type.toLowerCase()
   );
+  const getLinkToOrder = (orderNumber) => {
+    return `/TrackOrder/${orderNumber}`;
+  };
   const navigate = useNavigate();
+  const handleReviewClick = (orderNumber) => {
+    const reviewPageUrl = `/Review/${orderNumber}/347279`;
+    navigate(reviewPageUrl); // Navigate to the review page
+  };
 
-  const calculateOldPrice = (totalBill) => {
-    // Calculate the old price as 10% more than the total bill
-    return (parseFloat(totalBill) * 1.1).toFixed(2);
+  const handleTrackOrderClick = (orderNumber) => {
+    // Navigate to the track order screen with the order number
+    navigate(`/TrackOrder/${orderNumber}`);
   };
 
   return (
-    <div className="row g-1">
+    <div className="row g-3">
       {filteredOrders.map((order) => (
-        <div key={order.order_number} className="card mb-3">
-          <div className="card-body">
-            <div className="row align-items-center">
-              <div className="col-6">
-                <h5 className="card-title mb-1">{order.order_number}</h5>
-              </div>
-              <div className="col-6 text-end">
-                <span className="card-text text-muted mb-0">
-                  {order.date_time}
-                </span>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col-3">
-                <p className="mb-0 fs-6">
-                  <i className="ri-store-2-line pe-2"></i>
-                  {order.restaurant_name}
-                </p>
-              </div>
-              <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
-                <p className="mb-0 fs-7">
-                  <i className="ri-bowl-line pe-2"></i>
-                  {order.menu_count === 0
-                    ? "No onging orders"
-                    : order.menu_count}
-                </p>
-              </div>
-              <div
-                className="col-4"
-                style={{ position: "absolute", right: "-10px" }}
+        <div key={order.order_number} className="col-12">
+          <div className="dz-card list-style style-3">
+            {/* <div className="dz-card list-style style-3"> */}
+            {/* <div className="dz-media"> */}
+            {/* Add product image here if needed */}
+
+            {/* </div> */}
+            <div className="dz-content1">
+              <Link
+                // to={type === 'ongoing' ? `/TrackOrder` : `/TrackOrder`}
+                //  to={type === 'ongoing' ? `/TrackOrder` : `/TrackOrder`}
+                to={getLinkToOrder(order.order_number)}
               >
-                <div className="price-wrapper">
-                  <h6 className="current-price fs-3">₹{order.total_bill}</h6>
-                  <span className="old-price">
-                    ₹{calculateOldPrice(order.total_bill)}
-                  </span>
+                <div className="container">
+                  <div className="row">
+                    <div className="col-6">
+                      <h5
+                        className="title"
+                        style={{ fontSize: "19px", paddingTop: "10px" }}
+                      >
+                        <a href="#">{order.order_number}</a>
+                      </h5>
+                      <div className="col-6">TIME</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+                <ul className="dz-meta">
+                  <li className="dz-price">₹{order.total_bill}</li>
+                </ul>
+                <span className="dz-off">{order.restaurant_name}</span>
+              </Link>
+              {/* {type === "ongoing" ? (
+                <button
+                  className="info-btn btn btn-primary btn-sm btn-xs font-13 "
+                  onClick={() => handleTrackOrderClick(order.order_number)}
+                >
+                  Track Order
+                </button>
+              ) : (
+                <button
+                  className="info-btn btn btn-primary btn-sm btn-xs font-13"
+                  onClick={() => handleReviewClick(order.order_number)}
+                >
+                  Write Review
+                </button>
+              )} */}
             </div>
           </div>
         </div>
       ))}
+
+      <div className="card mb-3">
+        <div className="card-body">
+          <div className="row align-items-center">
+            <div className="col-6">
+              <h5 className="card-title mb-1">444112255222</h5>
+            </div>
+            <div className="col-6 text-end">
+              <span className="card-text text-muted mb-0">
+                31-Aug-2024 11:25 AM
+              </span>
+            </div>
+          </div>
+          <div className="row mt-2">
+            <div className="col-3">
+              <p className="mb-0 fs-6">
+                <i className="ri-store-2-line pe-2"></i>Panchmi
+              </p>
+            </div>
+            <div className="col-3 text-start">
+              <p className="mb-0 fs-6">
+                <i className="ri-bowl-line pe-2"></i>3 Menu
+              </p>
+            </div>
+            <div className="col-4" style={{position:"absolute", right:"-10px"}}>
+              <div className="price-wrapper">
+                <h6 className="current-price fs-3">₹500</h6>
+                <span className="old-price">₹600</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

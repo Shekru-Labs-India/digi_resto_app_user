@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -11,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Slider from "@mui/material/Slider";
 import { debounce } from 'lodash'; // Make sure to install lodash if not already installed
+import Bottom from "../component/bottom";
 
 const Product = () => {
   const [menuList, setMenuList] = useState([]);
@@ -37,6 +34,7 @@ const Product = () => {
     if (!text) return "";
     return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
+  
 
   const fetchMenuData = useCallback(async () => {
     console.log("fetchMenuData called"); // Add this line
@@ -736,6 +734,8 @@ const Product = () => {
       {sortByOpen || filterOpen ? (
         <div className="offcanvas-backdrop fade show"></div>
       ) : null}
+
+      <Bottom />
     </div>
   );
 };

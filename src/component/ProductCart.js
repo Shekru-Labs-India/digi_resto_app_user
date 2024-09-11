@@ -9,6 +9,7 @@ const ProductCard = () => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [totalMenuCount, setTotalMenuCount] = useState(0); // New state for total count
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   const userData = JSON.parse(localStorage.getItem("userData"));
@@ -101,6 +102,9 @@ const ProductCard = () => {
                 "menuItems",
                 JSON.stringify(formattedMenuList)
               );
+              if (categoryId === null) {
+                setTotalMenuCount(formattedMenuList.length); // Update total count
+              }
             } else {
               console.log("No menu items found for the given category");
               setMenuList([]);
@@ -266,8 +270,6 @@ const ProductCard = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
-
-  const totalMenuCount = menuList.length;
 
   return (
     <div>

@@ -127,18 +127,16 @@ const Checkout = () => {
               {cartItems.length > 0 ? (
                 cartItems.map((item, index) => (
                   <li key={index} className="list-group-items ">
-                    <div className="list-content">
-                      <h5 className="title">{item.name}</h5>
-                      <p className="about">
-                        {item.quantity}x₹{item.price.toFixed(2)}
-                        <span
-                          className="price"
-                          style={{ fontWeight: "bold", marginLeft: "220px" }}
-                        >
-                          ₹{(item.quantity * item.price).toFixed(2)}
+                    <div className="row align-items-center">
+                      <div class="col-7">
+                        <h5 className="title mb-2">{item.name}</h5>
+                      </div>
+                      <div class="col-5 text-end">
+                        <span>{item.quantity}x</span>
+                        <span className="ms-2 prize">
+                          ₹{item.price.toFixed(2)}
                         </span>
-                      </p>
-                      {/* Display subtotal (quantity * price) */}
+                      </div>
                     </div>
                   </li>
                 ))
@@ -146,8 +144,6 @@ const Checkout = () => {
                 <li>No items in the cart.</li>
               )}
             </ul>
-
-            
 
             {/* </div> */}
             {cartItems.length > 0 && (
@@ -164,18 +160,22 @@ const Checkout = () => {
         </div>
       </main>
 
-      <div className="footer-fixed-btn bottom-40">
-        <ul className="total-prize">
-          <li className="name">Subtotal</li>
-          <li className="prize">₹{calculateTotal()}</li>
-        </ul>
-        <Link
-          to="/MyOrder"
-          className="btn btn-primary btn-lg btn-thin rounded-xl w-100"
-          onClick={handleSubmitOrder}
-        >
-          Submit Order
-        </Link>
+      <div className="container">
+        <div className=" bottom-40">
+          <ul className="total-prize">
+            <li className="name">My Order</li>
+            <li className="prize">₹{calculateTotal()}</li>
+          </ul>
+          <div className="d-flex justify-content-center align-items-center pt-3">
+            <Link
+              to="/MyOrder"
+              className="btn btn-primary btn-lg btn-thin rounded-xl"
+              onClick={handleSubmitOrder}
+            >
+              Submit Order
+            </Link>
+          </div>
+        </div>
       </div>
       <Bottom></Bottom>
     </div>
