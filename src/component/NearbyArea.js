@@ -253,7 +253,7 @@ const NearbyArea = () => {
                               menuItem.is_favourite
                                 ? "ri-heart-fill text-red"
                                 : "ri-heart-line"
-                            } bx-sm`}
+                            } `}
                             onClick={() => handleLikeClick(menuItem.menu_id)}
                             style={{
                               position: "absolute",
@@ -265,7 +265,7 @@ const NearbyArea = () => {
                           ></i>
                         ) : (
                           <i
-                            className="bx bx-heart"
+                            className="ri-heart-line"
                             style={{
                               position: "absolute",
                               top: "0",

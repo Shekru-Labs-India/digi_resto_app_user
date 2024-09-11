@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
 import Bottom from "../component/bottom";
+import { Divider } from "@mui/material";
 // import { useRestaurantId } from "./context/RestaurantIdContext";
 
 const Checkout = () => {
@@ -97,10 +98,22 @@ const Checkout = () => {
         <div className="container">
           <div className="dz-flex-box">
             {/* <div className="dz-list m-b20"> */}
+            <div className="row">
+              <div className="col-1">
+                <i class="ri-map-pin-fill fs-2"></i>
+              </div>
+              <div className="col-11"> Delivery Address</div>
+            </div>
+            <div className="row">
+              <div className="col-1">
+                <i class="ri-bank-card-fill fs-2"></i>
+              </div>
+              <div className="col-11">Payment</div>
+            </div>
             <ul className="dz-list-group">
               <div className="mb-3">
                 <label className="form-label" htmlFor="notes">
-                  Notes For Chef:
+                  Additional Notes :
                 </label>
                 <textarea
                   className="form-control dz-textarea"
@@ -133,6 +146,8 @@ const Checkout = () => {
                 <li>No items in the cart.</li>
               )}
             </ul>
+
+            
 
             {/* </div> */}
             {cartItems.length > 0 && (

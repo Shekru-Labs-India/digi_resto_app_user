@@ -23,16 +23,15 @@ const HomeScreen = () => {
 
   return (
     <div>
-       
-       <div className="page-wrapper">
+      <div className="page-wrapper">
         {/* <Header></Header> */}
-        <Sidebar></Sidebar> 
+        <Sidebar></Sidebar>
 
-            {/* Main Content Start */}
-            <main className="page-content p-t100 p-b70">
-                <div className="container overflow-hidden pt-0">
-                    {/* SearchBox */}
-                    {/* <div className="search-box">
+        {/* Main Content Start */}
+        <main className="page-content p-t100 p-b70">
+          <div className="container overflow-hidden pt-0">
+            {/* SearchBox */}
+            {/* <div className="search-box">
                         <div className="input-group">
                             <input type="search" placeholder="Search" className="form-control" />
                             <span className="input-group-text">
@@ -41,30 +40,27 @@ const HomeScreen = () => {
                             </span>
                         </div>
                     </div> */}
-                    {/* SearchBox */}
-                    <FeaturedArea/>
-                    <OfferBanner/>
-                    
-                    {/* <PopularProducts/> */}
-                    <ProductCart/>
-                    {/* <PeopleAlsoViewed/> */}
-                    {/* <ItemsCart/> */}
-                    <NearbyArea/>
-                </div>
-               
-            </main>
-           
-            {/* Main Content End */}
-        
-       
-{/* <MySwiper></MySwiper>
+            {/* SearchBox */}
+            <FeaturedArea />
+            <OfferBanner />
+
+            {/* <PopularProducts/> */}
+            <ProductCart />
+            {/* <PeopleAlsoViewed/> */}
+            {/* <ItemsCart/> */}
+            <NearbyArea />
+          </div>
+        </main>
+
+        {/* Main Content End */}
+
+        {/* <MySwiper></MySwiper>
         <Plantcategory></Plantcategory> */}
 
         <Bottom></Bottom>
-        </div>
-        </div>
+      </div>
+    </div>
   );
 };
 
 export default HomeScreen;
-

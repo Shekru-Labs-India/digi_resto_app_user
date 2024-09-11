@@ -318,7 +318,6 @@ const Product = () => {
               className="ri-shopping-cart-2-line"
               style={{ fontSize: "25px" }}
             >
-              {/* <i className="bx bx-cart bx-sm"></i> */}
               {userData && (
                 <span className="badge badge-danger">{cartItemsCount}</span>
               )}
@@ -423,7 +422,7 @@ const Product = () => {
                         ></i>
                       ) : (
                         <i
-                          className=" bx bx-heart"
+                          className="ri-heart-line"
                           style={{
                             position: "absolute",
                             top: "0",
@@ -517,13 +516,14 @@ const Product = () => {
             tabIndex="-1"
             id="offcanvasBottom1"
           >
-            <div className="offcanvas-header ">
-              <h4 className="offcanvas-title">Sort By</h4>
+            <div className="offcanvas-header d-flex justify-content-center align-items-center">
+              <h4 className="offcanvas-title text-center">Sort By</h4>
               <button
                 type="button"
                 className="btn-close style-2"
                 onClick={() => setSortByOpen(!sortByOpen)}
                 aria-label="Close"
+                style={{ position: 'absolute', right: '15px' }}
               >
                 <i className="ri-close-line" style={{ fontSize: "18px" }}></i>
               </button>
@@ -601,7 +601,9 @@ const Product = () => {
             id="offcanvasBottom2"
           >
             <div className="offcanvas-header">
-              <h4 className="offcanvas-title">Filters</h4>
+              <div className="d-flex justify-content-center align-items-center" style={{ flex: 1 }}>
+                <h4 className="offcanvas-title m-0">Filters</h4>
+              </div>
               <button
                 type="button"
                 className="btn-close style-2"

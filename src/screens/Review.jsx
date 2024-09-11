@@ -202,7 +202,7 @@ const Review = () => {
         <div className="header-content">
           <div className="left-content">
             <Link to="/MyOrder" className="back-btn dz-icon icon-fill icon-sm">
-              <i className='ri-arrow-left-line'></i>
+              <i className="ri-arrow-left-line"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -219,15 +219,17 @@ const Review = () => {
           {/* Rating Section */}
           <div className="rating-area">
             <h2 className="title">Overall Rating</h2>
-            <p className="dz-text">Your average rating is {rating.toFixed(1)}</p>
+            <p className="dz-text">
+              Your average rating is {rating.toFixed(1)}
+            </p>
             <ul className="dz-star-rating">
               {[1, 2, 3, 4, 5].map((star) => (
                 <li
                   key={star}
-                  className={star <= rating ? 'active' : ''}
+                  className={star <= rating ? "active" : ""}
                   onClick={() => handleRatingChange(star)}
                 >
-                  <i className='bx bxs-star bx-md staricons'></i>
+                  <i className="ri-star-line"></i>
                 </li>
               ))}
             </ul>

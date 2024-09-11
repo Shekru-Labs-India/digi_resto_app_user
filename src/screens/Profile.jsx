@@ -16,11 +16,7 @@ const Profile = () => {
     navigate("/Signinscreen");
   };
 
-  // const toTitleCase = (str) => {
-  //   return str.replace(/\w\S*/g, function (txt) {
-  //     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-  //   });
-  // };
+  
   const toTitleCase = (str) => {
     if (!str) {
       return ""; // Return empty string if str is undefined or null
@@ -72,8 +68,8 @@ const Profile = () => {
                 <div className="media">
                   <div className="media-40 me-2 user-image">
                     <i
-                      className="bx bx-user-circle bx-md"
-                      style={{ fontSize: "20px", marginTop: "9px" }}
+                      className="ri-account-circle-line"
+                      style={{ fontSize: "40px", marginTop: "9px" }}
                     ></i>
                   </div>
                   <h4 className="name mb-0">
@@ -85,45 +81,42 @@ const Profile = () => {
                 <ul className="row g-2">
                   <li className="col-6">
                     <Link to="/MyOrder">
-                      <i className="ri-list-check-3" style={{paddingRight:"5px"}}></i> My Orders
+                      <i
+                        className="ri-list-check-3"
+                        style={{ paddingRight: "5px", fontSize: "20px" }}
+                      ></i>{" "}
+                      My Orders
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link to="/Wishlist">
-                      <i className="ri-heart-line" style={{paddingRight:"5px"}}></i> Favourite
+                      <i
+                        className="ri-heart-line"
+                        style={{ paddingRight: "5px", fontSize: "20px" }}
+                      ></i>{" "}
+                      Favourite
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link to="/Cart">
-                      <i className="ri-shopping-cart-2-line " style={{paddingRight:"5px"}}></i> Cart
+                      <i
+                        className="ri-shopping-cart-2-line "
+                        style={{ paddingRight: "5px", fontSize: "20px" }}
+                      ></i>{" "}
+                      Cart
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link to="/OrderTracking">
-                      <i className="ri-truck-line" style={{paddingRight:"5px"}}></i> Track order
-                      {/* <i className="bx bxs-truck iconboxi"></i> Track order */}
+                      <i
+                        className="ri-truck-line"
+                        style={{ paddingRight: "5px", fontSize: "20px" }}
+                      ></i>{" "}
+                      Track order
                     </Link>
                   </li>
                 </ul>
               </div>
-{/* 
-              <div className="title-bar">
-                <h4 className="title mb-0 font-w500">My Activity</h4>
-              </div>
-              <div className="dz-list style-1">
-                <ul>
-                  <li>
-                    <a href="faq.html" className="item-content item-link">
-                      <div className="list-icon">
-                        <i className="bx bx-chat bx-sm"></i>
-                      </div>
-                      <div className="dz-inner">
-                        <span className="title">Questions & Answers</span>
-                      </div>
-                    </a>
-                  </li>
-                </ul>
-              </div> */}
             </div>
           </div>
         </main>
@@ -166,7 +159,6 @@ const Profile = () => {
             >
               <i
                 className="ri-logout-box-r-line"
-                // className="bx bx-log-out bx-rotate-180 bx-md"
                 style={{ cursor: "pointer", fontSize: "2.5em" }}
               ></i>
             </div>
@@ -185,7 +177,6 @@ const Profile = () => {
                   ></i>
                 </div>
                 <h4 className="name mb-0">
-                  {/* <span className="greetings">Hello, {toTitleCase(userData.name) || 'User'}</span> */}
                   <div className="greetings">
                     Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
                   </div>
@@ -198,7 +189,7 @@ const Profile = () => {
                   <Link to="/MyOrder">
                     <i
                       className="ri-list-check-3"
-                      style={{ paddingRight: "5px" }}
+                      style={{ paddingRight: "5px", fontSize: "20px" }}
                     ></i>{" "}
                     My Orders
                   </Link>
@@ -207,7 +198,7 @@ const Profile = () => {
                   <Link to="/Wishlist">
                     <i
                       className="ri-heart-line"
-                      style={{ paddingRight: "5px" }}
+                      style={{ paddingRight: "5px", fontSize: "20px" }}
                     ></i>{" "}
                     Favourite
                   </Link>
@@ -216,7 +207,7 @@ const Profile = () => {
                   <Link to="/Cart">
                     <i
                       className="ri-shopping-cart-2-line "
-                      style={{ paddingRight: "5px" }}
+                      style={{ paddingRight: "5px", fontSize: "20px" }}
                     ></i>{" "}
                     Cart
                   </Link>
@@ -225,7 +216,7 @@ const Profile = () => {
                   <Link to="/OrderTracking">
                     <i
                       className="ri-truck-line"
-                      style={{ paddingRight: "5px" }}
+                      style={{ paddingRight: "5px", fontSize: "20px" }}
                     ></i>{" "}
                     Track order
                   </Link>
@@ -247,36 +238,8 @@ const Profile = () => {
                     </div>
                   </Link>
                 </li>
-                <li>
-                  <a href="" class="item-content item-link">
-                    <div class="list-icon">
-                      {/* <i class="fi fi-rr-bell"></i> */}
-                      <i class="ri-notification-3-line"></i>
-                    </div>
-                    <div class="dz-inner me-2">
-                      <span class="title">Notifications Settings</span>
-                    </div>
-                  </a>
-                </li>
               </ul>
             </div>
-            {/* <div className="title-bar">
-              <h4 className="title mb-0 font-w500">My Activity</h4>
-            </div>
-            <div className="dz-list style-1">
-              <ul>
-                <li>
-                  <Link to="/Faq" className="item-content item-link">
-                    <div className="list-icon">
-                      <i className="bx bx-chat bx-sm"></i>
-                    </div>
-                    <div className="dz-inner">
-                      <span className="title">FAQ's</span>
-                    </div>
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
           </div>
         </div>
       </main>

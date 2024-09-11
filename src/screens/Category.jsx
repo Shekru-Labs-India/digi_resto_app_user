@@ -251,8 +251,12 @@ const Category = () => {
                 </h5>
               </div>
               <div className="right-content">
-                <Link to="/Search" className="ri-search-line" style={{fontSize:"18px"}}>
-                  <i className="bx bx-search-alt-2"></i>
+                <Link
+                  to="/Search"
+                  className="ri-search-line"
+                  style={{ fontSize: "18px" }}
+                >
+                  <i className="ri-search-line"></i>
                 </Link>
               </div>
             </div>

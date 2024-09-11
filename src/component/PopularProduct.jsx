@@ -66,21 +66,28 @@ const PopularProducts = () => {
     }, [menuCategories]); // Re-run effect when menuCategories changes
 
     return (
-        <div className="dz-box">
-            <div className="title-bar">
-                <h5 className="title p-r50">Menu Category</h5>
-                <Link to="/Category"><i className='bx bx-right-arrow-alt bx-sm'></i></Link>
-            </div>
-            <div className="swiper category-slide">
-                <div className="swiper-wrapper">
-                    {menuCategories.map((category) => (
-                        <div className="swiper-slide" key={category.menu_cat_id}>
-                            <Link to={`/category/${category.menu_cat_id}`} className="category-btn">{category.name}</Link>
-                        </div>
-                    ))}
-                </div>
-            </div>
+      <div className="dz-box">
+        <div className="title-bar">
+          <h5 className="title p-r50">Menu Category</h5>
+          <Link to="/Category">
+            <i className="ri-arrow-right-fill"></i>
+          </Link>
         </div>
+        <div className="swiper category-slide">
+          <div className="swiper-wrapper">
+            {menuCategories.map((category) => (
+              <div className="swiper-slide" key={category.menu_cat_id}>
+                <Link
+                  to={`/category/${category.menu_cat_id}`}
+                  className="category-btn"
+                >
+                  {category.name}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     );
 };
 

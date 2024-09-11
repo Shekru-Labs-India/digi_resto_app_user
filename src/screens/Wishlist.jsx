@@ -264,9 +264,9 @@ const Wishlist = () => {
                             }}
                           >
                             {isMenuItemInCart(menu.menu_id) ? (
-                              <i className="ri-shopping-cart-2-fill bx-sm"></i>
+                              <i className="ri-shopping-cart-2-fill"></i>
                             ) : (
-                              <i className="ri-shopping-cart-2-line bx-sm"></i>
+                              <i className="ri-shopping-cart-2-line"></i>
                             )}
                           </div>
                         </div>

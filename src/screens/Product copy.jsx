@@ -907,7 +907,7 @@ const Product = () => {
                         ></i>
                       ) : (
                         <i
-                          className=" bx bx-heart"
+                          className="ri-heart-line"
                           style={{
                             position: "absolute",
                             top: "0",
@@ -948,13 +948,13 @@ const Product = () => {
                           className="cart-btn"
                         >
                           {isMenuItemInCart(menuItem.menu_id) ? (
-                            <i className="bx bxs-cart bx-sm"></i>
+                            <i className="ri-shopping-cart-2-fill"></i>
                           ) : (
-                            <i className="bx bx-cart-add bx-sm"></i>
+                            <i className="ri-shopping-cart-2-line"></i>
                           )}
                         </div>
                       ) : (
-                        <i className="bx bx-cart-add bx-sm"></i>
+                        <i className="ri-shopping-cart-2-fill"></i>
                       )}
                     </div>
                   </div>
