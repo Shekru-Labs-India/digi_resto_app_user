@@ -1,4 +1,8 @@
-  .price-wrapper .current-price {
+.custom-container {
+  padding-bottom: 0px; /* This will override Bootstrap's padding-bottom */
+}
+
+.price-wrapper .current-price {
     color: #4E74FC;
     font-size: 18px;
     margin-bottom: 0;

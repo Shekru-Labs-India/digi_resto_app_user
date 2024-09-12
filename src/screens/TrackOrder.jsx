@@ -1,111 +1,10 @@
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import product from '../assets/images/product/product4/1.png'
-
-// const TrackOrder = () => {
-//     return (
-//         <div className="page-wrapper">
-//             {/* Header */}
-//             <header className="header header-fixed style-3">
-//                 <div className="header-content">
-//                     <div className="left-content">
-//                     <Link to="/MyOrder" className="back-btn dz-icon icon-fill icon-sm">
-//                         <i className='ri-arrow-left-line' ></i>
-//                         </Link>
-//                     </div>
-//                     <div className="mid-content"><h5 className="title">Track Order</h5></div>
-//                     <div className="right-content"></div>
-//                 </div>
-//             </header>
-//             {/* Header End */}
-
-//             {/* Main Content Start */}
-//             <main className="page-content space-top">
-//                 <div className="container">
-//<h4 className="title">Order menu</h4>
-//                     <div className="dz-card list-style style-3 m-b30">
-//                         <div className="dz-media">
-//                             <a href="product-detail.html">
-//                                 <img src={product} alt="" />
-//                             </a>
-//                         </div>
-//                         <div className="dz-content">
-//                             <h5 className="title"><a href="product-detail.html">Royal Bluebell Bliss (M)</a></h5>
-//                             <ul className="dz-meta">
-//                                 <li className="dz-price">$80<del>$95</del></li>
-
-//                             </ul>
-//                             <span className="dz-off">Category Name</span>
-//                         </div>
-
-//                     </div>
-
-//                     <div className="dz-card list-style style-3 m-b30">
-//                         <div className="dz-media">
-//                             <a href="product-detail.html">
-//                                 <img src={product} alt="" />
-//                             </a>
-//                         </div>
-//                         <div className="dz-content">
-//                             <h5 className="title"><a href="product-detail.html">Royal Bluebell Bliss (M)</a></h5>
-//                             <ul className="dz-meta">
-//                                 <li className="dz-price">$80<del>$95</del></li>
-
-//                             </ul>
-//                             <span className="dz-off">Category Name</span>
-//                         </div>
-
-//                     </div>
-
-//                     <div className="order-status">
-//                         <h4 className="title">Track order</h4>
-//                         <ul className="dz-timeline style-2">
-//                             <li className="timeline-item active">
-//                                 <div className="active-box">
-//                                     <h6 className="timeline-title"><span className="title">order placed</span> <span className="timeline-date">27 Dec 2023</span></h6>
-//                                     <p className="timeline-text">We have received your order</p>
-//                                 </div>
-//                             </li>
-//                             <li className="timeline-item active">
-//                                 <div className="active-box">
-//                                     <h6 className="timeline-title"><span className="title">order Confirm</span> <span className="timeline-date">27 Dec 2023</span></h6>
-//                                     <p className="timeline-text">We has been confirmed</p>
-//                                 </div>
-//                             </li>
-//                             <li className="timeline-item">
-//                                 <div className="active-box">
-//                                     <h6 className="timeline-title"><span className="title">Ready To ship</span> <span className="timeline-date">28 Dec 2023</span></h6>
-//                                     <p className="timeline-text">We are preparing your order</p>
-//                                 </div>
-//                             </li>
-//                             <li className="timeline-item">
-//                                 <div className="active-box">
-//                                     <h6 className="timeline-title"><span className="title">order placed</span> <span className="timeline-date">29 Dec 2023</span></h6>
-//                                     <p className="timeline-text">Your order is ready for shipping</p>
-//                                 </div>
-//                             </li>
-//                             <li className="timeline-item">
-//                                 <div className="active-box">
-//                                     <h6 className="timeline-title"><span className="title">Out for delivery</span> <span className="timeline-date">31 Dec 2023</span></h6>
-//                                     <p className="timeline-text">Your order is out for delivery</p>
-//                                 </div>
-//                             </li>
-//                         </ul>
-//                     </div>
-//                 </div>
-//             </main>
-//             {/* Main Content End */}
-//         </div>
-//     );
-// };
-
-// export default TrackOrder;
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
+import OrderGif from "../screens/OrderGif";
+import "../assets/css/custom.css";
 
 const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
@@ -116,6 +15,7 @@ const TrackOrder = () => {
     navigate(-1);
   };
   const toTitleCase = (str) => {
+    if (!str) return ""; // Return empty string if str is null or undefined
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
@@ -150,7 +50,7 @@ const TrackOrder = () => {
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
-      }finally {
+      } finally {
         setLoading(false); // Set loading to false after API call
       }
     };
@@ -165,11 +65,15 @@ const TrackOrder = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   return (
-    <div className="page-wrapper">
+    <>
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="" className="back-btn dz-icon icon-fill icon-sm" onClick={handleBack}>
+            <Link
+              to=""
+              className="back-btn dz-icon icon-fill icon-sm"
+              onClick={handleBack}
+            >
               <i className="ri-arrow-left-line"></i>
             </Link>
           </div>
@@ -180,8 +84,71 @@ const TrackOrder = () => {
         </div>
       </header>
 
-      <main className="page-content space-top">
-      {loading ? (
+      <div className="container" style={{ paddingBottom: "1px" }}>
+        <div className="page-wrapper " style={{ marginTop: "70px" }}>
+          <h4 className="title pb-2">Order Menu</h4>
+          <div className="card">
+            <div className="card-body">
+              <div className="row align-items-center mb-0">
+                <div className="col-6">
+                  <h5 className="card-title mb-0">444112552222</h5>
+                </div>
+                <div className="col-6 text-end">
+                  <span className="card-text " style={{ color: "#a5a5a5" }}>
+                    31-Aug-2023 11:25 AM
+                  </span>
+                </div>
+              </div>
+              <div className="row align-items-center mt-2">
+                <div className="col-4">
+                  <p className="mb-0" style={{ color: "#a5a5a5" }}>
+                    <i className="ri-store-2-line pe-2"></i>
+                    Panchmi
+                  </p>
+                </div>
+                <div className="col-4 text-center">
+                  <p className="mb-0 text-start" style={{ color: "#a5a5a5" }}>
+                    <i className="ri-bowl-line pe-2"></i>3 Menu
+                  </p>
+                </div>
+                <div className="col-4 text-end">
+                  <span
+                    className="current-price fs-3 fw-medium"
+                    style={{ color: "#4E74FC" }}
+                  >
+                    ₹400
+                  </span>
+                  <span
+                    className=" text-decoration-line-through ms-2"
+                    style={{ color: "#a5a5a5" }}
+                  >
+                    ₹500
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="container custom-container" style={{ paddingTop: "1px" }}>
+        <div className="card-body" style={{ padding: "0px" }}>
+          <div className="card ">
+            <div className="row py-3 px-2">
+              <div className="col-2">
+                <OrderGif />
+              </div>
+              <div className="col-10 text-center">
+                You have the best taste in food. <br />
+                We're crafting a menu to match it perfectly.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* <main className="page-content space-top"> */}
+      <main className="page-content">
+        {loading ? (
           <div id="preloader">
             <div className="loader">
               <div className="spinner-border text-primary" role="status">
@@ -191,69 +158,230 @@ const TrackOrder = () => {
           </div>
         ) : (
           <>
-        {userData ? (
-          <div className="container">
-            <section>
-              <h4 className="title">Order Menu</h4>
-              {orderDetails.menu_details.map((menu) => (
-                <div key={menu.menu_id} className="dz-card list-style style-3 m-b30">
-                  <div className="dz-media">
-                   
-                      <img
-                        style={{ height: '100px', width: '100px' }}
-                        src={menu.image  || images}
-                        alt={menu.name}
-                        onError={(e) => {
-                          e.target.src = images;
-                          e.target.style.width = "80px";
-                          e.target.style.height = "80px";
-                        }}
-                      />
-                    
-                  </div>
-                  <div className="dz-content">
-                    <h5 className="title">{toTitleCase(menu.name)}</h5>
-                    <ul className="dz-meta">
-                      <li className="timeline-date">
-                        {menu.quantity} x ₹{menu.price}
+            {userData ? (
+              <div className="container">
+                {/* <section>
+                  <h4 className="title">Order Menu</h4>
+                  {orderDetails && orderDetails.menu_details && orderDetails.menu_details.map((menu) => (
+                    <div key={menu.menu_id} className="dz-card list-style style-3 m-b30">
+                      <div className="dz-media">
+                        <img
+                          style={{ height: "100px", width: "100px" }}
+                          src={menu.image || images}
+                          alt={menu.name}
+                          onError={(e) => {
+                            e.target.src = images;
+                            e.target.style.width = "80px";
+                            e.target.style.height = "80px";
+                          }}
+                        />
+                      </div>
+                      <div className="dz-content">
+                        <h5 className="title">{toTitleCase(menu.name)}</h5>
+                        <ul className="dz-meta">
+                          <li className="timeline-date">
+                            {menu.quantity} x ₹{menu.price}
+                          </li>
+                        </ul>
+                        <p className="timeline-text">
+                          {toTitleCase(menu.spicy_index)} | {toTitleCase(menu.veg_nonveg)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </section> */}
+                {/* 
+                <section>
+                  <h4 className="title">Menu Details</h4>
+                  {orderDetails && orderDetails.order_details && (
+                    <ul className="dz-card list-style style-3 m-b30">
+                      <li className="timeline-item active">
+                        <div className="dz-content1">
+                          <span className="title">
+                            {toTitleCase(orderDetails.order_details.restaurant_name)}
+                          </span>
+                          <br />
+                          <span className="timeline-date">
+                            ₹{orderDetails.order_details.total_bill}
+                          </span>
+                          <p className="timeline-text">
+                            {toTitleCase(orderDetails.order_details.order_status)}
+                          </p>
+                        </div>
                       </li>
                     </ul>
-                    <p className="timeline-text">
-                      {toTitleCase(menu.spicy_index)} | {toTitleCase(menu.veg_nonveg)}
-                    </p>
+                  )}
+                </section> */}
+
+                <section>
+                  <h4 className="title">Menu Details</h4>
+                  {/* <ul className="dz-card list-style style-3 m-b30">
+                    <li className="timeline-item active">
+                      <div className="dz-content1">
+                        <span className="title">
+                          {toTitleCase(orderDetails.order_details.restaurant_name)}
+                        </span>
+                        <br></br>
+                        <span className="timeline-date">
+                          ₹{orderDetails.order_details.total_bill}
+                        </span>
+                        <p className="timeline-text">
+                          {toTitleCase(orderDetails.order_details.order_status)}
+                        </p>
+                      </div>
+                    </li>
+                  </ul> */}
+                </section>
+
+                <div
+                  className="swiper-slide search-content1"
+                  // key={menu.menu_id}
+                  // key={menu.menu_id}
+                >
+                  {/* Use onClick to fetch menu details and navigate to ProductDetails */}
+                  <div className="cart-list style-2 shadow-lg">
+                    {/* <div className="cart-list style-2" style={{padding:"0px"}}> */}
+                    <div className="row">
+                      <div className="col-3">
+                        <div className="dz-media media-110">
+                          <Link to={`/ProductDetails/menu_id`}>
+                            <img
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "10px",
+                              }}
+                              src={images} // Use default image if image is null
+                              onError={(e) => {
+                                e.target.src = images; // Set local image source on error
+                                e.target.style.width = "80px"; // Example: Set width of the local image
+                                e.target.style.height = "80px"; // Example: Set height of the local image
+                              }}
+                            />
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="col-9">
+                        <div className="dz-content">
+                          <h6 className="title">Chiken Thali</h6>
+                          <div className="row">
+                            <ul className="dz-meta">
+                              <div className="col-4">
+                                <span style={{ color: "#0d775e" }}>
+                                  <i class="ri-restaurant-line"></i>
+                                  <li className="fs-5 fw-medium ps-2">
+                                    Indian
+                                  </li>
+                                </span>
+                              </div>
+                              <div className="col-4">
+                                <i
+                                  class="ri-fire-fill"
+                                  style={{ color: "#eb8e57" }}
+                                ></i>
+                                <i
+                                  class="ri-fire-fill"
+                                  style={{ color: "#eb8e57" }}
+                                ></i>
+                                <i
+                                  class="ri-fire-fill"
+                                  style={{ color: "#eb8e57" }}
+                                ></i>
+                                <i
+                                  class="ri-fire-line"
+                                  style={{ color: "#a5a5a5" }}
+                                ></i>
+                                <i
+                                  class="ri-fire-line"
+                                  style={{ color: "#a5a5a5" }}
+                                ></i>
+                              </div>
+                              <div className="col-4">
+                                <span className="d-flex text-end">
+                                  <i
+                                    class="ri-star-half-line "
+                                    style={{ color: "#fda200" }}
+                                  ></i>{" "}
+                                  4.9
+                                  <div
+                                    className="d-flex align-items-center justify-content-center"
+                                    style={{ fontSize: "12px" }}
+                                  >
+                                    (121)
+                                  </div>
+                                </span>
+                              </div>
+                            </ul>
+                            <div className="container">
+                              <div className="row">
+                                <div className="col-4">
+                                  <div class="price-wrapper">
+                                    <h6 class="current-price fs-3">₹20</h6>
+                                    <span class="old-price">₹22.00</span>
+                                  </div>
+                                </div>
+                                <div className="col-4">
+                                  <span
+                                    className="px-5"
+                                    // style={{ fontSize: "15px" }}
+                                  >
+                                    x10
+                                  </span>
+                                </div>
+                                <div className="col-4">
+                                  <h6 class="current-price fs-3">₹7000</h6>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {/* <ul className="dz-meta">
+                            <li className="dz-price">₹700</li>
+                          </ul> */}
+                          {/* <div className="dz-off">menu veg_nonveg</div> */}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </section>
-
-            <section>
-              <h4 className="title">Track Order</h4>
-              <ul className="dz-card list-style style-3 m-b30">
-                <li className="timeline-item active">
-                  <div className="dz-content1">
-                    <span className="title">
-                      {toTitleCase(orderDetails.order_details.restaurant_name)}
-                    </span>
-                    <br></br>
-                    <span className="timeline-date">
-                      ₹{orderDetails.order_details.total_bill}
-                    </span>
-                    <p className="timeline-text">
-                      {toTitleCase(orderDetails.order_details.order_status)}
-                    </p>
+                <div className="card-body mt-2" style={{ padding: "0px" }}>
+                  <div className="card">
+                    <div className="row mx-2">
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2">
+                          <span className="ps-2" style={{ color: "#a5a5a5" }}>
+                            Subtotal
+                          </span>
+                          <span className="pe-2">₹2000</span>
+                        </div>
+                      </div>
+                      <div className="col-12 mb-2">
+                        <div className="d-flex justify-content-between align-items-center py-2">
+                          <span className="ps-2" style={{ color: "#a5a5a5" }}>
+                            Tax
+                          </span>
+                          <span className="pe-2">₹200</span>
+                        </div>
+                      </div>
+                      <hr />
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-2 fw-medium">
+                          <span className="ps-2">Total</span>
+                          <span className="pe-2">₹1,699.00</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </li>
-              </ul>
-            </section>
-          </div>
-        ) : (
-          <SigninButton />
-        )}
+                </div>
+              </div>
+            ) : (
+              <SigninButton />
+            )}
           </>
         )}
       </main>
       <Bottom></Bottom>
-    </div>
+    </>
   );
 };
 

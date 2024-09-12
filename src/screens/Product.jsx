@@ -396,7 +396,7 @@ const Product = () => {
                           className="ri-restaurant-line"
                           style={{ paddingRight: "5px" }}
                         ></i>
-                        {menuItem.category}
+                        {categories.find(category => category.menu_cat_id === menuItem.menu_cat_id)?.name || menuItem.category}
                       </h3>
 
                       {userData ? (
