@@ -396,7 +396,10 @@ const Product = () => {
                           className="ri-restaurant-line"
                           style={{ paddingRight: "5px" }}
                         ></i>
-                        {categories.find(category => category.menu_cat_id === menuItem.menu_cat_id)?.name || menuItem.category}
+                        {categories.find(
+                          (category) =>
+                            category.menu_cat_id === menuItem.menu_cat_id
+                        )?.name || menuItem.category}
                       </h3>
 
                       {userData ? (
@@ -488,8 +491,14 @@ const Product = () => {
       </main>
 
       {/* Sort and Filter Footer */}
-      <div className="footer fixed">
-        <ul className="dz-product-filter">
+      <div
+        className="footer fixed"
+        style={{ position: "absolute", bottom: "-25px" }}
+      >
+        <ul
+          className="dz-product-filter"
+          style={{ position: "absolute", bottom: "100px" }}
+        >
           <li>
             <a
               href="javascript:void(0);"
@@ -510,9 +519,10 @@ const Product = () => {
 
         {sortByOpen && (
           <div
-            className="offcanvas offcanvas-bottom p-b60 show "
+            className="offcanvas offcanvas-bottom p-b60 show"
             tabIndex="-1"
             id="offcanvasBottom1"
+            style={{ position:"absolute", bottom:"250px" }}
           >
             <div className="offcanvas-header d-flex justify-content-center align-items-center">
               <h4 className="offcanvas-title text-center">Sort By</h4>
@@ -521,7 +531,7 @@ const Product = () => {
                 className="btn-close style-2"
                 onClick={() => setSortByOpen(!sortByOpen)}
                 aria-label="Close"
-                style={{ position: 'absolute', right: '15px' }}
+                style={{ position: "absolute", right: "15px" }}
               >
                 <i className="ri-close-line" style={{ fontSize: "18px" }}></i>
               </button>
@@ -591,7 +601,7 @@ const Product = () => {
             </div>
           </div>
         )}
-
+        <Bottom />
         {filterOpen && (
           <div
             className="offcanvas offcanvas-bottom p-b60 show "
@@ -599,7 +609,10 @@ const Product = () => {
             id="offcanvasBottom2"
           >
             <div className="offcanvas-header">
-              <div className="d-flex justify-content-center align-items-center" style={{ flex: 1 }}>
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ flex: 1 }}
+              >
                 <h4 className="offcanvas-title m-0">Filters</h4>
               </div>
               <button
@@ -735,7 +748,7 @@ const Product = () => {
         <div className="offcanvas-backdrop fade show"></div>
       ) : null}
 
-      <Bottom />
+      {/* <Bottom /> */}
     </div>
   );
 };

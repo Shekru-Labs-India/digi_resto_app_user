@@ -34,7 +34,7 @@ const Bottom = () => {
               : "nav-link"
           }
         >
-          <i className="ri-home-2-line" style={{fontSize:"24px"}}></i>
+          <i className="ri-home-2-line" style={{ fontSize: "24px" }}></i>
           <span className="name">Home</span>
         </Link>
         <Link
@@ -43,7 +43,7 @@ const Bottom = () => {
             location.pathname === "/Wishlist" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="ri-heart-line" style={{fontSize:"24px"}}></i>
+          <i className="ri-heart-2-line" style={{ fontSize: "24px" }}></i>
           <span className="name">Favourite</span>
         </Link>
         <Link
@@ -52,8 +52,13 @@ const Bottom = () => {
             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="ri-shopping-cart-2-line" style={{fontSize:"24px"}}></i>
-          <span className="name">Cart {cartItemCount > 0 && `(${cartItemCount})`}</span>
+          <i
+            className="ri-shopping-cart-2-line"
+            style={{ fontSize: "24px" }}
+          ></i>
+          <span className="name">
+            Cart {cartItemCount > 0 && `(${cartItemCount})`}
+          </span>
         </Link>
         <Link
           to="/Search"
@@ -61,16 +66,17 @@ const Bottom = () => {
             location.pathname === "/Search" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="ri-search-line" style={{fontSize:"24px"}}></i>
+          <i className="ri-search-line" style={{ fontSize: "24px" }}></i>
           <span className="name">Search</span>
         </Link>
         <Link
           to="/Profile"
-          className={
-            isProfileActive ? "nav-link active" : "nav-link"
-          }
+          className={isProfileActive ? "nav-link active" : "nav-link"}
         >
-          <i className="ri-account-circle-line" style={{fontSize:"24px"}}></i>
+          <i
+            className="ri-account-circle-line"
+            style={{ fontSize: "24px" }}
+          ></i>
           <span className="name">Profile</span>
         </Link>
       </div>

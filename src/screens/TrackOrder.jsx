@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import images from "../assets/MenuDefault.png";
+import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif";
@@ -86,9 +86,9 @@ const TrackOrder = () => {
 
       <div className="container" style={{ paddingBottom: "1px" }}>
         <div className="page-wrapper " style={{ marginTop: "70px" }}>
-          <h4 className="title pb-2">Order Menu</h4>
+          <h4 className="title pb-2 fs-3">Order Menu</h4>
           <div className="card">
-            <div className="card-body">
+            <div className="card-body py-2">
               <div className="row align-items-center mb-0">
                 <div className="col-6">
                   <h5 className="card-title mb-0">444112552222</h5>
@@ -99,19 +99,19 @@ const TrackOrder = () => {
                   </span>
                 </div>
               </div>
-              <div className="row align-items-center mt-2">
+              <div className="row align-items-center mt-2 ">
                 <div className="col-4">
-                  <p className="mb-0" style={{ color: "#a5a5a5" }}>
+                  <p className="mb-0 fs-6" style={{}}>
                     <i className="ri-store-2-line pe-2"></i>
                     Panchmi
                   </p>
                 </div>
-                <div className="col-4 text-center">
-                  <p className="mb-0 text-start" style={{ color: "#a5a5a5" }}>
-                    <i className="ri-bowl-line pe-2"></i>3 Menu
+                <div className="col-3 text-center">
+                  <p className="mb-0 text-start fs-6" style={{}}>
+                    <i className="ri-bowl-line pe-0"></i> 3 Menu
                   </p>
                 </div>
-                <div className="col-4 text-end">
+                <div className="col-5 text-end">
                   <span
                     className="current-price fs-3 fw-medium"
                     style={{ color: "#4E74FC" }}
@@ -132,14 +132,20 @@ const TrackOrder = () => {
       </div>
       <div className="container custom-container" style={{ paddingTop: "1px" }}>
         <div className="card-body" style={{ padding: "0px" }}>
-          <div className="card ">
-            <div className="row py-3 px-2">
-              <div className="col-2">
+          <div className="card" style={{ height: "85px" }}>
+            <div className="row py-2 px-2 h-100">
+              <div className="col-2 d-flex align-items-center justify-content-center">
                 <OrderGif />
               </div>
-              <div className="col-10 text-center">
-                You have the best taste in food. <br />
-                We're crafting a menu to match it perfectly.
+              <div className="col-10 d-flex align-items-center justify-content-center">
+                <div className="text-center mb-0">
+                  <div className="fs-6 fs-sm-5 fs-md-4 fw-medium">
+                    You have the best taste in food.
+                  </div>
+                  <div className="fs-6 fs-sm-5 fs-md-4 fw-medium">
+                    We're crafting a menu to match it perfectly.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -214,7 +220,7 @@ const TrackOrder = () => {
                 </section> */}
 
                 <section>
-                  <h4 className="title">Menu Details</h4>
+                  <h4 className="title fs-3">Menu Details</h4>
                   {/* <ul className="dz-card list-style style-3 m-b30">
                     <li className="timeline-item active">
                       <div className="dz-content1">
@@ -239,135 +245,158 @@ const TrackOrder = () => {
                   // key={menu.menu_id}
                 >
                   {/* Use onClick to fetch menu details and navigate to ProductDetails */}
-                  <div className="cart-list style-2 shadow-lg">
+                  <div
+                    className="cart-list style-2 shadow-lg py-0 my-0"
+                    style={{
+                      padding: "0px",
+                      alignItems: "flex-start",
+                      height: "100px",
+                    }}
+                  >
                     {/* <div className="cart-list style-2" style={{padding:"0px"}}> */}
-                    <div className="row">
-                      <div className="col-3">
-                        <div className="dz-media media-110">
-                          <Link to={`/ProductDetails/menu_id`}>
-                            <img
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "10px",
-                              }}
-                              src={images} // Use default image if image is null
-                              onError={(e) => {
-                                e.target.src = images; // Set local image source on error
-                                e.target.style.width = "80px"; // Example: Set width of the local image
-                                e.target.style.height = "80px"; // Example: Set height of the local image
-                              }}
-                            />
-                          </Link>
-                        </div>
+                    {/* <div className="row"> */}
+                    <div className="col-2">
+                      <div className="dz-media media-100">
+                        <Link to={`/ProductDetails/menu_id`}>
+                          <img
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "10px",
+                            }}
+                            src={images} // Use default image if image is null
+                            onError={(e) => {
+                              e.target.src = images; // Set local image source on error
+                              e.target.style.width = "80px"; // Example: Set width of the local image
+                              e.target.style.height = "80px"; // Example: Set height of the local image
+                            }}
+                          />
+                        </Link>
                       </div>
-                      <div className="col-9">
-                        <div className="dz-content">
-                          <h6 className="title">Chiken Thali</h6>
-                          <div className="row">
-                            <ul className="dz-meta">
+                      {/* </div> */}
+                    </div>
+                    <div className="col-10 mt-2 px-5">
+                      <div className="dz-content">
+                        <h6 className="title fs-3">Chiken Thali</h6>
+                        <div className="row">
+                          <ul className="dz-meta">
+                            <div className="col-4 mt-0 ">
+                              <span style={{ color: "#0d775e" }}>
+                                <i class="ri-restaurant-line"></i>
+                                <li className="fs-5 fw-medium ps-2">Indian</li>
+                              </span>
+                            </div>
+                            <div className="col-4">
+                              <i
+                                class="ri-fire-fill"
+                                style={{ color: "#eb8e57" }}
+                              ></i>
+                              <i
+                                class="ri-fire-fill"
+                                style={{ color: "#eb8e57" }}
+                              ></i>
+                              <i
+                                class="ri-fire-fill"
+                                style={{ color: "#eb8e57" }}
+                              ></i>
+                              <i
+                                class="ri-fire-line"
+                                style={{ color: "#a5a5a5" }}
+                              ></i>
+                              <i
+                                class="ri-fire-line"
+                                style={{ color: "#a5a5a5" }}
+                              ></i>
+                            </div>
+                            <div className="col-4">
+                              <span className="d-flex text-end fw-semibold">
+                                <i
+                                  class="ri-star-half-line px-1"
+                                  style={{ color: "#fda200" }}
+                                ></i>{" "}
+                                4.9
+                                <div
+                                  className="d-flex align-items-center justify-content-center px-1 fw-lighter"
+                                  style={{ fontSize: "12px", color: "#a5a5a5" }}
+                                >
+                                  (121)
+                                </div>
+                              </span>
+                            </div>
+                          </ul>
+                          <div
+                            className="container mb-0"
+                            style={{ paddingTop: "0px" }}
+                          >
+                            <div className="row pt-1" style={{}}>
                               <div className="col-4">
-                                <span style={{ color: "#0d775e" }}>
-                                  <i class="ri-restaurant-line"></i>
-                                  <li className="fs-5 fw-medium ps-2">
-                                    Indian
-                                  </li>
+                                <div class="price-wrapper">
+                                  <h6 class="current-price fs-3">₹20</h6>
+                                  <span class="old-price">₹22.00</span>
+                                </div>
+                              </div>
+                              <div className="col-4">
+                                <span
+                                  className="px-5"
+                                  style={{ color: "#a5a5a5" }}
+                                  // style={{ fontSize: "15px" }}
+                                >
+                                  x10
                                 </span>
                               </div>
                               <div className="col-4">
-                                <i
-                                  class="ri-fire-fill"
-                                  style={{ color: "#eb8e57" }}
-                                ></i>
-                                <i
-                                  class="ri-fire-fill"
-                                  style={{ color: "#eb8e57" }}
-                                ></i>
-                                <i
-                                  class="ri-fire-fill"
-                                  style={{ color: "#eb8e57" }}
-                                ></i>
-                                <i
-                                  class="ri-fire-line"
-                                  style={{ color: "#a5a5a5" }}
-                                ></i>
-                                <i
-                                  class="ri-fire-line"
-                                  style={{ color: "#a5a5a5" }}
-                                ></i>
-                              </div>
-                              <div className="col-4">
-                                <span className="d-flex text-end">
-                                  <i
-                                    class="ri-star-half-line "
-                                    style={{ color: "#fda200" }}
-                                  ></i>{" "}
-                                  4.9
-                                  <div
-                                    className="d-flex align-items-center justify-content-center"
-                                    style={{ fontSize: "12px" }}
-                                  >
-                                    (121)
-                                  </div>
-                                </span>
-                              </div>
-                            </ul>
-                            <div className="container">
-                              <div className="row">
-                                <div className="col-4">
-                                  <div class="price-wrapper">
-                                    <h6 class="current-price fs-3">₹20</h6>
-                                    <span class="old-price">₹22.00</span>
-                                  </div>
-                                </div>
-                                <div className="col-4">
-                                  <span
-                                    className="px-5"
-                                    // style={{ fontSize: "15px" }}
-                                  >
-                                    x10
-                                  </span>
-                                </div>
-                                <div className="col-4">
-                                  <h6 class="current-price fs-3">₹7000</h6>
-                                </div>
+                                <h6
+                                  class="current-price fs-3"
+                                  style={{ color: "#4E74FC" }}
+                                >
+                                  ₹7000
+                                </h6>
                               </div>
                             </div>
                           </div>
-                          {/* <ul className="dz-meta">
+                        </div>
+                        {/* <ul className="dz-meta">
                             <li className="dz-price">₹700</li>
                           </ul> */}
-                          {/* <div className="dz-off">menu veg_nonveg</div> */}
-                        </div>
+                        {/* <div className="dz-off">menu veg_nonveg</div> */}
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="card-body mt-2" style={{ padding: "0px" }}>
                   <div className="card">
-                    <div className="row mx-2">
+                    <div className="row px-1">
                       <div className="col-12">
-                        <div className="d-flex justify-content-between align-items-center py-2">
-                          <span className="ps-2" style={{ color: "#a5a5a5" }}>
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span
+                            className="ps-2 fs-4"
+                            style={{ color: "#a5a5a5" }}
+                          >
                             Subtotal
                           </span>
-                          <span className="pe-2">₹2000</span>
+                          <span className="pe-2 fs-4">₹2000</span>
                         </div>
                       </div>
                       <div className="col-12 mb-2">
-                        <div className="d-flex justify-content-between align-items-center py-2">
-                          <span className="ps-2" style={{ color: "#a5a5a5" }}>
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span
+                            className="ps-2 fs-4"
+                            style={{ color: "#a5a5a5" }}
+                          >
                             Tax
                           </span>
-                          <span className="pe-2">₹200</span>
+                          <span className="pe-2 fs-4">₹200</span>
                         </div>
                       </div>
-                      <hr />
+                      <div>
+                        {/* <hr /> */}
+                        <hr className="dashed" />
+                      </div>
                       <div className="col-12">
-                        <div className="d-flex justify-content-between align-items-center py-2 fw-medium">
-                          <span className="ps-2">Total</span>
-                          <span className="pe-2">₹1,699.00</span>
+                        <div className="d-flex justify-content-between align-items-center py-1 fw-medium mb-2">
+                          <span className="ps-2 fs-4 fw-medium">Total</span>
+                          <span className="pe-2 fs-4 fw-medium">₹1,699.00</span>
                         </div>
                       </div>
                     </div>
