@@ -1,9 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
-import { useRestaurantId } from '../context/RestaurantIdContext';
-import { useCart } from '../hooks/useCart';
+import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useCart } from "../hooks/useCart";
 import Bottom from "../component/bottom";
 import Devider from "../component/Devider";
 
@@ -178,7 +177,9 @@ const MenuDetails = () => {
     navigate(-1);
   };
 
-  const shouldDisplayFooter = !cartItems.some(item => item.menu_id === productDetails?.menu_id);
+  const shouldDisplayFooter = !cartItems.some(
+    (item) => item.menu_id === productDetails?.menu_id
+  );
 
   if (!productDetails) {
     return <div>Loading...</div>;
@@ -232,99 +233,130 @@ const MenuDetails = () => {
           </div>
           <div className="container">
             <div className="dz-product-detail">
-              <div className="detail-content" style={{ position: "relative" }}>
+              <div className="detail-content" style={{ }}>
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
                     {/* {productDetails.menu_cat_name} */}
                   </h3>
                 )}
-                <div className="row">
-                  <div className="col-6">
-                    <h4 className="title" style={{ fontSize: "20px" }}>
+                <div className="row  mt-0 ">
+                  <div className="col-8">
+                    <h4 className="title fs-2">
                       {toTitleCase(productDetails.name)} (
                       {toTitleCase(productDetails.veg_nonveg)})
                     </h4>
                   </div>
-                  <div className="col-6">
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      padding: '5px',
-                      width: 'fit-content',
-                      marginLeft: 'auto'
-                    }}>
-                      <button
-                        onClick={decrementQuantity}
-                        style={{
-                          width: '30px',
-                          height: '30px',
-                          borderRadius: '50%',
-                          border: '1px solid #ccc',
-                          background: '#fff',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: '10px'
-                        }}
-                      >
-                        <i className="ri-subtract-line"></i>
-                      </button>
-                      <span style={{margin: '0 10px', fontSize: '18px'}}>{quantity}</span>
-                      <button
-                        onClick={incrementQuantity}
-                        style={{
-                          width: '30px',
-                          height: '30px',
-                          borderRadius: '50%',
-                          border: '1px solid #ccc',
-                          background: '#fff',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginLeft: '10px'
-                        }}
-                      >
-                        <i className="ri-add-line"></i>
-                      </button>
-                    </div>
+                  <div
+                    className="col-4 py-1 rounded-3 text-"
+                    style={{
+                      backgroundColor: "#e7dedf",
+                      width: "120px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <button
+                      onClick={decrementQuantity}
+                      style={{
+                        width: "50px",
+                        height: "30px",
+                        borderRadius: "100%",
+                        border: "1px solid #ccc",
+                        background: "#fff",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: "10px",
+                      }}
+                    >
+                      <i className="ri-subtract-line"></i>
+                    </button>
+                    <span style={{ margin: "0 10px", fontSize: "18px" }}>
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={incrementQuantity}
+                      style={{
+                        width: "50px",
+                        height: "30px",
+                        borderRadius: "100%",
+                        border: "1px solid #ccc",
+                        background: "#fff",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      <i className="ri-add-line"></i>
+                    </button>
                   </div>
                 </div>
               </div>
 
               <div className="product-meta">
-                {productDetails.spicy_index && (
-                  <div
-                    className="spicy-index"
-                    style={{ paddingBottom: "10px" }}
-                  >
-                    {Array.from({ length: 5 }).map((_, index) =>
-                      index < productDetails.spicy_index ? (
-                        <i
-                          key={index}
-                          className="ri-fire-fill"
-                          style={{ fontSize: "13px", color: "#eb8e57" }}
-                        ></i>
-                      ) : (
-                        <i
-                          key={index}
-                          className="ri-fire-line"
-                          style={{ fontSize: "13px", color: "#0000001a" }}
-                        ></i>
-                      )
+                <div className="row">
+                  <div className="col-4">
+                    <div
+                      className="dz-quantity detail-content fs-4 fw-medium m-0"
+                      style={{ color: "#0a795b" }}
+                    >
+                      <i
+                        class="ri-restaurant-line fs-3"
+                        style={{ paddingRight: "5px" }}
+                      ></i>
+                      Italian
+                    </div>
+                  </div>
+                  <div className="col-4 text-center">
+                    <div className="d-flex align-items-center">
+                      <i
+                        class="ri-star-half-line pe-1"
+                        style={{ color: "#f8a500", fontSize: "23px" }}
+                      ></i>
+                      <span
+                        className="fs-3 fw-semibold"
+                        style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                      >
+                        4.5
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-4 text-end">
+                    {productDetails.spicy_index && (
+                      <div
+                        className="spicy-index"
+                        style={{ paddingBottom: "10px" }}
+                      >
+                        {Array.from({ length: 5 }).map((_, index) =>
+                          index < productDetails.spicy_index ? (
+                            <i
+                              key={index}
+                              className="ri-fire-fill fs-2"
+                              style={{ color: "#eb8e57" }}
+                            ></i>
+                          ) : (
+                            <i
+                              key={index}
+                              className="ri-fire-line fs-2"
+                              style={{ color: "#0000001a" }}
+                            ></i>
+                          )
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
+                </div>
               </div>
-              <div className="product-info">
-                <div className="desc">
-                  <p>{productDetails.description}</p>
+              <div className="product-info ">
+                <div className="desc ">
+                  <p className="fs-3">{productDetails.description}</p>
                 </div>
 
-                <div className="d-flex align-items-center justify-content-between py-4">
-                </div>
+                <div className="d-flex align-items-center justify-content-between py-4"></div>
                 {showQuantityError && (
                   <div className="text-danger">Please add a quantity.</div>
                 )}
@@ -334,9 +366,7 @@ const MenuDetails = () => {
         </main>
         <div className="container">
           <div className="row">
-            <div className="col-12">
-              <Devider />
-            </div>
+            <div className="col-12"></div>
           </div>
         </div>
 
@@ -345,37 +375,61 @@ const MenuDetails = () => {
             className="footer fixed"
             style={{ position: "absolute", bottom: "70px" }}
           >
+            {/* <Devider style={{position:"absolute", top:"100px"}}/> */}
             <div className="container">
-              <div className="d-flex align-items-center justify-content-between">
-                <div className="d-flex flex-column">
-                  <h5 className="mb-0">Total amount</h5>
-                  <div className="d-flex align-items-baseline">
-                    <h4 className="mb-0 price" style={{ color: "#4E74FC" }}>
-                      ₹{productDetails.price}
-                    </h4>
-                    <span
-                      className="price-old ms-2"
-                      style={{
-                        textDecoration: "line-through",
-                        color: "#a5a5a5",
-                        fontSize: "13px",
-                        position: "relative",
-                      }}
-                    >
-                    </span>
+              <div className="" style={{ position: "relative", top: "-50px" }}>
+                <hr className="dashed" />
+              </div>
+              <div className="row">
+                <div className="col-6">
+                  <div className="d-flex align-items-center justify-content-between mb-5">
+                    <div className="d-flex flex-column">
+                      <h5 className="mb-2">Total amount</h5>
+                      <div className="d-flex align-items-baseline">
+                        <h4
+                          className="mb-0 price fs-1"
+                          style={{ color: "#4E74FC" }}
+                        >
+                          ₹{productDetails.price}
+                        </h4>
+                        <span
+                          className=" text-decoration-line-through ms-2"
+                          style={{ color: "#a5a5a5" }}
+                        >
+                          ₹500
+                        </span>
+                        <div
+                          className="fw-medium d-flex fs-5 ps-2"
+                          style={{ color: "#0D775E" }}
+                        >
+                          40% off
+                        </div>
+                        {/* <span
+                          className="price-old ms-2"
+                          style={{
+                            textDecoration: "line-through",
+                            color: "#a5a5a5",
+                            fontSize: "13px",
+                            position: "relative",
+                          }}
+                        ></span> */}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <button
-                  className="btn btn-primary"
-                  style={{ borderRadius: "100px" }}
-                  onClick={handleAddToCart}
-                >
-                  <i
-                    className="ri-shopping-cart-2-line"
-                    style={{ fontSize: "25px", paddingRight: "10px" }}
-                  ></i>
-                  Add to Cart
-                </button>
+                <div className="col-6 text-end pt-2">
+                  <button
+                    className="btn btn-primary"
+                    style={{ borderRadius: "100px" }}
+                    onClick={handleAddToCart}
+                  >
+                    <i
+                      className="ri-shopping-cart-line fs-1 pe-3 "
+                      style={{}}
+                    ></i>
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             </div>
           </footer>

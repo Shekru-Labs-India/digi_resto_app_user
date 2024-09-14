@@ -23,6 +23,7 @@ import OrderTracking from './screens/OrderTracking';
 import { RestaurantIdProvider } from './context/RestaurantIdContext';
 import { CartProvider } from './context/CartContext'; // Add this import
 import Faq from './screens/Faq';
+import Test from './component/Test';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
           <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
           <Route path="/Review/:order_number/:restaurantCode" element={<Review />} />
+          <Route path="/testing" element={<Test/>} />
         </Routes>
       </CartProvider>
     </RestaurantIdProvider>

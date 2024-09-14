@@ -41,8 +41,8 @@ const HomeScreen = () => {
                         </div>
                     </div> */}
             {/* SearchBox */}
-            <OfferBanner />
             <FeaturedArea />
+            <OfferBanner />
 
             {/* <PopularProducts/> */}
             <ProductCart />

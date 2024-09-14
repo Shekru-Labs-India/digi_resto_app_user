@@ -16,12 +16,11 @@ const Profile = () => {
     navigate("/Signinscreen");
   };
 
-  
   const toTitleCase = (str) => {
     if (!str) {
       return ""; // Return empty string if str is undefined or null
     }
-  
+
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
@@ -31,12 +30,12 @@ const Profile = () => {
     const words = name.split(" ");
     return words[0]; // Return the first word
   };
-  
+
   if (!userData) {
     // User is not logged in, render restricted version of profile
     return (
       <div className="page-wrapper">
-        <header className="header header-fixed style-3">
+        {/* <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -60,6 +59,25 @@ const Profile = () => {
               </div>
             </div>
           </div>
+        </header> */}
+
+        {/* Header */}
+        <header className="header header-fixed style-3">
+          <div className="header-content">
+            <div className="left-content">
+              <Link to="/Wishlist" className="back-btn fs-3">
+                <i className="ri-arrow-left-line"></i>
+              </Link>
+            </div>
+            <div className="mid-content">
+              <h5 className="title">Profile</h5>
+            </div>
+            <div className="right-content">
+              <Link to="/Signinscreen" className="fs-3">
+                <i className="ri-shut-down-line"></i>
+              </Link>
+            </div>
+          </div>
         </header>
         <main className="page-content space-top p-b40">
           <div className="container">
@@ -80,39 +98,35 @@ const Profile = () => {
               <div className="content-box">
                 <ul className="row g-2">
                   <li className="col-6">
-                    <Link to="/MyOrder">
-                      <i
-                        className="ri-list-check-3"
-                        style={{ paddingRight: "5px", fontSize: "20px" }}
-                      ></i>{" "}
-                      My Orders
+                    <Link
+                      to="/MyOrder"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-checkbox-circle-line me-2 fs-5"></i> Menu
                     </Link>
                   </li>
                   <li className="col-6">
-                    <Link to="/Wishlist">
-                      <i
-                        className="ri-heart-line"
-                        style={{ paddingRight: "5px", fontSize: "20px" }}
-                      ></i>{" "}
-                      Favourite
+                    <Link
+                      to="/OrderTracking"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-list-ordered me-2 fs-5"></i> My Order
                     </Link>
                   </li>
                   <li className="col-6">
-                    <Link to="/Cart">
-                      <i
-                        className="ri-shopping-cart-2-line "
-                        style={{ paddingRight: "5px", fontSize: "20px" }}
-                      ></i>{" "}
-                      Cart
+                    <Link
+                      to="/Cart"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-shopping-cart-line me-2 fs-5"></i> Cart
                     </Link>
                   </li>
                   <li className="col-6">
-                    <Link to="/OrderTracking">
-                      <i
-                        className="ri-truck-line"
-                        style={{ paddingRight: "5px", fontSize: "20px" }}
-                      ></i>{" "}
-                      Track order
+                    <Link
+                      to="/Wishlist"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-heart-line me-2 fs-5"></i> Favourite
                     </Link>
                   </li>
                 </ul>
@@ -155,10 +169,10 @@ const Profile = () => {
           <div className="right-content">
             <div
               onClick={handleLogout}
-              className="d-flex align-items-center gap-2 font-10 text-danger"
+              className="d-flex align-items-center gap-2 font-10"
             >
               <i
-                className="ri-logout-box-r-line"
+                className="ri-shut-down-line"
                 style={{ cursor: "pointer", fontSize: "2.5em" }}
               ></i>
             </div>
@@ -186,39 +200,35 @@ const Profile = () => {
             <div className="content-box">
               <ul className="row g-2">
                 <li className="col-6">
-                  <Link to="/MyOrder">
-                    <i
-                      className="ri-list-check-3"
-                      style={{ paddingRight: "5px", fontSize: "20px" }}
-                    ></i>{" "}
-                    My Orders
+                  <Link
+                    to="/MyOrder"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                  >
+                    <i className="ri-checkbox-circle-line me-2 fs-5"></i> Menu
                   </Link>
                 </li>
                 <li className="col-6">
-                  <Link to="/Wishlist">
-                    <i
-                      className="ri-heart-line"
-                      style={{ paddingRight: "5px", fontSize: "20px" }}
-                    ></i>{" "}
-                    Favourite
+                  <Link
+                    to="/OrderTracking"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                  >
+                    <i className="ri-list-ordered me-2 fs-5"></i> My Order
                   </Link>
                 </li>
                 <li className="col-6">
-                  <Link to="/Cart">
-                    <i
-                      className="ri-shopping-cart-2-line "
-                      style={{ paddingRight: "5px", fontSize: "20px" }}
-                    ></i>{" "}
-                    Cart
+                  <Link
+                    to="/Cart"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                  >
+                    <i className="ri-shopping-cart-line me-2 fs-5"></i> Cart
                   </Link>
                 </li>
                 <li className="col-6">
-                  <Link to="/OrderTracking">
-                    <i
-                      className="ri-truck-line"
-                      style={{ paddingRight: "5px", fontSize: "20px" }}
-                    ></i>{" "}
-                    Track order
+                  <Link
+                    to="/Wishlist"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                  >
+                    <i className="ri-heart-line me-2 fs-5"></i> Favourite
                   </Link>
                 </li>
               </ul>
@@ -226,19 +236,35 @@ const Profile = () => {
             <div className="title-bar">
               <h4 className="title mb-0 font-w500">Account Settings</h4>
             </div>
-            <div className="dz-list style-1 m-b20">
+
+            {/* <div className="dz-list style-1 m-b20">
               <ul>
                 <li>
                   <Link to="/EditProfile" className="item-content item-link">
                     <div className="list-icon">
-                      <i className="ri-account-circle-line"></i>
+                      <i className="ri-user-3-line"></i>
                     </div>
                     <div className="dz-inner">
                       <span className="title">Edit Profile</span>
+                      <i class="ri-arrow-right-s-line"></i>
                     </div>
                   </Link>
                 </li>
               </ul>
+            </div> */}
+
+            <div class="container">
+              <Link to="/EditProfile" className="item-content item-link">
+                <div class="row align-items-center">
+                  <div class="col-auto px-0">
+                    <i class="ri-user-3-line fs-4 "></i>
+                  </div>
+                  <div class="col text-start px-1 fs-5">Edit Profile</div>
+                  <div class="col-auto text-end ms-auto">
+                    <i class="ri-arrow-right-s-line"></i>
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -249,4 +275,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

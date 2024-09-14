@@ -288,7 +288,7 @@ const ProductCard = () => {
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
             <div
-              className={`category-btn swiper-slide ${
+              className={`category-btn border border-2 rounded-5 swiper-slide ${
                 selectedCategoryId === null ? "active" : ""
               }`}
               onClick={() => handleCategorySelect(null)}
@@ -302,7 +302,7 @@ const ProductCard = () => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn ${
+                  className={`category-btn border border-2 rounded-5 ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -336,7 +336,7 @@ const ProductCard = () => {
                     <img
                       src={menu.image || images}
                       alt={menu.name}
-                      style={{ height: "150px" }}
+                      style={{ height: "200px", width: "300px" }}
                       onError={(e) => {
                         e.target.src = images;
                       }}
@@ -349,56 +349,84 @@ const ProductCard = () => {
                     style={{ position: "relative" }}
                   >
                     <div
-                      className="dz-quantity detail-content"
-                      style={{ fontSize: "12px" }}
+                      className="dz-quantity detail-content fs-5 fw-medium"
+                      style={{ color: "#0a795b" }}
                     >
                       <i
-                        class="ri-restaurant-line"
+                        class="ri-restaurant-line fs-3"
                         style={{ paddingRight: "5px" }}
                       ></i>
                       {menu.category}
                     </div>
-                    {userData && (
-                      <i
-                        className={`ri-heart-${menu.is_favourite ? 'fill' : 'line'}`}
-                        onClick={() => handleLikeClick(menu.menu_id)}
-                        style={{
-                          position: "absolute",
-                          top: "0",
-                          right: "0",
-                          fontSize: "23px",
-                          cursor: "pointer",
-                          color: menu.is_favourite ? "red" : "inherit"
-                        }}
-                      ></i>
-                    )}
+                    {/* Conditional rendering for favorite icon */}
+                    <i
+                      className={`${
+                        menu.is_favourite
+                          ? "ri-hearts-fill fs-2"
+                          : "ri-heart-2-line fs-2"
+                      }`} // Show ri-heart-fill if liked, ri-heart-line if not liked
+                      onClick={() => handleLikeClick(menu.menu_id)}
+                      style={{
+                        position: "absolute",
+                        top: "0",
+                        right: "0",
+                        fontSize: "23px",
+                        cursor: "pointer",
+                        // color: menu.is_favourite ? "red" : "inherit",
+                        color: menu.is_favourite ? "#fe0809" : "#73757b",
+                      }}
+                    ></i>
                   </div>
 
-                  {menu.name && <h4 className="item-name">{menu.name}</h4>}
+                  {menu.name && (
+                    <h4 className="item-name fs-3 mt-2">{menu.name}</h4>
+                  )}
                   {menu.spicy_index && (
-                    <div className="offer-code">
-                      {/* Displaying the spicy index using icons */}
-                      {Array.from({ length: 5 }).map((_, index) =>
-                        index < menu.spicy_index ? (
-                          <i
-                            className="ri-fire-fill"
-                            style={{ fontSize: "12px" }}
-                            key={index}
-                          ></i>
-                        ) : (
-                          <i
-                            className="ri-fire-line"
-                            style={{ fontSize: "12px", color: "#0000001a" }}
-                            key={index}
-                          ></i>
-                        )
-                      )}
+                    <div className="row">
+                      <div className="col-6">
+                        <div className="offer-code">
+                          {/* Displaying the spicy index using icons */}
+                          {Array.from({ length: 5 }).map((_, index) =>
+                            index < menu.spicy_index ? (
+                              <i
+                                className="ri-fire-fill fs-3"
+                                style={{ fontSize: "12px" }}
+                                key={index}
+                              ></i>
+                            ) : (
+                              <i
+                                className="ri-fire-line fs-3"
+                                style={{ fontSize: "12px", color: "#bbbaba" }}
+                                key={index}
+                              ></i>
+                            )
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-6 text-end">
+                        <i
+                          class="ri-star-half-line pe-1"
+                          style={{ color: "#f8a500", fontSize: "23px" }}
+                        ></i>
+                        <span className="fs-3 fw-semibold" style={{ color: "#7f7e7e", marginLeft: "5px" }}>
+                          4.5
+                        </span>
+                      </div>
                     </div>
                   )}
-                  <div className="footer-wrapper">
+
+                  <div className="footer-wrapper mt-2">
                     <div className="price-wrapper">
-                      <h6 className="current-price">₹{menu.price}</h6>
-                      <span className="old-price">₹{menu.oldPrice}</span>
+                      <h6 className="current-price fs-3 fw-medium">
+                        ₹{menu.price}
+                      </h6>
+                      <span className="old-price fs-7">₹{menu.oldPrice}</span>
+                    </div>
+                    <div
+                      className="fw-medium d-flex fs-5 fw-semibold"
+                      style={{ color: "#438a3c" }}
+                    >
+                      40% Off
                     </div>
                     <div className="footer-btns">
                       {userData ? (
@@ -407,22 +435,13 @@ const ProductCard = () => {
                           className="cart-btn"
                         >
                           {isMenuItemInCart(menu.menu_id) ? (
-                            <i
-                              className="ri-shopping-cart-2-fill"
-                              style={{ fontSize: "25px" }}
-                            ></i>
+                            <i className="ri-shopping-cart-2-fill fs-2"></i>
                           ) : (
-                            <i
-                              className="ri-shopping-cart-2-line"
-                              style={{ fontSize: "25px" }}
-                            ></i>
+                            <i className="ri-shopping-cart-2-line fs-2"></i>
                           )}
                         </div>
                       ) : (
-                        <i
-                          className="ri-shopping-cart-2-line"
-                          style={{ fontSize: "25px" }}
-                        ></i>
+                        <i className="ri-shopping-cart-2-line fs-2"></i>
                       )}
                     </div>
                   </div>

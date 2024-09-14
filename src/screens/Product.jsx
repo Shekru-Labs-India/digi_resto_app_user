@@ -9,6 +9,7 @@ import Slider from "@mui/material/Slider";
 import { debounce } from 'lodash'; // Make sure to install lodash if not already installed
 import Bottom from "../component/bottom";
 
+
 const Product = () => {
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -329,8 +330,17 @@ const Product = () => {
           sortByOpen || filterOpen ? "open" : ""
         }`}
       >
+        {" "}
+        <div className="container mt-2 mb-0">
+          <div className="row">
+            <div className="col-12 fs-3  fw-medium">
+              <i class="ri-store-2-line "></i>
+              <span className="ps-2">Panchami</span>
+              </div>
+          </div>
+        </div>
         <div
-          className={`container pb-0 ${sortByOpen || filterOpen ? "open" : ""}`}
+          className={`container pb-0 pt-0 ${sortByOpen || filterOpen ? "open" : ""}`}
         >
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
@@ -367,7 +377,6 @@ const Product = () => {
             </div>
           </div>
         </div>
-
         <div className="container pb-0">
           <div className="row g-3 grid-style-1">
             {filteredMenuList.map((menuItem) => (
@@ -493,11 +502,11 @@ const Product = () => {
       {/* Sort and Filter Footer */}
       <div
         className="footer fixed"
-        style={{ position: "absolute", bottom: "-25px" }}
+        style={{ position: "absolute", bottom: "-25px", zIndex: 9999 }}
       >
         <ul
           className="dz-product-filter"
-          style={{ position: "absolute", bottom: "100px" }}
+          style={{ position: "absolute", bottom: "100px", zIndex: 9999 }}
         >
           <li>
             <a
@@ -522,7 +531,7 @@ const Product = () => {
             className="offcanvas offcanvas-bottom p-b60 show"
             tabIndex="-1"
             id="offcanvasBottom1"
-            style={{ position:"absolute", bottom:"250px" }}
+            style={{ position: "absolute", bottom: "250px", zIndex: 9999 }}
           >
             <div className="offcanvas-header d-flex justify-content-center align-items-center">
               <h4 className="offcanvas-title text-center">Sort By</h4>

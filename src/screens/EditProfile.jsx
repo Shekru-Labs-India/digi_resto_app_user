@@ -122,7 +122,7 @@ const EditProfile = () => {
               <div className="edit-profile">
                 <div className="mb-3">
                   <label className="form-label" htmlFor="name">
-                    <span className="required-star">*</span> Full Name
+                    <span className="required-star">*</span> Name
                   </label>
                   <input
                     type="text"
@@ -135,7 +135,7 @@ const EditProfile = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label" htmlFor="phone">
-                    <span className="required-star">*</span> Mobile Number
+                    <span className="required-star">*</span> Mobile
                   </label>
                   <input
                     type="tel"
@@ -166,10 +166,12 @@ const EditProfile = () => {
                 <div className="d-flex justify-content-center align-items-center">
                   <button
                     type="button"
-                    className="btn btn-lg btn-thin rounded-xl btn-primary"
+                    className="btn btn-lg btn-thin rounded-xl btn-primary py-2 px-5 mt-4"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
                     onClick={handleUpdateProfile}
                   >
-                    Save Changes
+                    <span className='fs-6 fw-medium'>Save Changes</span>
+                    
                   </button>
                 </div>
               </div>

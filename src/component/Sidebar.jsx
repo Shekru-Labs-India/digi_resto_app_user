@@ -44,7 +44,7 @@ const Sidebar = () => {
       <header className="header header-fixed p-3">
         <div className="header-content">
           <div className="left-content gap-1">
-            <h3 className="title font-w300">
+            <h3 className="title fw-medium">
               <i class="ri-store-2-line" style={{ paddingRight: "10px" }}></i>
               {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
             </h3>

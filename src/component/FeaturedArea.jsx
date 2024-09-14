@@ -243,8 +243,11 @@ const FeaturedArea = () => {
           {menuLists.map((menu) => (
             <div key={menu.menu_id} className="swiper-slide">
               <Link to={`/ProductDetails/${menu.menu_id}`}>
-                <div className="cart-list style-2">
-                  <div className="dz-media media-75">
+                <div
+                  className="cart-list rounded-4 "
+                  style={{ backgroundColor: "#ffffff" }}
+                >
+                  <div className="dz-media media-100 ">
                     <img
                       style={{
                         width: "100%",
@@ -258,15 +261,21 @@ const FeaturedArea = () => {
                       }}
                     />
                   </div>
-                  <div className="dz-content">
-                    <h6 className="title">{menu.name}</h6>
-                    <ul className="dz-meta">
+                  <div className="dz-content" style={{ display: "block" }}>
+                    <h6 className="title">{/* {menu.name} */}</h6>
+                    <ul className="dz-meta mt-2">
                       {/* <li className="dz-price"> */}
-                      <li className="dz-price" style={{ color: "#4E74FC" }}>
-                        ₹{menu.price} <del>₹{Math.floor(menu.price * 1.1)}</del>
+                      <li
+                        className="dz-price fs-2"
+                        style={{ color: "#4E74FC" }}
+                      >
+                        ₹{menu.price}{" "}
+                        <del className="fs-5 ps-2">
+                          ₹{Math.floor(menu.price * 1.1)}
+                        </del>
                       </li>
                     </ul>
-                    <div
+                    {/* <div
                       className="dz-quantity detail-content"
                       style={{ fontSize: "12px" }}
                     >
@@ -275,6 +284,27 @@ const FeaturedArea = () => {
                         style={{ paddingRight: "5px" }}
                       ></i>
                       {menu.menu_cat_name}
+                    </div> */}
+                    <div className="row pt-2">
+                      <div className="col-6">
+                        {" "}
+                        <div
+                          className="fw-medium d-flex fs-5"
+                          style={{ color: "#0D775E" }}
+                        >
+                          40% off
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        {" "}
+                        <p className="fs-5 fw-semibold">
+                          <i
+                            class="ri-star-half-line pe-2"
+                            style={{ color: "#f8a500" }}
+                          ></i>
+                          4.9
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

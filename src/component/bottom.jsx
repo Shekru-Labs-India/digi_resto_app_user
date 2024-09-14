@@ -52,10 +52,7 @@ const Bottom = () => {
             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
           }
         >
-          <i
-            className="ri-shopping-cart-2-line"
-            style={{ fontSize: "24px" }}
-          ></i>
+          <i className="ri-shopping-cart-line" style={{ fontSize: "24px" }}></i>
           <span className="name">
             Cart {cartItemCount > 0 && `(${cartItemCount})`}
           </span>
@@ -73,10 +70,7 @@ const Bottom = () => {
           to="/Profile"
           className={isProfileActive ? "nav-link active" : "nav-link"}
         >
-          <i
-            className="ri-account-circle-line"
-            style={{ fontSize: "24px" }}
-          ></i>
+          <i className="ri-user-3-line" style={{ fontSize: "24px" }}></i>
           <span className="name">Profile</span>
         </Link>
       </div>

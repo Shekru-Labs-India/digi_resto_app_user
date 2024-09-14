@@ -249,10 +249,10 @@ const NearbyArea = () => {
                         </div>
                         {userData ? (
                           <i
-                            className={`bx ${
+                            className={` ${
                               menuItem.is_favourite
-                                ? "ri-heart-fill text-red"
-                                : "ri-heart-line"
+                                ? "ri-hearts-fill text-red"
+                                : "ri-heart-2-line"
                             } `}
                             onClick={() => handleLikeClick(menuItem.menu_id)}
                             style={{
@@ -276,7 +276,7 @@ const NearbyArea = () => {
                           ></i>
                         )}
                       </div>
-                      <h4 className="item-name">
+                      <h4 className="item-name ">
                         <a href="product-detail.html">
                           {toTitleCase(menuItem.name)}
                         </a>
