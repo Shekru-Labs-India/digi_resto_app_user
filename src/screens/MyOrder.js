@@ -72,14 +72,14 @@ const MyOrder = () => {
           <div className="mid-content">
             <h5 className="title">My Order</h5>
           </div>
-          <div className="right-content">
+          {/* <div className="right-content">
             <Link
               to={`/HomeScreen/${347279}`}
               className="dz-icon icon-sm icon-fill"
             >
               <i className="ri-home-2-line"></i>
             </Link>
-          </div>
+          </div> */}
         </div>
       </header>
 
@@ -177,49 +177,73 @@ const OrdersTab = ({ orders, type }) => {
 
   return (
     <div className="row g-1">
-      {filteredOrders.map((order) => (
-        <div key={order.order_number} className="card mb-3">
-          <div className="card-body">
-            <div className="row align-items-center">
-              <div className="col-6">
-                <h5 className="card-title mb-1">{order.order_number}</h5>
-              </div>
-              <div className="col-6 text-end">
-                <span className="card-text text-muted mb-0">
-                  {order.date_time}
-                </span>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col-3">
-                <p className="mb-0 fs-6">
-                  <i className="ri-store-2-line pe-2"></i>
-                  {order.restaurant_name}
-                </p>
-              </div>
-              <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
-                <p className="mb-0 fs-7">
-                  <i className="ri-bowl-line pe-2"></i>
-                  {order.menu_count === 0
-                    ? "No onging orders"
-                    : order.menu_count}
-                </p>
-              </div>
-              <div
-                className="col-4"
-                style={{ position: "absolute", right: "-10px" }}
-              >
-                <div className="price-wrapper">
-                  <h6 className="current-price fs-3">₹{order.total_bill}</h6>
-                  <span className="old-price">
-                    ₹{calculateOldPrice(order.total_bill)}
+      {filteredOrders.length === 0 ? ( // Check if there are no orders
+        <div
+          className="d-flex justify-content-center align-items-center flex-column"
+          style={{ height: "80vh" }}
+        >
+          <p className="fs-6 fw-semibold">You haven't placed any orders yet.</p>
+          {/* Message for no orders */}
+          <Link
+            to="/Product"
+            className="mt-2 fs-6 fw-semibold"
+            style={{ color: "#4f74fd" }}
+          >
+            Explore our menus
+          </Link>
+        </div>
+      ) : (
+        filteredOrders.map((order) => (
+          <div key={order.order_number} className="card mb-3">
+            <div className="card-body">
+              <div className="row align-items-center">
+                <div className="col-6">
+                  <h5 className="card-title mb-1">{order.order_number}</h5>
+                </div>
+                <div className="col-6 text-end">
+                  <span className="card-text text-muted mb-0">
+                    {order.date_time}
                   </span>
+                </div>
+              </div>
+              <div className="row mt-2">
+                <div className="col-3">
+                  <p className="mb-0 fs-6">
+                    <i className="ri-store-2-line pe-2"></i>
+                    {order.restaurant_name}
+                  </p>
+                </div>
+                <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
+                  <p className="mb-0 fs-7">
+                    <i className="ri-bowl-line pe-2"></i>
+                    {order.menu_count === 0
+                      ? "No ongoing orders"
+                      : order.menu_count}
+                  </p>
+                </div>
+                <div
+                  className="col-5 text-end"
+                  style={{ position: "absolute", right: "0" }}
+                >
+                  <div className="price-wrapper">
+                    <h6 className="current-price fs-3">₹{order.total_bill}</h6>
+                    <span className="old-price">
+                      ₹{calculateOldPrice(order.total_bill)}
+                    </span>
+
+                    <div
+                      className="fw-medium d-flex fs-5 ps-1 "
+                      style={{ color: "#0D775E", position: "absolute", right: "10px" }}
+                    >
+                      40% off
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };

@@ -8,13 +8,14 @@ const Profile = () => {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("userData"));
 
-  const handleLogout = () => {
-    // Clear user information from local storage
-    localStorage.removeItem("userData");
+const handleLogout = () => {
+  // Clear all stored data from local storage
+  localStorage.clear();
 
-    // Redirect to the signin screen
-    navigate("/Signinscreen");
-  };
+  // Redirect to the signin screen
+  navigate("/Signinscreen");
+};
+
 
   const toTitleCase = (str) => {
     if (!str) {
@@ -86,7 +87,7 @@ const Profile = () => {
                 <div className="media">
                   <div className="media-40 me-2 user-image">
                     <i
-                      className="ri-account-circle-line"
+                      className="ri-login-circle-line"
                       style={{ fontSize: "40px", marginTop: "9px" }}
                     ></i>
                   </div>
@@ -102,7 +103,7 @@ const Profile = () => {
                       to="/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-checkbox-circle-line me-2 fs-5"></i> Menu
+                      <i className="ri-bowl-line me-2 fs-5"></i> Menu
                     </Link>
                   </li>
                   <li className="col-6">
@@ -110,7 +111,7 @@ const Profile = () => {
                       to="/OrderTracking"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-list-ordered me-2 fs-5"></i> My Order
+                      <i className="ri-drinks-2-line me-2 fs-5"></i> My Order
                     </Link>
                   </li>
                   <li className="col-6">
@@ -126,7 +127,7 @@ const Profile = () => {
                       to="/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-line me-2 fs-5"></i> Favourite
+                      <i className="ri-heart-2-line me-2 fs-5"></i> Favourite
                     </Link>
                   </li>
                 </ul>
@@ -186,12 +187,12 @@ const Profile = () => {
               <div className="media">
                 <div className="media-40 me-2 user-image">
                   <i
-                    className="ri-account-circle-line"
+                    className="ri-user-3-line"
                     style={{ fontSize: "35px", marginTop: "9px" }}
                   ></i>
                 </div>
-                <h4 className="name mb-0">
-                  <div className="greetings">
+                <h4 className="name mb-0 ">
+                  <div className="greetings fs-3 fw-medium">
                     Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
                   </div>
                 </h4>
@@ -202,33 +203,33 @@ const Profile = () => {
                 <li className="col-6">
                   <Link
                     to="/MyOrder"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
-                    <i className="ri-checkbox-circle-line me-2 fs-5"></i> Menu
+                    <i className="ri-bowl-line me-2 fs-2"></i> Menu
                   </Link>
                 </li>
                 <li className="col-6">
                   <Link
                     to="/OrderTracking"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
-                    <i className="ri-list-ordered me-2 fs-5"></i> My Order
+                    <i className="ri-drinks-2-line me-2 fs-2"></i> My Order
                   </Link>
                 </li>
                 <li className="col-6">
                   <Link
                     to="/Cart"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
-                    <i className="ri-shopping-cart-line me-2 fs-5"></i> Cart
+                    <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
                   </Link>
                 </li>
                 <li className="col-6">
                   <Link
                     to="/Wishlist"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
-                    <i className="ri-heart-line me-2 fs-5"></i> Favourite
+                    <i className="ri-heart-2-line me-2 fs-2"></i> Favourite
                   </Link>
                 </li>
               </ul>
@@ -257,11 +258,11 @@ const Profile = () => {
               <Link to="/EditProfile" className="item-content item-link">
                 <div class="row align-items-center">
                   <div class="col-auto px-0">
-                    <i class="ri-user-3-line fs-4 "></i>
+                    <i class="ri-user-3-line fs-3 "></i>
                   </div>
-                  <div class="col text-start px-1 fs-5">Edit Profile</div>
+                  <div class="col text-start px-1 fs-4">Edit Profile</div>
                   <div class="col-auto text-end ms-auto">
-                    <i class="ri-arrow-right-s-line"></i>
+                    <i class="ri-arrow-right-s-line fs-4"></i>
                   </div>
                 </div>
               </Link>

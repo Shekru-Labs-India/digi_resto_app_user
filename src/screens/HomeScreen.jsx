@@ -9,6 +9,7 @@ import FeaturedArea from "../component/FeaturedArea";
 import NearbyArea from "../component/NearbyArea";
 import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import OfferAndFeatured from "../component/OfferAndFeatured";
 
 const HomeScreen = () => {
   const { restaurantCode } = useParams();
@@ -41,6 +42,8 @@ const HomeScreen = () => {
                         </div>
                     </div> */}
             {/* SearchBox */}
+
+            {/* <OfferAndFeatured /> */}
             <OfferBanner />
             <FeaturedArea />
 

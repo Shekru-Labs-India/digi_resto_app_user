@@ -16,42 +16,12 @@ const  OrderTracking = () => {
 
   useEffect(() => {
     const fetchOngoingOrders = async () => {
-      try {
-        setLoading(true); 
-        const response = await fetch('https://menumitra.com/user_api/get_order_list', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId, // Change this line
-            order_status: 'Ongoing',
-            customer_id: customerId
-          })
-        });
-console.log(restaurantId)
-console.log(customerId)
-        if (response.ok) {
-          const data = await response.json();
-          if (data.st === 1 && data.lists) {
-            setOrders(data.lists);
-          } else {
-            console.error('Invalid data format:', data);
-          }
-        } else {
-          console.error('Network response was not ok.');
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      } finally {
-        setLoading(false); // Set loading to false after API call
+      if (customerId && restaurantId) {
+        // Fetch orders using customerId
       }
     };
-
-    if (customerId && restaurantId) { // Add restaurantId check
-      fetchOngoingOrders();
-    }
-  }, [customerId, restaurantId]); // Add restaurantId to dependency array
+    fetchOngoingOrders();
+  }, [customerId, restaurantId]);
 
   const handleBack = () => {
     navigate(-1);

@@ -3,33 +3,50 @@ import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
-import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useRestaurantId } from "../context/RestaurantIdContext"; // Ensure this context is used correctly
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const { restaurantId } = useRestaurantId();
+  const navigate = useNavigate();
 
+  // Fetch restaurant_id from context or local storage
+  const { restaurantId: contextRestaurantId } = useRestaurantId();
+  const storedRestaurantId = localStorage.getItem("restaurantId");
+  const restaurantId = contextRestaurantId || storedRestaurantId;
+
+  // Retrieve user data from local storage
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
 
-  const removeItem = async (
-    indexToRemove,
-    restaurantId,
-    menuId,
-    customerId
-  ) => {
+  // Debugging logs
+  console.log("UserData from LocalStorage:", userData);
+  console.log("Customer ID:", customerId);
+  console.log("Restaurant ID from context/localStorage:", restaurantId);
+
+  // Update local storage with restaurant_id
+  useEffect(() => {
+    if (restaurantId) {
+      localStorage.setItem("restaurantId", restaurantId);
+    }
+  }, [restaurantId]);
+
+  const removeItem = async (indexToRemove, menuId) => {
+    if (!customerId || !menuId || !restaurantId) {
+      console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
+      return;
+    }
+
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/delete_favourite_menu",
+        "https://menumitra.com/user_api/remove_favourite_menu",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            restaurant_id: restaurantId, // Include restaurant_id
             menu_id: menuId,
             customer_id: customerId,
           }),
@@ -41,7 +58,10 @@ const Wishlist = () => {
         updatedMenuList.splice(indexToRemove, 1);
         setMenuList(updatedMenuList);
       } else {
-        console.error("Failed to remove item from wishlist");
+        console.error(
+          "Failed to remove item from wishlist:",
+          response.statusText
+        );
       }
     } catch (error) {
       console.error("Error removing item from wishlist:", error);
@@ -77,7 +97,9 @@ const Wishlist = () => {
 
   useEffect(() => {
     const fetchFavoriteItems = async () => {
+      // Check if customerId and restaurantId exist before making the API call
       if (!customerId || !restaurantId) {
+        console.error("Customer ID or Restaurant ID is not available.");
         setLoading(false);
         return;
       }
@@ -93,7 +115,7 @@ const Wishlist = () => {
             },
             body: JSON.stringify({
               customer_id: customerId,
-              restaurant_id: restaurantId,
+              restaurant_id: restaurantId, // Include restaurant_id in the request
             }),
           }
         );
@@ -116,10 +138,10 @@ const Wishlist = () => {
     };
 
     fetchFavoriteItems();
-  }, [customerId, restaurantId]);
+  }, [customerId, restaurantId]); // Ensure customerId and restaurantId are included in the dependency array
 
-  const handleRemoveItemClick = (index, restaurantId, menuId, customerId) => {
-    removeItem(index, restaurantId, menuId, customerId);
+  const handleRemoveItemClick = (index, menuId) => {
+    removeItem(index, menuId);
   };
 
   const handleAddToCartClick = (item) => {
@@ -188,12 +210,12 @@ const Wishlist = () => {
                                 height: "100px",
                                 borderRadius: "15px",
                               }}
-                              src={menu.image || images} // Use default image if menu.image is null
-                              alt={menu.name}
+                              src={menu.image || images}
+                              alt={menu.menu_name}
                               onError={(e) => {
-                                e.target.src = images; // Set local image source on error
-                                e.target.style.width = "100px"; // Set width of the local image
-                                e.target.style.height = "100px"; // Set height of the local image
+                                e.target.src = images;
+                                e.target.style.width = "100px";
+                                e.target.style.height = "100px";
                               }}
                             />
                           </Link>
@@ -201,7 +223,7 @@ const Wishlist = () => {
                         <div className="dz-content">
                           <h5 className="title">
                             <Link to={`/ProductDetails/${menu.menu_id}`}>
-                              {toTitleCase(menu.name)}
+                              {toTitleCase(menu.menu_name)}
                             </Link>
                           </h5>
 
@@ -222,21 +244,15 @@ const Wishlist = () => {
                                 }}
                               >
                                 {" "}
-                                {/* Use dynamic restaurant name */}
                               </i>
-                              {menu.restaurant_name}{" "}
+                              {menu.restaurant_name}
                             </li>
                           </ul>
 
                           {/* Remove Icon */}
                           <div
                             onClick={() =>
-                              handleRemoveItemClick(
-                                index,
-                                menu.restaurant_id,
-                                menu.menu_id,
-                                customerId
-                              )
+                              handleRemoveItemClick(index, menu.menu_id)
                             }
                             className="remove-text"
                             style={{

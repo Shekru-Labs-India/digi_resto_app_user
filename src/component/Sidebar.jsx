@@ -53,10 +53,7 @@ const Sidebar = () => {
           <div className="right-content">
             <div className="menu-toggler" onClick={toggleSidebar}>
               {isLoggedIn ? (
-                <i
-                  className="ri-account-circle-line"
-                  style={{ fontSize: "48px" }}
-                ></i>
+                <i className="ri-user-3-line fs-1"></i>
               ) : (
                 <Link to="/Signinscreen">
                   <i
@@ -80,10 +77,7 @@ const Sidebar = () => {
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
           <div className="dz-media">
-            <i
-              className="ri-account-circle-line"
-              style={{ fontSize: "45px" }}
-            ></i>
+            <i className="ri-user-3-line fs-1"></i>
           </div>
           <div className="dz-info">
             <div className="greetings">
@@ -115,7 +109,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="ri-heart-line" style={{ fontSize: "25px" }}></i>
+                <i className="ri-heart-2-line" style={{ fontSize: "25px" }}></i>
               </span>
               <span>Favourite</span>
             </Link>
@@ -145,10 +139,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Profile">
               <span className="dz-icon icon-sm">
-                <i
-                  className="ri-account-circle-line"
-                  style={{ fontSize: "25px" }}
-                ></i>
+                <i className="ri-user-3-line" style={{ fontSize: "25px" }}></i>
               </span>
               <span>Profile</span>
             </Link>

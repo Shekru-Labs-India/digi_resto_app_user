@@ -18,6 +18,15 @@
   transform: translateY(100%); /* Hide the offcanvas */
 }
 
+/* Dotted border */
+hr.dotted {
+  border-top:  2.5px dotted #0d775e;
+   padding-top: 0.5px;
+  padding-bottom: 0.5px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
 hr.dashed {
   border-top: 2.5px dashed #0d775e;
   padding-top: 0.5px;

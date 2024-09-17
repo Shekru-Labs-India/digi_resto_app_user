@@ -58,17 +58,46 @@ const NearbyArea = () => {
       .join(" ");
   };
 
+  const fetchAllMenuListByCategory = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: customerId || null, // Send customer_id if logged in
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("API response data:", data);
+        // Handle the response data as needed
+      } else {
+        console.error("Failed to fetch menu data. Status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "https://menumitra.com/user_api/get_special_menu_list",
+          "https://menumitra.com/user_api/get_all_menu_list_by_category",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              customer_id: customerId || null, // Send customer_id if logged in
               restaurant_id: restaurantId,
             }),
           }

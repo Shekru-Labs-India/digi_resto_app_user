@@ -1,79 +1,39 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
-import { debounce } from "lodash"; // Make sure to install lodash
+import { debounce } from "lodash";
 
 const ProductCard = () => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [totalMenuCount, setTotalMenuCount] = useState(0); // New state for total count
+  const [totalMenuCount, setTotalMenuCount] = useState(0);
+  const [filteredMenuList, setFilteredMenuList] = useState([]);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const fetchMenuCategories = useCallback(async () => {
-    if (isLoading) return;
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_category_list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.st === 1 && Array.isArray(data.lists)) {
-        const formattedCategories = data.lists.map((category) => ({
-          ...category,
-          name: toTitleCase(category.name),
-        }));
-        setMenuCategories(formattedCategories);
-        setSelectedCategoryId(null); // Set to null initially
-        fetchMenuData(null); // Fetch all menu items
-      } else {
-        console.error("Categories fetch error:", data.msg);
-        setMenuCategories([]);
-      }
-    } catch (error) {
-      console.error("Error fetching menu categories:", error);
-      setMenuCategories([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [restaurantId]);
+  const hasFetchedData = useRef(false);
 
   const fetchMenuData = useCallback(
     async (categoryId) => {
-      if (isLoading) return;
+      if (isLoading || hasFetchedData.current) return;
       setIsLoading(true);
+      hasFetchedData.current = true;
       try {
         const requestBody = {
+          customer_id: customerId,
           restaurant_id: restaurantId,
-          cat_id: categoryId === null ? "all" : categoryId.toString(),
         };
 
         console.log("Fetching menu data with:", requestBody);
 
         const response = await fetch(
-          "https://menumitra.com/user_api/get_menu_by_cat",
+          "https://menumitra.com/user_api/get_all_menu_list_by_category",
           {
             method: "POST",
             headers: {
@@ -86,45 +46,60 @@ const ProductCard = () => {
         const data = await response.json();
         console.log("API Response:", data);
 
-        if (response.ok) {
-          if (data.st === 1) {
-            if (Array.isArray(data.menu_list) && data.menu_list.length > 0) {
-              const formattedMenuList = data.menu_list.map((menu) => ({
-                ...menu,
-                image: menu.image,
-                category: toTitleCase(menu.category),
-                name: toTitleCase(menu.name),
-                oldPrice: Math.floor(menu.price * 1.1),
-                is_favourite: menu.is_favourite === 1,
-              }));
-              setMenuList(formattedMenuList);
-              localStorage.setItem(
-                "menuItems",
-                JSON.stringify(formattedMenuList)
-              );
-              if (categoryId === null) {
-                setTotalMenuCount(formattedMenuList.length); // Update total count
-              }
+        if (response.ok && data.st === 1) {
+          if (Array.isArray(data.data.category)) {
+            const formattedCategories = data.data.category.map((category) => ({
+              ...category,
+              name: toTitleCase(category.category_name),
+            }));
+            setMenuCategories(formattedCategories);
+          }
+
+          if (Array.isArray(data.data.menus)) {
+            const formattedMenuList = data.data.menus.map((menu) => ({
+              ...menu,
+              image: menu.image || images,
+              category: toTitleCase(menu.category_name),
+              name: toTitleCase(menu.menu_name),
+              oldPrice: Math.floor(menu.price * 1.1),
+              is_favourite: menu.is_favourite === 1,
+            }));
+            setMenuList(formattedMenuList);
+            setTotalMenuCount(formattedMenuList.length);
+
+            if (categoryId === null) {
+              setFilteredMenuList(formattedMenuList);
             } else {
-              console.log("No menu items found for the given category");
-              setMenuList([]);
+              const filteredMenus = formattedMenuList.filter(
+                (menu) => menu.menu_cat_id === categoryId
+              );
+              setFilteredMenuList(filteredMenus);
             }
+            localStorage.setItem(
+              "menuItems",
+              JSON.stringify(formattedMenuList)
+            );
           } else {
-            console.error("API Error:", data.msg);
+            setMenuCategories([]);
             setMenuList([]);
+            setFilteredMenuList([]);
           }
         } else {
-          console.error("Network response was not ok. Status:", response.status);
+          console.error("API Error:", data.msg);
+          setMenuCategories([]);
           setMenuList([]);
+          setFilteredMenuList([]);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setMenuCategories([]);
         setMenuList([]);
+        setFilteredMenuList([]);
       } finally {
         setIsLoading(false);
       }
     },
-    [restaurantId]
+    [customerId, restaurantId, isLoading]
   );
 
   const debouncedFetchMenuData = useCallback(
@@ -135,20 +110,10 @@ const ProductCard = () => {
   );
 
   useEffect(() => {
-    let isMounted = true;
-    if (restaurantId && !isLoading) {
-      const fetchData = async () => {
-        await fetchMenuCategories();
-        if (isMounted) {
-          await fetchMenuData(null);
-        }
-      };
-      fetchData();
+    if (restaurantId) {
+      debouncedFetchMenuData(selectedCategoryId);
     }
-    return () => {
-      isMounted = false;
-    };
-  }, [restaurantId, fetchMenuCategories, fetchMenuData]);
+  }, [restaurantId, selectedCategoryId, debouncedFetchMenuData]);
 
   useEffect(() => {
     const swiper = new Swiper(".category-slide", {
@@ -168,7 +133,7 @@ const ProductCard = () => {
     const isFavorite = menuItem.is_favourite;
 
     const apiUrl = isFavorite
-      ? "https://menumitra.com/user_api/delete_favourite_menu"
+      ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
     try {
@@ -193,6 +158,13 @@ const ProductCard = () => {
               : item
           );
           setMenuList(updatedMenuList);
+          setFilteredMenuList(
+            updatedMenuList.filter(
+              (item) =>
+                item.menu_cat_id === selectedCategoryId ||
+                selectedCategoryId === null
+            )
+          );
           console.log(
             isFavorite ? "Removed from favorites" : "Added to favorites"
           );
@@ -210,6 +182,7 @@ const ProductCard = () => {
   const handleCategorySelect = useCallback(
     (categoryId) => {
       setSelectedCategoryId(categoryId);
+      hasFetchedData.current = false;
       debouncedFetchMenuData(categoryId);
     },
     [debouncedFetchMenuData]
@@ -221,46 +194,36 @@ const ProductCard = () => {
     });
   };
 
-  const handleAddToCartClick = (menu) => {
-    console.log("Adding to cart:", menu);
-    try {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      console.log("Current cart items:", cartItems);
+  const handleAddToCartClick = async (menu) => {
+    if (!customerId || !restaurantId) {
+      console.error("Missing required data");
+      return;
+    }
 
-      const isAlreadyInCart = cartItems.some(
-        (item) => item.menu_id === menu.menu_id
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menu.menu_id,
+            customer_id: customerId,
+            quantity: 1,
+          }),
+        }
       );
 
-      if (isAlreadyInCart) {
-        console.log("Item already in cart");
-        alert("This item is already in the cart!");
-        return;
-      }
-
-      const cartItem = {
-        image: menu.image,
-        name: menu.name,
-        price: menu.price,
-        oldPrice: menu.oldPrice,
-        quantity: 1,
-        menu_id: menu.menu_id,
-      };
-
-      const updatedCartItems = [...cartItems, cartItem];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      console.log("Updated cart items:", updatedCartItems);
-      
-      // Verify that the item was added to localStorage
-      const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      console.log("Stored cart items after update:", storedCartItems);
-
-      if (storedCartItems.length === updatedCartItems.length) {
-        console.log("Cart item successfully added to localStorage");
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        console.log("Item successfully added to cart");
+        navigate("/Cart");
       } else {
-        console.error("Failed to add cart item to localStorage");
+        console.error("Failed to add item to cart:", data.msg);
       }
-
-      navigate("/Cart");
     } catch (error) {
       console.error("Error adding item to cart:", error);
     }
@@ -317,8 +280,7 @@ const ProductCard = () => {
                         : "",
                   }}
                 >
-                  {category.name} ({category.menu_count}){" "}
-                  {/* Display menu count */}
+                  {category.category_name} ({category.menu_count})
                 </div>
               </div>
             ))}
@@ -327,12 +289,17 @@ const ProductCard = () => {
       </div>
 
       <div className="row g-3 grid-style-1">
-        {menuList.length > 0 ? (
-          menuList.map((menu) => (
+        {filteredMenuList.length > 0 ? (
+          filteredMenuList.map((menu) => (
             <div key={menu.menu_id} className="col-6">
               <div className="card-item style-6">
                 <div className="dz-media">
-                  <Link to={`/ProductDetails/${menu.menu_id}`}>
+                  <Link
+                    to={{
+                      pathname: `/ProductDetails/${menu.menu_id}`,
+                    }}
+                    state={{ menu_cat_id: menu.menu_cat_id }} // Pass menu_cat_id as state
+                  >
                     <img
                       src={menu.image || images}
                       alt={menu.name}
@@ -353,18 +320,17 @@ const ProductCard = () => {
                       style={{ color: "#0a795b" }}
                     >
                       <i
-                        class="ri-restaurant-line fs-3"
+                        className="ri-restaurant-line fs-3"
                         style={{ paddingRight: "5px" }}
                       ></i>
                       {menu.category}
                     </div>
-                    {/* Conditional rendering for favorite icon */}
                     <i
                       className={`${
                         menu.is_favourite
                           ? "ri-hearts-fill fs-2"
                           : "ri-heart-2-line fs-2"
-                      }`} // Show ri-heart-fill if liked, ri-heart-line if not liked
+                      }`}
                       onClick={() => handleLikeClick(menu.menu_id)}
                       style={{
                         position: "absolute",
@@ -372,7 +338,6 @@ const ProductCard = () => {
                         right: "0",
                         fontSize: "23px",
                         cursor: "pointer",
-                        // color: menu.is_favourite ? "red" : "inherit",
                         color: menu.is_favourite ? "#fe0809" : "#73757b",
                       }}
                     ></i>
@@ -385,7 +350,6 @@ const ProductCard = () => {
                     <div className="row">
                       <div className="col-6">
                         <div className="offer-code">
-                          {/* Displaying the spicy index using icons */}
                           {Array.from({ length: 5 }).map((_, index) =>
                             index < menu.spicy_index ? (
                               <i
@@ -405,10 +369,13 @@ const ProductCard = () => {
                       </div>
                       <div className="col-6 text-end">
                         <i
-                          class="ri-star-half-line pe-1"
+                          className="ri-star-half-line pe-1"
                           style={{ color: "#f8a500", fontSize: "23px" }}
                         ></i>
-                        <span className="fs-3 fw-semibold" style={{ color: "#7f7e7e", marginLeft: "5px" }}>
+                        <span
+                          className="fs-3 fw-semibold"
+                          style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                        >
                           4.5
                         </span>
                       </div>
