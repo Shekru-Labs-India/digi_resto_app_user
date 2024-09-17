@@ -194,40 +194,46 @@ const ProductCard = () => {
     });
   };
 
-  const handleAddToCartClick = async (menu) => {
-    if (!customerId || !restaurantId) {
-      console.error("Missing required data");
-      return;
-    }
+ const handleAddToCartClick = async (menu) => {
+   if (!customerId || !restaurantId) {
+     console.error("Missing required data");
+     return;
+   }
 
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menu.menu_id,
-            customer_id: customerId,
-            quantity: 1,
-          }),
-        }
-      );
+   try {
+     const response = await fetch(
+       "https://menumitra.com/user_api/add_to_cart",
+       {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           restaurant_id: restaurantId,
+           menu_id: menu.menu_id,
+           customer_id: customerId,
+           quantity: 1,
+         }),
+       }
+     );
 
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        console.log("Item successfully added to cart");
-        navigate("/Cart");
-      } else {
-        console.error("Failed to add item to cart:", data.msg);
-      }
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
-    }
-  };
+     const data = await response.json();
+     if (response.ok && data.st === 1) {
+       console.log("Item successfully added to cart");
+
+       // Store the cart_id in local storage
+       localStorage.setItem("cartId", data.cart_id);
+
+       // Navigate to the Cart component
+       navigate("/Cart");
+     } else {
+       console.error("Failed to add item to cart:", data.msg);
+     }
+   } catch (error) {
+     console.error("Error adding item to cart:", error);
+   }
+ };
+
 
   const isMenuItemInCart = (menuId) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -239,11 +245,11 @@ const ProductCard = () => {
       <div className="dz-box">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
-            <h5 className="title p-r50">Menu Category</h5>
+            <h5 className="title p-r50 fs-5">Menu Category</h5>
             <Link to="/Category">
               <i
-                className="ri-arrow-right-line"
-                style={{ fontSize: "18px" }}
+                className="ri-arrow-right-line fs-3"
+                
               ></i>
             </Link>
           </div>
@@ -251,7 +257,7 @@ const ProductCard = () => {
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
             <div
-              className={`category-btn border border-2 rounded-5 swiper-slide ${
+              className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
                 selectedCategoryId === null ? "active" : ""
               }`}
               onClick={() => handleCategorySelect(null)}
@@ -265,7 +271,7 @@ const ProductCard = () => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn border border-2 rounded-5 ${
+                  className={`category-btn border border-2 rounded-5 fs-${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -316,11 +322,11 @@ const ProductCard = () => {
                     style={{ position: "relative" }}
                   >
                     <div
-                      className="dz-quantity detail-content fs-5 fw-medium"
+                      className="dz-quantity detail-content fs-6 fw-medium"
                       style={{ color: "#0a795b" }}
                     >
                       <i
-                        className="ri-restaurant-line fs-3"
+                        className="ri-restaurant-line "
                         style={{ paddingRight: "5px" }}
                       ></i>
                       {menu.category}
@@ -344,22 +350,22 @@ const ProductCard = () => {
                   </div>
 
                   {menu.name && (
-                    <h4 className="item-name fs-3 mt-2">{menu.name}</h4>
+                    <h4 className="item-name fs-6 mt-2">{menu.name}</h4>
                   )}
                   {menu.spicy_index && (
                     <div className="row">
                       <div className="col-6">
-                        <div className="offer-code">
+                        <div className="offer-code mt-2">
                           {Array.from({ length: 5 }).map((_, index) =>
                             index < menu.spicy_index ? (
                               <i
-                                className="ri-fire-fill fs-3"
+                                className="ri-fire-fill fs-6"
                                 style={{ fontSize: "12px" }}
                                 key={index}
                               ></i>
                             ) : (
                               <i
-                                className="ri-fire-line fs-3"
+                                className="ri-fire-line fs-6"
                                 style={{ fontSize: "12px", color: "#bbbaba" }}
                                 key={index}
                               ></i>
@@ -369,14 +375,14 @@ const ProductCard = () => {
                       </div>
                       <div className="col-6 text-end">
                         <i
-                          className="ri-star-half-line pe-1"
+                          className="ri-star-half-line pe-1 fs-6"
                           style={{ color: "#f8a500", fontSize: "23px" }}
                         ></i>
                         <span
-                          className="fs-3 fw-semibold"
+                          className="fs-6 fw-semibold"
                           style={{ color: "#7f7e7e", marginLeft: "5px" }}
                         >
-                          4.5
+                          {menu.rating}
                         </span>
                       </div>
                     </div>
@@ -384,16 +390,16 @@ const ProductCard = () => {
 
                   <div className="footer-wrapper mt-2">
                     <div className="price-wrapper">
-                      <h6 className="current-price fs-3 fw-medium">
+                      <h6 className="current-price fs-6 fw-medium">
                         ₹{menu.price}
                       </h6>
-                      <span className="old-price fs-7">₹{menu.oldPrice}</span>
+                      <span className="old-price fs-6">₹{menu.oldPrice}</span>
                     </div>
                     <div
-                      className="fw-medium d-flex fs-5 fw-semibold"
+                      className="fw-medium d-flex fs-6 fw-semibold"
                       style={{ color: "#438a3c" }}
                     >
-                      40% Off
+                      {menu.offer} Off
                     </div>
                     <div className="footer-btns">
                       {userData ? (

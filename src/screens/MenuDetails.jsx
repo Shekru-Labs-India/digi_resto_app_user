@@ -165,21 +165,27 @@ const MenuDetails = () => {
     navigate("/Cart");
   };
 
-  const incrementQuantity = () => {
-    if (quantity < 20) {
-      setQuantity((prevQuantity) => prevQuantity + 1);
-      setShowQuantityError(false);
-    } else {
-      alert("Maximum limit reached for this item.");
-    }
-  };
+const totalAmount =
+  quantity * (productDetails?.discountedPrice || productDetails?.price || 0);
 
-  const decrementQuantity = () => {
-    if (quantity > 0) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
-      setShowQuantityError(false);
-    }
-  };
+
+const incrementQuantity = () => {
+  if (quantity < 20) {
+    setQuantity((prevQuantity) => prevQuantity + 1);
+    setShowQuantityError(false);
+  } else {
+    alert("Maximum limit reached for this item.");
+  }
+};
+
+const decrementQuantity = () => {
+  if (quantity > 1) {
+    // Prevent going below 1
+    setQuantity((prevQuantity) => prevQuantity - 1);
+    setShowQuantityError(false);
+  }
+};
+
 
   const handleBack = () => {
     navigate(-1);
@@ -192,6 +198,8 @@ const MenuDetails = () => {
   if (!productDetails) {
     return <div>Loading...</div>;
   }
+
+  
 
   return (
     <>
@@ -207,9 +215,9 @@ const MenuDetails = () => {
               </div>
             </div>
             <div className="mid-content">
-              <h5 className="title">Product Details</h5>
+              <h5 className="title fs-5">Product Details</h5>
             </div>
-            <div className="right-content">
+            {/* <div className="right-content">
               <Link
                 to="/Cart"
                 className="notification-badge dz-icon icon-sm icon-fill"
@@ -219,7 +227,7 @@ const MenuDetails = () => {
                   <span className="badge badge-danger">{cartItemsCount}</span>
                 )}
               </Link>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -230,6 +238,12 @@ const MenuDetails = () => {
                 className="product-detail-image"
                 src={productDetails.image || images}
                 alt={productDetails.name}
+                style={{
+                  height: "335px",
+                  width: "360px",
+                  borderRadius: "10px",
+                  marginTop: "80px",
+                }}
                 onError={(e) => {
                   e.target.src = images;
                 }}
@@ -244,32 +258,32 @@ const MenuDetails = () => {
               <div className="detail-content" style={{}}>
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
-                    {productDetails.menu_cat_name}
+                    {/* {productDetails.menu_cat_name} */}
                   </h3>
                 )}
                 <div className="row mt-0">
                   <div className="col-8">
-                    <h4 className="title fs-2">
-                      {toTitleCase(productDetails.name)} (
-                      {toTitleCase(productDetails.veg_nonveg)})
+                    <h4 className="title fs-5">
+                      {toTitleCase(productDetails.name)}
+                      {/* ({toTitleCase(productDetails.veg_nonveg)}) */}
                     </h4>
                   </div>
                   <div
                     className="col-4 py-1"
                     style={{
-                      backgroundColor: "#f2eceb",
+                      // backgroundColor: "#f2eceb",
                       borderRadius: "12px",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-between",
+                      justifyContent: "space-evenly",
                       padding: "10px 15px",
                     }}
                   >
                     <button
                       onClick={decrementQuantity}
                       style={{
-                        width: "40px",
-                        height: "40px",
+                        width: "25px",
+                        height: "25px",
                         borderRadius: "50%",
                         border: "1px solid #ccc",
                         background: "#fff",
@@ -281,7 +295,7 @@ const MenuDetails = () => {
                     >
                       <i
                         className="ri-subtract-line"
-                        style={{ fontSize: "20px" }}
+                        style={{ fontSize: "18px" }}
                       ></i>
                     </button>
 
@@ -292,8 +306,8 @@ const MenuDetails = () => {
                     <button
                       onClick={incrementQuantity}
                       style={{
-                        width: "40px",
-                        height: "40px",
+                        width: "25px",
+                        height: "25px",
                         borderRadius: "50%",
                         border: "1px solid #ccc",
                         background: "#fff",
@@ -320,7 +334,7 @@ const MenuDetails = () => {
                       style={{ color: "#0a795b" }}
                     >
                       <i
-                        className="ri-restaurant-line fs-3"
+                        className="ri-restaurant-line fs-3 "
                         style={{ paddingRight: "5px" }}
                       ></i>
                       {productDetails.menu_cat_name || "Category Name"}
@@ -366,15 +380,20 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="product-info ">
-                <div className="desc ">
-                  <p className="fs-3">{productDetails.description}</p>
-                </div>
+              <div className="container">
+                <div className="product-info">
+                  <div>
+                    <p className="fs-6 text-wrap text-break">
+                      {productDetails.description}
+                    </p>
+                  </div>
 
-                <div className="d-flex align-items-center justify-content-between py-4"></div>
-                {showQuantityError && (
-                  <div className="text-danger">Please add a quantity.</div>
-                )}
+                  <div className="d-flex align-items-center justify-content-between py-4"></div>
+
+                  {showQuantityError && (
+                    <div className="text-danger">Please add a quantity.</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -397,22 +416,22 @@ const MenuDetails = () => {
                     <div className="col-6">
                       <div className="d-flex align-items-center justify-content-between mb-5">
                         <div className="d-flex flex-column">
-                          <h5 className="mb-2">Total amount</h5>
+                          <h5 className="mb-2 fs-6 fw-medium">Total amount</h5>
                           <div className="d-flex align-items-baseline">
                             <h4
-                              className="mb-0 price fs-1"
+                              className="mb-0 price fs-4"
                               style={{ color: "#4E74FC" }}
                             >
                               ₹ {productDetails.price}
                             </h4>
                             <span
-                              className="text-decoration-line-through ms-2"
+                              className="text-decoration-line-through ms-2 fs-6"
                               style={{ color: "#a5a5a5" }}
                             >
                               ₹{productDetails.discountedPrice}{" "}
                             </span>
                             <div
-                              className="fw-medium d-flex fs-5 ps-2"
+                              className="fw-medium d-flex fs-6 ps-2"
                               style={{ color: "#0D775E" }}
                             >
                               {productDetails.offer}
@@ -423,12 +442,12 @@ const MenuDetails = () => {
                     </div>
                     <div className="col-6 text-end pt-2">
                       <button
-                        className="btn btn-primary"
+                        className="btn btn-primary "
                         style={{ borderRadius: "100px" }}
                         onClick={handleAddToCart}
                       >
-                        <i className="ri-shopping-cart-line fs-1 pe-3"></i>
-                        Add to Cart
+                        <i className="ri-shopping-cart-line fs-5 pe-3"></i>
+                        <div className="fs-6">Add to Cart</div>
                       </button>
                     </div>
                   </div>

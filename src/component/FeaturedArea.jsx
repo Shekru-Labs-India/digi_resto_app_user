@@ -111,7 +111,7 @@ const FeaturedArea = () => {
                     <ul className="dz-meta mt-2">
                       {/* <li className="dz-price"> */}
                       <li
-                        className="dz-price fs-2"
+                        className="dz-price fs-5"
                         style={{ color: "#4E74FC" }}
                       >
                         ₹{menu.price}{" "}
@@ -134,10 +134,10 @@ const FeaturedArea = () => {
                       <div className="col-6">
                         {" "}
                         <div
-                          className="fw-medium d-flex fs-5"
+                          className="fw-medium d-flex fs-6 mx-0"
                           style={{ color: "#0D775E" }}
                         >
-                          40% off
+                          {menu.offer} Off
                         </div>
                       </div>
                       <div className="col-6">
@@ -147,7 +147,7 @@ const FeaturedArea = () => {
                             class="ri-star-half-line pe-2"
                             style={{ color: "#f8a500" }}
                           ></i>
-                          4.9
+                          {menu.rating}
                         </p>
                       </div>
                     </div>

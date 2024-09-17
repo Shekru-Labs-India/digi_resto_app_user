@@ -219,14 +219,14 @@ const NearbyArea = () => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
         <i
-          className="ri-fire-fill"
-          style={{ fontSize: "13px" }}
+          className="ri-fire-fill fs-6"
+        
           key={index}
         ></i>
       ) : (
         <i
-          className="ri-fire-line"
-          style={{ fontSize: "12px", color: "#0000001a" }}
+          className="ri-fire-line fs-6"
+          style={{  color: "#0000001a" }}
           key={index}
         ></i>
       )
@@ -237,7 +237,7 @@ const NearbyArea = () => {
     <div className="dz-box style-2 nearby-area">
       <div className="title-bar1 align-items-start">
         <div className="left">
-          <h4 className="title mb-1">Special Menu</h4>
+          <h4 className="title mb-1 fs-5">Special Menu</h4>
         </div>
       </div>
       <div className="swiper product-swiper swiper-center">
@@ -246,7 +246,9 @@ const NearbyArea = () => {
             <div className="swiper-slide col-6" key={index}>
               <div className="row g-3 grid-style-1">
                 <div>
-                  <div className="card-item style-6">
+                  <div className="card-item style-6" 
+                  // style={{width:"216px" , height:"auto"}}
+                  >
                     <div className="dz-media">
                       <Link to={`/ProductDetails/${menuItem.menu_id}`}>
                         <img
@@ -266,12 +268,13 @@ const NearbyArea = () => {
                         {/* <h3 className="product-title">
                           {toTitleCase(menuItem.menu_cat_name)}
                         </h3> */}
+                        
                         <div
                           className="dz-quantity detail-content"
-                          style={{ fontSize: "12px" }}
+              
                         >
                           <i
-                            class="ri-restaurant-line"
+                            class="ri-restaurant-line fs-6 " 
                             style={{ paddingRight: "5px" }}
                           ></i>
                           {toTitleCase(menuItem.menu_cat_name)}
@@ -313,12 +316,30 @@ const NearbyArea = () => {
                       <div className="offer-code">
                         {renderSpiceIcons(menuItem.spicy_index)}
                       </div>
+                      <div className="col-6 text-end">
+                        <i
+                          className="ri-star-half-line fs-6 pe-1"
+                          style={{ color: "#f8a500" }}
+                        ></i>
+                        <span
+                          className="fs-6 fw-semibold"
+                          style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                        >
+                          {menuItem.rating}
+                        </span>
+                      </div>
                       <div className="footer-wrapper">
                         <div className="price-wrapper">
                           <h6 className="current-price">₹{menuItem.price}</h6>
                           <span className="old-price">
                             ₹{menuItem.oldPrice}
                           </span>
+                          <div
+                            className="fw-medium d-flex fs-5"
+                            style={{ color: "#0D775E" }}
+                          >
+                            {menuItem.offer} Off
+                          </div>
                         </div>
                         {userData ? (
                           <div

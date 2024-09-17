@@ -100,7 +100,7 @@ const handleLogout = () => {
                 <ul className="row g-2">
                   <li className="col-6">
                     <Link
-                      to="/MyOrder"
+                      to="/Product"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-bowl-line me-2 fs-5"></i> Menu
@@ -108,7 +108,8 @@ const handleLogout = () => {
                   </li>
                   <li className="col-6">
                     <Link
-                      to="/OrderTracking"
+                      // to="/OrderTracking"
+                      to="/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-drinks-2-line me-2 fs-5"></i> My Order
@@ -145,7 +146,7 @@ const handleLogout = () => {
     <div className="page-wrapper">
       <header className="header header-fixed style-3">
         <div className="header-content">
-          <div className="left-content">
+          {/* <div className="left-content">
             <div style={{ display: "flex", alignItems: "center" }}>
               <div className="header-logo" style={{ marginRight: "10px" }}>
                 <img
@@ -165,8 +166,15 @@ const handleLogout = () => {
                 MenuMitra
               </span>
             </div>
+          </div> */}
+          <div className="left-content">
+            <Link to="/Wishlist" className="back-btn fs-3">
+              <i className="ri-arrow-left-line"></i>
+            </Link>
           </div>
-          <div className="mid-content"></div>
+          <div className="mid-content">
+            <h5 className="title">Profile</h5>
+          </div>
           <div className="right-content">
             <div
               onClick={handleLogout}
@@ -202,7 +210,7 @@ const handleLogout = () => {
               <ul className="row g-2">
                 <li className="col-6">
                   <Link
-                    to="/MyOrder"
+                    to="/Product"
                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
                     <i className="ri-bowl-line me-2 fs-2"></i> Menu
@@ -210,7 +218,8 @@ const handleLogout = () => {
                 </li>
                 <li className="col-6">
                   <Link
-                    to="/OrderTracking"
+                    // to="/OrderTracking"
+                    to="/MyOrder"
                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
                     <i className="ri-drinks-2-line me-2 fs-2"></i> My Order

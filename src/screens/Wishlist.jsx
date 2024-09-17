@@ -195,110 +195,123 @@ const Wishlist = () => {
           <main className="page-content space-top p-b70">
             <div className="container">
               {userData ? (
-                <div className="row g-3">
-                  {menuList.map((menu, index) => (
-                    <div className="col-12" key={index}>
-                      <div
-                        className="dz-card list-style style-3"
-                        style={{ position: "relative" }}
-                      >
-                        <div className="dz-media">
-                          <Link to={`/ProductDetails/${menu.menu_id}`}>
-                            <img
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                borderRadius: "15px",
-                              }}
-                              src={menu.image || images}
-                              alt={menu.menu_name}
-                              onError={(e) => {
-                                e.target.src = images;
-                                e.target.style.width = "100px";
-                                e.target.style.height = "100px";
-                              }}
-                            />
-                          </Link>
-                        </div>
-                        <div className="dz-content">
-                          <h5 className="title">
+                menuList.length > 0 ? (
+                  <div className="row g-3">
+                    {menuList.map((menu, index) => (
+                      <div className="col-12" key={index}>
+                        <div
+                          className="dz-card list-style style-3"
+                          style={{ position: "relative" }}
+                        >
+                          <div className="dz-media">
                             <Link to={`/ProductDetails/${menu.menu_id}`}>
-                              {toTitleCase(menu.menu_name)}
-                            </Link>
-                          </h5>
-
-                          <ul className="dz-meta">
-                            <li
-                              className="dz-price"
-                              style={{ color: "#4E74FC" }}
-                            >
-                              ₹{menu.price}
-                              {menu.oldPrice && <del>₹{menu.oldPrice}</del>}
-                            </li>
-                            <li>
-                              <i
-                                className="ri-store-2-line"
+                              <img
                                 style={{
-                                  paddingLeft: "20px",
-                                  fontSize: "18px",
+                                  width: "100px",
+                                  height: "100px",
+                                  borderRadius: "15px",
                                 }}
-                              >
-                                {" "}
-                              </i>
-                              {menu.restaurant_name}
-                            </li>
-                          </ul>
-
-                          {/* Remove Icon */}
-                          <div
-                            onClick={() =>
-                              handleRemoveItemClick(index, menu.menu_id)
-                            }
-                            className="remove-text"
-                            style={{
-                              position: "absolute",
-                              top: "10px",
-                              right: "10px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <i
-                              className="ri-close-line"
-                              style={{ fontSize: "18px" }}
-                            ></i>
+                                src={menu.image || images}
+                                alt={menu.menu_name}
+                                onError={(e) => {
+                                  e.target.src = images;
+                                  e.target.style.width = "100px";
+                                  e.target.style.height = "100px";
+                                }}
+                              />
+                            </Link>
                           </div>
+                          <div className="dz-content">
+                            <h5 className="title">
+                              <Link to={`/ProductDetails/${menu.menu_id}`}>
+                                {toTitleCase(menu.menu_name)}
+                              </Link>
+                            </h5>
 
-                          {/* Cart Icon */}
-                          <div
-                            onClick={() => handleAddToCartClick(menu)}
-                            className="cart-btn"
-                            style={{
-                              position: "absolute",
-                              bottom: "10px",
-                              right: "10px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            {isMenuItemInCart(menu.menu_id) ? (
-                              <i className="ri-shopping-cart-2-fill"></i>
-                            ) : (
-                              <i className="ri-shopping-cart-2-line"></i>
-                            )}
+                            <ul className="dz-meta">
+                              <li
+                                className="dz-price"
+                                style={{ color: "#4E74FC" }}
+                              >
+                                ₹{menu.price}
+                                {menu.oldPrice && <del>₹{menu.oldPrice}</del>}
+                              </li>
+                              <li>
+                                <i
+                                  className="ri-store-2-line"
+                                  style={{
+                                    paddingLeft: "20px",
+                                    fontSize: "18px",
+                                  }}
+                                >
+                                  {" "}
+                                </i>
+                                {menu.restaurant_name}
+                              </li>
+                            </ul>
+
+                            {/* Remove Icon */}
+                            <div
+                              onClick={() =>
+                                handleRemoveItemClick(index, menu.menu_id)
+                              }
+                              className="remove-text"
+                              style={{
+                                position: "absolute",
+                                top: "10px",
+                                right: "10px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <i
+                                className="ri-close-line"
+                                style={{ fontSize: "18px" }}
+                              ></i>
+                            </div>
+
+                            {/* Cart Icon */}
+                            <div
+                              onClick={() => handleAddToCartClick(menu)}
+                              className="cart-btn"
+                              style={{
+                                position: "absolute",
+                                bottom: "10px",
+                                right: "10px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {isMenuItemInCart(menu.menu_id) ? (
+                                <i className="ri-shopping-cart-2-fill"></i>
+                              ) : (
+                                <i className="ri-shopping-cart-2-line"></i>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    className="empty-favorites d-flex flex-column justify-content-center align-items-center w-100"
+                    style={{ height: "100%" }}
+                  >
+                    <h5>Nothing to show in favorites.</h5>
+                    <p>Add some products to show here!</p>
+                    <Link to="/HomeScreen" className="btn btn-primary">
+                      Browse Menus
+                    </Link>
+                  </div>
+                )
               ) : (
                 <SigninButton />
               )}
             </div>
           </main>
-
-          <Bottom />
         </>
       )}
+
+      <Bottom activeMenu="favourite" />
     </div>
   );
 };
