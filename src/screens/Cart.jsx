@@ -865,7 +865,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail",
+        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
         {
           method: "POST",
           headers: {
@@ -1048,7 +1048,7 @@ const Cart = () => {
 
                       <div className="row">
                         <div
-                          className="col-4 fs-4"
+                          className="col-4 fs-6"
                           style={{ color: "#0d775e" }}
                         >
                           <i className="ri-restaurant-line me-2"></i>
@@ -1060,13 +1060,13 @@ const Cart = () => {
                               index < item.spicy_index ? (
                                 <i
                                   className="ri-fire-fill fs-6"
-                                  style={{ fontSize: "12px", color: "#fe0809" }} // Filled icon color
+                                  style={{ fontSize: "12px", color: "#eb8e57" }}
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
                                   className="ri-fire-line fs-6"
-                                  style={{ fontSize: "12px", color: "#bbbaba" }} // Unfilled icon color
+                                  style={{ fontSize: "12px", color: "#bbbaba" }}
                                   key={index}
                                 ></i>
                               )
@@ -1114,61 +1114,33 @@ const Cart = () => {
 
                         {/* Quantity Selector and Delete Button Row */}
                         <div className="col-4 text-end">
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              marginTop: "10px",
-                            }}
-                          >
-                            {/* Quantity Controls */}
-                            <div
+                          <div className="d-flex justify-content-end align-items-center">
+                            {/* Decrement Button */}
+                            <i
+                              className="ri-subtract-line mx-3"
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                border: "1px solid #e0e0e0",
-                                borderRadius: "20px",
+                                fontSize: "20px",
+                                color: "#0d775e",
+                                cursor: "pointer",
                               }}
-                            >
-                              <button
-                                onClick={() => decrementQuantity(index)}
-                                style={{
-                                  border: "none",
-                                  background: "none",
-                                  fontSize: "20px",
-                                  color: "#0d775e",
-                                  padding: "5px 10px",
-                                }}
-                              >
-                                -
-                              </button>
-                              <input
-                                type="number"
-                                value={item.quantity}
-                                style={{
-                                  border: "none",
-                                  textAlign: "center",
-                                  width: "50px",
-                                  fontSize: "16px",
-                                  color: "#0d775e",
-                                  outline: "none",
-                                }}
-                                readOnly
-                              />
-                              <button
-                                onClick={() => incrementQuantity(index)}
-                                style={{
-                                  border: "none",
-                                  background: "none",
-                                  fontSize: "20px",
-                                  color: "#0d775e",
-                                  padding: "5px 10px",
-                                }}
-                              >
-                                +
-                              </button>
-                            </div>
+                              onClick={() => decrementQuantity(index)}
+                            ></i>
+
+                            {/* Quantity Display */}
+                            <span className="fs-4" style={{ color: "#0d775e" }}>
+                              {item.quantity}
+                            </span>
+
+                            {/* Increment Button */}
+                            <i
+                              className="ri-add-line mx-3"
+                              style={{
+                                fontSize: "20px",
+                                color: "#0d775e",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => incrementQuantity(index)}
+                            ></i>
                           </div>
                         </div>
                       </div>
@@ -1182,7 +1154,7 @@ const Cart = () => {
           )}
         </main>
       )}
-       {/* Footer Fixed Button */}
+      {/* Footer Fixed Button */}
       {userData &&
         displayCartItems.length > 0 && ( // Only render if user is logged in and cart is not empty
           <div

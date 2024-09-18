@@ -1,3 +1,94 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+}
+
+.circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #f3f3f3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px; /* Adds space below the circle */
+}
+
+.popup-gif {
+  width: 80px;  /* Adjust size as needed */
+  height: 80px;
+  border-radius: 50%;
+}
+
+.popup-content h4 {
+  font-size: 1.25rem;
+  margin-top: 20px;
+}
+
+.popup-content p {
+  font-size: 1rem;
+  color: #555;
+}
+
+
+
+
+
+
+
+
+
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .custom-offcanvas {
   position: fixed; /* or absolute */
   top: 0; /* Adjust as needed */

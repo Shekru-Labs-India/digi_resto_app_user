@@ -33,11 +33,11 @@ function App() {
           <Route path="/HomeScreen/:restaurantCode" element={<HomeScreen />} />
           <Route
             path="/HomeScreen"
-            element={<Navigate to="/HomeScreen/880771" replace />}
+            element={<Navigate to="/HomeScreen/416437" replace />}
           />
           <Route
             path="/"
-            element={<Navigate to="/HomeScreen/880771" replace />}
+            element={<Navigate to="/HomeScreen/416437" replace />}
           />
           <Route path="/Signinscreen" element={<Signinscreen />} />
           <Route path="/Signupscreen" element={<Signupscreen />} />
@@ -106,11 +106,11 @@ export default App;
 //           <Route path="/HomeScreen/:restaurantCode" element={<HomeScreen />} />
 //           <Route
 //             path="/HomeScreen"
-//             element={<Navigate to="/HomeScreen/880771" replace />}
+//             element={<Navigate to="/HomeScreen/416437" replace />}
 //           />
 //           <Route
 //             path="/"
-//             element={<Navigate to="/HomeScreen/880771" replace />}
+//             element={<Navigate to="/HomeScreen/416437" replace />}
 //           />
 //           <Route path="/Signinscreen" element={<Signinscreen />} />
 //           <Route path="/Signupscreen" element={<Signupscreen />} />

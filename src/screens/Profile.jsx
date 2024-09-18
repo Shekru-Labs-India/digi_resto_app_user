@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import applogo from "../assets/logos/Menu Mitra logo 3.png";
 import Bottom from "../component/bottom";
+import HomeScreen from './HomeScreen';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ const handleLogout = () => {
         <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
-              <Link to="/Wishlist" className="back-btn fs-3">
+              <Link to="/HomeScreen" className="back-btn fs-3">
                 <i className="ri-arrow-left-line"></i>
               </Link>
             </div>
@@ -125,7 +126,7 @@ const handleLogout = () => {
                   </li>
                   <li className="col-6">
                     <Link
-                      to="/Wishlist"
+                      to="/"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-heart-2-line me-2 fs-5"></i> Favourite
@@ -168,7 +169,7 @@ const handleLogout = () => {
             </div>
           </div> */}
           <div className="left-content">
-            <Link to="/Wishlist" className="back-btn fs-3">
+            <Link to="/HomeScreen" className="back-btn fs-3">
               <i className="ri-arrow-left-line"></i>
             </Link>
           </div>
