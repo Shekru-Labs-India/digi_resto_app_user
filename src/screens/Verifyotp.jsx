@@ -569,6 +569,7 @@ const Verifyotp = () => {
       setLoading(false);
     }
   };
+  const isOtpEntered = otp.trim().length > 0;
 
   return (
     <div className="page-wrapper full-height">
@@ -643,7 +644,7 @@ const Verifyotp = () => {
           </div>
         </div>
       </main>
-      <CompanyVersion />
+     
     </div>
   );
 };

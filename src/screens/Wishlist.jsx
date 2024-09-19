@@ -476,30 +476,26 @@ const Wishlist = () => {
         </div>
       ) : (
         <>
-          <header className="header header-fixed style-3">
+                    <header className="header header-fixed style-3">
             <div className="header-content">
               <div className="left-content">
                 <Link
                   to="/HomeScreen"
-                  className="back-btn dz-icon icon-fill icon-sm"
+                  className="back-btn dz-icon  icon-sm"
                   onClick={() => navigate(-1)}
                 >
-                  <i className="ri-arrow-left-line"></i>
+                  <i className="ri-arrow-left-line fs-2"></i>
                 </Link>
               </div>
               <div className="mid-content">
                 <h5 className="title">
                   Favourite{" "}
                   {userData && (
-                    <span className="items-badge">{menuList.length}</span>
+                    <span className="">({menuList.length})</span>
                   )}
                 </h5>
               </div>
-              <div className="right-content">
-                <Link to="/Search" className="dz-icon icon-fill icon-sm">
-                  <i className="ri-search-line"></i>
-                </Link>
-              </div>
+              
             </div>
           </header>
 
@@ -584,19 +580,19 @@ const Wishlist = () => {
                                 {/* <del>₹ {menu.oldPrice}</del> */}
                                 <del>₹ 100</del>
                               </span>
-                              <span className="text-success ps-3">40% off</span>
+                              <span className="text-success ps-2">40% off</span>
                             </div>
-                            <div className="col-1 ps-5 d-flex align-items-center">
+                            <div className="col-2 ps-2 d-flex align-items-right">
                               <i
                                 className="ri-store-2-line"
                                 style={{ fontSize: "20px" }}
                               ></i>
-                              <span className="ms-2">
+                              <span className="ms-2 text-nowrap mt-1">
                                 {menu.restaurant_name}
                               </span>
                             </div>
                             <div
-                              className="col-4 pe-0 text-end"
+                              className="col-4 pe-0 ps-0 text-end"
                               style={{ fontSize: "20px" }}
                             >
                               <div className="d-flex justify-content-end">
@@ -631,7 +627,7 @@ const Wishlist = () => {
                 <Link to="/HomeScreen" className="btn btn-primary">
                   Browse Menus
                 </Link>
-                <SigninButton />
+                
               </div>
             )}
           </main>
