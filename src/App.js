@@ -3,9 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import Signinscreen from "./screens/Signinscreen";
 import Signupscreen from "./screens/SignupScreen";
-import ForgotPassword from "./screens/Forgotpw";
 import Verifyotp from "./screens/Verifyotp"; // Ensure Verifyotp is imported correctly
-import Changepassword from "./screens/Changepassword";
 import Profile from "./screens/Profile";
 import Wishlist from "./screens/Wishlist";
 import Category from "./screens/Category";
@@ -14,7 +12,6 @@ import EditProfile from "./screens/EditProfile";
 import MyOrder from "./screens/MyOrder";
 import Product from "./screens/Product";
 import TrackOrder from "./screens/TrackOrder";
-import Review from "./screens/Review";
 import Search from "./screens/Search";
 import Checkout from "./screens/Checkout";
 import MenuDetails from "./screens/MenuDetails";
@@ -22,8 +19,7 @@ import OrderTracking from "./screens/OrderTracking";
 
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
-import Faq from "./screens/Faq";
-import Test from "./component/Test";
+
 
 function App() {
   return (
@@ -41,10 +37,10 @@ function App() {
           />
           <Route path="/Signinscreen" element={<Signinscreen />} />
           <Route path="/Signupscreen" element={<Signupscreen />} />
-          <Route path="/ForgotPassword" element={<ForgotPassword />} />
+          
           <Route path="/Verifyotp" element={<Verifyotp />} />
           {/* Use lowercase 'o' */}
-          <Route path="/Changepassword" element={<Changepassword />} />
+         
           <Route path="/Wishlist" element={<Wishlist />} />
           <Route path="/Cart" element={<Cart />} />
           <Route path="/Checkout" element={<Checkout />} />
@@ -52,17 +48,14 @@ function App() {
           <Route path="/Profile" element={<Profile />} />
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/MyOrder" element={<MyOrder />} />
-          <Route path="/Faq" element={<Faq />} />
+         
           <Route path="/Product" element={<Product />} />
           <Route path="/Search" element={<Search />} />
-          <Route path="/OrderTracking" element={<OrderTracking />} />
+          
           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
           <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
-          <Route
-            path="/Review/:order_number/:restaurantCode"
-            element={<Review />}
-          />
-          <Route path="/testing" element={<Test />} />
+          
+         
         </Routes>
       </CartProvider>
     </RestaurantIdProvider>

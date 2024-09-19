@@ -226,6 +226,7 @@ const Verifyotp = () => {
       setLoading(false);
     }
   };
+  const isOtpEntered = otp.trim().length > 0;
 
   return (
     <div className="page-wrapper full-height">
@@ -240,51 +241,63 @@ const Verifyotp = () => {
               />
             </div>
             <div className="account-section">
-              <div className="section-head">
-                <Logoname />
-                <h2 className="title">Enter OTP</h2>
-                <p>An Authentication Code has been sent to {mobile}</p>
-              </div>
-
-              <form onSubmit={(e) => e.preventDefault()}>
-                <label className="form-label" htmlFor="otp">
-                  <span className="required-star">*</span> OTP
-                </label>
-                <div className="digit-group">
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="otp"
-                    value={otp}
-                    onChange={handleOtpChange}
-                    placeholder="Enter OTP"
-                  />
+                <div className="section-head">
+                  <Logoname />
+                  <h2 className="title">Enter OTP</h2>
                 </div>
-
-                {error && <p className="text-danger">{error}</p>}
-
-                {loading ? (
-                  <div id="preloader">
-                    <div className="loader">
-                      <div
-                        className="spinner-border text-primary"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Loading...</span>
+                <form onSubmit={(e) => e.preventDefault()}>
+                  <label className="form-label fs-4" htmlFor="otp">
+                    <span className="required-star">*</span>OTP
+                  </label>
+                  <div id="otp" className="digit-group">
+                    
+                     
+               
+                  <div className="input-group text-muted">
+                    {otp.trim() === "" && ( 
+                      <span className="input-group-text py-0">
+                        <i className="ri-lock-line fs-3 text-muted"></i>
+                      </span>
+                    )}
+                    <input
+                      className="form-control text-start"
+                      type="text"
+                      id="digit-1"
+                      name="digit-1"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                    />
+                  </div>
+                    
+                  </div>
+                  <p>
+                    An Authentication Code Has Sent
+                    <span className="text-lowercase text-primary"></span>
+                  </p>
+                  {error && <p className="text-danger">{error}</p>}
+                  {loading ? (
+                    <div id="preloader">
+                      <div className="loader">
+                        <div
+                          className="spinner-border text-primary"
+                          role="status"
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <button
-                    className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
-                    onClick={handleVerify}
-                    disabled={!otp.trim()}
-                  >
-                    Verify and proceed
-                  </button>
-                )}
-              </form>
-            </div>
+                  ) : (
+                    <button
+                      className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+                      onClick={handleVerify}
+                      disabled={!isOtpEntered} // Disable button if OTP is not entered
+                    >
+                      Verify OTP
+                    </button>
+                  )}
+                </form>
+              </div>
 
             <div className="text-center mt-auto">
               Back to{" "}
@@ -295,7 +308,7 @@ const Verifyotp = () => {
           </div>
         </div>
       </main>
-      <CompanyVersion />
+     
     </div>
   );
 };

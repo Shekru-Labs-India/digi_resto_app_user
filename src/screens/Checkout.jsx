@@ -758,6 +758,10 @@ const Checkout = () => {
                   placeholder="Write Here"
                 ></textarea>
               </div>
+              <ul className="ms-3">
+              <li className="my-2 text-muted" > &bull; Make mutton thali a bit less spicy</li>
+              <li className="my-2 text-muted">&bull; Make my panipuri more spicy</li>
+            </ul>
             </ul>
 
             <div className="dz-flex-box mt-3">

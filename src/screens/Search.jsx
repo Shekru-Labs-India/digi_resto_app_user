@@ -722,42 +722,38 @@ const Search = () => {
   return (
     <div className="page-wrapper">
       {/* Header */}
-      <header className="header header-fixed style-3 py-2">
-        <div className="header-content">
-          <div className="search-area">
-            <div
-              onClick={() => navigate(-1)}
-              className="back-btn icon-fill dz-icon"
-            >
-              <i className="ri-arrow-left-line"></i>
-            </div>
-            <div className="mid-content">
-              <h5 className="title me-3">Search</h5>
+      <header className="header header-fixed style-3 ">
+          <div className="header-content">
+            <div className="search-area">
+              <div onClick={() => navigate(-1)} className="back-btn  dz-icon">
+                <i className="ri-arrow-left-line fs-2"></i>
+              </div>
+              <div className="mid-content">
+                <h5 className="title me-3">Search</h5>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
       {/* Header End */}
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-        <div className="container">
-          <div className="input-group w-100 my-2">
+      <div className="container ">
+          <div className="input-group w-100 my-2 border border-muted rounded">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 text-muted"></i>
             </span>
             <input
               type="search"
-              className="form-control bg-white ps-2"
+              className="form-control bg-white ps-2 "
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
             />
-            <span className="input-group-text py-0" onClick={handleClearAll}>
-              <i className="ri-close-line fs-3 text-muted"></i>
-            </span>
+           
+
           </div>
-          <div className="title-bar my-3 d-flex justify-content-between">
+          <div className="title-bar my-3">
             <h4 className="title mb-0 font-w500">Search Menu</h4>
             <div className="font-w500 h5" onClick={handleClearAll}>
               Clear All
@@ -830,7 +826,7 @@ const Search = () => {
                           </div>
                         </div>
                         <div className="row mt-3">
-                          <div className="col-4 pe-0">
+                          <div className="col-5 pe-0">
                             <h3
                               className=" d-inline fs-5 fw-medium"
                               style={{ color: "#4E74FC" }}
@@ -838,14 +834,14 @@ const Search = () => {
                               ₹{menu.price.toFixed(2)}
                             </h3>
                             {menu.oldPrice && (
-                              <span className="text-muted ms-2">
+                              <span className="text-muted ms-2 ">
                                 <del>₹{menu.oldPrice.toFixed(2)}</del>
                               </span>
                             )}
                           </div>
-                          <div className="col-4">
+                          <div className="col-3">
                             <div
-                              className="fw-medium d-flex fs-6 fw-semibold"
+                              className="fw-medium d-flex  fs-6 fw-semibold"
                               style={{ color: "#438a3c" }}
                             >
                               {menu.offer} Off

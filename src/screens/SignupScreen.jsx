@@ -55,7 +55,7 @@ const handleSignUp = async (e) => {
 
       // Store user data in local storage
       localStorage.setItem("userData", JSON.stringify(userData));
-      navigate("/Verifyotp", { state: { mobile } }); // Pass mobile number to Verifyotp
+      navigate("/Signinscreen", { state: { mobile } }); // Pass mobile number to Verifyotp
     } else if (data.st === 2) {
       setError("Mobile Number already exists. Use another number.");
     } else {
@@ -121,127 +121,81 @@ const handleSignUp = async (e) => {
 
   return (
     <div className="page-wrapper full-height">
-      <main className="page-content">
-        <div className="container pt-0 overflow-hidden">
-          <div className="dz-authentication-area dz-flex-box">
-            <div className="dz-media">
-              <img src={pic2} alt="" />
-            </div>
-            <div className="account-section">
-              <div className="section-head">
-                <Logoname />
-                <h2 className="title">Create your account</h2>
-              </div>
-              <form onSubmit={handleSignUp}>
-                <div className="mb-3">
-                  <label className="form-label" htmlFor="name">
-                    <span className="required-star">*</span>Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className={`form-control ${nameError ? "is-invalid" : ""}`}
-                    placeholder="Enter Name"
-                    value={name}
-                    onChange={handleNameChange}
-                  />
-                  {nameError && (
-                    <div className="invalid-feedback">{nameError}</div>
-                  )}
-                </div>
-                <div className="m-b15">
-                  <label className="form-label" htmlFor="mobile">
-                    <span className="required-star">*</span> Mobile
-                  </label>
-                  <input
-                    type="tel"
-                    id="mobile"
-                    className={`form-control ${
-                      mobileError ? "is-invalid" : ""
-                    }`}
-                    placeholder="Enter Mobile"
-                    value={mobile}
-                    onChange={handleMobileChange}
-                  />
-                  {mobileError && (
-                    <div className="invalid-feedback">{mobileError}</div>
-                  )}
-                </div>
-                <div className="m-b15">
-                  <label className="form-label" htmlFor="dob">
-                    <span className="required-star">*</span> Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    id="dob"
-                    className={`form-control ${dobError ? "is-invalid" : ""}`}
-                    value={dob}
-                    onChange={handleDobChange}
-                  />
-                  {dobError && (
-                    <div className="invalid-feedback">{dobError}</div>
-                  )}
-                  {/* <DatePicker
-                                        id="dob"
-                                        className="form-control"
-                                        selected={dob}
-                                        onChange={(date) => setDob(date)} // Set the selected date to the state
-                                        showYearDropdown
-                                        scrollableYearDropdown
-                                        yearDropdownItemNumber={100}
-                                        maxDate={new Date()} // Max date is today's date
-                                        dateFormat="dd/MM/yyyy"
-                                    /> */}
-                </div>
-                <div className="form-check m-b25">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value={agreed}
-                    id="Checked-1"
-                    onChange={(e) => setAgreed(e.target.checked)}
-                  />
-                  <label className="form-check-label" htmlFor="Checked-1">
-                    I agree to all Terms, Privacy, and Fees
-                  </label>
-                </div>
-                {error && <p className="text-danger">{error}</p>}
-
-                {loading ? (
-                  <div id="preloader">
-                    <div className="loader">
-                      <div
-                        className="spinner-border text-primary"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
+                <main className="page-content">
+                    <div className="container pt-0 overflow-hidden">
+                        <div className="dz-authentication-area dz-flex-box">
+                            <div className="dz-media">
+                                <img src={pic2} alt="" />
+                            </div>
+                            <div className="account-section">
+                                <div className="section-head">
+                                    <Logoname />
+                                    <h2 className="title">Create your account</h2>
+                                </div>
+                                <form onSubmit={handleSignUp}>
+                                    <div className="mb-3">
+                                        <label className="form-label fs-4" htmlFor="name">
+                                            <span className="required-star">*</span>Name
+                                        </label>
+                                        <div className="input-group">
+                                            <span className="input-group-text fs-3 py-0 "><i className="ri-user-3-line  text-muted" /></span> 
+                                            <input type="text" id="name" className={`form-control ${nameError ? 'is-invalid' : ''}`} placeholder='Name' value={name} onChange={handleNameChange} />
+                                        </div>
+                                        {nameError && <div className="invalid-feedback">{nameError}</div>}
+                                    </div>
+                                    <div className="m-b15">
+                                        <label className="form-label fs-4" htmlFor="mobile">
+                                            <span className="required-star">*</span> Mobile
+                                        </label>
+                                        <div className="input-group">
+                                            <span className="input-group-text fs-3 py-0"><i className="ri-smartphone-line  text-muted"/></span> 
+                                            <input type="tel" id="mobile" className={`form-control ${mobileError ? 'is-invalid' : ''}`} placeholder=' Enter Mobile Number' value={mobile} onChange={handleMobileChange} />
+                                        </div>
+                                        {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+                                    </div>
+                                    <div className="m-b15">
+                                        <label className="form-label fs-4" htmlFor="dob">
+                                            <span className="required-star">*</span> Date of Birth
+                                        </label>
+                                        <div className="input-group">
+                                            <span className="input-group-text fs-3 py-0"><i className="ri-calendar-line text-muted"/></span>
+                                            <input type="text" id="dob" className={`form-control ${dobError ? 'is-invalid' : ''}`} placeholder='yyyy-mm-dd' value={dob} onChange={handleDobChange} />
+                                        </div>
+                                        {dobError && <div className="invalid-feedback">{dobError}</div>}
+                                    </div>
+                                    <div className="form-check m-b25 ">
+                                        <input className="form-check-input" type="checkbox" value={agreed} id="Checked-1" onChange={(e) => setAgreed(e.target.checked)} />
+                                        <label className="form-check-label fs-6 " htmlFor="Checked-1">
+                                            I agree to all Terms, Privacy, and Fees
+                                        </label>
+                                    </div>
+                                    {error && <p className="text-danger">{error}</p>}
+                                    {loading ? (
+                                        <div id="preloader">
+                                            <div className="loader">
+                                                <div className="spinner-border text-primary" role="status">
+                                                    <span className="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button id="signupButton" type="submit"
+                                         className={`dz-btn btn btn-thin btn-lg btn-primary rounded-xl ${!isFormValid() ? 'disabled' : ''}`} disabled={!isFormValid()}>
+                                            Create Account
+                                        </button>
+                                    )}
+                                </form>
+                            </div>
+                            <div className="text-center mt-auto">
+                                Already have an account?{' '}
+                                <Link to="/Signinscreen" className="text-underline font-w500">
+                                    Sign In
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                ) : (
-                  <button
-                    id="signupButton"
-                    type="submit"
-                    className={`dz-btn btn btn-thin btn-lg btn-primary rounded-xl ${
-                      !isFormValid() ? "disabled" : ""
-                    }`}
-                    disabled={!isFormValid()} // Disable button if form is not valid
-                  >
-                    Create Account
-                  </button>
-                )}
-              </form>
+                </main>
             </div>
-            <div className="text-center mt-auto">
-              Already have an account?{" "}
-              <Link to="/Signinscreen" className="text-underline font-w500">
-                Sign In
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
   );
 };
 

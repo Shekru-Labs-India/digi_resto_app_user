@@ -949,23 +949,19 @@ const Cart = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-              <i className="ri-arrow-left-line"></i>
+            <Link to="/" className="back-btn dz-icon  icon-sm">
+              <i className="ri-arrow-left-line fs-2"></i>
             </Link>
           </div>
           <div className="mid-content">
             <h5 className="title">
               My Cart{" "}
               {userData && (
-                <span className="items-badge">{displayCartItems.length}</span>
+                <span className="">({displayCartItems.length})</span>
               )}
             </h5>
           </div>
-          <div className="right-content">
-            <Link to="/Search" className="dz-icon icon-fill icon-sm">
-              <i className="ri-search-line"></i>
-            </Link>
-          </div>
+          
         </div>
       </header>
       {/* Cart Items */}
@@ -1032,7 +1028,7 @@ const Cart = () => {
                     </div>
 
                     {/* Content Column */}
-                    <div className="col-9">
+                    <div className="col-8">
                       {/* Name Row */}
                       <div className="row">
                         <div className="col-10 mt-2">
