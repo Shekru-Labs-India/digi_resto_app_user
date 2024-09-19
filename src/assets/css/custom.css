@@ -1,3 +1,67 @@
+ 
+ .scrollable-section {
+  height: 200px; /* Set height */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+
+  .slide-up {
+    animation: slideUp 0.4s forwards;
+  }
+
+  .slide-down {
+    animation: slideDown 0.4s forwards;
+  }
+
+
+
+
+
+
+
+
+
+.small-offer-text {
+  font-size: 0.75rem; /* Adjust this to control the text size */
+  color: #438a3c;
+  font-weight: 600; /* Matches fw-semibold */
+}
+.dashed-line {
+  border-top: 1.9px dashed #0d775e; 
+  width: 100%; 
+}
+
+
+
+
+
 /* Container for the input field and icon */
 .input-container {
   position: relative;

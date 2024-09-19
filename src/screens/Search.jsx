@@ -430,7 +430,7 @@
 //               onClick={() => navigate(-1)}
 //               className="back-btn icon-fill dz-icon"
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </div>
 //             <div className="input w-100">
 //               <input

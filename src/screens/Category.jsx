@@ -58,7 +58,7 @@
 //               to="/HomeScreen/347279"
 //               className="back-btn dz-icon icon-fill icon-sm"
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -233,7 +233,7 @@
 //                   to="/HomeScreen/347279"
 //                   className="back-btn dz-icon icon-fill icon-sm"
 //                 >
-//                   <i className="ri-arrow-left-line"></i>
+//                   <i className="ri-arrow-left-line fs-3"></i>
 //                 </Link>
 //               </div>
 //               <div className="mid-content">
@@ -388,7 +388,7 @@
 //                   to="/HomeScreen/347279"
 //                   className="back-btn dz-icon icon-fill icon-sm"
 //                 >
-//                   <i className="ri-arrow-left-line"></i>
+//                   <i className="ri-arrow-left-line fs-3"></i>
 //                 </Link>
 //               </div>
 //               <div className="mid-content">
@@ -548,7 +548,7 @@ const Category = () => {
             <div className="header-content">
               <div className="left-conten ">
                 <Link
-                  to="/HomeScreen/416437"
+                  to="/HomeScreen/681316"
                   className="back-btn dz-icon icon-sm"
                 >
                   <i className="ri-arrow-left-line fs-2"></i>

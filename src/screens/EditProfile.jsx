@@ -90,7 +90,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -269,7 +269,7 @@ const EditProfile = () => {
         <div className="header-content">
           <div className="left-content">
             <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -291,38 +291,38 @@ const EditProfile = () => {
           ) : (
             <div className="edit-profile">
               <div className="mb-3">
-                <label className="form-label" htmlFor="name">
-                  <span className="required-star">*</span> Name
+                <label className="fs-6 fw-medium pb-2" htmlFor="name">
+                  <span className="required-star fw-light">*</span> Name
                 </label>
                 <input
                   type="text"
                   id="name"
-                  className="form-control"
+                  className="form-control border border-2"
                   placeholder="Enter Full Name"
                   value={toTitleCase(newName)}
                   onChange={(e) => setNewName(e.target.value)}
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label" htmlFor="phone">
+                <label className="fs-6 fw-medium pb-2" htmlFor="phone">
                   <span className="required-star">*</span> Mobile
                 </label>
                 <input
                   type="tel"
                   id="phone"
-                  className="form-control"
+                  className="form-control border border-2"
                   value={newMobile}
                   onChange={(e) => setNewMobile(e.target.value)} // Now editable
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label" htmlFor="dob">
+                <label className="fs-6 fw-medium pb-2" htmlFor="dob">
                   <span className="required-star">*</span> Date of Birth
                 </label>
                 <input
                   type="date"
                   id="dob"
-                  className="form-control"
+                  className="form-control border border-2"
                   placeholder="Enter DOB"
                   value={newDob}
                   onChange={(e) => setNewDob(e.target.value)}

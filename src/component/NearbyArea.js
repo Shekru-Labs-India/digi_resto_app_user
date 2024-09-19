@@ -261,10 +261,13 @@ const NearbyArea = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                        <div className="dz-quantity detail-content">
+                        <div
+                          className="dz-quantity detail-content fs-6 fw-medium text-truncate"
+                          style={{ color: "#0a795b" }}
+                        >
                           <i
-                            className="ri-restaurant-line fs-6 "
-                            style={{ paddingRight: "2px" }}
+                            className="ri-restaurant-line "
+                            style={{ paddingRight: "5px" }}
                           ></i>
                           {toTitleCase(menuItem.category_name)}
                         </div>
@@ -292,34 +295,36 @@ const NearbyArea = () => {
                           {toTitleCase(menuItem.name)}
                         </a>
                       </h4>
-                      <div className="offer-code">
-                        {renderSpiceIcons(menuItem.spicy_index)}
-                      </div>
-                      <div className="col-6 text-end">
-                        <i
-                          className="ri-star-half-line fs-6 pe-1"
-                          style={{ color: "#f8a500" }}
-                        ></i>
-                        <span
-                          className="fs-6 fw-semibold"
-                          style={{ color: "#7f7e7e", marginLeft: "5px" }}
-                        >
-                          {menuItem.rating}
-                        </span>
-                      </div>
-                      <div className="footer-wrapper">
-                        <div className="price-wrapper">
-                          <h6 className="current-price">₹{menuItem.price}</h6>
-                          <span className="old-price">
-                            ₹{menuItem.oldPrice}
-                          </span>
-                          <div
-                            className="fw-medium d-flex fs-5"
-                            style={{ color: "#0D775E" }}
-                          >
-                            {menuItem.offer} Off
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="offer-code mx-0">
+                            {renderSpiceIcons(menuItem.spicy_index)}
                           </div>
                         </div>
+                        <div className="col-6 text-end">
+                          <i
+                            className="ri-star-half-line fs-6 pe-1"
+                            style={{ color: "#f8a500" }}
+                          ></i>
+                          <span
+                            className="fs-6 fw-semibold"
+                            style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                          >
+                            {menuItem.rating}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="footer-wrapper">
+                        <div className="price-wrapper d-flex align-items-baseline">
+                          <h6 className="current-price me-0 fs-6 fw-medium">
+                            ₹{menuItem.price}
+                          </h6>
+                          <span className="old-price ms-0 fs-8 ms-1">
+                            ₹{menuItem.oldPrice}
+                          </span>
+                        </div>
+
+                        <div className="small-offer-text">{menuItem.offer} off</div>
                         <div
                           onClick={() => handleAddToCartClick(menuItem)}
                           className="cart-btn"
@@ -337,6 +342,35 @@ const NearbyArea = () => {
                           )}
                         </div>
                       </div>
+                      {/* <div className="footer-wrapper mt-2">
+                        <div className="price-wrapper d-flex align-items-baseline">
+                          <h6 className="current-price me-0 fs-6 fw-medium">
+                            ₹{menuItem.price}
+                          </h6>
+                          <span className="old-price ms-0 fs-8 ms-1">
+                            ₹{menuItem.oldPrice}
+                          </span>
+                        </div>
+
+                        <div className="small-offer-text">{menuItem.offer}</div>
+
+                        <div className="footer-btns">
+                          {userData ? (
+                            <div
+                              onClick={() => handleAddToCartClick(menuItem)}
+                              className="cart-btn"
+                            >
+                              {isMenuItemInCart(menuItem.menu_id) ? (
+                                <i className="ri-shopping-cart-2-fill fs-2"></i>
+                              ) : (
+                                <i className="ri-shopping-cart-2-line fs-2"></i>
+                              )}
+                            </div>
+                          ) : (
+                            <i className="ri-shopping-cart-2-line fs-2"></i>
+                          )}
+                        </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

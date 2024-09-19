@@ -27,9 +27,9 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/HomeScreen/${416437}`}
+          to={`/HomeScreen/${681316}`}
           className={
-            location.pathname === `/HomeScreen/${416437}`
+            location.pathname === `/HomeScreen/${681316}`
               ? "nav-link active"
               : "nav-link"
           }

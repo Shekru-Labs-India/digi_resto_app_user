@@ -74,7 +74,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={handleBack}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -511,7 +511,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={handleBack}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -721,7 +721,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={handleBack}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -956,7 +956,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={handleBack}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -1283,7 +1283,7 @@ const TrackOrder = () => {
               className="back-btn dz-icon icon-fill icon-sm"
               onClick={handleBack}
             >
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -1298,39 +1298,48 @@ const TrackOrder = () => {
           <div className="card">
             <div className="card-body py-2">
               <div className="row align-items-center mb-0">
-                <div className="col-6">
+                <div className="col-5">
                   <h5 className="card-title mb-0">
                     {order_details.order_number}
                   </h5>
                 </div>
                 <div className="col-6 text-end">
-                  <span className="card-text " style={{ color: "#a5a5a5" }}>
+                  <span
+                    className="card-text text-muted mb-0"
+                    style={{ position: "relative", right: "-35px" }}
+                  >
                     {order_details.datetime}
                   </span>
                 </div>
               </div>
               <div className="row align-items-center mt-2 ">
                 <div className="col-4">
-                  <p className="mb-0 fs-6">
+                  <p className="mb-0 fs-6 text-truncate">
                     <i className="ri-store-2-line pe-2"></i>
                     {order_details.restaurant_name}
                   </p>
                 </div>
-                <div className="col-3 text-center">
-                  <p className="mb-0 text-start fs-6">
-                    <i className="ri-bowl-line pe-0"></i>{" "}
+                <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
+                  <p
+                    className="mb-0 fs-7"
+                    style={{ position: "relative", right: "25px" }}
+                  >
+                    <i className="ri-bowl-line pe-1"></i>{" "}
                     {order_details.menu_count} Menu
                   </p>
                 </div>
-                <div className="col-5 text-end">
+                <div
+                  className="col-6 text-end"
+                  style={{ position: "absolute", right: "-3px" }}
+                >
                   <span
-                    className="current-price fs-3 fw-medium"
+                    className="current-price fs-4 me-1 fw-semibold mx-0"
                     style={{ color: "#4E74FC" }}
                   >
                     ₹{order_details.grand_total}
                   </span>
                   <span
-                    className="text-decoration-line-through ms-2"
+                    className="text-decoration-line-through ms-1"
                     style={{ color: "#a5a5a5" }}
                   >
                     ₹
@@ -1356,23 +1365,25 @@ const TrackOrder = () => {
               borderRadius: "8px",
             }}
           >
-            <span className="fs-6 fw-medium h-100" style={{ color: "#2f855a",  }}>
+            <span className="fs-6 fw-medium h-100" style={{ color: "#2f855a" }}>
               Your delicious order has been served
             </span>
           </div>
         ) : (
           <div className="card-body" style={{ padding: "0px" }}>
-            <div className="card" style={{ height: "85px" }}>
+            <div className="card" style={{ height: "70px" }}>
               <div className="row py-2 px-2 h-100">
-                <div className="col-2 d-flex align-items-center justify-content-center">
+                <div className="col-2 d-flex align-items-center justify-content-center"
+                style={{position:"absolute", left:"0px", height:"10px", bottom:"32px", scale:"0.9"}}>
                   <OrderGif />
                 </div>
-                <div className="col-10 d-flex align-items-center justify-content-center">
+                <div className="col-12 d-flex align-items-center justify-content-center"
+                style={{position:"absolute", bottom:"15px",right:"-30px"}}>
                   <div className="text-center mb-0">
                     <div className="fs-6 fs-sm-5 fs-md-4 fw-medium">
                       You have the best taste in food.
                     </div>
-                    <div className="fs-6 fs-sm-5 fs-md-4 fw-medium">
+                    <div className="fs-7 fw-medium">
                       We're crafting a menu to match it perfectly.
                     </div>
                   </div>

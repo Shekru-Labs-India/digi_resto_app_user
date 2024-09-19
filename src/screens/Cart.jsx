@@ -102,7 +102,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -484,7 +484,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -789,32 +789,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -946,7 +920,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -1225,27 +1199,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -1275,7 +1228,6 @@
 //   return parseInt(restaurantId, 10);
 // };
 
-
 //   // Retrieve Cart ID from localStorage
 //   const getCartId = () => {
 //     const cartId = localStorage.getItem("cartId");
@@ -1295,7 +1247,6 @@
 //     console.error("Customer ID or Restaurant ID is missing.");
 //   }
 // }, []);
-
 
 //   // Fetch cart details from API
 //   const fetchCartDetails = async () => {
@@ -1428,7 +1379,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -1675,25 +1626,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -1865,7 +1797,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -2116,21 +2048,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -2304,7 +2221,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -2554,23 +2471,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -2754,7 +2654,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -2903,17 +2803,7 @@
 
 // export default Cart;
 
-
-
-
 // rerived from gh----->
-
-
-
-
-
-
-
 
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -2921,6 +2811,7 @@ import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
+import App from "./../App";
 
 const Cart = () => {
   const [cartDetails, setCartDetails] = useState(null);
@@ -3057,12 +2948,15 @@ const Cart = () => {
               )}
             </h5>
           </div>
-          
         </div>
       </header>
       {/* Cart Items */}
       {displayCartItems.length === 0 ? (
-        <main className="page-content space-top p-b100">
+        // <main className="page-content space-top p-b100">
+        <main
+          className="page-content space-top p-b100"
+          // style={{height:"1000px"}}
+        >
           <div className="container overflow-hidden">
             <div className="m-b20 dz-flex-box">
               <div className="dz-cart-about text-center">
@@ -3081,7 +2975,7 @@ const Cart = () => {
           style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
         >
           {userData ? (
-            <div className="container">
+            <div className="container scrollable-section">
               {/* RESTAURANT NAME */}
               <div className="left-content gap-1 ps-2 py-2">
                 <h3 className="title fw-medium">
@@ -3101,10 +2995,12 @@ const Cart = () => {
                   style={{
                     borderRadius: "15px",
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    position: "relative",
+                    left: "4px",
                   }}
                 >
-                  <div className="row g-0">
-                    {/* Image Column */}
+                  {/* <div className="row g-0">
+                    {}
                     <div className="col-3">
                       <Link to={`/ProductDetails/${item.menu_id}`}>
                         <img
@@ -3123,15 +3019,15 @@ const Cart = () => {
                       </Link>
                     </div>
 
-                    {/* Content Column */}
+                    {}
                     <div className="col-8">
-                      {/* Name Row */}
+                      {}
                       <div className="row">
                         <div className="col-10 mt-2">
                           <h5 className="title fs-3">{item.menu_name}</h5>
                         </div>
                         <div className="col-2">
-                          {/* Delete Button */}
+                          {}
                           <div onClick={() => handleRemoveClick(item)}>
                             <i className="ri-close-line fs-3"></i>
                           </div>
@@ -3177,7 +3073,7 @@ const Cart = () => {
                         </div>
                       </div>
 
-                      {/* Price Row */}
+                      {}
                       <div className="row mt-1">
                         <div className="col-4">
                           <p className="mb-2 fs-2 fw-semibold">
@@ -3204,10 +3100,10 @@ const Cart = () => {
                           </span>
                         </div>
 
-                        {/* Quantity Selector and Delete Button Row */}
+                        {}
                         <div className="col-4 text-end">
                           <div className="d-flex justify-content-end align-items-center">
-                            {/* Decrement Button */}
+                            {}
                             <i
                               className="ri-subtract-line mx-3"
                               style={{
@@ -3218,17 +3114,300 @@ const Cart = () => {
                               onClick={() => decrementQuantity(index)}
                             ></i>
 
-                            {/* Quantity Display */}
+                            {}
                             <span className="fs-4" style={{ color: "#0d775e" }}>
                               {item.quantity}
                             </span>
 
-                            {/* Increment Button */}
+                            {}
                             <i
                               className="ri-add-line mx-3"
                               style={{
                                 fontSize: "20px",
                                 color: "#0d775e",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => incrementQuantity(index)}
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> */}
+
+                  {/* --------------- */}
+
+                  {/* <div className="row">
+                    <div className="col-3 ">
+                      <Link to={`/ProductDetails/${item.menu_id}`}>
+                        <img
+                          src={item.image || images}
+                          alt={item.menu_name}
+                          style={{
+                            height: "110px",
+                            width: "110px",
+                            objectFit: "cover",
+                            borderRadius: "10px",
+                          }}
+                          onError={(e) => {
+                            e.target.src = images;
+                          }}
+                        />
+                      </Link>
+                    </div>
+                    <div className="col-9 pt-1">
+                      <div className="row">
+                        <div className="col-6">
+                          <h5 className="title fs-">{item.menu_name}</h5>
+                        </div>
+                        <div className="col-6 text-end pe-4">
+                          <div onClick={() => handleRemoveClick(item)}>
+                            <i className="ri-close-line fs-3"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-4">
+                          <i
+                            className="ri-restaurant-line me-2"
+                            style={{ color: "" }}
+                          ></i>
+                          {item.menu_cat_name}
+                        </div>
+                        <div className="col-4">
+                          <div className="offer-code mt-2">
+                            {Array.from({ length: 5 }).map((_, index) =>
+                              index < item.spicy_index ? (
+                                <i
+                                  className="ri-fire-fill fs-6"
+                                  style={{ fontSize: "12px", color: "#eb8e57" }}
+                                  key={index}
+                                ></i>
+                              ) : (
+                                <i
+                                  className="ri-fire-line fs-6"
+                                  style={{ fontSize: "12px", color: "#bbbaba" }}
+                                  key={index}
+                                ></i>
+                              )
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-4">
+                          <span className="fw-semibold">
+                            <i
+                              className="ri-star-fill px-1"
+                              style={{ color: "#fda200" }}
+                            ></i>{" "}
+                            4.9
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-4">
+                          {" "}
+                          <p className="mb-2 fs-2 fw-semibold">
+                            <span style={{ color: "#4E74FC" }}>
+                              ₹{item.price}
+                            </span>
+                            <del
+                              style={{
+                                fontSize: "14px",
+                                color: "#a5a5a5",
+                                marginLeft: "5px",
+                              }}
+                            >
+                              ₹{item.oldPrice || item.price}
+                            </del>
+                          </p>
+                        </div>
+                        <div className="col-4">
+                          {" "}
+                          <span
+                            className="d-flex fs-6 fw-semibold"
+                            style={{ color: "#438a3c" }}
+                          >
+                            {item.offer || "No Offer"}
+                          </span>
+                        </div>
+                        <div className="col-4">
+                          {" "}
+                          <div className="d-flex justify-content-end align-items-center">
+                   
+                            <i
+                              className="ri-subtract-line mx-3"
+                              style={{
+                                fontSize: "20px",
+                                color: "#0d775e",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => decrementQuantity(index)}
+                            ></i>
+
+                  
+                            <span className="fs-4" style={{ color: "#0d775e" }}>
+                              {item.quantity}
+                            </span>
+
+                         
+                            <i
+                              className="ri-add-line mx-3"
+                              style={{
+                                fontSize: "20px",
+                                color: "#0d775e",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => incrementQuantity(index)}
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> */}
+
+                  {/* -----------new---------- */}
+
+                  <div className="row my-auto" style={{ height: "110px" }}>
+                    <div className="col-3 px-0" style={{}}>
+                      <Link to={`/ProductDetails/${item.menu_id}`}>
+                        <img
+                          src={item.image || images}
+                          alt={item.menu_name}
+                          style={{
+                            height: "110px",
+                            width: "110px",
+                            objectFit: "cover",
+                            borderRadius: "10px",
+                            position: "relative",
+                            left: "5px",
+                          }}
+                          onError={(e) => {
+                            e.target.src = images;
+                          }}
+                        />
+                      </Link>
+                    </div>
+                    <div className="col-9 pt-2 pb-2">
+                      <div className="row">
+                        <div className="col-9 my-auto">
+                          <h5 className="title text-truncate">
+                            {item.menu_name}
+                          </h5>
+                        </div>
+                        <div className="col-3 text-end pe-4">
+                          <div onClick={() => handleRemoveClick(item)}>
+                            <i
+                              className="ri-close-line fs-3"
+                              style={{ color: "#818180" }}
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div
+                          className="col-5 fs-6 text-truncate fw-medium my-auto"
+                          style={{ color: "#438a3c" }}
+                        >
+                          <i className="ri-restaurant-line me-2"></i>
+                          {item.menu_cat_name}
+                        </div>
+                        <div className="col-3 px-0 ps-1">
+                          <div
+                            className="offer-code my-auto"
+                            style={{ width: "100px" }}
+                          >
+                            {Array.from({ length: 5 }).map((_, index) =>
+                              index < item.spicy_index ? (
+                                <i
+                                  className="ri-fire-fill fs-6"
+                                  style={{ fontSize: "12px", color: "#eb8e57" }}
+                                  key={index}
+                                ></i>
+                              ) : (
+                                <i
+                                  className="ri-fire-line fs-6"
+                                  style={{ fontSize: "12px", color: "#bbbaba" }}
+                                  key={index}
+                                ></i>
+                              )
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-4 px-0 ps-1 text-center">
+                          <span className="fw-semibold">
+                            <i
+                              className="ri-star-half-line px-1"
+                              style={{ color: "#fda200" }}
+                            ></i>{" "}
+                            4.9
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row pt-2">
+                        <div className="col-6 mx-0 my-auto px-0" style={{position:"relative", left:"15px"}}>
+                          {" "}
+                          <p className="mb-2 fs-4 fw-medium ">
+                            <span style={{ color: "#4E74FC" , }}>
+                              ₹{item.price}
+                            </span>
+                            <del
+                              style={{
+                                fontSize: "14px",
+                                color: "#dedede",
+                                marginLeft: "5px",
+                                width: "100px",
+                              }}
+                            >
+                              ₹{item.oldPrice || item.price}
+                            </del>
+                          </p>
+                        </div>
+                        <div
+                          className="col-3 px-0 pt-1"
+                          style={{ textAlign: "", position:"relative", right:"15px"  }}
+                        >
+                          {" "}
+                          <span
+                            className="d-flex fs-7 fw-semibold mx-a text-truncate "
+                            style={{ color: "#438a3c" }}
+                          >
+                            <div className="d-flex align-items-center justify-content-center">
+                              
+                            {item.offer || "No "} Off
+                            </div>
+                          </span>
+                        </div>
+                        <div className="col-3">
+                          {" "}
+                          <div className="d-flex justify-content-end align-items-center">
+                            {/* Decrement Button */}
+                            <i
+                              className="ri-subtract-line mx-2"
+                              style={{
+                                fontSize: "18px",
+                                color: "",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => decrementQuantity(index)}
+                            ></i>
+
+                            {/* Quantity Display */}
+                            <span
+                              className="fs-4 px-2"
+                              style={{
+                                color: "",
+                                backgroundColor: "#a5a5a5",
+                              }}
+                            >
+                              {item.quantity}
+                            </span>
+
+                            {/* Increment Button */}
+                            <i
+                              className="ri-add-line mx-2"
+                              style={{
+                                fontSize: "18px",
+                                color: "",
                                 cursor: "pointer",
                               }}
                               onClick={() => incrementQuantity(index)}
@@ -3250,49 +3429,52 @@ const Cart = () => {
       {userData &&
         displayCartItems.length > 0 && ( // Only render if user is logged in and cart is not empty
           <div
-            className="container footer-fixed-bottom mb-5 pb-5 z-3"
+            className="container footer-fixed-bottom mb-5 pb-5 z-3 pt-10"
             style={{ backgroundColor: "transparent" }}
           >
             <div className="card-body mt-2" style={{ padding: "0px" }}>
-              <div className="card">
-                <div className="row px-1">
+              <div className="card mx-auto" style={{ width: "365px" }}>
+                <div className="row px-1 py-1" style={{ height: "180px" }}>
                   <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 fs-5" style={{ color: "#a5a5a5" }}>
                         Subtotal
                       </span>
-                      <span className="pe-2 fs-4">
+                      <span className="pe-2 fs-5 fw-semibold">
                         ₹{cartDetails?.sub_total || 0}
                       </span>
                     </div>
                   </div>
-                  <div className="col-12 mb-2">
-                    <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                  <div className="col-12 mb-0">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 fs-5" style={{ color: "#a5a5a5" }}>
                         Discount
                       </span>
-                      <span className="pe-2 fs-4">
+                      <span className="pe-2 fs-5 fw-semibold">
                         ₹{cartDetails?.discount || 0}
                       </span>
                     </div>
                   </div>
-                  <div className="col-12 mb-2">
-                    <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                  <div className="col-12 mb-0">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 fs-5" style={{ color: "#a5a5a5" }}>
                         Tax
                       </span>
-                      <span className="pe-2 fs-4">
+                      <span className="pe-2 fs-5 fw-semibold">
                         ₹{cartDetails?.tax || 0}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <hr className="dashed" />
+                    <hr
+                      className="dashed-line me-3 p-0 m-0"
+                      style={{ color: "#0d775e" }}
+                    />
                   </div>
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1 fw-medium mb-2">
-                      <span className="ps-2 fs-4 fw-medium">Grand Total</span>
-                      <span className="pe-2 fs-4 fw-medium">
+                  <div className="col-12 ">
+                    <div className="d-flex justify-content-between align-items-center py-1 fw-medium  pb-0 mb-0">
+                      <span className="ps-2 fs-5 fw-semibold ">Grand Total</span>
+                      <span className="pe-2 fs-5 fw-semibold">
                         ₹{cartDetails?.grand_total || 0}
                       </span>
                     </div>

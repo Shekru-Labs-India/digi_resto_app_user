@@ -74,7 +74,7 @@ const Test = () => {
               className="back-btn dz-icon icon-fill icon-sm"
               onClick={handleBack}
             >
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
           <div className="mid-content">

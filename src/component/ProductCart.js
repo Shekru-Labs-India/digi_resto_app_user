@@ -1290,18 +1290,17 @@ const ProductCard = () => {
                   )}
 
                   <div className="footer-wrapper mt-2">
-                    <div className="price-wrapper">
-                      <h6 className="current-price fs-6 fw-medium">
+                    <div className="price-wrapper d-flex align-items-baseline">
+                      <h6 className="current-price me-0 fs-6 fw-medium">
                         ₹{menu.price}
                       </h6>
-                      <span className="old-price fs-6">₹{menu.oldPrice}</span>
+                      <span className="old-price ms-0 fs-8 ms-1">
+                        ₹{menu.oldPrice}
+                      </span>
                     </div>
-                    <div
-                      className="fw-medium d-flex fs-6 fw-semibold"
-                      style={{ color: "#438a3c" }}
-                    >
-                      {menu.offer} Off
-                    </div>
+
+                    <div className="small-offer-text">{menu.offer} Off</div>
+
                     <div className="footer-btns">
                       {userData ? (
                         <div
