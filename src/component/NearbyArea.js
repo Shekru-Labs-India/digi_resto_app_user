@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import Swiper from "swiper";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
-// import { RiFireFill, RiFireLine } from "react-icons/ri"; // Import Remixicon icons
 
 const NearbyArea = () => {
   const swiperRef = useRef(null);
@@ -29,8 +28,8 @@ const NearbyArea = () => {
     const swiper = new Swiper(".product-swiper", {
       loop: true,
       slidesPerView: "auto",
-      centeredSlides: true,
-      spaceBetween: 10,
+      centeredSlides: false,
+      spaceBetween: 65,
     });
 
     swiperRef.current = swiper;
@@ -146,7 +145,7 @@ const NearbyArea = () => {
       const isFavorite = menuItem.is_favourite;
 
       const apiUrl = isFavorite
-        ? "https://menumitra.com/user_api/delete_favourite_menu"
+        ? "https://menumitra.com/user_api/remove_favourite_menu"
         : "https://menumitra.com/user_api/save_favourite_menu";
 
       const response = await fetch(apiUrl, {
@@ -218,15 +217,11 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i
-          className="ri-fire-fill fs-6"
-        
-          key={index}
-        ></i>
+        <i className="ri-fire-fill fs-6" key={index}></i>
       ) : (
         <i
           className="ri-fire-line fs-6"
-          style={{  color: "#0000001a" }}
+          style={{ color: "#0000001a" }}
           key={index}
         ></i>
       )
@@ -246,8 +241,9 @@ const NearbyArea = () => {
             <div className="swiper-slide col-6" key={index}>
               <div className="row g-3 grid-style-1">
                 <div>
-                  <div className="card-item style-6" 
-                  // style={{width:"216px" , height:"auto"}}
+                  <div
+                    className="card-item style-6"
+                    style={{ width: "216px", height: "auto" }}
                   >
                     <div className="dz-media">
                       <Link to={`/ProductDetails/${menuItem.menu_id}`}>
@@ -265,48 +261,31 @@ const NearbyArea = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                        {/* <h3 className="product-title">
-                          {toTitleCase(menuItem.menu_cat_name)}
-                        </h3> */}
-                        
-                        <div
-                          className="dz-quantity detail-content"
-              
-                        >
+                        <div className="dz-quantity detail-content">
                           <i
-                            class="ri-restaurant-line fs-6 " 
-                            style={{ paddingRight: "5px" }}
+                            className="ri-restaurant-line fs-6 "
+                            style={{ paddingRight: "2px" }}
                           ></i>
-                          {toTitleCase(menuItem.menu_cat_name)}
+                          {toTitleCase(menuItem.category_name)}
                         </div>
-                        {userData ? (
-                          <i
-                            className={` ${
-                              menuItem.is_favourite
-                                ? "ri-hearts-fill text-red"
-                                : "ri-heart-2-line"
-                            } `}
-                            onClick={() => handleLikeClick(menuItem.menu_id)}
-                            style={{
-                              position: "absolute",
-                              top: "0",
-                              right: "0",
-                              fontSize: "23px",
-                              cursor: "pointer",
-                            }}
-                          ></i>
-                        ) : (
-                          <i
-                            className="ri-heart-line"
-                            style={{
-                              position: "absolute",
-                              top: "0",
-                              right: "0",
-                              fontSize: "23px",
-                              cursor: "pointer",
-                            }}
-                          ></i>
-                        )}
+                        <i
+                          className={` ${
+                            menuItem.is_favourite
+                              ? "ri-hearts-fill"
+                              : "ri-heart-2-line"
+                          } fs-2`}
+                          onClick={() => handleLikeClick(menuItem.menu_id)}
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            right: "0",
+                            fontSize: "23px",
+                            cursor: "pointer",
+                            color: menuItem.is_favourite
+                              ? "#fe0809"
+                              : "#73757b",
+                          }}
+                        ></i>
                       </div>
                       <h4 className="item-name ">
                         <a href="product-detail.html">
@@ -341,29 +320,22 @@ const NearbyArea = () => {
                             {menuItem.offer} Off
                           </div>
                         </div>
-                        {userData ? (
-                          <div
-                            onClick={() => handleAddToCartClick(menuItem)}
-                            className="cart-btn"
-                          >
-                            {isMenuItemInCart(menuItem.menu_id) ? (
-                              <i
-                                className="ri-shopping-cart-2-fill"
-                                style={{ fontSize: "25px" }}
-                              ></i>
-                            ) : (
-                              <i
-                                className="ri-shopping-cart-2-line"
-                                style={{ fontSize: "25px" }}
-                              ></i>
-                            )}
-                          </div>
-                        ) : (
-                          <i
-                            className="ri-shopping-cart-2-line"
-                            style={{ fontSize: "25px" }}
-                          ></i>
-                        )}
+                        <div
+                          onClick={() => handleAddToCartClick(menuItem)}
+                          className="cart-btn"
+                        >
+                          {isMenuItemInCart(menuItem.menu_id) ? (
+                            <i
+                              className="ri-shopping-cart-2-fill"
+                              style={{ fontSize: "25px" }}
+                            ></i>
+                          ) : (
+                            <i
+                              className="ri-shopping-cart-2-line"
+                              style={{ fontSize: "25px" }}
+                            ></i>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

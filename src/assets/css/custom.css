@@ -1,3 +1,102 @@
+/* Container for the input field and icon */
+.input-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Icon styling */
+.input-container i {
+  position: absolute;
+  top: 50%;
+  left: 12px; /* Adjust the icon's distance from the left */
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888; /* Icon color */
+}
+
+/* Padding on the input field to avoid overlap with the icon */
+.input-container .form-control {
+  padding-left: 45px; /* Increase padding to avoid overlap with the icon */
+  height: 50px; /* Adjust height for a better look */
+  border-radius: 8px; /* More subtle rounded corners */
+  border: 2px solid #ccc; /* Slightly thicker border */
+  background-color: #f9f9f9; /* Light background to match expected design */
+  box-shadow: none; /* Remove any default shadow */
+  font-size: 16px; /* Larger font size for input text */
+  color: #333; /* Darker text for input */
+}
+
+/* Adjust border and shadow on focus */
+.input-container .form-control:focus {
+  border-color: #888; /* Darker gray border on focus */
+  outline: none;
+}
+
+/* Label styling */
+.form-label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Validation errors */
+.input-container .form-control.is-invalid {
+  border-color: red;
+}
+
+/* Optional: Add a subtle shadow on hover for better user feedback */
+.input-container .form-control:hover {
+  border-color: #666;
+}
+
+/* Ensure the form-control class has vertical alignment */
+.input-container .form-control::placeholder {
+  color: #999; /* Placeholder color */
+  opacity: 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Container for the input and icon */
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Lock icon */
+.input-container i.ri-lock-line {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888; /* Change color as needed */
+}
+
+/* Input field with padding to avoid overlap with icon */
+.input-container .form-control {
+  padding-left: 40px; /* Add padding to make space for the icon */
+}
+
+
+
+
+
+
+
+
+
 .popup-overlay {
   position: fixed;
   top: 0;

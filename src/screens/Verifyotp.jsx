@@ -153,6 +153,349 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import Logoname from "../constants/Logoname";
+// import CompanyVersion from "../constants/CompanyVersion";
+// import pic4 from "../assets/background.jpg";
+
+// const Verifyotp = () => {
+//   const [otp, setOtp] = useState("");
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   // Get mobile and otp from localStorage
+//   const mobile = localStorage.getItem("mobile");
+//   const otpStored = localStorage.getItem("otp");
+
+//   const handleOtpChange = (e) => {
+//     setOtp(e.target.value.trim());
+//   };
+
+//   const handleVerify = async () => {
+//     if (!otp.trim()) {
+//       setError("OTP is required");
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     try {
+//       const url = "https://menumitra.com/user_api/account_verify_otp";
+//       const requestOptions = {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           mobile: mobile, // Use mobile from localStorage
+//           otp: otpStored || otp, // Use stored OTP if available, else use the entered OTP
+//         }),
+//       };
+
+//       const response = await fetch(url, requestOptions);
+//       const data = await response.json();
+
+//       if (!response.ok) {
+//         throw new Error(`HTTP error! Status: ${response.status}`);
+//       }
+
+//       // Check for successful OTP verification
+//       if (data.st === 1) {
+//         console.log("OTP verification success:", data);
+
+//         // Store user details in local storage
+//         const { customer_id, name, dob } = data.customer_details;
+//         const userData = { customer_id, name, dob };
+//         localStorage.setItem("userData", JSON.stringify(userData));
+
+//         // Redirect to the next screen after successful verification
+//         navigate("/HomeScreen");
+
+//         // Clear OTP and mobile from localStorage after use
+//         localStorage.removeItem("otp");
+//         localStorage.removeItem("mobile");
+//       } else {
+//         setError("Incorrect OTP. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Error verifying OTP:", error);
+//       setError("Verification failed. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="page-wrapper full-height">
+//       <main className="page-content">
+//         <div className="container pt-0 overflow-hidden">
+//           <div className="dz-authentication-area dz-flex-box">
+//             <div className="dz-media">
+//               <img
+//                 src={pic4}
+//                 alt="OTP Verification"
+//                 style={{ height: "250px" }}
+//               />
+//             </div>
+//             <div className="account-section">
+//               <div className="section-head">
+//                 <Logoname />
+//                 <h2 className="title">Enter OTP</h2>
+//                 <p>An Authentication Code has been sent to {mobile}</p>
+//               </div>
+
+//               <form onSubmit={(e) => e.preventDefault()}>
+//                 <label className="form-label" htmlFor="otp">
+//                   <span className="required-star">*</span> OTP
+//                 </label>
+//                 <div className="digit-group">
+//                   <input
+//                     className="form-control"
+//                     type="text"
+//                     id="otp"
+//                     value={otp}
+//                     onChange={handleOtpChange}
+//                     placeholder="Enter OTP"
+//                   />
+//                 </div>
+
+//                 {error && <p className="text-danger">{error}</p>}
+
+//                 {loading ? (
+//                   <div id="preloader">
+//                     <div className="loader">
+//                       <div
+//                         className="spinner-border text-primary"
+//                         role="status"
+//                       >
+//                         <span className="visually-hidden">Loading...</span>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 ) : (
+//                   <button
+//                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+//                     onClick={handleVerify}
+//                     disabled={!otp.trim()}
+//                   >
+//                     Verify and proceed
+//                   </button>
+//                 )}
+//               </form>
+//             </div>
+
+//             <div className="text-center mt-auto">
+//               Back to{" "}
+//               <Link to="/Signinscreen" className="text-underline font-w500">
+//                 Sign In
+//               </Link>
+//             </div>
+//           </div>
+//         </div>
+//       </main>
+//       <CompanyVersion />
+//     </div>
+//   );
+// };
+
+// export default Verifyotp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import Logoname from "../constants/Logoname";
+// import CompanyVersion from "../constants/CompanyVersion";
+// import pic4 from "../assets/background.jpg";
+
+// const Verifyotp = () => {
+//   const [otp, setOtp] = useState("");
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   // Get mobile and otp from localStorage
+//   const mobile = localStorage.getItem("mobile");
+//   const otpStored = localStorage.getItem("otp");
+
+//   const handleOtpChange = (e) => {
+//     setOtp(e.target.value.trim());
+//   };
+
+//   const handleVerify = async () => {
+//     if (!otp.trim()) {
+//       setError("OTP is required");
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     try {
+//       const url = "https://menumitra.com/user_api/account_verify_otp";
+//       const requestOptions = {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           mobile: mobile, // Use mobile from localStorage
+//           otp: otpStored || otp, // Use stored OTP if available, else use the entered OTP
+//         }),
+//       };
+
+//       const response = await fetch(url, requestOptions);
+//       const data = await response.json();
+
+//       if (!response.ok) {
+//         throw new Error(`HTTP error! Status: ${response.status}`);
+//       }
+
+//       // Check for successful OTP verification
+//       if (data.st === 1) {
+//         console.log("OTP verification success:", data);
+
+//         // Store user details in local storage
+//         const { customer_id, name, dob } = data.customer_details;
+//         const userData = { customer_id, name, dob };
+//         localStorage.setItem("userData", JSON.stringify(userData));
+
+//         // Redirect to the next screen after successful verification
+//         navigate("/HomeScreen");
+
+//         // Clear OTP and mobile from localStorage after use
+//         localStorage.removeItem("otp");
+//         localStorage.removeItem("mobile");
+//       } else {
+//         setError("Incorrect OTP. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Error verifying OTP:", error);
+//       setError("Verification failed. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="page-wrapper full-height">
+//       <main className="page-content">
+//         <div className="container pt-0 overflow-hidden">
+//           <div className="dz-authentication-area dz-flex-box">
+//             <div className="dz-media">
+//               <img
+//                 src={pic4}
+//                 alt="OTP Verification"
+//                 style={{ height: "250px" }}
+//               />
+//             </div>
+//             <div className="account-section">
+//               <div className="section-head">
+//                 <Logoname />
+//                 <h2 className="title">Enter OTP</h2>
+//                 <p>An Authentication Code has been sent to {mobile}</p>
+//               </div>
+
+//               <form onSubmit={(e) => e.preventDefault()}>
+//                 <label className="form-label" htmlFor="otp">
+//                   <span className="required-star">*</span> OTP
+//                 </label>
+
+//                 {/* Input field container */}
+//                 <div className="input-container">
+//                   {/* Lock icon */}
+//                   <i className="ri-lock-line"></i>
+//                   <input
+//                     className="form-control"
+//                     type="text"
+//                     id="otp"
+//                     value={otp}
+//                     onChange={handleOtpChange}
+//                     placeholder="Enter OTP"
+//                   />
+//                 </div>
+
+//                 {error && <p className="text-danger">{error}</p>}
+
+//                 {loading ? (
+//                   <div id="preloader">
+//                     <div className="loader">
+//                       <div
+//                         className="spinner-border text-primary"
+//                         role="status"
+//                       >
+//                         <span className="visually-hidden">Loading...</span>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 ) : (
+//                   <button
+//                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+//                     onClick={handleVerify}
+//                     disabled={!otp.trim()}
+//                   >
+//                     Verify and proceed
+//                   </button>
+//                 )}
+//               </form>
+//             </div>
+
+//             <div className="text-center mt-auto">
+//               Back to{" "}
+//               <Link to="/Signinscreen" className="text-underline font-w500">
+//                 Sign In
+//               </Link>
+//             </div>
+//           </div>
+//         </div>
+//       </main>
+//       <CompanyVersion />
+//     </div>
+//   );
+// };
+
+// export default Verifyotp;
+
+
+
+
+// retrived from gh--->
+
+
+
+
+
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logoname from "../constants/Logoname";
@@ -246,7 +589,12 @@ const Verifyotp = () => {
                 <p>An Authentication Code has been sent to {mobile}</p>
               </div>
 
-              <form onSubmit={(e) => e.preventDefault()}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleVerify();
+                }}
+              >
                 <label className="form-label" htmlFor="otp">
                   <span className="required-star">*</span> OTP
                 </label>
@@ -276,8 +624,8 @@ const Verifyotp = () => {
                   </div>
                 ) : (
                   <button
+                    type="submit"
                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
-                    onClick={handleVerify}
                     disabled={!otp.trim()}
                   >
                     Verify and proceed
@@ -301,4 +649,3 @@ const Verifyotp = () => {
 };
 
 export default Verifyotp;
-
