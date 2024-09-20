@@ -301,7 +301,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={() => navigate(-1)}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </div>
 //           </div>
 //           <div className="mid-content">
@@ -1013,7 +1013,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={() => navigate(-1)}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </div>
 //           </div>
 //           <div className="mid-content">
@@ -1464,7 +1464,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={() => navigate(-1)}
 //             >
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </div>
 //           </div>
 //           <div className="mid-content">
@@ -1961,7 +1961,7 @@ const Product = () => {
               className="back-btn dz-icon icon-fill icon-sm"
               onClick={() => navigate(-1)}
             >
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-3"></i>
             </div>
           </div>
           <div className="mid-content">
@@ -2136,28 +2136,107 @@ const Product = () => {
         </div>
 
         {/* Sort and Filter Footer */}
-        <div className="container">
-          <div className="row text-center">
-            <div className="col-6 fs-4 d-flex justify-content-center align-items-center">
-              <i className="ri-arrow-up-line me-2"></i>
-              <button
-                className="btn btn-outline-primary"
-                onClick={() => setSortByOpen(true)}
-              >
-                Sort
-              </button>
-            </div>
-            <div className="col-6 fs-4 d-flex justify-content-center align-items-center">
-              <i className="ri-equalizer-line me-2"></i>
-              <button
-                className="btn btn-outline-primary"
-                onClick={() => setFilterOpen(true)}
-              >
-                Filter
-              </button>
+
+        {/* <h5 className="sub-title">Price</h5> */}
+        {/* <div className="container" style={{position:"fixed", bottom:"80px"}}> 
+          <div className="row">
+            <div className="col-12">
+              <div className="filter-inner-content rounded py-3 px-3 shadow" style={{backgroundColor:"#ffffff"}}>
+                <h5 className="sub-title">Price</h5>
+                <div className="title-bar">
+                  <div
+                    className="price-range-slider"
+                    style={{
+                      width: "100%",
+                      padding: "0 20px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <Slider
+                      value={priceRange}
+                      onChange={handlePriceChange}
+                      valueLabelDisplay="auto"
+                      min={100}
+                      max={1000}
+                      sx={{
+                        color: "#0D775E",
+                        width: "100%",
+                        "& .MuiSlider-thumb": {
+                          backgroundColor: "#0D775E",
+                          border: "2px solid #0D775E",
+                        },
+                        "& .MuiSlider-rail": {
+                          height: 4,
+                          backgroundColor: "#9ec8be",
+                        },
+                        "& .MuiSlider-track": {
+                          height: 4,
+                        },
+                      }}
+                    />
+                    <div
+                      className="price-labels"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: "10px",
+                      }}
+                    >
+                      <span>₹{priceRange[0]}</span>
+                      <span>₹{priceRange[1]}</span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="filter-buttons"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    width: "100%",
+                    padding: "0 20px",
+                  }}
+                >
+                  <button
+                    onClick={handlePriceFilter}
+                    className="apply-btn"
+                    style={{
+                      padding: "12px 20px",
+                      backgroundColor: "#0D775E",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      width: "100%",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Apply
+                  </button>
+                  <button
+                    onClick={() => setPriceRange([100, 1000])}
+                    className="reset-btn"
+                    style={{
+                      padding: "12px 20px",
+                      backgroundColor: "#f0f0f0",
+                      color: "#333",
+                      border: "1px solid #ccc",
+                      borderRadius: "8px",
+                      width: "100%",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+    
 
         {sortByOpen && (
           <div
@@ -2273,7 +2352,200 @@ const Product = () => {
               </div>
             </div>
           </div>
+        )} */}
+
+        <div
+          className="container d-flex justify-content-center align-items-center"
+          style={{
+            position: "fixed",
+            bottom: "75px",
+            backgroundColor: "#ffffff",
+            height: "80px",
+            zIndex: 1,
+          }}
+        >
+          <div className="row w-100">
+            <div className="col-12 d-flex justify-content-center">
+              <button
+                className="btn "
+                style={{
+                  fontFamily:"poppins"
+                }}
+                onClick={() => setFilterOpen(true)}
+              >
+                <i className="ri-equalizer-line pe-3"></i>
+                Filter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {filterOpen && (
+          <div
+            className={`container ${filterOpen ? "slide-up" : "slide-down"}`}
+            style={{ position: "fixed", bottom: "110px" }}
+          >
+            <div className="row">
+              <div className="col-12">
+                <div
+                  className="filter-inner-content rounded py-3 px-3 shadow"
+                  style={{ backgroundColor: "#ffffff" }}
+                >
+                  <h5 className="sub-title">Price</h5>
+                  <div className="title-bar">
+                    <div
+                      className="price-range-slider"
+                      style={{
+                        width: "100%",
+                        padding: "0 20px",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      <Slider
+                        value={priceRange}
+                        onChange={handlePriceChange}
+                        valueLabelDisplay="auto"
+                        min={100}
+                        max={1000}
+                        sx={{
+                          color: "#0D775E",
+                          width: "100%",
+                          "& .MuiSlider-thumb": {
+                            backgroundColor: "#0D775E",
+                            border: "2px solid #0D775E",
+                          },
+                          "& .MuiSlider-rail": {
+                            height: 4,
+                            backgroundColor: "#9ec8be",
+                          },
+                          "& .MuiSlider-track": {
+                            height: 4,
+                          },
+                        }}
+                      />
+                      <div
+                        className="price-labels"
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginTop: "10px",
+                        }}
+                      >
+                        <span>₹{priceRange[0]}</span>
+                        <span>₹{priceRange[1]}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="filter-buttons"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                      width: "100%",
+                      padding: "0 20px",
+                    }}
+                  >
+                    <div className="row">
+                      <div className="col-6">
+                        <button
+                          onClick={() => {
+                            setFilterOpen(false);
+                            setTimeout(() => setPriceRange([100, 1000]), 400); // Slight delay to wait for the animation to finish
+                          }}
+                          className="reset-btn"
+                          style={{
+                            padding: "12px 20px",
+                            backgroundColor: "#f0f0f0",
+                            color: "#333",
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                            width: "100%",
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="col-6">
+                        <button
+                          onClick={handlePriceFilter}
+                          className="apply-btn"
+                          style={{
+                            padding: "12px 20px",
+                            backgroundColor: "#0D775E",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            width: "100%",
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
+
+        {/* {sortByOpen && (
+          <div
+            className="offcanvas offcanvas-bottom show"
+            tabIndex="-1"
+            style={{ zIndex: 1050 }}
+          >
+            <div className="offcanvas-header">
+              <h5 className="offcanvas-title">Sort By</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setSortByOpen(false)}
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="offcanvas-body">
+              <button
+                className={`btn btn-light w-100 mb-2 ${
+                  sortCriteria === "priceLowToHigh"
+                    ? "bg-primary text-white"
+                    : ""
+                }`}
+                onClick={() => handleSort("priceLowToHigh")}
+              >
+                Price Low to High
+              </button>
+              <button
+                className={`btn btn-light w-100 mb-2 ${
+                  sortCriteria === "priceHighToLow"
+                    ? "bg-primary text-white"
+                    : ""
+                }`}
+                onClick={() => handleSort("priceHighToLow")}
+              >
+                Price High to Low
+              </button>
+              <div className="d-flex justify-content-between mt-3">
+                <button
+                  className="btn btn-outline-secondary w-45"
+                  onClick={() => setSortByOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button className="btn btn-primary w-45" onClick={applySort}>
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        )} */}
       </main>
 
       <Bottom />

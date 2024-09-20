@@ -66,7 +66,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-//               <i className="ri-arrow-left-line"></i>
+//               <i className="ri-arrow-left-line fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -335,8 +335,8 @@ const MyOrder = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
-              <i className="ri-arrow-left-line"></i>
+            <Link to="/Profile" className="back-btn dz-icon  icon-sm">
+              <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -358,7 +358,7 @@ const MyOrder = () => {
           ) : (
             <>
               {userData ? (
-                <div className="default-tab style-2">
+                <div className="default-tab style-2" >
                   <div className="dz-tabs" style={{bottom:"80px"}}>
                     <ul className="nav nav-tabs" role="tablist">
                       <li
@@ -444,7 +444,9 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="fs-6 fw-semibold">You haven't placed any orders yet.</p>
+          <p className="fs-6 fw-semibold " style={{ color: "#7f7e7e" }}>
+            You haven't placed any orders yet.
+          </p>
           <Link
             to="/Product"
             className="mt-2 fs-6 fw-semibold"
@@ -461,48 +463,53 @@ const OrdersTab = ({ orders, type }) => {
             onClick={() => handleOrderClick(order.order_number)} // Add click handler
             style={{ cursor: "pointer" }} // Add pointer cursor for better UX
           >
-            <div className="card-body">
+            <div className="card-body" style={{ height: "90px" }}>
               <div className="row align-items-center">
-                <div className="col-6">
+                <div className="col-5">
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
-                <div className="col-6 text-end">
-                  <span className="card-text text-muted mb-0">
+                <div className="col-7 text-end">
+                  <span className="card-text text-muted mb-0" style={{position:"relative", right:"-6px"}}>
                     {order.date_time}
                   </span>
                 </div>
               </div>
               <div className="row mt-2">
-                <div className="col-3">
-                  <p className="mb-0 fs-6">
+                <div className="col-4">
+                  <p className="mb-0 fs-6 text-truncate">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
                   </p>
                 </div>
                 <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
-                  <p className="mb-0 fs-7">
+                  <p
+                    className="mb-0 fs-7"
+                    style={{ position: "relative", right: "25px" }}
+                  >
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
                       ? "No ongoing orders"
-                      : order.menu_count}
+                      : order.menu_count}{" "}
+                    Menu
                   </p>
                 </div>
                 <div
                   className="col-5 text-end"
-                  style={{ position: "absolute", right: "0" }}
+                  style={{ position: "absolute", right: "35px" }}
                 >
                   <div className="price-wrapper">
-                    <h6 className="current-price fs-3">₹{order.total_bill}</h6>
-                    <span className="old-price">
+                    <h6 className="current-price fs-4 me-1">₹{order.total_bill}</h6>
+                    <span className="old-price fs-7">
                       ₹{calculateOldPrice(order.total_bill)}
                     </span>
 
                     <div
-                      className="fw-medium d-flex fs-5 ps-1 "
+                      className="fw-semibold d-flex  ps-1  "
                       style={{
+                        fontSize:"14px",
                         color: "#0D775E",
                         position: "absolute",
-                        right: "10px",
+                        right: "-25px",
                       }}
                     >
                       40% off

@@ -68,7 +68,7 @@ const handleLogout = () => {
           <div className="header-content">
             <div className="left-content">
               <Link to="/HomeScreen" className="back-btn fs-3">
-                <i className="ri-arrow-left-line"></i>
+                <i className="ri-arrow-left-line fs-3"></i>
               </Link>
             </div>
             <div className="mid-content">
@@ -170,7 +170,7 @@ const handleLogout = () => {
           </div> */}
           <div className="left-content">
             <Link to="/HomeScreen" className="back-btn fs-3">
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
           <div className="mid-content">
