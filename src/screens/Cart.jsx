@@ -2805,6 +2805,14 @@
 
 // rerived from gh----->
 
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -2983,7 +2991,8 @@ const Cart = () => {
                     className="ri-store-2-line"
                     style={{ paddingRight: "10px" }}
                   ></i>
-                  {cartDetails.restaurant_name || "Restaurant Name"}
+                 {userData ? userData.restaurantName : "Restaurant Name"}
+
                 </h3>
               </div>
               {/* RESTAURANT NAME */}

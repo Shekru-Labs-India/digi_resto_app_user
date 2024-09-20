@@ -49,7 +49,7 @@ function App() {
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/MyOrder" element={<MyOrder />} />
          
-          <Route path="/Product" element={<Product />} />
+          <Route path="/Menu" element={<Product />} />
           <Route path="/Search" element={<Search />} />
           
           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />

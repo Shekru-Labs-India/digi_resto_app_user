@@ -572,7 +572,7 @@ const Category = () => {
                     <div className="dz-card style-4 text-center px-0 pb-0 border border-success">
                       <h6 className="title px-0">
                         <Link
-                          to="/Product"
+                          to="/Menu"
                           onClick={() => handleCategoryClick(category)}
                         >
                           {toTitleCase(category.category_name)} (
@@ -581,7 +581,7 @@ const Category = () => {
                       </h6>
                       <div className="" style={{}}>
                         <Link
-                          to="/Product"
+                          to="/Menu"
                           onClick={() => handleCategoryClick(category)}
                         >
                           <img

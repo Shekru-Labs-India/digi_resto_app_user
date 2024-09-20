@@ -45,7 +45,7 @@ const HomeScreen = () => {
 
             {/* <OfferAndFeatured /> */}
             <OfferBanner />
-            <FeaturedArea />
+            {/* <FeaturedArea /> */}
 
             {/* <PopularProducts/> */}
             <ProductCart />
