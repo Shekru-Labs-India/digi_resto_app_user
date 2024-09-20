@@ -42,27 +42,26 @@ const Sidebar = () => {
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
       {/* Header */}
       <header className="header header-fixed p-3">
-        <div className="header-content">
-          <div className="left-content gap-1">
-            <h3 className="title fw-medium">
-              <i class="ri-store-2-line" style={{ paddingRight: "10px" }}></i>
-              {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
-            </h3>
-          </div>
-          <div className="mid-content"></div>
-          <div className="right-content">
+      <div className="header-content d-flex justify-content-between">
+          <div className="left-content">
             <div className="menu-toggler" onClick={toggleSidebar}>
               {isLoggedIn ? (
-                <i className="ri-user-3-line fs-1"></i>
+                <i className="ri-menu-line fs-1"></i>
               ) : (
                 <Link to="/Signinscreen">
                   <i
                     className="ri-login-circle-line fs-1"
-                    // style={{ fontSize: "48px" }}
+                    
                   ></i>
                 </Link>
               )}
             </div>
+          </div> 
+          <div className="right-content gap-1">
+            <h3 className="title fw-medium">
+              {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
+              <i className="ri-store-2-line ps-2"></i>
+            </h3>
           </div>
         </div>
       </header>
@@ -160,13 +159,11 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-bottom">
-          <div className="app-info">
-            <span className="ver-info">
-              <p className="company" style={{ textAlign: "center" }}>
-                ShekruLabs India Pvt.Ltd <span className="company">v1</span>
-              </p>
-            </span>
-          </div>
+        <div className="container text-center">
+    <h6>Powered by </h6>
+    <h6 className="text-muted">Shekru Labs India Pvt. Ltd.</h6>
+    <h6 className="text-muted">V 1.1</h6>
+  </div>
         </div>
       </div>
     </div>

@@ -1155,6 +1155,7 @@ import "../assets/css/custom.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 
 const TrackOrder = () => {
+  // Define displayCartItems
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
@@ -1163,7 +1164,8 @@ const TrackOrder = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
   const customerId = userData ? userData.customer_id : null;
-
+   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
+   const [cartDetails, setCartDetails] = useState(null);
   const handleBack = () => {
     navigate(-1);
   };
@@ -1258,20 +1260,22 @@ const TrackOrder = () => {
   const renderSpicyIndex = (spicyIndex) => {
     const totalFires = 5;
     return (
-      <div className="spicy-index">
+      <div className="spicy-index ms-3">
         {Array.from({ length: totalFires }).map((_, index) => (
           <i
             key={index}
             className={`ri-fire-${index < spicyIndex ? "fill" : "line"}`}
             style={{
               color: index < spicyIndex ? "#eb8e57" : "#bbbaba",
-              marginRight: "2px",
+            
+               fontSize: "18px"
             }}
           ></i>
         ))}
       </div>
     );
   };
+  
 
   return (
     <>
@@ -1280,10 +1284,10 @@ const TrackOrder = () => {
           <div className="left-content">
             <Link
               to=""
-              className="back-btn dz-icon icon-fill icon-sm"
+              className="back-btn dz-icon  icon-sm"
               onClick={handleBack}
             >
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-2"></i>
             </Link>
           </div>
           <div className="mid-content">
@@ -1309,29 +1313,29 @@ const TrackOrder = () => {
                   </span>
                 </div>
               </div>
-              <div className="row align-items-center mt-2 ">
-                <div className="col-4">
+              <div className="row mt-2 align-items-center"> {/* Added align-items-center for vertical alignment */}
+                <div className="col-4 text-start pe-0"> {/* Added text-start for left alignment */}
                   <p className="mb-0 fs-6">
                     <i className="ri-store-2-line pe-2"></i>
                     {order_details.restaurant_name}
                   </p>
                 </div>
-                <div className="col-3 text-center">
-                  <p className="mb-0 text-start fs-6">
+                <div className="col-3 pe-0 ps-2"> {/* Changed to text-center for center alignment */}
+                  <p className="mb-0 fs-6">
                     <i className="ri-bowl-line pe-0"></i>{" "}
                     {order_details.menu_count} Menu
                   </p>
                 </div>
-                <div className="col-5 text-end">
-                  <span
-                    className="current-price fs-3 fw-medium"
+                <div className="col-5 text-end ps-0"> {/* Kept text-end for right alignment */}
+                <span
+                    className="current-price fs-6 fw-medium"
                     style={{ color: "#4E74FC" }}
                   >
                     ₹{order_details.grand_total}
                   </span>
                   <span
                     className="text-decoration-line-through ms-2"
-                    style={{ color: "#a5a5a5" }}
+                    style={{ color: "#a5a5a5", fontSize: "0.8em" }} // Adjusted font size for old price
                   >
                     ₹
                     {(
@@ -1356,12 +1360,12 @@ const TrackOrder = () => {
               borderRadius: "8px",
             }}
           >
-            <span className="fs-6 fw-medium h-100" style={{ color: "#2f855a",  }}>
+            <span className="fs-6 fw-medium h-100 rounded-corner" style={{ color: "#2f855a",  }}>
               Your delicious order has been served
             </span>
           </div>
         ) : (
-          <div className="card-body" style={{ padding: "0px" }}>
+          <div className="card-body p-0" >
             <div className="card" style={{ height: "85px" }}>
               <div className="row py-2 px-2 h-100">
                 <div className="col-2 d-flex align-items-center justify-content-center">
@@ -1385,55 +1389,55 @@ const TrackOrder = () => {
 
       <main className="page-content ">
         {userData ? (
-          <section className="container mt-3">
+          <section className="container mt-1">
             <h4 className="title fs-3">Menu Details</h4>
             <div className="row g-3">
               {menu_details.map((menu) => (
                 <div key={menu.menu_id} className="col-12">
                   <div className="dz-card list-style style-3 horizontal-card">
                     <div className="dz-media">
-                      <img
+                      <img className="rounded"
                         src={menu.image || images}
                         alt={menu.menu_name}
                         onError={(e) => {
                           e.target.src = images;
                         }}
                         style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "8px",
+                          width: "108px",
+                          height: "108px",
+                          
                         }}
                       />
                     </div>
-                    <div className="dz-content px-3">
-                      <h5 className="title">{menu.menu_name}</h5>
-                      <div className="d-flex align-items-center mb-1">
+                    <div className="dz-content  text-success">
+                      <h5 className=" mt-2 mb-0">{menu.menu_name}</h5>
+                      <div className="d-flex ">
                         <i
-                          className="ri-restaurant-line"
-                          style={{ paddingRight: "5px" }}
+                          className="ri-restaurant-line pe-1"
+                          
                         ></i>
-                        <span className="category-text">
+                        <span className="category-text text-success fs-6">
                           {menu.category_name}
                         </span>
-                        {renderSpicyIndex(menu.spicy_index)}
-                        <span className="rating ms-auto">
+                        {renderSpicyIndex(menu.spicy_index)  }
+                        <span className="rating ms-5">
                           <i
-                            className="ri-star-fill"
-                            style={{ color: "#fda200", marginRight: "3px" }}
+                            className="ri-star-half-line"
+                            style={{ color: "#fda200",  }}
                           ></i>
                           {menu.rating}
                         </span>
                       </div>
                       <div className="d-flex align-items-center">
-                        <h6
-                          className="current-price"
-                          style={{ color: "#4E74FC", marginRight: "10px" }}
+                      <span
+                          className="current-price me-1 fs-5 mb-2"
+                          style={{ color: "#4E74FC" }}
                         >
                           ₹{menu.net_price}
-                        </h6>
+                        </span>
                         <span
-                          className="old-price text-decoration-line-through"
-                          style={{ color: "#a5a5a5", marginRight: "10px" }}
+                          className="old-price text-decoration-line-through mb-2"
+                          style={{ color: "#a5a5a5", fontSize: "0.8em" }} // Adjusted font size for old price
                         >
                           ₹
                           {(
@@ -1442,20 +1446,20 @@ const TrackOrder = () => {
                           ).toFixed(2)}
                         </span>
                         <span
-                          className="offer-text"
-                          style={{ color: "#438a3c", marginRight: "10px" }}
+                          className="offer-text mb-2 ms-1"
+                          style={{ color: "#438a3c" }}
                         >
-                          {menu.offer} Off
+                          {menu.offer} <span style={{ fontSize: "0.8em" }}>Off</span> {/* Adjusted font size for "Off" */}
                         </span>
                         <span
-                          className="quantity"
-                          style={{ color: "#7f7e7e", marginRight: "10px" }}
+                          className="quantity  mb-2 ms-4 "
+                          style={{ color: "#7f7e7e",  }}
                         >
                           x {menu.quantity}
                         </span>
                         <h6
-                          className="total-price ms-auto"
-                          style={{ fontWeight: "bold" }}
+                          className="total-price ms-4 "
+                          style={{ color: "#4E74FC"}}
                         >
                           ₹{menu.net_price * menu.quantity}
                         </h6>
@@ -1466,10 +1470,66 @@ const TrackOrder = () => {
               ))}
             </div>
           </section>
+
+          
         ) : (
           <SigninButton />
         )}
       </main>
+      {userData && orderDetails && ( 
+          <div
+            className="container  mb-5 pb-5 z-3"
+            style={{ backgroundColor: "transparent" }}
+          >
+            <div className="card-body mt-2 p-0">
+              <div className="card">
+                <div className="row px-1">
+                  <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                        Subtotal
+                      </span>
+                      <span className="pe-2 fs-4 h5">
+                        ₹{orderDetails.order_details.sub_total || 0} 
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-12 mb-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                        Discount
+                      </span>
+                      <span className="pe-2 fs-4 h5">
+                        ₹{orderDetails.order_details.discount || 0} 
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-12 mb-2 ">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 fs-4" style={{ color: "#a5a5a5" }}>
+                        Tax
+                      </span>
+                      <span className="pe-2 fs-4 h5">
+                        ₹{orderDetails.order_details.tax || 0} 
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <hr className="dashed" />
+                  </div>
+                  <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center py-1 fw-medium mb-2">
+                      <span className="ps-2 fs-4 fw-medium h5">Grand Total</span>
+                      <span className="pe-2 fs-4 fw-medium h5">
+                        ₹{orderDetails.order_details.grand_total || 0} 
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       <Bottom></Bottom>
     </>
   );

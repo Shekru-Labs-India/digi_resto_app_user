@@ -720,7 +720,7 @@ const Checkout = () => {
 
   const closePopup = () => {
     setShowPopup(false);
-    navigate("/MyOrder"); // Redirect to order page when popup is closed
+    navigate("/MyOrder"); 
   };
 
   return (
@@ -730,14 +730,14 @@ const Checkout = () => {
           <div className="left-content">
             <Link
               to=""
-              className="back-btn dz-icon icon-fill icon-sm"
+              className="back-btn dz-icon  icon-sm"
               onClick={() => navigate(-1)}
             >
-              <i className="ri-arrow-left-line"></i>
+              <i className="ri-arrow-left-line fs-2"></i>
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">Checkout</h5>
+            <h5 className="title pe-3">Checkout</h5>
           </div>
         </div>
       </header>
@@ -773,25 +773,25 @@ const Checkout = () => {
                         className="row mb-3 justify-content-center"
                         key={index}
                       >
-                        <div className="col-4 mt-1">
+                        <div className="col-4 mt-1 px-2 py-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
                           <div className="text-success">
                             <i className="ri-restaurant-line me-2"></i>{" "}
                             <span>{item.menu_cat_name}</span>
                           </div>
                         </div>
-                        <div className="col-4 h5 text-end">
+                        <div className="col-4 h5 text-center px-2">
                           x {item.quantity}
                         </div>
-                        <div className="col-4 text-end">
-                          <span className="h5 text-info">
+                        <div className="col-4 text-center px-2">
+                          <span className="h5 text-info ps-2">
                             ₹{item.sub_total.toFixed(2)}
                           </span>
-                          <div className="mt-0 d-flex justify-content-end">
+                          <div className="mt-0 d-flex justify-content-center">
                             <del className="text-muted small mt-1">
                               ₹{item.price}
                             </del>
-                            <span className="text-success text-end ms-1">
+                            <span className="text-success  ms-1">
                               {item.offer || "No discount"}
                             </span>
                           </div>

@@ -548,7 +548,7 @@ const Category = () => {
             <div className="header-content">
               <div className="left-conten ">
                 <Link
-                  to="/HomeScreen/416437"
+                  to="/HomeScreen/"
                   className="back-btn dz-icon icon-sm"
                 >
                   <i className="ri-arrow-left-line fs-2"></i>
@@ -568,7 +568,7 @@ const Category = () => {
             <div className="container">
               <div className="row g-3 grid-style-1">
                 {categories.map((category, index) => (
-                  <div className="col-6 px-4 py-2" key={index}>
+                  <div className="col-6 px-3 py-2" key={index}>
                     <div className="dz-card style-4 text-center px-0 pb-0 border border-success">
                       <h6 className="title px-0">
                         <Link
@@ -587,7 +587,7 @@ const Category = () => {
                           <img
                             style={{
                               width: "100%",
-                              height: "150px",
+                              height: "100px",
                             }}
                             src={category.image || defaultImg} // Use default image if image is null
                             alt={category.category_name} // Update alt text
