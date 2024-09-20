@@ -640,7 +640,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        "https://menumitra.com/user_api/get_cart_detail",
         {
           method: "POST",
           headers: {
@@ -773,7 +773,7 @@ const Checkout = () => {
                         className="row mb-3 justify-content-center"
                         key={index}
                       >
-                        <div className="col-4 mt-1 px-2 py-1">
+                        <div className="col-4  px-2 pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
                           <div className="text-success">
                             <i className="ri-restaurant-line me-2"></i>{" "}
@@ -791,8 +791,8 @@ const Checkout = () => {
                             <del className="text-muted small mt-1">
                               ₹{item.price}
                             </del>
-                            <span className="text-success  ms-1">
-                              {item.offer || "No discount"}
+                            <span className="text-success  ms-1" >
+                              {item.offer || "No discount"}{"%"} Off
                             </span>
                           </div>
                         </div>

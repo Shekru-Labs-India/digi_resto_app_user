@@ -430,7 +430,7 @@
 //               onClick={() => navigate(-1)}
 //               className="back-btn icon-fill dz-icon"
 //             >
-//               <i className="ri-arrow-left-line fs-3"></i>
+//               <i className="ri-arrow-left-line"></i>
 //             </div>
 //             <div className="input w-100">
 //               <input
@@ -755,8 +755,10 @@ const Search = () => {
           </div>
           {debouncedSearchTerm && ( 
             <div className="title-bar my-3">
-              <h4 className="title mb-0 font-w500">Search Menu</h4>
-              <div className="font-w500 h5" onClick={handleClearAll}>
+              <div className=" fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }}>
+                Search Menu
+              </div>
+              <div className="fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }} onClick={handleClearAll}>
                 Clear All
               </div>
             </div>
@@ -792,11 +794,11 @@ const Search = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="col-4 text-end ">
+                          <div className="col-4 text-end pe-0">
                             <span className="d-inline-block">
                               <div
-                                className="offer-code"
-                                style={{ fontSize: "20px" }}
+                                className="offer-code pt-1"
+                                style={{ fontSize: "16px" }}
                               >
                                 {Array.from({ length: 5 }).map((_, index) => (
                                   <i
@@ -841,17 +843,17 @@ const Search = () => {
                               </span>
                             )}
                           </div>
-                          <div className="col-3 pe-0 ps-1">
+                          <div className="col-3 pe-0 ps-1 ">
                             <div
-                              className="fw-medium   fw-semibold"
+                              className="fw-medium fw-semibold pt-1"
                               style={{ color: "#438a3c" }}
                             >
-                              {menu.offer} <span style={{ fontSize: "0.8em" }}>Off</span>
+                              {menu.offer}%<span style={{ fontSize: "0.8em" }} className="pt-1"> Off</span>
                             </div>
                           </div>
-                          <div className="col-1 text-end   ps-3 ">
+                          <div className="col-1 text-end   ps-4 ">
                             <i
-                              className={`${
+                              className={`  ${
                                 menu.is_favourite
                                   ? "ri-hearts-fill fs-4 "
                                   : "ri-heart-2-line fs-4  "

@@ -45,13 +45,13 @@ const HomeScreen = () => {
 
             {/* <OfferAndFeatured /> */}
             <OfferBanner />
-            <FeaturedArea />
+            {/* <FeaturedArea /> */}
 
             {/* <PopularProducts/> */}
             <ProductCart />
             {/* <PeopleAlsoViewed/> */}
             {/* <ItemsCart/> */}
-            <NearbyArea />
+            {/* <NearbyArea /> */}
           </div>
         </main>
 

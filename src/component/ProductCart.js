@@ -909,6 +909,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
+import NearbyArea from "./NearbyArea";
 
 const ProductCard = () => {
   const [menuList, setMenuList] = useState([]);
@@ -1326,6 +1327,7 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
+      <NearbyArea/>
     </div>
   );
 };

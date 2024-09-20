@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import applogo from "../assets/logos/Menu Mitra logo 3.png";
 import Bottom from "../component/bottom";
 import HomeScreen from './HomeScreen';
+import CompanyVersion from "../constants/CompanyVersion";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -280,6 +281,7 @@ const handleLogout = () => {
           </div>
         </div>
       </main>
+      <CompanyVersion/>
       <Bottom />
     </div>
   );

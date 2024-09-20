@@ -1104,11 +1104,7 @@ const Signinscreen = () => {
         </div>
       </main>
       
-  <div className="container text-center">
-    <h6>Powered by </h6>
-    <h6 className="text-muted">Shekru Labs India Pvt. Ltd.</h6>
-    <h6 className="text-muted">V 1.1</h6>
-  </div>
+ <CompanyVersion/>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
+import CompanyVersion from "../constants/CompanyVersion";
 
 const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -159,11 +160,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-bottom">
-        <div className="container text-center">
-    <h6>Powered by </h6>
-    <h6 className="text-muted">Shekru Labs India Pvt. Ltd.</h6>
-    <h6 className="text-muted">V 1.1</h6>
-  </div>
+        <CompanyVersion/>
         </div>
       </div>
     </div>

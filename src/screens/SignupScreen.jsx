@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pic2 from "../assets/background.jpg";
 import Logoname from "../constants/Logoname";
+import CompanyVersion from "../constants/CompanyVersion";
 
 const Signupscreen = () => {
   const navigate = useNavigate();
@@ -195,6 +196,7 @@ const handleSignUp = async (e) => {
                         </div>
                     </div>
                 </main>
+                <CompanyVersion/>
             </div>
   );
 };
