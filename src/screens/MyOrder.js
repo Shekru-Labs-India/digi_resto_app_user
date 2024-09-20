@@ -448,7 +448,7 @@ const OrdersTab = ({ orders, type }) => {
             You haven't placed any orders yet.
           </p>
           <Link
-            to="/Product"
+            to="/Menu"
             className="mt-2 fs-6 fw-semibold"
             style={{ color: "#4f74fd" }}
           >

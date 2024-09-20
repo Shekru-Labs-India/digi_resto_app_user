@@ -1957,12 +1957,14 @@ const Product = () => {
       <header className="header header-fixed style-3 ">
         <div className="header-content">
           <div className="left-content">
-            <div
-              className="back-btn dz-icon icon-fill icon-sm"
-              onClick={() => navigate(-1)}
-            >
-              <i className="ri-arrow-left-line fs-3"></i>
-            </div>
+            <Link to="/Category">
+              <div
+                className="back-btn dz-icon icon-fill icon-sm"
+                // onClick={() => navigate(-1)}
+              >
+                <i className="ri-arrow-left-line fs-3"></i>
+              </div>
+            </Link>
           </div>
           <div className="mid-content">
             <h5 className="title">Menu</h5>
@@ -2369,7 +2371,7 @@ const Product = () => {
               <button
                 className="btn "
                 style={{
-                  fontFamily:"poppins"
+                  fontFamily: "poppins",
                 }}
                 onClick={() => setFilterOpen(true)}
               >

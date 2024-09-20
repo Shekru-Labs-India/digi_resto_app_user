@@ -924,6 +924,8 @@ const ProductCard = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
+  const swiperRef = useRef(null); // Declare the swiperRef using useRef
+
 
   const fetchMenuData = useCallback(
     async (categoryId) => {
@@ -1017,17 +1019,31 @@ const ProductCard = () => {
 
   useEffect(() => {
     if (restaurantId) {
-      debouncedFetchMenuData(selectedCategoryId);
+      debouncedFetchMenuData(null);
+      setSelectedCategoryId(null);
     }
   }, [restaurantId, selectedCategoryId, debouncedFetchMenuData]);
 
   useEffect(() => {
-    const swiper = new Swiper(".category-slide", {
-      slidesPerView: "auto",
-      spaceBetween: 10,
-    });
-    return () => swiper.destroy(true, true);
-  }, [menuCategories]);
+    if (menuCategories.length > 0) {
+      if (swiperRef.current) {
+        swiperRef.current.destroy(true, true); // Destroy previous instance if it exists
+      }
+
+      swiperRef.current = new Swiper(".category-slide", {
+        slidesPerView: "auto",
+        spaceBetween: 10,
+        observer: true, // Reinitialize when DOM changes
+        observeParents: true,
+      });
+    }
+    // Cleanup to destroy the swiper on unmount
+    return () => {
+      if (swiperRef.current) {
+        swiperRef.current.destroy(true, true);
+      }
+    };
+  }, [menuCategories, selectedCategoryId]); // Add selectedCategoryId to reinitialize on category change
 
   const handleLikeClick = async (menuId) => {
     if (!customerId || !restaurantId) {
@@ -1085,14 +1101,15 @@ const ProductCard = () => {
     }
   };
 
-  const handleCategorySelect = useCallback(
-    (categoryId) => {
-      setSelectedCategoryId(categoryId);
-      hasFetchedData.current = false;
-      debouncedFetchMenuData(categoryId);
-    },
-    [debouncedFetchMenuData]
-  );
+ const handleCategorySelect = useCallback(
+   (categoryId) => {
+     setSelectedCategoryId(categoryId); // Update the selected category
+     hasFetchedData.current = false;
+     debouncedFetchMenuData(categoryId); // Refetch data for the selected category
+   },
+   [debouncedFetchMenuData]
+ );
+
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
@@ -1158,6 +1175,7 @@ const ProductCard = () => {
         )}
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
+            {/* "All" Category */}
             <div
               className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
                 selectedCategoryId === null ? "active" : ""
@@ -1170,10 +1188,12 @@ const ProductCard = () => {
             >
               All ({totalMenuCount})
             </div>
+
+            {/* Render other categories */}
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn border border-2 rounded-5 fs-${
+                  className={`category-btn border border-2 rounded-5 fs-6 ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -1252,7 +1272,9 @@ const ProductCard = () => {
                   </div>
 
                   {menu.name && (
-                    <h4 className="item-name fs-6 mt-2">{menu.name}</h4>
+                    <h4 className="item-name fs-6 mt-2 text-break">
+                      {menu.name}
+                    </h4>
                   )}
                   {menu.spicy_index && (
                     <div className="row">
@@ -1275,7 +1297,10 @@ const ProductCard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="col-6 text-end">
+                      <div
+                        className="col-6 text-end"
+                        style={{ position: "relative", top: "8px" }}
+                      >
                         <i
                           className="ri-star-half-line pe-1 fs-6"
                           style={{ color: "#f8a500", fontSize: "23px" }}
@@ -1300,7 +1325,10 @@ const ProductCard = () => {
                       </span>
                     </div>
 
-                    <div className="small-offer-text">{menu.offer} Off</div>
+                    <div className="small-offer-text">
+                      {menu.offer}
+                      {"%"} Off
+                    </div>
 
                     <div className="footer-btns">
                       {userData ? (

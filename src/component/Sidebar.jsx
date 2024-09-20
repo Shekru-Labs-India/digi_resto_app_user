@@ -43,8 +43,15 @@ const Sidebar = () => {
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
       {/* Header */}
       <header className="header header-fixed p-3">
-      <div className="header-content d-flex justify-content-between">
-          <div className="left-content">
+        {/* <div className="header-content">
+          <div className="left-content gap-1">
+            <h3 className="title fw-medium">
+              <i class="ri-store-2-line" style={{ paddingRight: "10px" }}></i>
+              {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
+            </h3>
+          </div>
+          <div className="mid-content"></div>
+          <div className="right-content">
             <div className="menu-toggler" onClick={toggleSidebar}>
               {isLoggedIn ? (
                 <i className="ri-menu-line fs-1"></i>
@@ -58,6 +65,26 @@ const Sidebar = () => {
               )}
             </div>
           </div> 
+          <div className="right-content gap-1">
+            <h3 className="title fw-medium">
+              {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
+              <i className="ri-store-2-line ps-2"></i>
+            </h3>
+          </div>
+        </div> */}
+
+        <div className="header-content d-flex justify-content-between">
+          <div className="left-content">
+            <div className="menu-toggler" onClick={toggleSidebar}>
+              {isLoggedIn ? (
+                <i className="ri-menu-line fs-1"></i>
+              ) : (
+                <Link>
+                  <i className="ri-menu-line fs-1"></i>
+                </Link>
+              )}
+            </div>
+          </div>
           <div className="right-content gap-1">
             <h3 className="title fw-medium">
               {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
