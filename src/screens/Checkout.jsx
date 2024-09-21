@@ -184,28 +184,6 @@
 
 // export default Checkout;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate, useLocation } from "react-router-dom";
 // import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -383,16 +361,6 @@
 // };
 
 // export default Checkout;
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -603,9 +571,6 @@
 
 // export default Checkout;
 
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import Bottom from "../component/bottom";
@@ -720,7 +685,7 @@
 
 //   const closePopup = () => {
 //     setShowPopup(false);
-//     navigate("/MyOrder"); 
+//     navigate("/MyOrder");
 //   };
 
 //   return (
@@ -862,18 +827,6 @@
 // };
 
 // export default Checkout;
-
-
-
-
-
-
-
-
-
-
-
-
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -1040,14 +993,14 @@ const Checkout = () => {
 
             <div className="dz-flex-box mt-3">
               <div className="card">
-                <div className="card-body">
+                <div className="card-body px-0">
                   {cartItems.length > 0 ? (
                     cartItems.map((item, index) => (
                       <div
                         className="row mb-3 justify-content-center"
                         key={index}
                       >
-                        <div className="col-4  px-2 pb-1">
+                        <div className="col-4  px-4 pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
                           <div className="text-success">
                             <i className="ri-restaurant-line me-2"></i>{" "}
@@ -1060,8 +1013,8 @@ const Checkout = () => {
                         <div className="col-4 text-center px-2">
                           <span className="h5 text-info ps-2">
                             ₹
-                            {item.sub_total
-                              ? item.sub_total.toFixed(2)
+                            {item.price
+                              ? item.price.toFixed(2)
                               : "0.00"}
                           </span>
                           <div className="mt-0 d-flex justify-content-center">
@@ -1080,20 +1033,30 @@ const Checkout = () => {
                     <div>No items in the cart.</div>
                   )}
 
-                  <hr />
-                  <div className="my-3">
-                    Subtotal{" "}
+                  <h5 className="px-2">
+                    Total{""}
+                    <span className="float-end h5">₹400</span>
+                  </h5>
+                  <hr className="mx-2" />
+                  <div className="my-3 px-2 ">
+                    Service Charges(10%)
                     <span className="float-end h5">₹{subTotal.toFixed(2)}</span>
                   </div>
-                  <div className="my-3">
-                    Discount{" "}
-                    <span className="float-end h5">₹{discount.toFixed(2)}</span>
+                  <div className="my-3 px-2">
+                    GST(10%)
+                    <span className="float-end h5 ">₹{discount.toFixed(2)}</span>
                   </div>
-                  <div className="">
-                    Tax{" "}
+                  <div className="px-2">
+                    Discount(10%)
                     <span className="float-end h5 mb-2">₹{tax.toFixed(2)}</span>
                   </div>
-                  <h5 className="mt-3">
+                  <hr className="mx-2 bg-black"  style={{
+                      border: "none",
+                      height: "3px",
+                      
+                      borderRadius: "10px",
+                    }}/>
+                  <h5 className="mt-2 px-2" >
                     Grand Total{" "}
                     <span className="float-end">₹{grandTotal.toFixed(2)}</span>
                   </h5>
