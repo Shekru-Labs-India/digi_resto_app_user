@@ -659,6 +659,7 @@ const Wishlist = () => {
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
+  
 
   useEffect(() => {
     if (restaurantId) {
@@ -771,6 +772,7 @@ const Wishlist = () => {
       }
     };
 
+
     fetchFavoriteItems();
   }, [customerId, restaurantId]);
 
@@ -781,7 +783,7 @@ const Wishlist = () => {
   const handleAddToCartClick = (item) => {
     if (!isMenuItemInCart(item.menu_id)) {
       addToCart(item);
-      navigate("/Cart");
+     
     } else {
       console.log("Item is already in the cart");
     }
@@ -915,7 +917,7 @@ const Wishlist = () => {
                                 <del>₹{menu.price}</del>
                               </span>
                             </div>
-                            <div className="col-2 px-0 text-center">
+                            <div className="col-2 px-0 text-start">
                               <span
                                 className="text-success"
                                 style={{ fontSize: "0.75rem" }}
@@ -934,20 +936,16 @@ const Wishlist = () => {
                               </span>
                             </div>
                             <div className="col-2 text-center ps-0">
-                              {userData ? (
-                                <div
-                                  onClick={() => handleAddToCartClick(menu)}
-                                  className="cart-btn"
-                                >
-                                  {isMenuItemInCart(menu.menu_id) ? (
-                                    <i className="ri-shopping-cart-2-fill fs-4"></i>
-                                  ) : (
-                                    <i className="ri-shopping-cart-2-line fs-4"></i>
-                                  )}
-                                </div>
-                              ) : (
-                                <i className="ri-shopping-cart-2-line fs-4"></i>
-                              )}
+                              <div
+                                className="cart-btn"
+                                onClick={() => handleAddToCartClick(menu)}
+                              >
+                                {isMenuItemInCart(menu.menu_id) ? (
+                                  <i className="ri-shopping-cart-2-fill fs-4"></i>
+                                ) : (
+                                  <i className="ri-shopping-cart-2-line fs-4"></i>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

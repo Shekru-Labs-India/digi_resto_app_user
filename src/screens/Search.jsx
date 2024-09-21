@@ -579,11 +579,11 @@ const Search = () => {
 
   console.log("Restaurant ID:", restaurantId);
 
-  // Debounce the search input to avoid too many API calls
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 300); // 300ms debounce time
+    }, 300); 
 
     return () => {
       clearTimeout(handler);
@@ -608,7 +608,7 @@ const Search = () => {
         return;
       }
 
-      if (debouncedSearchTerm.trim().length < 3) {
+      if (debouncedSearchTerm.trim().length < 3 || debouncedSearchTerm.trim().length > 10) {
         setSearchedMenu([]); // Clear the menu list if search term is less than 3 characters
         return;
       }
@@ -851,7 +851,7 @@ const Search = () => {
                               {menu.offer}%<span style={{ fontSize: "0.8em" }} className="pt-1"> Off</span>
                             </div>
                           </div>
-                          <div className="col-1 text-end   ps-4 ">
+                          <div className="col-1 text-end  ps-4 " style={{zIndex:'999'}}>
                             <i
                               className={`  ${
                                 menu.is_favourite
@@ -882,7 +882,7 @@ const Search = () => {
                 </div>
               ))
             ) : (
-              <p>No items found.</p>
+              <p className="text-center mt-3">No items found.</p>
             )}
           </div>
         </div>

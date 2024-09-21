@@ -279,10 +279,15 @@ const handleLogout = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </div> 
       </main>
-      <CompanyVersion/>
+      <div className=" text-center mt-6" style={{marginTop:'150px'}}>
+    <h6 className="" style={{ color: 'grey' }}>Powered by </h6>
+    <h6 className="" style={{ color: 'grey' }}>Shekru Labs India Pvt. Ltd.</h6>
+    <h6 className="" style={{ color: 'grey' }}>V 1.1</h6>
+  </div>
       <Bottom />
+    
     </div>
   );
 };
