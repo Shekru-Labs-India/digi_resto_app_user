@@ -3646,15 +3646,15 @@ const Cart = () => {
   // Retrieve Cart ID from localStorage or set a default
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
-    return cartId ? parseInt(cartId, 10) : 1; // Default to 1 if not found
+    return cartId ? parseInt(cartId, 10) : 1;
   };
 
-  // Fetch cart details on component mount
+
   useEffect(() => {
     fetchCartDetails();
   }, []);
 
-  // Function to fetch cart details
+
   const fetchCartDetails = async () => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
@@ -3684,8 +3684,8 @@ const Cart = () => {
       if (data.st === 1) {
         setCartDetails(data);
       } else if (data.st === 2) {
-        // Check for empty cart
-        setCartDetails({ order_items: [] }); // Set empty order_items
+   
+        setCartDetails({ order_items: [] }); 
       } else {
         console.error("Failed to fetch cart details:", data.msg);
       }
@@ -3694,12 +3694,12 @@ const Cart = () => {
     }
   };
 
-  // Function to remove item from cart via API
+
   const removeFromCart = async (item) => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
     const cartId = getCartId();
-    const menuId = item.menu_id; // Get the menu ID from the item to be removed
+    const menuId = item.menu_id; 
 
     try {
       const response = await fetch(
@@ -3720,7 +3720,7 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item removed from cart successfully.");
-        fetchCartDetails(); // Fetch the updated cart details
+        fetchCartDetails(); 
       } else {
         console.error("Failed to remove item from cart:", data.msg);
       }
@@ -3729,7 +3729,7 @@ const Cart = () => {
     }
   };
 
-  // Function to update the cart quantity via API
+  
   const updateCartQuantity = async (menuId, newQuantity) => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
@@ -3756,7 +3756,7 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Menu quantity updated successfully.");
-        fetchCartDetails(); // Fetch updated cart details after quantity update
+        fetchCartDetails(); 
       } else {
         console.error("Failed to update menu quantity:", data.msg);
       }
@@ -3765,13 +3765,13 @@ const Cart = () => {
     }
   };
 
-  // Increment quantity and update cart
+
   const incrementQuantity = (item) => {
     const newQuantity = item.quantity + 1;
     updateCartQuantity(item.menu_id, newQuantity);
   };
 
-  // Decrement quantity and update cart
+ 
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
       const newQuantity = item.quantity - 1;
@@ -3783,7 +3783,7 @@ const Cart = () => {
 
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
-      {/* Header */}
+  
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
@@ -3802,7 +3802,7 @@ const Cart = () => {
         </div>
       </header>
 
-      {/* Cart Items */}
+   
       {displayCartItems.length === 0 ? (
         <main className="page-content space-top p-b100">
           <div className="container overflow-hidden">
@@ -3829,7 +3829,9 @@ const Cart = () => {
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <div className="row my-auto" style={{ height: "110px" }}>
+                <div className="row my-auto" 
+                style={{ height: "110px" }}
+                >
                   <div className="col-3 px-0">
                     <Link to={`/ProductDetails/${item.menu_id}`}>
                       <img
@@ -3909,40 +3911,29 @@ const Cart = () => {
                       <div className="col-6 mx-0 my-auto px-0">
                         <p className="mb-2 fs-4 fw-medium">
                           <span
-                            style={{
-                              color: "#4E74FC",
-                              position: "relative",
-                              left: "21px",
-                            }}
+                            className="ms-3 me-2 text-info"
                           >
                             ₹{item.price}
                           </span>
-                          <del
-                            style={{
-                              fontSize: "14px",
-                              color: "#dedede",
-                              marginLeft: "5px",
-                              position: "relative",
-                              left: "21px",
-                            }}
+                          <span
+                          className="text-muted fs-6 text-decoration-line-through"
+                          
                           >
                             ₹{item.oldPrice || item.price}
-                          </del>
+                          </span>
+
+                          <span
+                            className="fs-6 ps-2 text-primary"
+                            
+                          >
+                            {item.offer || "No "}% Off
+                          </span>
                         </p>
                       </div>
-                      <div className="col-3 px-0 pt-1">
-                        <span
-                          className="d-flex fs-7 fw-semibold mx-a text-truncate"
-                          style={{ color: "#438a3c" }}
-                        >
-                          <div className="d-flex align-items-center justify-content-center">
-                            {item.offer || "No "} Off
-                          </div>
-                        </span>
-                      </div>
+                      <div className="col-3 px-0 pt-1"></div>
                       <div className="col-3">
                         <div className="d-flex justify-content-end align-items-center">
-                          {/* Decrement Button */}
+                       
                           <i
                             className="ri-subtract-line mx-2"
                             style={{
@@ -3952,17 +3943,14 @@ const Cart = () => {
                             onClick={() => decrementQuantity(item)}
                           ></i>
 
-                          {/* Quantity Display */}
+                          
                           <span
-                            className="fs-4 px-2"
-                            style={{
-                              backgroundColor: "#a5a5a5",
-                            }}
+                            className="text-light "
                           >
                             {item.quantity}
                           </span>
 
-                          {/* Increment Button */}
+                 
                           <i
                             className="ri-add-line mx-2"
                             style={{
@@ -3979,12 +3967,15 @@ const Cart = () => {
               </div>
             ))}
 
-            {/* Footer Section */}
+         
             {cartDetails && displayCartItems.length > 0 && (
               <div className="container mb-5 pb-5 z-3 pt-10">
                 <div className="card-body mt-2" style={{ padding: "0px" }}>
-                  <div className="card mx-auto" style={{ width: "365px" }}>
-                    <div className="row px-1 py-1" style={{ height: "180px" }}>
+                  <div className="card mx-auto" style={{ width: "328px" }}>
+                    <div
+                      className="row px-1 py-1"
+                      // style={{ height: "180px" }}
+                    >
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
@@ -3994,10 +3985,9 @@ const Cart = () => {
                             Total
                           </span>
                           <span className="pe-2 fs-5 fw-semibold">
-                            ₹{cartDetails?.sub_total || 0}
+                            ₹{cartDetails?.total_bill || 0}
                           </span>
                         </div>
-                        <hr />
                       </div>
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-0">
@@ -4005,13 +3995,13 @@ const Cart = () => {
                             className="ps-2 fs-5"
                             style={{ color: "#a5a5a5" }}
                           >
-                            Service Charges (10%)
+                            Service Charges ({cartDetails.service_charges_percent}%)
                           </span>
                           <span className="pe-2 fs-5 fw-semibold">
-                            ₹{cartDetails?.sub_total || 0}
+                            ₹{cartDetails?.service_charges_amount || 0}
                           </span>
                         </div>
-                        {/* <hr /> */}
+                       
                       </div>
                     
                       <div className="col-12 mb-0">
@@ -4020,10 +4010,10 @@ const Cart = () => {
                             className="ps-2 fs-5"
                             style={{ color: "#a5a5a5" }}
                           >
-                            GST (10%)
+                            GST ({cartDetails.gst_percent}%)
                           </span>
                           <span className="pe-2 fs-5 fw-semibold">
-                            ₹{cartDetails?.tax || 0}
+                            ₹{cartDetails?.gst_amount || 0}
                           </span>
                         </div>
                       </div>
@@ -4033,10 +4023,10 @@ const Cart = () => {
                             className="ps-2 fs-5"
                             style={{ color: "#a5a5a5" }}
                           >
-                            Discount
+                            Discount({cartDetails?.discount_percent || 0}%)
                           </span>
                           <span className="pe-2 fs-5 fw-semibold">
-                            ₹{cartDetails?.discount || 0}
+                            ₹{cartDetails?.discount_amount || 0}
                           </span>
                         </div>
                       </div>

@@ -903,7 +903,7 @@ const Wishlist = () => {
                           </div>
                           {/* Last Row: Pricing, Offer, and Restaurant Name */}
                           <div className="row mt-2  align-items-center">
-                            <div className="col-4 pe-0 ps-4 d-flex">
+                            {/* <div className="col-4 pe-0 ps-4 d-flex">
                               <h6
                                 className="text-info d-inline mb-0 fw-medium mt-1"
                                 style={{ fontSize: "16px" }}
@@ -916,17 +916,22 @@ const Wishlist = () => {
                               >
                                 <del>₹{menu.price}</del>
                               </span>
+                            </div> */}
+                            <div className="col-6 px-0 text-start">
+                              <p className="mb-2 ms-2 fs-4 fw-medium">
+                                <span className="ms-3 me-2 text-info">
+                                  ₹{menu.price}
+                                </span>
+                                <span className="text-muted fs-6 text-decoration-line-through">
+                                  ₹{menu.oldPrice || menu.price}
+                                </span>
+
+                                <span className="fs-6 ps-2 text-primary">
+                                  {menu.offer || "No "}% Off
+                                </span>
+                              </p>
                             </div>
-                            <div className="col-2 px-0 text-start">
-                              <span
-                                className="text-success"
-                                style={{ fontSize: "0.75rem" }}
-                              >
-                                {menu.offer}
-                                {"%"} Off
-                              </span>
-                            </div>
-                            <div className="col-4 ps-0 d-flex align-items-center">
+                            {/* <div className="col-4 ps-0 d-flex align-items-center">
                               <i
                                 className="ri-store-2-line"
                                 style={{ fontSize: "16px" }}
@@ -934,8 +939,8 @@ const Wishlist = () => {
                               <span className="ms-1 text-nowrap">
                                 {menu.restaurant_name}
                               </span>
-                            </div>
-                            <div className="col-2 text-center ps-0">
+                            </div> */}
+                            <div className="col-5 text-end">
                               <div
                                 className="cart-btn"
                                 onClick={() => handleAddToCartClick(menu)}

@@ -1768,18 +1768,30 @@ const ProductCard = () => {
 
                   <div className="footer-wrapper mt-2">
                     <div className="price-wrapper d-flex align-items-baseline">
-                      <h6 className="current-price me-0 fs-6 fw-medium">
+                      {/* <h6 className="current-price me-0 fs-6 fw-medium">
                         ₹{menu.price}
                       </h6>
                       <span className="old-price ms-0 fs-8 ms-1">
                         ₹{menu.oldPrice}
-                      </span>
+                      </span> */}
+                      <p className="mb-2 fs-4 fw-medium">
+                        <span className="ms- me-2 text-info">
+                          ₹{menu.price}
+                        </span>
+                        <span className="text-muted fs-6 text-decoration-line-through">
+                          ₹{menu.oldPrice || menu.price}
+                        </span>
+
+                        <span className="fs-6 ps-2 text-primary">
+                          {menu.offer || "No "}% Off
+                        </span>
+                      </p>
                     </div>
 
-                    <div className="small-offer-text">
+                    {/* <div className="small-offer-text">
                       {menu.offer}
                       {"%"} Off
-                    </div>
+                    </div> */}
 
                     <div className="footer-btns">
                       {userData ? (
@@ -1806,7 +1818,7 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
-      <NearbyArea/>
+      <NearbyArea />
     </div>
   );
 };

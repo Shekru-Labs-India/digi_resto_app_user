@@ -722,23 +722,26 @@ const Search = () => {
   return (
     <div className="page-wrapper">
       {/* Header */}
-      <header className="header header-fixed style-3 " style={{zIndex:"999"}}>
-          <div className="header-content">
-            <div className="search-area">
-              <div onClick={() => navigate(-1)} className="back-btn  dz-icon">
-                <i className="ri-arrow-left-line fs-2"></i>
-              </div>
-              <div className="mid-content">
-                <h5 className="title me-3">Search</h5>
-              </div>
+      <header
+        className="header header-fixed style-3 "
+        style={{ zIndex: "999" }}
+      >
+        <div className="header-content">
+          <div className="search-area">
+            <div onClick={() => navigate(-1)} className="back-btn  dz-icon">
+              <i className="ri-arrow-left-line fs-2"></i>
+            </div>
+            <div className="mid-content">
+              <h5 className="title me-3">Search</h5>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
       {/* Header End */}
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-      <div className="container pt-0">
+        <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 text-muted"></i>
@@ -750,15 +753,20 @@ const Search = () => {
               onChange={handleSearch}
               value={searchTerm}
             />
-           
-
           </div>
-          {debouncedSearchTerm && ( 
+          {debouncedSearchTerm && (
             <div className="title-bar my-3">
-              <div className=" fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }}>
+              <div
+                className=" fw-normal"
+                style={{ fontSize: "1.25rem", color: "grey" }}
+              >
                 Search Menu
               </div>
-              <div className="fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }} onClick={handleClearAll}>
+              <div
+                className="fw-normal"
+                style={{ fontSize: "1.25rem", color: "grey" }}
+                onClick={handleClearAll}
+              >
                 Clear All
               </div>
             </div>
@@ -830,8 +838,20 @@ const Search = () => {
                           </div>
                         </div>
                         <div className="row mt-2">
-                          <div className="col-7 pe-0">
-                            <h3
+                          <div className="col-7 ps-0">
+                            <p className="mb-2 fs-4 fw-medium">
+                              <span className="ms-3 me-2 text-info">
+                                ₹{menu.price}
+                              </span>
+                              <span className="text-muted fs-6 text-decoration-line-through">
+                                ₹{menu.oldPrice || menu.price}
+                              </span>
+
+                              <span className="fs-6 ps-2 text-primary">
+                                {menu.offer || "No "}% Off
+                              </span>
+                            </p>
+                            {/* <h3
                               className=" d-inline fs-5 fw-medium"
                               style={{ color: "#4E74FC" }}
                             >
@@ -839,19 +859,31 @@ const Search = () => {
                             </h3>
                             {menu.oldPrice && (
                               <span className="text-muted ms-2 ">
-                                <del style={{ fontSize: "0.8em" }}>₹{menu.oldPrice.toFixed(2)}</del>
+                                <del style={{ fontSize: "0.8em" }}>
+                                  ₹{menu.oldPrice.toFixed(2)}
+                                </del>
                               </span>
-                            )}
+                            )} */}
                           </div>
-                          <div className="col-3 pe-0 ps-1 ">
+                          {/* <div className="col-3 pe-0 ps-1 ">
                             <div
                               className="fw-medium fw-semibold pt-1"
                               style={{ color: "#438a3c" }}
                             >
-                              {menu.offer}%<span style={{ fontSize: "0.8em" }} className="pt-1"> Off</span>
+                              {menu.offer}%
+                              <span
+                                style={{ fontSize: "0.8em" }}
+                                className="pt-1"
+                              >
+                                {" "}
+                                Off
+                              </span>
                             </div>
-                          </div>
-                          <div className="col-1 text-end  ps-4 " style={{zIndex:'999'}}>
+                          </div> */}
+                          <div
+                            className="col-5 text-end  ps-4 "
+                            style={{ zIndex: "999" }}
+                          >
                             <i
                               className={`  ${
                                 menu.is_favourite

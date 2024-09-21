@@ -2100,12 +2100,24 @@ const Product = () => {
                       {menuItem.name}
                     </h4>
                     <div className="footer-wrapper">
-                      <div className="price-wrapper">
+                      {/* <div className="price-wrapper">
                         <h6 className="current-price fs-2">
                           ₹{menuItem.price}
                         </h6>
                         <span className="old-price">₹{menuItem.oldPrice}</span>
-                      </div>
+                      </div> */}
+                      <p className="mb-2 fs-4 fw-medium">
+                        <span className="me-1 text-info">
+                          ₹{menuItem.price}
+                        </span>
+                        <span className="text-muted fs-6 text-decoration-line-through">
+                          ₹{menuItem.oldPrice || menuItem.price}
+                        </span>
+
+                        <span className="fs-6 ps-2 text-primary">
+                          {menuItem.offer || "No "}% Off
+                        </span>
+                      </p>
                       {userData ? (
                         <div
                           onClick={() => handleAddToCartClick(menuItem)}

@@ -321,7 +321,7 @@ const OfferBanner = () => {
                       <div className="dz-content" style={{ display: "block" }}>
                         <h6 className="title">{menu.name}</h6>
                         <ul className="dz-meta mt-2">
-                          <li
+                          {/* <li
                             className="dz-price fs-5"
                             style={{ color: "#4E74FC" }}
                           >
@@ -329,17 +329,35 @@ const OfferBanner = () => {
                             <del className="fs-5 ps-2">
                               ₹{Math.floor(menu.price * 1.1)}
                             </del>
-                          </li>
+                          </li> */}
+                          <p className="mb-2 fs-4 fw-medium">
+                            <span className="ms-0 me-2 text-info">
+                              ₹{menu.price}
+                            </span>
+                            <span className="text-muted fs-6 text-decoration-line-through">
+                              ₹{menu.oldPrice || menu.price}
+                            </span>
+
+                            <span className="fs-6 ps-2 text-primary">
+                              {menu.offer || "No "}% Off
+                            </span>
+                          </p>
                         </ul>
                         <div className="row">
-                          <div className="col-6">
+                          {/* <div className="col-6">
                             <div
                               className="fw-medium d-flex mx-0 "
-                              style={{ color: "#0D775E", fontSize: "0.75rem", position:"relative", top:"3px" }}
+                              style={{
+                                color: "#0D775E",
+                                fontSize: "0.75rem",
+                                position: "relative",
+                                top: "3px",
+                              }}
                             >
-                              {menu.offer}{"%"} Off
+                              {menu.offer}
+                              {"%"} Off
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-6">
                             <p
                               className="fs-6 fw-semibold"

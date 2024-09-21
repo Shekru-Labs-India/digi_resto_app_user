@@ -315,7 +315,7 @@ const NearbyArea = () => {
                         </div>
                       </div>
                       <div className="footer-wrapper">
-                        <div className="price-wrapper d-flex align-items-baseline">
+                        {/* <div className="price-wrapper d-flex align-items-baseline">
                           <h6 className="current-price me-0 fs-6 fw-medium">
                             ₹{menuItem.price}
                           </h6>
@@ -324,7 +324,19 @@ const NearbyArea = () => {
                           </span>
                         </div>
 
-                        <div className="small-offer-text">{menuItem.offer} off</div>
+                        <div className="small-offer-text">{menuItem.offer} off</div> */}
+                        <p className="mb-2 fs-4 fw-medium">
+                          <span className="ms-0 me-2 text-info">
+                            ₹{menuItem.price}
+                          </span>
+                          <span className="text-muted fs-6 text-decoration-line-through">
+                            ₹{menuItem.oldPrice || menuItem.price}
+                          </span>
+
+                          <span className="fs-6 ps-2 text-primary">
+                            {menuItem.offer || "No "}% Off
+                          </span>
+                        </p>
                         <div
                           onClick={() => handleAddToCartClick(menuItem)}
                           className="cart-btn"

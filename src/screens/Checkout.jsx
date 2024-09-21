@@ -184,28 +184,6 @@
 
 // export default Checkout;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate, useLocation } from "react-router-dom";
 // import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -383,16 +361,6 @@
 // };
 
 // export default Checkout;
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -603,9 +571,6 @@
 
 // export default Checkout;
 
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import Bottom from "../component/bottom";
@@ -720,7 +685,7 @@
 
 //   const closePopup = () => {
 //     setShowPopup(false);
-//     navigate("/MyOrder"); 
+//     navigate("/MyOrder");
 //   };
 
 //   return (
@@ -875,6 +840,13 @@
 
 
 
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
@@ -884,24 +856,38 @@ import OrderGif from "../assets/gif/order_success.gif"; // Ensure this path is c
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { restaurantId } = useRestaurantId(); // Get restaurantId from context
+  const { restaurantId } = useRestaurantId();
+  console.log("Restaurant ID:", restaurantId); // Log the restaurant ID
+
   const [cartItems, setCartItems] = useState([]);
-  const [subTotal, setSubTotal] = useState(0);
+  const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [showPopup, setShowPopup] = useState(false); // State to show/hide popup
+  const [serviceCharges, setServiceCharges] = useState(0);
+  const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
+  const [gstPercent, setGstPercent] = useState(0);
+  const [discountPercent, setDiscountPercent] = useState(0);
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
+  console.log("Customer ID:", customerId); // Log the customer ID
 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
+    console.log("Cart ID:", cartId); // Log the cart ID
     return cartId ? parseInt(cartId, 10) : null;
   };
 
   const fetchCartDetails = async () => {
     const cartId = getCartId();
+    console.log("Fetching cart details with:", {
+      cartId,
+      customerId,
+      restaurantId,
+    });
+
     if (!cartId || !customerId || !restaurantId) {
       alert("Missing cart, customer, or restaurant data.");
       return;
@@ -909,7 +895,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail",
+        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
         {
           method: "POST",
           headers: {
@@ -924,13 +910,18 @@ const Checkout = () => {
       );
 
       const data = await response.json();
+      console.log("API Data:", data);
 
       if (response.ok) {
         setCartItems(data.order_items || []);
-        setSubTotal(parseFloat(data.sub_total) || 0);
-        setDiscount(parseFloat(data.discount) || 0);
-        setTax(parseFloat(data.tax) || 0);
+        setTotal(parseFloat(data.total_bill) || 0); // Access total_bill here
+        setDiscount(parseFloat(data.discount_amount) || 0);
+        setTax(parseFloat(data.gst_amount) || 0);
         setGrandTotal(parseFloat(data.grand_total) || 0);
+        setServiceCharges(parseFloat(data.service_charges_amount) || 0);
+        setServiceChargesPercent(parseFloat(data.service_charges_percent) || 0);
+        setGstPercent(parseFloat(data.gst_percent) || 0);
+        setDiscountPercent(parseFloat(data.discount_percent) || 0);
       } else {
         console.error("Failed to fetch cart details:", data.msg);
         alert(`Error: ${data.msg}`);
@@ -940,7 +931,14 @@ const Checkout = () => {
     }
   };
 
+
   useEffect(() => {
+    console.log(
+      "useEffect triggered, restaurantId:",
+      restaurantId,
+      "customerId:",
+      customerId
+    );
     fetchCartDetails();
   }, [restaurantId, customerId]);
 
@@ -1040,14 +1038,11 @@ const Checkout = () => {
 
             <div className="dz-flex-box mt-3">
               <div className="card">
-                <div className="card-body">
+                <div className="card-body px-0">
                   {cartItems.length > 0 ? (
                     cartItems.map((item, index) => (
-                      <div
-                        className="row mb-3 justify-content-center"
-                        key={index}
-                      >
-                        <div className="col-4  px-2 pb-1">
+                      <div className="row  justify-content-center" key={index}>
+                        <div className="col-4  px-4 pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
                           <div className="text-success">
                             <i className="ri-restaurant-line me-2"></i>{" "}
@@ -1057,12 +1052,9 @@ const Checkout = () => {
                         <div className="col-4 h5 text-center px-2">
                           x {item.quantity}
                         </div>
-                        <div className="col-4 text-center px-2">
-                          <span className="h5 text-info ps-2">
-                            ₹
-                            {item.sub_total
-                              ? item.sub_total.toFixed(2)
-                              : "0.00"}
+                        <div className="col-4 text-start px-2">
+                          {/* <span className="h5 text-info ps-2">
+                            ₹{item.price ? item.price.toFixed(2) : "0.00"}
                           </span>
                           <div className="mt-0 d-flex justify-content-center">
                             <del className="text-muted small mt-1">
@@ -1072,7 +1064,21 @@ const Checkout = () => {
                               {item.offer || "No discount"}
                               {"%"} Off
                             </span>
-                          </div>
+                          </div> */}
+
+                          <p className="mb-2 fs-4 fw-medium">
+                            <span className="ms-0 me-2 text-info">
+                              ₹{item.price}
+                            </span>
+                            <div className="">
+                            <span className="text-muted fs-6 text-decoration-line-through">
+                              ₹ {item.oldPrice || item.price}
+                            </span>
+                              <span className="fs-6 ps-2 text-primary">
+                                {item.offer || "No "}% Off
+                              </span>
+                            </div>
+                          </p>
                         </div>
                       </div>
                     ))
@@ -1080,22 +1086,71 @@ const Checkout = () => {
                     <div>No items in the cart.</div>
                   )}
 
-                  <hr />
-                  <div className="my-3">
-                    Subtotal{" "}
-                    <span className="float-end h5">₹{subTotal.toFixed(2)}</span>
+                  {/* <div className="my-3 px-2">
+                    Service Charges ({serviceChargesPercent}%)
+                    <span className="float-end h5">
+                      ₹{parseFloat(serviceCharges).toFixed(2)}
+                    </span>
                   </div>
-                  <div className="my-3">
-                    Discount{" "}
-                    <span className="float-end h5">₹{discount.toFixed(2)}</span>
+
+                  <div className="my-3 px-2">
+                    GST ({gstPercent}%)
+                    <span className="float-end h5">
+                      ₹{parseFloat(tax).toFixed(2)}
+                    </span>
                   </div>
-                  <div className="">
-                    Tax{" "}
-                    <span className="float-end h5 mb-2">₹{tax.toFixed(2)}</span>
+
+                  <div className="px-2">
+                    Discount ({discountPercent}%)
+                    <span className="float-end h5 mb-2">
+                      ₹{parseFloat(discount).toFixed(2)}
+                    </span>
                   </div>
-                  <h5 className="mt-3">
+
+                  <h5 className="mt-2 px-2">
                     Grand Total{" "}
-                    <span className="float-end">₹{grandTotal.toFixed(2)}</span>
+                    <span className="float-end">
+                      ₹{parseFloat(grandTotal).toFixed(2)}
+                    </span>
+                  </h5> */}
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-body px-0 ">
+                  <div className="fs-5 fw-semibold px-2">
+                    Total
+                    <span className="float-end h5">
+                      ₹{parseFloat(total).toFixed(2)}
+                    </span>
+                    <hr />
+                  </div>
+                  <div className="my-3 px-2">
+                    Service Charges ({serviceChargesPercent}%)
+                    <span className="float-end h5">
+                      ₹{parseFloat(serviceCharges).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="my-3 px-2">
+                    GST ({gstPercent}%)
+                    <span className="float-end h5">
+                      ₹{parseFloat(tax).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="px-2">
+                    Discount ({discountPercent}%)
+                    <span className="float-end h5 mb-2">
+                      ₹{parseFloat(discount).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <h5 className="mt-2 px-2">
+                    <hr />
+                    Grand Total{" "}
+                    <span className="float-end">
+                      ₹{parseFloat(grandTotal).toFixed(2)}
+                    </span>
                   </h5>
                 </div>
               </div>

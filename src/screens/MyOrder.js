@@ -469,22 +469,24 @@ const OrdersTab = ({ orders, type }) => {
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
                 <div className="col-7 text-end">
-                  <span className="card-text text-muted mb-0" style={{position:"relative", right:"-6px"}}>
+                  <span
+                    className="card-text text-muted mb-0"
+                    style={{ position: "relative", right: "-6px" }}
+                  >
                     {order.date_time}
                   </span>
                 </div>
               </div>
               <div className="row mt-2">
-                <div className="col-4">
-                  <p className="mb-0 fs-6 text-truncate">
+                <div className="col-5">
+                  <p className="mb-0 fs-6 text-break">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
                   </p>
                 </div>
                 <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
                   <p
-                    className="mb-0 fs-7"
-                    style={{ position: "relative", right: "25px" }}
+                    className="mb-0 fs-6"
                   >
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
@@ -494,11 +496,12 @@ const OrdersTab = ({ orders, type }) => {
                   </p>
                 </div>
                 <div
-                  className="col-5 text-end"
-                  style={{ position: "absolute", right: "35px" }}
+                  className="col-3" 
                 >
                   <div className="price-wrapper">
-                    <h6 className="current-price fs-4 me-1">₹{order.total_bill}</h6>
+                    {/* <h6 className="current-price fs-4 me-1">
+                      ₹{order.total_bill}
+                    </h6>
                     <span className="old-price fs-7">
                       ₹{calculateOldPrice(order.total_bill)}
                     </span>
@@ -506,14 +509,27 @@ const OrdersTab = ({ orders, type }) => {
                     <div
                       className="fw-semibold d-flex  ps-1  "
                       style={{
-                        fontSize:"14px",
+                        fontSize: "14px",
                         color: "#0D775E",
                         position: "absolute",
                         right: "-25px",
                       }}
                     >
                       40% off
-                    </div>
+                    </div> */}
+                    {/* ----- */}
+                    <p className="mb-2 fs-4 fw-medium">
+                      <span className="text-info text-end">
+                        ₹{order.total_bill}
+                      </span>
+                      {/* <span className="text-muted fs-6 text-decoration-line-through">
+                        ₹{calculateOldPrice(order.total_bill)}
+                      </span>
+
+                      <span className="fs-6 ps-2 text-primary">
+                        {order.offer || "No "}% Off
+                      </span> */}
+                    </p>
                   </div>
                 </div>
               </div>

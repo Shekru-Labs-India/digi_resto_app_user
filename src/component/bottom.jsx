@@ -54,7 +54,8 @@ const Bottom = () => {
         >
           <i className="ri-shopping-cart-line" style={{ fontSize: "24px" }}></i>
           <span className="name">
-            Cart {cartItemCount > 0 && `(${cartItemCount})`}
+            Cart 
+            {/* {cartItemCount > 0 && `(${cartItemCount})`} */}
           </span>
         </Link>
         <Link
