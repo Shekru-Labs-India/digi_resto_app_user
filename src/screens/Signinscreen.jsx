@@ -1046,10 +1046,10 @@ const Signinscreen = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <h1 className="title text-muted">
-                  Welcome Back You've <h1 className="title mt-3 text-muted"> Been
-                  Missed!</h1>
-                </h1>
+                <h2 className="title text-muted">
+                  Welcome Back You've <h2 className="title mt-1 text-muted"> Been
+                  Missed!</h2>
+                </h2>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
                 <div className="m-b15">
@@ -1103,7 +1103,8 @@ const Signinscreen = () => {
           </div>
         </div>
       </main>
-     
+      
+ <CompanyVersion/>
     </div>
   );
 };

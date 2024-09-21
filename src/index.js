@@ -7,6 +7,7 @@ import { HashRouter,BrowserRouter } from 'react-router-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { RestaurantIdProvider } from './context/RestaurantIdContext';
+import { MenuDataProvider } from './context/MenuDataContext';
 
 
 
@@ -18,7 +19,9 @@ root.render(
  
     {/* <React.StrictMode> */}
     <RestaurantIdProvider>
+   
       <App />
+     
       </RestaurantIdProvider>
     {/* </React.StrictMode> */}
    

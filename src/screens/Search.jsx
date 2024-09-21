@@ -430,7 +430,7 @@
 //               onClick={() => navigate(-1)}
 //               className="back-btn icon-fill dz-icon"
 //             >
-//               <i className="ri-arrow-left-line fs-3"></i>
+//               <i className="ri-arrow-left-line"></i>
 //             </div>
 //             <div className="input w-100">
 //               <input
@@ -579,11 +579,11 @@ const Search = () => {
 
   console.log("Restaurant ID:", restaurantId);
 
-  // Debounce the search input to avoid too many API calls
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 300); // 300ms debounce time
+    }, 300); 
 
     return () => {
       clearTimeout(handler);
@@ -608,7 +608,7 @@ const Search = () => {
         return;
       }
 
-      if (debouncedSearchTerm.trim().length < 3) {
+      if (debouncedSearchTerm.trim().length < 3 || debouncedSearchTerm.trim().length > 10) {
         setSearchedMenu([]); // Clear the menu list if search term is less than 3 characters
         return;
       }
@@ -738,7 +738,7 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-      <div className="container ">
+      <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 text-muted"></i>
@@ -753,12 +753,16 @@ const Search = () => {
            
 
           </div>
-          <div className="title-bar my-3">
-            <h4 className="title mb-0 font-w500">Search Menu</h4>
-            <div className="font-w500 h5" onClick={handleClearAll}>
-              Clear All
+          {debouncedSearchTerm && ( 
+            <div className="title-bar my-3">
+              <div className=" fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }}>
+                Search Menu
+              </div>
+              <div className="fw-normal" style={{ fontSize: '1.25rem', color: 'grey' }} onClick={handleClearAll}>
+                Clear All
+              </div>
             </div>
-          </div>
+          )}
 
           {isLoading && <p>Loading...</p>}
 
@@ -773,16 +777,16 @@ const Search = () => {
                           src={menu.image || images}
                           alt={menu.menu_name}
                           className="img-fluid rounded"
-                          style={{ width: "120px", height: "120px" }}
+                          style={{ width: "100px", height: "108px" }}
                           onError={(e) => {
                             e.target.src = images;
                           }}
                         />
                       </div>
-                      <div className="col-8 pt-2 pb-0 pe-0 ps-0">
+                      <div className="col-8 pt-2 pb-0 pe-0 ps-2">
                         <h4>{menu.menu_name}</h4>
                         <div className="row">
-                          <div className="col-4 mt-1">
+                          <div className="col-4 mt-1 pe-0">
                             <div className="mt-0">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
                               <span className="text-success">
@@ -790,11 +794,11 @@ const Search = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="col-4 text-end">
+                          <div className="col-4 text-end pe-0">
                             <span className="d-inline-block">
                               <div
-                                className="offer-code"
-                                style={{ fontSize: "20px" }}
+                                className="offer-code pt-1"
+                                style={{ fontSize: "16px" }}
                               >
                                 {Array.from({ length: 5 }).map((_, index) => (
                                   <i
@@ -825,8 +829,8 @@ const Search = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="row mt-3">
-                          <div className="col-5 pe-0">
+                        <div className="row mt-2">
+                          <div className="col-7 pe-0">
                             <h3
                               className=" d-inline fs-5 fw-medium"
                               style={{ color: "#4E74FC" }}
@@ -835,37 +839,38 @@ const Search = () => {
                             </h3>
                             {menu.oldPrice && (
                               <span className="text-muted ms-2 ">
-                                <del>₹{menu.oldPrice.toFixed(2)}</del>
+                                <del style={{ fontSize: "0.8em" }}>₹{menu.oldPrice.toFixed(2)}</del>
                               </span>
                             )}
                           </div>
-                          <div className="col-3">
+                          <div className="col-3 pe-0 ps-1 ">
                             <div
-                              className="fw-medium d-flex  fs-6 fw-semibold"
+                              className="fw-medium fw-semibold pt-1"
                               style={{ color: "#438a3c" }}
                             >
-                              {menu.offer} Off
+                              {menu.offer}%<span style={{ fontSize: "0.8em" }} className="pt-1"> Off</span>
                             </div>
                           </div>
-                          <div className="col-4 text-end">
+                          <div className="col-1 text-end  ps-4 " style={{zIndex:'999'}}>
                             <i
-                              className={`${
+                              className={`  ${
                                 menu.is_favourite
-                                  ? "ri-hearts-fill fs-2"
-                                  : "ri-heart-2-line fs-2"
+                                  ? "ri-hearts-fill fs-4 "
+                                  : "ri-heart-2-line fs-4  "
                               }`}
                               onClick={() => handleLikeClick(menu.menu_id)}
                               style={{
                                 cursor: "pointer",
+
                                 color: menu.is_favourite ? "red" : "",
                               }}
                             ></i>
                           </div>
                         </div>
                       </div>
-                      <div className="col-1 pt-1">
+                      <div className="col-1  p-0">
                         <span
-                          className="text-muted h5"
+                          className="text-muted fs-5 "
                           onClick={() => handleRemoveItem(menu.menu_id)}
                           style={{ cursor: "pointer" }}
                         >
@@ -877,7 +882,7 @@ const Search = () => {
                 </div>
               ))
             ) : (
-              <p>No items found.</p>
+              <p className="text-center mt-3">No items found.</p>
             )}
           </div>
         </div>

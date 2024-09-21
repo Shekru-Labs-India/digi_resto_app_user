@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
+import CompanyVersion from "../constants/CompanyVersion";
 
 const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,16 +54,22 @@ const Sidebar = () => {
           <div className="right-content">
             <div className="menu-toggler" onClick={toggleSidebar}>
               {isLoggedIn ? (
-                <i className="ri-user-3-line fs-1"></i>
+                <i className="ri-menu-line fs-1"></i>
               ) : (
                 <Link to="/Signinscreen">
                   <i
                     className="ri-login-circle-line fs-1"
-                    // style={{ fontSize: "48px" }}
+                    
                   ></i>
                 </Link>
               )}
             </div>
+          </div> 
+          <div className="right-content gap-1">
+            <h3 className="title fw-medium">
+              {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
+              <i className="ri-store-2-line ps-2"></i>
+            </h3>
           </div>
         </div> */}
 
@@ -180,13 +187,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-bottom">
-          <div className="app-info">
-            <span className="ver-info">
-              <p className="company" style={{ textAlign: "center" }}>
-                ShekruLabs India Pvt.Ltd <span className="company">v1</span>
-              </p>
-            </span>
-          </div>
+        <CompanyVersion/>
         </div>
       </div>
     </div>

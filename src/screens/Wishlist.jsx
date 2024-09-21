@@ -495,7 +495,7 @@
 //                   )}
 //                 </h5>
 //               </div>
-              
+
 //             </div>
 //           </header>
 
@@ -627,7 +627,7 @@
 //                 <Link to="/HomeScreen" className="btn btn-primary">
 //                   Browse Menus
 //                 </Link>
-                
+
 //               </div>
 //             )}
 //           </main>
@@ -640,10 +640,6 @@
 // };
 
 // export default Wishlist;
-
-
-
-
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -663,6 +659,7 @@ const Wishlist = () => {
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
+  
 
   useEffect(() => {
     if (restaurantId) {
@@ -775,6 +772,7 @@ const Wishlist = () => {
       }
     };
 
+
     fetchFavoriteItems();
   }, [customerId, restaurantId]);
 
@@ -785,7 +783,7 @@ const Wishlist = () => {
   const handleAddToCartClick = (item) => {
     if (!isMenuItemInCart(item.menu_id)) {
       addToCart(item);
-      navigate("/Cart");
+     
     } else {
       console.log("Item is already in the cart");
     }
@@ -835,99 +833,121 @@ const Wishlist = () => {
                             src={menu.image || images}
                             alt={menu.menu_name}
                             className="rounded"
-                            style={{ width: "120px", height: "120px" }}
+                            style={{ width: "100px", height: "102px" }}
                             onError={(e) => {
                               e.target.src = images;
-                              e.target.style.width = "120px";
-                              e.target.style.height = "120px";
+                              e.target.style.width = "100px";
+                              e.target.style.height = "100px";
                             }}
                           />
                         </div>
-                        <div className="col-8 pt-2 p-0">
-                          <h4>{toTitleCase(menu.menu_name)}</h4>
+                        <div className="col-9 pt-2 p-0">
+                          {/* First Row: Menu Name and Close Icon */}
                           <div className="row">
-                            <div className="col-4 ">
+                            <div className="col-8 ps-4">
+                              <h4>{toTitleCase(menu.menu_name)}</h4>
+                            </div>
+                            <div className="col-4 text-end ps-0 pe-4">
+                              <i
+                                className="ri-close-line text-muted h5"
+                                onClick={() =>
+                                  handleRemoveItemClick(index, menu.menu_id)
+                                }
+                              ></i>
+                            </div>
+                          </div>
+                          {/* Second Row: Category Name, Spicy Index, and Rating */}
+                          <div className="row">
+                            <div className="col-4 pe-0 ps-4">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
                               <span className="text-success">
                                 {menu.category_name}
                               </span>
                             </div>
-                            <div className="col-5 text-end">
-                              <i
-                                className="ri-fire-fill"
-                                style={{ color: "#eb8e57" }}
-                              ></i>
-                              <i
-                                className="ri-fire-fill"
-                                style={{ color: "#eb8e57" }}
-                              ></i>
-                              <i
-                                className="ri-fire-fill"
-                                style={{ color: "#eb8e57" }}
-                              ></i>
-                              <i
-                                className="ri-fire-line"
-                                style={{
-                                  color: "rgba(0, 0, 0, 0.1)",
-                                }}
-                              ></i>
-                              <i
-                                className="ri-fire-line"
-                                style={{
-                                  color: "rgba(0, 0, 0, 0.1)",
-                                }}
-                              ></i>
+                            <div className="col-5 pe-0 ps-1 text-center">
+                              {menu.spicy_index && (
+                                <div className="offer-code">
+                                  {Array.from({ length: 5 }).map((_, index) =>
+                                    index < menu.spicy_index ? (
+                                      <i
+                                        className="ri-fire-fill fs-6"
+                                        style={{
+                                          fontSize: "12px",
+                                          color: "#eb8e57",
+                                        }}
+                                        key={index}
+                                      ></i>
+                                    ) : (
+                                      <i
+                                        className="ri-fire-line fs-6"
+                                        style={{
+                                          fontSize: "12px",
+                                          color: "#eb8e57",
+                                        }}
+                                        key={index}
+                                      ></i>
+                                    )
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div className="col-3 text-end ">
-                              <span className="h6">
+                            <div className="col-3 text-center pe-3 ps-0">
+                              <span className="fs-6">
                                 <i
-                                  className="ri-star-half-line "
+                                  className="ri-star-half-line me-1 "
                                   style={{ color: "#eb8e57" }}
                                 ></i>
                                 {menu.rating || 0.1}
                               </span>
                             </div>
                           </div>
-                          <div className="row mt-3">
-                            <div className="col-7 pe-0">
-                              <h3 className="text-info d-inline fs-5">
-                                ₹ {menu.price}
-                              </h3>
-                              <span className="old-price ms-1 ">
-                                {/* <del>₹ {menu.oldPrice}</del> */}
-                                <del>₹ 100</del>
+                          {/* Last Row: Pricing, Offer, and Restaurant Name */}
+                          <div className="row mt-2  align-items-center">
+                            <div className="col-4 pe-0 ps-4 d-flex">
+                              <h6
+                                className="text-info d-inline mb-0 fw-medium mt-1"
+                                style={{ fontSize: "16px" }}
+                              >
+                                ₹{menu.price}
+                              </h6>
+                              <span
+                                className="old-price ms-1 mt-1"
+                                style={{ fontSize: "13px", color: "#888" }}
+                              >
+                                <del>₹{menu.price}</del>
                               </span>
-                              <span className="text-success ms-2">40% off</span>
                             </div>
-                            <div className="col-3 ps-2 d-flex align-items-right">
+                            <div className="col-2 px-0 text-start">
+                              <span
+                                className="text-success"
+                                style={{ fontSize: "0.75rem" }}
+                              >
+                                {menu.offer}
+                                {"%"} Off
+                              </span>
+                            </div>
+                            <div className="col-4 ps-0 d-flex align-items-center">
                               <i
                                 className="ri-store-2-line"
-                                style={{ fontSize: "18px" }}
+                                style={{ fontSize: "16px" }}
                               ></i>
-                              <span className="ms-2 text-nowrap me-2">
+                              <span className="ms-1 text-nowrap">
                                 {menu.restaurant_name}
                               </span>
                             </div>
-                            <div
-                              className="col-2 pe-0 ps-3 text-end"
-                              style={{ fontSize: "18px" }}
-                            >
-                              <div className="d-flex justify-content-end">
-                                <i
-                                  className="ri-shopping-cart-2-line"
-                                  onClick={() => handleAddToCartClick(menu)}
-                                ></i>
+                            <div className="col-2 text-center ps-0">
+                              <div
+                                className="cart-btn"
+                                onClick={() => handleAddToCartClick(menu)}
+                              >
+                                {isMenuItemInCart(menu.menu_id) ? (
+                                  <i className="ri-shopping-cart-2-fill fs-4"></i>
+                                ) : (
+                                  <i className="ri-shopping-cart-2-line fs-4"></i>
+                                )}
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="col-1 text-end ">
-                          <i
-                            className="ri-close-line text-muted h5"
-                            onClick={() =>
-                              handleRemoveItemClick(index, menu.menu_id)
-                            }
-                          ></i>
                         </div>
                       </div>
                     </div>
@@ -956,4 +976,3 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
-

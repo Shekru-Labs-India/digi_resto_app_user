@@ -51,7 +51,7 @@ const HomeScreen = () => {
             <ProductCart />
             {/* <PeopleAlsoViewed/> */}
             {/* <ItemsCart/> */}
-            <NearbyArea />
+            {/* <NearbyArea /> */}
           </div>
         </main>
 

@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pic2 from "../assets/background.jpg";
 import Logoname from "../constants/Logoname";
+import CompanyVersion from "../constants/CompanyVersion";
 
 const Signupscreen = () => {
   const navigate = useNavigate();
@@ -149,7 +150,7 @@ const handleSignUp = async (e) => {
                                         </label>
                                         <div className="input-group">
                                             <span className="input-group-text fs-3 py-0"><i className="ri-smartphone-line  text-muted"/></span> 
-                                            <input type="tel" id="mobile" className={`form-control ${mobileError ? 'is-invalid' : ''}`} placeholder=' Enter Mobile Number' value={mobile} onChange={handleMobileChange} />
+                                            <input type="tel" id="mobile" className={`form-control ${mobileError ? 'is-invalid' : ''}`} placeholder='Enter Mobile Number' value={mobile} onChange={handleMobileChange} />
                                         </div>
                                         {mobileError && <div className="invalid-feedback">{mobileError}</div>}
                                     </div>
@@ -195,6 +196,7 @@ const handleSignUp = async (e) => {
                         </div>
                     </div>
                 </main>
+                <CompanyVersion/>
             </div>
   );
 };

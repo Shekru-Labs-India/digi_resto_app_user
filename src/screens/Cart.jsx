@@ -58,6 +58,8 @@
 //         const data = await response.json();
 //         if (data.st === 1) {
 //           setCartDetails(data);
+//         } else if (data.st === 2) { // Check for empty cart
+//           setCartDetails({ order_items: [] }); // Set empty order_items
 //         } else {
 //           console.error("Failed to fetch cart details:", data.msg);
 //         }
@@ -2876,6 +2878,8 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         setCartDetails(data);
+      } else if (data.st === 2) { // Check for empty cart
+        setCartDetails({ order_items: [] }); // Set empty order_items
       } else {
         console.error("Failed to fetch cart details:", data.msg);
       }
@@ -2883,6 +2887,8 @@ const Cart = () => {
       console.error("Error fetching cart details:", error);
     }
   };
+  
+  
 
   const removeFromCart = async (item) => {
     const customerId = getCustomerId();
@@ -2909,6 +2915,9 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item removed from cart successfully.");
+        // Remove item from local storage
+        const updatedCartItems = displayCartItems.filter(cartItem => cartItem.menu_id !== menuId);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         // Fetch the updated cart details
         fetchCartDetails();
       } else {
