@@ -319,7 +319,7 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content" style={{ display: "block" }}>
-                        {/* <h6 className="title">{menu.name}</h6> */}
+                        <h6 className="title">{menu.name}</h6>
                         <ul className="dz-meta mt-2">
                           <li
                             className="dz-price fs-5"
@@ -331,7 +331,7 @@ const OfferBanner = () => {
                             </del>
                           </li>
                         </ul>
-                        <div className="row pt-2">
+                        <div className="row">
                           <div className="col-6">
                             <div
                               className="fw-medium d-flex mx-0 "

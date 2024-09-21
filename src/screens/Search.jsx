@@ -722,7 +722,7 @@ const Search = () => {
   return (
     <div className="page-wrapper">
       {/* Header */}
-      <header className="header header-fixed style-3 ">
+      <header className="header header-fixed style-3 " style={{zIndex:"999"}}>
           <div className="header-content">
             <div className="search-area">
               <div onClick={() => navigate(-1)} className="back-btn  dz-icon">

@@ -2980,7 +2980,7 @@ const Cart = () => {
       ) : (
         <main
           className="page-content space-top p-b200"
-          style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
+          // style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
         >
           {userData ? (
             <div className="container scrollable-section">
@@ -2991,8 +2991,7 @@ const Cart = () => {
                     className="ri-store-2-line"
                     style={{ paddingRight: "10px" }}
                   ></i>
-                 {userData ? userData.restaurantName : "Restaurant Name"}
-
+                  {userData ? userData.restaurantName : "Restaurant Name"}
                 </h3>
               </div>
               {/* RESTAURANT NAME */}
@@ -3353,10 +3352,13 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row pt-2">
-                        <div className="col-6 mx-0 my-auto px-0" style={{position:"relative", left:"15px"}}>
+                        <div
+                          className="col-6 mx-0 my-auto px-0"
+                          style={{ position: "relative", left: "15px" }}
+                        >
                           {" "}
                           <p className="mb-2 fs-4 fw-medium ">
-                            <span style={{ color: "#4E74FC" , }}>
+                            <span style={{ color: "#4E74FC" }}>
                               ₹{item.price}
                             </span>
                             <del
@@ -3373,7 +3375,11 @@ const Cart = () => {
                         </div>
                         <div
                           className="col-3 px-0 pt-1"
-                          style={{ textAlign: "", position:"relative", right:"15px"  }}
+                          style={{
+                            textAlign: "",
+                            position: "relative",
+                            right: "15px",
+                          }}
                         >
                           {" "}
                           <span
@@ -3381,8 +3387,7 @@ const Cart = () => {
                             style={{ color: "#438a3c" }}
                           >
                             <div className="d-flex align-items-center justify-content-center">
-                              
-                            {item.offer || "No "} Off
+                              {item.offer || "No "} Off
                             </div>
                           </span>
                         </div>
@@ -3428,6 +3433,91 @@ const Cart = () => {
                   </div>
                 </div>
               ))}
+              {/* Footer Fixed Button */}
+              {userData &&
+                displayCartItems.length > 0 && ( // Only render if user is logged in and cart is not empty
+                  <div
+                    className="container  mb-5 pb-5 z-3 pt-10"
+                    style={{ backgroundColor: "transparent" }}
+                  >
+                    <div className="card-body mt-2" style={{ padding: "0px" }}>
+                      <div className="card mx-auto" style={{ width: "365px" }}>
+                        <div
+                          className="row px-1 py-1"
+                          style={{ height: "180px" }}
+                        >
+                          <div className="col-12">
+                            <div className="d-flex justify-content-between align-items-center py-0">
+                              <span
+                                className="ps-2 fs-5"
+                                style={{ color: "#a5a5a5" }}
+                              >
+                                Subtotal
+                              </span>
+                              <span className="pe-2 fs-5 fw-semibold">
+                                ₹{cartDetails?.sub_total || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="col-12 mb-0">
+                            <div className="d-flex justify-content-between align-items-center py-0">
+                              <span
+                                className="ps-2 fs-5"
+                                style={{ color: "#a5a5a5" }}
+                              >
+                                Discount
+                              </span>
+                              <span className="pe-2 fs-5 fw-semibold">
+                                ₹{cartDetails?.discount || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="col-12 mb-0">
+                            <div className="d-flex justify-content-between align-items-center py-0">
+                              <span
+                                className="ps-2 fs-5"
+                                style={{ color: "#a5a5a5" }}
+                              >
+                                Tax
+                              </span>
+                              <span className="pe-2 fs-5 fw-semibold">
+                                ₹{cartDetails?.tax || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <hr
+                              className="dashed-line me-3 p-0 m-0"
+                              style={{ color: "#0d775e" }}
+                            />
+                          </div>
+                          <div className="col-12 ">
+                            <div className="d-flex justify-content-between align-items-center py-1 fw-medium  pb-0 mb-0">
+                              <span className="ps-2 fs-5 fw-semibold ">
+                                Grand Total
+                              </span>
+                              <span className="pe-2 fs-5 fw-semibold">
+                                ₹{cartDetails?.grand_total || 0}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="container d-flex align-items-center justify-content-center">
+                      {displayCartItems.length > 0 && (
+                        <Link
+                          to="/Checkout"
+                          state={{ cartItems: displayCartItems }}
+                          className="btn btn-lg btn-thin rounded-xl btn-primary px-5"
+                        >
+                          Proceed to Buy &nbsp;{" "}
+                          <b> ({displayCartItems.length} items)</b>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
             </div>
           ) : (
             <SigninButton />
@@ -3435,10 +3525,10 @@ const Cart = () => {
         </main>
       )}
       {/* Footer Fixed Button */}
-      {userData &&
+      {/* {userData &&
         displayCartItems.length > 0 && ( // Only render if user is logged in and cart is not empty
           <div
-            className="container footer-fixed-bottom mb-5 pb-5 z-3 pt-10"
+            className="container  mb-5 pb-5 z-3 pt-10"
             style={{ backgroundColor: "transparent" }}
           >
             <div className="card-body mt-2" style={{ padding: "0px" }}>
@@ -3482,7 +3572,9 @@ const Cart = () => {
                   </div>
                   <div className="col-12 ">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium  pb-0 mb-0">
-                      <span className="ps-2 fs-5 fw-semibold ">Grand Total</span>
+                      <span className="ps-2 fs-5 fw-semibold ">
+                        Grand Total
+                      </span>
                       <span className="pe-2 fs-5 fw-semibold">
                         ₹{cartDetails?.grand_total || 0}
                       </span>
@@ -3504,7 +3596,7 @@ const Cart = () => {
               )}
             </div>
           </div>
-        )}
+        )} */}
       <Bottom />
     </div>
   );
