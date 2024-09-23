@@ -2807,14 +2807,6 @@
 
 // rerived from gh----->
 
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -2887,8 +2879,6 @@
 //       console.error("Error fetching cart details:", error);
 //     }
 //   };
-  
-  
 
 //   const removeFromCart = async (item) => {
 //     const customerId = getCustomerId();
@@ -3250,7 +3240,7 @@
 //                         <div className="col-4">
 //                           {" "}
 //                           <div className="d-flex justify-content-end align-items-center">
-                   
+
 //                             <i
 //                               className="ri-subtract-line mx-3"
 //                               style={{
@@ -3261,12 +3251,10 @@
 //                               onClick={() => decrementQuantity(index)}
 //                             ></i>
 
-                  
 //                             <span className="fs-4" style={{ color: "#0d775e" }}>
 //                               {item.quantity}
 //                             </span>
 
-                         
 //                             <i
 //                               className="ri-add-line mx-3"
 //                               style={{
@@ -3613,29 +3601,6 @@
 
 // export default Cart;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -3960,7 +3925,7 @@ const Cart = () => {
             {cartDetails && displayCartItems.length > 0 && (
               <div className="container mb-5 pb-5 z-3 pt-10">
                 <div className="card-body mt-2" style={{ padding: "0px" }}>
-                  <div className="card mx-auto" style={{ width: "328px" }}>
+                  <div className="card mx-auto" >
                     <div
                       className="row px-1 py-1"
                       // style={{ height: "180px" }}
