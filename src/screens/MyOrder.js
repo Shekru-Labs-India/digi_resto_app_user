@@ -482,12 +482,15 @@ const OrdersTab = ({ orders, type }) => {
                   <p className="mb-0 fs-6 text-break">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
+
+                    <span className="ps-5 mb-0 fs-6 text-break">
+                      <i class="ri-user-location-line pe-2"></i>
+                      {order.table_number}
+                    </span>
                   </p>
                 </div>
                 <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
-                  <p
-                    className="mb-0 fs-6"
-                  >
+                  <p className="mb-0 fs-6">
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
                       ? "No ongoing orders"
@@ -495,9 +498,7 @@ const OrdersTab = ({ orders, type }) => {
                     Menu
                   </p>
                 </div>
-                <div
-                  className="col-3" 
-                >
+                <div className="col-3">
                   <div className="price-wrapper">
                     {/* <h6 className="current-price fs-4 me-1">
                       ₹{order.total_bill}

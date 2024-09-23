@@ -1326,15 +1326,20 @@ const TrackOrder = () => {
               <div className="row mt-2 align-items-center">
                 {" "}
                 {/* Added align-items-center for vertical alignment */}
-                <div className="col-4 text-start pe-0">
+                <div className="col-5 text-start pe-0">
                   {" "}
                   {/* Added text-start for left alignment */}
-                  <p className="mb-0 fs-6">
+                  <p className="mb-0 fs-6 text-break">
                     <i className="ri-store-2-line pe-2"></i>
                     {order_details.restaurant_name}
+
+                    <span className="ps-5 mb-0 fs-6 text-break">
+                      <i class="ri-user-location-line pe-2"></i>
+                      {order_details.table_number}
+                    </span>
                   </p>
                 </div>
-                <div className="col-3 pe-0 ps-2">
+                <div className="col-2 pe-0 ps-2">
                   {" "}
                   {/* Changed to text-center for center alignment */}
                   <p
@@ -1490,7 +1495,7 @@ const TrackOrder = () => {
                         >
                           x {menu.quantity}
                         </span>
-                        <h6
+                        {/* <h6
                           className="total-price ms-4 "
                           style={{
                             color: "#4E74FC",
@@ -1499,7 +1504,7 @@ const TrackOrder = () => {
                           }}
                         >
                           ₹{menu.net_price * menu.quantity}
-                        </h6>
+                        </h6> */}
                       </div>
                     </div>
                   </div>
@@ -1516,7 +1521,7 @@ const TrackOrder = () => {
           className="container  mb-5 pb-5 z-3"
           style={{ backgroundColor: "transparent" }}
         >
-          <div className="card-body mt-2 p-0">
+          <div className="card-body mt-2 p-0 mb-5">
             <div className="card">
               <div className="row px-1">
                 <div className="col-12 mt-2">
