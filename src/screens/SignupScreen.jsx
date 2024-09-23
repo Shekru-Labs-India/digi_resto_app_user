@@ -160,7 +160,7 @@ const handleSignUp = async (e) => {
                                         </label>
                                         <div className="input-group">
                                             <span className="input-group-text fs-3 py-0"><i className="ri-calendar-line text-muted"/></span>
-                                            <input type="text" id="dob" className={`form-control ${dobError ? 'is-invalid' : ''}`} placeholder='yyyy-mm-dd' value={dob} onChange={handleDobChange} />
+                                            <input type="date" id="dob" className={`form-control ${dobError ? 'is-invalid' : ''}`} placeholder='yyyy-mm-dd' value={dob} onChange={handleDobChange} />
                                         </div>
                                         {dobError && <div className="invalid-feedback">{dobError}</div>}
                                     </div>

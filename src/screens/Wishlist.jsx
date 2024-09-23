@@ -641,34 +641,401 @@
 
 // export default Wishlist;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import images from "../assets/MenuDefault.png";
+// import Bottom from "../component/bottom";
+// import SigninButton from "../constants/SigninButton";
+// import { useRestaurantId } from "../context/RestaurantIdContext";
+
+// const Wishlist = () => {
+//   const [menuList, setMenuList] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+
+//   const { restaurantId: contextRestaurantId } = useRestaurantId();
+//   const storedRestaurantId = localStorage.getItem("restaurantId");
+//   const restaurantId = contextRestaurantId || storedRestaurantId;
+
+//   const userData = JSON.parse(localStorage.getItem("userData"));
+//   const customerId = userData ? userData.customer_id : null;
+  
+
+//   useEffect(() => {
+//     if (restaurantId) {
+//       localStorage.setItem("restaurantId", restaurantId);
+//     }
+//   }, [restaurantId]);
+
+//   const removeItem = async (indexToRemove, menuId) => {
+//     if (!customerId || !menuId || !restaurantId) {
+//       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
+//       return;
+//     }
+
+//     try {
+//       const response = await fetch(
+//         "https://menumitra.com/user_api/remove_favourite_menu",
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             restaurant_id: restaurantId,
+//             menu_id: menuId,
+//             customer_id: customerId,
+//           }),
+//         }
+//       );
+
+//       if (response.ok) {
+//         const updatedMenuList = [...menuList];
+//         updatedMenuList.splice(indexToRemove, 1);
+//         setMenuList(updatedMenuList);
+//       } else {
+//         console.error(
+//           "Failed to remove item from wishlist:",
+//           response.statusText
+//         );
+//       }
+//     } catch (error) {
+//       console.error("Error removing item from wishlist:", error);
+//     }
+//   };
+
+//   const addToCart = (item) => {
+//     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+//     const itemInCart = cartItems.find(
+//       (cartItem) => cartItem.menu_id === item.menu_id
+//     );
+
+//     if (!itemInCart) {
+//       const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+//       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+//     } else {
+//       console.log("Item already in cart");
+//     }
+//   };
+
+//   const isMenuItemInCart = (menuId) => {
+//     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+//     return cartItems.some((item) => item.menu_id === menuId);
+//   };
+
+//   const toTitleCase = (str) => {
+//     return str
+//       .toLowerCase()
+//       .split(" ")
+//       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//       .join(" ");
+//   };
+
+//   useEffect(() => {
+//     const fetchFavoriteItems = async () => {
+//       if (!customerId || !restaurantId) {
+//         console.error("Customer ID or Restaurant ID is not available.");
+//         setLoading(false);
+//         return;
+//       }
+
+//       setLoading(true);
+//       try {
+//         const response = await fetch(
+//           "https://menumitra.com/user_api/get_favourite_list",
+//           {
+//             method: "POST",
+//             headers: {
+//               "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify({
+//               customer_id: customerId,
+//               restaurant_id: restaurantId,
+//             }),
+//           }
+//         );
+
+//         if (response.ok) {
+//           const data = await response.json();
+//           if (data.st === 1 && Array.isArray(data.lists)) {
+//             setMenuList(data.lists);
+//           } else {
+//             console.error("Invalid data format:", data);
+//           }
+//         } else {
+//           console.error("Network response was not ok:", response.statusText);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching favorite items:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+
+//     fetchFavoriteItems();
+//   }, [customerId, restaurantId]);
+
+//   const handleRemoveItemClick = (index, menuId) => {
+//     removeItem(index, menuId);
+//   };
+
+//   const handleAddToCartClick = (item) => {
+//     if (!isMenuItemInCart(item.menu_id)) {
+//       addToCart(item);
+     
+//     } else {
+//       console.log("Item is already in the cart");
+//     }
+//   };
+
+//   return (
+//     <div className="page-wrapper">
+//       {loading ? (
+//         <div id="preloader">
+//           <div className="loader">
+//             <div className="spinner-border text-primary" role="status">
+//               <span className="visually-hidden">Loading...</span>
+//             </div>
+//           </div>
+//         </div>
+//       ) : (
+//         <>
+//           <header className="header header-fixed style-3">
+//             <div className="header-content">
+//               <div className="left-content">
+//                 <Link
+//                   to="/HomeScreen"
+//                   className="back-btn dz-icon  icon-sm"
+//                   onClick={() => navigate(-1)}
+//                 >
+//                   <i className="ri-arrow-left-line fs-2"></i>
+//                 </Link>
+//               </div>
+//               <div className="mid-content">
+//                 <h5 className="title">
+//                   Favourite{" "}
+//                   {userData && <span className="">({menuList.length})</span>}
+//                 </h5>
+//               </div>
+//             </div>
+//           </header>
+
+//           <main className="page-content space-top p-b0 mt-3">
+//             {menuList.length > 0 ? (
+//               menuList.map((menu, index) => (
+//                 <div className="container py-1" key={index}>
+//                   <div className="card">
+//                     <div className="card-body py-0">
+//                       <div className="row">
+//                         <div className="col-3 px-0">
+//                           <img
+//                             src={menu.image || images}
+//                             alt={menu.menu_name}
+//                             className="rounded"
+//                             style={{ width: "100px", height: "102px" }}
+//                             onError={(e) => {
+//                               e.target.src = images;
+//                               e.target.style.width = "100px";
+//                               e.target.style.height = "100px";
+//                             }}
+//                           />
+//                         </div>
+//                         <div className="col-9 pt-2 p-0">
+//                           {/* First Row: Menu Name and Close Icon */}
+//                           <div className="row">
+//                             <div className="col-8 ps-4">
+//                               <h4>{toTitleCase(menu.menu_name)}</h4>
+//                             </div>
+//                             <div className="col-4 text-end ps-0 pe-4">
+//                               <i
+//                                 className="ri-close-line text-muted h5"
+//                                 onClick={() =>
+//                                   handleRemoveItemClick(index, menu.menu_id)
+//                                 }
+//                               ></i>
+//                             </div>
+//                           </div>
+//                           {/* Second Row: Category Name, Spicy Index, and Rating */}
+//                           <div className="row">
+//                             <div className="col-4 pe-0 ps-4">
+//                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
+//                               <span className="text-success">
+//                                 {menu.category_name}
+//                               </span>
+//                             </div>
+//                             <div className="col-5 pe-0 ps-1 text-center">
+//                               {menu.spicy_index && (
+//                                 <div className="offer-code">
+//                                   {Array.from({ length: 5 }).map((_, index) =>
+//                                     index < menu.spicy_index ? (
+//                                       <i
+//                                         className="ri-fire-fill fs-6"
+//                                         style={{
+//                                           fontSize: "12px",
+//                                           color: "#eb8e57",
+//                                         }}
+//                                         key={index}
+//                                       ></i>
+//                                     ) : (
+//                                       <i
+//                                         className="ri-fire-line fs-6"
+//                                         style={{
+//                                           fontSize: "12px",
+//                                           color: "#eb8e57",
+//                                         }}
+//                                         key={index}
+//                                       ></i>
+//                                     )
+//                                   )}
+//                                 </div>
+//                               )}
+//                             </div>
+//                             <div className="col-3 text-center pe-3 ps-0">
+//                               <span className="fs-6">
+//                                 <i
+//                                   className="ri-star-half-line me-1 "
+//                                   style={{ color: "#eb8e57" }}
+//                                 ></i>
+//                                 {menu.rating || 0.1}
+//                               </span>
+//                             </div>
+//                           </div>
+//                           {/* Last Row: Pricing, Offer, and Restaurant Name */}
+//                           <div className="row mt-2  align-items-center">
+//                             {/* <div className="col-4 pe-0 ps-4 d-flex">
+//                               <h6
+//                                 className="text-info d-inline mb-0 fw-medium mt-1"
+//                                 style={{ fontSize: "16px" }}
+//                               >
+//                                 ₹{menu.price}
+//                               </h6>
+//                               <span
+//                                 className="old-price ms-1 mt-1"
+//                                 style={{ fontSize: "13px", color: "#888" }}
+//                               >
+//                                 <del>₹{menu.price}</del>
+//                               </span>
+//                             </div> */}
+//                             <div className="col-6 px-0 text-start">
+//                               <p className="mb-2 ms-2 fs-4 fw-medium">
+//                                 <span className="ms-3 me-2 text-info">
+//                                   ₹{menu.price}
+//                                 </span>
+//                                 <span className="text-muted fs-6 text-decoration-line-through">
+//                                   ₹{menu.oldPrice || menu.price}
+//                                 </span>
+
+//                                 <span className="fs-6 ps-2 text-primary">
+//                                   {menu.offer || "No "}% Off
+//                                 </span>
+//                               </p>
+//                             </div>
+//                             {/* <div className="col-4 ps-0 d-flex align-items-center">
+//                               <i
+//                                 className="ri-store-2-line"
+//                                 style={{ fontSize: "16px" }}
+//                               ></i>
+//                               <span className="ms-1 text-nowrap">
+//                                 {menu.restaurant_name}
+//                               </span>
+//                             </div> */}
+//                             <div className="col-5 text-end">
+//                               <div
+//                                 className="cart-btn"
+//                                 onClick={() => handleAddToCartClick(menu)}
+//                               >
+//                                 {isMenuItemInCart(menu.menu_id) ? (
+//                                   <i className="ri-shopping-cart-2-fill fs-4"></i>
+//                                 ) : (
+//                                   <i className="ri-shopping-cart-2-line fs-4"></i>
+//                                 )}
+//                               </div>
+//                             </div>
+//                           </div>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))
+//             ) : (
+//               <div
+//                 className="empty-favorites d-flex flex-column justify-content-center align-items-center w-100"
+//                 style={{ height: "100%" }}
+//               >
+//                 <h5>Nothing to show in favorites.</h5>
+//                 <p>Add some products to show here!</p>
+//                 <Link to="/HomeScreen" className="btn btn-primary">
+//                   Browse Menus
+//                 </Link>
+//               </div>
+//             )}
+//           </main>
+//         </>
+//       )}
+
+//       <Bottom />
+//     </div>
+//   );
+// };
+
+// export default Wishlist;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
-import SigninButton from "../constants/SigninButton";
-import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const { restaurantId: contextRestaurantId } = useRestaurantId();
-  const storedRestaurantId = localStorage.getItem("restaurantId");
-  const restaurantId = contextRestaurantId || storedRestaurantId;
+  const userData = JSON.parse(localStorage.getItem("userData")) || {};
+  const customerId = userData.customer_id || null;
+  const storedRestaurantId = userData.restaurantId || null;
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  const customerId = userData ? userData.customer_id : null;
-  
-
-  useEffect(() => {
-    if (restaurantId) {
-      localStorage.setItem("restaurantId", restaurantId);
-    }
-  }, [restaurantId]);
+  // No need to set the restaurantId in localStorage since it's already in userData
 
   const removeItem = async (indexToRemove, menuId) => {
-    if (!customerId || !menuId || !restaurantId) {
+    if (!customerId || !menuId || !storedRestaurantId) {
       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
       return;
     }
@@ -682,7 +1049,7 @@ const Wishlist = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            restaurant_id: storedRestaurantId,
             menu_id: menuId,
             customer_id: customerId,
           }),
@@ -694,10 +1061,7 @@ const Wishlist = () => {
         updatedMenuList.splice(indexToRemove, 1);
         setMenuList(updatedMenuList);
       } else {
-        console.error(
-          "Failed to remove item from wishlist:",
-          response.statusText
-        );
+        console.error("Failed to remove item from wishlist:", response.statusText);
       }
     } catch (error) {
       console.error("Error removing item from wishlist:", error);
@@ -723,58 +1087,49 @@ const Wishlist = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  const toTitleCase = (str) => {
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const fetchFavoriteItems = async () => {
+    if (!customerId || !storedRestaurantId) {
+      console.error("Customer ID or Restaurant ID is not available.");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_favourite_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: customerId,
+            restaurant_id: storedRestaurantId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && Array.isArray(data.lists)) {
+          setMenuList(data.lists);
+        } else {
+          console.error("Invalid data format:", data);
+        }
+      } else {
+        console.error("Network response was not ok:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching favorite items:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchFavoriteItems = async () => {
-      if (!customerId || !restaurantId) {
-        console.error("Customer ID or Restaurant ID is not available.");
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_favourite_list",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customer_id: customerId,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.st === 1 && Array.isArray(data.lists)) {
-            setMenuList(data.lists);
-          } else {
-            console.error("Invalid data format:", data);
-          }
-        } else {
-          console.error("Network response was not ok:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching favorite items:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
     fetchFavoriteItems();
-  }, [customerId, restaurantId]);
+  }, [customerId, storedRestaurantId]);
 
   const handleRemoveItemClick = (index, menuId) => {
     removeItem(index, menuId);
@@ -783,7 +1138,6 @@ const Wishlist = () => {
   const handleAddToCartClick = (item) => {
     if (!isMenuItemInCart(item.menu_id)) {
       addToCart(item);
-     
     } else {
       console.log("Item is already in the cart");
     }
@@ -806,7 +1160,7 @@ const Wishlist = () => {
               <div className="left-content">
                 <Link
                   to="/HomeScreen"
-                  className="back-btn dz-icon  icon-sm"
+                  className="back-btn dz-icon icon-sm"
                   onClick={() => navigate(-1)}
                 >
                   <i className="ri-arrow-left-line fs-2"></i>
@@ -842,10 +1196,9 @@ const Wishlist = () => {
                           />
                         </div>
                         <div className="col-9 pt-2 p-0">
-                          {/* First Row: Menu Name and Close Icon */}
                           <div className="row">
                             <div className="col-8 ps-4">
-                              <h4>{toTitleCase(menu.menu_name)}</h4>
+                              <h4>{menu.menu_name}</h4>
                             </div>
                             <div className="col-4 text-end ps-0 pe-4">
                               <i
@@ -856,7 +1209,6 @@ const Wishlist = () => {
                               ></i>
                             </div>
                           </div>
-                          {/* Second Row: Category Name, Spicy Index, and Rating */}
                           <div className="row">
                             <div className="col-4 pe-0 ps-4">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
@@ -901,22 +1253,7 @@ const Wishlist = () => {
                               </span>
                             </div>
                           </div>
-                          {/* Last Row: Pricing, Offer, and Restaurant Name */}
-                          <div className="row mt-2  align-items-center">
-                            {/* <div className="col-4 pe-0 ps-4 d-flex">
-                              <h6
-                                className="text-info d-inline mb-0 fw-medium mt-1"
-                                style={{ fontSize: "16px" }}
-                              >
-                                ₹{menu.price}
-                              </h6>
-                              <span
-                                className="old-price ms-1 mt-1"
-                                style={{ fontSize: "13px", color: "#888" }}
-                              >
-                                <del>₹{menu.price}</del>
-                              </span>
-                            </div> */}
+                          <div className="row mt-2 align-items-center">
                             <div className="col-6 px-0 text-start">
                               <p className="mb-2 ms-2 fs-4 fw-medium">
                                 <span className="ms-3 me-2 text-info">
@@ -925,21 +1262,11 @@ const Wishlist = () => {
                                 <span className="text-muted fs-6 text-decoration-line-through">
                                   ₹{menu.oldPrice || menu.price}
                                 </span>
-
                                 <span className="fs-6 ps-2 text-primary">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </p>
                             </div>
-                            {/* <div className="col-4 ps-0 d-flex align-items-center">
-                              <i
-                                className="ri-store-2-line"
-                                style={{ fontSize: "16px" }}
-                              ></i>
-                              <span className="ms-1 text-nowrap">
-                                {menu.restaurant_name}
-                              </span>
-                            </div> */}
                             <div className="col-5 text-end">
                               <div
                                 className="cart-btn"
@@ -974,7 +1301,6 @@ const Wishlist = () => {
           </main>
         </>
       )}
-
       <Bottom />
     </div>
   );

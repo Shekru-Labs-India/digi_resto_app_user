@@ -3620,6 +3620,22 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -3637,10 +3653,10 @@ const Cart = () => {
     return userData ? userData.customer_id : null;
   };
 
-  // Retrieve Restaurant ID from localStorage
+  // Retrieve Restaurant ID from userData in localStorage
   const getRestaurantId = () => {
-    const restaurantId = localStorage.getItem("restaurantId");
-    return restaurantId ? parseInt(restaurantId, 10) : null;
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData && userData.restaurantId ? userData.restaurantId : null;
   };
 
   // Retrieve Cart ID from localStorage or set a default
@@ -3649,11 +3665,9 @@ const Cart = () => {
     return cartId ? parseInt(cartId, 10) : 1;
   };
 
-
   useEffect(() => {
     fetchCartDetails();
   }, []);
-
 
   const fetchCartDetails = async () => {
     const customerId = getCustomerId();
@@ -3684,8 +3698,7 @@ const Cart = () => {
       if (data.st === 1) {
         setCartDetails(data);
       } else if (data.st === 2) {
-   
-        setCartDetails({ order_items: [] }); 
+        setCartDetails({ order_items: [] });
       } else {
         console.error("Failed to fetch cart details:", data.msg);
       }
@@ -3694,12 +3707,11 @@ const Cart = () => {
     }
   };
 
-
   const removeFromCart = async (item) => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
     const cartId = getCartId();
-    const menuId = item.menu_id; 
+    const menuId = item.menu_id;
 
     try {
       const response = await fetch(
@@ -3720,7 +3732,7 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item removed from cart successfully.");
-        fetchCartDetails(); 
+        fetchCartDetails();
       } else {
         console.error("Failed to remove item from cart:", data.msg);
       }
@@ -3729,7 +3741,6 @@ const Cart = () => {
     }
   };
 
-  
   const updateCartQuantity = async (menuId, newQuantity) => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
@@ -3756,7 +3767,7 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Menu quantity updated successfully.");
-        fetchCartDetails(); 
+        fetchCartDetails();
       } else {
         console.error("Failed to update menu quantity:", data.msg);
       }
@@ -3765,13 +3776,11 @@ const Cart = () => {
     }
   };
 
-
   const incrementQuantity = (item) => {
     const newQuantity = item.quantity + 1;
     updateCartQuantity(item.menu_id, newQuantity);
   };
 
- 
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
       const newQuantity = item.quantity - 1;
@@ -3783,7 +3792,6 @@ const Cart = () => {
 
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
-  
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
@@ -3802,7 +3810,6 @@ const Cart = () => {
         </div>
       </header>
 
-   
       {displayCartItems.length === 0 ? (
         <main className="page-content space-top p-b100">
           <div className="container overflow-hidden">
@@ -3829,9 +3836,7 @@ const Cart = () => {
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <div className="row my-auto" 
-                style={{ height: "110px" }}
-                >
+                <div className="row my-auto" style={{ height: "110px" }}>
                   <div className="col-3 px-0">
                     <Link to={`/ProductDetails/${item.menu_id}`}>
                       <img
@@ -3910,22 +3915,14 @@ const Cart = () => {
                     <div className="row pt-2">
                       <div className="col-6 mx-0 my-auto px-0">
                         <p className="mb-2 fs-4 fw-medium">
-                          <span
-                            className="ms-3 me-2 text-info"
-                          >
+                          <span className="ms-3 me-2 text-info">
                             ₹{item.price}
                           </span>
-                          <span
-                          className="text-muted fs-6 text-decoration-line-through"
-                          
-                          >
+                          <span className="text-muted fs-6 text-decoration-line-through">
                             ₹{item.oldPrice || item.price}
                           </span>
 
-                          <span
-                            className="fs-6 ps-2 text-primary"
-                            
-                          >
+                          <span className="fs-6 ps-2 text-primary">
                             {item.offer || "No "}% Off
                           </span>
                         </p>
@@ -3933,7 +3930,6 @@ const Cart = () => {
                       <div className="col-3 px-0 pt-1"></div>
                       <div className="col-3">
                         <div className="d-flex justify-content-end align-items-center">
-                       
                           <i
                             className="ri-subtract-line mx-2"
                             style={{
@@ -3943,14 +3939,8 @@ const Cart = () => {
                             onClick={() => decrementQuantity(item)}
                           ></i>
 
-                          
-                          <span
-                            className="text-light "
-                          >
-                            {item.quantity}
-                          </span>
+                          <span className="text-light ">{item.quantity}</span>
 
-                 
                           <i
                             className="ri-add-line mx-2"
                             style={{
@@ -3967,7 +3957,6 @@ const Cart = () => {
               </div>
             ))}
 
-         
             {cartDetails && displayCartItems.length > 0 && (
               <div className="container mb-5 pb-5 z-3 pt-10">
                 <div className="card-body mt-2" style={{ padding: "0px" }}>
@@ -3995,15 +3984,15 @@ const Cart = () => {
                             className="ps-2 fs-5"
                             style={{ color: "#a5a5a5" }}
                           >
-                            Service Charges ({cartDetails.service_charges_percent}%)
+                            Service Charges (
+                            {cartDetails.service_charges_percent}%)
                           </span>
                           <span className="pe-2 fs-5 fw-semibold">
                             ₹{cartDetails?.service_charges_amount || 0}
                           </span>
                         </div>
-                       
                       </div>
-                    
+
                       <div className="col-12 mb-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
@@ -4017,7 +4006,7 @@ const Cart = () => {
                           </span>
                         </div>
                       </div>
-                        <div className="col-12 mb-0">
+                      <div className="col-12 mb-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
                             className="ps-2 fs-5"
