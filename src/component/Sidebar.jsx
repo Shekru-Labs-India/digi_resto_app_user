@@ -90,6 +90,12 @@ const Sidebar = () => {
               {restaurantDetails ? restaurantDetails.name : "Restaurant Name"}
               <i className="ri-store-2-line ps-2"></i>
             </h3>
+            <h6 className="title fw-medium h6 custom-text-gray">
+              {/* {restaurantDetails ? restaurantDetails.name : "Restaurant Name"} */}
+              {/* <i className="ri-store-2-line ps-2"></i> */}
+              Table Number : {userData ? userData.tableNumber : "Table Number"}
+              {/* <i class="ri-user-location-line ps-2"></i> */}
+            </h6>
           </div>
         </div>
       </header>
@@ -103,7 +109,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
-          <div className="dz-media">
+          <div className="dz-media d-flex justify-content-center align-items-center">
             <i className="ri-user-3-line fs-1"></i>
           </div>
           <div className="dz-info">
@@ -172,7 +178,7 @@ const Sidebar = () => {
             </Link>
           </li>
         </ul>
-        <div className="dz-mode">
+        <div className="dz-mode mt-4 me-4">
           <div className="theme-btn" onClick={toggleTheme}>
             <i
               className={`ri ${
@@ -187,7 +193,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="sidebar-bottom">
-        <CompanyVersion/>
+          <CompanyVersion />
         </div>
       </div>
     </div>

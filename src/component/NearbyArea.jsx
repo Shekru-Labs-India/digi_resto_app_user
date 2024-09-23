@@ -396,3 +396,8 @@ const NearbyArea = () => {
 };
 
 export default NearbyArea;
+
+
+
+
+
