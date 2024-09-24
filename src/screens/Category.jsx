@@ -49,7 +49,7 @@
 //   };
 //   return (
 //     <div className="page-wrapper">
-      
+
 //       {/* Header */}
 //       <header className="header header-fixed style-3">
 //         <div className="header-content">
@@ -90,9 +90,9 @@
 //                   </h6>
 //                   <div className="dz-media">
 //                     <Link to="/Product">
-//                       {/* <img 
+//                       {/* <img
 //                                             style={{ width: '100%', height: '100px', borderRadius: '10px' }}
-//                                             src={category.image} 
+//                                             src={category.image}
 //                                             alt={category.name} /> */}
 //                       <img
 //                         style={{
@@ -125,29 +125,6 @@
 // };
 
 // export default Category;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
@@ -299,10 +276,6 @@
 // };
 
 // export default Category;
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
@@ -458,14 +431,6 @@
 
 // export default Category;
 
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
@@ -547,10 +512,7 @@ const Category = () => {
           <header className="header header-fixed style-3">
             <div className="header-content">
               <div className="left-conten ">
-                <Link
-                  to="/HomeScreen/"
-                  className="back-btn dz-icon icon-sm"
-                >
+                <Link to="/HomeScreen/" className="back-btn dz-icon icon-sm">
                   <i className="ri-arrow-left-line fs-2"></i>
                 </Link>
               </div>
@@ -564,7 +526,7 @@ const Category = () => {
           {/* Header End */}
 
           {/* Main Content Start */}
-          <main className="page-content space-top p-b70">
+          {/* <main className="page-content space-top p-b70">
             <div className="container">
               <div className="row g-3 grid-style-1">
                 {categories.map((category, index) => (
@@ -602,8 +564,44 @@ const Category = () => {
                 ))}
               </div>
             </div>
-          </main>
+          </main> */}
           {/* Main Content End */}
+
+          <main className="page-content space-top p-b70">
+            <div className="container">
+              <div className="row g-3">
+                {categories.map((category, index) => (
+                  <div className="col-6" key={index}>
+                    <div className="dz-category-items border border-success overflow-hidden rounded-4">
+                      <Link
+                        to="/Menu"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <div className="dz-media category-image">
+                          <img
+                            style={{
+                              width: "100%",
+                              height: "150px",
+                              objectFit: "inherit",
+                            }} // Ensure image fits within the border
+                            src={category.image || defaultImg} // Use default image if image is null
+                            alt={category.category_name} // Update alt text
+                            onError={(e) => {
+                              e.target.src = south; // Set local image source on error
+                            }}
+                          />
+                        </div>
+                        <h6 className="title py-2 rounded-top-3 position-absolute top-0 bg-white">
+                          {toTitleCase(category.category_name)} (
+                          {category.menu_count})
+                        </h6>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </main>
 
           {/* Footer */}
           <Bottom />

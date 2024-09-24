@@ -5791,8 +5791,9 @@ hr.dotted {
   
   .sticky-bottom {
     position: sticky;
-    bottom: 0;
-    z-index: 1020; }
+    bottom: 48px;
+    z-index: 1020; 
+    background-color: #f6f6f6;}
   
   @media (min-width: 576px) {
     .sticky-sm-top {

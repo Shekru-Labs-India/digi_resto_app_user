@@ -168,7 +168,6 @@
 // const totalAmount =
 //   quantity * (productDetails?.discountedPrice || productDetails?.price || 0);
 
-
 // const incrementQuantity = () => {
 //   if (quantity < 20) {
 //     setQuantity((prevQuantity) => prevQuantity + 1);
@@ -186,7 +185,6 @@
 //   }
 // };
 
-
 //   const handleBack = () => {
 //     navigate(-1);
 //   };
@@ -198,8 +196,6 @@
 //   if (!productDetails) {
 //     return <div>Loading...</div>;
 //   }
-
-  
 
 //   return (
 //     <>
@@ -463,10 +459,6 @@
 // };
 
 // export default MenuDetails;
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
@@ -915,16 +907,6 @@
 
 // export default MenuDetails;
 
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -1333,14 +1315,6 @@
 
 // export default MenuDetails;
 
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -1748,10 +1722,6 @@
 // };
 
 // export default MenuDetails;
-
-
-
-
 
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
@@ -1946,7 +1916,8 @@ const MenuDetails = () => {
           </div>
         </header>
 
-        <main className="page-content p-b80">
+        <main className="page-content pb-5">
+          {/* <main className="page-content p-b80"> */}
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
               <img
@@ -1963,9 +1934,12 @@ const MenuDetails = () => {
               />
             </div>
           </div>
+
+          {/* make above constainers height till here so scroll will end and below container will not hide any thing */}
+
           <div className="container">
             <div className="dz-product-detail">
-              <div className="detail-content" style={{}}>
+              <div className="detail-content mt-0" style={{}}>
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
                     {/* {toTitleCase(productDetails.menu_cat_name)} */}
@@ -1973,7 +1947,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <h4 className="title fs-5">
+                    <h4 className="title fs-2">
                       {toTitleCase(productDetails.name)}
                     </h4>
                   </div>
@@ -2030,6 +2004,35 @@ const MenuDetails = () => {
                       ></i>
                     </button>
                   </div>
+                  {/* <div className="col-5">
+                    <div className="dz-stepper style-3">
+                      <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+                        <span className="input-group-btn input-group-prepend">
+                          <button
+                            className="btn btn-primary bootstrap-touchspin-down"
+                            type="button"
+                          >
+                            -
+                          </button>
+                        </span>
+                        <input
+                          readOnly=""
+                          className="stepper form-control"
+                          type="text"
+                          defaultValue={1}
+                          name="demo3"
+                        />
+                        <span className="input-group-btn input-group-append">
+                          <button
+                            className="btn btn-primary bootstrap-touchspin-up"
+                            type="button"
+                          >
+                            +
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -2087,12 +2090,10 @@ const MenuDetails = () => {
               <div className="container">
                 <div className="product-info">
                   <div>
-                    <p className="fs-7 text-wrap ">
+                    <p className="fs-7 text-wrap m-0">
                       {productDetails.description}
                     </p>
                   </div>
-
-                  <div className="d-flex align-items-center justify-content-between py-4"></div>
 
                   {showQuantityError && (
                     <div className="text-danger">Please add a quantity.</div>
@@ -2102,12 +2103,56 @@ const MenuDetails = () => {
             </div>
           </div>
         </main>
-        <div className="container">
+        <footer className="footer sticky-bottom">
+          <div className="container py-0">
+            <div className="row">
+              <hr className="dashed-line me-3 " />
+
+              <div className="col-6 ps-3 ">
+                <div className="d-flex align-items-center justify-content-between mb-5">
+                  <div className="d-flex flex-column">
+                    <h5 className="mb-2 fs-6 fw-medium">Total amount</h5>
+                    <div className="d-flex align-items-baseline">
+                      <h4
+                        className="mb-0 price fs-4"
+                        style={{ color: "#4E74FC" }}
+                      >
+                        ₹{totalAmount.toFixed(0)}
+                      </h4>
+                      <span
+                        className="text-decoration-line-through ms-2 fs-6"
+                        style={{ color: "#a5a5a5" }}
+                      >
+                        ₹{productDetails.price}
+                      </span>
+                      <div
+                        className="fw-medium d-flex fs-6 ps-2"
+                        style={{ color: "#0D775E" }}
+                      >
+                        {productDetails.offer}% Off
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-6 text-end">
+                <button
+                  className="btn btn-primary fs-3 py-1 rounded-pill"
+                  onClick={handleAddToCart}
+                >
+                  <i className="ri-shopping-cart-line pe-2"></i>
+                  <div className="font-poppins fs-6">Add to Cart</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </footer>
+        {/* <div className="container">
           <div className="row">
             <div className="col-12">
               <footer
-                className="footer fixed"
-                style={{ position: "absolute", bottom: "70px" }}
+                className="footer sticky-bottom"
+                
               >
                 <div className="container">
                   <div className="row">
@@ -2155,7 +2200,7 @@ const MenuDetails = () => {
               </footer>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <Bottom />
     </>

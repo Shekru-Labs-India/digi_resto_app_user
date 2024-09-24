@@ -93,7 +93,7 @@ const Sidebar = () => {
             <h6 className="title fw-medium h6 custom-text-gray">
               {/* {restaurantDetails ? restaurantDetails.name : "Restaurant Name"} */}
               {/* <i className="ri-store-2-line ps-2"></i> */}
-              Table Number : {userData ? userData.tableNumber : "Table Number"}
+              Table Number : {userData ? userData.tableNumber : ""}
               {/* <i class="ri-user-location-line ps-2"></i> */}
             </h6>
           </div>
