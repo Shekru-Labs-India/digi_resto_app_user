@@ -1186,8 +1186,8 @@ const Wishlist = () => {
                           <img
                             src={menu.image || images}
                             alt={menu.menu_name}
-                            className="rounded"
-                            style={{ width: "100px", height: "102px" }}
+                            className="rounded img-fluid"
+                            style={{ width: "100px", height: "108px" }}
                             onError={(e) => {
                               e.target.src = images;
                               e.target.style.width = "100px";
@@ -1254,7 +1254,7 @@ const Wishlist = () => {
                             </div>
                           </div>
                           <div className="row mt-2 align-items-center">
-                            <div className="col-6 px-0 text-start">
+                            <div className="col-5 px-0 text-start">
                               <p className="mb-2 ms-2 fs-4 fw-medium">
                                 <span className="ms-3 me-2 text-info">
                                   ₹{menu.price}
@@ -1262,12 +1262,15 @@ const Wishlist = () => {
                                 <span className="text-muted fs-6 text-decoration-line-through">
                                   ₹{menu.oldPrice || menu.price}
                                 </span>
-                                <span className="fs-6 ps-2 text-primary">
-                                  {menu.offer || "No "}% Off
-                                </span>
                               </p>
                             </div>
-                            <div className="col-5 text-end">
+                            <div className="col-4">
+                              {" "}
+                              <span className="fs-6 ps-2 text-primary">
+                                {menu.offer || "No "}% Off
+                              </span>
+                            </div>
+                            <div className="col-3 text-center">
                               <div
                                 className="cart-btn"
                                 onClick={() => handleAddToCartClick(menu)}

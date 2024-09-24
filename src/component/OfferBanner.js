@@ -903,16 +903,15 @@ const OfferBanner = () => {
                             <span className="text-muted fs-6 text-decoration-line-through">
                               ₹{menu.oldPrice || menu.price}
                             </span>
-
-                            <span className="fs-6 ps-2 text-primary">
-                              {menu.offer || "No "}% Off
-                            </span>
                           </p>
                         </ul>
                         <div className="row">
-                          <div className="col-6">
-                            <p
-                              className="fs-6 fw-semibold"
+                          <div className="col-12">
+                            <span className="fs-6 ps-2 text-primary">
+                              {menu.offer || "No "}% Off
+                            </span>
+                            <span
+                              className="fs-6 fw-semibold ps-4"
                               style={{ color: "#7f7e7e", marginLeft: "5px" }}
                             >
                               <i
@@ -920,7 +919,7 @@ const OfferBanner = () => {
                                 style={{ color: "#f8a500" }}
                               ></i>
                               {menu.rating}
-                            </p>
+                            </span>
                           </div>
                         </div>
                       </div>

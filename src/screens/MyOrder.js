@@ -465,28 +465,27 @@ const OrdersTab = ({ orders, type }) => {
           >
             <div className="card-body" style={{ height: "90px" }}>
               <div className="row align-items-center">
-                <div className="col-5">
+                <div className="col-4">
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
-                <div className="col-7 text-end">
+                <div className="col-8 text-end">
                   <span
                     className="card-text text-muted mb-0"
-                    style={{ position: "relative", right: "-6px" }}
+             
                   >
                     {order.date_time}
                   </span>
                 </div>
               </div>
               <div className="row mt-2">
-                <div className="col-5">
-                  <p className="mb-0 fs-6 text-break">
+                <div className="col-6">
+                  <p className="mb-0 fs-6 ">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
 
-                    <span className="ps-5 mb-0 fs-6 text-break">
-                      <i class="ri-user-location-line pe-2"></i>
+                      <i class="ri-user-location-line ps-2 pe-1"></i>
                       {order.table_number}
-                    </span>
+                    
                   </p>
                 </div>
                 <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
@@ -498,7 +497,7 @@ const OrdersTab = ({ orders, type }) => {
                     Menu
                   </p>
                 </div>
-                <div className="col-3">
+                <div className="col-2">
                   <div className="price-wrapper">
                     {/* <h6 className="current-price fs-4 me-1">
                       ₹{order.total_bill}

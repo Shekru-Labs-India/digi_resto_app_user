@@ -28,7 +28,7 @@ const NearbyArea = () => {
     const swiper = new Swiper(".product-swiper", {
       loop: true,
       slidesPerView: "auto",
-      centeredSlides: false,
+      centeredSlides: true,
       spaceBetween: 65,
     });
 
@@ -38,7 +38,7 @@ const NearbyArea = () => {
       if (swiperRef.current) {
         swiperRef.current.slideNext();
       }
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);
