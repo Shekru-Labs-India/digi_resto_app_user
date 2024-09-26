@@ -1,3 +1,30 @@
+.menu_name {
+   margin-left: 10px;
+   font-weight: 500;
+    font-size: 1rem; /* from .fs-sm */
+}
+
+.hotel-name{
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.table-number{
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gray-text{
+  color: #adb5bd;
+}
+
+.fs-12px{
+  font-size: 12px;
+}
+
+
+
+
 .font-poppins{
   font-family: Poppins, sans-serif;
 }

@@ -29,11 +29,11 @@
 //           <Route path="/HomeScreen/:restaurantCode" element={<HomeScreen />} />
 //           <Route
 //             path="/HomeScreen"
-//             element={<Navigate to="/HomeScreen/751231" replace />}
+//             element={<Navigate to="/HomeScreen/568400" replace />}
 //           />
 //           <Route
 //             path="/"
-//             element={<Navigate to="/HomeScreen/751231" replace />}
+//             element={<Navigate to="/HomeScreen/568400" replace />}
 //           />
 //           <Route path="/Signinscreen" element={<Signinscreen />} />
 //           <Route path="/Signupscreen" element={<Signupscreen />} />
@@ -112,17 +112,17 @@
 //           {/* Added table_number */}
 //           <Route
 //             path="/HomeScreen/:restaurantCode"
-//             element={<Navigate to="/HomeScreen/751231/1" replace />}
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
 //           />{" "}
 //           {/* Adjusted for default */}
 //           <Route
 //             path="/HomeScreen"
-//             element={<Navigate to="/HomeScreen/751231/1" replace />}
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
 //           />{" "}
 //           {/* Default route */}
 //           <Route
 //             path="/"
-//             element={<Navigate to="/HomeScreen/751231/1" replace />}
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
 //           />{" "}
 //           {/* Redirect root to default */}
 //           <Route path="/Signinscreen" element={<Signinscreen />} />
@@ -186,7 +186,7 @@
 // // Utility function to validate the restaurant code
 // const isValidRestaurantCode = (code) => {
 //   // Replace with your actual validation logic
-//   const validCodes = ["751231", "123456", "654321"]; // Example valid codes
+//   const validCodes = ["568400", "123456", "654321"]; // Example valid codes
 //   return validCodes.includes(code);
 // };
 
@@ -206,11 +206,11 @@
 //           />
 //           <Route
 //             path="/HomeScreen"
-//             element={<Navigate to="/HomeScreen/751231/1" replace />}
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
 //           />
 //           <Route
 //             path="/"
-//             element={<Navigate to="/HomeScreen/751231/1" replace />}
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
 //           />
 //           <Route path="/Signinscreen" element={<Signinscreen />} />
 //           <Route path="/Signupscreen" element={<Signupscreen />} />
@@ -296,11 +296,11 @@
 //         />
 //         <Route
 //           path="/HomeScreen"
-//           element={<Navigate to="/HomeScreen/751231/1" replace />}
+//           element={<Navigate to="/HomeScreen/568400/1" replace />}
 //         />
 //         <Route
 //           path="/"
-//           element={<Navigate to="/HomeScreen/751231/1" replace />}
+//           element={<Navigate to="/HomeScreen/568400/1" replace />}
 //         />
 //         <Route path="/Signinscreen" element={<Signinscreen />} />
 //         <Route path="/Signupscreen" element={<Signupscreen />} />
@@ -358,6 +358,87 @@
 // *-*-*-*2**-**
 
 
+// import React from "react";
+// import { Routes, Route, Navigate } from "react-router-dom";
+// import HomeScreen from "./screens/HomeScreen";
+// import Signinscreen from "./screens/Signinscreen";
+// import Signupscreen from "./screens/SignupScreen";
+// import Verifyotp from "./screens/Verifyotp";
+// import Profile from "./screens/Profile";
+// import Wishlist from "./screens/Wishlist";
+// import Category from "./screens/Category";
+// import Cart from "./screens/Cart";
+// import EditProfile from "./screens/EditProfile";
+// import MyOrder from "./screens/MyOrder";
+// import Product from "./screens/Product";
+// import TrackOrder from "./screens/TrackOrder";
+// import Search from "./screens/Search";
+// import Checkout from "./screens/Checkout";
+// import MenuDetails from "./screens/MenuDetails";
+
+// import { RestaurantIdProvider } from "./context/RestaurantIdContext";
+// import { CartProvider } from "./context/CartContext";
+// import ValidateAndNavigate from "./components/ValidateAndNavigate";
+
+// function App() {
+//   return (
+//     <RestaurantIdProvider restaurantCode="568400">
+//       {" "}
+//       {/* Default value here */}
+//       <CartProvider>
+//         <Routes>
+//           <Route
+//             path="/HomeScreen/:restaurantCode/:table_number"
+//             element={<HomeScreen />}
+//           />
+//           <Route
+//             path="/HomeScreen/:restaurantCode"
+//             element={<ValidateAndNavigate />}
+//           />
+//           <Route
+//             path="/HomeScreen"
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
+//           />
+//           <Route
+//             path="/"
+//             element={<Navigate to="/HomeScreen/568400/1" replace />}
+//           />
+//           <Route path="/Signinscreen" element={<Signinscreen />} />
+//           <Route path="/Signupscreen" element={<Signupscreen />} />
+//           <Route path="/Verifyotp" element={<Verifyotp />} />
+//           <Route path="/Wishlist" element={<Wishlist />} />
+//           <Route path="/Cart" element={<Cart />} />
+//           <Route path="/Checkout" element={<Checkout />} />
+//           <Route path="/Category" element={<Category />} />
+//           <Route path="/Profile" element={<Profile />} />
+//           <Route path="/EditProfile" element={<EditProfile />} />
+//           <Route path="/MyOrder" element={<MyOrder />} />
+//           <Route path="/Menu" element={<Product />} />
+//           <Route path="/Search" element={<Search />} />
+//           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
+//           <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
+//         </Routes>
+//       </CartProvider>
+//     </RestaurantIdProvider>
+//   );
+// }
+
+// export default App;
+
+
+
+
+
+
+
+// 25-09
+
+
+
+
+
+
+
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
@@ -382,7 +463,7 @@ import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
 function App() {
   return (
-    <RestaurantIdProvider restaurantCode="751231">
+    <RestaurantIdProvider restaurantCode="568400">
       {" "}
       {/* Default value here */}
       <CartProvider>
@@ -397,11 +478,11 @@ function App() {
           />
           <Route
             path="/HomeScreen"
-            element={<Navigate to="/HomeScreen/751231/1" replace />}
+            element={<Navigate to="/HomeScreen/568400/1" replace />}
           />
           <Route
             path="/"
-            element={<Navigate to="/HomeScreen/751231/1" replace />}
+            element={<Navigate to="/HomeScreen/568400/1" replace />}
           />
           <Route path="/Signinscreen" element={<Signinscreen />} />
           <Route path="/Signupscreen" element={<Signupscreen />} />

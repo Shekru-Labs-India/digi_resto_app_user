@@ -485,10 +485,9 @@ const OrdersTab = ({ orders, type }) => {
 
                       <i class="ri-user-location-line ps-2 pe-1"></i>
                       {order.table_number}
-                    
                   </p>
                 </div>
-                <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
+                <div className="col-4 text-start p-0" style={{ color: "#a5a5a5" }}>
                   <p className="mb-0 fs-6">
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
@@ -497,7 +496,7 @@ const OrdersTab = ({ orders, type }) => {
                     Menu
                   </p>
                 </div>
-                <div className="col-2">
+                <div className="col-2 p-0">
                   <div className="price-wrapper">
                     {/* <h6 className="current-price fs-4 me-1">
                       ₹{order.total_bill}

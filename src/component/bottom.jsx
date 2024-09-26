@@ -6,6 +6,7 @@ const Bottom = () => {
   const location = useLocation();
   const { restaurantCode } = useRestaurantId();
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
 
   useEffect(() => {
     const updateCartItemCount = () => {
@@ -13,11 +14,19 @@ const Bottom = () => {
       setCartItemCount(cartItems.length);
     };
 
+    const handleStorageChange = (e) => {
+      if (e.key === "cartItems") {
+        updateCartItemCount();
+      } else if (e.key === "userData") {
+        setUserData(JSON.parse(e.newValue) || {});
+      }
+    };
+
     updateCartItemCount();
-    window.addEventListener('storage', updateCartItemCount);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', updateCartItemCount);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -27,9 +36,9 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/HomeScreen/${751231}`}
+          to={`/HomeScreen/${restaurantCode}/${userData.tableNumber || ''}`}
           className={
-            location.pathname === `/HomeScreen/${751231}`
+            location.pathname === `/HomeScreen/${restaurantCode}/${userData.tableNumber || ''}`
               ? "nav-link active"
               : "nav-link"
           }

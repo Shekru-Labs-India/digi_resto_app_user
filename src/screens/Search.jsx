@@ -1867,7 +1867,7 @@ const Search = () => {
               <i className="ri-arrow-left-line fs-2"></i>
             </div>
             <div className="mid-content">
-              <h5 className="title me-3">Search</h5>
+              <h5 className="title me-5">Search</h5>
             </div>
           </div>
         </div>
@@ -1890,12 +1890,9 @@ const Search = () => {
           </div>
           {debouncedSearchTerm && (
             <div className="title-bar my-3">
-              <div className="fw-normal fs-4" style={{ color: "grey" }}>
-                Search Menu
-              </div>
+              <div className="fw-normal fs-6 gray-text">Search Menu</div>
               <div
-                className="fw-normal fs-6"
-                style={{color: "grey" }}
+                className="fw-normal fs-6 gray-text"
                 onClick={handleClearAll}
               >
                 Clear All
@@ -1940,7 +1937,7 @@ const Search = () => {
                           <div className="col-3 text-center p-0">
                             <span className="d-inline-block">
                               <div
-                                className="offer-code fs-6"
+                                className="offer-code mt-1 me-3"
                                 // style={{ fontSize: "16px" }}
                               >
                                 {Array.from({ length: 5 }).map((_, index) => (
@@ -1948,8 +1945,8 @@ const Search = () => {
                                     key={index}
                                     className={
                                       index < menu.spicy_index
-                                        ? "ri-fire-fill"
-                                        : "ri-fire-line"
+                                        ? "ri-fire-fill fs-sm"
+                                        : "ri-fire-line fs-sm"
                                     }
                                     style={{
                                       color:
@@ -1973,27 +1970,25 @@ const Search = () => {
                           </div>
                         </div>
                         <div className="row mt-2">
-                          <div className="col-5 ps-0">
+                          <div className="col-6 ps-0">
                             <p className="mb-2 fs-4 fw-medium">
                               <span className="ms-3 me-2 text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="text-muted fs-6 text-decoration-line-through">
+                              <span className="gray-text fs-6 text-decoration-line-through">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
-                             
                             </p>
                           </div>
-                          <div className="col-5 ps-0">
+                          <div className="col-4 p-0">
                             <p className="mb-2 fs-4 fw-medium">
-                            
-                              <span className="fs-6 ps-2 text-primary">
-                                {menu.offer || "No "} % Off
+                              <span className="fs-6 ps-2 text-primary ">
+                                {menu.offer || "No "}% Off
                               </span>
                             </p>
                           </div>
                           <div
-                            className="col-2 text-end ps-4"
+                            className="col-2 text-end p-0"
                             style={{ zIndex: "999" }}
                           >
                             <i

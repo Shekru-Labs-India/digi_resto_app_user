@@ -894,20 +894,20 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content" style={{ display: "block" }}>
-                        <h6 className="title">{menu.name}</h6>
+                        <h6 className="title text-wrap">{menu.name}</h6>
                         <ul className="dz-meta mt-2">
                           <p className="mb-2 fs-4 fw-medium">
                             <span className="ms-0 me-2 text-info">
                               ₹{menu.price}
                             </span>
-                            <span className="text-muted fs-6 text-decoration-line-through">
+                            <span className="gray-text fs-6 text-decoration-line-through">
                               ₹{menu.oldPrice || menu.price}
                             </span>
                           </p>
                         </ul>
                         <div className="row">
                           <div className="col-12">
-                            <span className="fs-6 ps-2 text-primary">
+                            <span className="fs-6 text-primary">
                               {menu.offer || "No "}% Off
                             </span>
                             <span
