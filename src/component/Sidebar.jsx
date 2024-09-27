@@ -488,9 +488,9 @@ const Sidebar = () => {
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
           <div className="dz-media d-flex justify-content-center align-items-center m-0">
-            <i className="ri-user-3-line fs-3 "></i>
+            <i className="ri-user-3-line fs-2 pm-0 fw-medium"></i>
           </div>
-          <div className="fs-6">
+          <div className="fs-5 m-0">
             <span>
               {userData?.name ? `Hello, ${toTitleCase(getFirstName(userData.name))}` : "Hello, User"}
             </span>
