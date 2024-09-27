@@ -1,4 +1,8 @@
-  .powered-by {
+.ratingStar{
+  color: #f8a500;
+}
+
+.powered-by {
     position: fixed;
     right: 0;
     bottom: 90px;

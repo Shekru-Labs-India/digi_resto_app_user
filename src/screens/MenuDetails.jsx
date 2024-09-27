@@ -1250,11 +1250,11 @@ const MenuDetails = () => {
                   </div>
                   <div className="col-4 text-end">
                     <i
-                      className="ri-star-half-line fs-3 pe-1"
-                      style={{ color: "#f8a500" }}
+                      className="ri-star-half-line fs-3 pe-1 ratingStar"
+                    
                     ></i>
                     <span
-                      className="fs-5 fw-semibold"
+                      className="fs-6 fw-semibold"
                       style={{ color: "#7f7e7e", marginLeft: "5px" }}
                     >
                       {productDetails.rating}

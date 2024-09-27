@@ -420,16 +420,10 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        <div className="text-center powered-by">
-          <h6 className="" style={{ color: "grey" }}>
-            Powered by{" "}
-          </h6>
-          <h6 className="" style={{ color: "grey" }}>
-            Shekru Labs India Pvt. Ltd.
-          </h6>
-          <h6 className="" style={{ color: "grey" }}>
-            V 1.1
-          </h6>
+        <div className="text-center mt-6 powered-by">
+          <div className="gray-text fs-6">Powered by </div>
+          <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+          <div className="gray-text fs-sm ">v1.1</div>
         </div>
         <Bottom />
       </div>
@@ -516,9 +510,9 @@ const Profile = () => {
             {userData && userData.customer_id && (
               <div className="container">
                 <Link to="/EditProfile" className="item-content item-link">
-                <div className="title-bar">
-                  <h4 className="title mb-0 font-w500">Account Settings</h4>
-                </div>
+                  <div className="title-bar">
+                    <h4 className="title mb-0 font-w500">Account Settings</h4>
+                  </div>
                   <div className="row align-items-center ms-0">
                     <div className="col-auto px-0">
                       <i className="ri-user-3-line fs-3 "></i>
@@ -535,15 +529,9 @@ const Profile = () => {
         </div>
       </main>
       <div className="text-center mt-6 powered-by">
-        <h6 className="" style={{ color: "grey" }}>
-          Powered by{" "}
-        </h6>
-        <h6 className="" style={{ color: "grey" }}>
-          Shekru Labs India Pvt. Ltd.
-        </h6>
-        <h6 className="" style={{ color: "grey" }}>
-          V 1.1
-        </h6>
+        <div className="gray-text fs-6">Powered by </div>
+        <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+        <div className="gray-text fs-sm ">v1.1</div>
       </div>
       <Bottom />
     </div>

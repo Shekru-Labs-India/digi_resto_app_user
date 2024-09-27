@@ -1801,8 +1801,8 @@ const Product = () => {
                         </div>
                         <div className="col-6 text-end mt-2">
                           <i
-                            className="ri-star-half-line pe-1 fs-6"
-                            style={{ color: "#f8a500" }}
+                            className="ri-star-half-line pe-1 fs-6 ratingStar"
+                            
                           ></i>
                           <span
                             className="fs-6 fw-semibold"

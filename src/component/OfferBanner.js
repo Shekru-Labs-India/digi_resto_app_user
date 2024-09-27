@@ -1175,8 +1175,8 @@ const OfferBanner = () => {
                               style={{ color: "#7f7e7e", marginLeft: "5px" }}
                             >
                               <i
-                                className="ri-star-half-line pe-2"
-                                style={{ color: "#f8a500" }}
+                                className="ri-star-half-line pe-2 ratingStar"
+                              
                               ></i>
                               {menu.rating}
                             </span>

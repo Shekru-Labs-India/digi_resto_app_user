@@ -1446,8 +1446,8 @@ const TrackOrder = () => {
                         {renderSpicyIndex(menu.spicy_index)}
                         <span className="rating ms-3">
                           <i
-                            className="ri-star-half-line"
-                            style={{ color: "#fda200" }}
+                            className="ri-star-half-line ratingStar"
+                  
                           ></i>
                           {menu.rating}
                         </span>

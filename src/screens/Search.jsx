@@ -1962,8 +1962,8 @@ const Search = () => {
                           <div className="col-3 text-end p-0 mt-1">
                             <span className="h6">
                               <i
-                                className="ri-star-half-line me-2"
-                                style={{ color: "#eb8e57" }}
+                                className="ri-star-half-line me-2 ratingStar"
+                                
                               ></i>
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>

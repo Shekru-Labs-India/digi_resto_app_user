@@ -854,8 +854,8 @@ const NearbyArea = () => {
           spaceBetween: 100,
         },
         1024: { // Desktop
-          slidesPerView: 4,
-          spaceBetween: 40,
+          slidesPerView: 3,
+          spaceBetween: 90,
         },
       },
     });
@@ -1153,12 +1153,11 @@ const NearbyArea = () => {
                         </div>
                         <div className="col-6 text-end">
                           <i
-                            className="ri-star-half-line fs-6 pe-1"
-                            style={{ color: "#f8a500" }}
+                            className="ri-star-half-line fs-6 pe-1 ratingStar"
+                
                           ></i>
                           <span
-                            className="fs-6 fw-semibold"
-                            style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                            className="fs-6 fw-semibold gray-text ms-1"
                           >
                             {menuItem.rating}
                           </span>

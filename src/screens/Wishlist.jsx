@@ -1932,7 +1932,7 @@ const Wishlist = () => {
                               src={menu.image || images}
                               alt={menu.menu_name}
                               className="rounded img-fluid"
-                              style={{ width: "100px", height: "155px" }}
+                              style={{ width: "100px", height: "100px" }}
                               onError={(e) => {
                                 e.target.src = images;
                                 e.target.style.width = "100px";
@@ -1989,8 +1989,8 @@ const Wishlist = () => {
                               <div className="col-3 text-center pe-3 ps-0">
                                 <span className="fs-6">
                                   <i
-                                    className="ri-star-half-line me-1 "
-                                    style={{ color: "#eb8e57" }}
+                                    className="ri-star-half-line me-1 ratingStar"
+                           
                                   ></i>
                                   {menu.rating || 0.1}
                                 </span>
