@@ -122,7 +122,7 @@
 //                       to="/Cart"
 //                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
 //                     >
-//                       <i className="ri-shopping-cart-line me-2 fs-5"></i> Cart
+//                       <i className="ri-shopping-cart-2-line me-2 fs-5"></i> Cart
 //                     </Link>
 //                   </li>
 //                   <li className="col-6">
@@ -232,7 +232,7 @@
 //                     to="/Cart"
 //                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
 //                   >
-//                     <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
+//                     <i className="ri-shopping-cart-2-line me-2 fs-2"></i> Cart
 //                   </Link>
 //                 </li>
 //                 <li className="col-6">
@@ -383,33 +383,33 @@ const Profile = () => {
                   <li className="col-6">
                     <Link
                       to="/Menu"
-                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                     >
-                      <i className="ri-bowl-line me-2 fs-5"></i> Menu
+                      <i className="ri-bowl-line me-2 fs-2"></i> Menu
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link
                       to="/MyOrder"
-                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                     >
-                      <i className="ri-drinks-2-line me-2 fs-5"></i> My Order
+                      <i className="ri-drinks-2-line me-2 fs-2"></i> My Order
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link
                       to="/Cart"
-                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                     >
-                      <i className="ri-shopping-cart-line me-2 fs-5"></i> Cart
+                      <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
                     </Link>
                   </li>
                   <li className="col-6">
                     <Link
                       to="/Wishlist"
-                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                     >
-                      <i className="ri-heart-2-line me-2 fs-3"></i> Favourite
+                      <i className="ri-heart-2-line me-2 fs-2"></i> Favourite
                     </Link>
                   </li>
                 </ul>
@@ -420,7 +420,7 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        <div className="text-center mt-6" style={{ marginTop: "150px" }}>
+        <div className="text-center powered-by">
           <h6 className="" style={{ color: "grey" }}>
             Powered by{" "}
           </h6>
@@ -515,11 +515,11 @@ const Profile = () => {
 
             {userData && userData.customer_id && (
               <div className="container">
+                <Link to="/EditProfile" className="item-content item-link">
                 <div className="title-bar">
                   <h4 className="title mb-0 font-w500">Account Settings</h4>
                 </div>
-                <Link to="/EditProfile" className="item-content item-link">
-                  <div className="row align-items-center">
+                  <div className="row align-items-center ms-0">
                     <div className="col-auto px-0">
                       <i className="ri-user-3-line fs-3 "></i>
                     </div>
@@ -534,7 +534,7 @@ const Profile = () => {
           </div>
         </div>
       </main>
-      <div className="text-center mt-6" style={{ marginTop: "150px" }}>
+      <div className="text-center mt-6 powered-by">
         <h6 className="" style={{ color: "grey" }}>
           Powered by{" "}
         </h6>

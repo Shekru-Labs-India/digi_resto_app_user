@@ -1639,7 +1639,7 @@ const Product = () => {
         <div className="header-content">
           <div className="left-content">
             <Link to="/Category">
-              <div className="back-btn dz-icon icon-fill icon-sm">
+              <div className="back-btn  icon-sm">
                 <i className="ri-arrow-left-line fs-3"></i>
               </div>
             </Link>
@@ -1734,15 +1734,22 @@ const Product = () => {
                       className="detail-content"
                       style={{ position: "relative" }}
                     >
-                      <h3 className="product-title fs-xs fw-medium">
-                        <i
-                          className="ri-restaurant-line"
-                          style={{ paddingRight: "5px" }}
-                        ></i>
-                        {categories.find(
-                          (category) =>
-                            category.menu_cat_id === menuItem.menu_cat_id
-                        )?.name || menuItem.category}
+                      <h3>
+                        <Link
+                          className="product-title fs-xs fw-medium category-text"
+                          style={{ color: "#0a795b" }}
+                          to={`/ProductDetails/${menuItem.menu_id}`}
+                          state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
+                        >
+                          <i
+                            className="ri-restaurant-line"
+                            style={{ paddingRight: "5px" }}
+                          ></i>
+                          {categories.find(
+                            (category) =>
+                              category.menu_cat_id === menuItem.menu_cat_id
+                          )?.name || menuItem.category}
+                        </Link>
                       </h3>
                       <i
                         className={`${
@@ -1763,8 +1770,13 @@ const Product = () => {
                     </div>
 
                     {menuItem.name && (
-                      <div className="fs-sm mt-2 text-break">
-                        {menuItem.name}
+                      <div className="item-name fs-sm text-wrap">
+                        <Link
+                          to={`/ProductDetails/${menuItem.menu_id}`}
+                          state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
+                        >
+                          {menuItem.name}
+                        </Link>
                       </div>
                     )}
                     {menuItem.spicy_index && (
@@ -1780,7 +1792,7 @@ const Product = () => {
                               ) : (
                                 <i
                                   className="ri-fire-line fs-6"
-                                  style={{color: "#bbbaba" }}
+                                  style={{ color: "#bbbaba" }}
                                   key={index}
                                 ></i>
                               )
@@ -1805,14 +1817,19 @@ const Product = () => {
                       <div className="col-8">
                         <div className="footer-wrapper">
                           <div className="price-wrapper d-flex align-items-baseline">
-                            <p className="mb-1 fs-4 fw-medium">
-                              <span className="ms- me-2 text-info">
-                                ₹{menuItem.price}
-                              </span>
-                              <span className="text-muted fs-6 text-decoration-line-through">
-                                ₹{menuItem.oldPrice || menuItem.price}
-                              </span>
-                            </p>
+                            <Link
+                              to={`/ProductDetails/${menuItem.menu_id}`}
+                              state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
+                            >
+                              <p className="mb-1 fs-4 fw-medium">
+                                <span className="ms- me-2 text-info">
+                                  ₹{menuItem.price}
+                                </span>
+                                <span className="text-muted fs-6 text-decoration-line-through">
+                                  ₹{menuItem.oldPrice || menuItem.price}
+                                </span>
+                              </p>
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -1824,7 +1841,7 @@ const Product = () => {
                             className="cart-btn text-end"
                           >
                             <i
-                              className={`ri-shopping-cart-2-${
+                              className={`ri-shopping-cart-${
                                 isMenuItemInCart(menuItem.menu_id)
                                   ? "fill"
                                   : "line"
@@ -1832,7 +1849,7 @@ const Product = () => {
                             ></i>
                           </div>
                         ) : (
-                          <i className="ri-shopping-cart-2-line fs-2"></i>
+                          <i className="ri-shopping-cart-line fs-2"></i>
                         )}
                       </div>
                     </div>

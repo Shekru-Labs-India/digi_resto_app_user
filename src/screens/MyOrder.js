@@ -436,6 +436,11 @@ const OrdersTab = ({ orders, type }) => {
     navigate(`/TrackOrder/${orderNumber}`);
   };
 
+  const formatDateTime = (dateTime) => {
+    const [date, time, period] = dateTime.split(" ");
+    return `${time} ${period} ${date}`;
+  };
+
   return (
     <div className="row g-1">
       {orders.length === 0 ? (
@@ -468,12 +473,9 @@ const OrdersTab = ({ orders, type }) => {
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
                 <div className="col-8 text-end">
-                  <span
-                    className="card-text text-muted mb-0"
-             
-                  >
-                    {order.date_time}
-                  </span>
+                 <span className="card-text text-muted mb-0">
+  {formatDateTime(order.date_time)}
+</span>
                 </div>
               </div>
               <div className="row mt-2">

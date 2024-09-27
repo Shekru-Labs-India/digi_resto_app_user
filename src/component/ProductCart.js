@@ -2162,16 +2162,23 @@ const ProductCard = () => {
                     className="detail-content category-text"
                     style={{ position: "relative" }}
                   >
-                    <div
-                      className="dz-quantity detail-content fs-xs fw-medium"
-                      style={{ color: "#0a795b" }}
+                    <Link
+                      to={{
+                        pathname: `/ProductDetails/${menu.menu_id}`,
+                      }}
+                      state={{ menu_cat_id: menu.menu_cat_id }}
                     >
-                      <i
-                        className="ri-restaurant-line"
-                        style={{ paddingRight: "5px" }}
-                      ></i>
-                      {menu.category}
-                    </div>
+                      <div
+                        className="dz-quantity detail-content fs-xs fw-medium"
+                        style={{ color: "#0a795b" }}
+                      >
+                        <i
+                          className="ri-restaurant-line"
+                          style={{ paddingRight: "5px" }}
+                        ></i>
+                        {menu.category}
+                      </div>
+                    </Link>
                     <i
                       className={`${
                         menu.is_favourite
@@ -2192,8 +2199,15 @@ const ProductCard = () => {
 
                   {menu.name && (
                     <div className="item-name fs-sm text-wrap">
-                      {menu.name}
-                      </div>
+                      <Link
+                        to={{
+                          pathname: `/ProductDetails/${menu.menu_id}`,
+                        }}
+                        state={{ menu_cat_id: menu.menu_cat_id }}
+                      >
+                        {menu.name}
+                      </Link>
+                    </div>
                   )}
                   {menu.spicy_index && (
                     <div className="row">
@@ -2201,10 +2215,7 @@ const ProductCard = () => {
                         <div className="offer-code mt-2">
                           {Array.from({ length: 5 }).map((_, index) =>
                             index < menu.spicy_index ? (
-                              <i
-                                className="ri-fire-fill fs-6"
-                                key={index}
-                              ></i>
+                              <i className="ri-fire-fill fs-6" key={index}></i>
                             ) : (
                               <i
                                 className="ri-fire-line fs-6"
@@ -2234,12 +2245,19 @@ const ProductCard = () => {
                       <div className="footer-wrapper">
                         <div className="price-wrapper d-flex align-items-baseline">
                           <p className="mb-1 fs-4 fw-medium">
-                            <span className="ms- me-2 text-info">
-                              ₹{menu.price}
-                            </span>
-                            <span className="gray-text fs-6 text-decoration-line-through">
-                              ₹{menu.oldPrice || menu.price}
-                            </span>
+                            <Link
+                              to={{
+                                pathname: `/ProductDetails/${menu.menu_id}`,
+                              }}
+                              state={{ menu_cat_id: menu.menu_cat_id }}
+                            >
+                              <span className="ms- me-2 text-info">
+                                ₹{menu.price}
+                              </span>
+                              <span className="gray-text fs-6 text-decoration-line-through">
+                                ₹{menu.oldPrice || menu.price}
+                              </span>
+                            </Link>
                           </p>
                         </div>
                       </div>
@@ -2252,7 +2270,7 @@ const ProductCard = () => {
                           className="cart-btn text-end"
                         >
                           <i
-                            className={`ri-shopping-cart-2-${
+                            className={`ri-shopping-cart-${
                               isMenuItemInCart(menu.menu_id) ? "fill" : "line"
                             } fs-2`}
                           ></i>

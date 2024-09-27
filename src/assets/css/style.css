@@ -21,7 +21,8 @@ cateHov:hover {
 
 .category-text {
   font-size: 12px;
-  color: black;
+  /* color: black; */
+  color: #0a795b;
 }
 
 .category-text:hover {

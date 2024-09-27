@@ -1,5 +1,3 @@
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -415,7 +413,7 @@
 //                   className="btn btn-primary fs-3 py-1 rounded-pill"
 //                   onClick={handleAddToCart}
 //                 >
-//                   <i className="ri-shopping-cart-line pe-2"></i>
+//                   <i className="ri-shopping-cart-2-line pe-2"></i>
 //                   <div className="font-poppins fs-6">Add to Cart</div>
 //                 </button>
 //               </div>
@@ -427,7 +425,7 @@
 //             <div className="col-12">
 //               <footer
 //                 className="footer sticky-bottom"
-                
+
 //               >
 //                 <div className="container">
 //                   <div className="row">
@@ -466,7 +464,7 @@
 //                         style={{ borderRadius: "100px" }}
 //                         onClick={handleAddToCart}
 //                       >
-//                         <i className="ri-shopping-cart-line fs-4 me-2"></i>
+//                         <i className="ri-shopping-cart-2-line fs-4 me-2"></i>
 //                         <div className="fs-7">Add to Cart</div>
 //                       </button>
 //                     </div>
@@ -484,14 +482,7 @@
 
 // export default MenuDetails;
 
-
-
-
-
 // 25--
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
@@ -916,7 +907,7 @@
 //                   className="btn btn-primary fs-3 py-1 rounded-pill"
 //                   onClick={handleAddToCart}
 //                 >
-//                   <i className="ri-shopping-cart-line pe-2"></i>
+//                   <i className="ri-shopping-cart-2-line pe-2"></i>
 //                   <div className="font-poppins fs-6">Add to Cart</div>
 //                 </button>
 //               </div>
@@ -931,19 +922,7 @@
 
 // export default MenuDetails;
 
-
-
-
-
 // addtocart*-*-*-*
-
-
-
-
-
-
-
-
 
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
@@ -1136,6 +1115,49 @@ const MenuDetails = () => {
     return <div>Loading...</div>;
   }
 
+  // Function to handle favorite status toggle
+  const handleLikeClick = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData || !restaurantId) {
+      console.error("Missing required data");
+      return;
+    }
+
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/remove_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: userData.customer_id,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          setIsFavorite(!isFavorite);
+          console.log(
+            isFavorite ? "Removed from favorites" : "Added to favorites"
+          );
+        } else {
+          console.error("Failed to update favorite status:", data.msg);
+        }
+      } else {
+        console.error("Network response was not ok.");
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper">
@@ -1175,20 +1197,75 @@ const MenuDetails = () => {
 
           <div className="container">
             <div className="dz-product-detail">
-              <div className="detail-content mt-0" style={{}}>
+              <div className="detail-content mt-0 mb-1">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
-                    {toTitleCase(productDetails.menu_cat_name)}
+                    {/* {toTitleCase(productDetails.menu_cat_name)} */}
                   </h3>
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <h4 className="title fs-2">
+                    <h4 className="title fs-sm">
                       {toTitleCase(productDetails.name)}
                     </h4>
                   </div>
+                </div>
+              </div>
+
+              <div className="product-meta">
+                <div className="row me-1">
+                  <div className="col-4">
+                    <div
+                      className="dz-quantity detail-content category-text m-0"
+                      style={{ color: "#0a795b" }}
+                    >
+                      <i
+                        className="ri-restaurant-line "
+                        style={{ paddingRight: "5px" }}
+                      ></i>
+                      {productDetails.menu_cat_name || "Category Name"}
+                    </div>
+                  </div>
+
+                  <div className="col-4 text-end">
+                    {productDetails.spicy_index && (
+                      <div className="spicy-index">
+                        {Array.from({ length: 5 }).map((_, index) =>
+                          index < productDetails.spicy_index ? (
+                            <i
+                              key={index}
+                              className="ri-fire-fill fs-6"
+                              style={{ color: "#eb8e57" }}
+                            ></i>
+                          ) : (
+                            <i
+                              key={index}
+                              className="ri-fire-line fs-6"
+                              style={{ color: "#0000001a" }}
+                            ></i>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-4 text-end">
+                    <i
+                      className="ri-star-half-line fs-3 pe-1"
+                      style={{ color: "#f8a500" }}
+                    ></i>
+                    <span
+                      className="fs-5 fw-semibold"
+                      style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                    >
+                      {productDetails.rating}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="container">
+                <div className="row">
                   <div
-                    className="col-5 py-1"
+                    className="col-6 py-1"
                     style={{
                       borderRadius: "5px",
                       display: "flex",
@@ -1242,60 +1319,21 @@ const MenuDetails = () => {
                       ></i>
                     </button>
                   </div>
+                  <div className="col-6 text-end">
+                    <i
+                      className={`ri-${
+                        isFavorite ? "hearts-fill" : "heart-2-line"
+                      } fs-3`}
+                      onClick={handleLikeClick}
+                      style={{
+                        cursor: "pointer",
+                        color: isFavorite ? "#fe0809" : "#73757b",
+                      }}
+                    ></i>
+                  </div>
                 </div>
               </div>
 
-              <div className="product-meta">
-                <div className="row me-1">
-                  <div className="col-4">
-                    <div
-                      className="dz-quantity detail-content fs-5 fw-medium m-0"
-                      style={{ color: "#0a795b" }}
-                    >
-                      <i
-                        className="ri-restaurant-line fs-4 "
-                        style={{ paddingRight: "5px" }}
-                      ></i>
-                      {productDetails.menu_cat_name || "Category Name"}
-                    </div>
-                  </div>
-                  <div className="col-4 text-center">
-                    <div className="d-flex align-items-center">
-                      <i
-                        className="ri-star-half-line pe-1"
-                        style={{ color: "#f8a500", fontSize: "23px" }}
-                      ></i>
-                      <span
-                        className="fs-5 fw-semibold"
-                        style={{ color: "#7f7e7e", marginLeft: "5px" }}
-                      >
-                        {productDetails.rating}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-4 text-end">
-                    {productDetails.spicy_index && (
-                      <div className="spicy-index">
-                        {Array.from({ length: 5 }).map((_, index) =>
-                          index < productDetails.spicy_index ? (
-                            <i
-                              key={index}
-                              className="ri-fire-fill fs-6"
-                              style={{ color: "#eb8e57" }}
-                            ></i>
-                          ) : (
-                            <i
-                              key={index}
-                              className="ri-fire-line fs-6"
-                              style={{ color: "#0000001a" }}
-                            ></i>
-                          )
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
               <div className="container">
                 <div className="product-info">
                   <div>
@@ -1312,10 +1350,10 @@ const MenuDetails = () => {
             </div>
           </div>
         </main>
-        <footer className="footer sticky-bottom">
-          <div className="container py-0">
+        <div className="container py-0">
+          <footer className="footer fixed-bottom-custom">
             <div className="row">
-              <hr className="dashed-line me-3 " />
+              <hr className="dashed-line me-5 pe-5" />
 
               <div className="col-6 ps-3 ">
                 <div className="d-flex align-items-center justify-content-between mb-5">
@@ -1345,17 +1383,18 @@ const MenuDetails = () => {
                 </div>
               </div>
               <div className="col-6 text-end">
-                <button
-                  className="btn btn-primary fs-3 py-1 rounded-pill"
+                <Link
+                  to="/Cart"
+                  className="btn btn-primary fs-3 py-2 rounded-pill"
                   onClick={handleAddToCart}
                 >
                   <i className="ri-shopping-cart-line pe-2"></i>
                   <div className="font-poppins fs-6">Add to Cart</div>
-                </button>
+                </Link>
               </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        </div>
       </div>
       <Bottom />
     </>

@@ -1,3 +1,17 @@
+  .powered-by {
+    position: fixed;
+    right: 0;
+    bottom: 90px;
+    left: 0;
+    z-index: 1030; }
+
+.fixed-bottom-custom{
+  position: fixed;
+    bottom: 48px;
+    z-index: 1; 
+    background-color: #f6f6f6;
+}
+
 .menu_name {
    margin-left: 10px;
    font-weight: 500;

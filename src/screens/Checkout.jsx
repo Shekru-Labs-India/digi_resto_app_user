@@ -1270,7 +1270,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        "https://menumitra.com/user_api/get_cart_detail",
         {
           method: "POST",
           headers: {
