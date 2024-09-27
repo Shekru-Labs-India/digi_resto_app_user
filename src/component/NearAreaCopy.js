@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swiper from "swiper";
-import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 
 const NearbyArea = () => {
   const swiperRef = useRef(null);
-  const { restaurantId } = useRestaurantId();
+  const restaurantId = localStorage.getItem("restaurantId");
   const [menuItems, setMenuItems] = useState(() => {
     const storedItems = localStorage.getItem("menuItems");
     return storedItems ? JSON.parse(storedItems) : [];
@@ -342,35 +341,6 @@ const NearbyArea = () => {
                           )}
                         </div>
                       </div>
-                      {/* <div className="footer-wrapper mt-2">
-                        <div className="price-wrapper d-flex align-items-baseline">
-                          <h6 className="current-price me-0 fs-6 fw-medium">
-                            ₹{menuItem.price}
-                          </h6>
-                          <span className="old-price ms-0 fs-8 ms-1">
-                            ₹{menuItem.oldPrice}
-                          </span>
-                        </div>
-
-                        <div className="small-offer-text">{menuItem.offer}</div>
-
-                        <div className="footer-btns">
-                          {userData ? (
-                            <div
-                              onClick={() => handleAddToCartClick(menuItem)}
-                              className="cart-btn"
-                            >
-                              {isMenuItemInCart(menuItem.menu_id) ? (
-                                <i className="ri-shopping-cart-2-fill fs-2"></i>
-                              ) : (
-                                <i className="ri-shopping-cart-2-line fs-2"></i>
-                              )}
-                            </div>
-                          ) : (
-                            <i className="ri-shopping-cart-2-line fs-2"></i>
-                          )}
-                        </div>
-                      </div> */}
                     </div>
                   </div>
                 </div>

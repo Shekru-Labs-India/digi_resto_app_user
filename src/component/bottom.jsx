@@ -67,7 +67,7 @@ const Bottom = () => {
         >
           <i className="ri-shopping-cart-line fs-3"></i>
           <span className="name">
-            Cart
+            My Cart
             {/* {cartItemCount > 0 && `(${cartItemCount})`} */}
           </span>
         </Link>

@@ -1669,18 +1669,20 @@ const Product = () => {
         <div className="container pb-0 pt-0">
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
-              <div
-                className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
-                  selectedCategory === null ? "active" : ""
-                }`}
-                onClick={() => handleCategorySelect(null)}
-                style={{
-                  backgroundColor: selectedCategory === null ? "#0D775E" : "",
-                  color: selectedCategory === null ? "#ffffff" : "",
-                }}
-              >
-                All ({categoryCounts.All})
-              </div>
+              {categories.length > 0 && (
+                <div
+                  className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
+                    selectedCategory === null ? "active" : ""
+                  }`}
+                  onClick={() => handleCategorySelect(null)}
+                  style={{
+                    backgroundColor: selectedCategory === null ? "#0D775E" : "",
+                    color: selectedCategory === null ? "#ffffff" : "",
+                  }}
+                >
+                  All ({categoryCounts.All})
+                </div>
+              )}
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
@@ -1800,10 +1802,7 @@ const Product = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end mt-2">
-                          <i
-                            className="ri-star-half-line pe-1 fs-6 ratingStar"
-                            
-                          ></i>
+                          <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
                           <span
                             className="fs-6 fw-semibold"
                             style={{ color: "#7f7e7e", marginLeft: "5px" }}

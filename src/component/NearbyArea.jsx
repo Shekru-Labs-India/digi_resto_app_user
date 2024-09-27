@@ -1071,7 +1071,9 @@ const NearbyArea = () => {
     <div className="dz-box style-2 nearby-area">
       <div className="title-bar1 align-items-start mb-5">
         <div className="left">
-          <h4 className="title mb-1 fs-5">Special Menu</h4>
+          {menuItems.length > 0 && (
+            <h4 className="title mb-1 fs-5">Special Menu</h4>
+          )}
         </div>
       </div>
       <div className="swiper product-swiper swiper-center">
@@ -1152,13 +1154,8 @@ const NearbyArea = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <i
-                            className="ri-star-half-line fs-6 pe-1 ratingStar"
-                
-                          ></i>
-                          <span
-                            className="fs-6 fw-semibold gray-text ms-1"
-                          >
+                          <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
+                          <span className="fs-6 fw-semibold gray-text ms-1">
                             {menuItem.rating}
                           </span>
                         </div>

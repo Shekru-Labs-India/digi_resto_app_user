@@ -1913,7 +1913,9 @@ const Wishlist = () => {
               <div className="mid-content">
                 <h5 className="title">
                   Favourite{" "}
-                  {userData && <span className="">({menuList.length})</span>}
+                  {userData && menuList.length > 0 && (
+                    <span className="">({menuList.length})</span>
+                  )}
                 </h5>
               </div>
             </div>
@@ -1988,10 +1990,7 @@ const Wishlist = () => {
                               </div>
                               <div className="col-3 text-center pe-3 ps-0">
                                 <span className="fs-6">
-                                  <i
-                                    className="ri-star-half-line me-1 ratingStar"
-                           
-                                  ></i>
+                                  <i className="ri-star-half-line me-1 ratingStar"></i>
                                   {menu.rating || 0.1}
                                 </span>
                               </div>

@@ -6836,7 +6836,7 @@ const Cart = () => {
               <div className="dz-cart-about text-center">
                 <h5 className="title">Your Cart is Empty</h5>
                 <p>Add items to your cart from the product details page.</p>
-                <Link to="/Category" className="btn btn-outline-primary btn-sm">
+                <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                   Return to Shop
                 </Link>
               </div>

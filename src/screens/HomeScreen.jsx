@@ -18,6 +18,7 @@ const HomeScreen = () => {
     if (restaurantCode) {
       console.log("Setting restaurant code:", restaurantCode);
       setRestaurantCode(restaurantCode);
+      localStorage.setItem("restaurantCode", restaurantCode); // Store restaurant code
     }
   }, [restaurantCode, setRestaurantCode]);
 
@@ -31,6 +32,7 @@ const HomeScreen = () => {
       userData.tableNumber = userData.tableNumber || table_number || '1';
 
       localStorage.setItem("userData", JSON.stringify(userData));
+      localStorage.setItem("restaurantId", restaurantId); // Store restaurant ID
     }
   }, [restaurantId, restaurantDetails, table_number]);
 

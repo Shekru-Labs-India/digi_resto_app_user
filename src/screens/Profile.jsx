@@ -365,7 +365,7 @@ const Profile = () => {
         <main className="page-content space-top p-b40">
           <div className="container">
             <div className="profile-area">
-              <div className="main-profile">
+              {/* <div className="main-profile">
                 <div className="media">
                   <div className="media-40 me-2 user-image">
                     <i
@@ -374,7 +374,18 @@ const Profile = () => {
                     ></i>
                   </div>
                   <h4 className="name mb-0">
-                    <span className="greetings">Hello,User</span>
+                    <span className="">Hello,User</span>
+                  </h4>
+                </div>
+              </div> */}
+
+              <div className="main-profile">
+                <div className="d-flex align-items-center">
+                  <h4 className="name mb-0">
+                    <div className="fw-medium">
+                      <i className="ri-user-3-line me-2 fs-3"></i>
+                      Hello, User
+                    </div>
                   </h4>
                 </div>
               </div>
@@ -456,15 +467,10 @@ const Profile = () => {
         <div className="container">
           <div className="profile-area">
             <div className="main-profile">
-              <div className="media">
-                <div className="media-40 me-2 user-image">
-                  <i
-                    className="ri-user-3-line"
-                    style={{ fontSize: "35px", marginTop: "9px" }}
-                  ></i>
-                </div>
-                <h4 className="name mb-0 ">
-                  <div className="greetings fs-3 fw-medium">
+              <div className="d-flex align-items-center">
+                <h4 className="name mb-0">
+                  <div className="fw-medium">
+                    <i className="ri-user-3-line me-2 fs-3"></i>
                     Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
                   </div>
                 </h4>
@@ -508,7 +514,7 @@ const Profile = () => {
             </div>
 
             {userData && userData.customer_id && (
-              <div className="container">
+              <div className="container p-0">
                 <Link to="/EditProfile" className="item-content item-link">
                   <div className="title-bar">
                     <h4 className="title mb-0 font-w500">Account Settings</h4>

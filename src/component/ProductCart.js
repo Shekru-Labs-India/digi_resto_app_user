@@ -2096,18 +2096,20 @@ const ProductCard = () => {
         )}
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            <div
-              className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
-                selectedCategoryId === null ? "active" : ""
-              }`}
-              onClick={() => handleCategorySelect(null)}
-              style={{
-                backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
-                color: selectedCategoryId === null ? "#ffffff" : "",
-              }}
-            >
-              All ({totalMenuCount})
-            </div>
+            {totalMenuCount > 0 && menuCategories.length > 0 && (
+              <div
+                className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
+                  selectedCategoryId === null ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect(null)}
+                style={{
+                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
+                  color: selectedCategoryId === null ? "#ffffff" : "",
+                }}
+              >
+                All ({totalMenuCount})
+              </div>
+            )}
 
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
@@ -2227,10 +2229,7 @@ const ProductCard = () => {
                         </div>
                       </div>
                       <div className="col-6 text-end mt-2">
-                        <i
-                          className="ri-star-half-line pe-1 fs-6 ratingStar"
-               
-                        ></i>
+                        <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
                         <span
                           className="fs-6 fw-semibold gray-text"
                           style={{ marginLeft: "5px" }}

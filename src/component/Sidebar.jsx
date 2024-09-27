@@ -487,13 +487,13 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
-          <div className="dz-media d-flex justify-content-center align-items-center">
-            <i className="ri-user-3-line fs-1"></i>
+          <div className="dz-media d-flex justify-content-center align-items-center m-0">
+            <i className="ri-user-3-line fs-3 "></i>
           </div>
-          <div className="dz-info">
-            <div className="greetings">
-              {toTitleCase(getFirstName(userData?.name)) || "User"}
-            </div>
+          <div className="fs-6">
+            <span>
+              {userData?.name ? `Hello, ${toTitleCase(getFirstName(userData.name))}` : "Hello, User"}
+            </span>
             <span className="mail">{userData?.mobile}</span>
           </div>
         </div>
