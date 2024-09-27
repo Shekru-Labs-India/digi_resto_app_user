@@ -520,7 +520,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="ri-heart-2-line" style={{ fontSize: "25px" }}></i>
+                <i className="ri-heart-2-line fs-3"></i>
               </span>
               <span>Favourite</span>
             </Link>

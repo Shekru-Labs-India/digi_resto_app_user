@@ -409,7 +409,7 @@ const Profile = () => {
                       to="/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-2-line me-2 fs-5"></i> Favourite
+                      <i className="ri-heart-2-line me-2 fs-3"></i> Favourite
                     </Link>
                   </li>
                 </ul>
@@ -507,7 +507,7 @@ const Profile = () => {
                     to="/Wishlist"
                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
                   >
-                    <i className="ri-heart-2-line me-2 fs-2"></i> Favourite
+                    <i className="ri-heart-2-line me-2 fs-3"></i> Favourite
                   </Link>
                 </li>
               </ul>

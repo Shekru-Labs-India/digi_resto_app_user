@@ -1280,13 +1280,13 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill fs-4"
+                              className="ri-fire-fill fs-6"
                               style={{ color: "#eb8e57" }}
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line fs-4"
+                              className="ri-fire-line fs-6"
                               style={{ color: "#0000001a" }}
                             ></i>
                           )

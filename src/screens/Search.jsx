@@ -1945,8 +1945,8 @@ const Search = () => {
                                     key={index}
                                     className={
                                       index < menu.spicy_index
-                                        ? "ri-fire-fill fs-sm"
-                                        : "ri-fire-line fs-sm"
+                                        ? "ri-fire-fill fs-6"
+                                        : "ri-fire-line fs-6"
                                     }
                                     style={{
                                       color:
@@ -1994,8 +1994,8 @@ const Search = () => {
                             <i
                               className={`${
                                 menu.is_favourite
-                                  ? "ri-hearts-fill fs-4"
-                                  : "ri-heart-2-line fs-4"
+                                  ? "ri-hearts-fill fs-3"
+                                  : "ri-heart-2-line fs-3"
                               }`}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -2018,7 +2018,7 @@ const Search = () => {
                           }}
                           style={{ cursor: "pointer" }}
                         >
-                          <i className="ri-close-line"></i>
+                          <i className="ri-close-line fs-4"></i>
                         </span>
                       </div>
                     </div>

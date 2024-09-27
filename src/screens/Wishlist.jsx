@@ -1947,7 +1947,7 @@ const Wishlist = () => {
                               </div>
                               <div className="col-4 text-end ps-0 pe-4">
                                 <i
-                                  className="ri-close-line text-muted h5"
+                                  className="ri-close-line gray-text fs-4"
                                   onClick={() =>
                                     handleRemoveItemClick(index, menu.menu_id)
                                   }
@@ -1962,23 +1962,21 @@ const Wishlist = () => {
                                 </span>
                               </div>
                               <div className="col-3 pe-0 ps-1">
-                                {menu.spicy_index && (
+                                {/* {menu.spicy_index && (
                                   <div className="offer-code">
                                     {Array.from({ length: 5 }).map((_, index) =>
                                       index < menu.spicy_index ? (
                                         <i
-                                          className="ri-fire-fill fs-sm"
+                                          className="ri-fire-fill fs-6"
                                           style={{
-                                            fontSize: "12px",
                                             color: "#eb8e57",
                                           }}
                                           key={index}
                                         ></i>
                                       ) : (
                                         <i
-                                          className="ri-fire-line fs-sm"
+                                          className="ri-fire-line fs-6"
                                           style={{
-                                            fontSize: "12px",
                                             color: "#eb8e57",
                                           }}
                                           key={index}
@@ -1986,7 +1984,7 @@ const Wishlist = () => {
                                       )
                                     )}
                                   </div>
-                                )}
+                                )} */}
                               </div>
                               <div className="col-3 text-center pe-3 ps-0">
                                 <span className="fs-6">

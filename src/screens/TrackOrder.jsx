@@ -1264,11 +1264,9 @@ const TrackOrder = () => {
         {Array.from({ length: totalFires }).map((_, index) => (
           <i
             key={index}
-            className={`ri-fire-${index < spicyIndex ? "fill" : "line"}`}
+            className={`ri-fire-${index < spicyIndex ? "fill fs-6" : "line fs-6"}`}
             style={{
               color: index < spicyIndex ? "#eb8e57" : "#bbbaba",
-            
-               fontSize: "18px"
             }}
           ></i>
         ))}

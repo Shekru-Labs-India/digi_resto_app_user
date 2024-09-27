@@ -2175,8 +2175,8 @@ const ProductCard = () => {
                     <i
                       className={`${
                         menu.is_favourite
-                          ? "ri-hearts-fill fs-2"
-                          : "ri-heart-2-line fs-2"
+                          ? "ri-hearts-fill fs-3"
+                          : "ri-heart-2-line fs-3"
                       }`}
                       onClick={() => handleLikeClick(menu.menu_id)}
                       style={{
@@ -2203,13 +2203,12 @@ const ProductCard = () => {
                             index < menu.spicy_index ? (
                               <i
                                 className="ri-fire-fill fs-6"
-                                style={{ fontSize: "12px" }}
                                 key={index}
                               ></i>
                             ) : (
                               <i
                                 className="ri-fire-line fs-6"
-                                style={{ fontSize: "12px", color: "#bbbaba" }}
+                                style={{ color: "#bbbaba" }}
                                 key={index}
                               ></i>
                             )

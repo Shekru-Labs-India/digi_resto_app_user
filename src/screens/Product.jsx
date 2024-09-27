@@ -1747,8 +1747,8 @@ const Product = () => {
                       <i
                         className={`${
                           menuItem.is_favourite
-                            ? "ri-hearts-fill fs-2"
-                            : "ri-heart-2-line fs-2"
+                            ? "ri-hearts-fill fs-3"
+                            : "ri-heart-2-line fs-3"
                         }`}
                         onClick={() => handleLikeClick(menuItem.menu_id)}
                         style={{
@@ -1775,13 +1775,12 @@ const Product = () => {
                               index < menuItem.spicy_index ? (
                                 <i
                                   className="ri-fire-fill fs-6"
-                                  style={{ fontSize: "12px" }}
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
                                   className="ri-fire-line fs-6"
-                                  style={{ fontSize: "12px", color: "#bbbaba" }}
+                                  style={{color: "#bbbaba" }}
                                   key={index}
                                 ></i>
                               )

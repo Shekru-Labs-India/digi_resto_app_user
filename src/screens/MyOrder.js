@@ -330,7 +330,6 @@ const MyOrder = () => {
   }, [activeTab, customerId, restaurantId]);
 
   return (
-    
     <div className="page-wrapper">
       <header className="header header-fixed style-3">
         <div className="header-content">
@@ -358,8 +357,8 @@ const MyOrder = () => {
           ) : (
             <>
               {userData ? (
-                <div className="default-tab style-2" >
-                  <div className="dz-tabs" style={{bottom:"80px"}}>
+                <div className="default-tab style-2 pb-5 mb-3">
+                  <div className="dz-tabs mb-5 pb-5" >
                     <ul className="nav nav-tabs" role="tablist">
                       <li
                         className={`nav-item ${

@@ -5974,7 +5974,7 @@ const Cart = () => {
                       <div className="col-3 text-end pe-4">
                         <div onClick={() => removeFromCart(item)}>
                           <i
-                            className="ri-close-line fs-3"
+                            className="ri-close-line fs-4"
                             style={{ color: "#818180" }}
                           ></i>
                         </div>
@@ -5995,9 +5995,9 @@ const Cart = () => {
                               key={index}
                               className={`ri-fire-${
                                 index < (item.spicy_index || 0)
-                                  ? "fill"
-                                  : "line"
-                              } fs-12px`}
+                                  ? "fill fs-6"
+                                  : "line fs-6"
+                              }`}
                               style={{
                                 color:
                                   index < (item.spicy_index || 0)
