@@ -330,7 +330,6 @@ const MyOrder = () => {
   }, [activeTab, customerId, restaurantId]);
 
   return (
-    
     <div className="page-wrapper">
       <header className="header header-fixed style-3">
         <div className="header-content">
@@ -358,8 +357,8 @@ const MyOrder = () => {
           ) : (
             <>
               {userData ? (
-                <div className="default-tab style-2" >
-                  <div className="dz-tabs" style={{bottom:"80px"}}>
+                <div className="default-tab style-2 pb-5 mb-3">
+                  <div className="dz-tabs mb-5 pb-5" >
                     <ul className="nav nav-tabs" role="tablist">
                       <li
                         className={`nav-item ${
@@ -437,6 +436,11 @@ const OrdersTab = ({ orders, type }) => {
     navigate(`/TrackOrder/${orderNumber}`);
   };
 
+  const formatDateTime = (dateTime) => {
+    const [date, time, period] = dateTime.split(" ");
+    return `${time} ${period} ${date}`;
+  };
+
   return (
     <div className="row g-1">
       {orders.length === 0 ? (
@@ -465,27 +469,27 @@ const OrdersTab = ({ orders, type }) => {
           >
             <div className="card-body" style={{ height: "90px" }}>
               <div className="row align-items-center">
-                <div className="col-5">
+                <div className="col-4">
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
-                <div className="col-7 text-end">
-                  <span className="card-text text-muted mb-0" style={{position:"relative", right:"-6px"}}>
-                    {order.date_time}
-                  </span>
+                <div className="col-8 text-end">
+                 <span className="card-text text-muted mb-0">
+  {formatDateTime(order.date_time)}
+</span>
                 </div>
               </div>
               <div className="row mt-2">
-                <div className="col-4">
-                  <p className="mb-0 fs-6 text-truncate">
+                <div className="col-6">
+                  <p className="mb-0 fs-6 ">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
+
+                      <i class="ri-user-location-line ps-2 pe-1"></i>
+                      {order.table_number}
                   </p>
                 </div>
-                <div className="col-4 text-start" style={{ color: "#a5a5a5" }}>
-                  <p
-                    className="mb-0 fs-7"
-                    style={{ position: "relative", right: "25px" }}
-                  >
+                <div className="col-4 text-start p-0" style={{ color: "#a5a5a5" }}>
+                  <p className="mb-0 fs-6">
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
                       ? "No ongoing orders"
@@ -493,12 +497,11 @@ const OrdersTab = ({ orders, type }) => {
                     Menu
                   </p>
                 </div>
-                <div
-                  className="col-5 text-end"
-                  style={{ position: "absolute", right: "35px" }}
-                >
+                <div className="col-2 p-0">
                   <div className="price-wrapper">
-                    <h6 className="current-price fs-4 me-1">₹{order.total_bill}</h6>
+                    {/* <h6 className="current-price fs-4 me-1">
+                      ₹{order.total_bill}
+                    </h6>
                     <span className="old-price fs-7">
                       ₹{calculateOldPrice(order.total_bill)}
                     </span>
@@ -506,14 +509,27 @@ const OrdersTab = ({ orders, type }) => {
                     <div
                       className="fw-semibold d-flex  ps-1  "
                       style={{
-                        fontSize:"14px",
+                        fontSize: "14px",
                         color: "#0D775E",
                         position: "absolute",
                         right: "-25px",
                       }}
                     >
                       40% off
-                    </div>
+                    </div> */}
+                    {/* ----- */}
+                    <p className="mb-2 fs-4 fw-medium">
+                      <span className="text-info text-end">
+                        ₹{order.total_bill}
+                      </span>
+                      {/* <span className="text-muted fs-6 text-decoration-line-through">
+                        ₹{calculateOldPrice(order.total_bill)}
+                      </span>
+
+                      <span className="fs-6 ps-2 text-primary">
+                        {order.offer || "No "}% Off
+                      </span> */}
+                    </p>
                   </div>
                 </div>
               </div>

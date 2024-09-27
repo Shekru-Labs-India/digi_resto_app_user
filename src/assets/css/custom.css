@@ -1,3 +1,78 @@
+.ratingStar{
+  color: #f8a500;
+}
+
+.powered-by {
+    position: fixed;
+    right: 0;
+    bottom: 90px;
+    left: 0;
+    z-index: 1030; }
+
+.fixed-bottom-custom{
+  position: fixed;
+    bottom: 48px;
+    z-index: 1; 
+    background-color: #f6f6f6;
+}
+
+.menu_name {
+   margin-left: 10px;
+   font-weight: 500;
+    font-size: 1rem; /* from .fs-sm */
+}
+
+.hotel-name{
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.table-number{
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gray-text{
+  color: #adb5bd;
+}
+
+.fs-12px{
+  font-size: 12px;
+}
+
+
+
+
+.font-poppins{
+  font-family: Poppins, sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.custom-text-gray{
+  /* color:#adb5bd; */
+  color:#bbbaba;
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  .scrollable-section {
   height: 200px; /* Set height */
