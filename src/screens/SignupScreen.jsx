@@ -22,16 +22,16 @@ const Signupscreen = () => {
   const [showPopup, setShowPopup] = useState(false); // Popup visibility state
   const checkboxRef = useRef(null); // Reference to the checkbox
 
-  useEffect(() => {
-    const valid = isFormValid();
-    const button = document.getElementById("signupButton");
-    if (button) button.disabled = !valid;
-  }, [name, mobile, dob, agreed, mobileError]);
-
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (!isFormFilled()) {
+      setError("Please fill all the fields correctly.");
+      setCheckboxError(""); // Clear checkbox error if form is not filled
+      return;
+    }
     if (!agreed) {
       setCheckboxError("Please click the checkbox");
+      setError(""); // Clear general error if checkbox is not checked
       if (checkboxRef.current) {
         checkboxRef.current.classList.add("shake");
         setTimeout(() => {
@@ -79,21 +79,31 @@ const Signupscreen = () => {
         setMobile("");
         setDob("");
 
-        // Wait for 2-3 seconds before redirecting to the sign-in page
+        // Hide popup and navigate to sign-in screen after 3 seconds
         setTimeout(() => {
-          setShowPopup(false); // Hide success popup
-          navigate("/Signinscreen", { state: { accountCreated: true } }); // Pass accountCreated flag to Signinscreen
-        }, 3000); // 3 seconds delay
+          setShowPopup(false);
+          navigate("/Signinscreen");
+        }, 3000);
       } else if (data.st === 2) {
         setError("Mobile Number already exists. Use another number.");
+        setTimeout(() => {
+          setError("");
+        }, 3000); // Clear error message after 2 seconds
       } else {
-        setError("Sign up failed. Please try again.");
+        setError("Mobile Number already exists. Use another number.");
+        setTimeout(() => {
+          setError("");
+        }, 3000); // Clear error message after 2 seconds
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      setError("Sign up failed. Please try again.");
+      setError("Mobile Number already exists. Use another number.");
+      setTimeout(() => {
+        setError("");
+      }, 3000); // Clear error message after 2 seconds
+    } finally {
+      setLoading(false); // Set loading to false after API call
     }
-    setLoading(false); // Set loading to false after API call
   };
 
   const generateCustomerId = () => {
@@ -122,12 +132,11 @@ const Signupscreen = () => {
     }
   };
 
-  const isFormValid = () => {
+  const isFormFilled = () => {
     return (
       name.trim() !== "" &&
       mobile.trim() !== "" &&
       dob.trim() !== "" &&
-      agreed &&
       mobileError === ""
     );
   };
@@ -161,8 +170,8 @@ const Signupscreen = () => {
                     <span className="required-star">*</span>Name
                   </label>
                   <div className="input-group">
-                    <span className="input-group-text fs-3 py-0 ">
-                      <i className="ri-user-3-line  text-muted" />
+                    <span className="input-group-text fs-3 py-0">
+                      <i className="ri-user-3-line text-muted" />
                     </span>
                     <input
                       type="text"
@@ -181,7 +190,7 @@ const Signupscreen = () => {
                   </label>
                   <div className="input-group">
                     <span className="input-group-text fs-3 py-0">
-                      <i className="ri-smartphone-line  text-muted" />
+                      <i className="ri-smartphone-line text-muted" />
                     </span>
                     <input
                       type="tel"
@@ -242,8 +251,7 @@ const Signupscreen = () => {
                   <button
                     id="signupButton"
                     type="submit"
-                    className={`dz-btn btn btn-thin btn-lg btn-primary rounded-xl ${!isFormValid() ? "disabled" : ""}`}
-                    disabled={!isFormValid()}
+                    className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
                   >
                     Create Account
                   </button>

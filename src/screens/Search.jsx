@@ -1926,7 +1926,7 @@ const Search = () => {
                       <div className="col-8 pt-2 pb-0 pe-0 ps-2">
                         <div className="fs-6">{menu.menu_name}</div>
                         <div className="row">
-                          <div className="col-5 mt-1 pe-0">
+                          <div className="col-7 mt-1 pe-0 ">
                             <div className="mt-0">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
                               <span className="text-success ">
@@ -1934,7 +1934,7 @@ const Search = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="col-3 text-center px-0">
+                          {/* <div className="col-3 text-center px-0">
                             <span className="d-inline-block">
                               <div
                                 className="offer-code pt-1"
@@ -1958,8 +1958,8 @@ const Search = () => {
                                 ))}
                               </div>
                             </span>
-                          </div>
-                          <div className="col-4 text-end p-0 mt-1">
+                          </div> */}
+                          <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
                             <span className="h6">
                               <i
                                 className="ri-star-half-line ms-4 me-2 ratingStar"
@@ -1970,7 +1970,7 @@ const Search = () => {
                           </div>
                         </div>
                         <div className="row mt-2">
-                          <div className="col-6 ps-0">
+                          <div className="col-6 px-0">
                             <p className="mb-2 fs-4 fw-medium">
                               <span className="ms-3 me-2 text-info">
                                 ₹{menu.price}
@@ -1981,8 +1981,8 @@ const Search = () => {
                             </p>
                           </div>
                           <div className="col-4 p-0">
-                            <p className="mb-2 fs-4 fw-medium">
-                              <span className="fs-6 ps-2 text-primary ">
+                            <p className="mb-2 fs-4 me-3 fw-medium">
+                              <span className="fs-6 ps-0  text-primary ">
                                 {menu.offer || "No "}% Off
                               </span>
                             </p>
