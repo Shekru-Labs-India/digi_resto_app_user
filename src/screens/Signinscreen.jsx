@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
 import authenticationPic1 from "../assets/background.jpg";
@@ -12,6 +12,16 @@ const Signinscreen = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [accountCreated, setAccountCreated] = useState(false);
+
+  useEffect(() => {
+    if (location.state && location.state.accountCreated) {
+      setAccountCreated(true);
+      // Clear the state after displaying the message
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleSignIn = async () => {
     if (!isMobileValid) {
@@ -108,6 +118,7 @@ const Signinscreen = () => {
                   Missed!</h2>
                 </h2>
               </div>
+             
               <form onSubmit={(e) => e.preventDefault()}>
                 <div className="m-b15">
                   <label className="form-label fs-4" htmlFor="mobile">

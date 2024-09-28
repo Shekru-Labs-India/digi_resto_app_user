@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pic2 from "../assets/background.jpg";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
+
 
 const Signupscreen = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const Signupscreen = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
   const [checkboxError, setCheckboxError] = useState(""); // Checkbox error state
+  const [showPopup, setShowPopup] = useState(false); // Popup visibility state
+  const checkboxRef = useRef(null); // Reference to the checkbox
 
   useEffect(() => {
     const valid = isFormValid();
@@ -29,6 +32,12 @@ const Signupscreen = () => {
     e.preventDefault();
     if (!agreed) {
       setCheckboxError("Please click the checkbox");
+      if (checkboxRef.current) {
+        checkboxRef.current.classList.add("shake");
+        setTimeout(() => {
+          checkboxRef.current.classList.remove("shake");
+        }, 500);
+      }
       return;
     }
     setLoading(true); // Set loading to true before API call
@@ -61,17 +70,25 @@ const Signupscreen = () => {
 
         // Store user data in local storage
         localStorage.setItem("userData", JSON.stringify(userData));
-        navigate("/Signinscreen", { state: { accountCreated: true } }); // Pass accountCreated flag to Signinscreen
+        
+        // Show success popup
+        setShowPopup(true);
+
+        // Clear form fields upon successful signup attempt
+        setName("");
+        setMobile("");
+        setDob("");
+
+        // Wait for 2-3 seconds before redirecting to the sign-in page
+        setTimeout(() => {
+          setShowPopup(false); // Hide success popup
+          navigate("/Signinscreen", { state: { accountCreated: true } }); // Pass accountCreated flag to Signinscreen
+        }, 3000); // 3 seconds delay
       } else if (data.st === 2) {
         setError("Mobile Number already exists. Use another number.");
       } else {
         setError("Sign up failed. Please try again.");
       }
-
-      // Clear form fields upon successful signup attempt
-      setName("");
-      setMobile("");
-      setDob("");
     } catch (error) {
       console.error("Error signing up:", error);
       setError("Sign up failed. Please try again.");
@@ -196,7 +213,7 @@ const Signupscreen = () => {
                   </div>
                   {dobError && <div className="invalid-feedback">{dobError}</div>}
                 </div>
-                <div className="form-check m-b25">
+                <div className="form-check m-b25" ref={checkboxRef}>
                   <input
                     className="form-check-input"
                     type="checkbox"
@@ -243,6 +260,11 @@ const Signupscreen = () => {
         </div>
       </main>
       <CompanyVersion/>
+      {showPopup && (
+        <div className="popup show">
+          Account Created Successfully
+        </div>
+      )}
     </div>
   );
 };

@@ -1859,16 +1859,16 @@ const Wishlist = () => {
                 </Link>
               </div>
               <div className="mid-content">
-                <h5 className="title">
-                  Favourite{" "}
-                  {userData && menuList.length > 0 && (
-                    <span className="small-number gray-text">
-                      {" ("}
-                      <span className="">{menuList.length}</span>
-                      {")"}
-                    </span>
-                  )}
-                </h5>
+              <h5 className="title">
+  Favourite{" "}
+  {userData && menuList.length > 0 && (
+    <span className="small-number gray-text">
+      {" ("}
+      <span className="">{menuList.length}</span>
+      {")"}
+    </span>
+  )}
+</h5>
               </div>
             </div>
           </header>
@@ -1986,31 +1986,24 @@ const Wishlist = () => {
                   </div>
                 ))
               ) : (
-
                 <div
-                  className="d-flex  flex-column justify-content-center align-items-center vh-100  mb-5"
-                  
+                  className="d-flex  flex-column justify-content-center align-items-center vh-100 overflow-hidden m-0"
+                  style={{ height: "100%" }}
                 >
                   <h5>Nothing to show in favorites.</h5>
                   <p>Add some products to show here!</p>
-                  <Link to="/HomeScreen" className="btn btn-outline-primary mb-5">
+                  <Link to="/HomeScreen" className="btn btn-outline-primary">
                     Browse Menus
                   </Link>
                 </div>
               )
             ) : (
-              
-                <div className="d-flex flex-column justify-content-center align-items-center vh-100 mb-5">
-                  <h5 className="">Please log in to view your favorites.</h5>
-                  <p className="">Add some products to show here!</p>
-                  <Link
-                    to="/HomeScreen"
-                    className="btn btn-outline-primary mb-5 "
-                  >
-                    Browse Menus
-                  </Link>
-                </div>
-              
+              <div className="d-flex flex-column justify-content-center align-items-center vh-100 overflow-hidden m-0">
+  <h5>Please log in to view your favorites.</h5>
+  <Link className="btn btn-outline-primary mt-3" to="/Signinscreen">
+    <i className="ri-lock-2-line fs-4 me-2 "></i> Login
+  </Link>
+</div>
             )}
           </main>
         </>
