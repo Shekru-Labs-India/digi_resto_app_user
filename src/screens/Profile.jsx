@@ -691,11 +691,11 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        <div className="text-center mt-6 powered-by">
-          <div className="gray-text fs-6">Powered by </div>
-          <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
-          <div className="gray-text fs-sm ">v1.1</div>
-        </div>
+          <div className="text-center mt-6 powered-by">
+            <div className="gray-text fs-6">Powered by </div>
+            <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+            <div className="gray-text fs-sm ">v1.1</div>
+          </div>
       </>
     );
   };
