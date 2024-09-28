@@ -492,41 +492,40 @@ const Sidebar = () => {
           </div>
           <div className="fs-6">
             <span className="ms-3 pt-4">
-              {userData?.name ? `Hello, ${toTitleCase(getFirstName(userData.name))}` : "Hello, User"}
+              {userData?.name
+                ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                : "Hello, User"}
             </span>
             <div className="mail ms-3">{userData?.mobile}</div>
             <div className="dz-mode mt-3 me-4">
-          <div className="theme-btn" onClick={toggleTheme}>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-sun-line" : "ri-moon-line"
-              } sun`}
-            ></i>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-moon-line" : "ri-sun-line"
-              } moon`}
-            ></i>
-          </div>
-        </div>
+              <div className="theme-btn" onClick={toggleTheme}>
+                <i
+                  className={`ri ${
+                    isDarkMode ? "ri-sun-line" : "ri-moon-line"
+                  } sun`}
+                ></i>
+                <i
+                  className={`ri ${
+                    isDarkMode ? "ri-moon-line" : "ri-sun-line"
+                  } moon`}
+                ></i>
+              </div>
+            </div>
           </div>
         </div>
         <ul className="nav navbar-nav">
           <li>
             <Link className="nav-link active" to="/Menu">
               <span className="dz-icon icon-sm">
-                <i
-                  className="ri-restaurant-line"
-                  style={{ fontSize: "25px" }}
-                ></i>
+                <i className="ri-bowl-line fs-3"></i>
               </span>
-              <span>Menus</span>
+              <span>Menu</span>
             </Link>
           </li>
           <li>
             <Link className="nav-link active" to="/Category">
               <span className="dz-icon icon-sm">
-                <i className="ri-list-check-2" style={{ fontSize: "25px" }}></i>
+                <i className="ri-list-check-2 fs-3"></i>
               </span>
               <span>Category</span>
             </Link>
@@ -543,8 +542,8 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/MyOrder">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-drinks-2-line"
-                  style={{ fontSize: "25px" }}
+                  className="ri-drinks-2-line fs-3"
+                 
                 ></i>
               </span>
               <span>My Orders</span>
@@ -554,8 +553,8 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/Cart">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-shopping-cart-line"
-                  style={{ fontSize: "25px" }}
+                  className="ri-shopping-cart-line fs-3"
+                 
                 ></i>
               </span>
               <span>My Cart</span>
@@ -564,7 +563,7 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Profile">
               <span className="dz-icon icon-sm">
-                <i className="ri-user-3-line" style={{ fontSize: "25px" }}></i>
+                <i className="ri-user-3-line fs-3"></i>
               </span>
               <span>Profile</span>
             </Link>

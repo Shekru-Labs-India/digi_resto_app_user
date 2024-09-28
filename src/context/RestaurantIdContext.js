@@ -588,16 +588,7 @@
 
 // 28-09
 
-
-
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
-import { useNavigate } from "react-router-dom";
+import React, { createContext, useState, useEffect, useContext } from "react";
 
 const RestaurantIdContext = createContext();
 
@@ -605,65 +596,57 @@ export const useRestaurantId = () => {
   return useContext(RestaurantIdContext);
 };
 
-export const RestaurantIdProvider = ({ children, restaurantCode }) => {
-  const [restaurantDetails, setRestaurantDetails] = useState(null);
+export const RestaurantIdProvider = ({ children }) => {
   const [restaurantId, setRestaurantId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  // Set restaurant code
-  const [currentRestaurantCode, setRestaurantCode] = useState(restaurantCode);
+  const [restaurantName, setRestaurantName] = useState(null);
+  const [restaurantCode, setRestaurantCode] = useState(
+    localStorage.getItem("restaurantCode") || ""
+  );
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
-      if (currentRestaurantCode) {
-        setLoading(true);
-        setError(null);
+      if (!restaurantCode) return;
 
-        try {
-          const response = await fetch(
-            "https://menumitra.com/user_api/get_restaurant_details_by_code",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                restaurant_code: currentRestaurantCode,
-              }),
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-
-            if (data.st === 1 && data.restaurant_details) {
-              setRestaurantDetails(data.restaurant_details);
-              setRestaurantId(data.restaurant_details.restaurant_id);
-            } else if (data.st === 2) {
-              navigate("/Signinscreen");
-            }
-          } else {
-            throw new Error("Failed to fetch restaurant details");
+      try {
+        const response = await fetch(
+          "https://menumitra.com/user_api/get_restaurant_details_by_code",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ restaurant_code: restaurantCode }),
           }
-        } catch (error) {
-          console.error("Error fetching restaurant details:", error);
-          setError("Failed to fetch restaurant details. Please try again.");
-        } finally {
-          setLoading(false);
+        );
+
+        const data = await response.json();
+        if (data.st === 1) {
+          const { restaurant_id, name } = data.restaurant_details;
+          setRestaurantId(restaurant_id);
+          setRestaurantName(name);
+
+          // Update userData in local storage
+          const userData = JSON.parse(localStorage.getItem("userData")) || {};
+          userData.restaurantId = restaurant_id;
+          userData.restaurantName = name;
+          localStorage.setItem("userData", JSON.stringify(userData));
+        } else {
+          console.error("Failed to fetch restaurant details:", data.msg);
         }
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
       }
     };
 
     fetchRestaurantDetails();
-  }, [currentRestaurantCode, navigate]);
+  }, [restaurantCode]);
 
   return (
     <RestaurantIdContext.Provider
       value={{
         restaurantId,
-        restaurantCode: currentRestaurantCode,
+        restaurantName,
+        restaurantCode,
         setRestaurantCode,
       }}
     >
