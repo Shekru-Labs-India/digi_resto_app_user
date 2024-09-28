@@ -492,7 +492,9 @@ const Sidebar = () => {
           </div>
           <div className="fs-5 m-0">
             <span>
-              {userData?.name ? `Hello, ${toTitleCase(getFirstName(userData.name))}` : "Hello, User"}
+              {userData?.name
+                ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                : "Hello, User"}
             </span>
             <span className="mail">{userData?.mobile}</span>
           </div>
@@ -529,7 +531,7 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/MyOrder">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-restaurant-line"
+                  className="ri-drinks-2-line"
                   style={{ fontSize: "25px" }}
                 ></i>
               </span>
@@ -540,7 +542,7 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/Cart">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-shopping-cart-2-line"
+                  className="ri-shopping-cart-line"
                   style={{ fontSize: "25px" }}
                 ></i>
               </span>

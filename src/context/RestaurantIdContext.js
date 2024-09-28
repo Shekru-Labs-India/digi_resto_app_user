@@ -495,6 +495,101 @@
 
 
 
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useMemo,
+// } from "react";
+// import { useNavigate } from "react-router-dom";
+
+// const RestaurantIdContext = createContext();
+
+// export const useRestaurantId = () => {
+//   return useContext(RestaurantIdContext);
+// };
+
+// export const RestaurantIdProvider = ({ children, restaurantCode }) => {
+//   const [restaurantDetails, setRestaurantDetails] = useState(null);
+//   const [restaurantId, setRestaurantId] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+//   const navigate = useNavigate();
+
+//   // Set restaurant code
+//   const [currentRestaurantCode, setRestaurantCode] = useState(restaurantCode);
+
+//   useEffect(() => {
+//     const fetchRestaurantDetails = async () => {
+//       if (currentRestaurantCode) {
+//         setLoading(true);
+//         setError(null);
+
+//         try {
+//           const response = await fetch(
+//             "https://menumitra.com/user_api/get_restaurant_details_by_code",
+//             {
+//               method: "POST",
+//               headers: {
+//                 "Content-Type": "application/json",
+//               },
+//               body: JSON.stringify({
+//                 restaurant_code: currentRestaurantCode,
+//               }),
+//             }
+//           );
+
+//           if (response.ok) {
+//             const data = await response.json();
+
+//             if (data.st === 1 && data.restaurant_details) {
+//               setRestaurantDetails(data.restaurant_details);
+//               setRestaurantId(data.restaurant_details.restaurant_id);
+//             } else if (data.st === 2) {
+//               navigate("/Signinscreen");
+//             }
+//           } else {
+//             throw new Error("Failed to fetch restaurant details");
+//           }
+//         } catch (error) {
+//           console.error("Error fetching restaurant details:", error);
+//           setError("Failed to fetch restaurant details. Please try again.");
+//         } finally {
+//           setLoading(false);
+//         }
+//       }
+//     };
+
+//     fetchRestaurantDetails();
+//   }, [currentRestaurantCode, navigate]);
+
+//   const value = useMemo(
+//     () => ({
+//       restaurantDetails,
+//       restaurantId,
+//       restaurantCode: currentRestaurantCode,
+//       setRestaurantCode, // Make sure to include this
+//       loading,
+//       error,
+//     }),
+//     [restaurantDetails, restaurantId, currentRestaurantCode, loading, error]
+//   );
+
+//   return (
+//     <RestaurantIdContext.Provider value={value}>
+//       {children}
+//     </RestaurantIdContext.Provider>
+//   );
+// };
+
+
+
+
+// 28-09
+
+
+
 import React, {
   createContext,
   useState,
@@ -564,20 +659,14 @@ export const RestaurantIdProvider = ({ children, restaurantCode }) => {
     fetchRestaurantDetails();
   }, [currentRestaurantCode, navigate]);
 
-  const value = useMemo(
-    () => ({
-      restaurantDetails,
-      restaurantId,
-      restaurantCode: currentRestaurantCode,
-      setRestaurantCode, // Make sure to include this
-      loading,
-      error,
-    }),
-    [restaurantDetails, restaurantId, currentRestaurantCode, loading, error]
-  );
-
   return (
-    <RestaurantIdContext.Provider value={value}>
+    <RestaurantIdContext.Provider
+      value={{
+        restaurantId,
+        restaurantCode: currentRestaurantCode,
+        setRestaurantCode,
+      }}
+    >
       {children}
     </RestaurantIdContext.Provider>
   );
