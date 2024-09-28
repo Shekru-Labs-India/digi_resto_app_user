@@ -487,14 +487,28 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
-          <div className="dz-media d-flex justify-content-center align-items-center m-0">
-            <i className="ri-user-3-line fs-3 "></i>
+          <div className="d-flex justify-content-start align-items-center m-0">
+            <i className="ri-user-3-line fs-3 ms-2"></i>
           </div>
           <div className="fs-6">
-            <span>
+            <span className="ms-3 pt-4">
               {userData?.name ? `Hello, ${toTitleCase(getFirstName(userData.name))}` : "Hello, User"}
             </span>
-            <span className="mail">{userData?.mobile}</span>
+            <div className="mail ms-3">{userData?.mobile}</div>
+            <div className="dz-mode mt-3 me-4">
+          <div className="theme-btn" onClick={toggleTheme}>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-sun-line" : "ri-moon-line"
+              } sun`}
+            ></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-moon-line" : "ri-sun-line"
+              } moon`}
+            ></i>
+          </div>
+        </div>
           </div>
         </div>
         <ul className="nav navbar-nav">
@@ -556,7 +570,7 @@ const Sidebar = () => {
             </Link>
           </li>
         </ul>
-        <div className="dz-mode mt-4 me-4">
+        {/* <div className="dz-mode mt-4 me-4">
           <div className="theme-btn" onClick={toggleTheme}>
             <i
               className={`ri ${
@@ -569,7 +583,7 @@ const Sidebar = () => {
               } moon`}
             ></i>
           </div>
-        </div>
+        </div> */}
         <div className="sidebar-bottom">
           <CompanyVersion />
         </div>
