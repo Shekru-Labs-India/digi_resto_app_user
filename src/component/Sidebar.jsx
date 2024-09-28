@@ -516,7 +516,7 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/Menu">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-menu-search-line"
+                  className="ri-restaurant-line"
                   style={{ fontSize: "25px" }}
                 ></i>
               </span>
@@ -543,7 +543,7 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/MyOrder">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-restaurant-line"
+                  className="ri-drinks-2-line"
                   style={{ fontSize: "25px" }}
                 ></i>
               </span>
@@ -554,11 +554,11 @@ const Sidebar = () => {
             <Link className="nav-link active" to="/Cart">
               <span className="dz-icon icon-sm">
                 <i
-                  className="ri-shopping-cart-2-line"
+                  className="ri-shopping-cart-line"
                   style={{ fontSize: "25px" }}
                 ></i>
               </span>
-              <span>Cart</span>
+              <span>My Cart</span>
             </Link>
           </li>
           <li>

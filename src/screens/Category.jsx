@@ -741,7 +741,10 @@ const Category = () => {
               </div>
               <div className="mid-content">
                 <h5 className="title">
-                  Category <span className="">({totalCategoriesCount})</span>
+                  Category
+                  {totalCategoriesCount > 0 && (
+                    <span className="">({totalCategoriesCount})</span>
+                  )}
                 </h5>
               </div>
             </div>
