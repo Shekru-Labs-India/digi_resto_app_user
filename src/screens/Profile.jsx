@@ -298,13 +298,264 @@
 
 // ************
 
+// import React from "react";
+// import { Link } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+// import applogo from "../assets/logos/Menu Mitra logo 3.png";
+// import Bottom from "../component/bottom";
+// import HomeScreen from "./HomeScreen";
+// import CompanyVersion from "../constants/CompanyVersion";
+
+// const Profile = () => {
+//   const navigate = useNavigate();
+//   const userData = JSON.parse(localStorage.getItem("userData"));
+
+//   const handleLogout = () => {
+//     const { restaurantId, tableNumber } = JSON.parse(
+//       localStorage.getItem("userData") || "{}"
+//     );
+//     localStorage.removeItem("userData");
+//     localStorage.setItem("lastRestaurantId", restaurantId);
+//     localStorage.setItem("lastTableNumber", tableNumber);
+//     navigate("/Signinscreen");
+//   };
+
+//   const toTitleCase = (str) => {
+//     if (!str) {
+//       return ""; // Return empty string if str is undefined or null
+//     }
+
+//     return str.replace(/\w\S*/g, function (txt) {
+//       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+//     });
+//   };
+
+//   const getFirstName = (name) => {
+//     if (!name) return ""; // Return empty string if name is undefined or null
+//     const words = name.split(" ");
+//     return words[0]; // Return the first word
+//   };
+
+//   if (!userData) {
+//     // User is not logged in, render restricted version of profile
+//     return (
+//       <div className="page-wrapper">
+//         <header className="header header-fixed style-3">
+//           <div className="header-content">
+//             <div className="left-content">
+//               <Link
+//                 to={`/HomeScreen/${userData?.restaurantId || ""}/${
+//                   userData?.tableNumber || ""
+//                 }`}
+//                 className="back-btn fs-3"
+//               >
+//                 <i className="ri-arrow-left-line fs-3"></i>
+//               </Link>
+//             </div>
+//             <div className="mid-content">
+//               <h5 className="title">Profile</h5>
+//             </div>
+//             <div className="right-content">
+//               <Link to="/Signinscreen" className="fs-3">
+//                 {/* <i className="ri-shut-down-line"></i> */}
+//               </Link>
+//             </div>
+//           </div>
+//         </header>
+//         <main className="page-content space-top p-b40">
+//           <div className="container">
+//             <div className="profile-area">
+//               {/* <div className="main-profile">
+//                 <div className="media">
+//                   <div className="media-40 me-2 user-image">
+//                     <i
+//                       className="ri-login-circle-line"
+//                       style={{ fontSize: "40px", marginTop: "9px" }}
+//                     ></i>
+//                   </div>
+//                   <h4 className="name mb-0">
+//                     <span className="">Hello,User</span>
+//                   </h4>
+//                 </div>
+//               </div> */}
+
+//               <div className="main-profile">
+//                 <div className="d-flex align-items-center">
+//                   <h4 className="name mb-0">
+//                     <div className="fw-medium">
+//                       <i className="ri-user-3-line me-2 fs-3"></i>
+//                       Hello, User
+//                     </div>
+//                   </h4>
+//                 </div>
+//               </div>
+//               <div className="content-box">
+//                 <ul className="row g-2">
+//                   <li className="col-6">
+//                     <Link
+//                       to="/Menu"
+//                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                     >
+//                       <i className="ri-bowl-line me-2 fs-2"></i> Menu
+//                     </Link>
+//                   </li>
+//                   <li className="col-6">
+//                     <Link
+//                       to="/MyOrder"
+//                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                     >
+//                       <i className="ri-drinks-2-line me-2 fs-2"></i> My Order
+//                     </Link>
+//                   </li>
+//                   <li className="col-6">
+//                     <Link
+//                       to="/Cart"
+//                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                     >
+//                       <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
+//                     </Link>
+//                   </li>
+//                   <li className="col-6">
+//                     <Link
+//                       to="/Wishlist"
+//                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                     >
+//                       <i className="ri-heart-2-line me-2 fs-2"></i> Favourite
+//                     </Link>
+//                   </li>
+//                 </ul>
+//               </div>
+//               {/* <div className="title-bar">
+//                 <h4 className="title mb-0 font-w500">Account Settings</h4>
+//               </div> */}
+//             </div>
+//           </div>
+//         </main>
+//         <div className="text-center mt-6 powered-by">
+//           <div className="gray-text fs-6">Powered by </div>
+//           <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+//           <div className="gray-text fs-sm ">v1.1</div>
+//         </div>
+//         <Bottom />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="page-wrapper">
+//       <header className="header header-fixed style-3">
+//         <div className="header-content">
+//           <div className="left-content">
+//             <Link
+//               to={`/HomeScreen/${userData?.restaurantId || ""}/${
+//                 userData?.tableNumber || ""
+//               }`}
+//               className="back-btn fs-3"
+//             >
+//               <i className="ri-arrow-left-line fs-3"></i>
+//             </Link>
+//           </div>
+//           <div className="mid-content">
+//             <h5 className="title">Profile</h5>
+//           </div>
+//           <div className="right-content">
+//             <i className="ri-shut-down-line fs-3" onClick={handleLogout}></i>
+//           </div>
+//         </div>
+//       </header>
+//       <main className="page-content space-top p-b40">
+//         <div className="container">
+//           <div className="profile-area">
+//             <div className="main-profile">
+//               <div className="d-flex align-items-center">
+//                 <h4 className="name mb-0">
+//                   <div className="fw-medium">
+//                     <i className="ri-user-3-line me-2 fs-3"></i>
+//                     Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
+//                   </div>
+//                 </h4>
+//               </div>
+//             </div>
+//             <div className="content-box">
+//               <ul className="row g-2">
+//                 <li className="col-6">
+//                   <Link
+//                     to="/Menu"
+//                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                   >
+//                     <i className="ri-bowl-line me-2 fs-2"></i> Menu
+//                   </Link>
+//                 </li>
+//                 <li className="col-6">
+//                   <Link
+//                     to="/MyOrder"
+//                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                   >
+//                     <i className="ri-drinks-2-line me-2 fs-2"></i> My Order
+//                   </Link>
+//                 </li>
+//                 <li className="col-6">
+//                   <Link
+//                     to="/Cart"
+//                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                   >
+//                     <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
+//                   </Link>
+//                 </li>
+//                 <li className="col-6">
+//                   <Link
+//                     to="/Wishlist"
+//                     className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
+//                   >
+//                     <i className="ri-heart-2-line me-2 fs-3"></i> Favourite
+//                   </Link>
+//                 </li>
+//               </ul>
+//             </div>
+
+//             {userData && userData.customer_id && (
+//               <div className="container p-0">
+//                 <Link to="/EditProfile" className="item-content item-link">
+//                   <div className="title-bar">
+//                     <h4 className="title mb-0 font-w500">Account Settings</h4>
+//                   </div>
+//                   <div className="row align-items-center ms-0">
+//                     <div className="col-auto px-0">
+//                       <i className="ri-user-3-line fs-3 "></i>
+//                     </div>
+//                     <div className="col text-start px-1 fs-4">Edit Profile</div>
+//                     <div className="col-auto text-end ms-auto">
+//                       <i className="ri-arrow-right-s-line fs-4"></i>
+//                     </div>
+//                   </div>
+//                 </Link>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </main>
+//       <div className="text-center mt-6 powered-by">
+//         <div className="gray-text fs-6">Powered by </div>
+//         <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+//         <div className="gray-text fs-sm ">v1.1</div>
+//       </div>
+//       <Bottom />
+//     </div>
+//   );
+// };
+
+// export default Profile;
+
+
+
+// santosh
+
+
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import applogo from "../assets/logos/Menu Mitra logo 3.png";
 import Bottom from "../component/bottom";
-import HomeScreen from "./HomeScreen";
-import CompanyVersion from "../constants/CompanyVersion";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -322,24 +573,24 @@ const Profile = () => {
 
   const toTitleCase = (str) => {
     if (!str) {
-      return ""; // Return empty string if str is undefined or null
+      return "";
     }
-
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
 
   const getFirstName = (name) => {
-    if (!name) return ""; // Return empty string if name is undefined or null
+    if (!name) return "";
     const words = name.split(" ");
-    return words[0]; // Return the first word
+    return words[0];
   };
 
-  if (!userData) {
-    // User is not logged in, render restricted version of profile
+  const renderContent = () => {
+    const isLoggedIn = userData && userData.customer_id;
+
     return (
-      <div className="page-wrapper">
+      <>
         <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
@@ -355,36 +606,28 @@ const Profile = () => {
             <div className="mid-content">
               <h5 className="title">Profile</h5>
             </div>
-            <div className="right-content">
-              <Link to="/Signinscreen" className="fs-3">
-                <i className="ri-shut-down-line"></i>
-              </Link>
-            </div>
+            {isLoggedIn && (
+              <div className="right-content">
+                <i
+                  className="ri-shut-down-line fs-3"
+                  onClick={handleLogout}
+                ></i>
+              </div>
+            )}
           </div>
         </header>
         <main className="page-content space-top p-b40">
           <div className="container">
             <div className="profile-area">
-              {/* <div className="main-profile">
-                <div className="media">
-                  <div className="media-40 me-2 user-image">
-                    <i
-                      className="ri-login-circle-line"
-                      style={{ fontSize: "40px", marginTop: "9px" }}
-                    ></i>
-                  </div>
-                  <h4 className="name mb-0">
-                    <span className="">Hello,User</span>
-                  </h4>
-                </div>
-              </div> */}
-
               <div className="main-profile">
                 <div className="d-flex align-items-center">
                   <h4 className="name mb-0">
                     <div className="fw-medium">
                       <i className="ri-user-3-line me-2 fs-3"></i>
-                      Hello, User
+                      Hello,{" "}
+                      {isLoggedIn
+                        ? toTitleCase(getFirstName(userData.name))
+                        : "User"}
                     </div>
                   </h4>
                 </div>
@@ -425,9 +668,26 @@ const Profile = () => {
                   </li>
                 </ul>
               </div>
-              {/* <div className="title-bar">
-                <h4 className="title mb-0 font-w500">Account Settings</h4>
-              </div> */}
+              {isLoggedIn && (
+                <div className="container p-0">
+                  <Link to="/EditProfile" className="item-content item-link">
+                    <div className="title-bar">
+                      <h4 className="title mb-0 font-w500">Account Settings</h4>
+                    </div>
+                    <div className="row align-items-center ms-0">
+                      <div className="col-auto px-0">
+                        <i className="ri-user-3-line fs-3 "></i>
+                      </div>
+                      <div className="col text-start px-1 fs-4">
+                        Edit Profile
+                      </div>
+                      <div className="col-auto text-end ms-auto">
+                        <i className="ri-arrow-right-s-line fs-4"></i>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -436,109 +696,13 @@ const Profile = () => {
           <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
           <div className="gray-text fs-sm ">v1.1</div>
         </div>
-        <Bottom />
-      </div>
+      </>
     );
-  }
+  };
 
   return (
     <div className="page-wrapper">
-      <header className="header header-fixed style-3">
-        <div className="header-content">
-          <div className="left-content">
-            <Link
-              to={`/HomeScreen/${userData?.restaurantId || ""}/${
-                userData?.tableNumber || ""
-              }`}
-              className="back-btn fs-3"
-            >
-              <i className="ri-arrow-left-line fs-3"></i>
-            </Link>
-          </div>
-          <div className="mid-content">
-            <h5 className="title">Profile</h5>
-          </div>
-          <div className="right-content">
-            <i className="ri-shut-down-line fs-3" onClick={handleLogout}></i>
-          </div>
-        </div>
-      </header>
-      <main className="page-content space-top p-b40">
-        <div className="container">
-          <div className="profile-area">
-            <div className="main-profile">
-              <div className="d-flex align-items-center">
-                <h4 className="name mb-0">
-                  <div className="fw-medium">
-                    <i className="ri-user-3-line me-2 fs-3"></i>
-                    Hello, {toTitleCase(getFirstName(userData.name)) || "User"}
-                  </div>
-                </h4>
-              </div>
-            </div>
-            <div className="content-box">
-              <ul className="row g-2">
-                <li className="col-6">
-                  <Link
-                    to="/Menu"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
-                  >
-                    <i className="ri-bowl-line me-2 fs-2"></i> Menu
-                  </Link>
-                </li>
-                <li className="col-6">
-                  <Link
-                    to="/MyOrder"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
-                  >
-                    <i className="ri-drinks-2-line me-2 fs-2"></i> My Order
-                  </Link>
-                </li>
-                <li className="col-6">
-                  <Link
-                    to="/Cart"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
-                  >
-                    <i className="ri-shopping-cart-line me-2 fs-2"></i> Cart
-                  </Link>
-                </li>
-                <li className="col-6">
-                  <Link
-                    to="/Wishlist"
-                    className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none fs-5"
-                  >
-                    <i className="ri-heart-2-line me-2 fs-3"></i> Favourite
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {userData && userData.customer_id && (
-              <div className="container p-0">
-                <Link to="/EditProfile" className="item-content item-link">
-                  <div className="title-bar">
-                    <h4 className="title mb-0 font-w500">Account Settings</h4>
-                  </div>
-                  <div className="row align-items-center ms-0">
-                    <div className="col-auto px-0">
-                      <i className="ri-user-3-line fs-3 "></i>
-                    </div>
-                    <div className="col text-start px-1 fs-4">Edit Profile</div>
-                    <div className="col-auto text-end ms-auto">
-                      <i className="ri-arrow-right-s-line fs-4"></i>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-      <div className="text-center mt-6 powered-by">
-        <div className="gray-text fs-6">Powered by </div>
-        <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
-        <div className="gray-text fs-sm ">v1.1</div>
-      </div>
+      {renderContent()}
       <Bottom />
     </div>
   );
