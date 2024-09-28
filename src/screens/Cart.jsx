@@ -6831,17 +6831,17 @@ const Cart = () => {
 
       {displayCartItems.length === 0 ? (
         <main className="page-content space-top p-b100">
-          <div className="container overflow-hidden">
-            <div className="m-b20 dz-flex-box">
-              <div className="dz-cart-about text-center">
-                <h5 className="title">Your Cart is Empty</h5>
-                <p>Add items to your cart from the product details page.</p>
-                <Link to="/Menu" className="btn btn-outline-primary btn-sm">
-                  Return to Shop
-                </Link>
-              </div>
-            </div>
-          </div>
+        <div className="container overflow-hidden d-flex flex-column justify-content-center align-items-center vh-100 mb-5">
+  <div className="m text-center">
+    <div className="dz-cart-about">
+      <h5 className="title">Your Cart is Empty</h5>
+      <p>Add items to your cart from the product details page.</p>
+      <Link to="/Menu" className="btn btn-outline-primary btn-sm mb-5">
+        Return to Shop
+      </Link>
+    </div>
+  </div>
+</div>
         </main>
       ) : (
         <main className="page-content space-top p-b200">

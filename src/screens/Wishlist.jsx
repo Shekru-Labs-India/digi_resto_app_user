@@ -641,28 +641,6 @@
 
 // export default Wishlist;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import images from "../assets/MenuDefault.png";
@@ -681,7 +659,6 @@
 
 //   const userData = JSON.parse(localStorage.getItem("userData"));
 //   const customerId = userData ? userData.customer_id : null;
-  
 
 //   useEffect(() => {
 //     if (restaurantId) {
@@ -794,7 +771,6 @@
 //       }
 //     };
 
-
 //     fetchFavoriteItems();
 //   }, [customerId, restaurantId]);
 
@@ -805,7 +781,7 @@
 //   const handleAddToCartClick = (item) => {
 //     if (!isMenuItemInCart(item.menu_id)) {
 //       addToCart(item);
-     
+
 //     } else {
 //       console.log("Item is already in the cart");
 //     }
@@ -1003,20 +979,6 @@
 // };
 
 // export default Wishlist;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
@@ -1314,11 +1276,7 @@
 
 // export default Wishlist;
 
-
-
 // *********
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
@@ -1693,17 +1651,7 @@
 
 // export default Wishlist;
 
-
-
-
-
-
 // addtocart
-
-
-
-
-
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -1888,7 +1836,7 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper vh-100 overflow-hidden">
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -1914,7 +1862,11 @@ const Wishlist = () => {
                 <h5 className="title">
                   Favourite{" "}
                   {userData && menuList.length > 0 && (
-                    <span className="">({menuList.length})</span>
+                    <span className="small-number gray-text">
+                      {" ("}
+                      <span className="">{menuList.length}</span>
+                      {")"}
+                    </span>
                   )}
                 </h5>
               </div>
@@ -2034,27 +1986,31 @@ const Wishlist = () => {
                   </div>
                 ))
               ) : (
+
                 <div
-                  className="empty-favorites d-flex flex-column justify-content-center align-items-center w-100"
-                  style={{ height: "100%" }}
+                  className="d-flex  flex-column justify-content-center align-items-center vh-100  mb-5"
+                  
                 >
                   <h5>Nothing to show in favorites.</h5>
                   <p>Add some products to show here!</p>
-                  <Link to="/HomeScreen" className="btn btn-primary">
+                  <Link to="/HomeScreen" className="btn btn-outline-primary mb-5">
                     Browse Menus
                   </Link>
                 </div>
               )
             ) : (
-              <div
-                className="empty-favorites d-flex flex-column justify-content-center align-items-center w-100"
-                style={{ height: "100%" }}
-              >
-                <h5>Please log in to view your favorites.</h5>
-                <Link className="btn btn-primary mt-3" to="/Signinscreen">
-                  Login
-                </Link>
-              </div>
+              
+                <div className="d-flex flex-column justify-content-center align-items-center vh-100 mb-5">
+                  <h5 className="">Please log in to view your favorites.</h5>
+                  <p className="">Add some products to show here!</p>
+                  <Link
+                    to="/HomeScreen"
+                    className="btn btn-outline-primary mb-5 "
+                  >
+                    Browse Menus
+                  </Link>
+                </div>
+              
             )}
           </main>
         </>
