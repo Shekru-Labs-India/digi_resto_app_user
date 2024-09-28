@@ -630,7 +630,11 @@ const MyOrder = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/Profile" className="back-btn dz-icon  icon-sm">
+            <Link
+              to="/Profile"
+              className="back-btn dz-icon  icon-sm"
+              onClick={() => navigate(-1)}
+            >
               <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>
@@ -681,6 +685,7 @@ const MyOrder = () => {
                           }`}
                           onClick={() => handleTabChange("completed")}
                         >
+                          <i className="ri-checkbox-circle-line pe-2"></i>
                           Completed
                         </button>
                       </li>
@@ -744,7 +749,7 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="fs-6 fw-semibold " style={{ color: "#7f7e7e" }}>
+          <p className="fs-6 fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
           <Link

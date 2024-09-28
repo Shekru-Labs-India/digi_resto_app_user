@@ -471,7 +471,11 @@ const EditProfile = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/Profile" className="back-btn dz-icon icon-fill icon-sm">
+            <Link
+              to="/Profile"
+              className="back-btn dz-icon icon-fill icon-sm"
+              onClick={() => navigate(-1)}
+            >
               <i className="ri-arrow-left-line fs-3"></i>
             </Link>
           </div>

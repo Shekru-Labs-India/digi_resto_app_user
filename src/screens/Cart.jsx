@@ -6814,6 +6814,7 @@ const Cart = () => {
                 userData?.tableNumber || ""
               }`}
               className="back-btn dz-icon icon-sm"
+              onClick={() => navigate(-1)}
             >
               <i className="ri-arrow-left-line fs-2"></i>
             </Link>
@@ -6830,10 +6831,10 @@ const Cart = () => {
       </header>
 
       {displayCartItems.length === 0 ? (
-        <main className="page-content space-top p-b100">
-          <div className="container overflow-hidden">
-            <div className="m-b20 dz-flex-box">
-              <div className="dz-cart-about text-center">
+                <main className="page-content ">
+          <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <div className="m-b20 dz-flex-box text-center">
+              <div className="dz-cart-about">
                 <h5 className="title">Your Cart is Empty</h5>
                 <p>Add items to your cart from the product details page.</p>
                 <Link to="/Menu" className="btn btn-outline-primary btn-sm">

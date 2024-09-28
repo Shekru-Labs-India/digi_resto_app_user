@@ -599,6 +599,7 @@ const Profile = () => {
                   userData?.tableNumber || ""
                 }`}
                 className="back-btn fs-3"
+                onClick={() => navigate(-1)}
               >
                 <i className="ri-arrow-left-line fs-3"></i>
               </Link>
@@ -623,7 +624,13 @@ const Profile = () => {
                 <div className="d-flex align-items-center">
                   <h4 className="name mb-0">
                     <div className="fw-medium">
-                      <i className="ri-user-3-line me-2 fs-3"></i>
+                      <i
+                        className={
+                          isLoggedIn
+                            ? "ri-user-3-fill me-2 fs-3"
+                            : "ri-user-3-line me-2 fs-3"
+                        }
+                      ></i>
                       Hello,{" "}
                       {isLoggedIn
                         ? toTitleCase(getFirstName(userData.name))
@@ -676,7 +683,8 @@ const Profile = () => {
                     </div>
                     <div className="row align-items-center ms-0">
                       <div className="col-auto px-0">
-                        <i className="ri-user-3-line fs-3 "></i>
+                        {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
+                        <i className="ri-user-3-line fs-3"></i>
                       </div>
                       <div className="col text-start px-1 fs-4">
                         Edit Profile
@@ -691,11 +699,11 @@ const Profile = () => {
             </div>
           </div>
         </main>
-          <div className="text-center mt-6 powered-by">
-            <div className="gray-text fs-6">Powered by </div>
-            <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
-            <div className="gray-text fs-sm ">v1.1</div>
-          </div>
+        <div className="text-center mt-6 powered-by">
+          <div className="gray-text fs-6">Powered by </div>
+          <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
+          <div className="gray-text fs-sm ">v1.1</div>
+        </div>
       </>
     );
   };
