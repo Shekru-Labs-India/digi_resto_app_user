@@ -1926,7 +1926,7 @@ const Search = () => {
                       <div className="col-8 pt-2 pb-0 pe-0 ps-2">
                         <div className="fs-6">{menu.menu_name}</div>
                         <div className="row">
-                          <div className="col-6 mt-1 pe-0">
+                          <div className="col-5 mt-1 pe-0 ">
                             <div className="mt-0">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
                               <span className="text-success">
@@ -1934,11 +1934,11 @@ const Search = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="col-3 text-center p-0">
+                          <div className="col-3 text-end px-0">
                             <span className="d-inline-block">
                               <div
-                                className="offer-code mt-1 me-3"
-                                // style={{ fontSize: "16px" }}
+                                className="offer-code pt-1"
+                                style={{ fontSize: "16px",position:'relative',left:'10px' }}
                               >
                                 {Array.from({ length: 5 }).map((_, index) => (
                                   <i

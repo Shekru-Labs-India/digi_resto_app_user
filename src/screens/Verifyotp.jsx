@@ -457,7 +457,7 @@ const Verifyotp = () => {
                     )}
                     <input
                       className="form-control text-start"
-                      type="text"
+                      type="number"
                       id="digit-1"
                       name="digit-1"
                       value={otp}
