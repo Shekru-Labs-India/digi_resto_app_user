@@ -32,9 +32,6 @@ const Bottom = () => {
     };
   }, []);
 
-  const isProfileActive =
-    location.pathname === "/Profile" || location.pathname === "/EditProfile";
-
   return (
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
@@ -66,10 +63,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-shopping-cart-line fs-3"></i>
-          <span className="name">
-            My Cart
-            {/* {cartItemCount > 0 && `(${cartItemCount})`} */}
-          </span>
+          <span className="name">My Cart</span>
         </Link>
         <Link
           to="/Search"
@@ -82,7 +76,11 @@ const Bottom = () => {
         </Link>
         <Link
           to="/Profile"
-          className={isProfileActive ? "nav-link active" : "nav-link"}
+          className={
+            location.pathname === "/Profile" || location.pathname === "/EditProfile"
+              ? "nav-link active"
+              : "nav-link"
+          }
         >
           <i className="ri-user-3-line fs-3"></i>
           <span className="name">Profile</span>
