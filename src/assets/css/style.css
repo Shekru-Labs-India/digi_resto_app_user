@@ -13110,7 +13110,7 @@ hr.dotted {
   .btn-outline-primary {
     color: var(--primary);
     border-color: var(--primary); }
-    .btn-outline-primary:hover {
+    .:hover {
       border-color: var(--primary-hover);
       background-color: var(--primary-hover); }
     .btn-outline-primary:focus {

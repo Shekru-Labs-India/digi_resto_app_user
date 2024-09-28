@@ -1926,15 +1926,15 @@ const Search = () => {
                       <div className="col-8 pt-2 pb-0 pe-0 ps-2">
                         <div className="fs-6">{menu.menu_name}</div>
                         <div className="row">
-                          <div className="col-5 mt-1 pe-0 ">
+                          <div className="col-5 mt-1 pe-0">
                             <div className="mt-0">
                               <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
-                              <span className="text-success">
+                              <span className="text-success ">
                                 {menu.category_name}
                               </span>
                             </div>
                           </div>
-                          <div className="col-3 text-end px-0">
+                          <div className="col-3 text-center px-0">
                             <span className="d-inline-block">
                               <div
                                 className="offer-code pt-1"
@@ -1959,10 +1959,10 @@ const Search = () => {
                               </div>
                             </span>
                           </div>
-                          <div className="col-3 text-end p-0 mt-1">
+                          <div className="col-4 text-end p-0 mt-1">
                             <span className="h6">
                               <i
-                                className="ri-star-half-line me-2 ratingStar"
+                                className="ri-star-half-line ms-4 me-2 ratingStar"
                                 
                               ></i>
                               {parseFloat(menu.rating).toFixed(1)}
