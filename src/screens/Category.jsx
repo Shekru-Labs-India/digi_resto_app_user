@@ -708,6 +708,7 @@ const Category = () => {
                 <Link
                   to={`/HomeScreen/${restaurantId || ""}/${tableNumber || ""}`}
                   className="back-btn dz-icon icon-sm"
+                  onClick={() => navigate(-1)}
                 >
                   <i className="ri-arrow-left-line fs-2"></i>
                 </Link>

@@ -6814,6 +6814,7 @@ const Cart = () => {
                 userData?.tableNumber || ""
               }`}
               className="back-btn dz-icon icon-sm"
+              onClick={() => navigate(-1)}
             >
               <i className="ri-arrow-left-line fs-2"></i>
             </Link>
@@ -6830,18 +6831,18 @@ const Cart = () => {
       </header>
 
       {displayCartItems.length === 0 ? (
-        <main className="page-content space-top p-b100">
-        <div className="container overflow-hidden d-flex flex-column justify-content-center align-items-center vh-100 mb-5">
-  <div className="m text-center">
-    <div className="dz-cart-about">
-      <h5 className="title">Your Cart is Empty</h5>
-      <p>Add items to your cart from the product details page.</p>
-      <Link to="/Menu" className="btn btn-outline-primary btn-sm mb-5">
-        Return to Shop
-      </Link>
-    </div>
-  </div>
-</div>
+                <main className="page-content ">
+          <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <div className="m-b20 dz-flex-box text-center">
+              <div className="dz-cart-about">
+                <h5 className="title">Your Cart is Empty</h5>
+                <p>Add items to your cart from the product details page.</p>
+                <Link to="/Menu" className="btn btn-outline-primary btn-sm">
+                  Return to Shop
+                </Link>
+              </div>
+            </div>
+          </div>
         </main>
       ) : (
         <main className="page-content space-top p-b200">

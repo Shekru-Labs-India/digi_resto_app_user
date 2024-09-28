@@ -1917,6 +1917,7 @@ const Product = () => {
   const initialFetchDone = useRef(false);
   const swiperRef = useRef(null); // Define swiperRef
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
+  
 
   // Fetch menu data using a single API
   const fetchMenuData = useCallback(async () => {
@@ -2127,19 +2128,28 @@ const Product = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
+  
+
   return (
     <div>
       <header className="header header-fixed style-3 ">
         <div className="header-content">
           <div className="left-content">
             <Link to="/Category">
-              <div className="back-btn  icon-sm">
+              <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
                 <i className="ri-arrow-left-line fs-3"></i>
               </div>
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">Menu</h5>
+            <h5 className="title">
+              Menu{" "}
+              {categories.length > 0 && (
+                <span className="small-number gray-text">
+                  ({categories.length})
+                </span>
+              )}
+            </h5>
           </div>
         </div>
       </header>

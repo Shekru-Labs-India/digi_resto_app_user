@@ -77,12 +77,19 @@ const Bottom = () => {
         <Link
           to="/Profile"
           className={
-            location.pathname === "/Profile" || location.pathname === "/EditProfile"
+            location.pathname === "/Profile" ||
+            location.pathname === "/EditProfile"
               ? "nav-link active"
               : "nav-link"
           }
         >
-          <i className="ri-user-3-line fs-3"></i>
+          <i
+            className={
+              userData && userData.customer_id
+                ? "ri-user-3-fill fs-3"
+                : "ri-user-3-line fs-3"
+            }
+          ></i>
           <span className="name">Profile</span>
         </Link>
       </div>
