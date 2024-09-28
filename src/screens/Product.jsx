@@ -2146,7 +2146,7 @@ const Product = () => {
 
       <main className={`page-content space-top p-b80`}>
         <div className="container mt-2 mb-0">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12 fw-medium text-end hotel-name">
               <span className="ps-2">
                 {userData?.restaurantName?.toUpperCase() || "Restaurant Name"}
@@ -2154,6 +2154,18 @@ const Product = () => {
               <i className="ri-store-2-line ps-2"></i>
               <h6 className="title fw-medium h6 custom-text-gray table-number pe-5 me-5">
                 Table: {userData?.tableNumber || ""}
+              </h6>
+            </div>
+          </div> */}
+
+          <div className="header-content d-flex justify-content-end">
+            <div className="right-content gap-1">
+              <h3 className="title fw-medium hotel-name mb-0">
+                VIRAJHOTEL
+                <i className="ri-store-2-line ps-2"></i>
+              </h3>
+              <h6 className="title fw-medium h6 custom-text-gray table-number">
+                Table: 1
               </h6>
             </div>
           </div>
