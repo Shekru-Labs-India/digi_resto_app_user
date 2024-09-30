@@ -57,7 +57,10 @@ const Wishlist = () => {
       );
 
       if (response.ok) {
-        const updatedMenuList = [...menuList];
+        const updatedMenuList = [...menuList.map(menuList => ({
+          ...menuList,
+          oldPrice: Math.floor(menu.price * 1.1),
+        }))];
         updatedMenuList.splice(indexToRemove, 1);
         setMenuList(updatedMenuList);
       } else {
@@ -177,9 +180,13 @@ const Wishlist = () => {
     fetchFavoriteItems();
   }, [customerId, restaurantId]);
 
+  
+
   const handleRemoveItemClick = (index, menuId) => {
     removeItem(index, menuId);
   };
+
+
 
   return (
     <div className="page-wrapper full-height">

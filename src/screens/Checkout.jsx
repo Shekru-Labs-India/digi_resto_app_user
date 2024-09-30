@@ -1466,7 +1466,7 @@ const Checkout = () => {
                             </span>
                             
                               <span className="gray-text fs-6 text-decoration-line-through">
-                                ₹ {item.oldPrice || item.price}
+                                ₹ {item.oldPrice }
                               </span>
                               <div>
                               <span className="fs-6 ps-2 offer-color">

@@ -1980,7 +1980,7 @@ const Search = () => {
                               </span>
                             </p>
                           </div>
-                          <div className="col-4 ps-2">
+                          <div className="col-4 ps-1">
                             <p className="mb-2 fs-4  fw-medium">
                               <span className="fs-6 ps-0  text-end offer-color ">
                                 {menu.offer || "No "}% Off
