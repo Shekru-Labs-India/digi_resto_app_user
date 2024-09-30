@@ -2132,10 +2132,10 @@ const Product = () => {
 
   return (
     <div>
-      <header className="header header-fixed style-3 ">
+      <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
-            <Link to="/Category">
+            <Link to="#">
               <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
                 <i className="ri-arrow-left-line fs-3"></i>
               </div>
@@ -2146,7 +2146,7 @@ const Product = () => {
               Menu{" "}
               {categories.length > 0 && (
                 <span className="small-number gray-text">
-                  ({categories.length})
+                  ({menuList.length})
                 </span>
               )}
             </h5>

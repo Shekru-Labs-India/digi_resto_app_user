@@ -203,7 +203,7 @@ const Wishlist = () => {
       </div>
     </header>
 
-    <main className="page-content space-top p-b0 mt-3">
+    <main className="page-content space-top p-b0 mt-3 mb-5 pb-3">
       {customerId ? (
         menuList.length > 0 ? (
           menuList.map((menu, index) => (
@@ -240,8 +240,8 @@ const Wishlist = () => {
                       </div>
                       <div className="row">
                         <div className="col-5 pe-0 ps-4">
-                          <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
-                          <span className="text-success">
+                          <i className="ri-restaurant-line mt-0 me-2 text-primary"></i>
+                          <span className="text-primary">
                             {menu.category_name}
                           </span>
                         </div>
@@ -252,17 +252,14 @@ const Wishlist = () => {
                                 index < menu.spicy_index ? (
                                   <i
                                     className="ri-fire-fill fs-6"
-                                    style={{
-                                      color: "#eb8e57",
-                                    }}
+                                    style={{color:"#eb8e57"}}
+                                    
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
-                                    className="ri-fire-line fs-6"
-                                    style={{
-                                      color: "#eb8e57",
-                                    }}
+                                    className="ri-fire-line fs-6 gray-text"
+                                    
                                     key={index}
                                   ></i>
                                 )
@@ -316,7 +313,7 @@ const Wishlist = () => {
             </div>
           ))
         ) : (
-          <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+          <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
                 <h5 className="title">Nothing to show in favourites.</h5>
@@ -329,7 +326,7 @@ const Wishlist = () => {
           </div>
         )
       ) : (
-        <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>
           <div className="m-b20 dz-flex-box text-center">
             <div className="dz-cart-about">
               <h5>Please log in to view your favourites.</h5>

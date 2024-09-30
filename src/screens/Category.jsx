@@ -706,7 +706,7 @@ const Category = () => {
             <div className="header-content">
               <div className="left-conten ">
                 <Link
-                  to={`/HomeScreen/${restaurantId || ""}/${tableNumber || ""}`}
+                  to={'#'}
                   className="back-btn dz-icon icon-sm"
                   onClick={() => navigate(-1)}
                 >
