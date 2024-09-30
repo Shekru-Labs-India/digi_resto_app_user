@@ -1655,7 +1655,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Ensure this context is used correctly
@@ -1836,7 +1835,7 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="page-wrapper vh-100 overflow-hidden">
+    <div className="page-wrapper full-height d-flex flex-column" style={{ overflowY: "auto" }}>
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -1859,21 +1858,21 @@ const Wishlist = () => {
                 </Link>
               </div>
               <div className="mid-content">
-              <h5 className="title">
-  Favourite{" "}
-  {userData && menuList.length > 0 && (
-    <span className="small-number gray-text">
-      {" ("}
-      <span className="">{menuList.length}</span>
-      {")"}
-    </span>
-  )}
-</h5>
+                <h5 className="title">
+                  Favourite{" "}
+                  {userData && menuList.length > 0 && (
+                    <span className="small-number gray-text">
+                      {" ("}
+                      <span className="">{menuList.length}</span>
+                      {")"}
+                    </span>
+                  )}
+                </h5>
               </div>
             </div>
           </header>
 
-          <main className="page-content space-top p-b0 mt-3">
+          <main className="page-content flex-grow-1 d-flex flex-column justify-content-center align-items-center">
             {customerId ? (
               menuList.length > 0 ? (
                 menuList.map((menu, index) => (
@@ -1986,24 +1985,29 @@ const Wishlist = () => {
                   </div>
                 ))
               ) : (
-                <div
-                  className="d-flex  flex-column justify-content-center align-items-center vh-100 overflow-hidden m-0"
-                  style={{ height: "100%" }}
-                >
-                  <h5>Nothing to show in favorites.</h5>
-                  <p>Add some products to show here!</p>
-                  <Link to="/HomeScreen" className="btn btn-outline-primary">
-                    Browse Menus
-                  </Link>
+                <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                  <div className="m-b20 dz-flex-box text-center">
+                    <div className="dz-cart-about">
+                      <h5 className="title">Nothing to show in favorites.</h5>
+                      <p>Add some products to show here!</p>
+                      <Link to="/HomeScreen" className="btn btn-outline-primary btn-sm">
+                        Browse Menus
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )
             ) : (
-              <div className="d-flex flex-column justify-content-center align-items-center vh-100 overflow-hidden m-0">
-  <h5>Please log in to view your favorites.</h5>
-  <Link className="btn btn-outline-primary mt-3" to="/Signinscreen">
-    <i className="ri-lock-2-line fs-4 me-2 "></i> Login
-  </Link>
-</div>
+              <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <h5>Please log in to view your favorites.</h5>
+                    <Link className="btn btn-outline-primary mt-3" to="/Signinscreen">
+                      <i className="ri-lock-2-line fs-4 me-2 "></i> Login
+                    </Link>
+                  </div>
+                </div>
+              </div>
             )}
           </main>
         </>
