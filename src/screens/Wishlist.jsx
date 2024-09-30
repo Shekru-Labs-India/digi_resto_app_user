@@ -1658,6 +1658,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Ensure this context is used correctly
+import images from "../assets/MenuDefault.png";
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
