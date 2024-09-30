@@ -1242,6 +1242,9 @@ const Checkout = () => {
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
   const [gstPercent, setGstPercent] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [notes, setNotes] = useState("");
+  const [validationMessage, setValidationMessage] = useState("");
+  const [showNotePopup, setShowNotePopup] = useState(false); // State to show/hide note popup
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
@@ -1316,11 +1319,32 @@ const Checkout = () => {
     fetchCartDetails();
   }, [restaurantId, customerId]);
 
+  const handleNotesChange = (e) => {
+    const value = e.target.value;
+    const regex = /^[a-zA-Z0-9\s]*$/; // Only allow alphanumeric characters and spaces
+
+    if (value.length < 3 || value.length > 200) {
+      setValidationMessage("Notes must be between 3 and 200 characters.");
+    } else if (!regex.test(value)) {
+      setValidationMessage("Special characters are not allowed.");
+    } else {
+      setValidationMessage("");
+    }
+
+    setNotes(value);
+  };
+
   const handleSubmitOrder = async () => {
-    const notes = document
-      .getElementById("notes")
-      .value.trim()
-      .substring(0, 255);
+    if (!notes) {
+      setShowNotePopup(true);
+      return;
+    }
+
+    if (validationMessage) {
+      alert(validationMessage);
+      return;
+    }
+
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -1365,6 +1389,10 @@ const Checkout = () => {
     navigate("/MyOrder");
   };
 
+  const closeNotePopup = () => {
+    setShowNotePopup(false);
+  };
+
   return (
     <div className="page-wrapper full-height">
       <header className="header header-fixed style-3">
@@ -1398,13 +1426,18 @@ const Checkout = () => {
                   id="notes"
                   rows="4"
                   placeholder="Write Here"
+                  value={notes}
+                  onChange={handleNotesChange}
                 ></textarea>
+                {validationMessage && (
+                  <div className="text-danger mt-2">{validationMessage}</div>
+                )}
               </div>
               <ul className="ms-3">
-                <li className="my-2 text-muted">
+                <li className="my-2 gray-text">
                   &bull; Make mutton thali a bit less spicy
                 </li>
-                <li className="my-2 text-muted">
+                <li className="my-2 gray-text">
                   &bull; Make my panipuri more spicy
                 </li>
               </ul>
@@ -1412,33 +1445,34 @@ const Checkout = () => {
 
             <div className="dz-flex-box mt-3">
               <div className="card">
-                <div className="card-body px-0">
+                <div className="card-body px-1">
                   {cartItems.length > 0 ? (
                     cartItems.map((item, index) => (
                       <div className="row justify-content-center" key={index}>
-                        <div className="col-4 px-4 pb-1">
+                        <div className="col-6 pe-0   pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
-                          <div className="text-success">
+                          <div className="text-primary">
                             <i className="ri-restaurant-line me-2"></i>
                             <span>{item.menu_cat_name}</span>
                           </div>
                         </div>
-                        <div className="col-4 h5 text-center px-2">
+                        <div className="col-1 h5 text-end px-0">
                           x {item.quantity}
                         </div>
-                        <div className="col-4 text-start px-2">
+                        <div className="col-5 text-end ps-0 pe-4">
                           <p className="mb-2 fs-4 fw-medium">
                             <span className="ms-0 me-2 text-info">
                               ₹{item.price}
                             </span>
-                            <div className="">
-                              <span className="text-muted fs-6 text-decoration-line-through">
+                            
+                              <span className="gray-text fs-6 text-decoration-line-through">
                                 ₹ {item.oldPrice || item.price}
                               </span>
+                              <div>
                               <span className="fs-6 ps-2 text-primary">
                                 {item.offer || "No "}% Off
                               </span>
-                            </div>
+                           </div>
                           </p>
                         </div>
                       </div>
@@ -1447,32 +1481,36 @@ const Checkout = () => {
                     <div>No items in the cart.</div>
                   )}
 
-                  <div className="my-3 px-2">
+                  <div className="my-3 px-2 h5">
                     Total
                     <span className="float-end h5">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </div>
-                  <div className="my-3 px-2">
+                  <hr
+                        className=" mx-2 p-0 m-0  text-primary"
+                        
+                      />
+                  <div className="my-3 px-2 gray-text">
                     Service Charges ({serviceChargesPercent}%)
                     <span className="float-end h5">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
-                  <div className="my-3 px-2">
+                  <div className="my-3 px-2 gray-text">
                     GST ({gstPercent}%)
                     <span className="float-end h5">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
-                  <div className="px-2">
+                  <div className="px-2 gray-text">
                     Discount ({discountPercent}%)
                     <span className="float-end h5 mb-2">
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
-                  <h5 className="mt-2 px-2">
-                    <hr />
+                  <h5 className="mt-2 px-2 h4">
+                    <hr className=" text-primary" />
                     Grand Total{" "}
                     <span className="float-end">
                       ₹{parseFloat(grandTotal).toFixed(2)}
@@ -1505,6 +1543,18 @@ const Checkout = () => {
             <p>You have successfully made payment and placed your order.</p>
             <button className="btn btn-success w-100 mt-3" onClick={closePopup}>
               View Order
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showNotePopup && (
+        <div className="popup-overlay ">
+          <div className="popup-content ">
+            <h4 className="gray-text">Note Required</h4>
+            <p>Please provide a note before placing your order.</p>
+            <button className="btn btn-primary w-100 mt-3" onClick={closeNotePopup}>
+              Close
             </button>
           </div>
         </div>

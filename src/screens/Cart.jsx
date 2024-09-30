@@ -6861,6 +6861,7 @@ const Cart = () => {
               </div>
             </div>
             {displayCartItems.map((item, index) => (
+            
               <div
                 key={index}
                 className="card mb-3"
@@ -6900,7 +6901,7 @@ const Cart = () => {
                   <div className="col-9 pt-2 pb-2">
                     <div className="row">
                       <div className="col-9 my-auto">
-                        <Link
+                      <Link
                           to={{
                             pathname: `/ProductDetails/${item.menu_id}`,
                           }}
@@ -6913,7 +6914,9 @@ const Cart = () => {
                             {item.menu_name}
                           </h5>
                         </Link>
+                        
                       </div>
+
                       <div className="col-3 text-end pe-4">
                         <div onClick={() => removeFromCart(item)}>
                           <i
@@ -6922,7 +6925,17 @@ const Cart = () => {
                           ></i>
                         </div>
                       </div>
+
                     </div>
+                    <Link
+                          to={{
+                            pathname: `/ProductDetails/${item.menu_id}`,
+                          }}
+                          state={{
+                            restaurant_id: userData.restaurantId,
+                            menu_cat_id: item.menu_cat_id,
+                          }}
+                        >
                     <div className="row">
                       <div className="col-4 fs-sm p-0 fw-medium ms-3 category-text">
                         <Link
@@ -6933,9 +6946,10 @@ const Cart = () => {
                             restaurant_id: userData.restaurantId,
                             menu_cat_id: item.menu_cat_id,
                           }}
+                           className="text-primary"
                         >
                           <i className="ri-restaurant-line me-2"></i>
-                          {item.menu_cat_name}
+                          {item.menu_cat_name }
                         </Link>
                       </div>
                       <div className="col-4 px-0 ps-1">
@@ -6959,36 +6973,42 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="col-3 ps-1 text-center">
-                        <span className="fw-semibold gray-text">
-                          <i className="ri-star-half-line px-1 ratingStar"></i>{" "}
+                        <span className="fs-6 fw-semibold gray-text">
+                          <i className="ri-star-half-line px-1 ratingStar "></i>{" "}
                           {item.rating} 5.1
                         </span>
                       </div>
                     </div>
+                    </Link>
                     <div className="row pt-2">
                       <div className="col-10 mx-0 my-auto px-0">
+                      <Link
+                          to={{
+                            pathname: `/ProductDetails/${item.menu_id}`,
+                          }}
+                          state={{
+                            restaurant_id: userData.restaurantId,
+                            menu_cat_id: item.menu_cat_id,
+                          }}
+                        >
                         <p className="mb-2  fw-medium">
-                          <Link
-                            to={{
-                              pathname: `/ProductDetails/${item.menu_id}`,
-                            }}
-                            state={{
-                              restaurant_id: userData.restaurantId,
-                              menu_cat_id: item.menu_cat_id,
-                            }}
-                          >
+                          
                             <span className="ms-3 fs-4 me-2 text-info">
                               ₹{item.price}
                             </span>
                             <span className="gray-text fs-sm text-decoration-line-through">
                               ₹{item.oldPrice || item.price}
                             </span>
-                          </Link>
-                          <span className="fs-6 ps-4 text-primary">
+                          
+                          <span className="fs-6 ps-2 text-primary">
                             {item.offer || "No "}% Off
                           </span>
+                          
                         </p>
+                        </Link>
                       </div>
+
+
 
                       <div className="col-2">
                         <div className="d-flex justify-content-end align-items-center mt-1">
@@ -7009,6 +7029,7 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
+           
             ))}
           </div>
           {cartDetails && displayCartItems.length > 0 && (
@@ -7028,8 +7049,8 @@ const Cart = () => {
                         </span>
                       </div>
                       <hr
-                        className="dashed-line me-3 p-0 m-0"
-                        style={{ color: "#0d775e" }}
+                        className=" me-3 p-0 m-0  text-primary"
+                        
                       />
                     </div>
                     <div className="col-12 py-1">
@@ -7074,7 +7095,7 @@ const Cart = () => {
                     </div>
                     <div>
                       <hr
-                        className="dashed-line me-3 p-0 m-0"
+                        className=" me-3 p-0 m-0"
                         style={{ color: "#0d775e" }}
                       />
                     </div>
