@@ -671,6 +671,7 @@ const MyOrder = () => {
                           }`}
                           onClick={() => handleTabChange("ongoing")}
                         >
+                          <i class="ri-timer-line pe-2"></i>
                           Ongoing
                         </button>
                       </li>

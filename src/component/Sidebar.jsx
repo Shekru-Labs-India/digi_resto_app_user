@@ -488,11 +488,13 @@ const Sidebar = () => {
       <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
         <div className="author-box">
           <div className="d-flex justify-content-start align-items-center m-0">
-            {isLoggedIn ? (
-              <i className="ri-user-3-fill fs-3"></i>
-            ) : (
-              <i className="ri-user-3-line fs-3"></i>
-            )}
+            <i
+              className={
+                userData && userData.customer_id
+                  ? "ri-user-3-fill fs-3"
+                  : "ri-user-3-line fs-3"
+              }
+            ></i>
           </div>
           <div className="fs-6">
             <span className="ms-3 pt-4">
@@ -561,11 +563,13 @@ const Sidebar = () => {
           <li>
             <Link className="nav-link active" to="/Profile">
               <span className="dz-icon icon-sm">
-                {isLoggedIn ? (
-                  <i className="ri-user-3-fill fs-3"></i>
-                ) : (
-                  <i className="ri-user-3-line fs-3"></i>
-                )}
+                <i
+                  className={
+                    userData && userData.customer_id
+                      ? "ri-user-3-fill fs-3"
+                      : "ri-user-3-line fs-3"
+                  }
+                ></i>
               </span>
               <span>Profile</span>
             </Link>

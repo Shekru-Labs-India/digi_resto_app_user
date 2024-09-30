@@ -2220,8 +2220,7 @@ const ProductCard = () => {
                               <i className="ri-fire-fill fs-6" key={index}></i>
                             ) : (
                               <i
-                                className="ri-fire-line fs-6"
-                                style={{ color: "#bbbaba" }}
+                                className="ri-fire-line fs-6 gray-text"
                                 key={index}
                               ></i>
                             )
