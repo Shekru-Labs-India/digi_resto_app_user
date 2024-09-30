@@ -1928,8 +1928,8 @@ const Search = () => {
                         <div className="row">
                           <div className="col-7 mt-1 pe-0 ">
                             <div className="mt-0">
-                              <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
-                              <span className="text-success ">
+                              <i className="ri-restaurant-line mt-0 me-2 text-primary"></i>
+                              <span className="text-primary ">
                                 {menu.category_name}
                               </span>
                             </div>
@@ -1960,7 +1960,7 @@ const Search = () => {
                             </span>
                           </div> */}
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <span className="h6">
+                            <span className="h6 gray-text">
                               <i
                                 className="ri-star-half-line ms-4 me-2 ratingStar"
                                 
@@ -1982,7 +1982,7 @@ const Search = () => {
                           </div>
                           <div className="col-4 ps-2">
                             <p className="mb-2 fs-4  fw-medium">
-                              <span className="fs-6 ps-0  text-end text-primary ">
+                              <span className="fs-6 ps-0  text-end offer-color ">
                                 {menu.offer || "No "}% Off
                               </span>
                             </p>

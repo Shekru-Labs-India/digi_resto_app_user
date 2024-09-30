@@ -182,197 +182,167 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="page-wrapper ">
-      {loading ? (
-        <div id="preloader">
-          <div className="loader">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
+    <div className="page-wrapper full-height">
+    <header className="header header-fixed style-3">
+      <div className="header-content">
+        <div className="left-content">
+          <Link
+            to="/HomeScreen"
+            className="back-btn dz-icon icon-sm"
+            onClick={() => navigate(-1)}
+          >
+            <i className="ri-arrow-left-line fs-2"></i>
+          </Link>
         </div>
-      ) : (
-        <>
-          <header className="header header-fixed style-3 ">
-            <div className="header-content">
-              <div className="left-content">
-                <Link
-                  to="/HomeScreen"
-                  className="back-btn dz-icon icon-sm"
-                  onClick={() => navigate(-1)}
-                >
-                  <i className="ri-arrow-left-line fs-2"></i>
-                </Link>
-              </div>
-              <div className="mid-content">
-                <h5 className="title">
-                  Favourite{" "}
-                  {userData && menuList.length > 0 && (
-                    <span className="small-number gray-text">
-                      {" ("}
-                      <span className="">{menuList.length}</span>
-                      {")"}
-                    </span>
-                  )}
-                </h5>
-              </div>
-            </div>
-          </header>
+        <div className="mid-content">
+          <h5 className="title">
+            Favourite{" "}
+            {userData && <span className="">({menuList.length})</span>}
+          </h5>
+        </div>
+      </div>
+    </header>
 
-          <main className="page-content space-top p-b70 mt-1">
-            {customerId ? (
-              menuList.length > 0 ? (
-                menuList.map((menu, index) => (
-                  <div className="container py-1 " key={index}>
-                    <div className="card">
-                      <div className="card-body py-0">
-                        <div className="row">
-                          <div className="col-3 px-0">
-                            <img
-                              src={menu.image || images}
-                              alt={menu.menu_name}
-                              className="rounded img-fluid"
-                              style={{ width: "100px", height: "100px" }}
-                              onError={(e) => {
-                                e.target.src = images;
-                                e.target.style.width = "100px";
-                                e.target.style.height = "100px";
-                              }}
-                            />
-                          </div>
-                          <div className="col-9 pt-2 p-0">
-                            <div className="row">
-                              <div className="col-7 pe-2 menu_name">
-                                <div>{menu.menu_name}</div>
-                              </div>
-                              <div className="col-4 text-end ps-0 pe-2">
-                                <i
-                                  className="ri-close-line  fs-4"
-                                  onClick={() =>
-                                    handleRemoveItemClick(index, menu.menu_id)
-                                  }
-                                ></i>
-                              </div>
+    <main className="page-content space-top p-b0 mt-3">
+      {customerId ? (
+        menuList.length > 0 ? (
+          menuList.map((menu, index) => (
+            <div className="container py-1" key={index}>
+              <div className="card">
+                <div className="card-body py-0">
+                  <div className="row">
+                    <div className="col-3 px-0">
+                      <img
+                        src={menu.image || images}
+                        alt={menu.menu_name}
+                        className="rounded img-fluid"
+                        style={{ width: "100px", height: "100px" }}
+                        onError={(e) => {
+                          e.target.src = images;
+                          e.target.style.width = "100px";
+                          e.target.style.height = "100px";
+                        }}
+                      />
+                    </div>
+                    <div className="col-9 pt-2 p-0">
+                      <div className="row">
+                        <div className="col-7 pe-2 menu_name">
+                          <div>{menu.menu_name}</div>
+                        </div>
+                        <div className="col-4 text-end ps-0 pe-2">
+                          <i
+                            className="ri-close-line  fs-4"
+                            onClick={() =>
+                              handleRemoveItemClick(index, menu.menu_id)
+                            }
+                          ></i>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-5 pe-0 ps-4">
+                          <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
+                          <span className="text-success">
+                            {menu.category_name}
+                          </span>
+                        </div>
+                        <div className="col-4  px-0">
+                          {menu.spicy_index && (
+                            <div className="offer-code">
+                              {Array.from({ length: 5 }).map((_, index) =>
+                                index < menu.spicy_index ? (
+                                  <i
+                                    className="ri-fire-fill fs-6"
+                                    style={{
+                                      color: "#eb8e57",
+                                    }}
+                                    key={index}
+                                  ></i>
+                                ) : (
+                                  <i
+                                    className="ri-fire-line fs-6"
+                                    style={{
+                                      color: "#eb8e57",
+                                    }}
+                                    key={index}
+                                  ></i>
+                                )
+                              )}
                             </div>
-                            <div className="row">
-                              <div className="col-5 pe-0 ps-4">
-                                <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
-                                <span className="text-success">
-                                  {menu.category_name}
-                                </span>
-                              </div>
-                              <div className="col-4  px-0">
-                                {menu.spicy_index && (
-                                  <div className="offer-code">
-                                    {Array.from({ length: 5 }).map((_, index) =>
-                                      index < menu.spicy_index ? (
-                                        <i
-                                          className="ri-fire-fill fs-6"
-                                          style={{
-                                            color: "#eb8e57",
-                                          }}
-                                          key={index}
-                                        ></i>
-                                      ) : (
-                                        <i
-                                          className="ri-fire-line fs-6"
-                                          style={{
-                                            color: "#eb8e57",
-                                          }}
-                                          key={index}
-                                        ></i>
-                                      )
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="col-2 text-end  px-0">
-                                <span className="fs-6 fw-semibold gray-text">
-                                  <i className="ri-star-half-line me-1 ratingStar"></i>
-                                  {menu.rating || 0.1}
-                                </span>
-                              </div>
-                            </div>
+                          )}
+                        </div>
+                        <div className="col-2 text-end  px-0">
+                          <span className="fs-6 fw-semibold gray-text">
+                            <i className="ri-star-half-line me-1 ratingStar"></i>
+                            {menu.rating || 0.1}
+                          </span>
+                        </div>
+                      </div>
 
-                            <div className="row mt-2 align-items-center">
-                              <div className="col-5 px-0 text-start">
-                                <p className="mb-0 ms-2 fs-4 fw-medium">
-                                  <span className="ms-3 me-2 text-info">
-                                    ₹{menu.price}
-                                  </span>
-                                  <span className="gray-text fs-6 text-decoration-line-through ">
-                                    ₹{menu.oldPrice || menu.price}
-                                  </span>
-                                </p>
-                              </div>
-                              <div className="col-3 px-0 ">
-                                {" "}
-                                <span className="fs-6  text-primary ">
-                                  {menu.offer || "No "}% Off
-                                </span>
-                              </div>
+                      <div className="row mt-2 align-items-center">
+                        <div className="col-5 px-0 text-start">
+                          <p className="mb-0 ms-2 fs-4 fw-medium">
+                            <span className="ms-3 me-2 text-info">
+                              ₹{menu.price}
+                            </span>
+                            <span className="gray-text fs-6 text-decoration-line-through ">
+                              ₹{menu.oldPrice || menu.price}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="col-3 px-0 ">
+                          {" "}
+                          <span className="fs-6  offer-color ">
+                            {menu.offer || "No "}% Off
+                          </span>
+                        </div>
 
-                              <div className="col-3 text-end px-0 ">
-                                <div
-                                  className="cart-btn"
-                                  onClick={() => handleAddToCartClick(menu)}
-                                >
-                                  {isMenuItemInCart(menu.menu_id) ? (
-                                    <i className="ri-shopping-cart-fill fs-2"></i>
-                                  ) : (
-                                    <i className="ri-shopping-cart-line fs-2"></i>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+                        <div className="col-3 text-end px-0 ">
+                          <div
+                            className="cart-btn"
+                            onClick={() => handleAddToCartClick(menu)}
+                          >
+                            {isMenuItemInCart(menu.menu_id) ? (
+                              <i className="ri-shopping-cart-fill fs-2"></i>
+                            ) : (
+                              <i className="ri-shopping-cart-line fs-2"></i>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <div
-                  className="container d-flex justify-content-center align-items-center"
-                  style={{ minHeight: "100vh" }}
-                >
-                  <div className="m-b20 dz-flex-box text-center">
-                    <div className="dz-cart-about">
-                      <h5 className="title">Nothing to show in favourites.</h5>
-                      <p>Add some products to show here!</p>
-                      <Link
-                        to="/Menu"
-                        className="btn btn-outline-primary btn-sm"
-                      >
-                        Browse Menus
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )
-            ) : (
-              <div
-                className="container d-flex justify-content-center align-items-center"
-                style={{ minHeight: "100vh" }}
-              >
-                <div className="dz-flex-box text-center">
-                  <div className="dz-cart-about">
-                    <h5>Please log in to view your favourites.</h5>
-                    <Link
-                      className="btn btn-outline-primary mt-3"
-                      to="/Signinscreen"
-                    >
-                      <i className="ri-lock-2-line fs-4 me-2 "></i> Login
-                    </Link>
-                  </div>
                 </div>
               </div>
-            )}
-          </main>
-        </>
+            </div>
+          ))
+        ) : (
+          <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <div className="m-b20 dz-flex-box text-center">
+              <div className="dz-cart-about">
+                <h5 className="title">Nothing to show in favourites.</h5>
+                <p>Add some products to show here!</p>
+                <Link to="/Menu" className="btn btn-outline-primary btn-sm">
+                  Browse Menus
+                </Link>
+              </div>
+            </div>
+          </div>
+        )
+      ) : (
+        <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+          <div className="m-b20 dz-flex-box text-center">
+            <div className="dz-cart-about">
+              <h5>Please log in to view your favourites.</h5>
+              <Link className="btn btn-outline-primary mt-3" to="/Signinscreen">
+                <i className="ri-lock-2-line fs-4 me-2 "></i> Login
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
-      <Bottom />
-    </div>
+    </main>
+    <Bottom />
+  </div>
   );
 };
 

@@ -1373,7 +1373,7 @@ const MenuDetails = () => {
                         ₹{productDetails.price}
                       </span>
                       <div
-                        className="fw-medium d-flex fs-6 ps-2 text-primary"
+                        className="fw-medium d-flex fs-6 ps-2 offer-color"
                         
                       >
                         {productDetails.offer}% Off

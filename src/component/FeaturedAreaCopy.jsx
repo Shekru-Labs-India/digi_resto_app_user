@@ -134,8 +134,8 @@ const FeaturedArea = () => {
                       <div className="col-6">
                         {" "}
                         <div
-                          className="fw-medium d-flex fs-6 mx-0"
-                          style={{ color: "#0D775E" }}
+                          className="fw-medium d-flex fs-6 mx-0 offer-color"
+                         
                         >
                           {menu.offer} Off
                         </div>

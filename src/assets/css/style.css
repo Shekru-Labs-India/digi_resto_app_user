@@ -16,7 +16,9 @@ cateHov:hover {
       --bs-link-color-rgb: var(--bs-link-hover-color-rgb);
 } */
 
-
+.offer-color{
+  color: #428B3C;
+}
 
 
 .category-text {
@@ -28,6 +30,7 @@ cateHov:hover {
 .category-text:hover {
   color: #0d775e;
 }
+
 
 hr.dotted {
   border-top: 3px dotted #000000;
