@@ -1361,20 +1361,20 @@ const MenuDetails = () => {
                     <h5 className="mb-2 fs-6 fw-medium">Total amount</h5>
                     <div className="d-flex align-items-baseline">
                       <h4
-                        className="mb-0 price fs-4"
-                        style={{ color: "#4E74FC" }}
+                        className="mb-0 price fs-4 text-info"
+                       
                       >
                         ₹{totalAmount.toFixed(0)}
                       </h4>
                       <span
-                        className="text-decoration-line-through ms-2 fs-6"
-                        style={{ color: "#a5a5a5" }}
+                        className="text-decoration-line-through ms-2 fs-6 gray-text"
+                       
                       >
                         ₹{productDetails.price}
                       </span>
                       <div
-                        className="fw-medium d-flex fs-6 ps-2"
-                        style={{ color: "#0D775E" }}
+                        className="fw-medium d-flex fs-6 ps-2 text-primary"
+                        
                       >
                         {productDetails.offer}% Off
                       </div>

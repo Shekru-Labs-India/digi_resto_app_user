@@ -2044,12 +2044,23 @@ const ProductCard = () => {
     }
   };
 
+  const [popupVisible, setPopupVisible] = useState(false);
   const handleAddToCartClick = async (menu) => {
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
     }
+    // if (isMenuItemInCart(menu.menu_id)) {
+    //   setPopupVisible(true);
+    //   setTimeout(() => setPopupVisible(false), 3000); // Hide after 3 seconds
+    //   return;
+    // }
+    if (isMenuItemInCart(menu.menu_id)) {
+      alert("This item is already in the cart.");
+      return;
+    }
+  
 
     try {
       const response = await fetch(
@@ -2277,6 +2288,11 @@ const ProductCard = () => {
                         <i className="ri-shopping-cart-2-line fs-2"></i>
                       )}
                     </div>
+                    {/* {popupVisible && (
+        <div className="popupCart container">
+          <p>This item is already in the cart.</p>
+        </div>
+      )} */}
                   </div>
                   <div className="row">
                     <div className="col-12">

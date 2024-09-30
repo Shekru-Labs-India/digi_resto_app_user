@@ -1658,7 +1658,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Ensure this context is used correctly
-import images from "../assets/MenuDefault.png";
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
@@ -1732,6 +1731,7 @@ const Wishlist = () => {
       navigate("/Signinscreen");
       return;
     }
+   
 
     if (!isMenuItemInCart(item.menu_id)) {
       // Update local storage and state immediately
@@ -1779,7 +1779,7 @@ const Wishlist = () => {
         setCartItems(revertedCartItems);
       }
     } else {
-      console.log("Item is already in the cart");
+      alert(" This item is already in the cart");
     }
   };
 
@@ -1836,7 +1836,7 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="page-wrapper full-height d-flex flex-column" style={{ overflowY: "auto" }}>
+    <div className="page-wrapper ">
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -1847,7 +1847,7 @@ const Wishlist = () => {
         </div>
       ) : (
         <>
-          <header className="header header-fixed style-3">
+          <header className="header header-fixed style-3 ">
             <div className="header-content">
               <div className="left-content">
                 <Link
@@ -1873,11 +1873,11 @@ const Wishlist = () => {
             </div>
           </header>
 
-          <main className="page-content flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+          <main className="page-content space-top p-b70 mt-1">
             {customerId ? (
               menuList.length > 0 ? (
                 menuList.map((menu, index) => (
-                  <div className="container py-1" key={index}>
+                  <div className="container py-1 " key={index}>
                     <div className="card">
                       <div className="card-body py-0">
                         <div className="row">
@@ -1899,9 +1899,9 @@ const Wishlist = () => {
                               <div className="col-7 pe-2 menu_name">
                                 <div>{menu.menu_name}</div>
                               </div>
-                              <div className="col-4 text-end ps-0 pe-4">
+                              <div className="col-4 text-end ps-0 pe-2">
                                 <i
-                                  className="ri-close-line gray-text fs-4"
+                                  className="ri-close-line  fs-4"
                                   onClick={() =>
                                     handleRemoveItemClick(index, menu.menu_id)
                                   }
@@ -1909,14 +1909,14 @@ const Wishlist = () => {
                               </div>
                             </div>
                             <div className="row">
-                              <div className="col-6 pe-0 ps-4">
+                              <div className="col-5 pe-0 ps-4">
                                 <i className="ri-restaurant-line mt-0 me-2 text-success"></i>
                                 <span className="text-success">
                                   {menu.category_name}
                                 </span>
                               </div>
-                              <div className="col-3 pe-0 ps-1">
-                                {/* {menu.spicy_index && (
+                              <div className="col-4  px-0">
+                                {menu.spicy_index && (
                                   <div className="offer-code">
                                     {Array.from({ length: 5 }).map((_, index) =>
                                       index < menu.spicy_index ? (
@@ -1938,18 +1938,20 @@ const Wishlist = () => {
                                       )
                                     )}
                                   </div>
-                                )} */}
+                                )}
                               </div>
-                              <div className="col-3 text-center pe-3 ps-0">
-                                <span className="fs-6">
+                              <div className="col-2 text-end  px-0">
+                                <span className="fs-6 fw-semibold gray-text">
                                   <i className="ri-star-half-line me-1 ratingStar"></i>
                                   {menu.rating || 0.1}
                                 </span>
                               </div>
                             </div>
+
                             <div className="row mt-2 align-items-center">
-                              <div className="col-6 px-0 text-start">
-                                <p className="mb-2 ms-2 fs-4 fw-medium">
+
+                              <div className="col-5 px-0 text-start">
+                                <p className="mb-0 ms-2 fs-4 fw-medium">
                                   <span className="ms-3 me-2 text-info">
                                     ₹{menu.price}
                                   </span>
@@ -1957,27 +1959,29 @@ const Wishlist = () => {
                                     ₹{menu.oldPrice || menu.price}
                                   </span>
                                 </p>
-                              </div>
-                              <div className="col-4 text-end ms-4">
+                              </div> 
+                              <div className="col-3 px-0 ">
+                                  {" "}
+                                  <span className="fs-6  text-primary ">
+                                    {menu.offer || "No "}% Off
+                                  </span>
+                                </div>
+
+                              <div className="col-3 text-end px-0 ">
                                 <div
                                   className="cart-btn"
                                   onClick={() => handleAddToCartClick(menu)}
                                 >
                                   {isMenuItemInCart(menu.menu_id) ? (
-                                    <i className="ri-shopping-cart-2-fill fs-2"></i>
+                                    <i className="ri-shopping-cart-fill fs-2"></i>
                                   ) : (
-                                    <i className="ri-shopping-cart-2-line fs-2"></i>
+                                    <i className="ri-shopping-cart-line fs-2"></i>
                                   )}
                                 </div>
                               </div>
-                              <div className="row">
-                                <div className="col-12">
-                                  {" "}
-                                  <span className="fs-6 ps-2 text-primary">
-                                    {menu.offer || "No "}% Off
-                                  </span>
-                                </div>
-                              </div>
+                             
+                               
+                            
                             </div>
                           </div>
                         </div>
@@ -1989,9 +1993,9 @@ const Wishlist = () => {
                 <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
                   <div className="m-b20 dz-flex-box text-center">
                     <div className="dz-cart-about">
-                      <h5 className="title">Nothing to show in favorites.</h5>
+                      <h5 className="title">Nothing to show in favourites.</h5>
                       <p>Add some products to show here!</p>
-                      <Link to="/HomeScreen" className="btn btn-outline-primary btn-sm">
+                      <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                         Browse Menus
                       </Link>
                     </div>
@@ -2002,7 +2006,7 @@ const Wishlist = () => {
               <div className="container overflow-hidden d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
                 <div className="m-b20 dz-flex-box text-center">
                   <div className="dz-cart-about">
-                    <h5>Please log in to view your favorites.</h5>
+                    <h5>Please log in to view your favourites.</h5>
                     <Link className="btn btn-outline-primary mt-3" to="/Signinscreen">
                       <i className="ri-lock-2-line fs-4 me-2 "></i> Login
                     </Link>

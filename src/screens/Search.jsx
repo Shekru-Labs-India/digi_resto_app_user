@@ -1970,26 +1970,26 @@ const Search = () => {
                           </div>
                         </div>
                         <div className="row mt-2">
-                          <div className="col-6 px-0">
-                            <p className="mb-2 fs-4 fw-medium">
-                              <span className="ms-3 me-2 text-info">
+                          <div className="col-5 px-0">
+                            <p className="mb-2 fs-4 fw-medium  text-start">
+                              <span className="ms-3 me-1 text-info ">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text fs-6 text-decoration-line-through">
+                              <span className="gray-text fs-6 text-decoration-line-through ">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </p>
                           </div>
-                          <div className="col-4 p-0">
-                            <p className="mb-2 fs-4 me-3 fw-medium">
-                              <span className="fs-6 ps-0  text-primary ">
+                          <div className="col-4 ps-2">
+                            <p className="mb-2 fs-4  fw-medium">
+                              <span className="fs-6 ps-0  text-end text-primary ">
                                 {menu.offer || "No "}% Off
                               </span>
                             </p>
                           </div>
                           <div
-                            className="col-2 text-end p-0"
-                            style={{ zIndex: "999" }}
+                            className="col-3 text-end p-0"
+                           
                           >
                             <i
                               className={`${

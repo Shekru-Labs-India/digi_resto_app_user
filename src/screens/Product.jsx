@@ -2340,7 +2340,7 @@ const Product = () => {
                                 <span className="ms- me-2 text-info">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="text-muted fs-6 text-decoration-line-through">
+                                <span className="gray-text fs-6 text-decoration-line-through">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </p>

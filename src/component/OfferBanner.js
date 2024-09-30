@@ -1136,10 +1136,10 @@ const OfferBanner = () => {
                     state={{ menu_cat_id: menu.menu_cat_id }}
                   >
                     <div
-                      className="cart-list rounded-4 "
-                      style={{ backgroundColor: "#ffffff" }}
+                      className="cart-list rounded-4 style-2-custom"
+                      
                     >
-                      <div className="dz-media media-100 ">
+                      <div className="dz-media media-100">
                         <img
                           style={{
                             width: "100%",
@@ -1154,7 +1154,7 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content" style={{ display: "block" }}>
-                        <h6 className="title text-wrap">{menu.name}</h6>
+                        <span className=" h6 text-wrap title mb-0">{menu.name}</span>
                         <ul className="dz-meta mt-2">
                           <p className="mb-2 fs-4 fw-medium">
                             <span className="ms-0 me-2 text-info">
