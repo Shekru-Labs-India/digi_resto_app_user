@@ -157,7 +157,7 @@ const OfferAndFeatured = () => {
                               ₹{Math.floor(menu.price * 1.1)}
                             </del>
                           </li>
-                          <li className="dz-offer">{menu.offer}</li> {/* Display offer */}
+                          <li className="dz-offer offer-color offer-color">{menu.offer}</li> {/* Display offer */}
                         </ul>
                       </div>
                     </div>

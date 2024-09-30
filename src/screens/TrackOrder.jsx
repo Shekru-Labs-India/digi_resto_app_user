@@ -1436,11 +1436,11 @@ const TrackOrder = () => {
                         }}
                       />
                     </div>
-                    <div className="dz-content  text-success">
+                    <div className="dz-content  text-primary">
                       <h5 className=" mt-2 mb-0">{menu.menu_name}</h5>
                       <div className="d-flex ">
                         <i className="ri-restaurant-line pe-1"></i>
-                        <span className="category-text text-success fs-6">
+                        <span className="category-text text-primary fs-6">
                           {menu.category_name}
                         </span>
                         {renderSpicyIndex(menu.spicy_index)}
@@ -1483,7 +1483,7 @@ const TrackOrder = () => {
                             ₹{menu.oldPrice || menu.price}
                           </span>
 
-                          <span className="fs-6 ps-2 text-primary">
+                          <span className="fs-6 ps-2 offer-color">
                             {menu.offer || "No "}% Off
                           </span>
                         </p>

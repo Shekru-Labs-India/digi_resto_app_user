@@ -7000,7 +7000,7 @@ const Cart = () => {
                               ₹{item.oldPrice || item.price}
                             </span>
                           
-                          <span className="fs-6 ps-2 text-primary">
+                          <span className="fs-6 ps-2 offer-color">
                             {item.offer || "No "}% Off
                           </span>
                           

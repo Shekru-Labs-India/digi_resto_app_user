@@ -1469,7 +1469,7 @@ const Checkout = () => {
                                 ₹ {item.oldPrice || item.price}
                               </span>
                               <div>
-                              <span className="fs-6 ps-2 text-primary">
+                              <span className="fs-6 ps-2 offer-color">
                                 {item.offer || "No "}% Off
                               </span>
                            </div>

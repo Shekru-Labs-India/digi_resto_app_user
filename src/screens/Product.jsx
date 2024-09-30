@@ -2370,7 +2370,7 @@ const Product = () => {
                     </div>
                     <div className="row">
                       <div className="col-12">
-                        <span className="fs-6  text-primary">
+                        <span className="fs-6  offer-color">
                           {menuItem.offer || "No "}% Off
                         </span>
                       </div>
