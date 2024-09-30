@@ -346,7 +346,7 @@ const Verifyotp = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const restaurantCode = localStorage.getItem("restaurantCode") ;
   // Get mobile and otp from localStorage
   const mobile = localStorage.getItem("mobile");
   const otpStored = localStorage.getItem("otp");
@@ -399,12 +399,13 @@ const Verifyotp = () => {
           mobile, // Store mobile number
           restaurantId: tempRestaurantId || restaurantId,
           tableNumber: tempTableNumber || tableNumber || "1",
+          restaurantCode: restaurantCode,
         };
         localStorage.setItem("userData", JSON.stringify(userData));
 
         // Redirect to the HomeScreen with restaurantCode and table_number
         navigate(
-          `/HomeScreen/${userData.restaurantId}/${userData.tableNumber}`
+          `/HomeScreen/${userData.restaurantCode}/${userData.tableNumber}`
         );
 
         // Clear temporary storage

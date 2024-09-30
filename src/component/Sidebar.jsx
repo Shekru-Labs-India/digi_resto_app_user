@@ -489,12 +489,12 @@ const Sidebar = () => {
         <div className="author-box">
           <div className="d-flex justify-content-start align-items-center m-0">
             <i
-              className={
-                userData && userData.customer_id
-                  ? "ri-user-3-fill fs-3"
-                  : "ri-user-3-line fs-3"
-              }
-            ></i>
+            className={
+              userData && userData.customer_id
+                ? "ri-user-3-fill fs-3"
+                : "ri-user-3-line fs-3"
+            }
+          ></i>
           </div>
           <div className="fs-6">
             <span className="ms-3 pt-4">

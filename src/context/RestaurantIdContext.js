@@ -598,7 +598,9 @@ export const useRestaurantId = () => {
 
 export const RestaurantIdProvider = ({ children }) => {
   const [restaurantId, setRestaurantId] = useState(null);
-  const [restaurantName, setRestaurantName] = useState(null);
+  const [restaurantName, setRestaurantName] = useState(
+    localStorage.getItem("name") || ""
+  );
   const [restaurantCode, setRestaurantCode] = useState(
     localStorage.getItem("restaurantCode") || ""
   );

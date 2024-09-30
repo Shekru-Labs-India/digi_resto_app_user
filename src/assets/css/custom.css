@@ -1,4 +1,7 @@
-/* styles.css */
+.offer-color{
+  color: #428B3C;
+}
+
 .popupCart{
   position: fixed;
  top: 100px;
