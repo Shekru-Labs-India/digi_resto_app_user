@@ -15,7 +15,7 @@ const ValidateAndNavigate = () => {
     return <Navigate to="/Signinscreen" replace />;
   }
 
-  return <Navigate to={`/HomeScreen/${restaurantCode}/1`} replace />;
+  return <Navigate to={`/${restaurantCode}/1`} replace />;
 };
 
 export default ValidateAndNavigate;

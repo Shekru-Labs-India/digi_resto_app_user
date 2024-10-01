@@ -186,7 +186,7 @@ const Wishlist = () => {
       <div className="header-content">
         <div className="left-content">
           <Link
-            to="/HomeScreen"
+            to="/"
             className="back-btn dz-icon icon-sm"
             onClick={() => navigate(-1)}
           >

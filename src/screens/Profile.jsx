@@ -596,7 +596,7 @@ const Profile = () => {
           <div className="header-content">
             <div className="left-content">
               <Link
-                to={`/HomeScreen/${userData?.restaurantId || ""}/${
+                to={`/${userData?.restaurantId || ""}/${
                   userData?.tableNumber || ""
                 }`}
                 className="back-btn fs-3"

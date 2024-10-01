@@ -405,7 +405,7 @@ const Verifyotp = () => {
 
         // Redirect to the HomeScreen with restaurantCode and table_number
         navigate(
-          `/HomeScreen/${userData.restaurantCode}/${userData.tableNumber}`
+          `/${userData.restaurantCode}/${userData.tableNumber}`
         );
 
         // Clear temporary storage
