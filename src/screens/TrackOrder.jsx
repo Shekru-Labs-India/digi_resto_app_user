@@ -113,7 +113,7 @@ const TrackOrder = () => {
   const renderSpicyIndex = (spicyIndex) => {
     const totalFires = 5;
     return (
-      <div className="spicy-index ms-3">
+      <div className="spicy-index ">
         {Array.from({ length: totalFires }).map((_, index) => (
           <i
             key={index}
@@ -288,18 +288,18 @@ const TrackOrder = () => {
                       <div className="dz-content">
                         <h5 className=" mt-2 mb-0">{menu.menu_name}</h5>
                         <div className="row">
-                          <div className="col-4">
+                          <div className="col-6 pe-0">
                             <i className="ri-restaurant-line pe-1 text-success"></i>
-                            <span className="category-text text-success fs-6">
+                            <span className="category-text text-success fs-6 px-0">
                               {menu.category_name}
                             </span>
                           </div>
-                          <div className="col-4 text-center">
+                          <div className="col-3 px-0 ms-0">
                             {renderSpicyIndex(menu.spicy_index)}
                           </div>
-                          <div className="col-4 text-end pe-5">
-                            <span className="rating ms-3">
-                              <i className="ri-star-half-line ratingStar"></i>
+                          <div className="col-2  ">
+                            <span className="rating gray-text fw-semibold ms-0">
+                              <i className="ri-star-half-line ratingStar "></i>
                               {menu.rating}
                             </span>
                           </div>
@@ -307,9 +307,9 @@ const TrackOrder = () => {
                         <div className="d-flex align-items-center">
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-4 ps-0">
-                                <p className="mb-2 fs-4 fw-medium">
-                                  <span className="me-2 text-info">
+                              <div className="col-6 px-0">
+                                <p className=" fs-4 fw-medium">
+                                  <span className="me-1 text-info">
                                     ₹{menu.price}
                                   </span>
                                   <span className="gray-text fs-6 text-decoration-line-through">
@@ -317,12 +317,12 @@ const TrackOrder = () => {
                                   </span>
                                 </p>
                               </div>
-                              <div className="col-5  text-center">
-                                <span className="fs-6 ps-2 text-primary">
+                              <div className="col-4  px-0">
+                                <span className="fs-6 ps-2 text-primary ">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </div>
-                              <div className="col-3 text-end pe-5">
+                              <div className="col-2 ps-0 text-end">
                                 <span className="quantity gray-text">
                                   x {menu.quantity}
                                 </span>
@@ -352,8 +352,8 @@ const TrackOrder = () => {
                 <div className="col-12 mt-2">
                   <div className="d-flex justify-content-between align-items-center py-1">
                     {/* <span className="ps-2 fs-6 w-medium h5">Total</span> */}
-                    <h5 className="ps-2">Total</h5>
-                    <h5 className="pe-2">
+                    <h5 className="ps-2 fs-3 fw-medium">Total</h5>
+                    <h5 className="pe-2 fs-3 fw-medium">
                       {" "}
                       ₹{orderDetails.order_details.total_total || 0}
                     </h5>
@@ -410,8 +410,8 @@ const TrackOrder = () => {
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center fw-medium mb-2">
                     {/* <span className="ps-2 fs-6 fw-medium h5">Grand Total</span> */}
-                    <h5 className="ps-2">Grand Total</h5>
-                    <h5 className="pe-2">
+                    <h5 className="ps-2 fs-3 fw-medium">Grand Total</h5>
+                    <h5 className="pe-2 fs-3 fw-medium">
                       {" "}
                       ₹{orderDetails.order_details.grand_total || 0}
                     </h5>

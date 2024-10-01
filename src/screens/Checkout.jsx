@@ -1321,7 +1321,7 @@ const Checkout = () => {
 
   const handleNotesChange = (e) => {
     const value = e.target.value;
-    const regex = /^[a-zA-Z0-9\s]*$/; // Only allow alphanumeric characters and spaces
+    const regex = /^[a-zA-Z0-9\s.]*$/; // Only allow alphanumeric characters, spaces, and dots // Only allow alphanumeric characters and spaces, no dots // Only allow alphanumeric characters and spaces
 
     if (value.length < 3 || value.length > 200) {
       setValidationMessage("Notes must be between 3 and 200 characters.");
@@ -1466,7 +1466,7 @@ const Checkout = () => {
                             </span>
                             
                               <span className="gray-text fs-6 text-decoration-line-through">
-                                ₹ {item.oldPrice }
+                                ₹ {item.oldPrice || item.price}
                               </span>
                               <div>
                               <span className="fs-6 ps-2 offer-color">
@@ -1481,12 +1481,12 @@ const Checkout = () => {
                     <div>No items in the cart.</div>
                   )}
 
-                  <div className="my-3 px-2 h5">
+                  <h5 className="my-2 px-2 h4 ">
                     Total
-                    <span className="float-end h5">
+                    <span className="float-end  ">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
-                  </div>
+                  </h5>
                   <hr
                         className=" mx-2 p-0 m-0  text-primary"
                         
@@ -1539,8 +1539,8 @@ const Checkout = () => {
             <div className="circle">
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
-            <h4>Your Order Successfully Placed</h4>
-            <p>You have successfully made payment and placed your order.</p>
+            <h4 className="gray-text">Your Order Successfully Placed</h4>
+            <p className="gray-text">You have successfully made payment and placed your order.</p>
             <button className="btn btn-success w-100 mt-3" onClick={closePopup}>
               View Order
             </button>
