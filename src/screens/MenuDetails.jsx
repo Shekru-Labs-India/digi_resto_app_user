@@ -1123,6 +1123,11 @@ const MenuDetails = () => {
       return;
     }
 
+     if (!userData.customer_id) {
+       navigate("/Signinscreen");
+       return;
+     }
+
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
@@ -1249,10 +1254,7 @@ const MenuDetails = () => {
                     )}
                   </div>
                   <div className="col-4 text-end">
-                    <i
-                      className="ri-star-half-line fs-3 pe-1 ratingStar"
-                    
-                    ></i>
+                    <i className="ri-star-half-line fs-3 pe-1 ratingStar"></i>
                     <span
                       className="fs-6 fw-semibold"
                       style={{ color: "#7f7e7e", marginLeft: "5px" }}
@@ -1360,24 +1362,15 @@ const MenuDetails = () => {
                   <div className="d-flex flex-column">
                     <h5 className="mb-2 fs-6 fw-medium">Total amount</h5>
                     <div className="d-flex align-items-baseline">
-                      <h4
-                        className="mb-0 price fs-4 text-info"
-                       
-                      >
+                      <h4 className="mb-0 price fs-4 text-info">
                         ₹{totalAmount.toFixed(0)}
                       </h4>
-                      <span
-                        className="text-decoration-line-through ms-2 fs-6 gray-text"
-                       
-                      >
+                      <span className="text-decoration-line-through ms-2 fs-6 gray-text">
                         ₹{productDetails.price}
                       </span>
-                      <div
-                        className="fw-medium d-flex fs-6 ps-2 offer-color"
-                        
-                      >
-                        {productDetails.offer}% Off
-                      </div>
+                    </div>
+                    <div className="fw-medium d-flex fs-6 offer-color pt-1">
+                      {productDetails.offer}% Off
                     </div>
                   </div>
                 </div>
@@ -1385,7 +1378,7 @@ const MenuDetails = () => {
               <div className="col-6 text-end">
                 <Link
                   to="/Cart"
-                  className="btn btn-primary fs-3 py-2 rounded-pill"
+                  className="btn btn-primary fs-3 py-3 me-4 rounded-pill"
                   onClick={handleAddToCart}
                 >
                   <i className="ri-shopping-cart-line pe-2"></i>

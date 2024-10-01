@@ -2017,6 +2017,11 @@ const Product = () => {
   const handleLikeClick = async (menuId) => {
     if (!userData || !restaurantId) return;
 
+    if (!userData.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
