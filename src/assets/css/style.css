@@ -11879,8 +11879,12 @@ hr.dotted {
       color: #fff; }
     .theme-dark .menubar-area {
       background-color: #1E453E; }
-    .theme-dark .input-group .input-group-text {
-      background-color: #120e0e !important; }
+      .searchbg{
+        background-color: #120e0e;
+      }
+      
+    /* .theme-dark .input-group .input-group-text {
+      background-color: #120e0e !important; } */
     .theme-dark .input-group.input-mini .input-group-text {
       background-color: transparent !important; }
     .theme-dark .sidebar .navbar-nav li a {

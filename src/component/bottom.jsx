@@ -36,10 +36,10 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/HomeScreen/${restaurantCode}/${userData.tableNumber || ""}`}
+          to={`/${restaurantCode}/${userData.tableNumber || ""}`}
           className={
             location.pathname ===
-            `/HomeScreen/${restaurantCode}/${userData.tableNumber || ""}`
+            `/${restaurantCode}/${userData.tableNumber || ""}`
               ? "nav-link active"
               : "nav-link"
           }

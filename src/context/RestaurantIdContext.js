@@ -589,6 +589,7 @@
 // 28-09
 
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RestaurantIdContext = createContext();
 
@@ -604,6 +605,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantCode, setRestaurantCode] = useState(
     localStorage.getItem("restaurantCode") || ""
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -632,7 +634,13 @@ export const RestaurantIdProvider = ({ children }) => {
           userData.restaurantId = restaurant_id;
           userData.restaurantName = name;
           localStorage.setItem("userData", JSON.stringify(userData));
-        } else {
+        }
+
+        if (data.st === 2) {
+          navigate("/Signinscreen");
+        }
+
+        else {
           console.error("Failed to fetch restaurant details:", data.msg);
         }
       } catch (error) {

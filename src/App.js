@@ -472,23 +472,23 @@ function App() {
       <CartProvider>
         <Routes>
           <Route
-            path="/HomeScreen/:restaurantCode/:table_number"
+            path="/:restaurantCode/:table_number"
             element={<HomeScreen />}
           />
           <Route
-            path="/HomeScreen/:restaurantCode"
+            path="/:restaurantCode"
             element={<ValidateAndNavigate />}
           />
           <Route
-            path="/HomeScreen"
+            path="/"
             element={
-              <Navigate to={`/HomeScreen/${restaurantCode}/1`} replace />
+              <Navigate to={`//${restaurantCode}/1`} replace />
             }
           />
           <Route
             path="/"
             element={
-              <Navigate to={`/HomeScreen/${restaurantCode}/1`} replace />
+              <Navigate to={`//${restaurantCode}/1`} replace />
             }
           />
           <Route path="/Signinscreen" element={<Signinscreen />} />

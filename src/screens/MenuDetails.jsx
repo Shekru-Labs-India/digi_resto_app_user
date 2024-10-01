@@ -1051,57 +1051,62 @@ const MenuDetails = () => {
   };
 
   // Function to add item to cart
-  const handleAddToCart = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData) {
+  // ... existing code ...
+// ... existing code ...
+const handleAddToCart = async () => {
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  if (!userData || !userData.customer_id) {
       navigate("/Signinscreen");
       return;
-    }
-    if (quantity === 0 || !productDetails) return;
+  }
+  if (quantity === 0 || !productDetails) return;
 
-    const customerId = userData.customer_id;
-    const restaurantId = userData.restaurantId;
+  const customerId = userData.customer_id;
+  const restaurantId = userData.restaurantId;
 
-    let cartId = localStorage.getItem("cartId");
-    if (!cartId) {
+  let cartId = localStorage.getItem("cartId");
+  if (!cartId) {
       cartId = await createCart(customerId, restaurantId);
       if (!cartId) return; // If cart creation failed, exit the function
-    }
+  }
 
-    try {
+  try {
       const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
-            cart_id: cartId,
-            quantity: quantity,
-          }),
-        }
+          "https://menumitra.com/user_api/add_to_cart",
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  restaurant_id: restaurantId,
+                  menu_id: menuId,
+                  customer_id: customerId,
+                  cart_id: cartId,
+                  quantity: quantity,
+              }),
+          }
       );
 
       const data = await response.json();
       if (data.st === 1) {
-        console.log("Item added to cart successfully.");
-        const updatedCartItems = [
-          ...cartItems,
-          { ...productDetails, quantity },
-        ];
-        setCartItems(updatedCartItems);
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+          console.log("Item added to cart successfully.");
+          const updatedCartItems = [
+              ...cartItems,
+              { ...productDetails, quantity },
+          ];
+          setCartItems(updatedCartItems);
+          localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+          navigate("/Cart"); // Only navigate to cart if the item is successfully added
       } else {
-        console.error("Failed to add item to cart:", data.msg);
+          console.error("Failed to add item to cart:", data.msg);
       }
-    } catch (error) {
+  } catch (error) {
       console.error("Error adding item to cart:", error);
-    }
-  };
+  }
+};
+// ... existing code ...
+// ... existing code ...
 
   useEffect(() => {
     fetchProductDetails();
@@ -1186,12 +1191,11 @@ const MenuDetails = () => {
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
               <img
-                className="product-detail-image"
+                className="product-detail-image mt-5 pt-2"
                 src={productDetails.image || images}
                 alt={productDetails.name}
                 style={{
-                  height: "100%",
-                  width: "100%",
+                  
                 }}
                 onError={(e) => {
                   e.target.src = images;
@@ -1219,20 +1223,20 @@ const MenuDetails = () => {
 
               <div className="product-meta">
                 <div className="row me-1">
-                  <div className="col-4">
+                  <div className="col-5 pe-0 ps-1">
                     <div
-                      className="dz-quantity detail-content category-text m-0"
-                      style={{ color: "#0a795b" }}
+                      className="dz-quantity detail-content category-text m-0 ps-2 text-primary fs-6 px-0"
+                      
                     >
                       <i
-                        className="ri-restaurant-line "
-                        style={{ paddingRight: "5px" }}
+                        className="ri-restaurant-line  me-1 fs-6"
+                       
                       ></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
 
-                  <div className="col-4 text-end">
+                  <div className="col-3 ps-5 text-end">
                     {productDetails.spicy_index && (
                       <div className="spicy-index">
                         {Array.from({ length: 5 }).map((_, index) =>
@@ -1253,11 +1257,11 @@ const MenuDetails = () => {
                       </div>
                     )}
                   </div>
-                  <div className="col-4 text-end">
-                    <i className="ri-star-half-line fs-3 pe-1 ratingStar"></i>
+                  <div className="col-4 text-end px-0 pe-2   ">
+                    <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
                     <span
-                      className="fs-6 fw-semibold"
-                      style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                      className="fs-6 fw-semibold gray-text"
+                    
                     >
                       {productDetails.rating}
                     </span>
@@ -1376,14 +1380,14 @@ const MenuDetails = () => {
                 </div>
               </div>
               <div className="col-6 text-end">
-                <Link
-                  to="/Cart"
+                <button
+                  to="#"
                   className="btn btn-primary fs-3 py-3 me-4 rounded-pill"
                   onClick={handleAddToCart}
                 >
                   <i className="ri-shopping-cart-line pe-2"></i>
                   <div className="font-poppins fs-6">Add to Cart</div>
-                </Link>
+                </button>
               </div>
             </div>
           </footer>

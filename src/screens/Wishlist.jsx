@@ -308,7 +308,7 @@ const Wishlist = () => {
                         </Link>
 
                         <div className="row mt-2 align-items-center">
-                          <div className="col-5 px-0 text-start">
+                          <div className="col-6 px-0 text-center">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -320,7 +320,7 @@ const Wishlist = () => {
                               }}
                             >
                               <p className="mb-0 ms-2 fs-4 fw-medium">
-                                <span className="ms-3 me-2 text-info">
+                                <span className=" me-1 text-info">
                                   ₹{menu.price}
                                 </span>
                                 <span className="gray-text fs-6 text-decoration-line-through ">
@@ -346,7 +346,7 @@ const Wishlist = () => {
                             </Link>
                           </div>
 
-                          <div className="col-3 text-end px-0 ">
+                          <div className="col-3 text-center px-0 ">
                             <div
                               className="cart-btn"
                               onClick={() => handleAddToCartClick(menu)}

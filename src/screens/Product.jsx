@@ -1883,7 +1883,7 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, Link , useLocation} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
@@ -1917,8 +1917,7 @@ const Product = () => {
   const initialFetchDone = useRef(false);
   const swiperRef = useRef(null); // Define swiperRef
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
-  const location = useLocation();
-const { selectedCategoryId } = location.state || {};
+  
 
   // Fetch menu data using a single API
   const fetchMenuData = useCallback(async () => {
@@ -2072,19 +2071,17 @@ const { selectedCategoryId } = location.state || {};
   };
 
   // Handle category selection
-  
-const handleCategorySelect = (categoryId) => {
-  setSelectedCategory(categoryId);
-  if (categoryId === null) {
-    setFilteredMenuList(menuList);
-  } else {
-    const filteredMenus = menuList.filter(
-      (menu) => menu.menu_cat_id === categoryId
-    );
-    setFilteredMenuList(filteredMenus);
-  }
-};
-
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    if (categoryId === null) {
+      setFilteredMenuList(menuList);
+    } else {
+      const filteredMenus = menuList.filter(
+        (menu) => menu.menu_cat_id === categoryId
+      );
+      setFilteredMenuList(filteredMenus);
+    }
+  };
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -2135,8 +2132,6 @@ const handleCategorySelect = (categoryId) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
-
-
 
   
 
