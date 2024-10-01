@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/digi_resto_app_user/static/css/main.e3d0f4df.css",
-    "main.js": "/digi_resto_app_user/static/js/main.0a7dd3e3.js",
+    "main.js": "/digi_resto_app_user/static/js/main.6bc3a426.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/order_success.gif": "/digi_resto_app_user/static/media/order_success.ff087a254745acb5e294.gif",
     "static/media/stew.gif": "/digi_resto_app_user/static/media/stew.ff087a254745acb5e294.gif",
@@ -12,11 +12,11 @@
     "static/media/wave.svg": "/digi_resto_app_user/static/media/wave.d71cd8ede0bc135abc345b708cdc47ac.svg",
     "index.html": "/digi_resto_app_user/index.html",
     "main.e3d0f4df.css.map": "/digi_resto_app_user/static/css/main.e3d0f4df.css.map",
-    "main.0a7dd3e3.js.map": "/digi_resto_app_user/static/js/main.0a7dd3e3.js.map",
+    "main.6bc3a426.js.map": "/digi_resto_app_user/static/js/main.6bc3a426.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e3d0f4df.css",
-    "static/js/main.0a7dd3e3.js"
+    "static/js/main.6bc3a426.js"
   ]
 }
