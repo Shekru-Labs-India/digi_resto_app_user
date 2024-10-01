@@ -628,6 +628,7 @@ import defaultImg from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import south from "../assets/MenuDefault.png";
 
+
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [totalCategoriesCount, setTotalCategoriesCount] = useState(0);
@@ -686,7 +687,7 @@ const Category = () => {
   };
 
   const handleCategoryClick = (category) => {
-    navigate(`/Product?category=${category.menu_cat_id}`);
+    navigate("/Menu", { state: { selectedCategoryId: category.menu_cat_id } });
   };
 
   return (
