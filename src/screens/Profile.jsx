@@ -566,6 +566,7 @@ const Profile = () => {
       localStorage.getItem("userData") || "{}"
     );
     localStorage.removeItem("userData");
+    localStorage.removeItem("cartItems");
     localStorage.setItem("lastRestaurantId", restaurantId);
     localStorage.setItem("lastTableNumber", tableNumber);
     navigate("/Signinscreen");
