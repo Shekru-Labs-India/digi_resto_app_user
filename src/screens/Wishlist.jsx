@@ -133,10 +133,9 @@ const Wishlist = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  const toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, (txt) => {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+  const toTitleCase = (text) => {
+    if (!text) return "";
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   useEffect(() => {
@@ -195,10 +194,12 @@ const Wishlist = () => {
           </Link>
         </div>
         <div className="mid-content">
-          <h5 className="title">
-            Favourite{" "}
-            {userData && <span className="">({menuList.length})</span>}
-          </h5>
+        <h5 className="title">
+          Favourite{" "}
+          {userData && menuList.length > 0 && (
+            <span className="">({menuList.length})</span>
+          )}
+        </h5>
         </div>
       </div>
     </header>
