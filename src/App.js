@@ -462,7 +462,7 @@ import { CartProvider } from "./context/CartContext";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
 function App() {
-  const restaurantCode = localStorage.getItem("restaurantCode") || "568400"; // Default value
+  const restaurantCode = localStorage.getItem("restaurantCode") // Default value
   const restaurantId = localStorage.getItem("restaurantId");
   return (
     <RestaurantIdProvider
@@ -482,13 +482,13 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate to={`//${restaurantCode}/1`} replace />
+              <Navigate to={`/${restaurantCode}/1`} replace />
             }
           />
           <Route
             path="/"
             element={
-              <Navigate to={`//${restaurantCode}/1`} replace />
+              <Navigate to={`/${restaurantCode}/1`} replace />
             }
           />
           <Route path="/Signinscreen" element={<Signinscreen />} />

@@ -637,7 +637,7 @@ export const RestaurantIdProvider = ({ children }) => {
         }
 
         if (data.st === 2) {
-          navigate("/Signinscreen");
+          navigate("Signinscreen");
         }
 
         else {
