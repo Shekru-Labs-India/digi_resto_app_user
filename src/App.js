@@ -461,6 +461,8 @@ import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
+import QRScreen from "./screens/QRScreen";
+
 function App() {
   const restaurantCode = localStorage.getItem("restaurantCode") // Default value
   const restaurantId = localStorage.getItem("restaurantId");
@@ -505,6 +507,7 @@ function App() {
           <Route path="/Search" element={<Search />} />
           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
           <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
+          <Route path="/QRScreen" element={<QRScreen />} />
         </Routes>
       </CartProvider>
     </RestaurantIdProvider>
@@ -512,3 +515,5 @@ function App() {
 }
 
 export default App;
+
+
