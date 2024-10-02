@@ -1735,8 +1735,6 @@ const Search = () => {
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
   };
 
-
-
   const handleClearAll = () => {
     setSearchedMenu([]);
     setSearchTerm("");
@@ -1798,132 +1796,109 @@ const Search = () => {
 
           {isLoading && <p>Loading...</p>}
 
-          <div className="container p-0">
-            {searchedMenu.length > 0 ? (
-              searchedMenu.map((menu) => (
-                <div
-                  className="card mb-3"
-                  key={menu.menu_id}
-                  onClick={() => handleMenuClick(menu.menu_id)}
-                >
-                  <div className="card-body py-0">
+          {searchedMenu.map((menu) => (
+            <div
+              className="card mb-3"
+              key={menu.menu_id}
+            >
+              <div className="card-body py-0">
+                <div className="row">
+                  <div className="col-3 px-0">
+                    <img
+                      src={menu.image || images}
+                      alt={menu.menu_name}
+                      className="img-fluid rounded"
+                      style={{ width: "100px", height: "108px" }}
+                      onError={(e) => {
+                        e.target.src = images;
+                      }}
+                      onClick={() => handleMenuClick(menu.menu_id)}
+                     
+                    />
+                  </div>
+                  <div className="col-8 pt-2 pb-0 pe-0 ps-2">
+                    <div className="h6 title fw-semibold">{menu.menu_name}</div>
                     <div className="row">
-                      <div className="col-3 px-0">
-                        <img
-                          src={menu.image || images}
-                          alt={menu.menu_name}
-                          className="img-fluid rounded"
-                          style={{ width: "100px", height: "108px" }}
-                          onError={(e) => {
-                            e.target.src = images;
-                          }}
-                        />
-                      </div>
-                      <div className="col-8 pt-2 pb-0 pe-0 ps-2">
-                        <div className="h6 title fw-semibold">{menu.menu_name}</div>
-                        <div className="row">
-                          <div className="col-7 mt-1 pe-0 ">
-                            <div className="mt-0">
-                              <i className="ri-restaurant-line mt-0 me-2 text-primary"></i>
-                              <span className="text-primary ">
-                                {menu.category_name}
-                              </span>
-                            </div>
-                          </div>
-                          {/* <div className="col-3 text-center px-0">
-                            <span className="d-inline-block">
-                              <div
-                                className="offer-code pt-1"
-                                style={{ fontSize: "16px",position:'relative',left:'10px' }}
-                              >
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                  <i
-                                    key={index}
-                                    className={
-                                      index < menu.spicy_index
-                                        ? "ri-fire-fill fs-6"
-                                        : "ri-fire-line fs-6"
-                                    }
-                                    style={{
-                                      color:
-                                        index < menu.spicy_index
-                                          ? "#eb8e57"
-                                          : "rgba(0, 0, 0, 0.1)",
-                                    }}
-                                  ></i>
-                                ))}
-                              </div>
-                            </span>
-                          </div> */}
-                          <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <span className="h6 gray-text">
-                              <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
-                              {parseFloat(menu.rating).toFixed(1)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="row mt-2">
-                          <div className="col-5 px-0">
-                            <p className="mb-2 fs-4 fw-medium  text-start">
-                              <span className="ms-3 me-1 text-info ">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text fs-6 text-decoration-line-through ">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                            </p>
-                          </div>
-                          <div className="col-4 ps-0">
-                            <p className="mb-2 fs-4  fw-medium">
-                              <span className="fs-6 px-0  text-start offer-color ">
-                                {menu.offer || "No "}% Off
-                              </span>
-                            </p>
-                          </div>
-                          <div
-                            className="col-3 text-end p-0"
-                           
+                      <div className="col-7 mt-1 pe-0">
+                        <div className="mt-0">
+                          <i className="ri-restaurant-line mt-0 me-2 text-primary"></i>
+                          <span
+                            className="text-primary"
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
                           >
-                            <i
-                              className={`${
-                                menu.is_favourite
-                                  ? "ri-hearts-fill fs-3"
-                                  : "ri-heart-2-line fs-3"
-                              }`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleLikeClick(menu.menu_id);
-                              }}
-                              style={{
-                                cursor: "pointer",
-                                color: menu.is_favourite ? "red" : "",
-                              }}
-                            ></i>
-                          </div>
-
+                            {menu.category_name}
+                          </span>
                         </div>
                       </div>
-                      <div className="col-1 p-0">
-                        <span
-                          className="text-muted fs-5"
-                          onClick={(e) => {
-                            
-                            e.stopPropagation();
-                            handleRemoveItem(menu.menu_id);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <i className="ri-close-line fs-4"></i>
+                      <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                        <span className="h6 gray-text">
+                          <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
+                          {parseFloat(menu.rating).toFixed(1)}
                         </span>
                       </div>
                     </div>
+                    <div className="row mt-2">
+                      <div className="col-5 px-0">
+                        <p
+                          className="mb-0 mt-1 fs-4 fw-medium text-start"
+                          onClick={() => handleMenuClick(menu.menu_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <span className="ms-3 me-1 text-info">
+                            ₹{menu.price}
+                          </span>
+                          <span className="gray-text fs-6 text-decoration-line-through">
+                            ₹{menu.oldPrice || menu.price}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="col-4 ps-0">
+                        <p
+                          className="mb-0 mt-1 fs-4 fw-medium"
+                          onClick={() => handleMenuClick(menu.menu_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <span className="fs-6 px-0 text-start offer-color">
+                            {menu.offer || "No "}% Off
+                          </span>
+                        </p>
+                      </div>
+                      <div className="col-3 text-end p-0">
+                        <i
+                          className={`${
+                            menu.is_favourite
+                              ? "ri-hearts-fill fs-3"
+                              : "ri-heart-2-line fs-3"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
+                          }}
+                          style={{
+                            cursor: "pointer",
+                            color: menu.is_favourite ? "red" : "",
+                          }}
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-1 px-0 pt-2">
+                    <span
+                      className="text-muted fs-4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveItem(menu.menu_id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i className="ri-close-line fs-4 icon-adjust"></i>
+                    </span>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-center mt-3">No items found.</p>
-            )}
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
       <Bottom />

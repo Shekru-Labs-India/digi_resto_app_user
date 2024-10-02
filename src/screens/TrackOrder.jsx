@@ -96,6 +96,23 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, customerId]);
 
+  const formatDateTime = (dateTime) => {
+    const dateTimeParts = dateTime.split(" ");
+    if (dateTimeParts.length === 3) {
+      const [date, time, period] = dateTimeParts;
+      return `${time} ${period} ${date}`;
+    } else if (dateTimeParts.length === 2) {
+      const [date, time] = dateTimeParts;
+      // Determine AM/PM based on the time
+      const hours = parseInt(time.split(":")[0], 10);
+      const period = hours >= 12 ? "PM" : "AM";
+      return `${time} ${period} ${date}`;
+    } else {
+      return dateTime; // Return as is if the format is unexpected
+    }
+  };
+
+
   if (loading || !orderDetails) {
     return (
       <div id="preloader">
@@ -162,38 +179,38 @@ const TrackOrder = () => {
             style={{ paddingTop: "1px" }}
           ></div>
           <div className="card">
-            <div className="card-body py-2">
+            <div className="card-body p-2">
               <div className="row align-items-center mb-0">
-                <div className="col-6">
+                <div className="col-5">
                   <h5 className="card-title mb-0">
                     {order_details.order_number}
                   </h5>
                 </div>
-                <div className="col-6 text-end">
-                  <span className="card-text " style={{ color: "#a5a5a5" }}>
-                    {order_details.datetime}
-                  </span>
+                <div className="col-7 text-end">
+                  <span className="card-text gray-text " >
+        {formatDateTime(order_details.datetime)}
+      </span>
                 </div>
               </div>
               <div className="row mt-2 align-items-center">
                 <div className="col-5 text-start pe-0">
                   <p className="mb-0 fs-6 text-break">
-                    <i className="ri-store-2-line pe-2"></i>
+                    <i className="ri-store-2-line pe-1"></i>
                     {order_details.restaurant_name}
 
-                    <span className="ps-3 mb-0 fs-6 text-break">
-                      <i class="ri-user-location-line pe-2"></i>
+                    <span className="ps-2 mb-0 fs-6 text-break">
+                      <i class="ri-user-location-line pe-1"></i>
                       {order_details.table_number}
                     </span>
                   </p>
                 </div>
-                <div className="col-3 pe-0 ps-2">
-                  <p className="mb-0 fs-6  gray-text">
+                <div className="col-3 px-0 text-center">
+                  <p className="mb-0 fs-6  gray-text ">
                     <i className="ri-bowl-line pe-0"></i>
                     {order_details.menu_count} Menu
                   </p>
                 </div>
-                <div className="col-4 text-end ps-0">
+                <div className="col-4 text-start px-0">
                   <span
                     className="text-info fs-6 fw-medium"
                     style={{ color: "#4E74FC" }}
@@ -286,20 +303,20 @@ const TrackOrder = () => {
                         />
                       </div>
                       <div className="dz-content">
-                        <h5 className=" mt-2 mb-0">{menu.menu_name}</h5>
+                        <h5 className=" mt-0  mb-0">{menu.menu_name}</h5>
                         <div className="row">
-                          <div className="col-6 pe-0">
-                            <i className="ri-restaurant-line pe-1 text-success"></i>
-                            <span className="category-text text-success fs-6 px-0">
+                          <div className="col-5 pe-0">
+                            <i className="ri-restaurant-line pe-1 text-primary"></i>
+                            <span className="category-text text-primary fs-xs ">
                               {menu.category_name}
                             </span>
                           </div>
-                          <div className="col-3 px-0 ms-0">
+                          <div className="col-4 text-start ms-0 px-0 ">
                             {renderSpicyIndex(menu.spicy_index)}
                           </div>
-                          <div className="col-2  ">
+                          <div className="col-2 text-end  px-0">
                             <span className="rating gray-text fw-semibold ms-0">
-                              <i className="ri-star-half-line ratingStar "></i>
+                              <i className="ri-star-half-line ratingStar me-1"></i>
                               {menu.rating}
                             </span>
                           </div>
@@ -307,8 +324,8 @@ const TrackOrder = () => {
                         <div className="d-flex align-items-center">
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-6 px-0">
-                                <p className=" fs-4 fw-medium">
+                              <div className="col-6 px-0 ">
+                                <p className=" fs-4 fw-medium mb-0">
                                   <span className="me-1 text-info">
                                     ₹{menu.price}
                                   </span>
@@ -317,12 +334,12 @@ const TrackOrder = () => {
                                   </span>
                                 </p>
                               </div>
-                              <div className="col-4  px-0">
-                                <span className="fs-6 ps-2 text-primary ">
+                              <div className="col-4  px-0 pt-1 ">
+                                <span className="fs-6 ps-2 offer-color ">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </div>
-                              <div className="col-2 ps-0 text-end">
+                              <div className="col-2 ps-0 pt-1 text-end">
                                 <span className="quantity gray-text">
                                   x {menu.quantity}
                                 </span>
@@ -379,8 +396,8 @@ const TrackOrder = () => {
                 </div>
               </div>
               <div className="row">
-                <div className="col-12 mb-2">
-                  <div className="d-flex justify-content-between align-items-center py-1">
+                <div className="col-12 ">
+                  <div className="d-flex justify-content-between align-items-center">
                     <span className="ps-2 fs-6 gray-text">
                       GST ({orderDetails.order_details.gst_percent}%)
                     </span>
@@ -391,8 +408,8 @@ const TrackOrder = () => {
                 </div>
               </div>
               <div className="row">
-                <div className="col-12 mb-1">
-                  <div className="d-flex justify-content-between align-items-center py-1">
+                <div className="col-12 mb-1 mt-1">
+                  <div className="d-flex justify-content-between align-items-center ">
                     <span className="ps-2 fs-6 gray-text">
                       Discount (
                       {orderDetails.order_details.discount_percent || 0}%)

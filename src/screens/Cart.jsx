@@ -6759,10 +6759,10 @@ const Cart = () => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
     const cartId = getCartId();
-
+  
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/update_cart_quantity",
+        "https://menumitra.com/user_api/update_cart_menu_quantity",
         {
           method: "POST",
           headers: {
@@ -6777,10 +6777,16 @@ const Cart = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
       if (data.st === 1) {
-        fetchCartDetails(); // Refresh cart details
+        // Update the local state
+        setCartDetails((prevDetails) => {
+          const updatedItems = prevDetails.order_items.map((item) =>
+            item.menu_id === menuId ? { ...item, quantity: quantity } : item
+          );
+          return { ...prevDetails, order_items: updatedItems };
+        });
       } else {
         console.error("Failed to update cart quantity:", data.msg);
       }
@@ -6788,12 +6794,12 @@ const Cart = () => {
       console.error("Error updating cart quantity:", error);
     }
   };
-
+  
   const incrementQuantity = (item) => {
     const newQuantity = item.quantity + 1;
     updateCartQuantity(item.menu_id, newQuantity);
   };
-
+  
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
       const newQuantity = item.quantity - 1;

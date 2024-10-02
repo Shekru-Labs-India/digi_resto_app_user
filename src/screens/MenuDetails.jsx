@@ -1236,28 +1236,29 @@ const handleAddToCart = async () => {
                     </div>
                   </div>
 
-                  <div className="col-3 ps-5 text-end">
+                  <div className="col-3 ps-4 text-center">
                     {productDetails.spicy_index && (
                       <div className="spicy-index">
                         {Array.from({ length: 5 }).map((_, index) =>
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill fs-6"
-                              style={{ color: "#eb8e57" }}
+                              className="ri-fire-fill firefill offer-code"
+
+                              
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line fs-6"
-                              style={{ color: "#0000001a" }}
+                              className="ri-fire-line  gray-text"
+                              
                             ></i>
                           )
                         )}
                       </div>
                     )}
                   </div>
-                  <div className="col-4 text-end px-0 pe-2   ">
+                  <div className="col-4 text-end px-0 ">
                     <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
                     <span
                       className="fs-6 fw-semibold gray-text"
@@ -1325,7 +1326,7 @@ const handleAddToCart = async () => {
                       ></i>
                     </button>
                   </div>
-                  <div className="col-6 text-end">
+                  <div className="col-6 pe-2 text-end">
                     <i
                       className={`ri-${
                         isFavorite ? "hearts-fill" : "heart-2-line"

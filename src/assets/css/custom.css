@@ -1,3 +1,42 @@
+.swipe-animation {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  animation: swipe 10s linear infinite;
+}
+
+@keyframes swipe {
+  0% {
+    transform: translateX(100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
+.favoffer{
+  position: relative;
+  top: 1px;
+}
+
+.firefill{
+  color: #eb8e57;
+}
+
+/* Add this to your CSS file */
+.icon-adjust {
+  position: relative;
+  top: -5px; /* Adjust this value as needed */
+}
+
+
+
 .offer-color{
   color: #428B3C;
 }

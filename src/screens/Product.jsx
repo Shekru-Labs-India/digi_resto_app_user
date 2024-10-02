@@ -2101,38 +2101,73 @@ const Product = () => {
   }, [categories]);
 
   // Add item to cart
-  const handleAddToCartClick = (menuItem) => {
+  const handleAddToCartClick = async (menuItem) => {
+    if (!userData || !userData.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+  
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const isAlreadyInCart = cartItems.some(
       (item) => item.menu_id === menuItem.menu_id
     );
-
+  
     if (isAlreadyInCart) {
       alert("This item is already in the cart!");
       return;
     }
-
-    const cartItem = {
-      image: menuItem.image,
-      name: menuItem.name,
-      price: menuItem.price,
-      oldPrice: menuItem.oldPrice,
-      quantity: 1,
-      menu_id: menuItem.menu_id,
-    };
-
-    const updatedCartItems = [...cartItems, cartItem];
+  
+    // Update local storage and state immediately
+    const updatedCartItems = [...cartItems, { ...menuItem, quantity: 1 }];
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
     setCartItemsCount(updatedCartItems.length);
-    navigate("/Cart");
+  
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuItem.menu_id,
+            customer_id: userData.customer_id,
+            quantity: 1,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        console.log("Item added to cart successfully.");
+        localStorage.setItem("cartId", data.cart_id); // Store the cart ID in local storage
+      } else {
+        console.error("Failed to add item to cart:", data.msg);
+        // Revert the local storage and state update if the API call fails
+        const revertedCartItems = updatedCartItems.filter(
+          (cartItem) => cartItem.menu_id !== menuItem.menu_id
+        );
+        localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
+        setCartItemsCount(revertedCartItems.length);
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      // Revert the local storage and state update if the API call fails
+      const revertedCartItems = updatedCartItems.filter(
+        (cartItem) => cartItem.menu_id !== menuItem.menu_id
+      );
+      localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
+      setCartItemsCount(revertedCartItems.length);
+    }
   };
-
+  
   // Check if a menu item is in the cart
   const isMenuItemInCart = (menuId) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
-
   
 
   return (

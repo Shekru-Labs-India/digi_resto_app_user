@@ -186,7 +186,7 @@ const Wishlist = () => {
         <div className="header-content">
           <div className="left-content">
             <Link
-              to="/HomeScreen"
+             
               className="back-btn dz-icon icon-sm"
               onClick={() => navigate(-1)}
             >
@@ -235,7 +235,7 @@ const Wishlist = () => {
                           />
                         </Link>
                       </div>
-                      <div className="col-9 pt-2 p-0">
+                      <div className="col-9 pt-1 p-0">
                         <div className="row">
                           <div className="col-9 pe-2 menu_name">
                             <Link
@@ -251,13 +251,15 @@ const Wishlist = () => {
                               <div>{menu.menu_name}</div>
                             </Link>
                           </div>
-                          <div className="col-2 text-end ps-0 pe-2">
-                            <i
-                              className="ri-close-line  fs-4"
-                              onClick={() =>
-                                handleRemoveItemClick(index, menu.menu_id)
-                              }
-                            ></i>
+                          <div className="col-2 text-end fs-4 ps-0 pe-2 ">
+                            
+                              <i
+                                className="ri-close-line  icon-adjust "
+                                onClick={() =>
+                                  handleRemoveItemClick(index, menu.menu_id)
+                                }
+                              ></i>
+                            
                           </div>
                         </div>
                         <Link
@@ -297,9 +299,7 @@ const Wishlist = () => {
                               )}
                             </div>
                             <div className="col-2 px-0 d-flex align-items-center">
-                              <span
-                                className="fs-6 fw-semibold gray-text favRating"
-                              >
+                              <span className="fs-6 fw-semibold gray-text favRating">
                                 <i className="ri-star-half-line me-1 ratingStar"></i>
                                 {menu.rating || 0.1}
                               </span>
@@ -307,8 +307,8 @@ const Wishlist = () => {
                           </div>
                         </Link>
 
-                        <div className="row mt-2 align-items-center">
-                          <div className="col-6 px-0 text-center">
+                        <div className="row mt-2  align-items-center">
+                          <div className="col-5 ps-4 pe-0 ">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -319,9 +319,9 @@ const Wishlist = () => {
                                 menu_cat_id: menu.menu_cat_id,
                               }}
                             >
-                              <p className="mb-0 ms-2 fs-4 fw-medium">
+                              <p className="mb-0  fs-4 me-0 fw-medium">
                                 <span className=" me-1 text-info">
-                                  ₹{menu.price}
+                                ₹{menu.price}
                                 </span>
                                 <span className="gray-text fs-6 text-decoration-line-through ">
                                   ₹{menu.oldPrice || menu.price}
@@ -329,7 +329,7 @@ const Wishlist = () => {
                               </p>
                             </Link>
                           </div>
-                          <div className="col-3 px-0 ">
+                          <div className="col-3 ps-0 ">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -340,21 +340,21 @@ const Wishlist = () => {
                               }}
                             >
                               {" "}
-                              <span className="fs-6  offer-color ">
+                              <span className="fs-6  offer-color favoffer "   >
                                 {menu.offer || "No "}% Off
                               </span>
                             </Link>
                           </div>
 
-                          <div className="col-3 text-center px-0 ">
+                          <div className="col-4 text-center px-0">
                             <div
                               className="cart-btn"
                               onClick={() => handleAddToCartClick(menu)}
                             >
                               {isMenuItemInCart(menu.menu_id) ? (
-                                <i className="ri-shopping-cart-fill fs-2"></i>
+                                <i className="ri-shopping-cart-fill fs-2 ps-4"></i>
                               ) : (
-                                <i className="ri-shopping-cart-line fs-2"></i>
+                                <i className="ri-shopping-cart-line fs-2 ps-4"></i>
                               )}
                             </div>
                           </div>
