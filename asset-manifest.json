@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/digi_resto_app_user/static/css/main.00242ab3.css",
-    "main.js": "/digi_resto_app_user/static/js/main.53cccf8d.js",
+    "main.css": "/digi_resto_app_user/static/css/main.a4738fb2.css",
+    "main.js": "/digi_resto_app_user/static/js/main.9d5abc8f.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/order_success.gif": "/digi_resto_app_user/static/media/order_success.ff087a254745acb5e294.gif",
     "static/media/stew.gif": "/digi_resto_app_user/static/media/stew.ff087a254745acb5e294.gif",
@@ -11,12 +11,12 @@
     "static/media/Menu Mitra logo 1.png": "/digi_resto_app_user/static/media/Menu Mitra logo 1.f2669b4d1fd2fad7e4ff.png",
     "static/media/wave.svg": "/digi_resto_app_user/static/media/wave.d71cd8ede0bc135abc345b708cdc47ac.svg",
     "index.html": "/digi_resto_app_user/index.html",
-    "main.00242ab3.css.map": "/digi_resto_app_user/static/css/main.00242ab3.css.map",
-    "main.53cccf8d.js.map": "/digi_resto_app_user/static/js/main.53cccf8d.js.map",
+    "main.a4738fb2.css.map": "/digi_resto_app_user/static/css/main.a4738fb2.css.map",
+    "main.9d5abc8f.js.map": "/digi_resto_app_user/static/js/main.9d5abc8f.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.00242ab3.css",
-    "static/js/main.53cccf8d.js"
+    "static/css/main.a4738fb2.css",
+    "static/js/main.9d5abc8f.js"
   ]
 }
