@@ -6888,9 +6888,9 @@ const incrementQuantity = (item) => {
             <div className="container mt-0 pt-0 mb-0">
               <div className="row">
                 <div className="col-12 fw-medium text-end hotel-name">
-                  <span className="ps-2">
-                    {userData.restaurantName.toUpperCase()}
-                  </span>
+                <span className="ps-2">
+  {userData?.restaurantName?.toUpperCase() || 'UNKNOWN'}
+</span>
                   <i className="ri-store-2-line ps-2"></i>
                   <h6 className="title fw-medium h6 custom-text-gray table-number pe-5 me-5">
                     Table: {userData.tableNumber || ""}
@@ -6985,9 +6985,9 @@ const incrementQuantity = (item) => {
                             restaurant_id: userData.restaurantId,
                             menu_cat_id: item.menu_cat_id,
                           }} 
-                           className="text-primary "
+                           className=" category-text "
                         >
-                          <i className="ri-restaurant-line me-2"></i>
+                          <i className="ri-restaurant-line me-2 category-text"></i>
                           {item.menu_cat_name }
                         </Link>
                       </div>

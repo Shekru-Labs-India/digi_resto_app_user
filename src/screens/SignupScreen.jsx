@@ -88,19 +88,20 @@ const Signupscreen = () => {
         setError("Mobile Number already exists. Use another number.");
         setTimeout(() => {
           setError("");
-        }, 3000); // Clear error message after 2 seconds
+        }, 3000); // Clear error message after 3 seconds
       } else {
-        setError("Mobile Number already exists. Use another number.");
+        // Handle other specific error codes from the API
+        setError("An error occurred. Please try again.");
         setTimeout(() => {
           setError("");
-        }, 3000); // Clear error message after 2 seconds
+        }, 3000); // Clear error message after 3 seconds
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      setError("Mobile Number already exists. Use another number.");
+      setError("An unexpected error occurred. Please try again.");
       setTimeout(() => {
         setError("");
-      }, 3000); // Clear error message after 2 seconds
+      }, 3000); // Clear error message after 3 seconds
     } finally {
       setLoading(false); // Set loading to false after API call
     }

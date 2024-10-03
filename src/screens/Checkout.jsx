@@ -828,25 +828,6 @@
 
 // export default Checkout;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import Bottom from "../component/bottom";
@@ -930,7 +911,6 @@
 //       console.error("Error fetching cart details:", error);
 //     }
 //   };
-
 
 //   useEffect(() => {
 //     console.log(
@@ -1197,29 +1177,6 @@
 
 // export default Checkout;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
@@ -1265,12 +1222,12 @@ const Checkout = () => {
       customerId,
       restaurantId,
     });
-  
+
     if (!cartId || !customerId || !restaurantId) {
       alert("Missing cart, customer, or restaurant data.");
       return;
     }
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail",
@@ -1286,10 +1243,10 @@ const Checkout = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       console.log("API Data:", data);
-  
+
       if (response.ok) {
         // Calculate old price for each item
         const updatedOrderItems = data.order_items.map((item) => ({
@@ -1344,27 +1301,27 @@ const Checkout = () => {
       setShowNotePopup(true);
       return;
     }
-  
+
     if (validationMessage) {
       alert(validationMessage);
       return;
     }
-  
+
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
     }));
-  
+
     // Capture the current system time
     const currentTime = new Date();
-    const formattedTime = currentTime.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+    const formattedTime = currentTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       hour12: true,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Ensure local time zone is used
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Ensure local time zone is used
     });
-  
+
     const orderData = {
       customer_id: customerId,
       restaurant_id: restaurantId,
@@ -1374,7 +1331,7 @@ const Checkout = () => {
       table_number: tableNumber, // Use tableNumber from userData
       order_time: formattedTime, // Add the current time to the order data
     };
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/create_order",
@@ -1386,9 +1343,9 @@ const Checkout = () => {
           body: JSON.stringify(orderData),
         }
       );
-  
+
       const responseData = await response.json();
-  
+
       if (response.ok) {
         setShowPopup(true);
       } else {
@@ -1467,9 +1424,9 @@ const Checkout = () => {
                       <div className="row justify-content-center" key={index}>
                         <div className="col-6 pe-0   pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
-                          <div className="text-primary category-text">
-                            <i className="ri-restaurant-line me-2"></i>
-                            <span className="">{item.menu_cat_name}</span>
+                          <div className="text-primary ">
+                            <i className="ri-restaurant-line me-2 category-text "></i>
+                            <span className="category-text">{item.menu_cat_name}</span>
                           </div>
                         </div>
                         <div className="col-1 h5 text-end px-0">
@@ -1480,15 +1437,15 @@ const Checkout = () => {
                             <span className="ms-0 me-2 text-info">
                               ₹{item.price}
                             </span>
-                            
-                              <span className="gray-text fs-6 text-decoration-line-through">
-                                ₹ {item.oldPrice || item.price}
-                              </span>
-                              <div>
+
+                            <span className="gray-text fs-6 text-decoration-line-through">
+                              ₹ {item.oldPrice || item.price}
+                            </span>
+                            <div>
                               <span className="fs-6 ps-2 offer-color">
                                 {item.offer || "No "}% Off
                               </span>
-                           </div>
+                            </div>
                           </p>
                         </div>
                       </div>
@@ -1503,25 +1460,22 @@ const Checkout = () => {
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </h5>
-                  <hr
-                        className=" mx-2 p-0 m-0  text-primary"
-                        
-                      />
-                  <div className="my-3 px-2 gray-text">
+                  <hr className=" mx-2 p-0 m-0  text-primary" />
+                  <div className="px-2 gray-text mb-0 py-1">
                     Service Charges ({serviceChargesPercent}%)
                     <span className="float-end h5">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
-                  <div className="my-3 px-2 gray-text">
+                  <div className="px-2 gray-text mb-0 py-2">
                     GST ({gstPercent}%)
                     <span className="float-end h5">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
-                  <div className="px-2 gray-text">
+                  <div className="px-2 gray-text pt-1 mb-0">
                     Discount ({discountPercent}%)
-                    <span className="float-end h5 mb-2">
+                    <span className="float-end h5">
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
@@ -1556,7 +1510,9 @@ const Checkout = () => {
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
             <h4 className="gray-text">Your Order Successfully Placed</h4>
-            <p className="gray-text">You have successfully made payment and placed your order.</p>
+            <p className="gray-text">
+              You have successfully made payment and placed your order.
+            </p>
             <button className="btn btn-success w-100 mt-3" onClick={closePopup}>
               View Order
             </button>
@@ -1569,7 +1525,10 @@ const Checkout = () => {
           <div className="popup-content ">
             <h4 className="gray-text">Note Required</h4>
             <p>Please provide a note before placing your order.</p>
-            <button className="btn btn-primary w-100 mt-3" onClick={closeNotePopup}>
+            <button
+              className="btn btn-primary w-100 mt-3"
+              onClick={closeNotePopup}
+            >
               Close
             </button>
           </div>

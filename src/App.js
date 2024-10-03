@@ -456,21 +456,35 @@ import TrackOrder from "./screens/TrackOrder";
 import Search from "./screens/Search";
 import Checkout from "./screens/Checkout";
 import MenuDetails from "./screens/MenuDetails";
+import Sidebar from "./component/Sidebar";
+import { useState, useEffect } from "react";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
+import QRScreen from "./screens/QRScreen";
+
 function App() {
-  const restaurantCode = localStorage.getItem("restaurantCode") || "568400"; // Default value
+  const restaurantCode = localStorage.getItem("restaurantCode") // Default value
   const restaurantId = localStorage.getItem("restaurantId");
+  
+
+    
+
+
+
   return (
+    <ThemeProvider>
     <RestaurantIdProvider
       restaurantCode={restaurantCode}
       restaurantId={restaurantId}
     >
       <CartProvider>
-        <Routes>
+     
+          
+        <Routes> 
           <Route
             path="/:restaurantCode/:table_number"
             element={<HomeScreen />}
@@ -482,15 +496,16 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate to={`//${restaurantCode}/1`} replace />
+              <Navigate to={`/${restaurantCode}/1`} replace />
             }
           />
           <Route
             path="/"
             element={
-              <Navigate to={`//${restaurantCode}/1`} replace />
+              <Navigate to={`/${restaurantCode}/1`} replace />
             }
           />
+
           <Route path="/Signinscreen" element={<Signinscreen />} />
           <Route path="/Signupscreen" element={<Signupscreen />} />
           <Route path="/Verifyotp" element={<Verifyotp />} />
@@ -505,10 +520,14 @@ function App() {
           <Route path="/Search" element={<Search />} />
           <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
           <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
+          <Route path="/QRScreen" element={<QRScreen />} />
         </Routes>
       </CartProvider>
     </RestaurantIdProvider>
+    </ThemeProvider>
   );
 }
 
 export default App;
+
+

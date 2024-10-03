@@ -122,6 +122,11 @@
 
 .favRating{
   margin-left: -15px; /* Adjust the value as needed */
+  margin-top: -3px;
+}
+
+.fireNegative{
+  margin-left: -10px;
 }
 
 

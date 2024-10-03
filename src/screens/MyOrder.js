@@ -224,7 +224,7 @@ const OrdersTab = ({ orders, type }) => {
                   <h5 className="card-title mb-1">{order.order_number}</h5>
                 </div>
                 <div className="col-8 text-end">
-                  <span className="card-text text-muted mb-0">
+                  <span className="card-text gray-text mb-0">
                     {formatDateTime(order.date_time)}
                   </span>
                 </div>

@@ -283,13 +283,13 @@ const Wishlist = () => {
                                 {menu.category_name}
                               </span>
                             </div>
-                            <div className="col-4 text-start px-0 ">
+                            <div className="col-4 text-start fireNegative  px-0 ">
                               {menu.spicy_index && (
                                 <div className="offer-code">
                                   {Array.from({ length: 5 }).map((_, index) =>
                                     index < menu.spicy_index ? (
                                       <i
-                                        className="ri-fire-fill fs-6"
+                                        className="ri-fire-fill fs-6 "
                                         style={{ color: "#eb8e57" }}
                                         key={index}
                                       ></i>

@@ -28,6 +28,41 @@ const MenuDetails = () => {
     );
   };
 
+  const createCart = async (customerId, restaurantId) => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/create_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: customerId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`Network response was not ok: ${response.statusText}`);
+        return null;
+      }
+
+      const data = await response.json();
+      if (data.st === 1) {
+        localStorage.setItem("cartId", data.cart_id);
+        return data.cart_id;
+      } else {
+        console.error("Failed to create cart:", data.msg);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error creating cart:", error);
+      return null;
+    }
+  };
+
   // Fetch product details
   const fetchProductDetails = async () => {
     try {
@@ -93,57 +128,24 @@ const MenuDetails = () => {
     }
   };
 
-  // Function to create a new cart
-  const createCart = async (customerId, restaurantId) => {
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/create_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            customer_id: customerId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.st === 1) {
-        localStorage.setItem("cartId", data.cart_id);
-        return data.cart_id;
-      } else {
-        console.error("Failed to create cart:", data.msg);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error creating cart:", error);
-      return null;
-    }
-  };
-
   useEffect(() => {
     fetchProductDetails();
     fetchCartDetails();
   }, [menuId, restaurantId]);
 
   const fetchCartDetails = async () => {
-    const customerId = JSON.parse(
-      localStorage.getItem("userData")
-    )?.customer_id;
+    const customerId = JSON.parse(localStorage.getItem("userData"))?.customer_id;
     let cartId = localStorage.getItem("cartId");
-
+  
     console.log("Customer ID:", customerId);
     console.log("Restaurant ID:", restaurantId);
     console.log("Cart ID:", cartId);
-
+  
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
       return;
     }
-
+  
     if (!cartId) {
       cartId = await createCart(customerId, restaurantId);
       if (!cartId) {
@@ -151,7 +153,7 @@ const MenuDetails = () => {
         return;
       }
     }
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -167,10 +169,10 @@ const MenuDetails = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
       console.log("API response data:", data);
-
+  
       if (data.st === 1) {
         setCartItems(data.order_items);
       } else if (data.st === 2) {
@@ -186,32 +188,17 @@ const MenuDetails = () => {
       console.error("Error fetching cart details:", error);
     }
   };
-
+  
   const handleAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !userData.customer_id) {
       navigate("/Signinscreen");
       return;
     }
-
-    const existingCartItem = cartItems.find((item) => item.menu_id === menuId);
-    const currentQuantity = existingCartItem ? existingCartItem.quantity : 0;
-
-    // Ensure the total quantity does not exceed 20
-    if (currentQuantity + quantity > 20) {
-      alert("You cannot add more than 20 items of this product.");
-      return;
-    }
-
-    const isAlreadyInCart = cartItems.some((item) => item.menu_id === menuId);
-    if (isAlreadyInCart) {
-      alert("The item is already added in the cart.");
-      return;
-    }
-
+  
     const customerId = userData.customer_id;
     let cartId = localStorage.getItem("cartId");
-
+  
     if (!cartId) {
       cartId = await createCart(customerId, restaurantId);
       if (!cartId) {
@@ -219,7 +206,7 @@ const MenuDetails = () => {
         return;
       }
     }
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -232,12 +219,12 @@ const MenuDetails = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             customer_id: customerId,
-            cart_id: cartId,
+            
             quantity: quantity,
           }),
         }
       );
-
+  
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item added to cart successfully.");
@@ -251,9 +238,7 @@ const MenuDetails = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  
 
   if (!productDetails) {
     return <div>Loading...</div>;
@@ -313,12 +298,11 @@ const MenuDetails = () => {
         <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
-              <div
-                className="back-btn dz-icon icon-fill icon-sm"
-                onClick={handleBack}
-              >
+            <Link to="#">
+              <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
                 <i className="ri-arrow-left-line fs-3"></i>
               </div>
+            </Link>
             </div>
             <div className="mid-content">
               <h5 className="title fs-5">Product Details</h5>
@@ -452,8 +436,8 @@ const MenuDetails = () => {
             </div>
           </div>
         </main>
-        <div className="container py-0">
-          <footer className=" footer fixed-bottom-custom">
+        <div className="container py-5 my-4">
+          <footer className="footer fixed-bottom-custom">
             <div className="row">
               <hr className="dashed-line me-5 pe-5" />
 

@@ -7,10 +7,14 @@ const Sidebar = () => {
     const { restaurantName } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { table_number } = useParams();
+
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
-  const [isDarkMode, setIsDarkMode] = useState(false); // State for theme
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Initialize state from local storage
+    return localStorage.getItem("isDarkMode") === "true";
+  });// State for theme
   const { restaurantDetails } = useRestaurantId(); // Consume context
   const isLoggedIn = !!localStorage.getItem("userData");
   // const [restaurantName, setRestaurantName] = useState(
@@ -24,6 +28,8 @@ const Sidebar = () => {
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
     }
   }, [table_number, ]);
+
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -42,18 +48,22 @@ const Sidebar = () => {
     });
   };
 
+  
+  useEffect(() => {
+    // Apply the theme class based on the current state
+    if (isDarkMode) {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
+
   const toggleTheme = () => {
     const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode); // Toggle the dark mode state
-    const body = document.body;
-    if (newIsDarkMode) {
-      body.classList.add("theme-dark");
-    } else {
-      body.classList.remove("theme-dark");
-    }
-    localStorage.setItem("isDarkMode", newIsDarkMode); // Save the state to localStorage
+    setIsDarkMode(newIsDarkMode);
+    localStorage.setItem("isDarkMode", newIsDarkMode);
   };
-  
+
   // Use useEffect to apply the theme on initial load
   useEffect(() => {
     const savedIsDarkMode = localStorage.getItem("isDarkMode") === "true";
@@ -124,19 +134,15 @@ const Sidebar = () => {
             </span>
             <div className="mail ms-3 gray-text">{userData?.mobile}</div>
             <div className="dz-mode mt-3 me-4">
-              <div className="theme-btn" onClick={toggleTheme}>
-                <i
-                  className={`ri ${
-                    isDarkMode ? "ri-sun-line" : "ri-moon-line"
-                  } sun`}
-                ></i>
-                <i
-                  className={`ri ${
-                    isDarkMode ? "ri-moon-line" : "ri-sun-line"
-                  } moon`}
-                ></i>
-              </div>
-            </div>
+        <div className="theme-btn" onClick={toggleTheme}>
+          <i
+            className={`ri ${isDarkMode ? "ri-sun-line" : "ri-moon-line"} sun`}
+          ></i>
+          <i
+            className={`ri ${isDarkMode ? "ri-moon-line" : "ri-sun-line"} moon`}
+          ></i>
+        </div>
+      </div>
           </div>
         </div>
         <ul className="nav navbar-nav">
