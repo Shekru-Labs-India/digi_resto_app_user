@@ -108,44 +108,53 @@ const Signinscreen = () => {
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
             <div className="dz-media">
-              <img src={authenticationPic1} alt="" style={{ height: "250px" }} />
+              <img
+                src={authenticationPic1}
+                alt=""
+                style={{ height: "250px" }}
+              />
             </div>
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
                 <h2 className="title text-muted">
-                  Welcome Back You've <h2 className="title mt-1 text-muted"> Been
-                  Missed!</h2>
+                  Welcome Back You've{" "}
+                  <h2 className="title mt-1 text-muted"> Been Missed!</h2>
                 </h2>
               </div>
-             
+
               <form onSubmit={(e) => e.preventDefault()}>
                 <div className="m-b15">
                   <label className="form-label fs-4" htmlFor="mobile">
                     <span className="required-star">*</span> Mobile
                   </label>
                   <div className="input-group text-muted">
-                    {mobile.trim() === "" && ( 
-                      <span className="input-group-text py-0">
-                        <i className="ri-smartphone-line fs-3 text-muted"></i>
-                      </span>
-                    )}
+                    <span className="input-group-text py-0">
+                      <i className="ri-smartphone-line fs-3 text-muted"></i>
+                    </span>
                     <input
                       type="text"
                       id="mobile"
-                      className={`form-control ${mobileError ? 'is-invalid' : ''}`}
+                      className={`form-control ${
+                        mobileError ? "is-invalid" : ""
+                      }`}
                       placeholder="Enter Mobile Number"
                       value={mobile}
                       onChange={handleMobileChange}
                     />
                   </div>
-                  {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+                  {mobileError && (
+                    <div className="invalid-feedback">{mobileError}</div>
+                  )}
                 </div>
                 {error && <p className="text-danger">{error}</p>}
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      <div className="spinner-border text-primary" role="status">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     </div>
@@ -171,7 +180,7 @@ const Signinscreen = () => {
           </div>
         </div>
       </main>
-      
+
       <div className="text-center mt-5 pt-5">
         <div className="gray-text fs-6 mt-5">Powered by </div>
         <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>

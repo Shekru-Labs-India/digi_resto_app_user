@@ -1,3 +1,47 @@
+.btn-color{
+  background: linear-gradient(45deg, #0D775E, #00513E);
+}
+
+
+
+
+.item-name{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* word-wrap: break-word; */
+
+}
+.quantity-container {
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 5px 5px;
+  background-color:  transparent;
+}
+
+.quantity-button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.quantity-text {
+  font-size: 16px;
+  margin: 0 5px;
+}
+
+
+
+
+
 .swipe-animation {
   display: block;
   white-space: nowrap;
@@ -34,6 +78,8 @@
   position: relative;
   top: -5px; /* Adjust this value as needed */
 }
+
+
 
 
 
@@ -153,7 +199,7 @@ background-color: var(--bg-white);
   position: fixed;
     bottom: 48px;
     z-index: 1; 
-    background-color: #f6f6f6;
+   
 }
 
 .menu_name {

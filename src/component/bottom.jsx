@@ -63,7 +63,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-shopping-cart-line fs-3"></i>
-          <span className="name">My Cart</span>
+          <span className="name">Cart</span>
         </Link>
         <Link
           to="/Search"

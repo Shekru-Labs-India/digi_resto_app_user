@@ -112,7 +112,6 @@ const TrackOrder = () => {
     }
   };
 
-
   if (loading || !orderDetails) {
     return (
       <div id="preloader">
@@ -187,44 +186,45 @@ const TrackOrder = () => {
                   </h5>
                 </div>
                 <div className="col-7 text-end">
-                  <span className="card-text gray-text " >
-        {formatDateTime(order_details.datetime)}
-      </span>
+                  <span className="card-text gray-text ">
+                    {formatDateTime(order_details.datetime)}
+                  </span>
                 </div>
               </div>
               <div className="row mt-2 align-items-center">
-                <div className="col-5 text-start pe-0">
-                  <p className="mb-0 fs-6 text-break">
+                <div className="col-4 pe-1">
+                  <p className="mb-0 fs-6 text-break ">
                     <i className="ri-store-2-line pe-1"></i>
                     {order_details.restaurant_name}
 
-                    <span className="ps-2 mb-0 fs-6 text-break">
+                    <span className="ps-1 mb-0 fs-6 text-break">
                       <i class="ri-user-location-line pe-1"></i>
                       {order_details.table_number}
                     </span>
                   </p>
                 </div>
-                <div className="col-3 px-0 text-center">
+                <div className="col-3 px-0 text-end">
                   <p className="mb-0 fs-6  gray-text ">
                     <i className="ri-bowl-line pe-0"></i>
                     {order_details.menu_count} Menu
                   </p>
                 </div>
-                <div className="col-4 text-start px-0">
+                <div className="col-5 text-end ps-0">
                   <span
-                    className="text-info fs-6 fw-medium"
-                    style={{ color: "#4E74FC" }}
+                    className="text-info fs-6 fw-medium " 
+                    
                   >
                     ₹{order_details.grand_total}
                   </span>
                   <span
-                    className="text-decoration-line-through ms-2"
-                    style={{ color: "#a5a5a5", fontSize: "0.8em" }}
+                    className="text-decoration-line-through ms-2 gray-text"
+                    
                   >
                     ₹
                     {(
-                      (order_details.grand_total || 0) +
-                      (order_details.discount || 0)
+                      order_details.grand_total /
+                        (1 - order_details.discount_percent / 100) ||
+                      order_details.grand_total
                     ).toFixed(2)}
                   </span>
                 </div>
@@ -255,11 +255,11 @@ const TrackOrder = () => {
         ) : (
           <div className="card-body p-0">
             <div className="card">
-              <div className="row py-2 px-2 h-100">
-                <div className="col-3 d-flex align-items-center justify-content-center">
+              <div className="row py-2 ps-2 pe-0 h-100">
+                <div className="col-3 d-flex align-items-center justify-content-center pe-2">
                   <OrderGif />
                 </div>
-                <div className="col-9 d-flex align-items-center justify-content-center px-0">
+                <div className="col-8 d-flex align-items-center justify-content-center px-0">
                   <div className="text-center mb-0">
                     <div className=" fw-medium" style={{ fontSize: "14px" }}>
                       You have the best taste in food.
@@ -307,7 +307,7 @@ const TrackOrder = () => {
                         <div className="row">
                           <div className="col-5 pe-0">
                             <i className="ri-restaurant-line pe-1 text-primary"></i>
-                            <span className="category-text text-primary fs-xs ">
+                            <span className="category-text text-primary fs-xs  ">
                               {menu.category_name}
                             </span>
                           </div>

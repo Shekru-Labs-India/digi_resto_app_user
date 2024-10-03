@@ -43,14 +43,27 @@ const Sidebar = () => {
   };
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode); // Toggle the dark mode state
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode); // Toggle the dark mode state
     const body = document.body;
-    if (isDarkMode) {
-      body.classList.remove("theme-dark");
-    } else {
+    if (newIsDarkMode) {
       body.classList.add("theme-dark");
+    } else {
+      body.classList.remove("theme-dark");
     }
+    localStorage.setItem("isDarkMode", newIsDarkMode); // Save the state to localStorage
   };
+  
+  // Use useEffect to apply the theme on initial load
+  useEffect(() => {
+    const savedIsDarkMode = localStorage.getItem("isDarkMode") === "true";
+    setIsDarkMode(savedIsDarkMode);
+    if (savedIsDarkMode) {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+  }, []);
 
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
@@ -164,7 +177,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-shopping-cart-line fs-3"></i>
               </span>
-              <span>My Cart</span>
+              <span>Cart</span>
             </Link>
           </li>
           <li>

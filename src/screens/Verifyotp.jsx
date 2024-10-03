@@ -450,22 +450,20 @@ const Verifyotp = () => {
                   <span className="required-star">*</span>OTP
                 </label>
                 <div id="otp" className="digit-group">
-                  <div className="input-group text-muted">
-                    {otp.trim() === "" && (
-                      <span className="input-group-text py-0">
-                        <i className="ri-lock-line fs-3 text-muted"></i>
-                      </span>
-                    )}
-                    <input
-                      className="form-control text-start"
-                      type="number"
-                      id="digit-1"
-                      name="digit-1"
-                      value={otp}
-                      onChange={handleOtpChange}
-                      placeholder="Enter OTP"
-                    />
-                  </div>
+                <div className="input-group text-muted">
+  <span className="input-group-text py-0">
+    <i className="ri-lock-line fs-3 text-muted"></i>
+  </span>
+  <input
+    className="form-control text-start"
+    type="number"
+    id="digit-1"
+    name="digit-1"
+    value={otp}
+    onChange={handleOtpChange}
+    placeholder="Enter OTP"
+  />
+</div>
                 </div>
                 <p>
                   An Authentication Code Has Sent

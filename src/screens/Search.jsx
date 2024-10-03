@@ -1786,7 +1786,7 @@ const Search = () => {
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
               <div
-                className="fw-normal fs-6 gray-text"
+                className="fw-semibold fs-6 gray-text"
                 onClick={handleClearAll}
               >
                 Clear All
@@ -1848,7 +1848,7 @@ const Search = () => {
                           <span className="ms-3 me-1 text-info">
                             ₹{menu.price}
                           </span>
-                          <span className="gray-text fs-6 text-decoration-line-through">
+                          <span className="gray-text fs-6 old-price text-decoration-line-through">
                             ₹{menu.oldPrice || menu.price}
                           </span>
                         </p>
@@ -1859,7 +1859,7 @@ const Search = () => {
                           onClick={() => handleMenuClick(menu.menu_id)}
                           style={{ cursor: "pointer" }}
                         >
-                          <span className="fs-6 px-0 text-start offer-color">
+                          <span className="fs-6 px-0 text-start offer-color offer ">
                             {menu.offer || "No "}% Off
                           </span>
                         </p>

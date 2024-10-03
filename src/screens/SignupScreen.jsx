@@ -30,7 +30,7 @@ const Signupscreen = () => {
       return;
     }
     if (!agreed) {
-      setCheckboxError("Please click the checkbox");
+      setCheckboxError("Please select the privacy!");
       setError(""); // Clear general error if checkbox is not checked
       if (checkboxRef.current) {
         checkboxRef.current.classList.add("shake");
@@ -141,11 +141,34 @@ const Signupscreen = () => {
     );
   };
 
+  const handleDobInput = (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  
+    // Automatically add hyphens as the user types
+    if (value.length > 2) {
+      value = value.slice(0, 2) + '-' + value.slice(2);
+    }
+    if (value.length > 5) {
+      value = value.slice(0, 5) + '-' + value.slice(5);
+    }
+  
+    // Limit to 10 characters (dd-mm-yyyy)
+    if (value.length > 10) {
+      value = value.slice(0, 10);
+    }
+  
+    e.target.value = value;
+    setDob(value);
+  };
+  
   const handleDobChange = (e) => {
     const value = e.target.value;
     setDob(value);
+    const datePattern = /^\d{2}-\d{2}-\d{4}$/; // Regex for dd-mm-yyyy format
     if (value.trim() === "") {
       setDobError("Date of Birth is required");
+    } else if (!datePattern.test(value)) {
+      setDobError("Date of Birth must be in dd-mm-yyyy format");
     } else {
       setDobError("");
     }
@@ -204,24 +227,25 @@ const Signupscreen = () => {
                   {mobileError && <div className="invalid-feedback">{mobileError}</div>}
                 </div>
                 <div className="m-b15">
-                  <label className="form-label fs-4" htmlFor="dob">
-                    <span className="required-star">*</span> Date of Birth
-                  </label>
-                  <div className="input-group">
-                    <span className="input-group-text fs-3 py-0">
-                      <i className="ri-calendar-line text-muted" />
-                    </span>
-                    <input
-                      type="date"
-                      id="dob"
-                      className={`form-control ${dobError ? "is-invalid" : ""}`}
-                      placeholder="yyyy-mm-dd"
-                      value={dob}
-                      onChange={handleDobChange}
-                    />
-                  </div>
-                  {dobError && <div className="invalid-feedback">{dobError}</div>}
-                </div>
+  <label className="form-label fs-4" htmlFor="dob">
+    <span className="required-star">*</span> Date of Birth
+  </label>
+  <div className="input-group">
+    <span className="input-group-text fs-3 py-0">
+      <i className="ri-calendar-line text-muted" />
+    </span>
+    <input
+      type="text"
+      id="dob"
+      className={`form-control ${dobError ? "is-invalid" : ""}`}
+      placeholder="dd-mm-yyyy"
+      value={dob}
+      onChange={handleDobChange}
+      onInput={handleDobInput}
+    />
+  </div>
+  {dobError && <div className="invalid-feedback">{dobError}</div>}
+</div>
                 <div className="form-check m-b25" ref={checkboxRef}>
                   <input
                     className="form-check-input"

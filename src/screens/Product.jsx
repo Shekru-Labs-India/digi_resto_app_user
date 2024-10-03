@@ -1919,6 +1919,35 @@ const Product = () => {
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
   
 
+  const applySort = () => {
+    let sortedList = [...filteredMenuList];
+    switch (sortCriteria) {
+      case 'popularity':
+        // Assuming there's a 'popularity' field in the menu items
+        sortedList.sort((a, b) => b.popularity - a.popularity);
+        break;
+      case 'discount':
+        // Assuming there's a 'discount' field in the menu items
+        sortedList.sort((a, b) => b.discount - a.discount);
+        break;
+      case 'priceHighToLow':
+        sortedList.sort((a, b) => b.price - a.price);
+        break;
+      case 'priceLowToHigh':
+        sortedList.sort((a, b) => a.price - b.price);
+        break;
+      case 'rating':
+        // Assuming there's a 'rating' field in the menu items
+        sortedList.sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        break;
+    }
+    setFilteredMenuList(sortedList);
+  };
+
+  
+
   // Fetch menu data using a single API
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId || isLoading) return;
@@ -2300,8 +2329,8 @@ const Product = () => {
                           state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
                         >
                           <i
-                            className="ri-restaurant-line"
-                            style={{ paddingRight: "5px" }}
+                            className="ri-restaurant-line pe-1"
+                            
                           ></i>
                           {categories.find(
                             (category) =>
@@ -2312,8 +2341,8 @@ const Product = () => {
                       <i
                         className={`${
                           menuItem.is_favourite
-                            ? "ri-hearts-fill fs-3"
-                            : "ri-heart-2-line fs-3"
+                            ? "ri-hearts-fill fs-3 mt-0"
+                            : "ri-heart-2-line fs-3 mt-0"
                         }`}
                         onClick={() => handleLikeClick(menuItem.menu_id)}
                         style={{
@@ -2421,6 +2450,51 @@ const Product = () => {
             ))}
           </div>
         </div>
+
+
+        {/* <div className="dz-sorting">
+        <ul className="list-unstyled mb-0">
+          {[
+            { key: 'popularity', icon: 'ri-star-line', label: 'Popularity' },
+            { key: 'discount', icon: 'ri-discount-percent-line', label: 'Discount' },
+            { key: 'priceHighToLow', icon: 'ri-arrow-up-line', label: 'Price High to Low' },
+            { key: 'priceLowToHigh', icon: 'ri-arrow-down-line', label: 'Price Low to High' },
+            { key: 'rating', icon: 'ri-star-half-line', label: 'Customer Rating' }
+          ].map(({ key, icon, label }) => (
+            <li
+              key={key}
+              className={`sort-item ${sortCriteria === key ? 'active' : ''}`}
+              onClick={() => setSortCriteria(key)}
+              style={{
+                backgroundColor: sortCriteria === key ? '#0D775E' : 'transparent',
+                color: sortCriteria === key ? '#ffffff' : 'inherit',
+                padding: '10px 15px',
+                borderRadius: '8px',
+                marginBottom: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <i className={`${icon} me-2`} style={{ fontSize: '18px' }}></i>
+              {label}
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={() => setSortByOpen(false)}
+          className="btn btn-outline-secondary w-45 rounded-xl"
+          style={{ borderColor: '#0D775E', color: '#0D775E' }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={applySort}
+          className="btn btn-primary w-45 rounded-xl"
+          style={{ backgroundColor: '#0D775E', borderColor: '#0D775E' }}
+        >
+          Apply
+        </button>
+      </div> */}
       </main>
 
       <Bottom />

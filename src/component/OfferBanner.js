@@ -1154,7 +1154,7 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content" style={{ display: "block" }}>
-                        <span className="h6 ms-0 text-wrap title mb-0">{menu.name}</span>
+                        <span className="h6 ms-0  item-name title mb-0">{menu.name}</span>
                         <ul className="dz-meta mt-2">
                           <p className="mb-2 fs-4 fw-medium">
                             <span className="ms-0 me-2 text-info">

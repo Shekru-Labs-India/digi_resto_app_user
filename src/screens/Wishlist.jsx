@@ -155,11 +155,16 @@ const Wishlist = () => {
             }),
           }
         );
-
+    
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && Array.isArray(data.lists)) {
-            setMenuList(data.lists);
+            // Calculate old price for each item
+            const updatedMenuList = data.lists.map((item) => ({
+              ...item,
+              oldPrice: Math.floor(item.price * 1.1), // Old price calculation
+            }));
+            setMenuList(updatedMenuList);
           } else {
             console.error("Invalid data format:", data);
           }
@@ -273,12 +278,12 @@ const Wishlist = () => {
                         >
                           <div className="row">
                             <div className="col-6 pe-0 ps-4">
-                              <i className="ri-restaurant-line mt-0 me-2 text-primary"></i>
+                              <i className="ri-restaurant-line mt-0 me-1 text-primary"></i>
                               <span className="text-primary">
                                 {menu.category_name}
                               </span>
                             </div>
-                            <div className="col-4 text-start px-0">
+                            <div className="col-4 text-start px-0 ">
                               {menu.spicy_index && (
                                 <div className="offer-code">
                                   {Array.from({ length: 5 }).map((_, index) =>

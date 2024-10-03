@@ -1265,12 +1265,12 @@ const Checkout = () => {
       customerId,
       restaurantId,
     });
-
+  
     if (!cartId || !customerId || !restaurantId) {
       alert("Missing cart, customer, or restaurant data.");
       return;
     }
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail",
@@ -1286,12 +1286,17 @@ const Checkout = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
       console.log("API Data:", data);
-
+  
       if (response.ok) {
-        setCartItems(data.order_items || []);
+        // Calculate old price for each item
+        const updatedOrderItems = data.order_items.map((item) => ({
+          ...item,
+          oldPrice: Math.floor(item.price * 1.1), // Old price calculation
+        }));
+        setCartItems(updatedOrderItems);
         setTotal(parseFloat(data.total_bill) || 0);
         setDiscount(parseFloat(data.discount_amount) || 0);
         setTax(parseFloat(data.gst_amount) || 0);
@@ -1339,17 +1344,27 @@ const Checkout = () => {
       setShowNotePopup(true);
       return;
     }
-
+  
     if (validationMessage) {
       alert(validationMessage);
       return;
     }
-
+  
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
     }));
-
+  
+    // Capture the current system time
+    const currentTime = new Date();
+    const formattedTime = currentTime.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Ensure local time zone is used
+    });
+  
     const orderData = {
       customer_id: customerId,
       restaurant_id: restaurantId,
@@ -1357,8 +1372,9 @@ const Checkout = () => {
       note: notes,
       order_items: orderItems,
       table_number: tableNumber, // Use tableNumber from userData
+      order_time: formattedTime, // Add the current time to the order data
     };
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/create_order",
@@ -1370,9 +1386,9 @@ const Checkout = () => {
           body: JSON.stringify(orderData),
         }
       );
-
+  
       const responseData = await response.json();
-
+  
       if (response.ok) {
         setShowPopup(true);
       } else {
@@ -1451,9 +1467,9 @@ const Checkout = () => {
                       <div className="row justify-content-center" key={index}>
                         <div className="col-6 pe-0   pb-1">
                           <h5 className="mb-0">{item.menu_name}</h5>
-                          <div className="text-primary">
+                          <div className="text-primary category-text">
                             <i className="ri-restaurant-line me-2"></i>
-                            <span>{item.menu_cat_name}</span>
+                            <span className="">{item.menu_cat_name}</span>
                           </div>
                         </div>
                         <div className="col-1 h5 text-end px-0">
