@@ -13,12 +13,29 @@ const MenuDetails = () => {
   const [totalAmount, setTotalAmount] = useState(0); // Total amount state
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
-  const { menuId } = useParams();
+  const { menuId: menuIdString } = useParams();
+  const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const { addToCart } = useCart();
   const location = useLocation();
   const menu_cat_id = location.state?.menu_cat_id || 1;
+  const [cartDetails, setCartDetails] = useState({ order_items: [] });
+
+  const getCustomerId = () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData ? userData.customer_id : null;
+  };
+
+  const getRestaurantId = () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData && userData.restaurantId ? userData.restaurantId : null;
+  };
+
+  const getCartId = () => {
+    const cartId = localStorage.getItem("cartId");
+    return cartId ? parseInt(cartId, 10) : 1;
+  };
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -28,40 +45,7 @@ const MenuDetails = () => {
     );
   };
 
-  const createCart = async (customerId, restaurantId) => {
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/create_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            customer_id: customerId,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        console.error(`Network response was not ok: ${response.statusText}`);
-        return null;
-      }
-
-      const data = await response.json();
-      if (data.st === 1) {
-        localStorage.setItem("cartId", data.cart_id);
-        return data.cart_id;
-      } else {
-        console.error("Failed to create cart:", data.msg);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error creating cart:", error);
-      return null;
-    }
-  };
+  
 
   // Fetch product details
   const fetchProductDetails = async () => {
@@ -95,6 +79,7 @@ const MenuDetails = () => {
             image,
             offer,
             rating,
+            
           } = data.details;
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
@@ -113,6 +98,7 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
+            
           });
 
           // Set the initial total amount
@@ -130,64 +116,55 @@ const MenuDetails = () => {
 
   useEffect(() => {
     fetchProductDetails();
-    fetchCartDetails();
+    
   }, [menuId, restaurantId]);
 
-  const fetchCartDetails = async () => {
-    const customerId = JSON.parse(localStorage.getItem("userData"))?.customer_id;
-    let cartId = localStorage.getItem("cartId");
+ 
+  // const fetchCartDetails = async () => {
+  //   const customerId = getCustomerId();
+  //   const restaurantId = getRestaurantId();
+  //   const cartId = getCartId();
   
-    console.log("Customer ID:", customerId);
-    console.log("Restaurant ID:", restaurantId);
-    console.log("Cart ID:", cartId);
+  //   if (!customerId || !restaurantId) {
+  //     console.error("Customer ID or Restaurant ID is not available.");
+  //     return;
+  //   }
   
-    if (!customerId || !restaurantId) {
-      console.error("Missing required data");
-      return;
-    }
+  //   try {
+  //     const response = await fetch(
+  //       "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           cart_id: cartId,
+  //           customer_id: customerId,
+  //           restaurant_id: restaurantId,
+  //         }),
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     console.log("API response data:", data); // Debug log
   
-    if (!cartId) {
-      cartId = await createCart(customerId, restaurantId);
-      if (!cartId) {
-        console.error("Failed to create cart");
-        return;
-      }
-    }
-  
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
-  
-      const data = await response.json();
-      console.log("API response data:", data);
-  
-      if (data.st === 1) {
-        setCartItems(data.order_items);
-      } else if (data.st === 2) {
-        console.error("Cart not found, creating a new cart.");
-        cartId = await createCart(customerId, restaurantId);
-        if (cartId) {
-          fetchCartDetails(); // Retry fetching cart details
-        }
-      } else {
-        console.error("Failed to fetch cart details:", data.msg);
-      }
-    } catch (error) {
-      console.error("Error fetching cart details:", error);
-    }
-  };
+  //     if (data.st === 1) {
+  //       // Calculate old price for each item
+  //       const updatedOrderItems = data.order_items.map((item) => ({
+  //         ...item,
+  //         oldPrice: Math.floor(item.price * 1.1), // Old price calculation
+  //       }));
+  //       setCartDetails({ ...data, order_items: updatedOrderItems });
+  //       console.log("Cart details set:", data); // Debug log
+  //     } else if (data.st === 2) {
+  //       setCartDetails({ order_items: [] });
+  //     } else {
+  //       console.error("Failed to fetch cart details:", data.msg);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching cart details:", error);
+  //   }
+  // };
   
   const handleAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -205,7 +182,15 @@ const MenuDetails = () => {
         console.error("Failed to create cart");
         return;
       }
+      localStorage.setItem("cartId", cartId); // Store the cart ID
     }
+
+    if (isMenuItemInCart(menuId)) {
+      alert("This item is already in the cart");
+      navigate("/Cart");
+      return;
+    }
+
   
     try {
       const response = await fetch(
@@ -216,10 +201,9 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            customer_id: customerId,
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: customerId,
-            
             quantity: quantity,
           }),
         }
@@ -228,7 +212,10 @@ const MenuDetails = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item added to cart successfully.");
-        fetchCartDetails(); // Refresh cart details
+       
+        localStorage.setItem("cartId", data.cart_id);
+        
+        
         navigate("/Cart");
       } else {
         console.error("Failed to add item to cart:", data.msg);
@@ -237,6 +224,13 @@ const MenuDetails = () => {
       console.error("Error adding item to cart:", error);
     }
   };
+
+  const isMenuItemInCart = (menuId) => {
+    return cartItems.some((item) => item.menu_id === menuId);
+  };
+  
+ 
+
 
   
 
@@ -436,7 +430,7 @@ const MenuDetails = () => {
             </div>
           </div>
         </main>
-        <div className="container py-5 my-4">
+        <div className="container">
           <footer className="footer fixed-bottom-custom">
             <div className="row">
               <hr className="dashed-line me-5 pe-5" />

@@ -706,7 +706,7 @@ const Category = () => {
             <div className="header-content">
               <div className="left-conten ">
                 <Link
-                  to={'#'}
+                  to={"#"}
                   className="back-btn dz-icon icon-sm"
                   onClick={() => navigate(-1)}
                 >
@@ -714,16 +714,16 @@ const Category = () => {
                 </Link>
               </div>
               <div className="mid-content">
-              <h5 className="title">
-  Category
-  {totalCategoriesCount > 0 && (
-    <span className=" small-number gray-text">
-      {" ("}
-      <span className="">{totalCategoriesCount}</span>
-      {")"}
-    </span>
-  )}
-</h5>
+                <h5 className="title">
+                  Category
+                  {totalCategoriesCount > 0 && (
+                    <span className=" small-number gray-text">
+                      {" ("}
+                      <span className="">{totalCategoriesCount}</span>
+                      {")"}
+                    </span>
+                  )}
+                </h5>
               </div>
             </div>
           </header>
@@ -731,37 +731,38 @@ const Category = () => {
 
           <main className="page-content space-top p-b70">
             <div className="container">
-            <div className="row g-3">
-  {categories.map((category, index) => (
-    <div className="col-6" key={index}>
-      <div className="dz-category-items border border-success overflow-hidden rounded-4 d-flex flex-column">
-        <Link
-          to="/Menu"
-          onClick={() => handleCategoryClick(category)}
-          className="d-block"
-        >
-          <div className="dz-media category-image flex-grow-1 rounded-top-3 rounded-bottom-0">
-            <img
-              style={{
-                width: "100%",
-                height: "180px",
-                objectFit: "cover",
-              }}
-              src={category.image || defaultImg}
-              alt={category.category_name}
-              onError={(e) => {
-                e.target.src = south;
-              }}
-            />
-          </div>
-          <h6 className="py-2 rounded-bottom-3 bg-white w-100 text-center m-0">
-            {toTitleCase(category.category_name)} ({category.menu_count})
-          </h6>
-        </Link>
-      </div>
-    </div>
-  ))}
-</div>
+              <div className="row g-3">
+                {categories.map((category, index) => (
+                  <div className="col-6" key={index}>
+                    <div className="dz-category-items border border-success overflow-hidden rounded-4 d-flex flex-column">
+                      <Link
+                        to="/Menu"
+                        onClick={() => handleCategoryClick(category)}
+                        className="d-block"
+                      >
+                        <div className="dz-media category-image flex-grow-1 rounded-top-3 rounded-bottom-0">
+                          <img
+                            style={{
+                              width: "100%",
+                              height: "180px",
+                              objectFit: "cover",
+                            }}
+                            src={category.image || defaultImg}
+                            alt={category.category_name}
+                            onError={(e) => {
+                              e.target.src = south;
+                            }}
+                          />
+                        </div>
+                        <h6 className="py-2 rounded-bottom-3 bg-white w-100 text-center m-0">
+                          {toTitleCase(category.category_name)} (
+                          {category.menu_count})
+                        </h6>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </main>
 

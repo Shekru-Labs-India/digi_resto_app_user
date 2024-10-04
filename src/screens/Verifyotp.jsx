@@ -341,22 +341,41 @@ import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
 import pic4 from "../assets/background.jpg";
 
+
+
 const Verifyotp = () => {
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const restaurantCode = localStorage.getItem("restaurantCode") ;
-  // Get mobile and otp from localStorage
+  const restaurantCode = localStorage.getItem("restaurantCode");
   const mobile = localStorage.getItem("mobile");
   const otpStored = localStorage.getItem("otp");
 
-  const handleOtpChange = (e) => {
-    setOtp(e.target.value.trim());
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) { // Only allow digits
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      // Move focus to the next input if a digit is entered
+      if (value && index < otp.length - 1) {
+        document.getElementById(`digit-${index + 2}`).focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      // Move focus to the previous input if backspace is pressed and current input is empty
+      document.getElementById(`digit-${index}`).focus();
+    }
   };
 
   const handleVerify = async () => {
-    if (!otp.trim()) {
+    const enteredOtp = otp.join("");
+    if (!enteredOtp.trim()) {
       setError("OTP is required");
       return;
     }
@@ -371,8 +390,8 @@ const Verifyotp = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          mobile: mobile, // Use mobile from localStorage
-          otp: otpStored || otp, // Use stored OTP if available, else use the entered OTP
+          mobile: mobile,
+          otp: otpStored || enteredOtp,
         }),
       };
 
@@ -383,11 +402,9 @@ const Verifyotp = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Check for successful OTP verification
       if (data.st === 1) {
         console.log("OTP verification success:", data);
 
-        // Store customer details in local storage
         const { customer_id, name, dob, mobile, restaurantId, tableNumber } =
           data.customer_details;
         const tempRestaurantId = localStorage.getItem("tempRestaurantId");
@@ -396,19 +413,15 @@ const Verifyotp = () => {
           customer_id,
           name,
           dob,
-          mobile, // Store mobile number
+          mobile,
           restaurantId: tempRestaurantId || restaurantId,
           tableNumber: tempTableNumber || tableNumber || "1",
           restaurantCode: restaurantCode,
         };
         localStorage.setItem("userData", JSON.stringify(userData));
 
-        // Redirect to the HomeScreen with restaurantCode and table_number
-        navigate(
-          `/${userData.restaurantCode}/${userData.tableNumber}`
-        );
+        navigate(`/${userData.restaurantCode}/${userData.tableNumber}`);
 
-        // Clear temporary storage
         localStorage.removeItem("tempRestaurantId");
         localStorage.removeItem("tempTableNumber");
         localStorage.removeItem("lastRestaurantId");
@@ -426,7 +439,7 @@ const Verifyotp = () => {
     }
   };
 
-  const isOtpEntered = otp.trim().length > 0;
+  const isOtpEntered = otp.every((digit) => digit.trim().length > 0);
 
   return (
     <div className="page-wrapper full-height">
@@ -450,20 +463,19 @@ const Verifyotp = () => {
                   <span className="required-star">*</span>OTP
                 </label>
                 <div id="otp" className="digit-group">
-                <div className="input-group text-muted">
-  <span className="input-group-text py-0">
-    <i className="ri-lock-line fs-3 text-muted"></i>
-  </span>
-  <input
-    className="form-control text-start"
-    type="number"
-    id="digit-1"
-    name="digit-1"
-    value={otp}
-    onChange={handleOtpChange}
-    placeholder="Enter OTP"
-  />
-</div>
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      className="form-control text-center"
+                      type="text"
+                      id={`digit-${index + 1}`}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(e, index)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      maxLength="1"
+                      style={{ width: "50px", marginRight: "5px" }}
+                    />
+                  ))}
                 </div>
                 <p>
                   An Authentication Code Has Sent
@@ -485,7 +497,7 @@ const Verifyotp = () => {
                   <button
                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
                     onClick={handleVerify}
-                    disabled={!isOtpEntered} // Disable button if OTP is not entered
+                    disabled={!isOtpEntered}
                   >
                     Verify OTP
                   </button>

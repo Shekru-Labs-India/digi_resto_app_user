@@ -1593,6 +1593,8 @@ const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchedMenu, setSearchedMenu] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false); // Track if history should be shown
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -1620,6 +1622,12 @@ const Search = () => {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
+
+  useEffect(() => {
+    const storedHistory =
+      JSON.parse(localStorage.getItem("searchHistory")) || [];
+    setSearchHistory(storedHistory);
+  }, []);
 
   useEffect(() => {
     const fetchSearchedMenu = async () => {
@@ -1666,6 +1674,18 @@ const Search = () => {
               oldPrice: Math.floor(menu.price * 1.1),
             }));
             setSearchedMenu(formattedMenu);
+            // Update search history
+            const updatedHistory = [
+              debouncedSearchTerm,
+              ...searchHistory.filter((term) => term !== debouncedSearchTerm),
+            ];
+            setSearchHistory(updatedHistory);
+            localStorage.setItem(
+              "searchHistory",
+              JSON.stringify(updatedHistory)
+            );
+            
+            setShowHistory(false);
           } else {
             console.error("Invalid data format:", data);
           }
@@ -1738,6 +1758,8 @@ const Search = () => {
   const handleClearAll = () => {
     setSearchedMenu([]);
     setSearchTerm("");
+    setSearchHistory([]);
+    localStorage.removeItem("searchHistory");
   };
 
   const handleMenuClick = (menuId) => {
@@ -1749,6 +1771,12 @@ const Search = () => {
     } else {
       console.error("Menu item not found in local storage");
     }
+  };
+
+  const handleHistoryClick = (term) => {
+    setSearchTerm(term);
+    setDebouncedSearchTerm(term);
+    setShowHistory(false); // Hide history when a term is clicked
   };
 
   return (
@@ -1780,8 +1808,22 @@ const Search = () => {
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
+              onFocus={() => setShowHistory(true)}
             />
           </div>
+          {searchHistory.length > 0 && (
+            <div className="search-history">
+              <h6 className="gray-text">Search History</h6>
+              <ul>
+                {searchHistory.map((term, index) => (
+                  <li className="h6" key={index} onClick={() => handleHistoryClick(term)}>
+                    {term}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
@@ -1797,10 +1839,7 @@ const Search = () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div
-              className="card mb-3"
-              key={menu.menu_id}
-            >
+            <div className="card mb-3" key={menu.menu_id}>
               <div className="card-body py-0">
                 <div className="row">
                   <div className="col-3 px-0">
@@ -1813,7 +1852,6 @@ const Search = () => {
                         e.target.src = images;
                       }}
                       onClick={() => handleMenuClick(menu.menu_id)}
-                     
                     />
                   </div>
                   <div className="col-8 pt-2 pb-0 pe-0 ps-2">

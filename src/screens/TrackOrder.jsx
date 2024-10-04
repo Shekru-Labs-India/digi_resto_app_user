@@ -306,8 +306,8 @@ const TrackOrder = () => {
                         <h5 className=" mt-0  mb-0">{menu.menu_name}</h5>
                         <div className="row">
                           <div className="col-5 pe-0">
-                            <i className="ri-restaurant-line pe-1 text-primary"></i>
-                            <span className="category-text text-primary fs-xs  ">
+                            <i className="ri-restaurant-line pe-1 category-text fs-xs "></i>
+                            <span className="category-text fs-xs  ">
                               {menu.category_name}
                             </span>
                           </div>

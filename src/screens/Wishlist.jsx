@@ -277,13 +277,13 @@ const Wishlist = () => {
                           }}
                         >
                           <div className="row">
-                            <div className="col-6 pe-0 ps-4">
-                              <i className="ri-restaurant-line mt-0 me-1 text-primary"></i>
-                              <span className="text-primary">
+                            <div className="col-5 pe-0 ps-4">
+                              <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs "></i>
+                              <span className="category-text fs-xs  ">
                                 {menu.category_name}
                               </span>
                             </div>
-                            <div className="col-4 text-start fireNegative  px-0 ">
+                            <div className="col-5 text-center fireNegative  ps-0 ">
                               {menu.spicy_index && (
                                 <div className="offer-code">
                                   {Array.from({ length: 5 }).map((_, index) =>

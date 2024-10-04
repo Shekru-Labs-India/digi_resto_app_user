@@ -1882,8 +1882,8 @@
 
 
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useRef} from "react";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
@@ -1917,7 +1917,9 @@ const Product = () => {
   const initialFetchDone = useRef(false);
   const swiperRef = useRef(null); // Define swiperRef
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
+  const { restaurantName } = useRestaurantId();
   
+  const { table_number } = useParams();
 
   const applySort = () => {
     let sortedList = [...filteredMenuList];
@@ -2111,12 +2113,25 @@ const Product = () => {
       setFilteredMenuList(filteredMenus);
     }
   };
+  
+  useEffect(() => {
+    // Extract category ID from query parameters
+    const queryParams = new URLSearchParams(location.search);
+    const categoryId = queryParams.get("category");
+
+    if (categoryId) {
+      setSelectedCategory(parseInt(categoryId, 10));
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (categories.length > 0) {
       swiperRef.current = new Swiper(".category-slide", {
         slidesPerView: "auto",
         spaceBetween: 10,
+        initialSlide: categories.findIndex(
+          (category) => category.menu_cat_id === selectedCategory
+        ),
       });
 
       // Add scroll event listener
@@ -2127,7 +2142,7 @@ const Product = () => {
         }
       });
     }
-  }, [categories]);
+  }, [categories,selectedCategory]);
 
   // Add item to cart
   const handleAddToCartClick = async (menuItem) => {
@@ -2197,6 +2212,9 @@ const Product = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
+
+  
+ 
   
 
   return (
@@ -2239,13 +2257,18 @@ const Product = () => {
 
           <div className="header-content d-flex justify-content-end">
             <div className="right-content gap-1">
-              <h3 className="title fw-medium hotel-name mb-0">
-                VIRAJHOTEL
-                <i className="ri-store-2-line ps-2"></i>
-              </h3>
-              <h6 className="title fw-medium h6 custom-text-gray table-number">
-                Table: 1
-              </h6>
+            <h3 className="title fw-medium hotel-name">
+              {/* {userData.restaurantName && userData.restaurantName.length > 0
+                ? userData.restaurantName.toUpperCase()
+                : "Restaurant Default"} */}
+
+              {restaurantName || "Restaurant Name"}
+              <i className="ri-store-2-line ps-2"></i>
+            </h3>
+            {/* <h2>{restaurantName || "Restaurant Name"}</h2> */}
+            <h6 className="title fw-medium h6 custom-text-gray table-number">
+              Table: {userData.tableNumber || ""}
+            </h6>
             </div>
           </div>
         </div>

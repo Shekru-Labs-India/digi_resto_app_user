@@ -11,6 +11,7 @@ const Signinscreen = () => {
   const [mobileError, setMobileError] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [accountCreated, setAccountCreated] = useState(false);
@@ -63,6 +64,7 @@ const Signinscreen = () => {
         localStorage.setItem("mobile", mobile); // Store mobile number
         localStorage.setItem("otp", otp); // Store OTP
 
+        setOtpSent(true);
         // Navigate to Verifyotp component
         navigate("/Verifyotp");
 
@@ -141,6 +143,7 @@ const Signinscreen = () => {
                       placeholder="Enter Mobile Number"
                       value={mobile}
                       onChange={handleMobileChange}
+                      disabled={otpSent}
                     />
                   </div>
                   {mobileError && (
@@ -166,7 +169,7 @@ const Signinscreen = () => {
                     onClick={handleSignIn}
                     disabled={!isMobileValid} // Disable button if mobile is invalid
                   >
-                    Sign In
+                    Send OTP
                   </button>
                 )}
               </form>
