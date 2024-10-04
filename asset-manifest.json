@@ -1,23 +1,28 @@
 {
   "files": {
-    "main.css": "/digi_resto_app_user/static/css/main.e013aae6.css",
-    "main.js": "/digi_resto_app_user/static/js/main.143cccac.js",
+    "main.css": "/digi_resto_app_user/static/css/main.050063bf.css",
+    "main.js": "/digi_resto_app_user/static/js/main.9a07823b.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/order_success.gif": "/digi_resto_app_user/static/media/order_success.ff087a254745acb5e294.gif",
     "static/media/stew.gif": "/digi_resto_app_user/static/media/stew.ff087a254745acb5e294.gif",
+    "static/media/primeicons.svg": "/digi_resto_app_user/static/media/primeicons.6ed59f962963a4a73af2.svg",
     "static/media/splash2.jpg": "/digi_resto_app_user/static/media/splash2.bf9840bff9ed4548a01a.jpg",
     "static/media/mmua_transparent.png": "/digi_resto_app_user/static/media/mmua_transparent.c8b5a8c77c0f30a9559c.png",
     "static/media/background.jpg": "/digi_resto_app_user/static/media/background.779f81d1eb8c2285dca9.jpg",
+    "static/media/primeicons.eot": "/digi_resto_app_user/static/media/primeicons.ff0c4cd79b2ffca2de54.eot",
+    "static/media/primeicons.woff": "/digi_resto_app_user/static/media/primeicons.8931fda1930c3bd21e96.woff",
+    "static/media/primeicons.ttf": "/digi_resto_app_user/static/media/primeicons.a5c2a53d1ff7a9ff5933.ttf",
+    "static/media/primeicons.woff2": "/digi_resto_app_user/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "static/media/chiken.jpg": "/digi_resto_app_user/static/media/chiken.f854f364c15359a79764.jpg",
     "static/media/Menu Mitra logo 1.png": "/digi_resto_app_user/static/media/Menu Mitra logo 1.f2669b4d1fd2fad7e4ff.png",
     "static/media/wave.svg": "/digi_resto_app_user/static/media/wave.d71cd8ede0bc135abc345b708cdc47ac.svg",
     "index.html": "/digi_resto_app_user/index.html",
-    "main.e013aae6.css.map": "/digi_resto_app_user/static/css/main.e013aae6.css.map",
-    "main.143cccac.js.map": "/digi_resto_app_user/static/js/main.143cccac.js.map",
+    "main.050063bf.css.map": "/digi_resto_app_user/static/css/main.050063bf.css.map",
+    "main.9a07823b.js.map": "/digi_resto_app_user/static/js/main.9a07823b.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e013aae6.css",
-    "static/js/main.143cccac.js"
+    "static/css/main.050063bf.css",
+    "static/js/main.9a07823b.js"
   ]
 }
