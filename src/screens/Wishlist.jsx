@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Ensure this context is used correctly
 import images from "../assets/MenuDefault.png";
 import EventEmitter from "../components/EventEmitter";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const Wishlist = () => {
   const [menuList, setMenuList] = useState([]);
@@ -13,6 +17,7 @@ const Wishlist = () => {
     () => JSON.parse(localStorage.getItem("cartItems")) || []
   );
   const navigate = useNavigate();
+  const toast = useRef(null);
 
   // Fetch restaurant_id from context or local storage
   const { restaurantId: contextRestaurantId } = useRestaurantId();
@@ -61,14 +66,36 @@ const Wishlist = () => {
         const updatedMenuList = [...menuList];
         updatedMenuList.splice(indexToRemove, 1);
         setMenuList(updatedMenuList);
+
+        // Show toast notification for item removed from favorites
+        toast.current.show({
+          severity: "success", // Green color for positive action
+          summary: "Removed from Favorites",
+          detail: "Item has been removed from your favorites.",
+          life: 3000,
+        });
       } else {
         console.error(
           "Failed to remove item from wishlist:",
           response.statusText
         );
+        // Show toast notification for failure
+        toast.current.show({
+          severity: "error", // Red color for negative action
+          summary: "Error",
+          detail: "Failed to remove item from favorites.",
+          life: 3000,
+        });
       }
     } catch (error) {
       console.error("Error removing item from wishlist:", error);
+      // Show toast notification for error
+      toast.current.show({
+        severity: "error", // Red color for negative action
+        summary: "Error",
+        detail: "An error occurred while removing the item.",
+        life: 3000,
+      });
     }
   };
 
@@ -79,53 +106,84 @@ const Wishlist = () => {
       return;
     }
 
-    if (!isMenuItemInCart(item.menu_id)) {
-      // Update local storage and state immediately
-      const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      setCartItems(updatedCartItems);
+    if (isMenuItemInCart(item.menu_id)) {
+      // Show toast notification for item already in cart
+      toast.current.show({
+        severity: "warn", // Yellow color for warning
+        summary: "Item Already in Cart",
+        detail: item.menu_name,
+        life: 3000,
+      });
+      return;
+    }
 
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/add_to_cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              restaurant_id: restaurantId,
-              menu_id: item.menu_id,
-              customer_id: customerId,
-              quantity: 1,
-            }),
-          }
-        );
+    // Update local storage and state immediately
+    const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+    setCartItems(updatedCartItems);
 
-        const data = await response.json();
-        if (response.ok && data.st === 1) {
-          console.log("Item added to cart successfully.");
-          localStorage.setItem("cartId", data.cart_id); // Store the cart ID in local storage
-        } else {
-          console.error("Failed to add item to cart:", data.msg);
-          // Revert the local storage and state update if the API call fails
-          const revertedCartItems = updatedCartItems.filter(
-            (cartItem) => cartItem.menu_id !== item.menu_id
-          );
-          localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
-          setCartItems(revertedCartItems);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: item.menu_id,
+            customer_id: customerId,
+            quantity: 1,
+          }),
         }
-      } catch (error) {
-        console.error("Error adding item to cart:", error);
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        console.log("Item added to cart successfully.");
+        localStorage.setItem("cartId", data.cart_id); // Store the cart ID in local storage
+
+        // Show toast notification for item added to cart
+        toast.current.show({
+          severity: "success", // Green color for positive action
+          summary: "Added to Cart",
+          detail: item.menu_name,
+          life: 3000,
+        });
+      } else {
+        console.error("Failed to add item to cart:", data.msg);
         // Revert the local storage and state update if the API call fails
         const revertedCartItems = updatedCartItems.filter(
           (cartItem) => cartItem.menu_id !== item.menu_id
         );
         localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
         setCartItems(revertedCartItems);
+
+        // Show toast notification for failure
+        toast.current.show({
+          severity: "error", // Red color for negative action
+          summary: "Error",
+          detail: "Failed to add item to cart.",
+          life: 3000,
+        });
       }
-    } else {
-      alert(" This item is already in the cart");
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      // Revert the local storage and state update if the API call fails
+      const revertedCartItems = updatedCartItems.filter(
+        (cartItem) => cartItem.menu_id !== item.menu_id
+      );
+      localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
+      setCartItems(revertedCartItems);
+
+      // Show toast notification for error
+      toast.current.show({
+        severity: "error", // Red color for negative action
+        summary: "Error",
+        detail: "An error occurred while adding the item to the cart.",
+        life: 3000,
+      });
     }
   };
 
@@ -187,6 +245,7 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">

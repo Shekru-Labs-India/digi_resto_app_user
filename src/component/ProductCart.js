@@ -230,16 +230,16 @@ const ProductCard = () => {
       navigate("/Signinscreen");
       return;
     }
-    // if (isMenuItemInCart(menu.menu_id)) {
-    //   setPopupVisible(true);
-    //   setTimeout(() => setPopupVisible(false), 3000); // Hide after 3 seconds
-    //   return;
-    // }
     if (isMenuItemInCart(menu.menu_id)) {
-      alert("This item is already in the cart.");
+      // Show toast notification for item already in cart
+      toast.current.show({
+        severity: "warn",
+        summary: "Item Already in Cart",
+        detail: menu.name,
+        life: 3000,
+      });
       return;
     }
-  
 
     try {
       const response = await fetch(
@@ -263,6 +263,14 @@ const ProductCard = () => {
         const updatedCartItems = [...cartItems, { ...menu, quantity: 1 }];
         setCartItems(updatedCartItems);
         localStorage.setItem("cartId", data.cart_id);
+
+        // Show toast notification for item added to cart
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: menu.name,
+          life: 3000,
+        });
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
