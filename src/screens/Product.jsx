@@ -1884,6 +1884,7 @@
 
 import React, { useState, useEffect, useCallback, useRef} from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
@@ -1898,6 +1899,7 @@ const toTitleCase = (text) => {
 };
 
 const Product = () => {
+  
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -1920,6 +1922,7 @@ const Product = () => {
   const { restaurantName } = useRestaurantId();
   
   const { table_number } = useParams();
+      const location = useLocation();
 
   const applySort = () => {
     let sortedList = [...filteredMenuList];

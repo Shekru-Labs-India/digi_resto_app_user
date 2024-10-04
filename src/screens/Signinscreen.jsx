@@ -4,6 +4,10 @@ import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
 import authenticationPic1 from "../assets/background.jpg";
 import welcomeback from "../assets/images/authentication/wave.svg";
+import { Toast } from 'primereact/toast'; // Import Toast from primereact
+import 'primereact/resources/themes/saga-blue/theme.css'; // Theme
+import 'primereact/resources/primereact.min.css'; // Core CSS
+
 
 const Signinscreen = () => {
   const [mobile, setMobile] = useState("");
@@ -15,6 +19,7 @@ const Signinscreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [accountCreated, setAccountCreated] = useState(false);
+  const toast = React.useRef(null); // Create a ref for the toast
 
   useEffect(() => {
     if (location.state && location.state.accountCreated) {
@@ -65,6 +70,9 @@ const Signinscreen = () => {
         localStorage.setItem("otp", otp); // Store OTP
 
         setOtpSent(true);
+        // Show toast message
+        toast.current.show({ severity: 'success', summary: 'Success', detail: 'OTP has been sent successfully!', life: 3000 });
+
         // Navigate to Verifyotp component
         navigate("/Verifyotp");
 
@@ -108,6 +116,7 @@ const Signinscreen = () => {
 
   return (
     <div className="page-wrapper full-height">
+      <Toast ref={toast} /> {/* Add Toast component */}
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">

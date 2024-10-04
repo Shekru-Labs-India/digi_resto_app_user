@@ -466,6 +466,11 @@ import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
 import QRScreen from "./screens/QRScreen";
 
+import 'primereact/resources/themes/saga-blue/theme.css'; // Theme
+import 'primereact/resources/primereact.min.css';         // Core CSS
+// import 'primeicons/primeicons.css';                       // Icons CSS
+
+
 function App() {
   const restaurantCode = localStorage.getItem("restaurantCode") // Default value
   const restaurantId = localStorage.getItem("restaurantId");

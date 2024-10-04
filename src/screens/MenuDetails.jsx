@@ -177,7 +177,7 @@ const MenuDetails = () => {
     let cartId = localStorage.getItem("cartId");
   
     if (!cartId) {
-      cartId = await createCart(customerId, restaurantId);
+      cartId = await (customerId, restaurantId);
       if (!cartId) {
         console.error("Failed to create cart");
         return;
