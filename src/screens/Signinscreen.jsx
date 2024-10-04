@@ -52,7 +52,7 @@ const Signinscreen = () => {
       const response = await fetch(url, requestOptions);
       const data = await response.json();
 
-      console.log("API response:", data); // Log the API response here
+      console.log("API response:", data); 
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -90,9 +90,10 @@ const Signinscreen = () => {
       } else {
         setError(data.msg || "Sign in failed. Please try again.");
       }
+     
     } catch (error) {
       console.error("Error signing in:", error);
-      setError("Sign in failed. Please try again.");
+      setError("Mobile number not found, please create an account.");
     } finally {
       setLoading(false);
     }
