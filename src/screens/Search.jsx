@@ -1615,6 +1615,7 @@ const Search = () => {
   const handleSearch = (event) => {
     const term = event.target.value;
     setSearchTerm(term);
+    setShowHistory(term.length > 0); // Show history only when there's input
   };
 
   const toTitleCase = (str) => {
@@ -1684,8 +1685,6 @@ const Search = () => {
               "searchHistory",
               JSON.stringify(updatedHistory)
             );
-            
-            setShowHistory(false);
           } else {
             console.error("Invalid data format:", data);
           }
@@ -1779,6 +1778,7 @@ const Search = () => {
     setShowHistory(false); // Hide history when a term is clicked
   };
 
+
   return (
     <div className="page-wrapper">
       {/* Header */}
@@ -1808,10 +1808,10 @@ const Search = () => {
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
-              onFocus={() => setShowHistory(true)}
+             
             />
           </div>
-          {searchHistory.length > 0 && (
+          {/* {searchHistory.length > 0 && (
             <div className="search-history">
               <h6 className="gray-text">Search History</h6>
               <ul>
@@ -1822,7 +1822,7 @@ const Search = () => {
                 ))}
               </ul>
             </div>
-          )}
+          )} */}
 
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">

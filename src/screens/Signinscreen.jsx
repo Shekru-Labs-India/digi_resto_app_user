@@ -77,6 +77,8 @@ const Signinscreen = () => {
           localStorage.setItem("tempRestaurantId", lastRestaurantId);
           localStorage.setItem("tempTableNumber", lastTableNumber);
         }
+      } else if (data.st === 2) {
+        setError("Mobile number not found, please create an account.");
       } else {
         setError(data.msg || "Sign in failed. Please try again.");
       }
@@ -84,7 +86,7 @@ const Signinscreen = () => {
       console.error("Error signing in:", error);
       setError("Sign in failed. Please try again.");
     } finally {
-      setLoading(false); // Set loading to false after API call
+      setLoading(false);
     }
   };
 
