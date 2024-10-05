@@ -214,12 +214,11 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
 import authenticationPic1 from "../assets/background.jpg";
-import welcomeback from "../assets/images/authentication/wave.svg";
 import { Toast } from "primereact/toast"; // Import Toast from primereact
 import "primereact/resources/themes/saga-blue/theme.css"; // Theme
 import "primereact/resources/primereact.min.css"; // Core CSS
@@ -234,12 +233,11 @@ const Signinscreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [accountCreated, setAccountCreated] = useState(false);
-  const toast = React.useRef(null); // Create a ref for the toast
+  const toastBottomCenter = useRef(null); // Create a ref for the toast
 
   useEffect(() => {
     if (location.state && location.state.accountCreated) {
       setAccountCreated(true);
-      // Clear the state after displaying the message
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
@@ -249,8 +247,8 @@ const Signinscreen = () => {
       setError("Mobile number must be 10 digits");
       return;
     }
-    setLoading(true); // Set loading to true before API call
-    setError(null); // Clear previous errors
+    setLoading(true);
+    setError(null);
 
     try {
       const url = "https://menumitra.com/user_api/account_login";
@@ -259,58 +257,66 @@ const Signinscreen = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          mobile: mobile,
-        }),
+        body: JSON.stringify({ mobile }),
       };
 
       const response = await fetch(url, requestOptions);
       const data = await response.json();
 
-      console.log("API response:", data);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Check if the API response status (`st`) is 1 for success
       if (data.st === 1) {
         console.log("Sign-in success response:", data);
 
-        // Extract the OTP from the msg field
-        const otp = data.msg.match(/\d+/)[0]; // Extracts the first number (OTP) from the msg string
-
-        // Store the mobile number and OTP in local storage
-        localStorage.setItem("mobile", mobile); // Store mobile number
-        localStorage.setItem("otp", otp); // Store OTP
+        const otp = data.msg.match(/\d+/)[0];
+        localStorage.setItem("mobile", mobile);
+        localStorage.setItem("otp", otp);
 
         setOtpSent(true);
-        // Show toast message
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "OTP has been sent successfully!",
-          life: 3000,
-        });
+         {
+          toastBottomCenter.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "OTP has been sent successfully!",
+            life: 3000,
+          });
+        }
 
-        // Navigate to Verifyotp component
         navigate("/Verifyotp");
-
-        // Optionally clear the form
         setMobile("");
       } else if (data.st === 2) {
-        setError("Mobile number not found, please create an account.");
+        console.log("Unregistered number response:", data);
+        if (toastBottomCenter.current) {
+          toastBottomCenter.current.show({
+            severity: "warn",
+            summary: "Warning",
+            detail: "Mobile number not found, Please create an account",
+            life: 2000,
+          });
+        }
+        setTimeout(() => {
+          navigate("/Signupscreen");
+        }, 2000);
       } else {
         setError(data.msg || "Sign in failed. Please try again.");
       }
     } catch (error) {
       console.error("Error signing in:", error);
-      setError("Mobile number not found, please create an account.");
+      setError("Sign in failed. Please try again.");
+      if (toastBottomCenter.current) {
+        toastBottomCenter.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Sign in failed. Please try again.",
+          life: 3000,
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
-
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setMobile(value);
@@ -324,12 +330,12 @@ const Signinscreen = () => {
   };
 
   const checkMobileValidity = (value) => {
-    return /^\d{10}$/.test(value); // Ensure that the mobile number is exactly 10 digits
+    return /^\d{10}$/.test(value);
   };
 
   return (
     <div className="page-wrapper full-height">
-      <Toast ref={toast} /> {/* Add Toast component */}
+      <Toast ref={toastBottomCenter} position="bottom-center" /> {/* Ensure Toast is positioned at the bottom-center */}
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
@@ -359,7 +365,7 @@ const Signinscreen = () => {
                       <i className="ri-smartphone-line fs-3 text-muted"></i>
                     </span>
                     <input
-                      type="text"
+                      type="tel"
                       id="mobile"
                       className={`form-control ${
                         mobileError ? "is-invalid" : ""
@@ -391,7 +397,7 @@ const Signinscreen = () => {
                     type="button"
                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
                     onClick={handleSignIn}
-                    disabled={!isMobileValid} // Disable button if mobile is invalid
+                    disabled={!isMobileValid}
                   >
                     Send OTP
                   </button>

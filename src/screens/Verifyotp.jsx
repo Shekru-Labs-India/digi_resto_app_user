@@ -250,9 +250,19 @@ const Verifyotp = () => {
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      // Move focus to the previous input if backspace is pressed and current input is empty
-      document.getElementById(`digit-${index}`).focus();
+    if (e.key === "Backspace") {
+      const newOtp = [...otp]; // Initialize newOtp here
+      if (!otp[index] && index > 0) {
+        // Move focus to the previous input if backspace is pressed and current input is empty
+        document.getElementById(`digit-${index}`).focus();
+      } else {
+        // Remove the last entered digit and move focus to the previous input
+        newOtp[index] = "";
+        setOtp(newOtp);
+        if (index > 0) {
+          document.getElementById(`digit-${index}`).focus();
+        }
+      }
     }
   };
 
@@ -362,15 +372,15 @@ const Verifyotp = () => {
                 <h2 className="title">Enter OTP</h2>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                <label className="form-label fs-4" htmlFor="otp">
+                <label className="form-label fs-4 ms-4" htmlFor="otp">
                   <span className="required-star">*</span>OTP
                 </label>
-                <div id="otp" className="digit-group">
+                <div id="otp" className="digit-group d-flex justify-content-center">
                   {otp.map((digit, index) => (
                     <input
                       key={index}
                       className="form-control text-center"
-                      type="text"
+                      type="tel"
                       id={`digit-${index + 1}`}
                       value={digit}
                       onChange={(e) => handleOtpChange(e, index)}
@@ -380,7 +390,7 @@ const Verifyotp = () => {
                     />
                   ))}
                 </div>
-                <p>
+                <p className="text-center">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
                 </p>

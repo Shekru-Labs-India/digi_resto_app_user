@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import pic2 from "../assets/background.jpg";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
-
+import { Toast } from "primereact/toast"; // Import Toast from primereact
+import "primereact/resources/themes/saga-blue/theme.css"; // Theme
+import "primereact/resources/primereact.min.css"; // Core CSS
 
 const Signupscreen = () => {
   const navigate = useNavigate();
@@ -13,14 +13,13 @@ const Signupscreen = () => {
   const [nameError, setNameError] = useState("");
   const [mobile, setMobile] = useState("");
   const [mobileError, setMobileError] = useState("");
-  const [dob, setDob] = useState("");
-  const [dobError, setDobError] = useState("");
   const [agreed, setAgreed] = useState(false); // Checkbox state
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
   const [checkboxError, setCheckboxError] = useState(""); // Checkbox error state
   const [showPopup, setShowPopup] = useState(false); // Popup visibility state
   const checkboxRef = useRef(null); // Reference to the checkbox
+  const toast = useRef(null); // Create a ref for the toast
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -51,7 +50,6 @@ const Signupscreen = () => {
         },
         body: JSON.stringify({
           name: name,
-          dob: dob,
           mobile: mobile,
         }),
       };
@@ -66,18 +64,24 @@ const Signupscreen = () => {
 
       if (data.st === 1) {
         const customerId = generateCustomerId(); // Generate a unique customerId
-        const userData = { name, mobile, dob, customerId };
+        const userData = { name, mobile, customerId };
 
         // Store user data in local storage
         localStorage.setItem("userData", JSON.stringify(userData));
         
-        // Show success popup
-        setShowPopup(true);
+        // Show success toast
+        if (toast.current) {
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Account created successfully!",
+            life: 3000,
+          });
+        }
 
         // Clear form fields upon successful signup attempt
         setName("");
         setMobile("");
-        setDob("");
 
         // Hide popup and navigate to sign-in screen after 3 seconds
         setTimeout(() => {
@@ -85,23 +89,39 @@ const Signupscreen = () => {
           navigate("/Signinscreen");
         }, 3000);
       } else if (data.st === 2) {
-        setError("Mobile Number already exists. Use another number.");
-        setTimeout(() => {
-          setError("");
-        }, 3000); // Clear error message after 3 seconds
+        setError(data.msg || "Mobile Number already exists. Use another number.");
+        // Show error toast for existing mobile number
+        if (toast.current) {
+          toast.current.show({
+            severity: "warn",
+            summary: "Warning",
+            detail: "Mobile Number already exists. Use another number.",
+            life: 3000,
+          });
+        }
       } else {
         // Handle other specific error codes from the API
-        setError("An error occurred. Please try again.");
-        setTimeout(() => {
-          setError("");
-        }, 3000); // Clear error message after 3 seconds
+        
+        if (toast.current) {
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "An error occurred. Please try again.",
+            life: 3000,
+          });
+        }
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      setError("An unexpected error occurred. Please try again.");
-      setTimeout(() => {
-        setError("");
-      }, 3000); // Clear error message after 3 seconds
+      
+      if (toast.current) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "An unexpected error occurred. Please try again.",
+          life: 3000,
+        });
+      }
     } finally {
       setLoading(false); // Set loading to false after API call
     }
@@ -137,46 +157,13 @@ const Signupscreen = () => {
     return (
       name.trim() !== "" &&
       mobile.trim() !== "" &&
-      dob.trim() !== "" &&
       mobileError === ""
     );
   };
 
-  const handleDobInput = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-  
-    // Automatically add hyphens as the user types
-    if (value.length > 2) {
-      value = value.slice(0, 2) + '-' + value.slice(2);
-    }
-    if (value.length > 5) {
-      value = value.slice(0, 5) + '-' + value.slice(5);
-    }
-  
-    // Limit to 10 characters (dd-mm-yyyy)
-    if (value.length > 10) {
-      value = value.slice(0, 10);
-    }
-  
-    e.target.value = value;
-    setDob(value);
-  };
-  
-  const handleDobChange = (e) => {
-    const value = e.target.value;
-    setDob(value);
-    const datePattern = /^\d{2}-\d{2}-\d{4}$/; // Regex for dd-mm-yyyy format
-    if (value.trim() === "") {
-      setDobError("Date of Birth is required");
-    } else if (!datePattern.test(value)) {
-      setDobError("Date of Birth must be in dd-mm-yyyy format");
-    } else {
-      setDobError("");
-    }
-  };
-
   return (
     <div className="page-wrapper full-height">
+      <Toast ref={toast} position="bottom-center" /> {/* Ensure Toast is positioned at the bottom-center */}
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
@@ -227,26 +214,6 @@ const Signupscreen = () => {
                   </div>
                   {mobileError && <div className="invalid-feedback">{mobileError}</div>}
                 </div>
-                <div className="m-b15">
-  <label className="form-label fs-4" htmlFor="dob">
-    <span className="required-star">*</span> Date of Birth
-  </label>
-  <div className="input-group">
-    <span className="input-group-text fs-3 py-0">
-      <i className="ri-calendar-line text-muted" />
-    </span>
-    <input
-      type="text"
-      id="dob"
-      className={`form-control ${dobError ? "is-invalid" : ""}`}
-      placeholder="dd-mm-yyyy"
-      value={dob}
-      onChange={handleDobChange}
-      onInput={handleDobInput}
-    />
-  </div>
-  {dobError && <div className="invalid-feedback">{dobError}</div>}
-</div>
                 <div className="form-check m-b25" ref={checkboxRef}>
                   <input
                     className="form-check-input"
