@@ -45,8 +45,6 @@ const MenuDetails = () => {
     );
   };
 
-  
-
   // Fetch product details
   const fetchProductDetails = async () => {
     try {
@@ -79,7 +77,6 @@ const MenuDetails = () => {
             image,
             offer,
             rating,
-            
           } = data.details;
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
@@ -98,7 +95,6 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
-            
           });
 
           // Set the initial total amount
@@ -116,20 +112,18 @@ const MenuDetails = () => {
 
   useEffect(() => {
     fetchProductDetails();
-    
   }, [menuId, restaurantId]);
 
- 
   // const fetchCartDetails = async () => {
   //   const customerId = getCustomerId();
   //   const restaurantId = getRestaurantId();
   //   const cartId = getCartId();
-  
+
   //   if (!customerId || !restaurantId) {
   //     console.error("Customer ID or Restaurant ID is not available.");
   //     return;
   //   }
-  
+
   //   try {
   //     const response = await fetch(
   //       "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -147,7 +141,7 @@ const MenuDetails = () => {
   //     );
   //     const data = await response.json();
   //     console.log("API response data:", data); // Debug log
-  
+
   //     if (data.st === 1) {
   //       // Calculate old price for each item
   //       const updatedOrderItems = data.order_items.map((item) => ({
@@ -165,17 +159,17 @@ const MenuDetails = () => {
   //     console.error("Error fetching cart details:", error);
   //   }
   // };
-  
+
   const handleAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !userData.customer_id) {
       navigate("/Signinscreen");
       return;
     }
-  
+
     const customerId = userData.customer_id;
     let cartId = localStorage.getItem("cartId");
-  
+
     if (!cartId) {
       cartId = await (customerId, restaurantId);
       if (!cartId) {
@@ -191,7 +185,6 @@ const MenuDetails = () => {
       return;
     }
 
-  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -208,14 +201,13 @@ const MenuDetails = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item added to cart successfully.");
-       
+
         localStorage.setItem("cartId", data.cart_id);
-        
-        
+
         navigate("/Cart");
       } else {
         console.error("Failed to add item to cart:", data.msg);
@@ -228,11 +220,6 @@ const MenuDetails = () => {
   const isMenuItemInCart = (menuId) => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
-  
- 
-
-
-  
 
   if (!productDetails) {
     return <div>Loading...</div>;
@@ -292,11 +279,11 @@ const MenuDetails = () => {
         <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
-            <Link to="#">
-              <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
-                <i className="ri-arrow-left-line fs-3"></i>
-              </div>
-            </Link>
+              <Link to="#">
+                <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
+                  <i className="ri-arrow-left-line fs-3"></i>
+                </div>
+              </Link>
             </div>
             <div className="mid-content">
               <h5 className="title fs-5">Product Details</h5>
