@@ -10,26 +10,30 @@ const Cart = () => {
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setUserData(storedUserData);
+    } else {
+      console.error("User data not found in local storage.");
+    }
+    fetchCartDetails();
+  }, []);
+
   const getCustomerId = () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData ? userData.customer_id : null;
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    return storedUserData?.customer_id || null;
   };
 
   const getRestaurantId = () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData && userData.restaurantId ? userData.restaurantId : null;
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    return storedUserData?.restaurantId || null;
   };
 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
     return cartId ? parseInt(cartId, 10) : 1;
   };
-
-  useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    setUserData(storedUserData);
-    fetchCartDetails();
-  }, []);
 
   const fetchCartDetails = async () => {
     const customerId = getCustomerId();
@@ -57,16 +61,15 @@ const Cart = () => {
         }
       );
       const data = await response.json();
-      console.log("API response data:", data); // Debug log
+      console.log("API response data:", data);
 
       if (data.st === 1) {
-        // Calculate old price for each item
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
-          oldPrice: Math.floor(item.price * 1.1), // Old price calculation
+          oldPrice: Math.floor(item.price * 1.1),
         }));
         setCartDetails({ ...data, order_items: updatedOrderItems });
-        console.log("Cart details set:", data); // Debug log
+        console.log("Cart details set:", data);
       } else if (data.st === 2) {
         setCartDetails({ order_items: [] });
       } else {
@@ -104,10 +107,7 @@ const Cart = () => {
       if (data.st === 1) {
         console.log("Item removed from cart successfully.");
         removeCartItemByIndex(index); // Remove item from local storage using index
-        setCartDetails((prevDetails) => ({
-          ...prevDetails,
-          order_items: prevDetails.order_items.filter((_, i) => i !== index),
-        })); // Update local state
+        fetchCartDetails(); // Refresh cart details
       } else {
         console.error("Failed to remove item from cart:", data.msg);
       }
@@ -125,8 +125,6 @@ const Cart = () => {
 
   // ... existing code ...
 
-  // ... existing code ...
-
   const updateCartQuantity = async (menuId, quantity) => {
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
@@ -134,7 +132,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/update_cart_menu_quantity",
+        "https://menumitra.com/user_api/update_cart_quantity",
         {
           method: "POST",
           headers: {
@@ -149,36 +147,9 @@ const Cart = () => {
           }),
         }
       );
-
       const data = await response.json();
       if (data.st === 1) {
-        // Update the local state
-        setCartDetails((prevDetails) => {
-          const updatedItems = prevDetails.order_items.map((item) =>
-            item.menu_id === menuId ? { ...item, quantity: quantity } : item
-          );
-          const updatedTotalBill = updatedItems.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          );
-          const serviceCharges =
-            (updatedTotalBill * prevDetails.service_charges_percent) / 100;
-          const gstAmount = (updatedTotalBill * prevDetails.gst_percent) / 100;
-          const discountAmount =
-            (updatedTotalBill * prevDetails.discount_percent) / 100;
-          const updatedGrandTotal =
-            updatedTotalBill + serviceCharges + gstAmount - discountAmount;
-
-          return {
-            ...prevDetails,
-            order_items: updatedItems,
-            total_bill: updatedTotalBill,
-            service_charges_amount: serviceCharges,
-            gst_amount: gstAmount,
-            discount_amount: discountAmount,
-            grand_total: updatedGrandTotal,
-          };
-        });
+        fetchCartDetails(); // Refresh cart details
       } else {
         console.error("Failed to update cart quantity:", data.msg);
       }
