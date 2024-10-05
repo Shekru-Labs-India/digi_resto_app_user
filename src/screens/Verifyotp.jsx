@@ -369,10 +369,10 @@ const Verifyotp = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <h2 className="title">Enter OTP</h2>
+                <h2 className="title ms-4 ps-2">Enter OTP</h2>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                <label className="form-label fs-4 ms-4" htmlFor="otp">
+                <label className="form-label fs-4 ms-4 ps-1" htmlFor="otp">
                   <span className="required-star">*</span>OTP
                 </label>
                 <div id="otp" className="digit-group d-flex justify-content-center">
