@@ -55,12 +55,13 @@ const Signupscreen = () => {
       };
 
       const response = await fetch(url, requestOptions);
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        // Show the API response message if available
+        const errorMessage = data.msg || `HTTP error! Status: ${response.status}`;
+        throw new Error(errorMessage);
       }
-
-      const data = await response.json();
 
       if (data.st === 1) {
         const customerId = generateCustomerId(); // Generate a unique customerId
@@ -89,13 +90,14 @@ const Signupscreen = () => {
           navigate("/Signinscreen");
         }, 3000);
       } else if (data.st === 2) {
-        setError(data.msg || "Mobile Number already exists. Use another number.");
-        // Show error toast for existing mobile number
+        const errorMessage = data.msg || "Mobile Number already exists. Use another number.";
+        setError(errorMessage);
+        // Show error toast with the response message
         if (toast.current) {
           toast.current.show({
             severity: "warn",
             summary: "Warning",
-            detail: "Mobile Number already exists. Use another number.",
+            detail: errorMessage, // Use the response message from the API
             life: 3000,
           });
         }
@@ -113,12 +115,12 @@ const Signupscreen = () => {
       }
     } catch (error) {
       console.error("Error signing up:", error);
-      
+
       if (toast.current) {
         toast.current.show({
           severity: "error",
           summary: "Error",
-          detail: "An unexpected error occurred. Please try again.",
+          detail: error.message, // Use the error message
           life: 3000,
         });
       }
