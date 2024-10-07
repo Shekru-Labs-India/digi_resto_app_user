@@ -261,7 +261,7 @@ const Wishlist = () => {
             <h5 className="title">
               Favourite{" "}
               {userData && menuList.length > 0 && (
-                <span className="">({menuList.length})</span>
+                <span className="gray-text small-number">({menuList.length})</span>
               )}
             </h5>
           </div>

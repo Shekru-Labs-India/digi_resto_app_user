@@ -365,19 +365,25 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css"; 
+
 
 const EditProfile = () => {
   const [userData, setUserData] = useState({});
   const [newName, setNewName] = useState("");
   const [newMobile, setNewMobile] = useState("");
-  const [newDob, setNewDob] = useState("");
+
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useRef(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
@@ -385,7 +391,7 @@ const EditProfile = () => {
     setUserData(storedUserData);
     setNewName(storedUserData.name || "");
     setNewMobile(storedUserData.mobile || ""); // Ensure mobile is retrieved correctly
-    setNewDob(storedUserData.dob || "");
+    
   }, []);
 
   const handleUpdateProfile = async () => {
@@ -406,8 +412,7 @@ const EditProfile = () => {
         body: JSON.stringify({
           customer_id: userData?.customer_id || "",
           name: newName,
-          dob: newDob,
-          mobile: newMobile,
+         mobile: newMobile,
         }),
       };
 
@@ -423,13 +428,18 @@ const EditProfile = () => {
         const updatedUserData = {
           ...userData,
           name: newName,
-          dob: newDob,
+          
           mobile: newMobile,
         };
         localStorage.setItem("userData", JSON.stringify(updatedUserData));
         setUserData(updatedUserData);
         setError("");
-        setSuccessMessage("Profile updated successfully!");
+        toast.current.show({
+          severity: "success",
+          summary: "Profile Updated",
+          detail: "Your profile has been updated successfully!",
+          life: 3000,
+        });
         setTimeout(() => {
           navigate("/Profile");
         }, 2000);
@@ -468,6 +478,7 @@ const EditProfile = () => {
 
   return (
     <div className="page-wrapper">
+       <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
@@ -497,6 +508,7 @@ const EditProfile = () => {
             </div>
           ) : (
             <div className="edit-profile">
+             
               <div className="mb-3">
                 <label className="fs-6 fw-medium pb-2" htmlFor="name">
                   <span className="required-star fw-light">*</span> Name
@@ -522,19 +534,7 @@ const EditProfile = () => {
                   onChange={handleMobileChange} // Now editable with validation
                 />
               </div>
-              <div className="mb-3">
-                <label className="fs-6 fw-medium pb-2" htmlFor="dob">
-                  <span className="required-star">*</span> Date of Birth
-                </label>
-                <input
-                  type="date"
-                  id="dob"
-                  className="form-control border border-2"
-                  placeholder="Enter DOB"
-                  value={newDob}
-                  onChange={(e) => setNewDob(e.target.value)}
-                />
-              </div>
+              
               {error && <p className="text-danger">{error}</p>}
               {successMessage && (
                 <p className="text-success">{successMessage}</p>

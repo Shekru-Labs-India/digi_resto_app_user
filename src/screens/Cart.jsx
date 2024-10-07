@@ -1,14 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const Cart = () => {
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
+  const toastBottomCenter = useRef(null); 
+  const toast = useRef(null);
+  const { restaurantId } = useRestaurantId();
+  const { restaurantName } = useRestaurantId();
+  
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -108,6 +118,13 @@ const Cart = () => {
         console.log("Item removed from cart successfully.");
         removeCartItemByIndex(index); // Remove item from local storage using index
         fetchCartDetails(); // Refresh cart details
+        toast.current.show({
+          severity: "success",
+          summary: "Item Removed",
+          detail: `${item.menu_name} has been removed from your cart.`,
+          life: 2000,
+        })
+
       } else {
         console.error("Failed to remove item from cart:", data.msg);
       }
@@ -132,7 +149,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/update_cart_quantity",
+        "https://menumitra.com/user_api/update_cart_menu_quantity",
         {
           method: "POST",
           headers: {
@@ -166,8 +183,19 @@ const Cart = () => {
     if (item.quantity < 20) {
       const newQuantity = item.quantity + 1;
       updateCartQuantity(item.menu_id, newQuantity);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: `Increased quantity of ${item.menu_name} to ${newQuantity}`,
+        life: 2000,
+      });
     } else {
-      alert("You cannot add more than 20 items of this product.");
+      toast.current.show({
+        severity: "warn",
+        summary: "Limit Reached",
+        detail: "You cannot add more than 20 items of this product.",
+        life: 2000,
+      });
     }
   };
 
@@ -175,6 +203,12 @@ const Cart = () => {
     if (item.quantity > 1) {
       const newQuantity = item.quantity - 1;
       updateCartQuantity(item.menu_id, newQuantity);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: `Decreased quantity of ${item.menu_name} to ${newQuantity}`,
+        life: 2000,
+      });
     }
   };
 
@@ -182,6 +216,7 @@ const Cart = () => {
 
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">
@@ -208,6 +243,7 @@ const Cart = () => {
 
       {displayCartItems.length === 0 ? (
         <main className="page-content ">
+         
           <div
             className="container overflow-hidden d-flex justify-content-center align-items-center"
             style={{ height: "100vh" }}
@@ -230,7 +266,7 @@ const Cart = () => {
               <div className="row">
                 <div className="col-12 fw-medium text-end hotel-name">
                   <span className="ps-2">
-                    {userData?.restaurantName?.toUpperCase() || "UNKNOWN"}
+                  {restaurantName.toUpperCase() || "Restaurant Name"}
                   </span>
                   <i className="ri-store-2-line ps-2"></i>
                   <h6 className="title fw-medium h6 custom-text-gray table-number pe-5 me-5">
@@ -239,6 +275,7 @@ const Cart = () => {
                 </div>
               </div>
             </div>
+           
             {displayCartItems.map((item, index) => (
               <div
                 key={index}
@@ -276,7 +313,7 @@ const Cart = () => {
                       />
                     </Link>
                   </div>
-                  <div className="col-9 pt-2 pb-2">
+                  <div className="col-9 pt-2 pb-0">
                     <div className="row">
                       <div className="col-9 my-auto">
                         <Link
@@ -325,7 +362,7 @@ const Cart = () => {
                             {item.menu_cat_name}
                           </Link>
                         </div>
-                        <div className="col-4 px-0 ps-1">
+                        <div className="col-4 pe-0 ps-2">
                           <div className="offer-code my-auto ">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
@@ -345,7 +382,7 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="col-3 ps-1 text-center">
+                        <div className="col-3 px-1 text-start ">
                           <span className="fs-6 fw-semibold gray-text">
                             <i className="ri-star-half-line px-1 ratingStar "></i>{" "}
                             {item.rating}
@@ -364,7 +401,7 @@ const Cart = () => {
                             menu_cat_id: item.menu_cat_id,
                           }}
                         >
-                          <p className="mb-2  fw-medium">
+                          <p className="mb-0  fw-medium">
                             <span className="ms-3 fs-4 me-2 text-info">
                               ₹{item.price}
                             </span>

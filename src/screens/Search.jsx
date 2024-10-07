@@ -1584,10 +1584,14 @@
 
 // ----------------
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -1597,6 +1601,8 @@ const Search = () => {
   const [showHistory, setShowHistory] = useState(false); // Track if history should be shown
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const toast = useRef(null);
+
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const restaurantId = userData ? userData.restaurantId : null;
@@ -1736,9 +1742,12 @@ const Search = () => {
               : item
           );
           setSearchedMenu(updatedMenu);
-          console.log(
-            isFavorite ? "Removed from favorites" : "Added to favorites"
-          );
+          toast.current.show({
+            severity: isFavorite ? "info" : "success",
+            summary: isFavorite ? "Removed from Wishlist" : "Added to Wishlist",
+            detail: `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your wishlist.`,
+            life: 2000,
+          });
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -1751,7 +1760,14 @@ const Search = () => {
   };
 
   const handleRemoveItem = (menuId) => {
+    const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
+    toast.current.show({
+      severity: "warn",
+      summary: "Item Removed",
+      detail: `${menuItem.menu_name} has been removed from the search list.`,
+      life: 2000,
+    });
   };
 
   const handleClearAll = () => {
@@ -1797,6 +1813,7 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded">
             <span className="input-group-text py-0">
@@ -1877,7 +1894,7 @@ const Search = () => {
                       </div>
                     </div>
                     <div className="row mt-2">
-                      <div className="col-5 px-0">
+                      <div className="col-6 px-0">
                         <p
                           className="mb-0 mt-1 fs-4 fw-medium text-start"
                           onClick={() => handleMenuClick(menu.menu_id)}
@@ -1891,9 +1908,9 @@ const Search = () => {
                           </span>
                         </p>
                       </div>
-                      <div className="col-4 ps-0">
+                      <div className="col-3 px-0">
                         <p
-                          className="mb-0 mt-1 fs-4 fw-medium"
+                          className="mb-0 mt-1 fs-4 fw-medium offerSearch"
                           onClick={() => handleMenuClick(menu.menu_id)}
                           style={{ cursor: "pointer" }}
                         >
@@ -1902,7 +1919,7 @@ const Search = () => {
                           </span>
                         </p>
                       </div>
-                      <div className="col-3 text-end p-0">
+                      <div className="col-3 text-center p-0 clickable-icon">
                         <i
                           className={`${
                             menu.is_favourite
@@ -1914,7 +1931,7 @@ const Search = () => {
                             handleLikeClick(menu.menu_id);
                           }}
                           style={{
-                            cursor: "pointer",
+                            
                             color: menu.is_favourite ? "red" : "",
                           }}
                         ></i>

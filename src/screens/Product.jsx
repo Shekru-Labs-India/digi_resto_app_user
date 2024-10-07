@@ -1891,6 +1891,10 @@ import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Slider from "@mui/material/Slider"; // Import the Slider component
 import Bottom from "../component/bottom";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css"; 
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -1921,6 +1925,7 @@ const Product = () => {
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
   const { restaurantName } = useRestaurantId();
   
+  const toast = useRef(null);
   const { table_number } = useParams();
       const location = useLocation();
 
@@ -2094,9 +2099,14 @@ const Product = () => {
             )
           );
           setFavorites(updatedMenuList.filter((item) => item.is_favourite));
-          console.log(
-            isFavorite ? "Removed from favorites" : "Added to favorites"
-          );
+          toast.current.show({
+            severity: isFavorite ? "info" : "success",
+            summary: isFavorite ? "Removed from Favorites" : "Added to Favorites",
+            detail: isFavorite
+              ? "Item has been removed from your favorites."
+              : "Item has been added to your favorites.",
+            life: 3000,
+          });
         }
       }
     } catch (error) {
@@ -2160,7 +2170,12 @@ const Product = () => {
     );
   
     if (isAlreadyInCart) {
-      alert("This item is already in the cart!");
+      toast.current.show({
+        severity: "info",
+        summary: "Item in Cart",
+        detail: "This item is already in the cart!",
+        life: 3000,
+      });
       return;
     }
   
@@ -2190,6 +2205,12 @@ const Product = () => {
       if (response.ok && data.st === 1) {
         console.log("Item added to cart successfully.");
         localStorage.setItem("cartId", data.cart_id); // Store the cart ID in local storage
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: "Item has been added to your cart.",
+          life: 3000,
+        });
       } else {
         console.error("Failed to add item to cart:", data.msg);
         // Revert the local storage and state update if the API call fails
@@ -2222,6 +2243,7 @@ const Product = () => {
 
   return (
     <div>
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className="left-content">

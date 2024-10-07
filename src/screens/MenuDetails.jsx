@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useCart } from "../hooks/useCart";
 import Bottom from "../component/bottom";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css"; 
 
 const MenuDetails = () => {
+  const toast = useRef(null);
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
@@ -19,23 +24,11 @@ const MenuDetails = () => {
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const { addToCart } = useCart();
   const location = useLocation();
+  const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
 
-  const getCustomerId = () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData ? userData.customer_id : null;
-  };
-
-  const getRestaurantId = () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData && userData.restaurantId ? userData.restaurantId : null;
-  };
-
-  const getCartId = () => {
-    const cartId = localStorage.getItem("cartId");
-    return cartId ? parseInt(cartId, 10) : 1;
-  };
+ 
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -77,6 +70,7 @@ const MenuDetails = () => {
             image,
             offer,
             rating,
+            is_favorite,
           } = data.details;
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
@@ -95,7 +89,10 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
+            is_favorite,
           });
+
+          setIsFavorite(data.details.is_favourite); // Use the correct source
 
           // Set the initial total amount
           setTotalAmount(discountedPrice * quantity);
@@ -109,6 +106,8 @@ const MenuDetails = () => {
       console.error("Error fetching product details:", error);
     }
   };
+
+  
 
   useEffect(() => {
     fetchProductDetails();
@@ -207,6 +206,12 @@ const MenuDetails = () => {
         console.log("Item added to cart successfully.");
 
         localStorage.setItem("cartId", data.cart_id);
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: "Item has been added to your cart.",
+          life: 3000,
+        });
 
         navigate("/Cart");
       } else {
@@ -258,10 +263,20 @@ const MenuDetails = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
-          setIsFavorite(!isFavorite);
-          console.log(
-            isFavorite ? "Removed from favorites" : "Added to favorites"
-          );
+          const updatedFavoriteStatus = !isFavorite;
+          setIsFavorite(updatedFavoriteStatus);
+          setProductDetails({
+            ...productDetails,
+            is_favourite: updatedFavoriteStatus,
+          });
+        toast.current.show({
+          severity: isFavorite ? "info" : "success",
+          summary: isFavorite ? "Removed from Favorites" : "Added to Favorites",
+          detail: isFavorite
+            ? "Item has been removed from your favorites."
+            : "Item has been added to your favorites.",
+          life: 3000,
+        });
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -273,9 +288,30 @@ const MenuDetails = () => {
     }
   };
 
+  const handleQuantityChange = (change) => {
+    const newQuantity = quantity + change;
+    if (newQuantity >= 1 && newQuantity <= 20) {
+      setQuantity(newQuantity);
+      toast.current.show({
+        severity: "info",
+        summary: "Quantity Updated",
+        detail: `Quantity set to ${newQuantity}.`,
+        life: 2000,
+      });
+    } else if (newQuantity > 20) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Limit Reached",
+        detail: "You cannot add more than 20 items.",
+        life: 2000,
+      });
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper">
+        <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <header className="header header-fixed style-3">
           <div className="header-content">
             <div className="left-content">
@@ -362,29 +398,21 @@ const MenuDetails = () => {
               <div className="container">
                 <div className="row">
                   <div className="col-4 py-1 ps-0 quantity-container">
-                    <button
-                      onClick={() =>
-                        setQuantity(quantity > 1 ? quantity - 1 : 1)
-                      }
-                      className="quantity-button"
-                    >
-                      <i className="ri-subtract-line"></i>
-                    </button>
+                  <button
+                  onClick={() => handleQuantityChange(-1)}
+                  className="quantity-button"
+                >
+                  <i className="ri-subtract-line"></i>
+                </button>
 
-                    <span className="quantity-text">{quantity}</span>
+                <span className="quantity-text">{quantity}</span>
 
-                    <button
-                      onClick={() => {
-                        if (quantity < 20) {
-                          setQuantity(quantity + 1);
-                        } else {
-                          alert("You cannot add more than 20 items.");
-                        }
-                      }}
-                      className="quantity-button"
-                    >
-                      <i className="ri-add-line"></i>
-                    </button>
+                <button
+                  onClick={() => handleQuantityChange(1)}
+                  className="quantity-button"
+                >
+                  <i className="ri-add-line"></i>
+                </button>
                   </div>
                   <div className="col-8 pe-2 text-end">
                     <i

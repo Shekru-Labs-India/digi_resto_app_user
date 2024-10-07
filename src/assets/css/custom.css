@@ -39,8 +39,18 @@
 }
 
 
+.offerSearch{
+  margin-left: -10px;
+}
 
-
+/* Search.css */
+.clickable-icon {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%; /* Ensures the div takes the full height of the column */
+}
 
 
 

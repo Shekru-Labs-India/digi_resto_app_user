@@ -100,13 +100,13 @@ const TrackOrder = () => {
     const dateTimeParts = dateTime.split(" ");
     if (dateTimeParts.length === 3) {
       const [date, time, period] = dateTimeParts;
-      return `${time} ${period} ${date}`;
+      const [hours, minutes] = time.split(":");
+      return `${hours}:${minutes} ${period} ${date}`;
     } else if (dateTimeParts.length === 2) {
       const [date, time] = dateTimeParts;
-      // Determine AM/PM based on the time
-      const hours = parseInt(time.split(":")[0], 10);
-      const period = hours >= 12 ? "PM" : "AM";
-      return `${time} ${period} ${date}`;
+      const [hours, minutes] = time.split(":");
+      const period = parseInt(hours, 10) >= 12 ? "PM" : "AM";
+      return `${hours}:${minutes} ${period} ${date}`;
     } else {
       return dateTime; // Return as is if the format is unexpected
     }

@@ -88,7 +88,10 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">My Order</h5>
+            <h5 className="title">My Order 
+  {orders.length > 0 && (
+    <span className="gray-text small-number">({orders.length})</span>
+  )} </h5>
           </div>
         </div>
       </header>
@@ -189,7 +192,8 @@ const OrdersTab = ({ orders, type }) => {
 
   const formatDateTime = (dateTime) => {
     const [date, time, period] = dateTime.split(" ");
-    return `${time} ${period} ${date}`;
+    const [hours, minutes] = time.split(":");
+    return `${hours}:${minutes} ${period} ${date}`;
   };
 
   return (
@@ -251,6 +255,9 @@ const OrdersTab = ({ orders, type }) => {
                   <div className="price-wrapper">
                     <p className="mb-2 fs-4 fw-medium text-end">
                       <span className="text-info ">₹{order.total_bill}</span>
+                      {/* <span className="text-info ">₹{order.grand_total}</span> 
+                      add grand_total in api  */}
+                      
                     </p>
                   </div>
                 </div>
