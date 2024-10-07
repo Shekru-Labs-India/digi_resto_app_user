@@ -1710,6 +1710,7 @@ const Search = () => {
   const handleLikeClick = async (menuId) => {
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
+      navigate("/Signinscreen");
       return;
     }
 
