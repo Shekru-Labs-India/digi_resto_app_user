@@ -1881,8 +1881,7 @@
 
 
 
-
-import React, { useState, useEffect, useCallback, useRef} from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
@@ -1894,7 +1893,7 @@ import Bottom from "../component/bottom";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css"; 
+import "primeicons/primeicons.css";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -1903,7 +1902,6 @@ const toTitleCase = (text) => {
 };
 
 const Product = () => {
-  
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -1924,39 +1922,36 @@ const Product = () => {
   const swiperRef = useRef(null); // Define swiperRef
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
   const { restaurantName } = useRestaurantId();
-  
+
   const toast = useRef(null);
   const { table_number } = useParams();
-      const location = useLocation();
+  const location = useLocation();
 
+  // Define applySort function
   const applySort = () => {
     let sortedList = [...filteredMenuList];
     switch (sortCriteria) {
-      case 'popularity':
-        // Assuming there's a 'popularity' field in the menu items
+      case "popularity":
         sortedList.sort((a, b) => b.popularity - a.popularity);
         break;
-      case 'discount':
-        // Assuming there's a 'discount' field in the menu items
+      case "discount":
         sortedList.sort((a, b) => b.discount - a.discount);
         break;
-      case 'priceHighToLow':
+      case "priceHighToLow":
         sortedList.sort((a, b) => b.price - a.price);
         break;
-      case 'priceLowToHigh':
+      case "priceLowToHigh":
         sortedList.sort((a, b) => a.price - b.price);
         break;
-      case 'rating':
-        // Assuming there's a 'rating' field in the menu items
+      case "rating":
         sortedList.sort((a, b) => b.rating - a.rating);
         break;
       default:
         break;
     }
     setFilteredMenuList(sortedList);
+    setSortByOpen(false); // Close sort modal after applying sort
   };
-
-  
 
   // Fetch menu data using a single API
   const fetchMenuData = useCallback(async () => {
@@ -2101,7 +2096,9 @@ const Product = () => {
           setFavorites(updatedMenuList.filter((item) => item.is_favourite));
           toast.current.show({
             severity: isFavorite ? "info" : "success",
-            summary: isFavorite ? "Removed from Favorites" : "Added to Favorites",
+            summary: isFavorite
+              ? "Removed from Favorites"
+              : "Added to Favorites",
             detail: isFavorite
               ? "Item has been removed from your favorites."
               : "Item has been added to your favorites.",
@@ -2126,7 +2123,7 @@ const Product = () => {
       setFilteredMenuList(filteredMenus);
     }
   };
-  
+
   useEffect(() => {
     // Extract category ID from query parameters
     const queryParams = new URLSearchParams(location.search);
@@ -2155,7 +2152,7 @@ const Product = () => {
         }
       });
     }
-  }, [categories,selectedCategory]);
+  }, [categories, selectedCategory]);
 
   // Add item to cart
   const handleAddToCartClick = async (menuItem) => {
@@ -2163,12 +2160,12 @@ const Product = () => {
       navigate("/Signinscreen");
       return;
     }
-  
+
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const isAlreadyInCart = cartItems.some(
       (item) => item.menu_id === menuItem.menu_id
     );
-  
+
     if (isAlreadyInCart) {
       toast.current.show({
         severity: "info",
@@ -2178,12 +2175,12 @@ const Product = () => {
       });
       return;
     }
-  
+
     // Update local storage and state immediately
     const updatedCartItems = [...cartItems, { ...menuItem, quantity: 1 }];
     localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
     setCartItemsCount(updatedCartItems.length);
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -2200,7 +2197,7 @@ const Product = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         console.log("Item added to cart successfully.");
@@ -2230,16 +2227,12 @@ const Product = () => {
       setCartItemsCount(revertedCartItems.length);
     }
   };
-  
+
   // Check if a menu item is in the cart
   const isMenuItemInCart = (menuId) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.some((item) => item.menu_id === menuId);
   };
-
-  
- 
-  
 
   return (
     <div>
@@ -2248,7 +2241,7 @@ const Product = () => {
         <div className="header-content">
           <div className="left-content">
             <Link to="#">
-              <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
+              <div className="back-btn icon-sm" onClick={() => navigate(-1)}>
                 <i className="ri-arrow-left-line fs-3"></i>
               </div>
             </Link>
@@ -2268,32 +2261,15 @@ const Product = () => {
 
       <main className={`page-content space-top p-b80`}>
         <div className="container mt-2 mb-0">
-          {/* <div className="row">
-            <div className="col-12 fw-medium text-end hotel-name">
-              <span className="ps-2">
-                {userData?.restaurantName?.toUpperCase() || "Restaurant Name"}
-              </span>
-              <i className="ri-store-2-line ps-2"></i>
-              <h6 className="title fw-medium h6 custom-text-gray table-number pe-5 me-5">
-                Table: {userData?.tableNumber || ""}
-              </h6>
-            </div>
-          </div> */}
-
           <div className="header-content d-flex justify-content-end">
             <div className="right-content gap-1">
-            <h3 className="title fw-medium hotel-name">
-              {/* {userData.restaurantName && userData.restaurantName.length > 0
-                ? userData.restaurantName.toUpperCase()
-                : "Restaurant Default"} */}
-
-              {restaurantName || "Restaurant Name"}
-              <i className="ri-store-2-line ps-2"></i>
-            </h3>
-            {/* <h2>{restaurantName || "Restaurant Name"}</h2> */}
-            <h6 className="title fw-medium h6 custom-text-gray table-number">
-              Table: {userData.tableNumber || ""}
-            </h6>
+              <h3 className="title fw-medium hotel-name">
+                {restaurantName || "Restaurant Name"}
+                <i className="ri-store-2-line ps-2"></i>
+              </h3>
+              <h6 className="title fw-medium h6 custom-text-gray table-number">
+                Table: {userData.tableNumber || ""}
+              </h6>
             </div>
           </div>
         </div>
@@ -2343,7 +2319,7 @@ const Product = () => {
         </div>
 
         {/* Menu Items */}
-        <div className="container pb-0">
+        <div className="container pb-0" style={{ marginBottom: "8vh" }}>
           <div className="row g-3 grid-style-1">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
@@ -2376,10 +2352,7 @@ const Product = () => {
                           to={`/ProductDetails/${menuItem.menu_id}`}
                           state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
                         >
-                          <i
-                            className="ri-restaurant-line pe-1"
-                            
-                          ></i>
+                          <i className="ri-restaurant-line pe-1"></i>
                           {categories.find(
                             (category) =>
                               category.menu_cat_id === menuItem.menu_cat_id
@@ -2499,50 +2472,131 @@ const Product = () => {
           </div>
         </div>
 
-
-        {/* <div className="dz-sorting">
-        <ul className="list-unstyled mb-0">
-          {[
-            { key: 'popularity', icon: 'ri-star-line', label: 'Popularity' },
-            { key: 'discount', icon: 'ri-discount-percent-line', label: 'Discount' },
-            { key: 'priceHighToLow', icon: 'ri-arrow-up-line', label: 'Price High to Low' },
-            { key: 'priceLowToHigh', icon: 'ri-arrow-down-line', label: 'Price Low to High' },
-            { key: 'rating', icon: 'ri-star-half-line', label: 'Customer Rating' }
-          ].map(({ key, icon, label }) => (
-            <li
-              key={key}
-              className={`sort-item ${sortCriteria === key ? 'active' : ''}`}
-              onClick={() => setSortCriteria(key)}
-              style={{
-                backgroundColor: sortCriteria === key ? '#0D775E' : 'transparent',
-                color: sortCriteria === key ? '#ffffff' : 'inherit',
-                padding: '10px 15px',
-                borderRadius: '8px',
-                marginBottom: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              <i className={`${icon} me-2`} style={{ fontSize: '18px' }}></i>
-              {label}
+        {/* Sort and Filter Buttons */}
+        <div className="footer fixed" style={{ zIndex: 1, position: "fixed", bottom: "70px" }}>
+          <ul className="dz-product-filter">
+            <li>
+              <a
+                href="javascript:void(0);"
+                onClick={() => setSortByOpen(!sortByOpen)}
+              >
+                <i className="fi fi-rr-arrow-up"></i>Sort
+              </a>
             </li>
-          ))}
-        </ul>
-        <button
-          onClick={() => setSortByOpen(false)}
-          className="btn btn-outline-secondary w-45 rounded-xl"
-          style={{ borderColor: '#0D775E', color: '#0D775E' }}
-        >
-          Cancel
-        </button>
-        <button
-          onClick={applySort}
-          className="btn btn-primary w-45 rounded-xl"
-          style={{ backgroundColor: '#0D775E', borderColor: '#0D775E' }}
-        >
-          Apply
-        </button>
-      </div> */}
+            <li>
+              <a
+                href="javascript:void(0);"
+                onClick={() => setFilterOpen(!filterOpen)}
+              >
+                <i className="fi fi-rr-filter"></i>Filter
+              </a>
+            </li>
+          </ul>
+
+          {/* Sort By Offcanvas */}
+          {sortByOpen && (
+            <div
+              className="offcanvas offcanvas-bottom p-b60"
+              tabIndex="-1"
+              id="offcanvasBottom1"
+              aria-labelledby="offcanvasBottomLabel1"
+            >
+              <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvasBottomLabel1">
+                  Sort By
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setSortByOpen(false)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="offcanvas-body">
+                <ul>
+                  <li
+                    onClick={() => {
+                      setSortCriteria("popularity");
+                      applySort();
+                    }}
+                  >
+                    Popularity
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSortCriteria("discount");
+                      applySort();
+                    }}
+                  >
+                    Discount
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSortCriteria("priceHighToLow");
+                      applySort();
+                    }}
+                  >
+                    Price High to Low
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSortCriteria("priceLowToHigh");
+                      applySort();
+                    }}
+                  >
+                    Price Low to High
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSortCriteria("rating");
+                      applySort();
+                    }}
+                  >
+                    Rating
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Filter Offcanvas */}
+          {filterOpen && (
+            <div
+              className="offcanvas offcanvas-bottom p-b60"
+              tabIndex="-1"
+              id="offcanvasBottom2"
+              aria-labelledby="offcanvasBottomLabel2"
+            >
+              <div className="offcanvas-header">
+                <h5 className="offcanvas-title" id="offcanvasBottomLabel2">
+                  Filters
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setFilterOpen(false)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="offcanvas-body">
+                <div className="filter-inner-content">
+                  <div className="title-bar">
+                    <h5 className="sub-title">Price Range:</h5>
+                    <Slider
+                      value={priceRange}
+                      onChange={(e, newValue) => setPriceRange(newValue)}
+                      valueLabelDisplay="auto"
+                      min={0}
+                      max={2000}
+                      step={10}
+                    />
+                  </div>
+                  {/* Add more filters as needed */}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
 
       <Bottom />

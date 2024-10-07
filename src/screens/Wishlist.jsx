@@ -69,7 +69,7 @@ const Wishlist = () => {
 
         // Show toast notification for item removed from favorites
         toast.current.show({
-          severity: "success", // Green color for positive action
+          severity: "error", // Red color for negative action
           summary: "Removed from Favorites",
           detail: "Item has been removed from your favorites.",
           life: 3000,
