@@ -87,7 +87,7 @@ const QRScanner = () => {
             src={OverlayIcon}
             alt="Overlay"
             className="position-absolute start-0 w-75 h-75"
-            style={{ pointerEvents: "none", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+            style={{ pointerEvents: "none", top: "50%", left: "50%", transform: "translate(16%, -46%)" }}
           />
         </div>
       )}
