@@ -1,3 +1,46 @@
+.restaurant-info {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding-right: 15px;
+}
+
+.restaurant-name {
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-number {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 576px) {
+  .restaurant-info {
+    font-size: 16px;
+  }
+
+  .table-number {
+    font-size: 12px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
 .custom-toast {
   bottom: 75px !important;
   left: 50% !important;

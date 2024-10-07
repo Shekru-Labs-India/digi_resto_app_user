@@ -268,12 +268,12 @@ const Wishlist = () => {
         </div>
       </header>
 
-      <main className="page-content space-top p-b0 mt-3 mb-5 pb-3">
+      <main className="page-content space-top p-b0 mt-3 mb-5 pb-3 ">
         {customerId ? (
           menuList.length > 0 ? (
             menuList.map((menu, index) => (
               <div className="container py-1" key={index}>
-                <div className="card">
+                <div className="card rounded-4">
                   <div className="card-body py-0">
                     <div className="row">
                       <div className="col-3 px-0">
@@ -289,7 +289,7 @@ const Wishlist = () => {
                           <img
                             src={menu.image || images}
                             alt={menu.menu_name}
-                            className="rounded img-fluid"
+                            className="rounded-4 img-fluid"
                             style={{ width: "100px", height: "100px" }}
                             onError={(e) => {
                               e.target.src = images;

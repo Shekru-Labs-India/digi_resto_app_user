@@ -1857,14 +1857,14 @@ const Search = () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div className="card mb-3" key={menu.menu_id}>
+            <div className="card mb-3 rounded-4" key={menu.menu_id}>
               <div className="card-body py-0">
                 <div className="row">
                   <div className="col-3 px-0">
                     <img
                       src={menu.image || images}
                       alt={menu.menu_name}
-                      className="img-fluid rounded"
+                      className="img-fluid rounded-4"
                       style={{ width: "100px", height: "108px" }}
                       onError={(e) => {
                         e.target.src = images;
