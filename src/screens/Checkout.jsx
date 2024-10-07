@@ -118,10 +118,7 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
-    if (!notes) {
-      setShowNotePopup(true);
-      return;
-    }
+    
 
     if (validationMessage) {
       alert(validationMessage);
@@ -184,9 +181,7 @@ const Checkout = () => {
     navigate("/MyOrder");
   };
 
-  const closeNotePopup = () => {
-    setShowNotePopup(false);
-  };
+ 
 
   return (
     <div className="page-wrapper full-height">
@@ -342,20 +337,7 @@ const Checkout = () => {
         </div>
       )}
 
-      {showNotePopup && (
-        <div className="popup-overlay ">
-          <div className="popup-content ">
-            <h4 className="gray-text">Note Required</h4>
-            <p>Please provide a note before placing your order.</p>
-            <button
-              className="btn btn-primary w-100 mt-3"
-              onClick={closeNotePopup}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+     
 
       <Bottom />
     </div>

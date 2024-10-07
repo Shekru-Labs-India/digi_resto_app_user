@@ -243,7 +243,7 @@ const Verifyotp = () => {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
+  
       // Move focus to the next input if a digit is entered
       if (index < otp.length - 1) {
         const nextInput = document.getElementById(`digit-${index + 2}`);
@@ -254,28 +254,26 @@ const Verifyotp = () => {
     }
   };
 
+  const isEditable = (index) => {
+    // Check if all subsequent boxes are empty
+    return otp.slice(index + 1).every(digit => digit === "");
+  };
+
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       const newOtp = [...otp];
       if (otp[index]) {
+        // Clear the current digit
         newOtp[index] = "";
         setOtp(newOtp);
       } else if (index > 0) {
-        const prevInput = document.getElementById(`digit-${index}`);
-        if (prevInput) {
-          prevInput.focus();
-        }
+        // Move focus to the previous input if the current input is empty
+        document.getElementById(`digit-${index}`).focus();
       }
     }
   };
 
-  const handleFocus = (index) => {
-    const newOtp = [...otp];
-    for (let i = index; i < otp.length; i++) {
-      newOtp[i] = "";
-    }
-    setOtp(newOtp);
-  };
+  
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
@@ -396,7 +394,7 @@ const Verifyotp = () => {
                       value={digit}
                       onChange={(e) => handleOtpChange(e, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
-                      onFocus={() => handleFocus(index)}
+                      disabled={!isEditable(index)} // Disable if not editable
                       maxLength="1"
                       style={{ width: "50px", marginRight: "5px" }}
                       // Disable input if the previous box is empty

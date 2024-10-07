@@ -203,7 +203,7 @@ const TrackOrder = () => {
                     </span>
                   </p>
                 </div>
-                <div className="col-3 px-0 text-end">
+                <div className="col-3 px-0 text-center">
                   <p className="mb-0 fs-6  gray-text ">
                     <i className="ri-bowl-line pe-0"></i>
                     {order_details.menu_count} Menu
@@ -303,7 +303,7 @@ const TrackOrder = () => {
                         />
                       </div>
                       <div className="dz-content">
-                        <h5 className=" mt-0  mb-0">{menu.menu_name}</h5>
+                        <h6 className=" mt-0 fw-medium mb-0">{menu.menu_name}</h6>
                         <div className="row">
                           <div className="col-5 pe-0">
                             <i className="ri-restaurant-line pe-1 category-text fs-xs "></i>

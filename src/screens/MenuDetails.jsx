@@ -446,7 +446,7 @@ const MenuDetails = () => {
           </div>
         </main>
         <div className="container">
-          <footer className="footer fixed-bottom-custom">
+          <footer className="footer mb-4">
             <div className="row">
               <hr className="dashed-line me-5 pe-5" />
 

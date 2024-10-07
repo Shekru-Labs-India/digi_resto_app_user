@@ -21,7 +21,7 @@ const Wishlist = () => {
 
   // Fetch restaurant_id from context or local storage
   const { restaurantId: contextRestaurantId } = useRestaurantId();
-  const storedRestaurantId = localStorage.getItem("restaurantId");
+  const storedRestaurantId = localStorage.getItem("RestaurantId");
   const restaurantId = contextRestaurantId || storedRestaurantId;
 
   // Retrieve user data from local storage
