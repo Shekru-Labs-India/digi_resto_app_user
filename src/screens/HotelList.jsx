@@ -80,7 +80,7 @@ const HotelList = () => {
                           <i className="ri-store-2-line fs-4"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="menu_name fs-3 m-0">
+                          <span className="menu_name fs-5 m-0">
                             {hotel.restaurant_name}
                           </span>
                         </div>
