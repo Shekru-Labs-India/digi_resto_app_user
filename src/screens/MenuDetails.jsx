@@ -227,7 +227,7 @@ const MenuDetails = () => {
   };
 
   if (!productDetails) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   // Function to handle favorite status toggle
@@ -344,7 +344,7 @@ const MenuDetails = () => {
 
           <div className="container">
             <div className="dz-product-detail">
-              <div className="detail-content mt-0 mb-1">
+              <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
                     {/* {toTitleCase(productDetails.menu_cat_name)} */}
@@ -352,17 +352,17 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <h4 className="title fs-sm">
+                    <h4 className="title fs-sm mb-1">
                       {toTitleCase(productDetails.name)}
                     </h4>
                   </div>
                 </div>
               </div>
 
-              <div className="product-meta">
+              <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 ps-2 text-primary fs-6 px-0">
+                    <div className="dz-quantity detail-content category-text m-0 ps-2 fs-xs fs-6 px-0">
                       <i className="ri-restaurant-line  me-1 fs-6"></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -469,16 +469,18 @@ const MenuDetails = () => {
                 </div>
               </div>
               <div className="col-6 text-end">
-                <button
-                  to="#"
-                  className="btn btn-color fs-3 py-4 me-2  rounded-pill"
-                  onClick={handleAddToCart}
-                >
-                  <i className="ri-shopping-cart-line  pe-1 text-white"></i>
-                  <div className="font-poppins fs-6 text-nowrap  text-white">
-                    Add to Cart
-                  </div>
-                </button>
+              {!isMenuItemInCart(menuId) && (
+  <button
+    to="#"
+    className="btn btn-color fs-3 py-4 me-2  rounded-pill"
+    onClick={handleAddToCart}
+  >
+    <i className="ri-shopping-cart-line  pe-1 text-white"></i>
+    <div className="font-poppins fs-6 text-nowrap  text-white">
+      Add to Cart
+    </div>
+  </button>
+)}
               </div>
             </div>
           </footer>

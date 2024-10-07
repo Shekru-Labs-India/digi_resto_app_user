@@ -283,6 +283,10 @@ background-color: var(--bg-white);
   font-weight: 600;
 }
 
+.table-number-align{
+  margin-right:-10px;
+}
+
 .gray-text{
   color: #adb5bd;
 }

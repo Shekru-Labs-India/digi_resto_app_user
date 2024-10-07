@@ -269,7 +269,7 @@ const Cart = () => {
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                   </span>
                   <i className="ri-store-2-line ps-2"></i>
-                  <h6 className="title fw-medium h6 custom-text-gray table-number pe-5 me-5">
+                  <h6 className="title fw-medium h6 custom-text-gray table-number table-number-align text-center ps-5 ms-4">
                     Table: {userData.tableNumber || ""}
                   </h6>
                 </div>
@@ -497,8 +497,8 @@ const Cart = () => {
                     </div>
                     <div>
                       <hr
-                        className=" me-3 p-0 m-0"
-                        style={{ color: "#0d775e" }}
+                        className=" me-3 p-0 m-0 text-primary"
+                       
                       />
                     </div>
                     <div className="col-12 py-1">
