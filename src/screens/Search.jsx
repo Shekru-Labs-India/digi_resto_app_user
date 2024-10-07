@@ -1745,8 +1745,8 @@ const Search = () => {
           setSearchedMenu(updatedMenu);
           toast.current.show({
             severity: isFavorite ? "info" : "success",
-            summary: isFavorite ? "Removed from Wishlist" : "Added to Wishlist",
-            detail: `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your wishlist.`,
+            summary: isFavorite ? "Removed from Favourites" : "Added to Favourites",
+            detail: `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your favorites.`,
             life: 2000,
           });
         } else {
