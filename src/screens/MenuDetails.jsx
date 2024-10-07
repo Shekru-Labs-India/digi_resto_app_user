@@ -181,11 +181,7 @@ const MenuDetails = () => {
       localStorage.setItem("cartId", cartId); // Store the cart ID
     }
 
-    if (isMenuItemInCart(menuId)) {
-      alert("This item is already in the cart");
-
-      return;
-    }
+   
 
     try {
       const response = await fetch(
@@ -221,7 +217,10 @@ const MenuDetails = () => {
           life: 3000,
         });
 
-        navigate("/Cart");
+        setTimeout(() => {
+          navigate("/Cart");
+        }, 2000);
+
       } else {
         console.error("Failed to add item to cart:", data.msg);
       }
@@ -481,14 +480,14 @@ const MenuDetails = () => {
               <div className="col-6 text-end">
                 {isMenuItemInCart(menuId) ? (
                   <button
-                    className="btn btn-color fs-3 py-4 me-2 rounded-pill"
-                    disabled
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins fs-6 text-nowrap text-white">
-                      In Cart
-                    </div>
-                  </button>
+                  className="btn btn-color fs-3 py-4 me-2 rounded-pill"
+                  onClick={() => navigate("/Cart")}
+                >
+                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <div className="font-poppins fs-6 text-nowrap text-white">
+                    Go to Cart
+                  </div>
+                </button>
                 ) : (
                   <button
                     to="#"

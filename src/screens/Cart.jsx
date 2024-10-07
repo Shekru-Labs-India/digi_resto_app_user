@@ -446,7 +446,7 @@ const Cart = () => {
                 <div className="card mx-auto">
                   <div className="row px-1 py-1">
                     <div className="col-12">
-                      <div className="d-flex justify-content-between align-items-center py-2">
+                      <div className="d-flex justify-content-between align-items-center py-1">
                         <span className="ps-2 fs-3 fw-medium">Total</span>
 
                         <span className="pe-2 fs-3 fw-medium">
@@ -455,7 +455,7 @@ const Cart = () => {
                       </div>
                       <hr className=" me-3 p-0 m-0  text-primary" />
                     </div>
-                    <div className="col-12 py-1">
+                    <div className="col-12 pt-0">
                       <div className="d-flex justify-content-between align-items-center py-0">
                         <span
                           className="ps-2 fs-sm pt-1"
@@ -482,7 +482,7 @@ const Cart = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="col-12 mb-0 pt-1 pb-2">
+                    <div className="col-12 mb-0 pt-0 pb-1">
                       <div className="d-flex justify-content-between align-items-center py-0">
                         <span
                           className="ps-2 fs-sm"
@@ -501,7 +501,7 @@ const Cart = () => {
                        
                       />
                     </div>
-                    <div className="col-12 py-1">
+                    <div className="col-12 ">
                       <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
                         <span className="ps-2 fs-3 fw-medium">Grand Total</span>
                         <span className="pe-2 fs-3 ">

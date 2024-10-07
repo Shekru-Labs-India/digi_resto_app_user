@@ -173,27 +173,30 @@ const NearbyArea = () => {
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
-        toast.current.show({
-          severity: isFavorite ? "error" : "success",
-          summary: "Success",
-          detail: isFavorite ? "Removed from favorites" : "Added to favorites",
-          life: 3000,
-        });
-        // Update menuItems state
-        setMenuItems((prevItems) =>
-          prevItems.map((item) =>
-            item.menu_id === menuId
-              ? { ...item, is_favourite: !isFavorite }
-              : item
-          )
+
+        const updatedMenuItems = menuItems.map((item) =>
+          item.menu_id === menuId
+            ? { ...item, is_favourite: !isFavorite }
+            : item
         );
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to update favorite status",
-          life: 3000,
-        });
+  
+        
+      setMenuItems(updatedMenuItems);
+      localStorage.setItem("menuItems", JSON.stringify(updatedMenuItems));
+
+      toast.current.show({
+        severity: isFavorite ? "error" : "success",
+        summary: "Success",
+        detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+        life: 3000,
+      });
+    } else {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update favorite status",
+        life: 3000,
+      });
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
