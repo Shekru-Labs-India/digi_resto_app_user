@@ -7,7 +7,7 @@ import Bottom from "../component/bottom";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css"; 
+import "primeicons/primeicons.css";
 
 const MenuDetails = () => {
   const toast = useRef(null);
@@ -16,7 +16,9 @@ const MenuDetails = () => {
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
   const [showQuantityError, setShowQuantityError] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0); // Total amount state
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    return JSON.parse(localStorage.getItem("cartItems")) || [];
+  });
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
@@ -27,8 +29,6 @@ const MenuDetails = () => {
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
-
- 
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -107,11 +107,13 @@ const MenuDetails = () => {
     }
   };
 
-  
-
   useEffect(() => {
     fetchProductDetails();
   }, [menuId, restaurantId]);
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // const fetchCartDetails = async () => {
   //   const customerId = getCustomerId();
@@ -180,7 +182,7 @@ const MenuDetails = () => {
 
     if (isMenuItemInCart(menuId)) {
       alert("This item is already in the cart");
-      navigate("/Cart");
+
       return;
     }
 
@@ -204,7 +206,12 @@ const MenuDetails = () => {
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item added to cart successfully.");
-
+        const updatedCartItems = [
+          ...cartItems,
+          { ...productDetails, quantity: 1 },
+        ];
+        setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         localStorage.setItem("cartId", data.cart_id);
         toast.current.show({
           severity: "success",
@@ -269,14 +276,16 @@ const MenuDetails = () => {
             ...productDetails,
             is_favourite: updatedFavoriteStatus,
           });
-        toast.current.show({
-          severity: isFavorite ? "info" : "success",
-          summary: isFavorite ? "Removed from Favorites" : "Added to Favorites",
-          detail: isFavorite
-            ? "Item has been removed from your favorites."
-            : "Item has been added to your favorites.",
-          life: 3000,
-        });
+          toast.current.show({
+            severity: isFavorite ? "info" : "success",
+            summary: isFavorite
+              ? "Removed from Favorites"
+              : "Added to Favorites",
+            detail: isFavorite
+              ? "Item has been removed from your favorites."
+              : "Item has been added to your favorites.",
+            life: 3000,
+          });
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -398,21 +407,21 @@ const MenuDetails = () => {
               <div className="container">
                 <div className="row">
                   <div className="col-4 py-1 ps-0 quantity-container">
-                  <button
-                  onClick={() => handleQuantityChange(-1)}
-                  className="quantity-button"
-                >
-                  <i className="ri-subtract-line"></i>
-                </button>
+                    <button
+                      onClick={() => handleQuantityChange(-1)}
+                      className="quantity-button"
+                    >
+                      <i className="ri-subtract-line"></i>
+                    </button>
 
-                <span className="quantity-text">{quantity}</span>
+                    <span className="quantity-text">{quantity}</span>
 
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  className="quantity-button"
-                >
-                  <i className="ri-add-line"></i>
-                </button>
+                    <button
+                      onClick={() => handleQuantityChange(1)}
+                      className="quantity-button"
+                    >
+                      <i className="ri-add-line"></i>
+                    </button>
                   </div>
                   <div className="col-8 pe-2 text-end">
                     <i
@@ -469,18 +478,28 @@ const MenuDetails = () => {
                 </div>
               </div>
               <div className="col-6 text-end">
-              {!isMenuItemInCart(menuId) && (
-  <button
-    to="#"
-    className="btn btn-color fs-3 py-4 me-2  rounded-pill"
-    onClick={handleAddToCart}
-  >
-    <i className="ri-shopping-cart-line  pe-1 text-white"></i>
-    <div className="font-poppins fs-6 text-nowrap  text-white">
-      Add to Cart
-    </div>
-  </button>
-)}
+                {isMenuItemInCart(menuId) ? (
+                  <button
+                    className="btn btn-color fs-3 py-4 me-2 rounded-pill"
+                    disabled
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="font-poppins fs-6 text-nowrap text-white">
+                      In Cart
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    to="#"
+                    className="btn  btn-color fs-3 py-4 me-2 rounded-pill"
+                    onClick={handleAddToCart}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="font-poppins fs-6 text-nowrap text-white">
+                      Add to Cart
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
           </footer>

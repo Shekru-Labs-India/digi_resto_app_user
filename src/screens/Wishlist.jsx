@@ -337,8 +337,8 @@ const Wishlist = () => {
                         >
                           <div className="row">
                             <div className="col-5 pe-0 ps-4">
-                              <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs "></i>
-                              <span className="category-text fs-xs  ">
+                              <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs  fw-medium"></i>
+                              <span className="category-text fs-xs fw-medium ">
                                 {menu.category_name}
                               </span>
                             </div>
