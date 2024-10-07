@@ -25,7 +25,7 @@ const HotelList = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <main className="page-content pt-3">
+      <main className="page-content pt-0">
         {/* <div className="card rounded-3">
           <a href="https://shekru-labs-india.github.io/digi_resto_app_user/#/751231/1">
             <div class="card-body py-0">
@@ -85,7 +85,7 @@ const HotelList = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="row mt-2">
+                      <div className="row mt-1">
                         <div className="col-1 d-flex align-items-center">
                           <i className="ri-phone-line text-primary fs-4"></i>
                         </div>
@@ -95,7 +95,7 @@ const HotelList = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="row mt-2 pb-2">
+                      <div className="row mt-1 pb-1">
                         <div className="col-1">
                           <i className="ri-map-pin-line gray-text fs-4"></i>
                         </div>

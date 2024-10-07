@@ -28,7 +28,7 @@ const QRScanner = () => {
             // Redirect after 2 seconds
             setTimeout(() => {
               window.location.href = result.text;
-            }, 10000);
+            }, 2000);
           }
 
           if (error) {
@@ -64,9 +64,11 @@ const QRScanner = () => {
     <div className="container-fluid bg-light vh-100 d-flex flex-column align-items-center">
       <Toast ref={toast} position="bottom-center" /> {/* Add Toast component */}
       <h2 className="text-dark mt-3">MenuMitra</h2>
-      <button className="btn btn-primary my-3 rounded-pill" onClick={handleScanButtonClick}>
-        Scan QR
-      </button>
+      {!showCamera && ( // Conditionally render the button
+        <button className="btn btn-primary my-3 rounded-pill" onClick={handleScanButtonClick}>
+          Scan QR
+        </button>
+      )}
       {showCamera && (
         <div
           className="position-relative w-75 mb-4 rounded-5"
@@ -74,16 +76,11 @@ const QRScanner = () => {
         >
           <video
             ref={videoRef}
-            className="w-100 h-100 rounded-5"
+            className="w-100 h-100 rounded-5 mt-2"
             style={{ objectFit: "cover" }}
           />
         </div>
       )}
-      {/* {scannedResult && (
-        <div className="alert alert-success mt-3">
-          Scanned Result: {scannedResult}
-        </div>
-      )} */}
       <div className="container">
         <HotelList />
       </div>
