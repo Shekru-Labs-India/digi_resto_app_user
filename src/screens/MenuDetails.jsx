@@ -29,7 +29,7 @@ const MenuDetails = () => {
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
-
+  const customerId = JSON.parse(localStorage.getItem("userData"))?.customer_id;
   const toTitleCase = (str) => {
     if (!str) return "";
     return str.replace(
@@ -52,6 +52,7 @@ const MenuDetails = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
+            customer_id: customerId,
           }),
         }
       );

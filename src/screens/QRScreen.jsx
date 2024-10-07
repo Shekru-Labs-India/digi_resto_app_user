@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { Toast } from "primereact/toast"; // Import Toast from PrimeReact
 import HotelList from "./HotelList";
+import OverlayIcon from "../assets/google lens.svg"; // Import the SVG
 
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
@@ -65,8 +66,11 @@ const QRScanner = () => {
       <Toast ref={toast} position="bottom-center" /> {/* Add Toast component */}
       <h2 className="text-dark mt-3">MenuMitra</h2>
       {!showCamera && ( // Conditionally render the button
-        <button className="btn btn-primary my-3 rounded-pill" onClick={handleScanButtonClick}>
-          Scan QR
+        <button
+          className="btn btn-primary my-3 rounded-pill"
+          onClick={handleScanButtonClick}
+        >
+          <i class="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
         </button>
       )}
       {showCamera && (
@@ -78,6 +82,12 @@ const QRScanner = () => {
             ref={videoRef}
             className="w-100 h-100 rounded-5 mt-2"
             style={{ objectFit: "cover" }}
+          />
+          <img
+            src={OverlayIcon}
+            alt="Overlay"
+            className="position-absolute start-0 w-75 h-75"
+            style={{ pointerEvents: "none", top: "50%", left: "50%", transform: "translate(16%, -46%)" }}
           />
         </div>
       )}
