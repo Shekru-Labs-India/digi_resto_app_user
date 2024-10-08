@@ -269,7 +269,7 @@ const Cart = () => {
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                   </span>
                   <i className="ri-store-2-line ps-2"></i>
-                  <h6 className="title fw-medium h6 custom-text-gray table-number table-number-align text-center ps-5 ms-4">
+                  <h6 className="title fw-medium h6 custom-text-gray table-number table-number-align text-center me-5 ms-1">
                     Table: {userData.tableNumber || ""}
                   </h6>
                 </div>
@@ -447,9 +447,9 @@ const Cart = () => {
                   <div className="row px-1 py-1">
                     <div className="col-12">
                       <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 fs-3 fw-medium">Total</span>
+                        <span className="ps-2 h3 fw-medium">Total</span>
 
-                        <span className="pe-2 fs-3 fw-medium">
+                        <span className="pe-2 h3 fw-medium">
                           ₹{cartDetails?.total_bill || 0}
                         </span>
                       </div>
@@ -503,8 +503,8 @@ const Cart = () => {
                     </div>
                     <div className="col-12 ">
                       <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 fs-3 fw-medium">Grand Total</span>
-                        <span className="pe-2 fs-3 ">
+                        <span className="ps-2 h3 fw-medium">Grand Total</span>
+                        <span className="pe-2 h3 fw-medium">
                           ₹{cartDetails?.grand_total || 0}
                         </span>
                       </div>

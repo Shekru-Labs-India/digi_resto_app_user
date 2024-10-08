@@ -2263,7 +2263,7 @@ const Product = () => {
         <div className="container mt-2 mb-0">
           <div className="header-content d-flex justify-content-end">
             <div className="right-content gap-1">
-              <h3 className="title fw-medium hotel-name">
+              <h3 className="title fw-medium hotel-name mb-0">
                 {restaurantName || "Restaurant Name"}
                 <i className="ri-store-2-line ps-2"></i>
               </h3>
@@ -2410,8 +2410,8 @@ const Product = () => {
                         <div className="col-6 text-end mt-2">
                           <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
                           <span
-                            className="fs-6 fw-semibold"
-                            style={{ color: "#7f7e7e", marginLeft: "5px" }}
+                            className="fs-6 fw-semibold gray-text"
+                             
                           >
                             {menuItem.rating}
                           </span>

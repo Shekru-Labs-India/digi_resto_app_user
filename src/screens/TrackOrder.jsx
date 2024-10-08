@@ -96,20 +96,47 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, customerId]);
 
+  // const formatDateTime = (dateTime) => {
+  //   const [date, time] = dateTime.split(" ");
+  //   const [hours, minutes] = time.split(":");
+    
+  //   // Convert hours to 12-hour format
+  //   let hours12 = parseInt(hours, 10);
+  //   const period = hours12 >= 12 ? "PM" : "AM";
+  //   hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
+    
+  //   // Pad single-digit hours and minutes with leading zeros
+  //   const formattedHours = hours12.toString().padStart(2, '0');
+  //   const formattedMinutes = minutes.padStart(2, '0');
+    
+  //   return `${formattedHours}:${formattedMinutes} ${period} ${date}`;
+  // };
+
+
+  // Use above code after correcting the date format in the backend
+
   const formatDateTime = (dateTime) => {
-    const dateTimeParts = dateTime.split(" ");
-    if (dateTimeParts.length === 3) {
-      const [date, time, period] = dateTimeParts;
-      const [hours, minutes] = time.split(":");
-      return `${hours}:${minutes} ${period} ${date}`;
-    } else if (dateTimeParts.length === 2) {
-      const [date, time] = dateTimeParts;
-      const [hours, minutes] = time.split(":");
-      const period = parseInt(hours, 10) >= 12 ? "PM" : "AM";
-      return `${hours}:${minutes} ${period} ${date}`;
-    } else {
-      return dateTime; // Return as is if the format is unexpected
-    }
+    const [date, time] = dateTime.split(" ");
+    const [day, month, year] = date.split("-");
+    const [hours, minutes] = time.split(":");
+    
+    // Convert hours to 12-hour format
+    let hours12 = parseInt(hours, 10);
+    const period = hours12 >= 12 ? "PM" : "AM";
+    hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
+    
+    // Pad single-digit hours and minutes with leading zeros
+    const formattedHours = hours12.toString().padStart(2, '0');
+    const formattedMinutes = minutes.padStart(2, '0');
+    
+    // Array of month abbreviations
+    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    
+    // Get month abbreviation
+    const monthAbbr = monthNames[parseInt(month, 10) - 1];
+    
+    return `${formattedHours}:${formattedMinutes} ${period} ${day}-${monthAbbr}-${year}`;
   };
 
   if (loading || !orderDetails) {

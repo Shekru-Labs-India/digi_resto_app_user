@@ -90,7 +90,7 @@ const MyOrder = () => {
           <div className="mid-content">
             <h5 className="title">My Order 
   {orders.length > 0 && (
-    <span className="gray-text small-number">({orders.length})</span>
+    <span className="gray-text small-number"> ({orders.length})</span>
   )} </h5>
           </div>
         </div>
@@ -191,9 +191,19 @@ const OrdersTab = ({ orders, type }) => {
   };
 
   const formatDateTime = (dateTime) => {
-    const [date, time, period] = dateTime.split(" ");
+    const [date, time] = dateTime.split(" ");
     const [hours, minutes] = time.split(":");
-    return `${hours}:${minutes} ${period} ${date}`;
+    
+    // Convert hours to 12-hour format
+    let hours12 = parseInt(hours, 10);
+    const period = hours12 >= 12 ? "PM" : "AM";
+    hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
+    
+    // Pad single-digit hours and minutes with leading zeros
+    const formattedHours = hours12.toString().padStart(2, '0');
+    const formattedMinutes = minutes.padStart(2, '0');
+    
+    return `${formattedHours}:${formattedMinutes} ${period} ${date}`;
   };
 
   return (
@@ -209,7 +219,7 @@ const OrdersTab = ({ orders, type }) => {
           <Link
             to="/Menu"
             className="mt-2 fs-6 fw-semibold"
-            style={{ color: "#4f74fd" }}
+           
           >
             Explore our menus
           </Link>
@@ -247,7 +257,7 @@ const OrdersTab = ({ orders, type }) => {
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
                       ? "No ongoing orders"
-                      : order.menu_count}{" "}
+                      : order.menu_count} {" "}
                     Menu
                   </p>
                 </div>
