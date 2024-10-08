@@ -287,9 +287,11 @@ const ProductCard = () => {
       <div className="dz-box">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
-            <h5 className="title p-r50 fs-5">Menu Category</h5>
+            <span className="title p-r50 customFontSizeBold">
+              Menu Category
+            </span>
             <Link to="/Category">
-              <i className="ri-arrow-right-line fs-3"></i>
+              <i className="ri-arrow-right-line customFontSize"></i>
             </Link>
           </div>
         )}
@@ -297,7 +299,7 @@ const ProductCard = () => {
           <div className="swiper-wrapper">
             {totalMenuCount > 0 && menuCategories.length > 0 && (
               <div
-                className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
+                className={`category-btn border border-2 rounded-5 swiper-slide customFontSizeBold ${
                   selectedCategoryId === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
@@ -313,7 +315,7 @@ const ProductCard = () => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn border border-2 rounded-5 fs-6 ${
+                  className={`category-btn border border-2 rounded-5 customFontSizeBold ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -399,8 +401,9 @@ const ProductCard = () => {
                   </div>
 
                   {menu.name && (
-                    <div className="item-name fs-sm text-wrap">
+                    <div className=" customFontSizeBolds text-wrap">
                       <Link
+                        className="customFontSizeBold"
                         to={{
                           pathname: `/ProductDetails/${menu.menu_id}`,
                         }}
@@ -429,7 +432,7 @@ const ProductCard = () => {
                       <div className="col-6 text-end mt-2">
                         <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
                         <span
-                          className="fs-6 fw-semibold gray-text"
+                          className="customFontSize fw-semibold gray-text"
                           style={{ marginLeft: "5px" }}
                         >
                           {menu.rating}
@@ -441,7 +444,7 @@ const ProductCard = () => {
                     <div className="col-8">
                       <div className="footer-wrapper">
                         <div className="price-wrapper d-flex align-items-baseline">
-                          <p className="mb-1 fs-4 fw-medium">
+                          <p className="mb-1 customFontSize fw-medium">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -451,7 +454,7 @@ const ProductCard = () => {
                               <span className="ms- me-2 text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text fs-6 text-decoration-line-through">
+                              <span className="gray-text customFontSize text-decoration-line-through">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </Link>
@@ -484,7 +487,7 @@ const ProductCard = () => {
                   </div>
                   <div className="row">
                     <div className="col-12">
-                      <span className="fs-6  offer-color">
+                      <span className="customFontSize  offer-color">
                         {menu.offer || "No "}% Off
                       </span>
                     </div>

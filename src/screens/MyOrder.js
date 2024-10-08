@@ -88,10 +88,15 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">My Order 
-  {orders.length > 0 && (
-    <span className="gray-text small-number"> ({orders.length})</span>
-  )} </h5>
+            <h5 className="customFontSizeBold">
+              My Order
+              {orders.length > 0 && (
+                <span className="gray-text small-number">
+                  {" "}
+                  ({orders.length})
+                </span>
+              )}{" "}
+            </h5>
           </div>
         </div>
       </header>
@@ -118,7 +123,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link ${
+                          className={`nav-link customFontSizeBold ${
                             activeTab === "ongoing" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("ongoing")}
@@ -133,7 +138,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link ${
+                          className={`nav-link customFontSizeBold ${
                             activeTab === "completed" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("completed")}
@@ -213,14 +218,10 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="fs-6 fw-semibold gray-text">
+          <p className="customFontSizeBold fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
-          <Link
-            to="/Menu"
-            className="mt-2 fs-6 fw-semibold"
-           
-          >
+          <Link to="/Menu" className="mt-2 customFontSizeBold fw-semibold">
             Explore our menus
           </Link>
         </div>
@@ -235,17 +236,19 @@ const OrdersTab = ({ orders, type }) => {
             <div className="card-body" style={{ height: "90px" }}>
               <div className="row align-items-center">
                 <div className="col-4">
-                  <h5 className="card-title mb-1">{order.order_number}</h5>
+                  <span className="card-title mb-1 customFontSizeBold">
+                    {order.order_number}
+                  </span>
                 </div>
                 <div className="col-8 text-end">
-                  <span className="card-text gray-text mb-0">
+                  <span className="card-text gray-text mb-0 customFontSizeBold">
                     {formatDateTime(order.date_time)}
                   </span>
                 </div>
               </div>
               <div className="row mt-2">
                 <div className="col-6">
-                  <p className="mb-0 fs-6 ">
+                  <p className="mb-0 customFontSizeBold">
                     <i className="ri-store-2-line pe-2"></i>
                     {order.restaurant_name}
                     <i className="ri-user-location-line ps-2 pe-1"></i>
@@ -253,21 +256,20 @@ const OrdersTab = ({ orders, type }) => {
                   </p>
                 </div>
                 <div className="col-4 text-start p-0 gray-text">
-                  <p className="mb-0 fs-6">
+                  <p className="mb-0 customFontSizeBold">
                     <i className="ri-bowl-line pe-2"></i>
                     {order.menu_count === 0
                       ? "No ongoing orders"
-                      : order.menu_count} {" "}
+                      : order.menu_count}{" "}
                     Menu
                   </p>
                 </div>
                 <div className="col-2 p-0">
                   <div className="price-wrapper">
-                    <p className="mb-2 fs-4 fw-medium text-end">
-                      <span className="text-info ">₹{order.total_bill}</span>
-                      {/* <span className="text-info ">₹{order.grand_total}</span> 
-                      add grand_total in api  */}
-                      
+                    <p className="mb-2 customFontSizeBold fw-medium text-end">
+                      {/* <span className="text-info ">₹{order.total_bill}</span> */}
+                      <span className="text-info ">₹{order.grand_total}</span>
+                      {/* add grand_total in api  */}
                     </p>
                   </div>
                 </div>

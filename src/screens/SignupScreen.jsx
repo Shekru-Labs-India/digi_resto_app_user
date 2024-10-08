@@ -165,7 +165,8 @@ const Signupscreen = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <Toast ref={toast} position="bottom-center" /> {/* Ensure Toast is positioned at the bottom-center */}
+      <Toast ref={toast} position="bottom-center" />{" "}
+      {/* Ensure Toast is positioned at the bottom-center */}
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
@@ -175,11 +176,11 @@ const Signupscreen = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <h2 className="title">Create your account</h2>
+                <h2 className="customFontSizeBold">Create your account</h2>
               </div>
               <form onSubmit={handleSignUp}>
                 <div className="mb-3">
-                  <label className="form-label fs-4" htmlFor="name">
+                  <label className=" customFontSizeBold" htmlFor="name">
                     <span className="required-star">*</span>Name
                   </label>
                   <div className="input-group">
@@ -189,16 +190,20 @@ const Signupscreen = () => {
                     <input
                       type="text"
                       id="name"
-                      className={`form-control ${nameError ? "is-invalid" : ""}`}
+                      className={`form-control ${
+                        nameError ? "is-invalid" : ""
+                      }`}
                       placeholder="Name"
                       value={name}
                       onChange={handleNameChange}
                     />
                   </div>
-                  {nameError && <div className="invalid-feedback">{nameError}</div>}
+                  {nameError && (
+                    <div className="invalid-feedback">{nameError}</div>
+                  )}
                 </div>
                 <div className="m-b15">
-                  <label className="form-label fs-4" htmlFor="mobile">
+                  <label className="customFontSizeBold" htmlFor="mobile">
                     <span className="required-star">*</span> Mobile
                   </label>
                   <div className="input-group">
@@ -208,13 +213,17 @@ const Signupscreen = () => {
                     <input
                       type="tel"
                       id="mobile"
-                      className={`form-control ${mobileError ? "is-invalid" : ""}`}
+                      className={`form-control ${
+                        mobileError ? "is-invalid" : ""
+                      }`}
                       placeholder="Enter Mobile Number"
                       value={mobile}
                       onChange={handleMobileChange}
                     />
                   </div>
-                  {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+                  {mobileError && (
+                    <div className="invalid-feedback">{mobileError}</div>
+                  )}
                 </div>
                 <div className="form-check m-b25" ref={checkboxRef}>
                   <input
@@ -227,16 +236,24 @@ const Signupscreen = () => {
                       setCheckboxError(""); // Clear checkbox error when checked
                     }}
                   />
-                  <label className="form-check-label fs-6" htmlFor="Checked-1">
+                  <label
+                    className="form-check-label customFontSizeBold"
+                    htmlFor="Checked-1"
+                  >
                     I agree to all Terms, Privacy, and Fees
                   </label>
                 </div>
-                {checkboxError && <p className="text-danger">{checkboxError}</p>}
+                {checkboxError && (
+                  <p className="text-danger">{checkboxError}</p>
+                )}
                 {error && <p className="text-danger">{error}</p>}
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      <div className="spinner-border text-primary" role="status">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     </div>
@@ -245,27 +262,28 @@ const Signupscreen = () => {
                   <button
                     id="signupButton"
                     type="submit"
-                    className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+                    className="dz-btn btn customFontSizeBold btn-primary rounded-xl"
                   >
                     Create Account
                   </button>
                 )}
               </form>
             </div>
-            <div className="text-center mt-auto">
-              Already have an account?{' '}
-              <Link to="/Signinscreen" className="text-underline font-w500">
+            <div className="text-center mt-auto customFontSize">
+              Already have an account?{" "}
+              <Link
+                to="/Signinscreen"
+                className="text-underline customFontSizeBold"
+              >
                 Sign In
               </Link>
             </div>
           </div>
         </div>
       </main>
-      <CompanyVersion/>
+      <CompanyVersion />
       {showPopup && (
-        <div className="popup show">
-          Account Created Successfully
-        </div>
+        <div className="popup show">Account Created Successfully</div>
       )}
     </div>
   );

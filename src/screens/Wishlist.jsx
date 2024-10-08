@@ -250,18 +250,19 @@ const Wishlist = () => {
         <div className="header-content">
           <div className="left-content">
             <Link
-             
               className="back-btn dz-icon icon-sm"
               onClick={() => navigate(-1)}
             >
-              <i className="ri-arrow-left-line fs-2"></i>
+              <i className="ri-arrow-left-line customFontSizeBold"></i>
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">
+            <h5 className="customFontSizeBold">
               Favourite{" "}
               {userData && menuList.length > 0 && (
-                <span className="gray-text small-number">({menuList.length})</span>
+                <span className="gray-text small-number">
+                  ({menuList.length})
+                </span>
               )}
             </h5>
           </div>
@@ -301,7 +302,7 @@ const Wishlist = () => {
                       </div>
                       <div className="col-9 pt-1 p-0">
                         <div className="row">
-                          <div className="col-9 pe-2 menu_name">
+                          <div className="col-9 pe-2">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -312,18 +313,18 @@ const Wishlist = () => {
                                 menu_cat_id: menu.menu_cat_id,
                               }}
                             >
-                              <div>{menu.menu_name}</div>
+                              <div className="customFontSizeBold">
+                                {menu.menu_name}
+                              </div>
                             </Link>
                           </div>
                           <div className="col-2 text-end fs-4 ps-0 pe-2 ">
-                            
-                              <i
-                                className="ri-close-line  icon-adjust "
-                                onClick={() =>
-                                  handleRemoveItemClick(index, menu.menu_id)
-                                }
-                              ></i>
-                            
+                            <i
+                              className="ri-close-line  icon-adjust "
+                              onClick={() =>
+                                handleRemoveItemClick(index, menu.menu_id)
+                              }
+                            ></i>
                           </div>
                         </div>
                         <Link
@@ -363,7 +364,7 @@ const Wishlist = () => {
                               )}
                             </div>
                             <div className="col-2 px-0 d-flex align-items-center">
-                              <span className="fs-6 fw-semibold gray-text favRating">
+                              <span className="customFontSize fw-semibold gray-text favRating">
                                 <i className="ri-star-half-line me-1 ratingStar"></i>
                                 {menu.rating || 0.1}
                               </span>
@@ -383,11 +384,11 @@ const Wishlist = () => {
                                 menu_cat_id: menu.menu_cat_id,
                               }}
                             >
-                              <p className="mb-0  fs-4 me-0 fw-medium">
+                              <p className="mb-0 customFontSize me-0 fw-medium">
                                 <span className=" me-1 text-info">
-                                ₹{menu.price}
+                                  ₹{menu.price}
                                 </span>
-                                <span className="gray-text fs-6 text-decoration-line-through ">
+                                <span className="gray-text customFontSize text-decoration-line-through ">
                                   ₹{menu.oldPrice || menu.price}
                                 </span>
                               </p>
@@ -404,7 +405,7 @@ const Wishlist = () => {
                               }}
                             >
                               {" "}
-                              <span className="fs-6  offer-color favoffer "   >
+                              <span className="customFontSize  offer-color favoffer ">
                                 {menu.offer || "No "}% Off
                               </span>
                             </Link>
@@ -436,7 +437,9 @@ const Wishlist = () => {
             >
               <div className="m-b20 dz-flex-box text-center">
                 <div className="dz-cart-about">
-                  <h5 className="title">Nothing to show in favourites.</h5>
+                  <h5 className="customFontSize">
+                    Nothing to show in favourites.
+                  </h5>
                   <p>Add some products to show here!</p>
                   <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                     Browse Menus
@@ -452,12 +455,14 @@ const Wishlist = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <h5>Please log in to view your favourites.</h5>
+                <span className="customFontSize">
+                  Please log in to view your favourites.
+                </span>
                 <Link
-                  className="btn btn-outline-primary mt-3"
+                  className="btn btn-outline-primary mt-3 customFontSize"
                   to="/Signinscreen"
                 >
-                  <i className="ri-lock-2-line fs-4 me-2 "></i> Login
+                  <i className="ri-lock-2-line me-2 "></i> Login
                 </Link>
               </div>
             </div>

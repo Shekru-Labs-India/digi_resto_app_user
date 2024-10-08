@@ -140,15 +140,23 @@
               <div className="account-section">
                 <div className="section-head">
                   <Logoname />
-                  <h2 className="title text-muted">
-                    Welcome Back You've{" "}
-                    <h2 className="title mt-1 text-muted"> Been Missed!</h2>
-                  </h2>
+                  <div className="d-flex justify-content-center">
+                    <span className="customFontSizeBold text-muted">
+                      Welcome Back You've{" "}
+                      <span className="customFontSizeBold mt-1 text-muted">
+                        {" "}
+                        Been Missed!
+                      </span>
+                    </span>
+                  </div>
                 </div>
 
                 <form onSubmit={(e) => e.preventDefault()}>
                   <div className="m-b15">
-                    <label className="form-label fs-4" htmlFor="mobile">
+                    <label
+                      className=" customFontSizeBold"
+                      htmlFor="mobile"
+                    >
                       <span className="required-star">*</span> Mobile
                     </label>
                     <div className="input-group text-muted">
@@ -186,7 +194,7 @@
                   ) : (
                     <button
                       type="button"
-                      className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+                      className="dz-btn btn customFontSizeBold btn-primary rounded-xl"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >
@@ -195,9 +203,12 @@
                   )}
                 </form>
               </div>
-              <div className="text-center mt-auto">
+              <div className="text-center mt-auto customFontSize">
                 Not a member?{" "}
-                <Link to="/Signupscreen" className="text-underline font-w500">
+                <Link
+                  to="/Signupscreen"
+                  className="text-underline customFontSizeBold"
+                >
                   Create an account
                 </Link>
               </div>
@@ -205,9 +216,9 @@
           </div>
         </main>
         <div className="text-center mt-5 pt-5">
-          <div className="gray-text fs-6 mt-5">Powered by </div>
-          <div className="gray-text fs-6">Shekru Labs India Pvt. Ltd.</div>
-          <div className="gray-text fs-sm ">v1.1</div>
+          <div className="gray-text customFontSizeBold mt-5">Powered by </div>
+          <div className="gray-text customFontSizeBold">Shekru Labs India Pvt. Ltd.</div>
+          <div className="gray-text  customFontSizeBold ">v1.1</div>
         </div>
       </div>
     );

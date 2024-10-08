@@ -64,7 +64,7 @@ const QRScanner = () => {
   return (
     <div className="container-fluid bg-light vh-100 d-flex flex-column align-items-center">
       <Toast ref={toast} position="bottom-center" /> {/* Add Toast component */}
-      <h2 className="text-dark mt-3">MenuMitra</h2>
+      <h4 className="text-dark mt-3">MenuMitra</h4>
       {!showCamera && ( // Conditionally render the button
         <button
           className="btn btn-primary my-3 rounded-pill"

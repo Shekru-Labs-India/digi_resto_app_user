@@ -2247,7 +2247,7 @@ const Product = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">
+            <h5 className="customFontSizeBold">
               Menu{" "}
               {categories.length > 0 && (
                 <span className="small-number gray-text">
@@ -2280,7 +2280,7 @@ const Product = () => {
             <div className="swiper-wrapper">
               {categories.length > 0 && (
                 <div
-                  className={`category-btn border border-2 rounded-5 swiper-slide fs-6 ${
+                  className={`category-btn border border-2 rounded-5 swiper-slide customFontSizeBold ${
                     selectedCategory === null ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(null)}
@@ -2295,7 +2295,7 @@ const Product = () => {
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
-                    className={`category-btn border border-2 rounded-5 fs-6 ${
+                    className={`category-btn border border-2 rounded-5 customFontSizeBold ${
                       selectedCategory === category.menu_cat_id ? "active" : ""
                     }`}
                     onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -2378,7 +2378,7 @@ const Product = () => {
                     </div>
 
                     {menuItem.name && (
-                      <div className="item-name fs-sm text-wrap">
+                      <div className="   customFontSizeBold text-wrap">
                         <Link
                           to={`/ProductDetails/${menuItem.menu_id}`}
                           state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
@@ -2408,11 +2408,8 @@ const Product = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end mt-2">
-                          <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
-                          <span
-                            className="fs-6 fw-semibold gray-text"
-                             
-                          >
+                          <i className="ri-star-half-line pe-1 customFontSizeBold ratingStar"></i>
+                          <span className="customFontSizeBold fw-semibold gray-text">
                             {menuItem.rating}
                           </span>
                         </div>
@@ -2426,11 +2423,11 @@ const Product = () => {
                               to={`/ProductDetails/${menuItem.menu_id}`}
                               state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
                             >
-                              <p className="mb-1 fs-4 fw-medium">
+                              <p className="mb-1 customFontSizeBold fw-medium">
                                 <span className="ms- me-2 text-info">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="gray-text fs-6 text-decoration-line-through">
+                                <span className="gray-text customFontSizeBold text-decoration-line-through">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </p>
@@ -2460,7 +2457,7 @@ const Product = () => {
                     </div>
                     <div className="row">
                       <div className="col-12">
-                        <span className="fs-6  offer-color">
+                        <span className="customFontSizeBold offer-color">
                           {menuItem.offer || "No "}% Off
                         </span>
                       </div>
@@ -2473,10 +2470,13 @@ const Product = () => {
         </div>
 
         {/* Sort and Filter Buttons */}
-        <div className="footer fixed" style={{ zIndex: 1, position: "fixed", bottom: "70px" }}>
+        <div
+          className="footer fixed"
+          style={{ zIndex: 1, position: "fixed", bottom: "70px" }}
+        >
           <ul className="dz-product-filter">
             <li>
-              <a
+              <a className="customFontSizeBold"
                 href="javascript:void(0);"
                 onClick={() => setSortByOpen(!sortByOpen)}
               >
@@ -2484,7 +2484,7 @@ const Product = () => {
               </a>
             </li>
             <li>
-              <a
+              <a className="customFontSizeBold"
                 href="javascript:void(0);"
                 onClick={() => setFilterOpen(!filterOpen)}
               >

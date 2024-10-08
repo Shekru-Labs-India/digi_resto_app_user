@@ -231,27 +231,28 @@ const Cart = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">
+            <span className="customFontSizeBold">
               My Cart{" "}
               {/* {displayCartItems.length > 0 && (
                 <span className="">({displayCartItems.length})</span>
               )} */}
-            </h5>
+            </span>
           </div>
         </div>
       </header>
 
       {displayCartItems.length === 0 ? (
         <main className="page-content ">
-         
           <div
             className="container overflow-hidden d-flex justify-content-center align-items-center"
             style={{ height: "100vh" }}
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <h5 className="title">Your Cart is Empty</h5>
-                <p>Add items to your cart from the product details page.</p>
+                <h5 className="customFontSizeBold">Your Cart is Empty</h5>
+                <p className="customFontSize">
+                  Add items to your cart from the product details page.
+                </p>
                 <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                   Return to Shop
                 </Link>
@@ -266,7 +267,7 @@ const Cart = () => {
               <div className="row">
                 <div className="col-12 fw-medium text-end hotel-name">
                   <span className="ps-2">
-                  {restaurantName.toUpperCase() || "Restaurant Name"}
+                    {restaurantName.toUpperCase() || "Restaurant Name"}
                   </span>
                   <i className="ri-store-2-line ps-2"></i>
                   <h6 className="title fw-medium h6 custom-text-gray table-number table-number-align text-center me-5 ms-1">
@@ -275,7 +276,7 @@ const Cart = () => {
                 </div>
               </div>
             </div>
-           
+
             {displayCartItems.map((item, index) => (
               <div
                 key={index}
@@ -325,9 +326,9 @@ const Cart = () => {
                             menu_cat_id: item.menu_cat_id,
                           }}
                         >
-                          <h5 className="title text-truncate">
+                          <span className="customFontSizeBold text-truncate">
                             {item.menu_name}
-                          </h5>
+                          </span>
                         </Link>
                       </div>
 
@@ -383,7 +384,7 @@ const Cart = () => {
                           </div>
                         </div>
                         <div className="col-3 px-1 text-start ">
-                          <span className="fs-6 fw-semibold gray-text">
+                          <span className="customFontSize fw-semibold gray-text">
                             <i className="ri-star-half-line px-1 ratingStar "></i>{" "}
                             {item.rating}
                           </span>
@@ -402,14 +403,14 @@ const Cart = () => {
                           }}
                         >
                           <p className="mb-0  fw-medium">
-                            <span className="ms-3 fs-4 me-2 text-info">
+                            <span className="ms-3 customFontSize me-2 text-info">
                               ₹{item.price}
                             </span>
-                            <span className="gray-text fs-sm text-decoration-line-through">
+                            <span className="gray-text customFontSize text-decoration-line-through">
                               ₹{item.oldPrice || item.price}
                             </span>
 
-                            <span className="fs-6 ps-2 offer-color">
+                            <span className="customFontSize ps-2 offer-color">
                               {item.offer || "No "}% Off
                             </span>
                           </p>
@@ -419,13 +420,15 @@ const Cart = () => {
                       <div className="col-2">
                         <div className="d-flex justify-content-end align-items-center mt-1">
                           <i
-                            className="ri-subtract-line fs-6 mx-2"
+                            className="ri-subtract-line customFontSize mx-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => decrementQuantity(item)}
                           ></i>
-                          <span className="text-light ">{item.quantity}</span>
+                          <span className="text-light customFontSize">
+                            {item.quantity}
+                          </span>
                           <i
-                            className="ri-add-line mx-2 fs-6"
+                            className="ri-add-line mx-2 customFontSize"
                             style={{ cursor: "pointer" }}
                             onClick={() => incrementQuantity(item)}
                           ></i>
@@ -447,9 +450,9 @@ const Cart = () => {
                   <div className="row px-1 py-1">
                     <div className="col-12">
                       <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 h3 fw-medium">Total</span>
+                        <span className="ps-2 customFontSizeBold ">Total</span>
 
-                        <span className="pe-2 h3 fw-medium">
+                        <span className="pe-2 customFontSizeBold">
                           ₹{cartDetails?.total_bill || 0}
                         </span>
                       </div>
@@ -458,13 +461,13 @@ const Cart = () => {
                     <div className="col-12 pt-0">
                       <div className="d-flex justify-content-between align-items-center py-0">
                         <span
-                          className="ps-2 fs-sm pt-1"
+                          className="ps-2 customFontSize pt-1"
                           style={{ color: "#a5a5a5" }}
                         >
                           Service Charges ({cartDetails.service_charges_percent}
                           %)
                         </span>
-                        <span className="pe-2 fs-sm fw-medium">
+                        <span className="pe-2 customFontSize fw-medium">
                           ₹{cartDetails?.service_charges_amount || 0}
                         </span>
                       </div>
@@ -472,12 +475,12 @@ const Cart = () => {
                     <div className="col-12 mb-0 py-1">
                       <div className="d-flex justify-content-between align-items-center py-0">
                         <span
-                          className="ps-2 fs-sm"
+                          className="ps-2 customFontSize"
                           style={{ color: "#a5a5a5" }}
                         >
                           GST ({cartDetails.gst_percent}%)
                         </span>
-                        <span className="pe-2 fs-sm fw-medium text-start">
+                        <span className="pe-2 customFontSize fw-medium text-start">
                           ₹{cartDetails?.gst_amount || 0}
                         </span>
                       </div>
@@ -485,26 +488,25 @@ const Cart = () => {
                     <div className="col-12 mb-0 pt-0 pb-1">
                       <div className="d-flex justify-content-between align-items-center py-0">
                         <span
-                          className="ps-2 fs-sm"
+                          className="ps-2 customFontSize"
                           style={{ color: "#a5a5a5" }}
                         >
                           Discount ({cartDetails?.discount_percent || 0}%)
                         </span>
-                        <span className="pe-2 fs-sm fw-medium">
+                        <span className="pe-2 customFontSize">
                           ₹{cartDetails?.discount_amount || 0}
                         </span>
                       </div>
                     </div>
                     <div>
-                      <hr
-                        className=" me-3 p-0 m-0 text-primary"
-                       
-                      />
+                      <hr className=" me-3 p-0 m-0 text-primary" />
                     </div>
                     <div className="col-12 ">
                       <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 h3 fw-medium">Grand Total</span>
-                        <span className="pe-2 h3 fw-medium">
+                        <span className="ps-2 customFontSizeBold">
+                          Grand Total
+                        </span>
+                        <span className="pe-2 customFontSizeBold">
                           ₹{cartDetails?.grand_total || 0}
                         </span>
                       </div>
@@ -516,7 +518,7 @@ const Cart = () => {
                 <Link
                   to="/Checkout"
                   state={{ cartItems: displayCartItems }}
-                  className="btn btn-lg btn-thin rounded-xl btn-primary px-5"
+                  className="btn  customFontSize rounded-xl btn-primary px-5"
                 >
                   Proceed to Buy &nbsp; <b>({displayCartItems.length} items)</b>
                 </Link>
