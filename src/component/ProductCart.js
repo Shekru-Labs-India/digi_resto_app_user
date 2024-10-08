@@ -210,8 +210,8 @@ const ProductCard = () => {
              toast.current.show({
                severity: isFavorite ? "error" : "success",
                summary: isFavorite
-                 ? "Removed from Favorites"
-                 : "Added to Favorites",
+                 ? "Removed from Favourites"
+                 : "Added to Favourites",
                detail: menuItem.name,
                life: 3000,
               //  position: "bottom-center", // Change this line to set the position
@@ -340,8 +340,8 @@ const ProductCard = () => {
         {filteredMenuList.length > 0 ? (
           filteredMenuList.map((menu) => (
             <div key={menu.menu_id} className="col-6">
-              <div className="card-item style-6">
-                <div className="dz-media">
+              <div className="card-item style-6 style-6-1">
+                <div className="dz-media ">
                   <Link
                     to={{
                       pathname: `/ProductDetails/${menu.menu_id}`,
@@ -351,6 +351,7 @@ const ProductCard = () => {
                     <img
                       src={menu.image || images}
                       alt={menu.name}
+                      className=""
                       style={{ height: "200px", width: "300px" }}
                       onError={(e) => {
                         e.target.src = images;

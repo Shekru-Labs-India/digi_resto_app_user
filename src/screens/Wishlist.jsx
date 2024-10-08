@@ -213,7 +213,7 @@ const Wishlist = () => {
             }),
           }
         );
-    
+
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && Array.isArray(data.lists)) {
@@ -250,7 +250,6 @@ const Wishlist = () => {
         <div className="header-content">
           <div className="left-content">
             <Link
-             
               className="back-btn dz-icon icon-sm"
               onClick={() => navigate(-1)}
             >
@@ -261,7 +260,9 @@ const Wishlist = () => {
             <h5 className="title">
               Favourite{" "}
               {userData && menuList.length > 0 && (
-                <span className="gray-text small-number">({menuList.length})</span>
+                <span className="gray-text small-number">
+                  ({menuList.length})
+                </span>
               )}
             </h5>
           </div>
@@ -316,14 +317,12 @@ const Wishlist = () => {
                             </Link>
                           </div>
                           <div className="col-2 text-end fs-4 ps-0 pe-2 ">
-                            
-                              <i
-                                className="ri-close-line  icon-adjust "
-                                onClick={() =>
-                                  handleRemoveItemClick(index, menu.menu_id)
-                                }
-                              ></i>
-                            
+                            <i
+                              className="ri-close-line  icon-adjust "
+                              onClick={() =>
+                                handleRemoveItemClick(index, menu.menu_id)
+                              }
+                            ></i>
                           </div>
                         </div>
                         <Link
@@ -370,59 +369,56 @@ const Wishlist = () => {
                             </div>
                           </div>
                         </Link>
-
-                        <div className="row mt-2  align-items-center">
-                          <div className="col-5 ps-4 pe-0 ">
-                            <Link
-                              to={{
-                                pathname: `/ProductDetails/${menu.menu_id}`,
-                              }}
-                              className=""
-                              state={{
-                                restaurant_id: restaurantId,
-                                menu_cat_id: menu.menu_cat_id,
-                              }}
-                            >
-                              <p className="mb-0  fs-4 me-0 fw-medium">
-                                <span className=" me-1 text-info">
-                                ₹{menu.price}
+                       
+                        <div className="row mt-2  ps-2 align-items-center">
+                          <div className="col-12 d-flex justify-content-between align-items-center">
+                            <div className="d-flex align-items-center">
+                              <Link
+                                to={{
+                                  pathname: `/ProductDetails/${menu.menu_id}`,
+                                }}
+                                className=""
+                                state={{
+                                  restaurant_id: restaurantId,
+                                  menu_cat_id: menu.menu_cat_id,
+                                }}
+                              >
+                                <p className="mb-0 fs-4 me-2 fw-medium">
+                                  <span className="me-1 text-info">
+                                    ₹{menu.price}
+                                  </span>
+                                  <span className="gray-text fs-6 text-decoration-line-through">
+                                    ₹{menu.oldPrice || menu.price}
+                                  </span>
+                                </p>
+                              </Link>
+                              <Link
+                                to={{
+                                  pathname: `/ProductDetails/${menu.menu_id}`,
+                                }}
+                                state={{
+                                  restaurant_id: restaurantId,
+                                  menu_cat_id: menu.menu_cat_id,
+                                }}
+                              >
+                                <span className="fs-6 offer-color favoffer">
+                                  {menu.offer || "No "}% Off
                                 </span>
-                                <span className="gray-text fs-6 text-decoration-line-through ">
-                                  ₹{menu.oldPrice || menu.price}
-                                </span>
-                              </p>
-                            </Link>
-                          </div>
-                          <div className="col-3 ps-0 ">
-                            <Link
-                              to={{
-                                pathname: `/ProductDetails/${menu.menu_id}`,
-                              }}
-                              state={{
-                                restaurant_id: restaurantId,
-                                menu_cat_id: menu.menu_cat_id,
-                              }}
-                            >
-                              {" "}
-                              <span className="fs-6  offer-color favoffer "   >
-                                {menu.offer || "No "}% Off
-                              </span>
-                            </Link>
-                          </div>
-
-                          <div className="col-4 text-center px-0">
+                              </Link>
+                            </div>
                             <div
-                              className="cart-btn"
+                              className="cart-btn cart-align me-3"
                               onClick={() => handleAddToCartClick(menu)}
                             >
                               {isMenuItemInCart(menu.menu_id) ? (
-                                <i className="ri-shopping-cart-fill fs-2 ps-4"></i>
+                                <i className="ri-shopping-cart-fill fs-2"></i>
                               ) : (
-                                <i className="ri-shopping-cart-line fs-2 ps-4"></i>
+                                <i className="ri-shopping-cart-line fs-2"></i>
                               )}
                             </div>
                           </div>
                         </div>
+                       
                       </div>
                     </div>
                   </div>

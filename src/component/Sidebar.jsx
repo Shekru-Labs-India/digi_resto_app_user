@@ -97,7 +97,7 @@ const Sidebar = () => {
                 ? userData.restaurantName.toUpperCase()
                 : "Restaurant Default"} */}
 
-              {restaurantName || "Restaurant Name"}
+              {restaurantName.toUpperCase() || "Restaurant Name"}
               <i className="ri-store-2-line ps-2"></i>
             </h3>
             {/* <h2>{restaurantName || "Restaurant Name"}</h2> */}

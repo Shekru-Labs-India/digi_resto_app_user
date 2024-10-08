@@ -14,11 +14,10 @@ const Cart = () => {
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
-  const toastBottomCenter = useRef(null); 
+  const toastBottomCenter = useRef(null);
   const toast = useRef(null);
   const { restaurantId } = useRestaurantId();
   const { restaurantName } = useRestaurantId();
-  
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -123,8 +122,7 @@ const Cart = () => {
           summary: "Item Removed",
           detail: `${item.menu_name} has been removed from your cart.`,
           life: 2000,
-        })
-
+        });
       } else {
         console.error("Failed to remove item from cart:", data.msg);
       }
@@ -243,7 +241,6 @@ const Cart = () => {
 
       {displayCartItems.length === 0 ? (
         <main className="page-content ">
-         
           <div
             className="container overflow-hidden d-flex justify-content-center align-items-center"
             style={{ height: "100vh" }}
@@ -262,20 +259,20 @@ const Cart = () => {
       ) : (
         <main className="page-content space-top p-b200">
           <div className="container scrollable-section">
-            <div className="container mt-0 pt-0 mb-0">
-              <div className="row">
-                <div className="col-12 fw-medium text-end hotel-name">
-                  <span className="ps-2">
-                  {restaurantName.toUpperCase() || "Restaurant Name"}
-                  </span>
-                  <i className="ri-store-2-line ps-2"></i>
-                  <h6 className="title fw-medium h6 custom-text-gray table-number table-number-align text-center me-5 ms-1">
+            <div className="container my-0 pt-0 pe-0">
+              <div className="restaurant-info-container d-flex justify-content-end">
+                <div className="right-content d-flex flex-column align-items-end">
+                  <h3 className="title fw-medium hotel-name mb-0 text-end">
+                    {restaurantName.toUpperCase() || "Restaurant Name"}
+                    <i className="ri-store-2-line ps-2"></i>
+                  </h3>
+                  <h6 className="title fw-medium h6 custom-text-gray table-number text-start align-self-start">
                     Table: {userData.tableNumber || ""}
                   </h6>
                 </div>
               </div>
             </div>
-           
+
             {displayCartItems.map((item, index) => (
               <div
                 key={index}
@@ -447,9 +444,9 @@ const Cart = () => {
                   <div className="row px-1 py-1">
                     <div className="col-12">
                       <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 h3 fw-medium">Total</span>
+                        <span className="ps-2 h4 fw-medium">Total</span>
 
-                        <span className="pe-2 h3 fw-medium">
+                        <span className="pe-2 h4 fw-medium">
                           ₹{cartDetails?.total_bill || 0}
                         </span>
                       </div>
@@ -496,15 +493,12 @@ const Cart = () => {
                       </div>
                     </div>
                     <div>
-                      <hr
-                        className=" me-3 p-0 m-0 text-primary"
-                       
-                      />
+                      <hr className=" me-3 p-0 m-0 text-primary" />
                     </div>
                     <div className="col-12 ">
                       <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 h3 fw-medium">Grand Total</span>
-                        <span className="pe-2 h3 fw-medium">
+                        <span className="ps-2 h4 fw-medium">Grand Total</span>
+                        <span className="pe-2 h4 fw-medium">
                           ₹{cartDetails?.grand_total || 0}
                         </span>
                       </div>

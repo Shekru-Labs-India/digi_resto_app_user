@@ -88,10 +88,15 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">My Order 
-  {orders.length > 0 && (
-    <span className="gray-text small-number"> ({orders.length})</span>
-  )} </h5>
+            <h5 className="title">
+              My Order
+              {orders.length > 0 && (
+                <span className="gray-text small-number">
+                  {" "}
+                  ({orders.length})
+                </span>
+              )}{" "}
+            </h5>
           </div>
         </div>
       </header>
@@ -193,16 +198,16 @@ const OrdersTab = ({ orders, type }) => {
   const formatDateTime = (dateTime) => {
     const [date, time] = dateTime.split(" ");
     const [hours, minutes] = time.split(":");
-    
+
     // Convert hours to 12-hour format
     let hours12 = parseInt(hours, 10);
     const period = hours12 >= 12 ? "PM" : "AM";
-    hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
-    
+    hours12 = hours12 % 12 || 12; // Convert 0 to 12 for midnight
+
     // Pad single-digit hours and minutes with leading zeros
-    const formattedHours = hours12.toString().padStart(2, '0');
-    const formattedMinutes = minutes.padStart(2, '0');
-    
+    const formattedHours = hours12.toString().padStart(2, "0");
+    const formattedMinutes = minutes.padStart(2, "0");
+
     return `${formattedHours}:${formattedMinutes} ${period} ${date}`;
   };
 
@@ -216,11 +221,7 @@ const OrdersTab = ({ orders, type }) => {
           <p className="fs-6 fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
-          <Link
-            to="/Menu"
-            className="mt-2 fs-6 fw-semibold"
-           
-          >
+          <Link to="/Menu" className="mt-2 fs-6 fw-semibold">
             Explore our menus
           </Link>
         </div>
@@ -232,7 +233,7 @@ const OrdersTab = ({ orders, type }) => {
             onClick={() => handleOrderClick(order.order_number)} // Add click handler
             style={{ cursor: "pointer" }} // Add pointer cursor for better UX
           >
-            <div className="card-body" style={{ height: "90px" }}>
+            <div className="card-body">
               <div className="row align-items-center">
                 <div className="col-4">
                   <h5 className="card-title mb-1">{order.order_number}</h5>
@@ -243,33 +244,25 @@ const OrdersTab = ({ orders, type }) => {
                   </span>
                 </div>
               </div>
-              <div className="row mt-2">
-                <div className="col-6">
-                  <p className="mb-0 fs-6 ">
-                    <i className="ri-store-2-line pe-2"></i>
-                    {order.restaurant_name}
-                    <i className="ri-user-location-line ps-2 pe-1"></i>
-                    {order.table_number}
-                  </p>
+              <div className="order-details-row">
+                <div className="restaurant-info">
+                  <i className="ri-store-2-line pe-2"></i>
+                  <span className="restaurant-name fw-normal fs-6">
+                    {order.restaurant_name.toUpperCase()}
+                  </span>
+                  <i className="ri-user-location-line ps-2 pe-1 fw-normal fs-6"></i>
+                  <span className="table-number fw-normal">{order.table_number}</span>
                 </div>
-                <div className="col-4 text-start p-0 gray-text">
-                  <p className="mb-0 fs-6">
-                    <i className="ri-bowl-line pe-2"></i>
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2"></i>
+                  <span>
                     {order.menu_count === 0
                       ? "No ongoing orders"
-                      : order.menu_count} {" "}
-                    Menu
-                  </p>
+                      : `${order.menu_count} Menu`}
+                  </span>
                 </div>
-                <div className="col-2 p-0">
-                  <div className="price-wrapper">
-                    <p className="mb-2 fs-4 fw-medium text-end">
-                      <span className="text-info ">₹{order.total_bill}</span>
-                      {/* <span className="text-info ">₹{order.grand_total}</span> 
-                      add grand_total in api  */}
-                      
-                    </p>
-                  </div>
+                <div className="price-info">
+                  <span className="text-info">₹{order.grand_total}</span>
                 </div>
               </div>
             </div>

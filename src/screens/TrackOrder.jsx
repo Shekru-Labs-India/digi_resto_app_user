@@ -130,8 +130,10 @@ const TrackOrder = () => {
     const formattedMinutes = minutes.padStart(2, '0');
     
     // Array of month abbreviations
-    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
     
     // Get month abbreviation
     const monthAbbr = monthNames[parseInt(month, 10) - 1];
@@ -222,7 +224,7 @@ const TrackOrder = () => {
                 <div className="col-4 pe-1">
                   <p className="mb-0 fs-6 text-break ">
                     <i className="ri-store-2-line pe-1"></i>
-                    {order_details.restaurant_name}
+                    {order_details.restaurant_name.toUpperCase()}
 
                     <span className="ps-1 mb-0 fs-6 text-break">
                       <i class="ri-user-location-line pe-1"></i>

@@ -1,12 +1,43 @@
 
+.order-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
 
+.restaurant-info {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 1rem;
+}
+
+.restaurant-name {
+  margin-right: 0.5rem;
+}
+
+.menu-info {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  margin-right: 1rem;
+}
+
+.price-info {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
 
 button{
   font-family: poppins, sans-serif;
 }
 
 
-.restaurant-info {
+.restaurant-info{
   display: flex;
   justify-content: flex-end;
   align-items: baseline;
@@ -16,17 +47,23 @@ button{
   padding-right: 15px;
 }
 
-.restaurant-name {
+.restaurant-name{
   max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.table-number {
+.table-number{
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+
+.restocart-name{
+  margin-left: 100px;
+  padding-left: 40px;
 }
 
 /* Media query for smaller screens */
@@ -121,17 +158,17 @@ button{
 
 }
 .quantity-container {
-  border-radius: 10px;
+  
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  padding: 5px 5px;
+  
   background-color:  transparent;
 }
 
 .quantity-button {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 1px solid #ccc;
   background: #fff;

@@ -120,10 +120,7 @@ const Checkout = () => {
   const handleSubmitOrder = async () => {
     
 
-    if (validationMessage) {
-      alert(validationMessage);
-      return;
-    }
+    
 
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,

@@ -2097,17 +2097,17 @@ const Product = () => {
           toast.current.show({
             severity: isFavorite ? "info" : "success",
             summary: isFavorite
-              ? "Removed from Favorites"
-              : "Added to Favorites",
+              ? "Removed from Favourites"
+              : "Added to Favourites",
             detail: isFavorite
-              ? "Item has been removed from your favorites."
-              : "Item has been added to your favorites.",
+              ? "Item has been removed from your favourites."
+              : "Item has been added to your favourites.",
             life: 3000,
           });
         }
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.error("Error updating favourite status:", error);
     }
   };
 
@@ -2264,7 +2264,7 @@ const Product = () => {
           <div className="header-content d-flex justify-content-end">
             <div className="right-content gap-1">
               <h3 className="title fw-medium hotel-name mb-0">
-                {restaurantName || "Restaurant Name"}
+                {restaurantName.toUpperCase() || "Restaurant Name"}
                 <i className="ri-store-2-line ps-2"></i>
               </h3>
               <h6 className="title fw-medium h6 custom-text-gray table-number">

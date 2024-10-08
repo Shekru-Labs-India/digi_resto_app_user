@@ -187,7 +187,7 @@ const NearbyArea = () => {
       toast.current.show({
         severity: isFavorite ? "error" : "success",
         summary: "Success",
-        detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+        detail: isFavorite ? "Removed from Favourites" : "Added to Favourites",
         life: 3000,
       });
     } else {
@@ -287,17 +287,17 @@ const NearbyArea = () => {
               <div className="row g-3 grid-style-1">
                 <div>
                   <div
-                    className="card-item style-6"
+                    className="card-item style-6 "
                     style={{ width: "216px", height: "auto" }}
                   >
-                    <div className="dz-media">
+                    <div className="dz-media ">
                       <Link
                         to={`/ProductDetails/${menuItem.menu_id}`}
                         state={{ menu_cat_id: menuItem.menu_cat_id }}
                       >
                         <img
                           src={menuItem.image || images}
-                          style={{ height: "150px", width: "400px" }}
+                          style={{ height: "150px", width: "400px",}}
                           onError={(e) => {
                             e.target.src = images;
                           }}

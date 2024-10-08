@@ -17004,12 +17004,23 @@ hr.dotted {
   .card-item.style-6 {
     background-color: var(--card-bg);
     box-shadow: 0px 7px 29px 0px rgba(100, 100, 111, 0.2);
-    border-radius: 13px;
+    border-radius: 0 0 13px 13px;;
     overflow: hidden;
   }
   .card-item .dz-media img {
     width: 100%;
   }
+
+  .card-item.style-6 .square-image {
+    background-color: var(--card-bg);
+    box-shadow: 0px 7px 29px 0px rgba(100, 100, 111, 0.2);
+    border-radius: 13px;;
+    overflow: hidden;
+   
+  }
+  
+
+
   .card-item.style-6 .dz-content {
     padding: 6px 12px 12px 12px;
   }

@@ -361,7 +361,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <h4 className="title fs-sm mb-1">
+                    <h4 className="title fs-sm mb-1 ps-2">
                       {toTitleCase(productDetails.name)}
                     </h4>
                   </div>
@@ -371,8 +371,8 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 ps-2 fs-xs fw-medium  px-0">
-                      <i className="ri-restaurant-line  me-1 category-text fw-medium"></i>
+                    <div className="dz-quantity detail-content category-text m-0 pt-1 ps-3 fs-xs fw-medium  px-0">
+                      <i className="ri-restaurant-line  me-1 category-text fw-medium "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
@@ -404,9 +404,9 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="container">
+              <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-4 py-1 ps-0 quantity-container">
+                  <div className="col-4 pt-0 ps-0 quantity-container">
                     <button
                       onClick={() => handleQuantityChange(-1)}
                       className="quantity-button"
@@ -423,7 +423,7 @@ const MenuDetails = () => {
                       <i className="ri-add-line"></i>
                     </button>
                   </div>
-                  <div className="col-8 pe-2 text-end">
+                  <div className="col-8 pe-2 text-end pt-1">
                     <i
                       className={`ri-${
                         isFavorite ? "hearts-fill" : "heart-2-line"
@@ -438,7 +438,7 @@ const MenuDetails = () => {
                 </div>
               </div>
 
-              <div className="container">
+              <div className="container ps-0">
                 <div className="product-info">
                   <div>
                     <p className="fs-7 text-wrap m-0">
