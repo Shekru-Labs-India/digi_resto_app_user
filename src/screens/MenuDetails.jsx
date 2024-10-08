@@ -331,12 +331,12 @@ const MenuDetails = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <h5 className="title fs-5">Product Details</h5>
+              <h5 className="title customFontSizeBold">Product Details</h5>
             </div>
           </div>
         </header>
 
-        <main className="page-content pb-5">
+        <main className="page-content ">
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
               <img
@@ -351,7 +351,7 @@ const MenuDetails = () => {
             </div>
           </div>
 
-          <div className="container">
+          <div className="container pb-0">
             <div className="dz-product-detail">
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
@@ -361,9 +361,9 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <h4 className="title fs-sm mb-1 ps-2">
+                    <span className="title customFontSizeBold mb-1">
                       {toTitleCase(productDetails.name)}
-                    </h4>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -371,8 +371,8 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 pt-1 ps-3 fs-xs fw-medium  px-0">
-                      <i className="ri-restaurant-line  me-1 category-text fw-medium "></i>
+                    <div className="dz-quantity detail-content category-text m-0 pt-1 ps-2  fw-medium  px-0">
+                      <i className="ri-restaurant-line  me-1 category-text "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
@@ -398,7 +398,7 @@ const MenuDetails = () => {
                   </div>
                   <div className="col-4 text-end px-0 ">
                     <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
-                    <span className="fs-6 fw-semibold gray-text">
+                    <span className="customFontSizeBold gray-text">
                       {productDetails.rating}
                     </span>
                   </div>
@@ -406,7 +406,7 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-4 pt-0 ps-0 quantity-container">
+                  <div className="col-4 pt-0 ps-0 pe-5 quantity-container">
                     <button
                       onClick={() => handleQuantityChange(-1)}
                       className="quantity-button"
@@ -441,7 +441,7 @@ const MenuDetails = () => {
               <div className="container ps-0">
                 <div className="product-info">
                   <div>
-                    <p className="fs-7 text-wrap m-0">
+                    <p className="customFontSize text-wrap m-0">
                       {productDetails.description}
                     </p>
                   </div>
@@ -462,16 +462,18 @@ const MenuDetails = () => {
               <div className="col-6 ps-3 ">
                 <div className="d-flex align-items-center justify-content-between mb-5">
                   <div className="d-flex flex-column">
-                    <h5 className="mb-2 fs-6 fw-medium">Total amount</h5>
+                    <span className="mb-2 customFontSizeBold">
+                      Total amount
+                    </span>
                     <div className="d-flex align-items-baseline">
-                      <h4 className="mb-0 price fs-4 text-info">
+                      <h4 className="mb-0 price customFontSizeBold text-info">
                         ₹{(productDetails.price * quantity).toFixed(0)}
                       </h4>
-                      <span className="text-decoration-line-through ms-2 fs-6 gray-text">
+                      <span className="text-decoration-line-through ms-2 customFontSizeBold gray-text">
                         ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                       </span>
                     </div>
-                    <div className="fw-medium d-flex fs-6 offer-color pt-1">
+                    <div className="fw-medium d-flex customFontSizeBold offer-color pt-1">
                       {productDetails.offer}% Off
                     </div>
                   </div>
@@ -480,22 +482,22 @@ const MenuDetails = () => {
               <div className="col-6 text-end">
                 {isMenuItemInCart(menuId) ? (
                   <button
-                  className="btn btn-color fs-3 py-4 me-2 rounded-pill"
-                  onClick={() => navigate("/Cart")}
-                >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                  <div className="font-poppins fs-6 text-nowrap text-white">
-                    Go to Cart
-                  </div>
-                </button>
+                    className="btn btn-color  py-4  rounded-pill customFontSizeBold"
+                    onClick={() => navigate("/Cart")}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="font-poppins customFontSizeBold text-nowrap text-white">
+                      Go to Cart
+                    </div>
+                  </button>
                 ) : (
                   <button
                     to="#"
-                    className="btn  btn-color fs-3 py-4 me-2 rounded-pill"
+                    className="btn  btn-color  py-4  rounded-pill customFontSizeBold"
                     onClick={handleAddToCart}
                   >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins fs-6 text-nowrap text-white">
+                    <i className="ri-shopping-cart-line pe-1 text-white customFontSizeBold"></i>
+                    <div className="text-nowrap text-white customFontSizeBold">
                       Add to Cart
                     </div>
                   </button>

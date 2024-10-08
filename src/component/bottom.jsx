@@ -45,7 +45,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-home-2-line fs-3"></i>
-          <span className="name">Home</span>
+          <span className="name customFontSizeBold">Home</span>
         </Link>
         <Link
           to="/Wishlist"
@@ -54,7 +54,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-heart-2-line fs-3"></i>
-          <span className="name">Favourite</span>
+          <span className="name customFontSizeBold">Favourite</span>
         </Link>
         <Link
           to="/Cart"
@@ -63,7 +63,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-shopping-cart-line fs-3"></i>
-          <span className="name">Cart</span>
+          <span className="name customFontSizeBold">Cart</span>
         </Link>
         <Link
           to="/Search"
@@ -72,7 +72,7 @@ const Bottom = () => {
           }
         >
           <i className="ri-search-line fs-3"></i>
-          <span className="name">Search</span>
+          <span className="name customFontSizeBold">Search</span>
         </Link>
         <Link
           to="/Profile"
@@ -90,7 +90,7 @@ const Bottom = () => {
                 : "ri-user-3-line fs-3"
             }
           ></i>
-          <span className="name">Profile</span>
+          <span className="name customFontSizeBold">Profile</span>
         </Link>
       </div>
     </div>

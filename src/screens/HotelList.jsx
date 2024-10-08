@@ -77,30 +77,32 @@ const HotelList = () => {
                     <div className="col-12">
                       <div className="row mt-2">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-store-2-line fs-4"></i>
+                          <i className="ri-store-2-line customFontSizeBold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="menu_name fs-5 m-0">
+                          <span className=" customFontSizeBold m-0">
                             {hotel.restaurant_name}
                           </span>
                         </div>
                       </div>
                       <div className="row mt-1">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-phone-line text-primary fs-4"></i>
+                          <i className="ri-phone-line text-primary customFontSizeBold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="text-primary fs-6">
+                          <span className="text-primary customFontSizeBold">
                             {hotel.mobile}
                           </span>
                         </div>
                       </div>
                       <div className="row mt-1 pb-1">
                         <div className="col-1">
-                          <i className="ri-map-pin-line gray-text fs-4"></i>
+                          <i className="ri-map-pin-line gray-text customFontSizeBold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="gray-text fs-6">{hotel.address}</span>
+                          <span className="gray-text customFontSizeBold">
+                            {hotel.address}
+                          </span>
                         </div>
                       </div>
                     </div>

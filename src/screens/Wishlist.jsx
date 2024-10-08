@@ -70,25 +70,25 @@ const Wishlist = () => {
         // Show toast notification for item removed from favorites
         toast.current.show({
           severity: "error", // Red color for negative action
-          summary: "Removed from Favorites",
-          detail: "Item has been removed from your favorites.",
+          summary: "Removed from Favourites",
+          detail: "Item has been removed from your favourites.",
           life: 3000,
         });
       } else {
         console.error(
-          "Failed to remove item from wishlist:",
+          "Failed to remove item from favourites:",
           response.statusText
         );
         // Show toast notification for failure
         toast.current.show({
           severity: "error", // Red color for negative action
           summary: "Error",
-          detail: "Failed to remove item from favorites.",
+          detail: "Failed to remove item from favourites.",
           life: 3000,
         });
       }
     } catch (error) {
-      console.error("Error removing item from wishlist:", error);
+      console.error("Error removing item from favourites:", error);
       // Show toast notification for error
       toast.current.show({
         severity: "error", // Red color for negative action
@@ -230,7 +230,7 @@ const Wishlist = () => {
           console.error("Network response was not ok:", response.statusText);
         }
       } catch (error) {
-        console.error("Error fetching favorite items:", error);
+        console.error("Error fetching favourite items:", error);
       } finally {
         setLoading(false);
       }
@@ -257,14 +257,18 @@ const Wishlist = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">
+            <span className="customFontSizeBold">
               Favourite{" "}
               {userData && menuList.length > 0 && (
+                
                 <span className="gray-text small-number">
                   ({menuList.length})
                 </span>
+                
+               
               )}
-            </h5>
+            </span>
+            
           </div>
         </div>
       </header>
@@ -302,7 +306,7 @@ const Wishlist = () => {
                       </div>
                       <div className="col-9 pt-1 p-0">
                         <div className="row">
-                          <div className="col-9 pe-2 menu_name">
+                          <div className="col-9 pe-2">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -323,6 +327,7 @@ const Wishlist = () => {
                                 handleRemoveItemClick(index, menu.menu_id)
                               }
                             ></i>
+                            
                           </div>
                         </div>
                         <Link
@@ -362,7 +367,7 @@ const Wishlist = () => {
                               )}
                             </div>
                             <div className="col-2 px-0 d-flex align-items-center">
-                              <span className="fs-6 fw-semibold gray-text favRating">
+                              <span className="customFontSize fw-semibold gray-text favRating">
                                 <i className="ri-star-half-line me-1 ratingStar"></i>
                                 {menu.rating || 0.1}
                               </span>
@@ -428,11 +433,13 @@ const Wishlist = () => {
           ) : (
             <div
               className="container overflow-hidden d-flex justify-content-center align-items-center"
-              style={{ height: "80vh" }}
+              style={{ height: "78vh" }}
             >
               <div className="m-b20 dz-flex-box text-center">
                 <div className="dz-cart-about">
-                  <h5 className="title">Nothing to show in favourites.</h5>
+                  <h5 className="customFontSize">
+                    Nothing to show in favourites.
+                  </h5>
                   <p>Add some products to show here!</p>
                   <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                     Browse Menus
@@ -448,12 +455,14 @@ const Wishlist = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <h5>Please log in to view your favourites.</h5>
+                <span className="customFontSize">
+                  Please log in to view your favourites.
+                </span>
                 <Link
-                  className="btn btn-outline-primary mt-3"
+                  className="btn btn-outline-primary mt-3 customFontSize"
                   to="/Signinscreen"
                 >
-                  <i className="ri-lock-2-line fs-4 me-2 "></i> Login
+                  <i className="ri-lock-2-line me-2 "></i> Login
                 </Link>
               </div>
             </div>

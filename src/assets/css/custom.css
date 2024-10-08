@@ -1,3 +1,11 @@
+.customFontSize{
+  font-size: 14px;
+}
+.customFontSizeBold{
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
 
 .order-details-row {
   display: flex;
@@ -31,6 +39,11 @@
   font-size: 1.1rem;
   font-weight: 500;
 }
+.customFontSizeBold{
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
 
 button{
   font-family: poppins, sans-serif;
@@ -363,7 +376,7 @@ background-color: var(--bg-white);
 }
 
 .hotel-name{
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 600;
 }
 

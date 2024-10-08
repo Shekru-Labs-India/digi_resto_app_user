@@ -99,19 +99,18 @@ const TrackOrder = () => {
   // const formatDateTime = (dateTime) => {
   //   const [date, time] = dateTime.split(" ");
   //   const [hours, minutes] = time.split(":");
-    
+
   //   // Convert hours to 12-hour format
   //   let hours12 = parseInt(hours, 10);
   //   const period = hours12 >= 12 ? "PM" : "AM";
   //   hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
-    
+
   //   // Pad single-digit hours and minutes with leading zeros
   //   const formattedHours = hours12.toString().padStart(2, '0');
   //   const formattedMinutes = minutes.padStart(2, '0');
-    
+
   //   return `${formattedHours}:${formattedMinutes} ${period} ${date}`;
   // };
-
 
   // Use above code after correcting the date format in the backend
 
@@ -119,25 +118,35 @@ const TrackOrder = () => {
     const [date, time] = dateTime.split(" ");
     const [day, month, year] = date.split("-");
     const [hours, minutes] = time.split(":");
-    
+
     // Convert hours to 12-hour format
     let hours12 = parseInt(hours, 10);
     const period = hours12 >= 12 ? "PM" : "AM";
-    hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
-    
+    hours12 = hours12 % 12 || 12; // Convert 0 to 12 for midnight
+
     // Pad single-digit hours and minutes with leading zeros
-    const formattedHours = hours12.toString().padStart(2, '0');
-    const formattedMinutes = minutes.padStart(2, '0');
-    
+    const formattedHours = hours12.toString().padStart(2, "0");
+    const formattedMinutes = minutes.padStart(2, "0");
+
     // Array of month abbreviations
     const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
-    
+
     // Get month abbreviation
     const monthAbbr = monthNames[parseInt(month, 10) - 1];
-    
+
     return `${formattedHours}:${formattedMinutes} ${period} ${day}-${monthAbbr}-${year}`;
   };
 
@@ -195,13 +204,17 @@ const TrackOrder = () => {
 
       <div className="container" style={{ paddingBottom: "1px" }}>
         <div className="page-wrapper " style={{ marginTop: "70px" }}>
-          <h4 className="title pb-2 fs-3">
+          <span className="title pb-2 customFontSizeBold">
             {isCompleted ? (
-              <div className="title pb-2 fs-3">Completed Order</div>
+              <div className="title pb-2 customFontSizeBold ">
+                Completed Order
+              </div>
             ) : (
-              <div className="title pb-2 fs-3">Ongoing Order</div>
+              <div className="title pb-2 customFontSizeBold ">
+                Ongoing Order
+              </div>
             )}
-          </h4>
+          </span>
           <div
             className="container custom-container"
             style={{ paddingTop: "1px" }}
@@ -210,54 +223,45 @@ const TrackOrder = () => {
             <div className="card-body p-2">
               <div className="row align-items-center mb-0">
                 <div className="col-5">
-                  <h5 className="card-title mb-0">
+                  <h5 className="card-title mb-0 customFontSizeBold">
                     {order_details.order_number}
                   </h5>
                 </div>
                 <div className="col-7 text-end">
-                  <span className="card-text gray-text ">
+                  <span className="card-text gray-text customFontSizeBold">
                     {formatDateTime(order_details.datetime)}
                   </span>
                 </div>
               </div>
-              <div className="row mt-2 align-items-center">
-                <div className="col-4 pe-1">
-                  <p className="mb-0 fs-6 text-break ">
-                    <i className="ri-store-2-line pe-1"></i>
-                    {order_details.restaurant_name.toUpperCase()}
-
-                    <span className="ps-1 mb-0 fs-6 text-break">
-                      <i class="ri-user-location-line pe-1"></i>
-                      {order_details.table_number}
-                    </span>
-                  </p>
-                </div>
-                <div className="col-3 px-0 text-center">
-                  <p className="mb-0 fs-6  gray-text ">
-                    <i className="ri-bowl-line pe-0"></i>
-                    {order_details.menu_count} Menu
-                  </p>
-                </div>
-                <div className="col-5 text-end ps-0">
-                  <span
-                    className="text-info fs-6 fw-medium " 
-                    
-                  >
-                    ₹{order_details.grand_total}
-                  </span>
-                  <span
-                    className="text-decoration-line-through ms-2 gray-text"
-                    
-                  >
-                    ₹
-                    {(
-                      order_details.grand_total /
-                        (1 - order_details.discount_percent / 100) ||
-                      order_details.grand_total
-                    ).toFixed(2)}
-                  </span>
-                </div>
-              </div>
+              <div className="order-details-row">
+  <div className="restaurant-info me-0">
+    <i className="ri-store-2-line pe-2"></i>
+    <span className="restaurant-name fw-normal fs-6">
+      {order_details.restaurant_name.toUpperCase()}
+    </span>
+    <i className="ri-user-location-line ps-0 pe-1 fw-normal fs-6"></i>
+    <span className="table-number fw-normal">{order_details.table_number}</span>
+  </div>
+  <div className="menu-info">
+    <i className="ri-bowl-line pe-2"></i>
+    <span className="customFontSizeBold gray-text">
+      {order_details.menu_count} Menu
+    </span>
+  </div>
+  <div className="price-info">
+    <span className="text-info customFontSizeBold fw-medium">
+      ₹{order_details.grand_total}
+    </span>
+    <span className="text-decoration-line-through ms-2 gray-text customFontSizeBold">
+      ₹
+      {(
+        order_details.grand_total /
+          (1 - order_details.discount_percent / 100) ||
+        order_details.grand_total
+      ).toFixed(2)}
+    </span>
+  </div>
+</div>
             </div>
           </div>
         </div>
@@ -308,7 +312,9 @@ const TrackOrder = () => {
       <main className="page-content ">
         {userData ? (
           <section className="container mt-1">
-            <h4 className="title pb-2 fs-3">Menu Details</h4>
+            <span className="title pb-2 customFontSizeBold pb-3">
+              Menu Details
+            </span>
             <div className="row g-3">
               {menu_details.map((menu) => {
                 const oldPrice = (menu.price / (1 - menu.offer / 100)).toFixed(
@@ -332,7 +338,9 @@ const TrackOrder = () => {
                         />
                       </div>
                       <div className="dz-content">
-                        <h6 className=" mt-0 fw-medium mb-0">{menu.menu_name}</h6>
+                        <h6 className=" mt-0 customFontSizeBold fw-medium mb-0">
+                          {menu.menu_name}
+                        </h6>
                         <div className="row">
                           <div className="col-5 pe-0">
                             <i className="ri-restaurant-line pe-1 category-text fs-xs "></i>
@@ -354,22 +362,22 @@ const TrackOrder = () => {
                           <div className="container py-0">
                             <div className="row">
                               <div className="col-6 px-0 ">
-                                <p className=" fs-4 fw-medium mb-0">
+                                <p className=" customFontSizeBold  fw-medium mb-0">
                                   <span className="me-1 text-info">
                                     ₹{menu.price}
                                   </span>
-                                  <span className="gray-text fs-6 text-decoration-line-through">
+                                  <span className="gray-text  text-decoration-line-through">
                                     ₹{oldPrice}
                                   </span>
                                 </p>
                               </div>
                               <div className="col-4  px-0 pt-1 ">
-                                <span className="fs-6 ps-2 offer-color ">
+                                <span className="customFontSizeBold ps-2 offer-color ">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </div>
                               <div className="col-2 ps-0 pt-1 text-end">
-                                <span className="quantity gray-text">
+                                <span className="quantity gray-text customFontSizeBold">
                                   x {menu.quantity}
                                 </span>
                               </div>
@@ -396,13 +404,15 @@ const TrackOrder = () => {
             <div className="card">
               <div className="row px-1">
                 <div className="col-12 mt-2">
-                  <div className="d-flex justify-content-between align-items-center py-1">
+                  <div className="d-flex justify-content-between align-items-center pb-1 pt-0">
                     {/* <span className="ps-2 fs-6 w-medium h5">Total</span> */}
-                    <h5 className="ps-2 fs-3 fw-medium">Total</h5>
-                    <h5 className="pe-2 fs-3 fw-medium">
+                    <span className="ps-2 customFontSizeBold fs-3 fw-medium">
+                      Total
+                    </span>
+                    <span className="pe-2 fs-3 fw-medium customFontSizeBold">
                       {" "}
                       ₹{orderDetails.order_details.total_total || 0}
-                    </h5>
+                    </span>
                     {/* <span className="pe-2 fs-6 h5">
                       ₹{orderDetails.order_details.total_total || 0}
                     </span> */}
@@ -414,11 +424,11 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 fs-6 gray-text">
+                    <span className="ps-2 customFontSizeBold gray-text">
                       Service Charges (
                       {orderDetails.order_details.service_charges_percent}%)
                     </span>
-                    <span className="pe-2 fs-6 h5">
+                    <span className="pe-2 customFontSizeBold">
                       ₹{orderDetails.order_details.service_charges_amount || 0}
                     </span>
                   </div>
@@ -427,10 +437,10 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-12 ">
                   <div className="d-flex justify-content-between align-items-center">
-                    <span className="ps-2 fs-6 gray-text">
+                    <span className="ps-2 customFontSizeBold gray-text">
                       GST ({orderDetails.order_details.gst_percent}%)
                     </span>
-                    <span className="pe-2 fs-6 h5">
+                    <span className="pe-2 customFontSizeBold h5">
                       ₹{orderDetails.order_details.gst_amount || 0}
                     </span>
                   </div>
@@ -439,25 +449,27 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-12 mb-1 mt-1">
                   <div className="d-flex justify-content-between align-items-center ">
-                    <span className="ps-2 fs-6 gray-text">
+                    <span className="ps-2 customFontSizeBold gray-text">
                       Discount (
                       {orderDetails.order_details.discount_percent || 0}%)
                     </span>
-                    <span className="pe-2 fs-6 h5">
+                    <span className="pe-2 customFontSizeBold h5">
                       ₹{orderDetails.order_details.discount_amount || 0}
                     </span>
                   </div>
                 </div>
               </div>
               <div>
-                <hr className="" />
+                <hr className="my-2" />
               </div>
               <div className="row">
                 <div className="col-12">
-                  <div className="d-flex justify-content-between align-items-center fw-medium mb-2">
+                  <div className="d-flex justify-content-between align-items-center fw-medium mb-1">
                     {/* <span className="ps-2 fs-6 fw-medium h5">Grand Total</span> */}
-                    <h5 className="ps-2 fs-3 fw-medium">Grand Total</h5>
-                    <h5 className="pe-2 fs-3 fw-medium">
+                    <h5 className="ps-2 customFontSizeBold fw-medium">
+                      Grand Total
+                    </h5>
+                    <h5 className="pe-2 customFontSizeBold fw-medium">
                       {" "}
                       ₹{orderDetails.order_details.grand_total || 0}
                     </h5>

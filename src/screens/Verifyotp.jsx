@@ -378,13 +378,16 @@ const Verifyotp = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <h2 className="title ms-4 ps-2">Enter OTP</h2>
+                <span className="customFontSizeBold ms-4 ps-2">Enter OTP</span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                <label className="form-label fs-4 ms-4 ps-1" htmlFor="otp">
+                <label className="customFontSizeBold ms-4 ps-1" htmlFor="otp">
                   <span className="required-star">*</span>OTP
                 </label>
-                <div id="otp" className="digit-group d-flex justify-content-center">
+                <div
+                  id="otp"
+                  className="digit-group d-flex justify-content-center"
+                >
                   {otp.map((digit, index) => (
                     <input
                       key={index}
@@ -401,7 +404,7 @@ const Verifyotp = () => {
                     />
                   ))}
                 </div>
-                <p className="text-center">
+                <p className="text-center customFontSizeBold  ">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
                 </p>
@@ -421,7 +424,6 @@ const Verifyotp = () => {
                   <button
                     className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
                     onClick={handleVerify}
-                    
                     disabled={otp.some((digit) => !digit.trim())}
                   >
                     Verify OTP
@@ -429,9 +431,12 @@ const Verifyotp = () => {
                 )}
               </form>
             </div>
-            <div className="text-center mt-auto">
+            <div className="text-center mt-auto customFontSize">
               Back to{" "}
-              <Link to="/Signinscreen" className="text-underline font-w500">
+              <Link
+                to="/Signinscreen"
+                className="text-underline customFontSizeBold"
+              >
                 Sign In
               </Link>
             </div>

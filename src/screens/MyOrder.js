@@ -88,7 +88,7 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">
+            <h5 className="customFontSizeBold">
               My Order
               {orders.length > 0 && (
                 <span className="gray-text small-number">
@@ -123,7 +123,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link ${
+                          className={`nav-link customFontSizeBold ${
                             activeTab === "ongoing" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("ongoing")}
@@ -138,7 +138,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link ${
+                          className={`nav-link customFontSizeBold ${
                             activeTab === "completed" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("completed")}
@@ -218,10 +218,10 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="fs-6 fw-semibold gray-text">
+          <p className="customFontSizeBold fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
-          <Link to="/Menu" className="mt-2 fs-6 fw-semibold">
+          <Link to="/Menu" className="mt-2 customFontSizeBold fw-semibold">
             Explore our menus
           </Link>
         </div>
@@ -236,10 +236,12 @@ const OrdersTab = ({ orders, type }) => {
             <div className="card-body">
               <div className="row align-items-center">
                 <div className="col-4">
-                  <h5 className="card-title mb-1">{order.order_number}</h5>
+                  <span className="card-title mb-1 customFontSizeBold">
+                    {order.order_number}
+                  </span>
                 </div>
                 <div className="col-8 text-end">
-                  <span className="card-text gray-text mb-0">
+                  <span className="card-text gray-text mb-0 customFontSizeBold">
                     {formatDateTime(order.date_time)}
                   </span>
                 </div>
