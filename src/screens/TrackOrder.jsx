@@ -197,7 +197,7 @@ const TrackOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="title">Order Details</h5>
+            <span className="title customFontSizeBold me-3">Order Details</span>
           </div>
         </div>
       </header>
@@ -343,8 +343,8 @@ const TrackOrder = () => {
                         </h6>
                         <div className="row">
                           <div className="col-5 pe-0">
-                            <i className="ri-restaurant-line pe-1 category-text fs-xs "></i>
-                            <span className="category-text fs-xs  ">
+                            <i className="ri-restaurant-line pe-1 category-text fs-xs fw-medium"></i>
+                            <span className="category-text fs-xs fw-medium">
                               {menu.category_name}
                             </span>
                           </div>

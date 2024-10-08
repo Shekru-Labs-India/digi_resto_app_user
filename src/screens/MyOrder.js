@@ -88,7 +88,7 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="customFontSizeBold">
+            <span className="customFontSizeBold me-3">
               My Order
               {orders.length > 0 && (
                 <span className="gray-text small-number">
@@ -96,7 +96,7 @@ const MyOrder = () => {
                   ({orders.length})
                 </span>
               )}{" "}
-            </h5>
+            </span>
           </div>
         </div>
       </header>

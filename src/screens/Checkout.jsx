@@ -208,7 +208,7 @@ const Checkout = () => {
                   Additional Notes:
                 </label>
                 <textarea
-                  className="form-control dz-textarea"
+                  className="form-control dz-textarea customFontSizeBold"
                   name="notes"
                   id="notes"
                   rows="4"
@@ -240,9 +240,9 @@ const Checkout = () => {
                           <span className="mb-0 customFontSizeBold">
                             {item.menu_name}
                           </span>
-                          <div className="text-primary ">
-                            <i className="ri-restaurant-line me-2 category-text "></i>
-                            <span className="category-text">
+                          <div className="">
+                            <i className="ri-restaurant-line me-2 category-text fw-medium"></i>
+                            <span className="category-text fw-medium">
                               {item.menu_cat_name}
                             </span>
                           </div>

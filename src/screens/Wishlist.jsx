@@ -257,7 +257,7 @@ const Wishlist = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold">
+            <span className="customFontSizeBold me-3">
               Favourite{" "}
               {userData && menuList.length > 0 && (
                 

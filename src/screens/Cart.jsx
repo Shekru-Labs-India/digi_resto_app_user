@@ -229,7 +229,7 @@ const Cart = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold">
+            <span className="customFontSizeBold me-3">
               My Cart{" "}
               {/* {displayCartItems.length > 0 && (
                 <span className="">({displayCartItems.length})</span>
