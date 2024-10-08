@@ -472,63 +472,54 @@ import 'primereact/resources/primereact.min.css';         // Core CSS
 
 
 function App() {
-  const restaurantCode = localStorage.getItem("restaurantCode") // Default value
+  const restaurantCode = localStorage.getItem("restaurantCode"); // Default value
   const restaurantId = localStorage.getItem("restaurantId");
-  
 
-    
-
-
+  useEffect(() => {
+    // Remove local storage object named menuItems
+    localStorage.removeItem("menuItems");
+  }, []); // Empty dependency array ensures this runs on mount
 
   return (
     <ThemeProvider>
-    <RestaurantIdProvider
-      restaurantCode={restaurantCode}
-      restaurantId={restaurantId}
-    >
-      <CartProvider>
-     
-          
-        <Routes> 
-          <Route
-            path="/:restaurantCode/:table_number"
-            element={<HomeScreen />}
-          />
-          <Route
-            path="/:restaurantCode"
-            element={<ValidateAndNavigate />}
-          />
-          <Route
-            path="/"
-            element={
-              <Navigate to={`/${restaurantCode}/1`} replace />
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <Navigate to={`/${restaurantCode}/1`} replace />
-            }
-          />
+      <RestaurantIdProvider
+        restaurantCode={restaurantCode}
+        restaurantId={restaurantId}
+      >
+        <CartProvider>
+          <Routes>
+            <Route
+              path="/:restaurantCode/:table_number"
+              element={<HomeScreen />}
+            />
+            <Route path="/:restaurantCode" element={<ValidateAndNavigate />} />
+            <Route
+              path="/"
+              element={<Navigate to={`/${restaurantCode}/1`} replace />}
+            />
+            <Route
+              path="/"
+              element={<Navigate to={`/${restaurantCode}/1`} replace />}
+            />
 
-          <Route path="/Signinscreen" element={<Signinscreen />} />
-          <Route path="/Signupscreen" element={<Signupscreen />} />
-          <Route path="/Verifyotp" element={<Verifyotp />} />
-          <Route path="/Wishlist" element={<Wishlist />} />
-          <Route path="/Cart" element={<Cart />} />
-          <Route path="/Checkout" element={<Checkout />} />
-          <Route path="/Category" element={<Category />} />
-          <Route path="/Profile" element={<Profile />} />
-          <Route path="/EditProfile" element={<EditProfile />} />
-          <Route path="/MyOrder" element={<MyOrder />} />
-          <Route path="/Menu" element={<Product />} />
-          <Route path="/Search" element={<Search />} />
-          <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
-          <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
-          <Route path="/QRScreen" element={<QRScreen />} />
-        </Routes>
-      </CartProvider>
-    </RestaurantIdProvider>
+            <Route path="/Signinscreen" element={<Signinscreen />} />
+            <Route path="/Signupscreen" element={<Signupscreen />} />
+            <Route path="/Verifyotp" element={<Verifyotp />} />
+            <Route path="/Wishlist" element={<Wishlist />} />
+            <Route path="/Cart" element={<Cart />} />
+            <Route path="/Checkout" element={<Checkout />} />
+            <Route path="/Category" element={<Category />} />
+            <Route path="/Profile" element={<Profile />} />
+            <Route path="/EditProfile" element={<EditProfile />} />
+            <Route path="/MyOrder" element={<MyOrder />} />
+            <Route path="/Menu" element={<Product />} />
+            <Route path="/Search" element={<Search />} />
+            <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
+            <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
+            <Route path="/QRScreen" element={<QRScreen />} />
+          </Routes>
+        </CartProvider>
+      </RestaurantIdProvider>
     </ThemeProvider>
   );
 }

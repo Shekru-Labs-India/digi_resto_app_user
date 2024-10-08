@@ -616,9 +616,10 @@ background-color: var(--bg-white);
 }
 
 .circle {
-  width: 100px;
-  height: 100px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
+  /* background-color: var(--bs-primary); */
   background-color: #f3f3f3;
   display: flex;
   justify-content: center;

@@ -19,6 +19,9 @@ const HomeScreen = () => {
       console.log("Setting restaurant code:", restaurantCode);
       setRestaurantCode(restaurantCode);
       localStorage.setItem("restaurantCode", restaurantCode); // Store restaurant code
+
+      // Remove local storage object named menuItems
+      localStorage.removeItem("menuItems");
     }
   }, [restaurantCode, setRestaurantCode]);
 
@@ -33,6 +36,7 @@ const HomeScreen = () => {
 
       localStorage.setItem("userData", JSON.stringify(userData));
       localStorage.setItem("restaurantId", restaurantId); // Store restaurant ID
+
     }
   }, [restaurantId, restaurantDetails, table_number]);
 
