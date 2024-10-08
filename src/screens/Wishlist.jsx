@@ -313,7 +313,7 @@ const Wishlist = () => {
                                 menu_cat_id: menu.menu_cat_id,
                               }}
                             >
-                              <div className="customFontSizeBold">
+                              <div className="ps-2 customFontSizeBold">
                                 {menu.menu_name}
                               </div>
                             </Link>
