@@ -12,13 +12,14 @@ const Profile = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   const handleLogout = () => {
-    const { restaurantId, tableNumber } = JSON.parse(
+    const { restaurantId, tableNumber, restaurantCode } = JSON.parse(
       localStorage.getItem("userData") || "{}"
     );
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
     localStorage.setItem("RestaurantId", restaurantId);
     localStorage.setItem("TableNumber", tableNumber);
+    localStorage.setItem("RestaurantCode", restaurantCode);
     navigate("/Signinscreen");
   };
 

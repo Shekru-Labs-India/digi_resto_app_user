@@ -75,7 +75,9 @@ const OfferBanner = () => {
           const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
             ...menu,
             name: toTitleCase(menu.category_name),
+
             menu_cat_name: toTitleCase(menu.category_name),
+
           }));
 
           // Merge local menu items and API data
@@ -190,6 +192,7 @@ const OfferBanner = () => {
                   <Link
                     to={`/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
+                    //  {menu.name} 
                   >
                     <div className="cart-list rounded-4 style-2-custom">
                       <div className="dz-media media-100">

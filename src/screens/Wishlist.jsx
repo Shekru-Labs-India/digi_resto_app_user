@@ -391,10 +391,10 @@ const Wishlist = () => {
                                 }}
                               >
                                 <p className="mb-0 fs-4 me-2 fw-medium">
-                                  <span className="me-1 text-info">
+                                  <span className="me-1 text-info customFontSizeBold">
                                     ₹{menu.price}
                                   </span>
-                                  <span className="gray-text fs-6 text-decoration-line-through">
+                                  <span className="gray-text fs-6 text-decoration-line-through customFontSizeBold">
                                     ₹{menu.oldPrice || menu.price}
                                   </span>
                                 </p>
@@ -408,13 +408,13 @@ const Wishlist = () => {
                                   menu_cat_id: menu.menu_cat_id,
                                 }}
                               >
-                                <span className="fs-6 offer-color favoffer">
+                                <span className=" offer-color favoffer customFontSize">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </Link>
                             </div>
                             <div
-                              className="cart-btn cart-align me-3"
+                              className="cart-btn cart-align me-3 "
                               onClick={() => handleAddToCartClick(menu)}
                             >
                               {isMenuItemInCart(menu.menu_id) ? (

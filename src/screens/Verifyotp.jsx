@@ -210,11 +210,7 @@
 
 // export default Verifyotp;
 
-
-
 // canvas gpt
-
-
 
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -224,7 +220,7 @@ import pic4 from "../assets/background.jpg";
 import { Toast } from "primereact/toast"; // Import Toast from primereact
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css"; 
+import "primeicons/primeicons.css";
 
 const Verifyotp = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -239,11 +235,12 @@ const Verifyotp = () => {
 
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-    if (/^\d$/.test(value)) { // Ensure only a single digit is entered
+    if (/^\d$/.test(value)) {
+      // Ensure only a single digit is entered
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-  
+
       // Move focus to the next input if a digit is entered
       if (index < otp.length - 1) {
         const nextInput = document.getElementById(`digit-${index + 2}`);
@@ -256,7 +253,7 @@ const Verifyotp = () => {
 
   const isEditable = (index) => {
     // Check if all subsequent boxes are empty
-    return otp.slice(index + 1).every(digit => digit === "");
+    return otp.slice(index + 1).every((digit) => digit === "");
   };
 
   const handleKeyDown = (e, index) => {
@@ -272,8 +269,6 @@ const Verifyotp = () => {
       }
     }
   };
-
-  
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
@@ -293,7 +288,7 @@ const Verifyotp = () => {
         },
         body: JSON.stringify({
           mobile: mobile,
-          otp: otpStored ,
+          otp: otpStored,
         }),
       };
 
@@ -307,18 +302,29 @@ const Verifyotp = () => {
       if (data.st === 1) {
         console.log("OTP verification success:", data);
 
-        const { customer_id, name, dob, mobile, tableNumber } =
+        const { customer_id, name, mobile, tableNumber } =
           data.customer_details;
+
+        const storedUserData = JSON.parse(
+          localStorage.getItem("userData") || "{}"
+        );
+        const storedTableNumber = localStorage.getItem("tableNumber");
+
         const userData = {
           customer_id,
           name,
-          dob,
+
           mobile,
-          restaurantId: restaurantId, // Ensure restaurantId is included
-          tableNumber: tableNumber || "1",
+          restaurantId: restaurantId,
+          tableNumber:
+            storedTableNumber ||
+            storedUserData.tableNumber ||
+            data.customer_details.tableNumber ||
+            "1",
           restaurantCode: restaurantCode,
         };
         localStorage.setItem("userData", JSON.stringify(userData));
+        localStorage.setItem("tableNumber", userData.tableNumber);
 
         // Show success toast message
         toast.current.show({

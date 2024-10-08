@@ -518,7 +518,7 @@ const Cart = () => {
                 <Link
                   to="/Checkout"
                   state={{ cartItems: displayCartItems }}
-                  className="btn  customFontSize rounded-xl btn-primary px-5"
+                  className="btn btn-color customFontSize rounded-pill text-white px-5"
                 >
                   Proceed to Buy &nbsp; <b>({displayCartItems.length} items)</b>
                 </Link>

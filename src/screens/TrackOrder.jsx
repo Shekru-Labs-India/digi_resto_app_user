@@ -235,15 +235,17 @@ const TrackOrder = () => {
               </div>
               <div className="order-details-row">
   <div className="restaurant-info me-0">
-    <i className="ri-store-2-line pe-2"></i>
-    <span className="restaurant-name fw-normal fs-6">
+    <i className="ri-store-2-line pe-2 customFontSizeBold "></i>
+    <span className="restaurant-name customFontSizeBold">
       {order_details.restaurant_name.toUpperCase()}
     </span>
-    <i className="ri-user-location-line ps-0 pe-1 fw-normal fs-6"></i>
-    <span className="table-number fw-normal">{order_details.table_number}</span>
+    <i className="ri-user-location-line ps-0 pe-1 customFontSizeBold "></i>
+    <span className="table-number customFontSizeBold">
+      {order_details.table_number}
+    </span>
   </div>
   <div className="menu-info">
-    <i className="ri-bowl-line pe-2"></i>
+    <i className="ri-bowl-line pe-2 customFontSizeBold gray-text"></i>
     <span className="customFontSizeBold gray-text">
       {order_details.menu_count} Menu
     </span>

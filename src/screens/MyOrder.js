@@ -248,23 +248,27 @@ const OrdersTab = ({ orders, type }) => {
               </div>
               <div className="order-details-row">
                 <div className="restaurant-info">
-                  <i className="ri-store-2-line pe-2"></i>
-                  <span className="restaurant-name fw-normal fs-6">
+                  <i className="ri-store-2-line pe-2 customFontSizeBold"></i>
+                  <span className="restaurant-name  customFontSizeBold">
                     {order.restaurant_name.toUpperCase()}
                   </span>
-                  <i className="ri-user-location-line ps-2 pe-1 fw-normal fs-6"></i>
-                  <span className="table-number fw-normal">{order.table_number}</span>
+                  <i className="ri-user-location-line ps-2 pe-1 customFontSizeBold"></i>
+                  <span className="table-number customFontSizeBold">
+                    {order.table_number}
+                  </span>
                 </div>
                 <div className="menu-info">
-                  <i className="ri-bowl-line pe-2"></i>
-                  <span>
+                  <i className="ri-bowl-line pe-2 gray-text "></i>
+                  <span className="gray-text">
                     {order.menu_count === 0
                       ? "No ongoing orders"
                       : `${order.menu_count} Menu`}
                   </span>
                 </div>
                 <div className="price-info">
-                  <span className="text-info">₹{order.grand_total}</span>
+                  <span className="text-info customFontSizeBold">
+                    ₹{order.grand_total}
+                  </span>
                 </div>
               </div>
             </div>

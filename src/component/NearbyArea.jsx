@@ -287,7 +287,7 @@ const NearbyArea = () => {
               <div className="row g-3 grid-style-1">
                 <div>
                   <div
-                    className="card-item style-6 "
+                    className="card-item style-6 rounded-3"
                     style={{ width: "216px", height: "auto" }}
                   >
                     <div className="dz-media ">
