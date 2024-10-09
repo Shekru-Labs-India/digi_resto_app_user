@@ -1,3 +1,18 @@
+
+.dotted-line{
+  border: none;
+  border-top: 2px dotted #0a795b;
+  background-color: transparent;
+}
+
+
+
+
+
+
+
+
+
 .customFontSize{
   font-size: 14px;
 }

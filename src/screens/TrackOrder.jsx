@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
@@ -6,7 +6,7 @@ import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
 import "../assets/css/custom.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
-import { ThemeProvider } from '../context/ThemeContext.js';
+import { ThemeProvider } from "../context/ThemeContext.js";
 
 const TrackOrder = () => {
   // Define displayCartItems
@@ -21,9 +21,6 @@ const TrackOrder = () => {
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
 
-
-
-
   const handleBack = () => {
     navigate(-1);
   };
@@ -33,6 +30,94 @@ const TrackOrder = () => {
   const [searchedMenu, setSearchedMenu] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useRef(null);
+
+  const [quantities, setQuantities] = useState({});
+  const [prices, setPrices] = useState({});
+
+  const getCustomerId = () => {
+    return userData ? userData.customer_id : null;
+  };
+
+  const getRestaurantId = () => {
+    return userData ? userData.restaurantId : null;
+  };
+
+  const getCartId = () => {
+    const cartId = localStorage.getItem("cartId");
+    return cartId ? parseInt(cartId, 10) : 1;
+  };
+
+  const updateCartQuantity = async (menuId, quantity) => {
+    const customerId = getCustomerId();
+    const restaurantId = getRestaurantId();
+    const cartId = getCartId();
+
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/update_cart_menu_quantity",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            quantity: quantity,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.st === 1) {
+        setQuantities((prev) => ({ ...prev, [menuId]: quantity }));
+        setPrices((prev) => ({ ...prev, [menuId]: data.price }));
+      } else {
+        console.error("Failed to update cart quantity:", data.msg);
+      }
+    } catch (error) {
+      console.error("Error updating cart quantity:", error);
+    }
+  };
+
+  const incrementQuantity = (menuId, currentQuantity, currentPrice) => {
+    if (currentQuantity < 20) {
+      const newQuantity = currentQuantity + 1;
+      updateCartQuantity(menuId, newQuantity);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: `Increased quantity to ${newQuantity}`,
+        life: 2000,
+      });
+    } else {
+      toast.current.show({
+        severity: "warn",
+        summary: "Limit Reached",
+        detail: "You cannot add more than 20 items of this product.",
+        life: 2000,
+      });
+    }
+  };
+
+  const decrementQuantity = (menuId, currentQuantity, currentPrice) => {
+    if (currentQuantity > 1) {
+      const newQuantity = currentQuantity - 1;
+      updateCartQuantity(menuId, newQuantity);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: `Decreased quantity to ${newQuantity}`,
+        life: 2000,
+      });
+    }
+  };
+
+  const handleClearAll = () => {
+    setSearchTerm("");
+    setSearchedMenu([]);
+  };
 
   // ... existing useEffect hooks and functions ...
 
@@ -152,6 +237,54 @@ const TrackOrder = () => {
       }
     };
 
+    const addToOrder = async (menu) => {
+      try {
+        const response = await fetch(
+          "https://menumitra.com/user_api/add_to_cart",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cart_id: getCartId(),
+              customer_id: getCustomerId(),
+              restaurant_id: getRestaurantId(),
+              menu_id: menu.menu_id,
+              quantity: 1, // Start with quantity 1
+              price: menu.price,
+            }),
+          }
+        );
+        const data = await response.json();
+        if (data.st === 1) {
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: `${menu.menu_name} added to your order`,
+            life: 2000,
+          });
+          fetchOrderDetails(); // Refresh order details
+        } else {
+          console.error("Failed to add item to order:", data.msg);
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to add item to order",
+            life: 2000,
+          });
+        }
+      } catch (error) {
+        console.error("Error adding item to order:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "An error occurred while adding item to order",
+          life: 2000,
+        });
+      }
+    };
+
     const fetchOrderStatus = async () => {
       try {
         const response = await fetch(
@@ -225,10 +358,20 @@ const TrackOrder = () => {
 
     // Array of month abbreviations
     const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
-    
+
     const currentMonth = new Date().getMonth(); // 0-11
     const monthIndex = month ? parseInt(month, 10) - 1 : currentMonth;
     // Get month abbreviation
@@ -357,58 +500,218 @@ const TrackOrder = () => {
       </div>
 
       <ThemeProvider>
-      {/* Conditional rendering of the green card or OrderGif based on order status */}
-      <div className="container custom-container" style={{ paddingTop: "1px" }}>
-        {isCompleted ? (
-          <div
-            className="card-body text-center"
-            style={{
-              backgroundColor: "#cce3d1",
-              padding: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            <span
-              className="fs-6 fw-medium h-100 rounded-corner"
-              style={{ color: "#2f855a" }}
+        {/* Conditional rendering of the green card or OrderGif based on order status */}
+        <div
+          className="container custom-container"
+          style={{ paddingTop: "1px" }}
+        >
+          {isCompleted ? (
+            <div
+              className="card-body text-center"
+              style={{
+                backgroundColor: "#cce3d1",
+                padding: "20px",
+                borderRadius: "8px",
+              }}
             >
-              Your delicious order has been served
-            </span>
-          </div>
-        ) : (
-          <div className="card-body p-0">
-            <div className="card">
-              <div className="row py-2 ps-2 pe-0 h-100">
-                <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                  <OrderGif />
-                </div>
-                <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                  <div className="text-center mb-0">
-                    <div className=" fw-medium" style={{ fontSize: "14px" }}>
-                      You have the best taste in food.
-                    </div>
+              <span
+                className="fs-6 fw-medium h-100 rounded-corner"
+                style={{ color: "#2f855a" }}
+              >
+                Your delicious order has been served
+              </span>
+            </div>
+          ) : (
+            <div className="card-body p-0">
+              <div className="card">
+                <div className="row py-2 ps-2 pe-0 h-100">
+                  <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                    <OrderGif />
+                  </div>
+                  <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                    <div className="text-center mb-0">
+                      <div className=" fw-medium" style={{ fontSize: "14px" }}>
+                        You have the best taste in food.
+                      </div>
 
-                    <div className=" fw-medium" style={{ fontSize: "14px" }}>
-                      We're crafting a menu to match it perfectly.
+                      <div className=" fw-medium" style={{ fontSize: "14px" }}>
+                        We're crafting a menu to match it perfectly.
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-
+          )}
+        </div>
       </ThemeProvider>
 
-      <main className="page-content ">
-
-
+      <main className="page-content">
+        <div className="container" style={{ paddingBottom: "1px" }}>
+          <div className="input-group w-100 my-2 border border-muted rounded-3">
+            <span className="input-group-text py-0">
+              <i className="ri-search-line fs-3 gray-text"></i>
+            </span>
+            <input
+              type="search"
+              className="form-control bg-white ps-2 customFontSizeBold"
+              placeholder="Search to add more items"
+              onChange={handleSearch}
+              value={searchTerm}
+            />
+          </div>
+        </div>
 
         {userData ? (
-          <section className="container mt-1">
-           
-            <div className="row g-3">
+          <section className="container mt-1 py-3">
+            {/* Searched menu items */}
+            {searchedMenu.length > 0 && (
+              <div className="row g-3 mb-3">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <h6 className="customFontSizeBold mb-0">Search Results</h6>
+                  <div
+                    className="customFontSizeBold gray-text"
+                    onClick={handleClearAll}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Clear All
+                  </div>
+                </div>
+                {searchedMenu.map((menu) => (
+                  <div key={menu.menu_id} className="col-12 mt-2">
+                    <div className="card mb-3 rounded-4">
+                      <div className="card-body py-0">
+                        <div className="row">
+                          <div
+                            className="col-3 px-0"
+                            onClick={() =>
+                              navigate(`/ProductDetails/${menu.menu_id}`, {
+                                state: {
+                                  restaurant_id: restaurantId,
+                                  menu_cat_id: menu.menu_cat_id,
+                                },
+                              })
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
+                            <img
+                              src={menu.image || images}
+                              alt={menu.menu_name}
+                              className="img-fluid rounded-4"
+                              style={{ width: "100px", height: "108px" }}
+                              onError={(e) => {
+                                e.target.src = images;
+                              }}
+                            />
+                          </div>
+                          <div className="col-8 pt-3 pb-0 pe-0 ps-2">
+                            <div
+                              className="customFontSizeBold"
+                              onClick={() =>
+                                navigate(`/ProductDetails/${menu.menu_id}`, {
+                                  state: {
+                                    restaurant_id: restaurantId,
+                                    menu_cat_id: menu.menu_cat_id,
+                                  },
+                                })
+                              }
+                              style={{ cursor: "pointer" }}
+                            >
+                              {menu.menu_name}
+                            </div>
+                            <div className="row">
+                              <div className="col-7 mt-1 pe-0">
+                                <div className="mt-0">
+                                  <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
+                                  <span className="category-text fs-xs fw-medium">
+                                    {menu.category_name}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                                <span className="customFontSizeBold gray-text">
+                                  <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
+                                  {parseFloat(menu.rating).toFixed(1)}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="row mt-3">
+                              <div className="col-8 px-0">
+                                <span className="mb-0 mt-1 customFontSize text-start fw-medium">
+                                  <span className="ms-3 me-1 text-info">
+                                    ₹{prices[menu.menu_id] || menu.price}
+                                  </span>
+                                  <span className="gray-text customFontSize old-price text-decoration-line-through">
+                                    ₹{menu.oldPrice}
+                                  </span>
+                                </span>
+                                <span className="mb-0 mt-1 ms-3 customFontSize offerSearch">
+                                  <span className="customFontSize px-0 text-start offer-color offer">
+                                    {menu.offer || "No "}% Off
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="col-4 text-end">
+                                <div className="d-flex justify-content-end align-items-center mt-1">
+                                  <i
+                                    className="ri-subtract-line customFontSize mx-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      decrementQuantity(
+                                        menu.menu_id,
+                                        quantities[menu.menu_id] || 1,
+                                        menu.price
+                                      );
+                                    }}
+                                  ></i>
+                                  <span className="text-light customFontSize">
+                                    {quantities[menu.menu_id] || 1}
+                                  </span>
+                                  <i
+                                    className="ri-add-line mx-2 customFontSize"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      incrementQuantity(
+                                        menu.menu_id,
+                                        quantities[menu.menu_id] || 1,
+                                        menu.price
+                                      );
+                                    }}
+                                  ></i>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Horizontal line */}
+            {/* {searchedMenu.length > 0 && (
+              <>
+                <div className="d-flex justify-content-center my-3">
+                  <button
+                    className="btn btn-primary btn-lg"
+                    onClick={handleSubmitOrder}
+                  >
+                    Submit Order
+                  </button>
+                </div>
+                <hr className="my-4 dotted-line text-primary" />
+              </>
+            )} */}
+
+            {/* Original menu items */}
+            <div className="row ">
+              <span className="customFontSizeBold gray-text ms-1 mb-2 ">
+                Ordered Items
+              </span>
               {menu_details.map((menu) => {
                 const oldPrice = (menu.price / (1 - menu.offer / 100)).toFixed(
                   2
@@ -426,62 +729,57 @@ const TrackOrder = () => {
                       })
                     }
                   >
-                    <div className="dz-card list-style style-3 horizontal-card">
-                      <div className="dz-media">
-                        <img
-                          className="rounded"
-                          src={menu.image || images}
-                          alt={menu.menu_name}
-                          onError={(e) => {
-                            e.target.src = images;
-                          }}
-                          style={{
-                            width: "108px",
-                            height: "108px",
-                          }}
-                        />
-                      </div>
-                      <div className="dz-content">
-                        <h6 className=" mt-0 customFontSizeBold fw-medium mb-0">
-                          {menu.menu_name}
-                        </h6>
+                    <div className="card mb-3 rounded-4">
+                      <div className="card-body py-0">
                         <div className="row">
-                          <div className="col-5 pe-0 d-flex align-items-center">
-                            <i className="ri-restaurant-line pe-1 category-text fs-xs fw-medium"></i>
-                            <span className="category-text fs-xs fw-medium">
-                              {menu.category_name}
-                            </span>
+                          <div className="col-3 px-0">
+                            <img
+                              src={menu.image || images}
+                              alt={menu.menu_name}
+                              className="img-fluid rounded-4"
+                              style={{ width: "100px", height: "108px" }}
+                              onError={(e) => {
+                                e.target.src = images;
+                              }}
+                            />
                           </div>
-                          <div className="col-4 text-start ms-0 px-0 d-flex align-items-center">
-                            {renderSpicyIndex(menu.spicy_index)}
-                          </div>
-                          <div className="col-2 text-end px-0 d-flex align-items-center justify-content-end">
-                            <span className="rating gray-text fw-semibold ms-0">
-                              <i className="ri-star-half-line ratingStar me-1"></i>
-                              {menu.rating}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="d-flex align-items-center">
-                          <div className="container py-0">
+                          <div className="col-8 pt-3 pb-0 pe-0 ps-2">
+                            <div className="customFontSizeBold">
+                              {menu.menu_name}
+                            </div>
                             <div className="row">
-                              <div className="col-6 px-0 d-flex align-items-center">
-                                <p className="customFontSizeBold fw-medium mb-0">
-                                  <span className="me-1 text-info">
-                                    ₹{menu.price}
+                              <div className="col-7 mt-1 pe-0">
+                                <div className="mt-0">
+                                  <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
+                                  <span className="category-text fs-xs fw-medium">
+                                    {menu.category_name}
                                   </span>
-                                  <span className="gray-text text-decoration-line-through">
-                                    ₹{oldPrice}
-                                  </span>
-                                </p>
+                                </div>
                               </div>
-                              <div className="col-4 px-0 d-flex align-items-center">
-                                <span className="customFontSizeBold ps-2 offer-color">
-                                  {menu.offer || "No "}% Off
+                              <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                                <span className="customFontSizeBold gray-text">
+                                  <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
+                                  {parseFloat(menu.rating).toFixed(1)}
                                 </span>
                               </div>
-                              <div className="col-2 ps-0 d-flex align-items-center justify-content-end">
+                            </div>
+                            <div className="row mt-3">
+                              <div className="col-8 px-0">
+                                <span className="mb-0 mt-1 customFontSize text-start fw-medium">
+                                  <span className="ms-3 me-1 text-info">
+                                    ₹{menu.price}
+                                  </span>
+                                  <span className="gray-text customFontSize old-price text-decoration-line-through">
+                                    ₹{oldPrice}
+                                  </span>
+                                </span>
+                                <span className="mb-0 mt-1 ms-3 customFontSize offerSearch">
+                                  <span className="customFontSize px-0 text-start offer-color offer">
+                                    {menu.offer || "No "}% Off
+                                  </span>
+                                </span>
+                              </div>
+                              <div className="col-4 text-center p-0">
                                 <span className="quantity gray-text customFontSizeBold">
                                   x {menu.quantity}
                                 </span>
@@ -500,71 +798,81 @@ const TrackOrder = () => {
           <SigninButton />
         )}
       </main>
+
       {userData && orderDetails && (
         <div
           className="container  mb-5 pb-5 z-3"
           style={{ backgroundColor: "transparent" }}
         >
-<div className="card-body mt-2 p-0 mb-5">
-  <div className="card mx-auto">
-    <div className="row px-1 py-1">
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center py-1">
-          <span className="ps-2 customFontSizeBold fw-medium">
-            Total
-          </span>
-          <span className="pe-2 customFontSizeBold fw-medium">
-            ₹{orderDetails.order_details.total_total || 0}
-          </span>
-        </div>
-        <hr className="me-3 p-0 m-0 text-primary" />
-      </div>
-      <div className="col-12 pt-0">
-        <div className="d-flex justify-content-between align-items-center py-0">
-          <span className="ps-2 customFontSize pt-1" style={{ color: "#a5a5a5" }}>
-            Service Charges ({orderDetails.order_details.service_charges_percent}%)
-          </span>
-          <span className="pe-2 customFontSize fw-medium">
-            ₹{orderDetails.order_details.service_charges_amount || 0}
-          </span>
-        </div>
-      </div>
-      <div className="col-12 mb-0 py-1">
-        <div className="d-flex justify-content-between align-items-center py-0">
-          <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
-            GST ({orderDetails.order_details.gst_percent}%)
-          </span>
-          <span className="pe-2 customFontSize fw-medium text-start">
-            ₹{orderDetails.order_details.gst_amount || 0}
-          </span>
-        </div>
-      </div>
-      <div className="col-12 mb-0 pt-0 pb-1">
-        <div className="d-flex justify-content-between align-items-center py-0">
-          <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
-            Discount ({orderDetails.order_details.discount_percent || 0}%)
-          </span>
-          <span className="pe-2 customFontSize">
-            ₹{orderDetails.order_details.discount_amount || 0}
-          </span>
-        </div>
-      </div>
-      <div>
-        <hr className="me-3 p-0 m-0 text-primary" />
-      </div>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-          <span className="ps-2 customFontSizeBold">
-            Grand Total
-          </span>
-          <span className="pe-2 customFontSizeBold">
-            ₹{orderDetails.order_details.grand_total || 0}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+          <div className="card-body mt-2 p-0 mb-5">
+            <div className="card mx-auto">
+              <div className="row px-1 py-1">
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center py-1">
+                    <span className="ps-2 customFontSizeBold fw-medium">
+                      Total
+                    </span>
+                    <span className="pe-2 customFontSizeBold fw-medium">
+                      ₹{orderDetails.order_details.total_total || 0}
+                    </span>
+                  </div>
+                  <hr className="me-3 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12 pt-0">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span
+                      className="ps-2 customFontSize pt-1"
+                      style={{ color: "#a5a5a5" }}
+                    >
+                      Service Charges (
+                      {orderDetails.order_details.service_charges_percent}%)
+                    </span>
+                    <span className="pe-2 customFontSize fw-medium">
+                      ₹{orderDetails.order_details.service_charges_amount || 0}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-12 mb-0 py-1">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span
+                      className="ps-2 customFontSize"
+                      style={{ color: "#a5a5a5" }}
+                    >
+                      GST ({orderDetails.order_details.gst_percent}%)
+                    </span>
+                    <span className="pe-2 customFontSize fw-medium text-start">
+                      ₹{orderDetails.order_details.gst_amount || 0}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-12 mb-0 pt-0 pb-1">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span
+                      className="ps-2 customFontSize"
+                      style={{ color: "#a5a5a5" }}
+                    >
+                      Discount (
+                      {orderDetails.order_details.discount_percent || 0}%)
+                    </span>
+                    <span className="pe-2 customFontSize">
+                      ₹{orderDetails.order_details.discount_amount || 0}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <hr className="me-3 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                    <span className="ps-2 customFontSizeBold">Grand Total</span>
+                    <span className="pe-2 customFontSizeBold">
+                      ₹{orderDetails.order_details.grand_total || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
       <Bottom></Bottom>
