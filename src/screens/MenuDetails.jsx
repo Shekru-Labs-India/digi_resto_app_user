@@ -343,7 +343,7 @@ const MenuDetails = () => {
                 className="product-detail-image mt-5 pt-2"
                 src={productDetails.image || images}
                 alt={productDetails.name}
-                style={{}}
+                style={{ aspectRatio: "16/9", objectFit: "cover", height: "100%",   }}
                 onError={(e) => {
                   e.target.src = images;
                 }}
