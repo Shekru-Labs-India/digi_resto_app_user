@@ -74,7 +74,7 @@ const OfferBanner = () => {
           // Fetching menu items from API and title-casing names
           const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
             ...menu,
-            name: toTitleCase(menu.category_name),
+            name: toTitleCase(menu.menu_name),
 
             menu_cat_name: toTitleCase(menu.category_name),
 
@@ -192,7 +192,6 @@ const OfferBanner = () => {
                   <Link
                     to={`/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
-                    //  {menu.name} 
                   >
                     <div className="cart-list rounded-4 style-2-custom">
                       <div className="dz-media media-100">

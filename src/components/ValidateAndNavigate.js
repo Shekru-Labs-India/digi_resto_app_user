@@ -4,7 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 
 // Validate and redirect based on restaurant code
 const ValidateAndNavigate = () => {
-  const { restaurantCode } = uselParams();
+  const { restaurantCode } = useParams();
   const { setRestaurantCode, error } = useRestaurantId();
 
   useEffect(() => {

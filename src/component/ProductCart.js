@@ -343,7 +343,7 @@ const ProductCard = () => {
         {filteredMenuList.length > 0 ? (
           filteredMenuList.map((menu) => (
             <div key={menu.menu_id} className="col-6">
-              <div className="card-item style-6 style-6-1">
+              <div className="card-item style-6 style-6-1 rounded-3">
                 <div className="dz-media ">
                   <Link
                     to={{
@@ -355,7 +355,9 @@ const ProductCard = () => {
                       src={menu.image || images}
                       alt={menu.name}
                       className=""
-                      style={{ height: "200px", width: "300px" }}
+                      style={{ height: "100%", width: "100%", objectFit: "fill", aspectRatio: 1 }}
+  
+  
                       onError={(e) => {
                         e.target.src = images;
                       }}

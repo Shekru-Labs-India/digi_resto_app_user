@@ -298,7 +298,7 @@ const NearbyArea = () => {
                       >
                         <img
                           src={menuItem.image || images}
-                          style={{ height: "150px", width: "400px",}}
+                          style={{ height: "100%", width: "100%", objectFit: "fill", aspectRatio: 1 }}
                           onError={(e) => {
                             e.target.src = images;
                           }}
