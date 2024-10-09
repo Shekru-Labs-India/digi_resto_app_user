@@ -234,36 +234,36 @@ const TrackOrder = () => {
                 </div>
               </div>
               <div className="order-details-row">
-  <div className="restaurant-info me-0">
-    <i className="ri-store-2-line pe-2 customFontSizeBold "></i>
-    <span className="restaurant-name customFontSizeBold">
-      {order_details.restaurant_name.toUpperCase()}
-    </span>
-    <i className="ri-user-location-line ps-0 pe-1 customFontSizeBold "></i>
-    <span className="table-number customFontSizeBold">
-      {order_details.table_number}
-    </span>
-  </div>
-  <div className="menu-info">
-    <i className="ri-bowl-line pe-2 customFontSizeBold gray-text"></i>
-    <span className="customFontSizeBold gray-text">
-      {order_details.menu_count} Menu
-    </span>
-  </div>
-  <div className="price-info">
-    <span className="text-info customFontSizeBold fw-medium">
-      ₹{order_details.grand_total}
-    </span>
-    <span className="text-decoration-line-through ms-2 gray-text customFontSizeBold">
-      ₹
-      {(
-        order_details.grand_total /
-          (1 - order_details.discount_percent / 100) ||
-        order_details.grand_total
-      ).toFixed(2)}
-    </span>
-  </div>
-</div>
+                <div className="restaurant-info me-0">
+                  <i className="ri-store-2-line pe-2 customFontSizeBold "></i>
+                  <span className="restaurant-name customFontSizeBold">
+                    {order_details.restaurant_name.toUpperCase()}
+                  </span>
+                  <i className="ri-user-location-line ps-0 pe-1 customFontSizeBold "></i>
+                  <span className="table-number customFontSizeBold">
+                    {order_details.table_number}
+                  </span>
+                </div>
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2 customFontSizeBold gray-text"></i>
+                  <span className="customFontSizeBold gray-text">
+                    {order_details.menu_count} Menu
+                  </span>
+                </div>
+                <div className="price-info">
+                  <span className="text-info customFontSizeBold fw-medium">
+                    ₹{order_details.grand_total}
+                  </span>
+                  <span className="text-decoration-line-through ms-2 gray-text customFontSizeBold">
+                    ₹
+                    {(
+                      order_details.grand_total /
+                        (1 - order_details.discount_percent / 100) ||
+                      order_details.grand_total
+                    ).toFixed(2)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -323,7 +323,18 @@ const TrackOrder = () => {
                   2
                 );
                 return (
-                  <div key={menu.menu_id} className="col-12">
+                  <div
+                    key={menu.menu_id}
+                    className="col-12"
+                    onClick={() =>
+                      navigate(`/ProductDetails/${menu.menu_id}`, {
+                        state: {
+                          restaurant_id: restaurantId,
+                          menu_cat_id: menu.menu_cat_id,
+                        },
+                      })
+                    }
+                  >
                     <div className="dz-card list-style style-3 horizontal-card">
                       <div className="dz-media">
                         <img
@@ -344,41 +355,42 @@ const TrackOrder = () => {
                           {menu.menu_name}
                         </h6>
                         <div className="row">
-                          <div className="col-5 pe-0">
+                          <div className="col-5 pe-0 d-flex align-items-center">
                             <i className="ri-restaurant-line pe-1 category-text fs-xs fw-medium"></i>
                             <span className="category-text fs-xs fw-medium">
                               {menu.category_name}
                             </span>
                           </div>
-                          <div className="col-4 text-start ms-0 px-0 ">
+                          <div className="col-4 text-start ms-0 px-0 d-flex align-items-center">
                             {renderSpicyIndex(menu.spicy_index)}
                           </div>
-                          <div className="col-2 text-end  px-0">
+                          <div className="col-2 text-end px-0 d-flex align-items-center justify-content-end">
                             <span className="rating gray-text fw-semibold ms-0">
                               <i className="ri-star-half-line ratingStar me-1"></i>
                               {menu.rating}
                             </span>
                           </div>
                         </div>
+
                         <div className="d-flex align-items-center">
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-6 px-0 ">
-                                <p className=" customFontSizeBold  fw-medium mb-0">
+                              <div className="col-6 px-0 d-flex align-items-center">
+                                <p className="customFontSizeBold fw-medium mb-0">
                                   <span className="me-1 text-info">
                                     ₹{menu.price}
                                   </span>
-                                  <span className="gray-text  text-decoration-line-through">
+                                  <span className="gray-text text-decoration-line-through">
                                     ₹{oldPrice}
                                   </span>
                                 </p>
                               </div>
-                              <div className="col-4  px-0 pt-1 ">
-                                <span className="customFontSizeBold ps-2 offer-color ">
+                              <div className="col-4 px-0 d-flex align-items-center">
+                                <span className="customFontSizeBold ps-2 offer-color">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </div>
-                              <div className="col-2 ps-0 pt-1 text-end">
+                              <div className="col-2 ps-0 d-flex align-items-center justify-content-end">
                                 <span className="quantity gray-text customFontSizeBold">
                                   x {menu.quantity}
                                 </span>

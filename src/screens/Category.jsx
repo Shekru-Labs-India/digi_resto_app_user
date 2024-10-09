@@ -113,13 +113,21 @@ const Category = () => {
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>
-                    <div className="dz-category-items border border-success overflow-hidden rounded-4 d-flex flex-column">
+                    <div className="dz-category-items border border-success overflow-hidden rounded-top-3 d-flex flex-column">
                       <Link
                         to="/Menu"
                         onClick={() => handleCategoryClick(category)}
                         className="d-block"
                       >
-                        <div className="dz-media category-image flex-grow-1 rounded-top-3 rounded-bottom-0">
+                        <div className="d-flex justify-content-center bg-white">
+                          <span className="py-2 rounded-bottom-3 text-center m-0 customFontSizeBold">
+                            {toTitleCase(category.category_name)}
+                            <span className=" small-number gray-text">
+                              <span className=""> ({category.menu_count})</span>
+                            </span>
+                          </span>
+                        </div>
+                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
                           <img
                             style={{
                               width: "100%",
@@ -132,12 +140,6 @@ const Category = () => {
                               e.target.src = south;
                             }}
                           />
-                        </div>
-                        <div className="d-flex justify-content-center bg-white">
-                          <span className="py-2 rounded-bottom-3 text-center m-0 customFontSizeBold">
-                            {toTitleCase(category.category_name)} (
-                            {category.menu_count})
-                          </span>
                         </div>
                       </Link>
                     </div>
