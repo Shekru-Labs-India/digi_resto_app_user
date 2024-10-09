@@ -1,6 +1,4 @@
-
-
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
@@ -18,7 +16,6 @@ const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useRef(null);
-
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const restaurantId = userData ? userData.restaurantId : null;
@@ -161,8 +158,12 @@ const Search = () => {
           setSearchedMenu(updatedMenu);
           toast.current.show({
             severity: isFavorite ? "info" : "success",
-            summary: isFavorite ? "Removed from Favourites" : "Added to Favourites",
-            detail: `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your favourites.`,
+            summary: isFavorite
+              ? "Removed from Favourites"
+              : "Added to Favourites",
+            detail: `${menuItem.menu_name} has been ${
+              isFavorite ? "removed from" : "added to"
+            } your favourites.`,
             life: 2000,
           });
         } else {
@@ -210,7 +211,6 @@ const Search = () => {
     setDebouncedSearchTerm(term);
     setShowHistory(false); // Hide history when a term is clicked
   };
-
 
   return (
     <div className="page-wrapper">
@@ -274,7 +274,7 @@ const Search = () => {
           {searchedMenu.map((menu) => (
             <div className="card mb-3 rounded-4" key={menu.menu_id}>
               <div className="card-body py-0">
-                <div className="row">
+                <div className="row ">
                   <div className="col-3 px-0">
                     <img
                       src={menu.image || images}
@@ -287,42 +287,38 @@ const Search = () => {
                       onClick={() => handleMenuClick(menu.menu_id)}
                     />
                   </div>
-                  <div className="col-8 pt-2 pb-0 pe-0 ps-2">
+                  <div className="col-8 pt-3 pb-0 pe-0 ps-2 ">
                     <div className="customFontSizeBold">{menu.menu_name}</div>
                     <div className="row">
                       <div className="col-7 mt-1 pe-0">
-                        <span onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}>
-                        <div className="mt-0">
-                          <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
-                          <span
-                            className="category-text fs-xs fw-medium "
-                            
-                          >
-                            {menu.category_name}
-                          </span>
-                          
-                        </div>
+                        <span
+                          onClick={() => handleMenuClick(menu.menu_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <div className="mt-0">
+                            <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
+                            <span className="category-text fs-xs fw-medium ">
+                              {menu.category_name}
+                            </span>
+                          </div>
                         </span>
                       </div>
 
                       <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                      <span
-                            
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
-                          >
-                        <span className="customFontSizeBold gray-text">
-                          <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
-                          {parseFloat(menu.rating).toFixed(1)}
-                        </span>
+                        <span
+                          onClick={() => handleMenuClick(menu.menu_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <span className="customFontSizeBold gray-text">
+                            <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
+                            {parseFloat(menu.rating).toFixed(1)}
+                          </span>
                         </span>
                       </div>
-
                     </div>
-                    <div className="row mt-2">
-                      <div className="col-6 px-0">
-                        <p
+                    <div className="row mt-3">
+                      <div className="col-8 px-0">
+                        <span
                           className="mb-0 mt-1 customFontSize text-start fw-medium"
                           onClick={() => handleMenuClick(menu.menu_id)}
                           style={{ cursor: "pointer" }}
@@ -333,34 +329,36 @@ const Search = () => {
                           <span className="gray-text customFontSize  old-price text-decoration-line-through">
                             ₹{menu.oldPrice || menu.price}
                           </span>
-                        </p>
-                      </div>
-                      <div className="col-3 px-0">
-                        <p
-                          className="mb-0 mt-1 customFontSize offerSearch"
+                        </span>
+
+                        <span
+                          className="mb-0 mt-1 ms-3 customFontSize offerSearch"
                           onClick={() => handleMenuClick(menu.menu_id)}
                           style={{ cursor: "pointer" }}
                         >
                           <span className="customFontSize px-0 text-start offer-color offer ">
                             {menu.offer || "No "}% Off
                           </span>
-                        </p>
+                        </span>
                       </div>
-                      <div className="col-3 text-center p-0 clickable-icon">
-                        <i
-                          className={`${
-                            menu.is_favourite
-                              ? "ri-hearts-fill fs-3"
-                              : "ri-heart-2-line fs-3"
-                          }`}
+                      <div className="col-4 text-center p-0 clickable-icon search-like">
+                        <div
                           onClick={(e) => {
                             e.stopPropagation();
                             handleLikeClick(menu.menu_id);
                           }}
-                          style={{
-                            color: menu.is_favourite ? "red" : "",
-                          }}
-                        ></i>
+                        >
+                          <i
+                            className={`${
+                              menu.is_favourite
+                                ? "ri-hearts-fill fs-3"
+                                : "ri-heart-2-line fs-3"
+                            }`}
+                            style={{
+                              color: menu.is_favourite ? "red" : "",
+                            }}
+                          ></i>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -123,7 +123,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link customFontSizeBold ${
+                          className={`nav-link customFontSizeBold  ${
                             activeTab === "ongoing" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("ongoing")}

@@ -91,13 +91,20 @@ button{
 }
 
 
+.product-like{
+
+  margin-top: -7px;
+}
 
 
+.cart-btn-align{
+  margin-top: -6px;
+}
 
 
-
-
-
+.search-like{
+  margin-top: -6px;
+}
 
 
 .custom-toast {

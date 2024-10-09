@@ -234,7 +234,7 @@ const Checkout = () => {
 
             <div className="dz-flex-box mt-3">
               <div className="card">
-                <div className="card-body px-1">
+                <div className="card-body px-1 pb-0">
                   {cartItems.length > 0 ? (
                     cartItems.map((item, index) => (
                       <div className="row justify-content-center" key={index}>
@@ -275,47 +275,71 @@ const Checkout = () => {
                       No items in the cart.
                     </div>
                   )}
-
-                  <span className="my-2 px-2 customFontSizeBold">
-                    Total
-                    <span className="float-end  ">
-                      ₹{parseFloat(total).toFixed(2)}
-                    </span>
-                  </span>
-                  <hr className=" mx-2 p-0 m-0  text-primary" />
-                  <div className="px-2 gray-text mb-0 py-1 customFontSizeBold">
-                    Service Charges ({serviceChargesPercent}%)
-                    <span className="float-end customFontSizeBold">
-                      ₹{parseFloat(serviceCharges).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="px-2 gray-text mb-0 py-2 customFontSizeBold">
-                    GST ({gstPercent}%)
-                    <span className="float-end customFontSizeBold">
-                      ₹{parseFloat(tax).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="px-2 gray-text pt-1 mb-0 customFontSizeBold">
-                    Discount ({discountPercent}%)
-                    <span className="float-end customFontSizeBold">
-                      ₹{parseFloat(discount).toFixed(2)}
-                    </span>
-                  </div>
-                  <h5 className="mt- px-2 customFontSizeBold">
-                    <hr className=" text-primary" />
-                    Grand Total{" "}
-                    <span className="float-end">
-                      ₹{parseFloat(grandTotal).toFixed(2)}
-                    </span>
-                  </h5>
                 </div>
               </div>
             </div>
-
+            <div className="card mx-auto">
+              <div className="row px-1 py-1">
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center py-1">
+                    <span className="ps-2 customFontSizeBold fw-medium">
+                      Total
+                    </span>
+                    <span className="pe-2 customFontSizeBold fw-medium">
+                      ₹{parseFloat(total).toFixed(2)}
+                    </span>
+                  </div>
+                  <hr className="me-3 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12 pt-0">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 customFontSize pt-1" style={{ color: "#a5a5a5" }}>
+                      Service Charges ({serviceChargesPercent}%)
+                    </span>
+                    <span className="pe-2 customFontSize fw-medium">
+                      ₹{parseFloat(serviceCharges).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-12 mb-0 py-1">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+                      GST ({gstPercent}%)
+                    </span>
+                    <span className="pe-2 customFontSize fw-medium text-start">
+                      ₹{parseFloat(tax).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-12 mb-0 pt-0 pb-1">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+                      Discount ({discountPercent}%)
+                    </span>
+                    <span className="pe-2 customFontSize">
+                      ₹{parseFloat(discount).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <hr className="me-3 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12">
+                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                    <span className="ps-2 customFontSizeBold">
+                      Grand Total
+                    </span>
+                    <span className="pe-2 customFontSizeBold">
+                      ₹{parseFloat(grandTotal).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-primary rounded-pill mt-3 customFontSizeBold"
+                className="btn btn-color rounded-pill mt-3 customFontSizeBold text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order

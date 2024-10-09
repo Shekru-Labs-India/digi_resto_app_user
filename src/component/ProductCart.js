@@ -364,7 +364,7 @@ const ProductCard = () => {
                     />
                   </Link>
                 </div>
-                <div className="dz-content">
+                <div className="dz-content pb-1">
                   <div
                     className="detail-content category-text"
                     style={{ position: "relative" }}
@@ -387,7 +387,7 @@ const ProductCard = () => {
                       </div>
                     </Link>
                     <i
-                      className={`${
+                      className={` product-like ${
                         menu.is_favourite
                           ? "ri-hearts-fill fs-3"
                           : "ri-heart-2-line fs-3"
@@ -397,7 +397,7 @@ const ProductCard = () => {
                         position: "absolute",
                         top: "0",
                         right: "0",
-                        fontSize: "23px",
+                       
                         cursor: "pointer",
                         color: menu.is_favourite ? "#fe0809" : "#73757b",
                       }}
@@ -467,11 +467,24 @@ const ProductCard = () => {
                       </div>
                     </div>
 
-                    <div className="col-4">
+                    
+                    {/* {popupVisible && (
+        <div className="popupCart container">
+          <p>This item is already in the cart.</p>
+        </div>
+      )} */}
+                  </div>
+                  <div className="row">
+                    <div className="col-6">
+                      <span className="customFontSize  offer-color">
+                        {menu.offer || "No "}% Off
+                      </span>
+                    </div>
+                    <div className="col-6  ">
                       {userData ? (
                         <div
                           onClick={() => handleAddToCartClick(menu)}
-                          className="cart-btn text-end"
+                          className="cart-btn text-end cart-btn-align"
                         >
                           <i
                             className={`ri-shopping-cart-${
@@ -482,18 +495,6 @@ const ProductCard = () => {
                       ) : (
                         <i className="ri-shopping-cart-2-line fs-2"></i>
                       )}
-                    </div>
-                    {/* {popupVisible && (
-        <div className="popupCart container">
-          <p>This item is already in the cart.</p>
-        </div>
-      )} */}
-                  </div>
-                  <div className="row">
-                    <div className="col-12">
-                      <span className="customFontSize  offer-color">
-                        {menu.offer || "No "}% Off
-                      </span>
                     </div>
                   </div>
                 </div>

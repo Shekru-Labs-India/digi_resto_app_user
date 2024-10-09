@@ -2247,14 +2247,14 @@ const Product = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="customFontSizeBold">
+            <span className="customFontSizeBold me-3">
               Menu{" "}
               {categories.length > 0 && (
                 <span className="small-number gray-text">
                   ({menuList.length})
                 </span>
               )}
-            </h5>
+            </span>
           </div>
         </div>
       </header>
