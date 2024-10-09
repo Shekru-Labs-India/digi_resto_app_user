@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useRef} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
@@ -20,8 +20,102 @@ const TrackOrder = () => {
   const customerId = userData ? userData.customer_id : null;
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
+
+
+
+
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [searchedMenu, setSearchedMenu] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useRef(null);
+
+  // ... existing useEffect hooks and functions ...
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+  };
+
+  useEffect(() => {
+    const fetchSearchedMenu = async () => {
+      if (!restaurantId) {
+        console.error("Restaurant ID not found in userData");
+        return;
+      }
+
+      if (
+        debouncedSearchTerm.trim().length < 3 ||
+        debouncedSearchTerm.trim().length > 10
+      ) {
+        setSearchedMenu([]);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const requestBody = {
+          restaurant_id: parseInt(restaurantId, 10),
+          keyword: debouncedSearchTerm.trim(),
+          customer_id: customerId || null,
+        };
+
+        const response = await fetch(
+          "https://menumitra.com/user_api/search_menu",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.st === 1 && Array.isArray(data.menu_list)) {
+            const formattedMenu = data.menu_list.map((menu) => ({
+              ...menu,
+              menu_name: toTitleCase(menu.menu_name),
+              is_favourite: menu.is_favourite === 1,
+              oldPrice: Math.floor(menu.price * 1.1),
+            }));
+            setSearchedMenu(formattedMenu);
+          } else {
+            console.error("Invalid data format:", data);
+          }
+        } else {
+          console.error("Response not OK:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchSearchedMenu();
+  }, [debouncedSearchTerm, restaurantId, customerId]);
+
+  const toTitleCase = (str) => {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
   };
 
   useEffect(() => {
@@ -308,11 +402,12 @@ const TrackOrder = () => {
       </ThemeProvider>
 
       <main className="page-content ">
+
+
+
         {userData ? (
           <section className="container mt-1">
-            <span className="title pb-2 customFontSizeBold pb-3">
-              Menu Details
-            </span>
+           
             <div className="row g-3">
               {menu_details.map((menu) => {
                 const oldPrice = (menu.price / (1 - menu.offer / 100)).toFixed(
@@ -410,87 +505,66 @@ const TrackOrder = () => {
           className="container  mb-5 pb-5 z-3"
           style={{ backgroundColor: "transparent" }}
         >
-          <div className="card-body mt-2 p-0 mb-5">
-            <div className="card">
-              <div className="row px-1">
-                <div className="col-12 mt-2">
-                  <div className="d-flex justify-content-between align-items-center pb-1 pt-0">
-                    {/* <span className="ps-2 fs-6 w-medium h5">Total</span> */}
-                    <span className="ps-2 customFontSizeBold fs-3 fw-medium">
-                      Total
-                    </span>
-                    <span className="pe-2 fs-3 fw-medium customFontSizeBold">
-                      {" "}
-                      ₹{orderDetails.order_details.total_total || 0}
-                    </span>
-                    {/* <span className="pe-2 fs-6 h5">
-                      ₹{orderDetails.order_details.total_total || 0}
-                    </span> */}
-                  </div>
-                  <hr className="mt-0" />
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-12">
-                  <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 customFontSizeBold gray-text">
-                      Service Charges (
-                      {orderDetails.order_details.service_charges_percent}%)
-                    </span>
-                    <span className="pe-2 customFontSizeBold">
-                      ₹{orderDetails.order_details.service_charges_amount || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-12 ">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="ps-2 customFontSizeBold gray-text">
-                      GST ({orderDetails.order_details.gst_percent}%)
-                    </span>
-                    <span className="pe-2 customFontSizeBold h5">
-                      ₹{orderDetails.order_details.gst_amount || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-12 mb-1 mt-1">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <span className="ps-2 customFontSizeBold gray-text">
-                      Discount (
-                      {orderDetails.order_details.discount_percent || 0}%)
-                    </span>
-                    <span className="pe-2 customFontSizeBold h5">
-                      ₹{orderDetails.order_details.discount_amount || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <hr className="my-2" />
-              </div>
-              <div className="row">
-                <div className="col-12">
-                  <div className="d-flex justify-content-between align-items-center fw-medium mb-1">
-                    {/* <span className="ps-2 fs-6 fw-medium h5">Grand Total</span> */}
-                    <h5 className="ps-2 customFontSizeBold fw-medium">
-                      Grand Total
-                    </h5>
-                    <h5 className="pe-2 customFontSizeBold fw-medium">
-                      {" "}
-                      ₹{orderDetails.order_details.grand_total || 0}
-                    </h5>
-                    {/* <span className="pe-2 fs-6 h5">
-                      ₹{orderDetails.order_details.grand_total || 0}
-                    </span> */}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+<div className="card-body mt-2 p-0 mb-5">
+  <div className="card mx-auto">
+    <div className="row px-1 py-1">
+      <div className="col-12">
+        <div className="d-flex justify-content-between align-items-center py-1">
+          <span className="ps-2 customFontSizeBold fw-medium">
+            Total
+          </span>
+          <span className="pe-2 customFontSizeBold fw-medium">
+            ₹{orderDetails.order_details.total_total || 0}
+          </span>
+        </div>
+        <hr className="me-3 p-0 m-0 text-primary" />
+      </div>
+      <div className="col-12 pt-0">
+        <div className="d-flex justify-content-between align-items-center py-0">
+          <span className="ps-2 customFontSize pt-1" style={{ color: "#a5a5a5" }}>
+            Service Charges ({orderDetails.order_details.service_charges_percent}%)
+          </span>
+          <span className="pe-2 customFontSize fw-medium">
+            ₹{orderDetails.order_details.service_charges_amount || 0}
+          </span>
+        </div>
+      </div>
+      <div className="col-12 mb-0 py-1">
+        <div className="d-flex justify-content-between align-items-center py-0">
+          <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+            GST ({orderDetails.order_details.gst_percent}%)
+          </span>
+          <span className="pe-2 customFontSize fw-medium text-start">
+            ₹{orderDetails.order_details.gst_amount || 0}
+          </span>
+        </div>
+      </div>
+      <div className="col-12 mb-0 pt-0 pb-1">
+        <div className="d-flex justify-content-between align-items-center py-0">
+          <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+            Discount ({orderDetails.order_details.discount_percent || 0}%)
+          </span>
+          <span className="pe-2 customFontSize">
+            ₹{orderDetails.order_details.discount_amount || 0}
+          </span>
+        </div>
+      </div>
+      <div>
+        <hr className="me-3 p-0 m-0 text-primary" />
+      </div>
+      <div className="col-12">
+        <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+          <span className="ps-2 customFontSizeBold">
+            Grand Total
+          </span>
+          <span className="pe-2 customFontSizeBold">
+            ₹{orderDetails.order_details.grand_total || 0}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       )}
       <Bottom></Bottom>

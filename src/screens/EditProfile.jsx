@@ -129,7 +129,7 @@ const EditProfile = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="customFontSizeBold">Edit Profile</h5>
+            <span className="customFontSizeBold me-3">Edit Profile</span>
           </div>
           <div className="right-content"></div>
         </div>
@@ -179,11 +179,11 @@ const EditProfile = () => {
               <div className="d-flex justify-content-center align-items-center">
                 <button
                   type="button"
-                  className="btn btn-lg btn-thin rounded-xl btn-primary py-2 px-3 mt-4"
+                  className="btn  btn-color  py-3  rounded-pill customFontSizeBold"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   onClick={handleUpdateProfile}
                 >
-                  <span className="customFontSizeBold">Save Changes</span>
+                  <span className="customFontSizeBold text-white">Save Changes</span>
                 </button>
               </div>
             </div>

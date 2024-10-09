@@ -57,7 +57,7 @@ const Profile = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <h5 className="customFontSize">Profile</h5>
+              <span className="customFontSizeBold me-3">Profile</span>
             </div>
             {isLoggedIn && (
               <div className="right-content">
