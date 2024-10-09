@@ -98,6 +98,7 @@ const NearbyArea = () => {
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
+        localStorage.removeItem("menuItems");
         const response = await fetch(
           "https://menumitra.com/user_api/get_all_menu_list_by_category",
           {

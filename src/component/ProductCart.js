@@ -38,6 +38,7 @@ const ProductCard = () => {
 
   // Sync cartItems with localStorage
   useEffect(() => {
+    localStorage.removeItem("menuItems");
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
