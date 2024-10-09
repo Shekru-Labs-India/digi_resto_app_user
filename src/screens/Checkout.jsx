@@ -301,7 +301,7 @@ const Checkout = () => {
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
-                  <h5 className="mt-2 px-2 customFontSizeBold">
+                  <h5 className="mt- px-2 customFontSizeBold">
                     <hr className=" text-primary" />
                     Grand Total{" "}
                     <span className="float-end">

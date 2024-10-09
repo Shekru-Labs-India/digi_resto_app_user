@@ -520,7 +520,7 @@ const Cart = () => {
                   state={{ cartItems: displayCartItems }}
                   className="btn btn-color customFontSize rounded-pill text-white px-5"
                 >
-                  Proceed to Buy &nbsp; <b>({displayCartItems.length} items)</b>
+                  Proceed to Buy &nbsp; <b> <span className="small-number gray-text">({displayCartItems.length} items)</span></b>
                 </Link>
               </div>
             </div>
