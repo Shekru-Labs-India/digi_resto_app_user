@@ -472,6 +472,7 @@ import 'primereact/resources/primereact.min.css';         // Core CSS
 
 
 function App() {
+  
   const restaurantCode = localStorage.getItem("restaurantCode"); // Default value
   const restaurantId = localStorage.getItem("restaurantId");
 

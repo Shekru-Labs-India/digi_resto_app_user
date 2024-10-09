@@ -232,7 +232,7 @@ const Search = () => {
       <main className="page-content p-t80 p-b40">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
-          <div className="input-group w-100 my-2 border border-muted rounded">
+          <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 gray-text "></i>
             </span>
@@ -291,23 +291,34 @@ const Search = () => {
                     <div className="customFontSizeBold">{menu.menu_name}</div>
                     <div className="row">
                       <div className="col-7 mt-1 pe-0">
+                        <span onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}>
                         <div className="mt-0">
                           <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
                           <span
                             className="category-text fs-xs fw-medium "
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
+                            
                           >
                             {menu.category_name}
                           </span>
+                          
                         </div>
+                        </span>
                       </div>
+
                       <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                      <span
+                            
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
+                          >
                         <span className="customFontSizeBold gray-text">
                           <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
                           {parseFloat(menu.rating).toFixed(1)}
                         </span>
+                        </span>
                       </div>
+
                     </div>
                     <div className="row mt-2">
                       <div className="col-6 px-0">

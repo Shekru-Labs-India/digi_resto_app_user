@@ -309,7 +309,7 @@ const ProductCard = () => {
                   color: selectedCategoryId === null ? "#ffffff" : "",
                 }}
               >
-                All ({totalMenuCount})
+                All <span className="small-number gray-text">({totalMenuCount})</span>
               </div>
             )}
 
@@ -331,7 +331,7 @@ const ProductCard = () => {
                         : "",
                   }}
                 >
-                  {category.name} ({category.menu_count})
+                  {category.name} <span className="small-number gray-text">({category.menu_count})</span>
                 </div>
               </div>
             ))}

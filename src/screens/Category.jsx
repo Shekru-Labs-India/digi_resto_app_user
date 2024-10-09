@@ -113,7 +113,7 @@ const Category = () => {
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>
-                    <div className="dz-category-items border border-success overflow-hidden rounded-top-3 d-flex flex-column">
+                    <div className="dz-category-items border border-success overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
                       <Link
                         to="/Menu"
                         onClick={() => handleCategoryClick(category)}

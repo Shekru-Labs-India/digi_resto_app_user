@@ -2289,7 +2289,7 @@ const Product = () => {
                     color: selectedCategory === null ? "#ffffff" : "",
                   }}
                 >
-                  All ({categoryCounts.All})
+                  All <span className="small-number gray-text">({categoryCounts.All})</span>
                 </div>
               )}
               {categories.map((category) => (
@@ -2310,7 +2310,7 @@ const Product = () => {
                           : "",
                     }}
                   >
-                    {category.name} ({categoryCounts[category.name] || 0})
+                    {category.name} <span className="small-number gray-text">({categoryCounts[category.name] || 0})</span>
                   </div>
                 </div>
               ))}
@@ -2323,7 +2323,7 @@ const Product = () => {
           <div className="row g-3 grid-style-1">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
-                <div className="card-item style-6">
+                <div className="card-item style-6 rounded-3">
                   <div className="dz-media">
                     <Link
                       to={`/ProductDetails/${menuItem.menu_id}`}
