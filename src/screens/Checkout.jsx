@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
-import OrderGif from "../assets/gif/order_success.gif"; // Ensure this path is correct
+import OrderGif from "../assets/gif/order_success.gif";
+import { ThemeContext } from '../context/ThemeContext.js'; // Adjust the import path as needed
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   console.log("Restaurant ID:", restaurantId);
+  const { isDarkMode } = useContext(ThemeContext);
 
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
@@ -326,9 +328,11 @@ const Checkout = () => {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
+           
             <div className="circle">
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
+            
             <span className="gray-text customFontSizeBold">Your Order Successfully Placed</span>
             <p className="gray-text customFontSizeBold">
               You have successfully made payment and placed your order.

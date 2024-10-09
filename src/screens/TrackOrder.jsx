@@ -6,6 +6,7 @@ import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
 import "../assets/css/custom.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
+import { ThemeProvider } from '../context/ThemeContext.js';
 
 const TrackOrder = () => {
   // Define displayCartItems
@@ -130,22 +131,14 @@ const TrackOrder = () => {
 
     // Array of month abbreviations
     const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
-
+    
+    const currentMonth = new Date().getMonth(); // 0-11
+    const monthIndex = month ? parseInt(month, 10) - 1 : currentMonth;
     // Get month abbreviation
-    const monthAbbr = monthNames[parseInt(month, 10) - 1];
+    const monthAbbr = monthNames[monthIndex] || monthNames[currentMonth];
 
     return `${formattedHours}:${formattedMinutes} ${period} ${day}-${monthAbbr}-${year}`;
   };
@@ -234,41 +227,42 @@ const TrackOrder = () => {
                 </div>
               </div>
               <div className="order-details-row">
-  <div className="restaurant-info me-0">
-    <i className="ri-store-2-line pe-2 customFontSizeBold "></i>
-    <span className="restaurant-name customFontSizeBold">
-      {order_details.restaurant_name.toUpperCase()}
-    </span>
-    <i className="ri-user-location-line ps-0 pe-1 customFontSizeBold "></i>
-    <span className="table-number customFontSizeBold">
-      {order_details.table_number}
-    </span>
-  </div>
-  <div className="menu-info">
-    <i className="ri-bowl-line pe-2 customFontSizeBold gray-text"></i>
-    <span className="customFontSizeBold gray-text">
-      {order_details.menu_count} Menu
-    </span>
-  </div>
-  <div className="price-info">
-    <span className="text-info customFontSizeBold fw-medium">
-      ₹{order_details.grand_total}
-    </span>
-    <span className="text-decoration-line-through ms-2 gray-text customFontSizeBold">
-      ₹
-      {(
-        order_details.grand_total /
-          (1 - order_details.discount_percent / 100) ||
-        order_details.grand_total
-      ).toFixed(2)}
-    </span>
-  </div>
-</div>
+                <div className="restaurant-info me-0">
+                  <i className="ri-store-2-line pe-2 customFontSizeBold "></i>
+                  <span className="restaurant-name customFontSizeBold">
+                    {order_details.restaurant_name.toUpperCase()}
+                  </span>
+                  <i className="ri-user-location-line ps-0 pe-1 customFontSizeBold "></i>
+                  <span className="table-number customFontSizeBold">
+                    {order_details.table_number}
+                  </span>
+                </div>
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2 customFontSizeBold gray-text"></i>
+                  <span className="customFontSizeBold gray-text">
+                    {order_details.menu_count} Menu
+                  </span>
+                </div>
+                <div className="price-info">
+                  <span className="text-info customFontSizeBold fw-medium">
+                    ₹{order_details.grand_total}
+                  </span>
+                  <span className="text-decoration-line-through ms-2 gray-text customFontSizeBold">
+                    ₹
+                    {(
+                      order_details.grand_total /
+                        (1 - order_details.discount_percent / 100) ||
+                      order_details.grand_total
+                    ).toFixed(2)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <ThemeProvider>
       {/* Conditional rendering of the green card or OrderGif based on order status */}
       <div className="container custom-container" style={{ paddingTop: "1px" }}>
         {isCompleted ? (
@@ -310,6 +304,8 @@ const TrackOrder = () => {
           </div>
         )}
       </div>
+
+      </ThemeProvider>
 
       <main className="page-content ">
         {userData ? (
