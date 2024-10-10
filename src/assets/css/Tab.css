@@ -1,0 +1,46 @@
+/* Accordion styles */
+
+.tab {
+  width: 80%;
+  overflow: hidden;
+}
+
+.tab input[type="checkbox"] {
+  display: none;
+}
+
+.tab-label {
+  display: flex;
+  cursor: pointer;
+  /* Icon */
+}
+
+.tab-label::before {
+  content: "\276F"; /* Right arrow */
+  width: 20px;
+  text-align: center;
+  transition: all 0.35s;
+}
+
+.tab-content {
+  max-height: 0;
+  padding: 0 1em;
+  transition: all 0.35s;
+}
+
+.tab-close {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1em;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+input:checked + .tab-label::before {
+  transform: rotate(90deg); /* Rotate arrow on checkbox check */
+}
+
+input:checked ~ .tab-content {
+  max-height: 100vh; /* Expand the content */
+  padding: 1em;
+}

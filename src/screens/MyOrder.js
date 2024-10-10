@@ -4,6 +4,7 @@ import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
+import "../assets/css/Tab.css"; 
 
 const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -357,6 +358,7 @@ const MyOrder = () => {
 
 const OrdersTab = ({ orders, type }) => {
   const navigate = useNavigate();
+  const [isChecked, setIsChecked] = useState(false);
 
   const calculateOldPrice = (totalBill) => {
     // Calculate the old price as 10% more than the total bill
@@ -401,7 +403,22 @@ const OrdersTab = ({ orders, type }) => {
       ) : (
         orders.map((order) => (
           <>
-            <div className="">Date from api</div>
+          <div className="tab">
+              <input
+                type="checkbox"
+                id="chck1"
+                checked={isChecked}
+                onChange={() => setIsChecked(!isChecked)}
+              />
+              <label className="tab-label" htmlFor="chck1">
+                10 Oct 2024
+              </label>
+              {isChecked && (
+                <div className="tab-content">
+                  
+                </div>
+              )}
+            </div>
             <div
               key={order.order_number}
               className="card mb-3"
@@ -448,6 +465,7 @@ const OrdersTab = ({ orders, type }) => {
                 </div>
               </div>
             </div>
+            
           </>
         ))
       )}
