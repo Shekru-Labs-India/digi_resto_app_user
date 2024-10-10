@@ -234,7 +234,7 @@ const ProductCard = () => {
     if (isMenuItemInCart(menu.menu_id)) {
       // Show toast notification for item already in cart
       toast.current.show({
-        severity: "warn",
+        severity: "error",
         summary: "Item Already in Cart",
         detail: menu.name,
         life: 3000,

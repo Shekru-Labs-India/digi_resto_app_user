@@ -109,7 +109,7 @@ const Wishlist = () => {
     if (isMenuItemInCart(item.menu_id)) {
       // Show toast notification for item already in cart
       toast.current.show({
-        severity: "warn", // Yellow color for warning
+        severity: "error", // Yellow color for warning
         summary: "Item Already in Cart",
         detail: item.menu_name,
         life: 3000,

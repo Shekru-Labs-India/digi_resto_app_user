@@ -115,23 +115,23 @@ const OfferBanner = () => {
     };
   }, [restaurantId]);
 
-  useEffect(() => {
-    if (banners.length > 0) {
-      const swiper = new Swiper(".featured-swiper2", {
-        slidesPerView: "auto",
-        spaceBetween: 20,
-        loop: true,
-        autoplay: {
-          delay: 2500,
-          disableOnInteraction: false,
-        },
-      });
+  // useEffect(() => {
+  //   if (banners.length > 0) {
+  //     const swiper = new Swiper(".featured-swiper2", {
+  //       slidesPerView: "auto",
+  //       spaceBetween: 20,
+  //       loop: true,
+  //       autoplay: {
+  //         delay: 2500,
+  //         disableOnInteraction: false,
+  //       },
+  //     });
 
-      return () => {
-        swiper.destroy();
-      };
-    }
-  }, [banners]);
+  //     return () => {
+  //       swiper.destroy();
+  //     };
+  //   }
+  // }, [banners]);
 
   useEffect(() => {
     if (menuLists.length > 0) {
@@ -164,7 +164,7 @@ const OfferBanner = () => {
       ) : (
         <>
           {/* Banner Section */}
-          <div className="swiper featured-swiper2 ">
+          {/* <div className="swiper featured-swiper2 ">
             <div className="swiper-wrapper">
               {banners.map((bannerUrl, index) => (
                 <div className="swiper-slide" key={index}>
@@ -182,7 +182,7 @@ const OfferBanner = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Menu Items Section */}
           <div className="swiper featured-swiper mt-3">

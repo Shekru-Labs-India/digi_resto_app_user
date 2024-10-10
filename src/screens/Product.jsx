@@ -2168,7 +2168,7 @@ const Product = () => {
 
     if (isAlreadyInCart) {
       toast.current.show({
-        severity: "info",
+        severity: "error",
         summary: "Item in Cart",
         detail: "This item is already in the cart!",
         life: 3000,

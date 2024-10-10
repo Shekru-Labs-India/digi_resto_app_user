@@ -210,6 +210,16 @@ const NearbyArea = () => {
       navigate("/Signinscreen");
       return;
     }
+    if (isMenuItemInCart(menuItem.menu_id)) {
+      // Show toast notification for item already in cart
+      toast.current.show({
+        severity: "error",
+        summary: "Item Already in Cart",
+        detail: menuItem.name,
+        life: 3000,
+      });
+      return;
+    }
 
     try {
       const response = await fetch(
