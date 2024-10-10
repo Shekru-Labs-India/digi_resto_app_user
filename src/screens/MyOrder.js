@@ -4,7 +4,7 @@ import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
-import "../assets/css/Tab.css"; 
+import "../assets/css/Tab.css";
 
 const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -106,12 +106,11 @@ const MyOrder = () => {
       document.body.classList.remove("theme-dark");
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
-  
 
-    const toTitleCase = (text) => {
-      if (!text) return "";
-      return text.replace(/\b\w/g, (char) => char.toUpperCase());
-    };
+  const toTitleCase = (text) => {
+    if (!text) return "";
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   return (
     <div className="page-wrapper">
@@ -359,7 +358,12 @@ const MyOrder = () => {
 const OrdersTab = ({ orders, type }) => {
   const navigate = useNavigate();
   const [checkedItems, setCheckedItems] = useState({});
-  
+
+  useEffect(() => {
+    // Reset checkedItems when orders or type changes
+    setCheckedItems({});
+  }, [orders, type]);
+
   const toggleChecked = (date) => {
     setCheckedItems((prev) => ({
       ...prev,
@@ -371,12 +375,23 @@ const OrdersTab = ({ orders, type }) => {
     navigate(`/TrackOrder/${orderNumber}`);
   };
 
+  const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return "";
+    const [date, time] = dateTimeString.split(" ");
+    if (!time || !date) return dateTimeString;
+    const [hours, minutes] = time.split(":");
+    return `${hours}:${minutes} ${date}`;
+  };
+
   return (
     <div className="row g-1">
       {Object.keys(orders).length === 0 ? (
-        <div className="d-flex justify-content-center align-items-center flex-column" style={{ height: "80vh" }}>
+        <div
+          className="d-flex justify-content-center align-items-center flex-column"
+          style={{ height: "80vh" }}
+        >
           <p className="custom_font_size_bold fw-semibold gray-text">
-            You haven't placed any orders yet.
+            You haven't placed any {type} orders yet.
           </p>
           <Link to="/Menu" className="mt-2 custom_font_size_bold fw-semibold">
             Explore our menus
@@ -384,24 +399,35 @@ const OrdersTab = ({ orders, type }) => {
         </div>
       ) : (
         Object.entries(orders).map(([date, dateOrders]) => (
-          <div className="tab" key={date}>
+          <div className="tab" key={`${date}-${type}`}>
             <input
               type="checkbox"
-              id={`chck${date}`}
-              checked={checkedItems[date] || false}
-              onChange={() => toggleChecked(date)}
+              id={`chck${date}-${type}`}
+              checked={checkedItems[`${date}-${type}`] || false}
+              onChange={() => toggleChecked(`${date}-${type}`)}
             />
-            <label className="tab-label" htmlFor={`chck${date}`}>
+            <label className="tab-label" htmlFor={`chck${date}-${type}`}>
               <span>{date}</span>
               <span className="">
-                <i className="ri-arrow-down-s-line"></i>
-                <span className="gray-text ps-2 small-number">{dateOrders.length}</span>
+                <span className="gray-text ps-2 pe-2 small-number">
+                  {dateOrders.length}
+                </span>
+                <span className="icon-circle">
+                  <i
+                    className={`ri-arrow-down-s-line ${
+                      checkedItems[`${date}-${type}`] ? "rotate_icon" : ""
+                    }`}
+                  ></i>
+                </span>
               </span>
             </label>
             <div className="tab-content">
               {dateOrders.map((order) => (
                 <div className="custom-card my-2" key={order.order_number}>
-                  <div className="card-body" onClick={() => handleOrderClick(order.order_number)}>
+                  <div
+                    className="card-body"
+                    onClick={() => handleOrderClick(order.order_number)}
+                  >
                     <div className="row align-items-center">
                       <div className="col-4">
                         <span className="card-title mb-1 custom_font_size_bold">
@@ -428,7 +454,9 @@ const OrdersTab = ({ orders, type }) => {
                       <div className="menu-info">
                         <i className="ri-bowl-line pe-2 gray-text"></i>
                         <span className="gray-text">
-                          {order.menu_count === 0 ? "No ongoing orders" : `${order.menu_count} Menu`}
+                          {order.menu_count === 0
+                            ? "No orders"
+                            : `${order.menu_count} Menu`}
                         </span>
                       </div>
                       <div className="price-info">
@@ -444,8 +472,9 @@ const OrdersTab = ({ orders, type }) => {
           </div>
         ))
       )}
-      <Bottom />
+      <Bottom></Bottom>
     </div>
+    
   );
 };
 
