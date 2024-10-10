@@ -1,16 +1,22 @@
 
+
+
+
+
+.notes-ul{
+  margin-top: 40px;
+}
+
+
+.notes-height{
+  height: 60px;
+}
+
 .dotted-line{
   border: none;
   border-top: 2px dotted #0a795b;
   background-color: transparent;
 }
-
-
-
-
-
-
-
 
 
 .customFontSize{

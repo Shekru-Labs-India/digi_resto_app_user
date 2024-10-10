@@ -4,7 +4,7 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import OrderGif from "../assets/gif/order_success.gif";
-import { ThemeContext } from '../context/ThemeContext.js'; // Adjust the import path as needed
+import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -120,10 +120,6 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
-    
-
-    
-
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -180,8 +176,6 @@ const Checkout = () => {
     navigate("/MyOrder");
   };
 
- 
-
   return (
     <div className="page-wrapper full-height">
       <header className="header header-fixed style-3">
@@ -205,7 +199,7 @@ const Checkout = () => {
         <div className="container">
           <div className="dz-flex-box">
             <ul className="dz-list-group">
-              <div className="mb-3">
+              <div className=" notes-height">
                 <label className="customFontSizeBold pb-2 ps-2" htmlFor="notes">
                   Additional Notes:
                 </label>
@@ -218,15 +212,17 @@ const Checkout = () => {
                   value={notes}
                   onChange={handleNotesChange}
                 ></textarea>
-                {validationMessage && (
-                  <div className="text-danger mt-2">{validationMessage}</div>
-                )}
+                {/* {validationMessage && (
+                  <div className="text-danger mb-3 ms-1 mt-2">
+                    {validationMessage}
+                  </div>
+                )} */}
               </div>
-              <ul className="ms-3 customFontSizeBold">
-                <li className="my-2 gray-text">
+              <ul className="ms-2 customFontSizeBold  notes-ul">
+                <li className=" gray-text">
                   &bull; Make mutton thali a bit less spicy
                 </li>
-                <li className="my-2 gray-text">
+                <li className="gray-text ">
                   &bull; Make my panipuri more spicy
                 </li>
               </ul>
@@ -293,30 +289,42 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 pt-0">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize pt-1" style={{ color: "#a5a5a5" }}>
-                      Service Charges ({serviceChargesPercent}%)
+                    <span className="ps-2 customFontSize pt-1 gray-text">
+                      Service Charges{" "}
+                      <span className="gray-text small-number">
+                        {" "}
+                        ({serviceChargesPercent || 0}% )
+                      </span>
                     </span>
-                    <span className="pe-2 customFontSize fw-medium">
+                    <span className="pe-2 customFontSize gray-text">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 py-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
-                      GST ({gstPercent}%)
+                    <span className="ps-2 customFontSize gray-text">
+                      GST{" "}
+                      <span className="gray-text small-number">
+                        {" "}
+                        ({gstPercent || 0}% )
+                      </span>
                     </span>
-                    <span className="pe-2 customFontSize fw-medium text-start">
+                    <span className="pe-2 customFontSize gray-text text-start">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 pt-0 pb-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
-                      Discount ({discountPercent}%)
+                    <span className="ps-2 customFontSize gray-text">
+                      Discount{" "}
+                      <span className="gray-text small-number">
+                        {" "}
+                        ({discountPercent || 0}% )
+                      </span>
                     </span>
-                    <span className="pe-2 customFontSize">
+                    <span className="pe-2 customFontSize gray-text">
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
@@ -326,9 +334,7 @@ const Checkout = () => {
                 </div>
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 customFontSizeBold">
-                      Grand Total
-                    </span>
+                    <span className="ps-2 customFontSizeBold">Grand Total</span>
                     <span className="pe-2 customFontSizeBold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
@@ -352,16 +358,20 @@ const Checkout = () => {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
-           
             <div className="circle">
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
-            
-            <span className="gray-text customFontSizeBold">Your Order Successfully Placed</span>
+
+            <span className="gray-text customFontSizeBold">
+              Your Order Successfully Placed
+            </span>
             <p className="gray-text customFontSizeBold">
               You have successfully made payment and placed your order.
             </p>
-            <button className="btn btn-primary rounded-pill  mt-3 customFontSizeBold" onClick={closePopup}>
+            <button
+              className="btn btn-primary rounded-pill  mt-3 customFontSizeBold"
+              onClick={closePopup}
+            >
               View Order
             </button>
           </div>
