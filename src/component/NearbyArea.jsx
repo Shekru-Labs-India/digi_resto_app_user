@@ -210,6 +210,16 @@ const NearbyArea = () => {
       navigate("/Signinscreen");
       return;
     }
+    if (isMenuItemInCart(menuItem.menu_id)) {
+      // Show toast notification for item already in cart
+      toast.current.show({
+        severity: "error",
+        summary: "Item Already in Cart",
+        detail: menuItem.name,
+        life: 3000,
+      });
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -277,7 +287,7 @@ const NearbyArea = () => {
       <div className="title-bar1 align-items-start mb-5">
         <div className="left">
           {menuItems.length > 0 && (
-            <h4 className="title mb-1 customFontSizeBold">Special Menu</h4>
+            <h4 className="title mb-1 custom_font_size_bold">Special Menu</h4>
           )}
         </div>
       </div>
@@ -344,7 +354,7 @@ const NearbyArea = () => {
                           }}
                         ></i>
                       </div>
-                      <span className="customFontSizeBold text-wrap">
+                      <span className="custom_font_size_bold text-wrap">
                         <Link
                           to={`/ProductDetails/${menuItem.menu_id}`}
                           state={{ menu_cat_id: menuItem.menu_cat_id }}
@@ -359,8 +369,8 @@ const NearbyArea = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
-                          <span className="fs-6 fw-semibold gray-text ms-1">
+                          <i className="ri-star-half-line fs-6  ratingStar"></i>
+                          <span className="fs-6 fw-semibold gray-text ">
                             {menuItem.rating}
                           </span>
                         </div>
@@ -368,7 +378,7 @@ const NearbyArea = () => {
                       <div className="">
                         <div className="row">
                           <div className="col-9">
-                            <p className="mb-2 customFontSize fw-medium">
+                            <p className="mb-2 custom_font_size fw-medium">
                               <Link
                                 to={`/ProductDetails/${menuItem.menu_id}`}
                                 state={{ menu_cat_id: menuItem.menu_cat_id }}
@@ -376,7 +386,7 @@ const NearbyArea = () => {
                                 <span className="ms-0 me-2 text-info">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="gray-text customFontSize text-decoration-line-through">
+                                <span className="gray-text custom_font_size text-decoration-line-through">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </Link>
@@ -398,7 +408,7 @@ const NearbyArea = () => {
                       </div>
                       <div className="row">
                         <div className="col-12">
-                          <span className="customFontSize offer-color">
+                          <span className="custom_font_size offer-color">
                             {menuItem.offer || "No "}% Off
                           </span>
                         </div>

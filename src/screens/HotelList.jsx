@@ -77,31 +77,31 @@ const HotelList = () => {
                     <div className="col-12">
                       <div className="row mt-2">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-store-2-line customFontSizeBold"></i>
+                          <i className="ri-store-2-line custom_font_size_bold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className=" customFontSizeBold m-0">
-                            {hotel.restaurant_name}
+                          <span className="custom_font_size_bold m-0">
+                            {hotel.restaurant_name.toUpperCase()}
                           </span>
                         </div>
                       </div>
                       <div className="row mt-1">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-phone-line text-primary customFontSizeBold"></i>
+                          <i className="ri-phone-line text-primary custom_font_size_bold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="text-primary customFontSizeBold">
+                          <span className="text-primary custom_font_size_bold">
                             {hotel.mobile}
                           </span>
                         </div>
                       </div>
                       <div className="row mt-1 pb-1">
                         <div className="col-1">
-                          <i className="ri-map-pin-line gray-text customFontSizeBold"></i>
+                          <i className="ri-map-pin-line gray-text custom_font_size_bold"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="gray-text customFontSizeBold">
-                            {hotel.address}
+                          <span className="gray-text custom_font_size_bold">
+                            {hotel.address.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
                           </span>
                         </div>
                       </div>

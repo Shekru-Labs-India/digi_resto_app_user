@@ -57,7 +57,7 @@ const Profile = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <span className="customFontSizeBold me-3">Profile</span>
+              <span className="custom_font_size_bold me-3">Profile</span>
             </div>
             {isLoggedIn && (
               <div className="right-content">
@@ -75,7 +75,7 @@ const Profile = () => {
               <div className="main-profile">
                 <div className="d-flex align-items-center">
                   <h4 className="name mb-0">
-                    <div className="customFontSizeBold">
+                    <div className="custom_font_size_bold">
                       <i
                         className={
                           isLoggedIn
@@ -99,7 +99,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-bowl-line me-2 fs-2"></i>
-                      <span className="customFontSize">Menu</span>
+                      <span className="custom_font_size">Menu</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -108,7 +108,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-drinks-2-line me-2 fs-2"></i>
-                      <span className="customFontSize">My Order</span>
+                      <span className="custom_font_size">My Order</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -117,7 +117,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-shopping-cart-line me-2 fs-2"></i>
-                      <span className="customFontSize">Cart</span>
+                      <span className="custom_font_size">Cart</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -126,7 +126,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-heart-2-line me-2 fs-2"></i>
-                      <span className="customFontSize">Favourite</span>
+                      <span className="custom_font_size">Favourite</span>
                     </Link>
                   </li>
                 </ul>
@@ -135,7 +135,7 @@ const Profile = () => {
                 <div className="container p-0">
                   <Link to="/EditProfile" className="item-content item-link">
                     <div className="title-bar">
-                      <span className=" mb-0 customFontSizeBold  ">
+                      <span className=" mb-0 custom_font_size_bold  ">
                         Account Settings
                       </span>
                     </div>
@@ -144,7 +144,7 @@ const Profile = () => {
                         {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
                         <i className="ri-user-3-line fs-3"></i>
                       </div>
-                      <div className="col text-start px-1 customFontSizeBold">
+                      <div className="col text-start px-1 custom_font_size_bold">
                         Edit Profile
                       </div>
                       <div className="col-auto text-end ms-auto">
@@ -158,11 +158,11 @@ const Profile = () => {
           </div>
         </main>
         <div className="text-center mt-6 powered-by">
-          <div className="gray-text customFontSize">Powered by </div>
-          <div className="gray-text customFontSize">
+          <div className="gray-text custom_font_size">Powered by </div>
+          <div className="gray-text custom_font_size">
             Shekru Labs India Pvt. Ltd.
           </div>
-          <div className="gray-text customFontSize">v1.1</div>
+          <div className="gray-text custom_font_size">v1.1</div>
         </div>
       </>
     );

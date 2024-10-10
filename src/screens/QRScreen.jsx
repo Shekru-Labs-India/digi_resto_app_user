@@ -3,6 +3,7 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 import { Toast } from "primereact/toast"; // Import Toast from PrimeReact
 import HotelList from "./HotelList";
 import OverlayIcon from "../assets/google lens.svg"; // Import the SVG
+import logo from "../assets/logos/mmua_transparent.png";
 
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
@@ -64,7 +65,10 @@ const QRScanner = () => {
   return (
     <div className="container-fluid bg-light vh-100 d-flex flex-column align-items-center">
       <Toast ref={toast} position="bottom-center" /> {/* Add Toast component */}
-      <h4 className="text-dark mt-3">MenuMitra</h4>
+      <div className="d-flex align-items-center mt-3">
+        <img src={logo} alt="logo" className=" me-3" width="30" height="30" />
+        <h4 className="text-dark">MenuMitra</h4>
+      </div>
       {!showCamera && ( // Conditionally render the button
         <button
           className="btn btn-primary my-3 rounded-pill"

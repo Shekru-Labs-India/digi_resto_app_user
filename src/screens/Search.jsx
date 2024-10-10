@@ -222,7 +222,7 @@ const Search = () => {
               <i className="ri-arrow-left-line fs-3"></i>
             </div>
             <div className="mid-content">
-              <span className="customFontSizeBold me-5">Search</span>
+              <span className="custom_font_size_bold me-5">Search</span>
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@ const Search = () => {
             </span>
             <input
               type="search"
-              className="form-control bg-white ps-2 customFontSizeBold"
+              className="form-control bg-white ps-2 custom_font_size_bold"
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
@@ -261,7 +261,7 @@ const Search = () => {
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
               <div
-                className="customFontSizeBold gray-text"
+                className="custom_font_size_bold gray-text"
                 onClick={handleClearAll}
               >
                 Clear All
@@ -272,111 +272,117 @@ const Search = () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div className="card mb-3 rounded-4" key={menu.menu_id}>
-              <div className="card-body py-0">
-                <div className="row ">
-                  <div className="col-3 px-0">
-                    <img
-                      src={menu.image || images}
-                      alt={menu.menu_name}
-                      className="img-fluid rounded-4"
-                      style={{ width: "100px", height: "108px" }}
-                      onError={(e) => {
-                        e.target.src = images;
-                      }}
-                      onClick={() => handleMenuClick(menu.menu_id)}
-                    />
-                  </div>
-                  <div className="col-8 pt-3 pb-0 pe-0 ps-2 ">
-                    <div className="customFontSizeBold">{menu.menu_name}</div>
-                    <div className="row">
-                      <div className="col-7 mt-1 pe-0">
-                        <span
-                          onClick={() => handleMenuClick(menu.menu_id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <div className="mt-0">
-                            <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
-                            <span className="category-text fs-xs fw-medium ">
-                              {menu.category_name}
-                            </span>
-                          </div>
-                        </span>
-                      </div>
-
-                      <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                        <span
-                          onClick={() => handleMenuClick(menu.menu_id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <span className="customFontSizeBold gray-text">
-                            <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
-                            {parseFloat(menu.rating).toFixed(1)}
-                          </span>
-                        </span>
-                      </div>
+            <>
+              <div className="card mb-3 rounded-4" key={menu.menu_id}>
+                <div className="card-body py-0">
+                  <div className="row ">
+                    <div className="col-3 px-0">
+                      <img
+                        src={menu.image || images}
+                        alt={menu.menu_name}
+                        className="img-fluid rounded-4"
+                        style={{ width: "100px", height: "108px" }}
+                        onError={(e) => {
+                          e.target.src = images;
+                        }}
+                        onClick={() => handleMenuClick(menu.menu_id)}
+                      />
                     </div>
-                    <div className="row mt-3">
-                      <div className="col-8 px-0">
-                        <span
-                          className="mb-0 mt-1 customFontSize text-start fw-medium"
-                          onClick={() => handleMenuClick(menu.menu_id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <span className="ms-3 me-1 text-info">
-                            ₹{menu.price}
+                    <div className="col-8 pt-3 pb-0 pe-0 ps-2 ">
+                      <div className="custom_font_size_bold">{menu.menu_name}</div>
+                      <div className="row">
+                        <div className="col-7 mt-1 pe-0">
+                          <span
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="mt-0">
+                              <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
+                              <span className="category-text fs-xs fw-medium ">
+                                {menu.category_name}
+                              </span>
+                            </div>
                           </span>
-                          <span className="gray-text customFontSize  old-price text-decoration-line-through">
-                            ₹{menu.oldPrice || menu.price}
-                          </span>
-                        </span>
+                        </div>
 
-                        <span
-                          className="mb-0 mt-1 ms-3 customFontSize offerSearch"
-                          onClick={() => handleMenuClick(menu.menu_id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <span className="customFontSize px-0 text-start offer-color offer ">
-                            {menu.offer || "No "}% Off
+                        <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                          <span
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <span className="custom_font_size_bold gray-text">
+                              <i className="ri-star-half-line ms-4  ratingStar"></i>
+                              {parseFloat(menu.rating).toFixed(1)}
+                            </span>
                           </span>
-                        </span>
+                        </div>
                       </div>
-                      <div className="col-4 text-center p-0 clickable-icon search-like">
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.is_favourite
-                                ? "ri-hearts-fill fs-3"
-                                : "ri-heart-2-line fs-3"
-                            }`}
-                            style={{
-                              color: menu.is_favourite ? "red" : "",
+                      <div className="row mt-3">
+                        <div className="col-8 px-0">
+                          <span
+                            className="mb-0 mt-1 custom_font_size text-start fw-medium"
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <span className="ms-3 me-1 text-info">
+                              ₹{menu.price}
+                            </span>
+                            <span className="gray-text custom_font_size  old-price text-decoration-line-through">
+                              ₹{menu.oldPrice || menu.price}
+                            </span>
+                          </span>
+
+                          <span
+                            className="mb-0 mt-1 ms-3 custom_font_size offerSearch"
+                            onClick={() => handleMenuClick(menu.menu_id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <span className="custom_font_size px-0 text-start offer-color offer ">
+                              {menu.offer || "No "}% Off
+                            </span>
+                          </span>
+                        </div>
+                        <div className="col-4 text-center p-0 clickable-icon search-like">
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLikeClick(menu.menu_id);
                             }}
-                          ></i>
+                          >
+                            <i
+                              className={`${
+                                menu.is_favourite
+                                  ? "ri-hearts-fill fs-3"
+                                  : "ri-heart-2-line fs-3"
+                              }`}
+                              style={{
+                                color: menu.is_favourite ? "red" : "",
+                              }}
+                            ></i>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-1 px-0 pt-2">
-                    <span
-                      className="text-muted fs-4"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveItem(menu.menu_id);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i className="ri-close-line fs-4 icon-adjust"></i>
-                    </span>
+                    <div className="col-1 px-0 pt-2">
+                      <span
+                        className="text-muted fs-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveItem(menu.menu_id);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <i className="ri-close-line fs-4"></i>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+
+             
+
+             
+            </>
           ))}
         </div>
       </main>

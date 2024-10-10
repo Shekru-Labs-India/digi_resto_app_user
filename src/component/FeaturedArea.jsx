@@ -144,7 +144,7 @@ const FeaturedArea = () => {
                         {" "}
                         <p className="fs-5 fw-semibold">
                           <i
-                            class="ri-star-half-line pe-2 ratingStar"
+                            class="ri-star-half-line ratingStar"
                   
                           ></i>
                           {menu.rating}

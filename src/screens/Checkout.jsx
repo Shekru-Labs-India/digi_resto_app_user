@@ -190,7 +190,7 @@ const Checkout = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="customFontSizeBold pe-3">Checkout</h5>
+            <h5 className="custom_font_size_bold pe-3">Checkout</h5>
           </div>
         </div>
       </header>
@@ -204,7 +204,7 @@ const Checkout = () => {
                   Additional Notes:
                 </label>
                 <textarea
-                  className="form-control dz-textarea customFontSizeBold"
+                  className="form-control dz-textarea custom_font_size_bold"
                   name="notes"
                   id="notes"
                   rows="4"
@@ -235,7 +235,7 @@ const Checkout = () => {
                     cartItems.map((item, index) => (
                       <div className="row justify-content-center" key={index}>
                         <div className="col-6 pe-0   pb-1">
-                          <span className="mb-0 customFontSizeBold">
+                          <span className="mb-0 custom_font_size_bold">
                             {item.menu_name}
                           </span>
                           <div className="">
@@ -245,20 +245,20 @@ const Checkout = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="col-1 customFontSizeBold text-end px-0">
+                        <div className="col-1 custom_font_size_bold text-end px-0">
                           x {item.quantity}
                         </div>
                         <div className="col-5 text-end ps-0 pe-4">
                           <p className="mb-2 fs-4 fw-medium">
-                            <span className="ms-0 me-2 text-info customFontSizeBold">
+                            <span className="ms-0 me-2 text-info custom_font_size_bold">
                               ₹{item.price}
                             </span>
 
-                            <span className="gray-text customFontSizeBold text-decoration-line-through">
+                            <span className="gray-text custom_font_size_bold text-decoration-line-through">
                               ₹ {item.oldPrice || item.price}
                             </span>
                             <div>
-                              <span className="fs-6 ps-2 offer-color customFontSizeBold">
+                              <span className="fs-6 ps-2 offer-color custom_font_size_bold">
                                 {item.offer || "No "}% Off
                               </span>
                             </div>
@@ -267,7 +267,7 @@ const Checkout = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="customFontSizeBold">
+                    <div className="custom_font_size_bold">
                       No items in the cart.
                     </div>
                   )}
@@ -278,10 +278,10 @@ const Checkout = () => {
               <div className="row px-1 py-1">
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 customFontSizeBold fw-medium">
+                    <span className="ps-2 custom_font_size_bold fw-medium">
                       Total
                     </span>
-                    <span className="pe-2 customFontSizeBold fw-medium">
+                    <span className="pe-2 custom_font_size_bold fw-medium">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </div>
@@ -345,7 +345,7 @@ const Checkout = () => {
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-color rounded-pill mt-3 customFontSizeBold text-white"
+                className="btn btn-color rounded-pill mt-3 custom_font_size_bold text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order

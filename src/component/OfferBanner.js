@@ -115,23 +115,23 @@ const OfferBanner = () => {
     };
   }, [restaurantId]);
 
-  useEffect(() => {
-    if (banners.length > 0) {
-      const swiper = new Swiper(".featured-swiper2", {
-        slidesPerView: "auto",
-        spaceBetween: 20,
-        loop: true,
-        autoplay: {
-          delay: 2500,
-          disableOnInteraction: false,
-        },
-      });
+  // useEffect(() => {
+  //   if (banners.length > 0) {
+  //     const swiper = new Swiper(".featured-swiper2", {
+  //       slidesPerView: "auto",
+  //       spaceBetween: 20,
+  //       loop: true,
+  //       autoplay: {
+  //         delay: 2500,
+  //         disableOnInteraction: false,
+  //       },
+  //     });
 
-      return () => {
-        swiper.destroy();
-      };
-    }
-  }, [banners]);
+  //     return () => {
+  //       swiper.destroy();
+  //     };
+  //   }
+  // }, [banners]);
 
   useEffect(() => {
     if (menuLists.length > 0) {
@@ -163,28 +163,6 @@ const OfferBanner = () => {
         </div>
       ) : (
         <>
-          {/* Banner Section */}
-          <div className="swiper featured-swiper2 ">
-            <div className="swiper-wrapper">
-              {banners.map((bannerUrl, index) => (
-                <div className="swiper-slide" key={index}>
-                  <div className="dz-media rounded-md">
-                    <img
-                      src={bannerUrl}
-                      style={{
-                        width: "100%",
-                        height: "160px",
-                        borderRadius: "10px",
-                      }}
-                      alt={`Banner ${index + 1}`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Menu Items Section */}
           <div className="swiper featured-swiper mt-3">
             <div className="swiper-wrapper">
               {menuLists.map((menu) => (
@@ -209,26 +187,26 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content d-block">
-                        <span className="customFontSize ms-0 text-wrap mb-0">
+                        <span className="custom_font_size_bold ms-0 text-wrap mb-0">
                           {menu.name}
                         </span>
                         <ul className="dz-meta mt-2">
-                          <p className="mb-2 customFontSize fw-medium">
+                          <p className="mb-2 custom_font_size fw-medium">
                             <span className="ms-0 me-2 text-info">
                               ₹{menu.price}
                             </span>
-                            <span className="gray-text customFontSize text-decoration-line-through">
+                            <span className="gray-text custom_font_size text-decoration-line-through">
                               ₹{menu.oldPrice || menu.price}
                             </span>
                           </p>
                         </ul>
                         <div className="row">
                           <div className="col-12">
-                            <span className="customFontSize offer-color">
+                            <span className="custom_font_size offer-color">
                               {menu.offer || "No "}% Off
                             </span>
-                            <span className="customFontSize fw-semibold gray-text ps-4">
-                              <i className="ri-star-half-line pe-2 ratingStar"></i>
+                            <span className="custom_font_size fw-semibold gray-text ms-3">
+                              <i className="ri-star-half-line ratingStar"></i>
                               {menu.rating}
                             </span>
                           </div>

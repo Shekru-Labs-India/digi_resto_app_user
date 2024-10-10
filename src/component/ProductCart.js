@@ -234,7 +234,7 @@ const ProductCard = () => {
     if (isMenuItemInCart(menu.menu_id)) {
       // Show toast notification for item already in cart
       toast.current.show({
-        severity: "warn",
+        severity: "error",
         summary: "Item Already in Cart",
         detail: menu.name,
         life: 3000,
@@ -285,14 +285,14 @@ const ProductCard = () => {
   return (
     <div>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
-      <div className="dz-box">
+      <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
-            <span className="title p-r50 customFontSizeBold">
+            <span className="title p-r50 custom_font_size_bold">
               Menu Category
             </span>
             <Link to="/Category">
-              <i className="ri-arrow-right-line customFontSize"></i>
+              <i className="ri-arrow-right-line custom_font_size"></i>
             </Link>
           </div>
         )}
@@ -300,7 +300,7 @@ const ProductCard = () => {
           <div className="swiper-wrapper">
             {totalMenuCount > 0 && menuCategories.length > 0 && (
               <div
-                className={`category-btn border border-2 rounded-5 swiper-slide customFontSizeBold ${
+                className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
                   selectedCategoryId === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
@@ -316,7 +316,7 @@ const ProductCard = () => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn border border-2 rounded-5 customFontSizeBold ${
+                  className={`category-btn border border-2 rounded-5 custom_font_size_bold ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -405,9 +405,9 @@ const ProductCard = () => {
                   </div>
 
                   {menu.name && (
-                    <div className=" customFontSizeBolds text-wrap">
+                    <div className="custom_font_size_bold text-wrap">
                       <Link
-                        className="customFontSizeBold"
+                        className="custom_font_size_bold"
                         to={{
                           pathname: `/ProductDetails/${menu.menu_id}`,
                         }}
@@ -434,10 +434,10 @@ const ProductCard = () => {
                         </div>
                       </div>
                       <div className="col-6 text-end mt-2">
-                        <i className="ri-star-half-line pe-1 fs-6 ratingStar"></i>
+                        <i className="ri-star-half-line  fs-6 ratingStar"></i>
                         <span
-                          className="customFontSize fw-semibold gray-text"
-                          style={{ marginLeft: "5px" }}
+                          className="custom_font_size fw-semibold gray-text"
+                         
                         >
                           {menu.rating}
                         </span>
@@ -448,7 +448,7 @@ const ProductCard = () => {
                     <div className="col-8">
                       <div className="footer-wrapper">
                         <div className="price-wrapper d-flex align-items-baseline">
-                          <p className="mb-1 customFontSize fw-medium">
+                          <p className="mb-1 custom_font_size fw-medium">
                             <Link
                               to={{
                                 pathname: `/ProductDetails/${menu.menu_id}`,
@@ -458,7 +458,7 @@ const ProductCard = () => {
                               <span className="ms- me-2 text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text customFontSize text-decoration-line-through">
+                              <span className="gray-text custom_font_size text-decoration-line-through">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </Link>
@@ -476,7 +476,7 @@ const ProductCard = () => {
                   </div>
                   <div className="row">
                     <div className="col-6">
-                      <span className="customFontSize  offer-color">
+                      <span className="custom_font_size  offer-color">
                         {menu.offer || "No "}% Off
                       </span>
                     </div>

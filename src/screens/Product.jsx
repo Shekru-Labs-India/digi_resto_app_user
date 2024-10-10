@@ -2168,7 +2168,7 @@ const Product = () => {
 
     if (isAlreadyInCart) {
       toast.current.show({
-        severity: "info",
+        severity: "error",
         summary: "Item in Cart",
         detail: "This item is already in the cart!",
         life: 3000,
@@ -2247,7 +2247,7 @@ const Product = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold me-3">
+            <span className="custom_font_size_bold me-3">
               Menu{" "}
               {categories.length > 0 && (
                 <span className="small-number gray-text">
@@ -2260,14 +2260,14 @@ const Product = () => {
       </header>
 
       <main className={`page-content space-top p-b80`}>
-        <div className="container mt-2 mb-0">
+        <div className="container">
           <div className="header-content d-flex justify-content-end">
             <div className="right-content gap-1">
               <h3 className="title fw-medium hotel-name mb-0">
                 {restaurantName.toUpperCase() || "Restaurant Name"}
                 <i className="ri-store-2-line ps-2"></i>
               </h3>
-              <h6 className="title fw-medium h6 custom-text-gray table-number">
+              <h6 className="custom_font_size mb-0 custom-text-gray table-number">
                 Table: {userData.tableNumber || ""}
               </h6>
             </div>
@@ -2280,7 +2280,7 @@ const Product = () => {
             <div className="swiper-wrapper">
               {categories.length > 0 && (
                 <div
-                  className={`category-btn border border-2 rounded-5 swiper-slide customFontSizeBold ${
+                  className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
                     selectedCategory === null ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(null)}
@@ -2295,7 +2295,7 @@ const Product = () => {
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
-                    className={`category-btn border border-2 rounded-5 customFontSizeBold ${
+                    className={`category-btn border border-2 rounded-5 custom_font_size_bold ${
                       selectedCategory === category.menu_cat_id ? "active" : ""
                     }`}
                     onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -2319,7 +2319,7 @@ const Product = () => {
         </div>
 
         {/* Menu Items */}
-        <div className="container pb-0" style={{ marginBottom: "8vh" }}>
+        <div className="container mb-5 pt-0">
           <div className="row g-3 grid-style-1">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
@@ -2378,7 +2378,7 @@ const Product = () => {
                     </div>
 
                     {menuItem.name && (
-                      <div className="   customFontSizeBold text-wrap">
+                      <div className="   custom_font_size_bold text-wrap">
                         <Link
                           to={`/ProductDetails/${menuItem.menu_id}`}
                           state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
@@ -2408,8 +2408,8 @@ const Product = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end mt-2">
-                          <i className="ri-star-half-line pe-1 customFontSizeBold ratingStar"></i>
-                          <span className="customFontSizeBold fw-semibold gray-text">
+                          <i className="ri-star-half-line pe-1 custom_font_size_bold ratingStar"></i>
+                          <span className="custom_font_size_bold fw-semibold gray-text">
                             {menuItem.rating}
                           </span>
                         </div>
@@ -2423,11 +2423,11 @@ const Product = () => {
                               to={`/ProductDetails/${menuItem.menu_id}`}
                               state={{ menu_cat_id: menuItem.menu_cat_id }} // Pass menu_cat_id here
                             >
-                              <p className="mb-1 customFontSizeBold fw-medium">
+                              <p className="mb-1 custom_font_size_bold fw-medium">
                                 <span className="ms- me-2 text-info">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="gray-text customFontSizeBold text-decoration-line-through">
+                                <span className="gray-text custom_font_size_bold text-decoration-line-through">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </p>
@@ -2457,7 +2457,7 @@ const Product = () => {
                     </div>
                     <div className="row">
                       <div className="col-12">
-                        <span className="customFontSizeBold offer-color">
+                        <span className="custom_font_size_bold offer-color">
                           {menuItem.offer || "No "}% Off
                         </span>
                       </div>
@@ -2476,7 +2476,7 @@ const Product = () => {
         >
           <ul className="dz-product-filter">
             <li>
-              <a className="customFontSizeBold"
+              <a className="custom_font_size_bold"
                 href="javascript:void(0);"
                 onClick={() => setSortByOpen(!sortByOpen)}
               >
@@ -2484,7 +2484,7 @@ const Product = () => {
               </a>
             </li>
             <li>
-              <a className="customFontSizeBold"
+              <a className="custom_font_size_bold"
                 href="javascript:void(0);"
                 onClick={() => setFilterOpen(!filterOpen)}
               >

@@ -109,7 +109,7 @@ const Wishlist = () => {
     if (isMenuItemInCart(item.menu_id)) {
       // Show toast notification for item already in cart
       toast.current.show({
-        severity: "warn", // Yellow color for warning
+        severity: "error", // Yellow color for warning
         summary: "Item Already in Cart",
         detail: item.menu_name,
         life: 3000,
@@ -257,7 +257,7 @@ const Wishlist = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold me-3">
+            <span className="custom_font_size_bold me-3">
               Favourite{" "}
               {userData && menuList.length > 0 && (
                 
@@ -317,7 +317,7 @@ const Wishlist = () => {
                                 menu_cat_id: menu.menu_cat_id,
                               }}
                             >
-                              <div className="ps-2 customFontSizeBold">
+                              <div className="ps-2 custom_font_size_bold">
                                 {menu.menu_name}
                               </div>
                             </Link>
@@ -369,8 +369,8 @@ const Wishlist = () => {
                               )}
                             </div>
                             <div className="col-2 px-0 d-flex align-items-center">
-                              <span className="customFontSize fw-semibold gray-text favRating">
-                                <i className="ri-star-half-line me-1 ratingStar"></i>
+                              <span className="custom_font_size fw-semibold gray-text favRating">
+                                <i className="ri-star-half-line  ratingStar"></i>
                                 {menu.rating || 0.1}
                               </span>
                             </div>
@@ -391,10 +391,10 @@ const Wishlist = () => {
                                 }}
                               >
                                 <p className="mb-0 fs-4 me-2 fw-medium">
-                                  <span className="me-1 text-info customFontSizeBold">
+                                  <span className="me-1 text-info custom_font_size_bold">
                                     ₹{menu.price}
                                   </span>
-                                  <span className="gray-text fs-6 text-decoration-line-through customFontSizeBold">
+                                  <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
                                     ₹{menu.oldPrice || menu.price}
                                   </span>
                                 </p>
@@ -408,7 +408,7 @@ const Wishlist = () => {
                                   menu_cat_id: menu.menu_cat_id,
                                 }}
                               >
-                                <span className=" offer-color favoffer customFontSize">
+                                <span className=" offer-color favoffer custom_font_size">
                                   {menu.offer || "No "}% Off
                                 </span>
                               </Link>
@@ -439,7 +439,7 @@ const Wishlist = () => {
             >
               <div className="m-b20 dz-flex-box text-center">
                 <div className="dz-cart-about">
-                  <h5 className="customFontSize">
+                  <h5 className="custom_font_size">
                     Nothing to show in favourites.
                   </h5>
                   <p>Add some products to show here!</p>
@@ -457,11 +457,11 @@ const Wishlist = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <span className="customFontSize">
+                <span className="custom_font_size">
                   Please log in to view your favourites.
                 </span>
                 <Link
-                  className="btn btn-outline-primary mt-3 customFontSize"
+                  className="btn btn-outline-primary mt-3 custom_font_size"
                   to="/Signinscreen"
                 >
                   <i className="ri-lock-2-line me-2 "></i> Login

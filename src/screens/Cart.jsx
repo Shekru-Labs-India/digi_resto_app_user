@@ -229,10 +229,12 @@ const Cart = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold me-3">
+            <span className="custom_font_size_bold me-3">
               My Cart{" "}
               {displayCartItems.length > 0 && (
-                <span className="small-number gray-text">({displayCartItems.length})</span>
+                <span className="small-number gray-text">
+                  ({displayCartItems.length})
+                </span>
               )}
             </span>
           </div>
@@ -247,8 +249,8 @@ const Cart = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <h5 className="customFontSizeBold">Your Cart is Empty</h5>
-                <p className="customFontSize">
+                <h5 className="custom_font_size_bold">Your Cart is Empty</h5>
+                <p className="custom_font_size">
                   Add items to your cart from the product details page.
                 </p>
                 <Link to="/Menu" className="btn btn-outline-primary btn-sm">
@@ -324,7 +326,7 @@ const Cart = () => {
                             menu_cat_id: item.menu_cat_id,
                           }}
                         >
-                          <span className="customFontSizeBold text-truncate">
+                          <span className="custom_font_size_bold text-truncate">
                             {item.menu_name}
                           </span>
                         </Link>
@@ -382,8 +384,8 @@ const Cart = () => {
                           </div>
                         </div>
                         <div className="col-3 px-1 text-start ">
-                          <span className="customFontSize fw-semibold gray-text">
-                            <i className="ri-star-half-line px-1 ratingStar "></i>{" "}
+                          <span className="custom_font_size fw-semibold gray-text">
+                            <i className="ri-star-half-line  ratingStar"></i>
                             {item.rating}
                           </span>
                         </div>
@@ -401,14 +403,14 @@ const Cart = () => {
                           }}
                         >
                           <p className="mb-0  fw-medium">
-                            <span className="ms-3 customFontSize me-2 text-info">
+                            <span className="ms-3 custom_font_size me-2 text-info">
                               ₹{item.price}
                             </span>
-                            <span className="gray-text customFontSize text-decoration-line-through">
+                            <span className="gray-text custom_font_size text-decoration-line-through">
                               ₹{item.oldPrice || item.price}
                             </span>
 
-                            <span className="customFontSize ps-2 offer-color">
+                            <span className="custom_font_size ps-2 offer-color">
                               {item.offer || "No "}% Off
                             </span>
                           </p>
@@ -418,15 +420,15 @@ const Cart = () => {
                       <div className="col-2">
                         <div className="d-flex justify-content-end align-items-center mt-1">
                           <i
-                            className="ri-subtract-line customFontSize mx-2"
+                            className="ri-subtract-line custom_font_size mx-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => decrementQuantity(item)}
                           ></i>
-                          <span className="text-light customFontSize">
+                          <span className="text-light custom_font_size">
                             {item.quantity}
                           </span>
                           <i
-                            className="ri-add-line mx-2 customFontSize"
+                            className="ri-add-line mx-2 custom_font_size"
                             style={{ cursor: "pointer" }}
                             onClick={() => incrementQuantity(item)}
                           ></i>
@@ -443,72 +445,75 @@ const Cart = () => {
               className="pb-5 mb-5"
               style={{ bottom: "75px", backgroundColor: "transparent" }}
             >
-              <div className="card-body">
-                <div className="card mx-auto">
-                  <div className="row px-1 py-1">
-                    <div className="col-12">
-                      <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 customFontSizeBold fw-medium">
-                          Total
-                        </span>
+              <div className="container">
+                <div className="">
+                  <div className="card mx-auto rounded-2">
+                    <div className="row px-1 py-1">
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span className="ps-2 custom_font_size_bold fw-medium">
+                            Total
+                          </span>
 
-                        <span className="pe-2 customFontSizeBold fw-medium">
-                          ₹{cartDetails?.total_bill || 0}
-                        </span>
+                          <span className="pe-2 custom_font_size_bold fw-medium">
+                            ₹{cartDetails?.total_bill || 0}
+                          </span>
+                        </div>
+                        <hr className=" me-3 p-0 m-0  text-primary" />
                       </div>
-                      <hr className=" me-3 p-0 m-0  text-primary" />
-                    </div>
-                    <div className="col-12 pt-0">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span
-                          className="ps-2 customFontSize pt-1"
-                          style={{ color: "#a5a5a5" }}
-                        >
-                          Service Charges ({cartDetails.service_charges_percent}
-                          %)
-                        </span>
-                        <span className="pe-2 customFontSize fw-medium">
-                          ₹{cartDetails?.service_charges_amount || 0}
-                        </span>
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span
+                            className="ps-2 custom_font_size pt-1"
+                            style={{ color: "#a5a5a5" }}
+                          >
+                            Service Charges (
+                            {cartDetails.service_charges_percent}
+                            %)
+                          </span>
+                          <span className="pe-2 custom_font_size fw-medium">
+                            ₹{cartDetails?.service_charges_amount || 0}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-12 mb-0 py-1">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span
-                          className="ps-2 customFontSize"
-                          style={{ color: "#a5a5a5" }}
-                        >
-                          GST ({cartDetails.gst_percent}%)
-                        </span>
-                        <span className="pe-2 customFontSize fw-medium text-start">
-                          ₹{cartDetails?.gst_amount || 0}
-                        </span>
+                      <div className="col-12 mb-0 py-1">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span
+                            className="ps-2 custom_font_size"
+                            style={{ color: "#a5a5a5" }}
+                          >
+                            GST ({cartDetails.gst_percent}%)
+                          </span>
+                          <span className="pe-2 custom_font_size fw-medium text-start">
+                            ₹{cartDetails?.gst_amount || 0}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-12 mb-0 pt-0 pb-1">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span
-                          className="ps-2 customFontSize"
-                          style={{ color: "#a5a5a5" }}
-                        >
-                          Discount ({cartDetails?.discount_percent || 0}%)
-                        </span>
-                        <span className="pe-2 customFontSize">
-                          ₹{cartDetails?.discount_amount || 0}
-                        </span>
+                      <div className="col-12 mb-0 pt-0 pb-1">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span
+                            className="ps-2 custom_font_size"
+                            style={{ color: "#a5a5a5" }}
+                          >
+                            Discount ({cartDetails?.discount_percent || 0}%)
+                          </span>
+                          <span className="pe-2 custom_font_size">
+                            ₹{cartDetails?.discount_amount || 0}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <hr className=" me-3 p-0 m-0 text-primary" />
-                    </div>
-                    <div className="col-12 ">
-                      <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 customFontSizeBold">
-                          Grand Total
-                        </span>
-                        <span className="pe-2 customFontSizeBold">
-                          ₹{cartDetails?.grand_total || 0}
-                        </span>
+                      <div>
+                        <hr className=" me-3 p-0 m-0 text-primary" />
+                      </div>
+                      <div className="col-12 ">
+                        <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                          <span className="ps-2 custom_font_size_bold">
+                            Grand Total
+                          </span>
+                          <span className="pe-2 custom_font_size_bold">
+                            ₹{cartDetails?.grand_total || 0}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -518,9 +523,15 @@ const Cart = () => {
                 <Link
                   to="/Checkout"
                   state={{ cartItems: displayCartItems }}
-                  className="btn btn-color customFontSize rounded-pill text-white px-5"
+                  className="btn btn-color custom_font_size rounded-pill text-white px-5"
                 >
-                  Proceed to Buy &nbsp; <b> <span className="small-number gray-text">({displayCartItems.length} items)</span></b>
+                  Proceed to Buy &nbsp;{" "}
+                  <b>
+                    {" "}
+                    <span className="small-number gray-text">
+                      ({displayCartItems.length} items)
+                    </span>
+                  </b>
                 </Link>
               </div>
             </div>

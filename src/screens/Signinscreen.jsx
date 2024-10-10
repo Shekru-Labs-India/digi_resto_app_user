@@ -141,9 +141,9 @@
                 <div className="section-head">
                   <Logoname />
                   <div className="d-flex justify-content-center">
-                    <span className="customFontSizeBold text-muted">
+                    <span className="custom_font_size_bold text-muted">
                       Welcome Back You've{" "}
-                      <span className="customFontSizeBold mt-1 text-muted">
+                      <span className="custom_font_size_bold mt-1 text-muted">
                         {" "}
                         Been Missed!
                       </span>
@@ -154,7 +154,7 @@
                 <form onSubmit={(e) => e.preventDefault()}>
                   <div className="m-b15">
                     <label
-                      className=" customFontSizeBold"
+                      className=" custom_font_size_bold"
                       htmlFor="mobile"
                     >
                       <span className="required-star">*</span> Mobile
@@ -166,7 +166,7 @@
                       <input
                         type="tel"
                         id="mobile"
-                        className={`form-control customFontSizeBold ${
+                        className={`form-control custom_font_size_bold ${
                           mobileError ? "is-invalid" : ""
                         }`}
                         placeholder="Enter Mobile Number"
@@ -194,7 +194,7 @@
                   ) : (
                     <button
                       type="button"
-                      className="dz-btn btn customFontSizeBold btn-primary rounded-xl"
+                      className="dz-btn btn custom_font_size_bold btn-primary rounded-xl"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >
@@ -203,11 +203,11 @@
                   )}
                 </form>
               </div>
-              <div className="text-center mt-auto customFontSize">
+              <div className="text-center mt-auto custom_font_size">
                 Not a member?{" "}
                 <Link
                   to="/Signupscreen"
-                  className="text-underline customFontSizeBold"
+                  className="text-underline custom_font_size_bold"
                 >
                   Create an account
                 </Link>
@@ -216,9 +216,9 @@
           </div>
         </main>
         <div className="text-center mt-5 pt-5">
-          <div className="gray-text customFontSizeBold mt-5">Powered by </div>
-          <div className="gray-text customFontSizeBold">Shekru Labs India Pvt. Ltd.</div>
-          <div className="gray-text  customFontSizeBold ">v1.1</div>
+          <div className="gray-text custom_font_size_bold mt-5">Powered by </div>
+          <div className="gray-text custom_font_size_bold">Shekru Labs India Pvt. Ltd.</div>
+          <div className="gray-text  custom_font_size_bold ">v1.1</div>
         </div>
       </div>
     );

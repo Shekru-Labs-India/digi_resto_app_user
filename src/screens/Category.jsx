@@ -93,7 +93,7 @@ const Category = () => {
                 </Link>
               </div>
               <div className="mid-content">
-                <span className="customFontSizeBold">
+                <span className="custom_font_size_bold">
                   Category
                   {totalCategoriesCount > 0 && (
                     <span className=" small-number gray-text">
@@ -120,7 +120,7 @@ const Category = () => {
                         className="d-block"
                       >
                         <div className="d-flex justify-content-center bg-white">
-                          <span className="py-2 rounded-bottom-3 text-center m-0 customFontSizeBold">
+                          <span className="py-2 rounded-bottom-3 text-center m-0 custom_font_size_bold">
                             {toTitleCase(category.category_name)}
                             <span className=" small-number gray-text">
                               <span className=""> ({category.menu_count})</span>
