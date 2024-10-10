@@ -315,8 +315,8 @@ const Wishlist = () => {
         {customerId ? (
           Object.keys(menuList).length > 0 ? (
             Object.keys(menuList).map((restaurantName) => (
-              <div className="container">
-                <div key={restaurantName} className="tab">
+              <div className="container py-0">
+                <div key={restaurantName} className="tab pt-0">
                   <input
                     type="checkbox"
                     id={`chck${restaurantName}`}
@@ -324,11 +324,14 @@ const Wishlist = () => {
                     onChange={() => toggleChecked(restaurantName)}
                   />
                   <label
-                    className="tab-label"
+                    className="tab-label pb-0 px-0"
                     htmlFor={`chck${restaurantName}`}
                   >
-                    <span className="custom_font_size_bold">
-                      {restaurantName}
+                    <span className="">
+                      <span class=" fw-medium hotel-name">
+                        <i class="ri-store-2-line me-2"></i>
+                        {restaurantName.toUpperCase()}
+                      </span>
                     </span>
                     <span className="">
                       <span className="gray-text ps-2 pe-2 small-number">
@@ -387,7 +390,7 @@ const Wishlist = () => {
                                   </div>
                                   <div className="col-2 text-end fs-4 ps-0 pe-2">
                                     <i
-                                      className="ri-close-line icon-adjust"
+                                      className="ri-hearts-fill icon-adjust heart-fill"
                                       onClick={() =>
                                         handleRemoveItemClick(
                                           restaurantName,

@@ -78,7 +78,7 @@ input:checked ~ .tab-content {
 }
 
 .custom-card {
-    margin-bottom: 1.25rem;
+
     background-color: var(--card-bg);
     transition: all .5s ease-in-out;
     position: relative;
