@@ -88,7 +88,7 @@ const MyOrder = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold me-3">
+            <span className="custom_font_size_bold me-3">
               My Order
               {orders.length > 0 && (
                 <span className="gray-text small-number">
@@ -123,7 +123,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link customFontSizeBold  ${
+                          className={`nav-link custom_font_size_bold  ${
                             activeTab === "ongoing" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("ongoing")}
@@ -138,7 +138,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link customFontSizeBold ${
+                          className={`nav-link custom_font_size_bold ${
                             activeTab === "completed" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("completed")}
@@ -218,10 +218,10 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="customFontSizeBold fw-semibold gray-text">
+          <p className="custom_font_size_bold fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
-          <Link to="/Menu" className="mt-2 customFontSizeBold fw-semibold">
+          <Link to="/Menu" className="mt-2 custom_font_size_bold fw-semibold">
             Explore our menus
           </Link>
         </div>
@@ -236,24 +236,24 @@ const OrdersTab = ({ orders, type }) => {
             <div className="card-body">
               <div className="row align-items-center">
                 <div className="col-4">
-                  <span className="card-title mb-1 customFontSizeBold">
+                  <span className="card-title mb-1 custom_font_size_bold">
                     {order.order_number}
                   </span>
                 </div>
                 <div className="col-8 text-end">
-                  <span className="card-text gray-text mb-0 customFontSizeBold">
+                  <span className="card-text gray-text mb-0 custom_font_size_bold">
                     {formatDateTime(order.date_time)}
                   </span>
                 </div>
               </div>
               <div className="order-details-row">
                 <div className="restaurant-info">
-                  <i className="ri-store-2-line pe-2 customFontSizeBold"></i>
-                  <span className="restaurant-name  customFontSizeBold">
+                  <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                  <span className="restaurant-name  custom_font_size_bold">
                     {order.restaurant_name.toUpperCase()}
                   </span>
-                  <i className="ri-user-location-line ps-2 pe-1 customFontSizeBold"></i>
-                  <span className="table-number customFontSizeBold">
+                  <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
+                  <span className="table-number custom_font_size_bold">
                     {order.table_number}
                   </span>
                 </div>
@@ -266,7 +266,7 @@ const OrdersTab = ({ orders, type }) => {
                   </span>
                 </div>
                 <div className="price-info">
-                  <span className="text-info customFontSizeBold">
+                  <span className="text-info custom_font_size_bold">
                     ₹{order.grand_total}
                   </span>
                 </div>

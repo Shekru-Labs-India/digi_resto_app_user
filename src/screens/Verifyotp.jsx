@@ -384,10 +384,10 @@ const Verifyotp = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <span className="customFontSizeBold ms-4 ps-2">Enter OTP</span>
+                <span className="custom_font_size_bold ms-4 ps-2">Enter OTP</span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                <label className="customFontSizeBold ms-4 ps-1" htmlFor="otp">
+                <label className="custom_font_size_bold ms-4 ps-1" htmlFor="otp">
                   <span className="required-star">*</span>OTP
                 </label>
                 <div
@@ -410,7 +410,7 @@ const Verifyotp = () => {
                     />
                   ))}
                 </div>
-                <p className="text-center customFontSizeBold  ">
+                <p className="text-center custom_font_size_bold  ">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
                 </p>
@@ -437,11 +437,11 @@ const Verifyotp = () => {
                 )}
               </form>
             </div>
-            <div className="text-center mt-auto customFontSize">
+            <div className="text-center mt-auto custom_font_size">
               Back to{" "}
               <Link
                 to="/Signinscreen"
-                className="text-underline customFontSizeBold"
+                className="text-underline custom_font_size_bold"
               >
                 Sign In
               </Link>

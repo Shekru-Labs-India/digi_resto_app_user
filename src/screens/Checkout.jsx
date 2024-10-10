@@ -196,7 +196,7 @@ const Checkout = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <h5 className="customFontSizeBold pe-3">Checkout</h5>
+            <h5 className="custom_font_size_bold pe-3">Checkout</h5>
           </div>
         </div>
       </header>
@@ -206,11 +206,11 @@ const Checkout = () => {
           <div className="dz-flex-box">
             <ul className="dz-list-group">
               <div className="mb-3">
-                <label className="customFontSizeBold pb-2 ps-2" htmlFor="notes">
+                <label className="custom_font_size_bold pb-2 ps-2" htmlFor="notes">
                   Additional Notes:
                 </label>
                 <textarea
-                  className="form-control dz-textarea customFontSizeBold"
+                  className="form-control dz-textarea custom_font_size_bold"
                   name="notes"
                   id="notes"
                   rows="4"
@@ -222,7 +222,7 @@ const Checkout = () => {
                   <div className="text-danger mt-2">{validationMessage}</div>
                 )}
               </div>
-              <ul className="ms-3 customFontSizeBold">
+              <ul className="ms-3 custom_font_size_bold">
                 <li className="my-2 gray-text">
                   &bull; Make mutton thali a bit less spicy
                 </li>
@@ -239,7 +239,7 @@ const Checkout = () => {
                     cartItems.map((item, index) => (
                       <div className="row justify-content-center" key={index}>
                         <div className="col-6 pe-0   pb-1">
-                          <span className="mb-0 customFontSizeBold">
+                          <span className="mb-0 custom_font_size_bold">
                             {item.menu_name}
                           </span>
                           <div className="">
@@ -249,20 +249,20 @@ const Checkout = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="col-1 customFontSizeBold text-end px-0">
+                        <div className="col-1 custom_font_size_bold text-end px-0">
                           x {item.quantity}
                         </div>
                         <div className="col-5 text-end ps-0 pe-4">
                           <p className="mb-2 fs-4 fw-medium">
-                            <span className="ms-0 me-2 text-info customFontSizeBold">
+                            <span className="ms-0 me-2 text-info custom_font_size_bold">
                               ₹{item.price}
                             </span>
 
-                            <span className="gray-text customFontSizeBold text-decoration-line-through">
+                            <span className="gray-text custom_font_size_bold text-decoration-line-through">
                               ₹ {item.oldPrice || item.price}
                             </span>
                             <div>
-                              <span className="fs-6 ps-2 offer-color customFontSizeBold">
+                              <span className="fs-6 ps-2 offer-color custom_font_size_bold">
                                 {item.offer || "No "}% Off
                               </span>
                             </div>
@@ -271,7 +271,7 @@ const Checkout = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="customFontSizeBold">
+                    <div className="custom_font_size_bold">
                       No items in the cart.
                     </div>
                   )}
@@ -282,10 +282,10 @@ const Checkout = () => {
               <div className="row px-1 py-1">
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 customFontSizeBold fw-medium">
+                    <span className="ps-2 custom_font_size_bold fw-medium">
                       Total
                     </span>
-                    <span className="pe-2 customFontSizeBold fw-medium">
+                    <span className="pe-2 custom_font_size_bold fw-medium">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </div>
@@ -293,30 +293,30 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 pt-0">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize pt-1" style={{ color: "#a5a5a5" }}>
+                    <span className="ps-2 custom_font_size pt-1" style={{ color: "#a5a5a5" }}>
                       Service Charges ({serviceChargesPercent}%)
                     </span>
-                    <span className="pe-2 customFontSize fw-medium">
+                    <span className="pe-2 custom_font_size fw-medium">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 py-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+                    <span className="ps-2 custom_font_size" style={{ color: "#a5a5a5" }}>
                       GST ({gstPercent}%)
                     </span>
-                    <span className="pe-2 customFontSize fw-medium text-start">
+                    <span className="pe-2 custom_font_size fw-medium text-start">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 pt-0 pb-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 customFontSize" style={{ color: "#a5a5a5" }}>
+                    <span className="ps-2 custom_font_size" style={{ color: "#a5a5a5" }}>
                       Discount ({discountPercent}%)
                     </span>
-                    <span className="pe-2 customFontSize">
+                    <span className="pe-2 custom_font_size">
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
@@ -326,10 +326,10 @@ const Checkout = () => {
                 </div>
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 customFontSizeBold">
+                    <span className="ps-2 custom_font_size_bold">
                       Grand Total
                     </span>
-                    <span className="pe-2 customFontSizeBold">
+                    <span className="pe-2 custom_font_size_bold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
                   </div>
@@ -339,7 +339,7 @@ const Checkout = () => {
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-color rounded-pill mt-3 customFontSizeBold text-white"
+                className="btn btn-color rounded-pill mt-3 custom_font_size_bold text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order
@@ -357,11 +357,11 @@ const Checkout = () => {
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
             
-            <span className="gray-text customFontSizeBold">Your Order Successfully Placed</span>
-            <p className="gray-text customFontSizeBold">
+            <span className="gray-text custom_font_size_bold">Your Order Successfully Placed</span>
+            <p className="gray-text custom_font_size_bold">
               You have successfully made payment and placed your order.
             </p>
-            <button className="btn btn-primary rounded-pill  mt-3 customFontSizeBold" onClick={closePopup}>
+            <button className="btn btn-primary rounded-pill  mt-3 custom_font_size_bold" onClick={closePopup}>
               View Order
             </button>
           </div>

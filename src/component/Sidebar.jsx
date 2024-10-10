@@ -126,13 +126,13 @@ const Sidebar = () => {
               }
             ></i>
           </div>
-          <div className="customFontSizeBold">
+          <div className="custom_font_size_bold">
             <span className="ms-3 pt-4">
               {userData?.name
                 ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 : "Hello, User"}
             </span>
-            <div className="mail ms-3 gray-text customFontSizeBold">
+            <div className="mail ms-3 gray-text custom_font_size_bold">
               {userData?.mobile}
             </div>
             <div className="dz-mode mt-3 me-4">
@@ -157,7 +157,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-bowl-line fs-3"></i>
               </span>
-              <span className="customFontSizeBold">Menu</span>
+              <span className="custom_font_size_bold">Menu</span>
             </Link>
           </li>
           <li>
@@ -165,7 +165,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-list-check-2 fs-3"></i>
               </span>
-              <span className="customFontSizeBold">Category</span>
+              <span className="custom_font_size_bold">Category</span>
             </Link>
           </li>
           <li>
@@ -173,7 +173,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-heart-2-line fs-3"></i>
               </span>
-              <span className="customFontSizeBold">Favourite</span>
+              <span className="custom_font_size_bold">Favourite</span>
             </Link>
           </li>
           <li>
@@ -181,7 +181,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-drinks-2-line fs-3"></i>
               </span>
-              <span className="customFontSizeBold">My Orders</span>
+              <span className="custom_font_size_bold">My Orders</span>
             </Link>
           </li>
           <li>
@@ -189,7 +189,7 @@ const Sidebar = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-shopping-cart-line fs-3"></i>
               </span>
-              <span className="customFontSizeBold">Cart</span>
+              <span className="custom_font_size_bold">Cart</span>
             </Link>
           </li>
           <li>
@@ -203,7 +203,7 @@ const Sidebar = () => {
                   }
                 ></i>
               </span>
-              <span className="customFontSizeBold">Profile</span>
+              <span className="custom_font_size_bold">Profile</span>
             </Link>
           </li>
         </ul>

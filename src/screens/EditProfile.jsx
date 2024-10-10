@@ -129,7 +129,7 @@ const EditProfile = () => {
             </Link>
           </div>
           <div className="mid-content">
-            <span className="customFontSizeBold me-3">Edit Profile</span>
+            <span className="custom_font_size_bold me-3">Edit Profile</span>
           </div>
           <div className="right-content"></div>
         </div>
@@ -147,7 +147,7 @@ const EditProfile = () => {
           ) : (
             <div className="edit-profile">
               <div className="mb-3">
-                <label className="customFontSizeBold pb-2" htmlFor="name">
+                <label className="custom_font_size_bold pb-2" htmlFor="name">
                   <span className="required-star fw-light">*</span> Name
                 </label>
                 <input
@@ -160,7 +160,7 @@ const EditProfile = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="customFontSizeBold pb-2" htmlFor="phone">
+                <label className="custom_font_size_bold pb-2" htmlFor="phone">
                   <span className="required-star">*</span> Mobile
                 </label>
                 <input
@@ -179,11 +179,11 @@ const EditProfile = () => {
               <div className="d-flex justify-content-center align-items-center">
                 <button
                   type="button"
-                  className="btn  btn-color  py-3  rounded-pill customFontSizeBold"
+                  className="btn  btn-color  py-3  rounded-pill custom_font_size_bold"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   onClick={handleUpdateProfile}
                 >
-                  <span className="customFontSizeBold text-white">Save Changes</span>
+                  <span className="custom_font_size_bold text-white">Save Changes</span>
                 </button>
               </div>
             </div>

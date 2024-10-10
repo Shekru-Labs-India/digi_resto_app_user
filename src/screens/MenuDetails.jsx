@@ -331,7 +331,7 @@ const MenuDetails = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <span className="customFontSizeBold me-3">Product Details</span>
+              <span className="custom_font_size_bold me-3">Product Details</span>
             </div>
           </div>
         </header>
@@ -361,7 +361,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <span className="title customFontSizeBold mb-1">
+                    <span className="title custom_font_size_bold mb-1">
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -398,7 +398,7 @@ const MenuDetails = () => {
                   </div>
                   <div className="col-4 text-end px-0 ">
                     <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
-                    <span className="customFontSizeBold gray-text">
+                    <span className="custom_font_size_bold gray-text">
                       {productDetails.rating}
                     </span>
                   </div>
@@ -441,7 +441,7 @@ const MenuDetails = () => {
               <div className="container ps-0">
                 <div className="product-info">
                   <div>
-                    <p className="customFontSize text-wrap m-0">
+                    <p className="custom_font_size text-wrap m-0">
                       {productDetails.description}
                     </p>
                   </div>
@@ -462,18 +462,18 @@ const MenuDetails = () => {
               <div className="col-6 ps-3 ">
                 <div className="d-flex align-items-center justify-content-between mb-5">
                   <div className="d-flex flex-column">
-                    <span className="mb-2 customFontSizeBold">
+                    <span className="mb-2 custom_font_size_bold">
                       Total amount
                     </span>
                     <div className="d-flex align-items-baseline">
-                      <h4 className="mb-0 price customFontSizeBold text-info">
+                      <h4 className="mb-0 price custom_font_size_bold text-info">
                         ₹{(productDetails.price * quantity).toFixed(0)}
                       </h4>
-                      <span className="text-decoration-line-through ms-2 customFontSizeBold gray-text">
+                      <span className="text-decoration-line-through ms-2 custom_font_size_bold gray-text">
                         ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                       </span>
                     </div>
-                    <div className="fw-medium d-flex customFontSizeBold offer-color pt-1">
+                    <div className="fw-medium d-flex custom_font_size_bold offer-color pt-1">
                       {productDetails.offer}% Off
                     </div>
                   </div>
@@ -482,22 +482,22 @@ const MenuDetails = () => {
               <div className="col-6 text-end">
                 {isMenuItemInCart(menuId) ? (
                   <button
-                    className="btn btn-color  py-4  rounded-pill customFontSizeBold"
+                    className="btn btn-color  py-4  rounded-pill custom_font_size_bold"
                     onClick={() => navigate("/Cart")}
                   >
                     <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins customFontSizeBold text-nowrap text-white">
+                    <div className="font-poppins custom_font_size_bold text-nowrap text-white">
                       Go to Cart
                     </div>
                   </button>
                 ) : (
                   <button
                     to="#"
-                    className="btn  btn-color  py-4  rounded-pill customFontSizeBold"
+                    className="btn  btn-color  py-4  rounded-pill custom_font_size_bold"
                     onClick={handleAddToCart}
                   >
-                    <i className="ri-shopping-cart-line pe-1 text-white customFontSizeBold"></i>
-                    <div className="text-nowrap text-white customFontSizeBold">
+                    <i className="ri-shopping-cart-line pe-1 text-white custom_font_size_bold"></i>
+                    <div className="text-nowrap text-white custom_font_size_bold">
                       Add to Cart
                     </div>
                   </button>
