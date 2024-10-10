@@ -626,7 +626,7 @@ const Product = () => {
                       <img
                         src={menuItem.image || images}
                         alt={menuItem.name || "Menu item"}
-                        style={{ height: "150px" }}
+                        style={{ aspectRatio: "1/1", objectFit: "cover", height: "100%",   }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
