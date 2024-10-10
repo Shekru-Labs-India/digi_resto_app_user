@@ -21,17 +21,23 @@ const TrackOrder = () => {
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
   const [userData2, setUserData] = useState(null);
- 
+
+  
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(
     () => localStorage.getItem("isDarkMode") === "true"
   );
+
+ 
+
   const isLoggedIn = !!localStorage.getItem("userData");
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  
 
   const toggleTheme = () => {
     const newIsDarkMode = !isDarkMode;
@@ -98,7 +104,14 @@ const TrackOrder = () => {
   const [prices, setPrices] = useState({});
 
   const [orderedItems, setOrderedItems] = useState([]);
-  const [pendingItems, setPendingItems] = useState([]);
+  const [pendingItems, setPendingItems] = useState(() => {
+    const savedPendingItems = localStorage.getItem('pendingItems');
+    return savedPendingItems ? JSON.parse(savedPendingItems) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('pendingItems', JSON.stringify(pendingItems));
+  }, [pendingItems]);
 
   const getCustomerId = () => {
     return userData ? userData.customer_id : null;
@@ -114,7 +127,7 @@ const TrackOrder = () => {
   };
 
   const handleRemovePendingItem = (menuId) => {
-    setPendingItems(pendingItems.filter((item) => item.menu_id !== menuId));
+    setPendingItems(prevItems => prevItems.filter(item => item.menu_id !== menuId));
   };
 
   const updateCartQuantity = async (menuId, quantity) => {
@@ -241,13 +254,21 @@ const TrackOrder = () => {
   };
 
   const handleAddToOrder = (menuItem) => {
-    // Add the item to pendingItems
-    setPendingItems([...pendingItems, { ...menuItem, quantity: 1 }]);
-
+    setPendingItems(prevItems => {
+      const existingItemIndex = prevItems.findIndex(item => item.menu_id === menuItem.menu_id);
+      if (existingItemIndex !== -1) {
+        // If item already exists, update its quantity
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex].quantity += 1;
+        return updatedItems;
+      } else {
+        // If item doesn't exist, add it with quantity 1
+        return [...prevItems, { ...menuItem, quantity: 1 }];
+      }
+    });
+  
     // Remove the item from searchedMenu
-    setSearchedMenu(
-      searchedMenu.filter((item) => item.menu_id !== menuItem.menu_id)
-    );
+    setSearchedMenu(prevMenu => prevMenu.filter(item => item.menu_id !== menuItem.menu_id));
   };
 
   const handleSubmitOrder = () => {
@@ -901,9 +922,7 @@ const TrackOrder = () => {
                                   {menu.menu_name}
                                 </div>
                                 <div>
-                                  <span className="customFontSizeBold me-2">
-                                    Qty: {menu.quantity}
-                                  </span>
+                                  
                                   <i
                                     className="ri-close-line"
                                     style={{ cursor: "pointer" }}
@@ -927,7 +946,7 @@ const TrackOrder = () => {
                                 </div>
                               </div>
                               <div className="row mt-2">
-                                <div className="col-12">
+                                <div className="col-9">
                                   <span className="custom_font_size text-info">
                                     ₹{menu.price * menu.quantity}
                                   </span>
@@ -935,6 +954,11 @@ const TrackOrder = () => {
                                     ₹
                                     {(menu.oldPrice || menu.price) *
                                       menu.quantity}
+                                  </span>
+                                </div>
+                                <div className="col-3 text-center">
+                                  <span className="quantity gray-text customFontSizeBold">
+                                    x {menu.quantity}
                                   </span>
                                 </div>
                               </div>
@@ -954,7 +978,7 @@ const TrackOrder = () => {
                     className="btn btn-primary btn-sm"
                     onClick={handleSubmitOrder}
                   >
-                    Submit Order
+                    Place Order
                   </button>
                 </div>
               )}
