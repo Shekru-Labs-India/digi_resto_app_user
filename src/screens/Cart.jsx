@@ -558,7 +558,7 @@ const Cart = () => {
                         </div>
                         <div className="col-3 px-1 text-start ">
                           <span className="custom_font_size fw-semibold gray-text">
-                            <i className="ri-star-half-line px-1 ratingStar "></i>{" "}
+                            <i className="ri-star-half-line  ratingStar"></i>
                             {item.rating}
                           </span>
                         </div>

@@ -4,7 +4,7 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import OrderGif from "../assets/gif/order_success.gif";
-import { ThemeContext } from '../context/ThemeContext.js'; // Adjust the import path as needed
+import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 
 const Checkout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -387,15 +387,17 @@ const Checkout = () => {
                   value={notes}
                   onChange={handleNotesChange}
                 ></textarea>
-                {validationMessage && (
-                  <div className="text-danger mt-2">{validationMessage}</div>
-                )}
+                {/* {validationMessage && (
+                  <div className="text-danger mb-3 ms-1 mt-2">
+                    {validationMessage}
+                  </div>
+                )} */}
               </div>
-              <ul className="ms-3 custom_font_size_bold">
-                <li className="my-2 gray-text">
+              <ul className="ms-2 customFontSizeBold  notes-ul">
+                <li className=" gray-text">
                   &bull; Make mutton thali a bit less spicy
                 </li>
-                <li className="my-2 gray-text">
+                <li className="gray-text ">
                   &bull; Make my panipuri more spicy
                 </li>
               </ul>
@@ -468,7 +470,7 @@ const Checkout = () => {
                     >
                       Service Charges ({serviceChargesPercent}%)
                     </span>
-                    <span className="pe-2 custom_font_size fw-medium">
+                    <span className="pe-2 customFontSize gray-text">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
@@ -481,7 +483,7 @@ const Checkout = () => {
                     >
                       GST ({gstPercent}%)
                     </span>
-                    <span className="pe-2 custom_font_size fw-medium text-start">
+                    <span className="pe-2 customFontSize gray-text text-start">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
@@ -494,7 +496,7 @@ const Checkout = () => {
                     >
                       Discount ({discountPercent}%)
                     </span>
-                    <span className="pe-2 custom_font_size">
+                    <span className="pe-2 customFontSize gray-text">
                       ₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
@@ -504,10 +506,8 @@ const Checkout = () => {
                 </div>
                 <div className="col-12">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 custom_font_size_bold">
-                      Grand Total
-                    </span>
-                    <span className="pe-2 custom_font_size_bold">
+                    <span className="ps-2 customFontSizeBold">Grand Total</span>
+                    <span className="pe-2 customFontSizeBold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
                   </div>

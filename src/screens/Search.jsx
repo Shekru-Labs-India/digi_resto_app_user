@@ -499,7 +499,7 @@ const Search = () => {
                             style={{ cursor: "pointer" }}
                           >
                             <span className="custom_font_size_bold gray-text">
-                              <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
+                              <i className="ri-star-half-line ms-4  ratingStar"></i>
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
                           </span>
@@ -567,120 +567,9 @@ const Search = () => {
                 </div>
               </div>
 
-              <hr />
+             
 
-              <div className="card mb-3 rounded-4" key={menu.menu_id}>
-                <div className="card-body py-0">
-                  <div className="row ">
-                    <div className="col-3 px-0">
-                      <img
-                        src={menu.image || images}
-                        alt={menu.menu_name}
-                        className="img-fluid rounded-4"
-                        style={{ width: "100px", height: "108px" }}
-                        onError={(e) => {
-                          e.target.src = images;
-                        }}
-                        onClick={() => handleMenuClick(menu.menu_id)}
-                      />
-                    </div>
-                    <div className="col-9 pb-0 pe-0 ps-2  mt-3">
-                      <div className="row">
-                        <div className="col-10">
-                          <div className="custom_font_size_bold">
-                            {menu.menu_name}
-                          </div>
-                        </div>
-                        <div className="col-2 pe-0 ps-4">
-                          <span
-                            className="text-muted fs-4 text-end"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveItem(menu.menu_id);
-                            }}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <i className="ri-close-line fs-4"></i>
-                          </span>
-                        </div>
-                        <div className="row pe-2">
-                          <div className="col-7 p-0 ps-3 ">
-                            <span
-                              onClick={() => handleMenuClick(menu.menu_id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <div className="mt-0">
-                                <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
-                                <span className="category-text fs-xs fw-medium ">
-                                  {menu.category_name}
-                                </span>
-                              </div>
-                            </span>
-                          </div>
-
-                          <div className="col-5 text-end p-0 ">
-                            <span
-                              onClick={() => handleMenuClick(menu.menu_id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <span className="custom_font_size_bold gray-text">
-                                <i className="ri-star-half-line ms-4 me-2 ratingStar"></i>
-                                {parseFloat(menu.rating).toFixed(1)}
-                              </span>
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="row mt-2 pe-2 p-0">
-                          <div className="col-8 px-0 ps-3">
-                            <span
-                              className="mb-0 mt-1 custom_font_size text-start fw-medium"
-                              onClick={() => handleMenuClick(menu.menu_id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <span className="ms-3 me-1 text-info">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text custom_font_size  old-price text-decoration-line-through">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                            </span>
-
-                            <span
-                              className="mb-0 mt-1 ms-3 custom_font_size offerSearch"
-                              onClick={() => handleMenuClick(menu.menu_id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <span className="custom_font_size px-0 text-start offer-color offer ">
-                                {menu.offer || "No "}% Off
-                              </span>
-                            </span>
-                          </div>
-
-                          <div
-                            className="col-4 text-end ps-5"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLikeClick(menu.menu_id);
-                            }}
-                          >
-                            <i
-                              className={`${
-                                menu.is_favourite
-                                  ? "ri-hearts-fill fs-3"
-                                  : "ri-heart-2-line fs-3"
-                              }`}
-                              style={{
-                                color: menu.is_favourite ? "red" : "",
-                              }}
-                            ></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+             
             </>
           ))}
         </div>

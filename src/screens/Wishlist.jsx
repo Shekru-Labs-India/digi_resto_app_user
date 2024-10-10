@@ -532,7 +532,7 @@ const Wishlist = () => {
                             </div>
                             <div className="col-2 px-0 d-flex align-items-center">
                               <span className="custom_font_size fw-semibold gray-text favRating">
-                                <i className="ri-star-half-line me-1 ratingStar"></i>
+                                <i className="ri-star-half-line  ratingStar"></i>
                                 {menu.rating || 0.1}
                               </span>
                             </div>

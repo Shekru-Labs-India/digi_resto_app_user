@@ -397,7 +397,7 @@ const MenuDetails = () => {
                     )}
                   </div>
                   <div className="col-4 text-end px-0 ">
-                    <i className="ri-star-half-line fs-6 pe-1 ratingStar"></i>
+                    <i className="ri-star-half-line fs-6  ratingStar"></i>
                     <span className="custom_font_size_bold gray-text">
                       {productDetails.rating}
                     </span>

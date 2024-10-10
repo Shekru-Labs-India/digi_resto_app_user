@@ -144,8 +144,8 @@ const FeaturedArea = () => {
                         {" "}
                         <p className="fs-5 fw-semibold">
                           <i
-                            class="ri-star-half-line pe-2"
-                            style={{ color: "#f8a500" }}
+                            class="ri-star-half-line "
+                            
                           ></i>
                           {menu.rating}
                         </p>

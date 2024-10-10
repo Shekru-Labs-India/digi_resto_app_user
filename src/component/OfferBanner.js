@@ -205,8 +205,8 @@ const OfferBanner = () => {
                             <span className="custom_font_size offer-color">
                               {menu.offer || "No "}% Off
                             </span>
-                            <span className="custom_font_size fw-semibold gray-text ps-4">
-                              <i className="ri-star-half-line pe-2 ratingStar"></i>
+                            <span className="custom_font_size fw-semibold gray-text ms-3">
+                              <i className="ri-star-half-line ratingStar"></i>
                               {menu.rating}
                             </span>
                           </div>
