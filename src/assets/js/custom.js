@@ -77,47 +77,6 @@ PlantZone = function(){
         });
 	}
 	
-	// Chat Box ============
-	var handleChatBox = function (){
-        $('.chat-btn').on('click', function() {
-			
-			var chatInput = $('.message-area .form-control');
-			var chatMessageValue = chatInput.val();
-			
-			var chatEmojiArea = $('.append-media').html();
-            
-            var current = new Date();
-            var ampm = current.getHours() >= 12 ? 'pm' : 'am';
-            var actualTime = (current.getHours()% 12 +':'+current.getMinutes() +' '+ ampm);
-			
-			var messageEmojiHtml = '<div class="chat-content user">'+
-				'<div class="message-item">'+
-					'<div class="bubble">'+chatEmojiArea+'</div>'+
-					'<div class="message-time">'+actualTime+'</div>'+
-				'</div>'+
-			'</div>';
-				
-			if(chatEmojiArea.length > 0){   
-				$('.chat-box-area').append(messageEmojiHtml);
-			}
-			
-			var messageHtml = '<div class="chat-content user">'+
-				'<div class="message-item">'+
-					'<div class="bubble">'+chatMessageValue+'</div>'+
-					'<div class="message-time">'+actualTime+'</div>'+
-				'</div>'+
-			'</div>';
-			
-			if(chatMessageValue.length > 0){
-				var appendMessage = $('.chat-box-area').append(messageHtml);
-			}
-			
-			//console.log(document.body.scrollHeight)
-			window.scrollTo(0, document.body.scrollHeight);
-			var clearChatInput = chatInput.val('');    
-			var clearChatInputE = $('.append-media').empty();     
-        });
-    }
     
     // Page Back ============
 	var handleGoBack = function(){

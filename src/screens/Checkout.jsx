@@ -7,10 +7,17 @@ import OrderGif from "../assets/gif/order_success.gif";
 import { ThemeContext } from '../context/ThemeContext.js'; // Adjust the import path as needed
 
 const Checkout = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Initialize state from local storage
+    return localStorage.getItem("isDarkMode") === "true";
+  }); // State for theme
+  const { restaurantName } = useRestaurantId();
+  const isLoggedIn = !!localStorage.getItem("userData");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   console.log("Restaurant ID:", restaurantId);
-  const { isDarkMode } = useContext(ThemeContext);
+  // const { isDarkMode } = useContext(ThemeContext);
 
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
@@ -120,10 +127,6 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
-    
-
-    
-
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -180,23 +183,186 @@ const Checkout = () => {
     navigate("/MyOrder");
   };
 
- 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+  };
+
+  const getFirstName = (name) => {
+    if (!name) return "User"; // Return "User" if name is undefined or null
+    const words = name.split(" ");
+    return words[0]; // Return the first word
+  };
+
+  const toggleTheme = () => {
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    localStorage.setItem("isDarkMode", newIsDarkMode);
+  };
+
+  useEffect(() => {
+    // Apply the theme class based on the current state
+    if (isDarkMode) {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
+
+    const toTitleCase = (text) => {
+      if (!text) return "";
+      return text.replace(/\b\w/g, (char) => char.toUpperCase());
+    };
 
   return (
     <div className="page-wrapper full-height">
       <header className="header header-fixed style-3">
         <div className="header-content">
-          <div className="left-content">
-            <Link
-              to=""
-              className="back-btn dz-icon icon-sm"
-              onClick={() => navigate(-1)}
-            >
-              <i className="ri-arrow-left-line fs-2"></i>
-            </Link>
+          <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
+            <header className="header header-fixed pt-2">
+              <div className="header-content d-flex justify-content-between">
+                <div className="left-content">
+                  <Link
+                    to=""
+                    className="back-btn dz-icon icon-sm"
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="ri-arrow-left-line fs-2"></i>
+                  </Link>
+                </div>
+                <div className="mid-content">
+                  <h5 className="custom_font_size_bold pe-3">Checkout</h5>
+                </div>
+                <div className="right-content gap-1">
+                  <div className="menu-toggler" onClick={toggleSidebar}>
+                    {isLoggedIn ? (
+                      <i className="ri-menu-line fs-1"></i>
+                    ) : (
+                      <Link to="/Signinscreen">
+                        <i className="ri-login-circle-line fs-1"></i>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            {/* Dark overlay for sidebar */}
+            <div
+              className={`dark-overlay ${
+                sidebarOpen ? "dark-overlay active" : ""
+              }`}
+              onClick={toggleSidebar}
+            ></div>
+
+            {/* Sidebar */}
+            <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
+              <div className="author-box">
+                <div className="d-flex justify-content-start align-items-center m-0">
+                  <i
+                    className={
+                      userData && userData.customer_id
+                        ? "ri-user-3-fill fs-3"
+                        : "ri-user-3-line fs-3"
+                    }
+                  ></i>
+                </div>
+                <div className="custom_font_size_bold">
+                  <span className="ms-3 pt-4">
+                    {userData?.name
+                      ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                      : "Hello, User"}
+                  </span>
+                  <div className="mail ms-3 gray-text custom_font_size_bold">
+                    {userData?.mobile}
+                  </div>
+                  <div className="dz-mode mt-3 me-4">
+                    <div className="theme-btn" onClick={toggleTheme}>
+                      <i
+                        className={`ri ${
+                          isDarkMode ? "ri-sun-line" : "ri-moon-line"
+                        } sun`}
+                      ></i>
+                      <i
+                        className={`ri ${
+                          isDarkMode ? "ri-moon-line" : "ri-sun-line"
+                        } moon`}
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ul className="nav navbar-nav">
+                <li>
+                  <Link className="nav-link active" to="/Menu">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-bowl-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Menu</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Category">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-list-check-2 fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Category</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Wishlist">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-heart-2-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Favourite</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/MyOrder">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-drinks-2-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">My Orders</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Cart">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-shopping-cart-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Cart</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Profile">
+                    <span className="dz-icon icon-sm">
+                      <i
+                        className={
+                          userData && userData.customer_id
+                            ? "ri-user-3-fill fs-3"
+                            : "ri-user-3-line fs-3"
+                        }
+                      ></i>
+                    </span>
+                    <span className="custom_font_size_bold">Profile</span>
+                  </Link>
+                </li>
+              </ul>
+              {/* <div className="dz-mode mt-4 me-4">
+          <div className="theme-btn" onClick={toggleTheme}>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-sun-line" : "ri-moon-line"
+              } sun`}
+            ></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-moon-line" : "ri-sun-line"
+              } moon`}
+            ></i>
           </div>
-          <div className="mid-content">
-            <h5 className="custom_font_size_bold pe-3">Checkout</h5>
+        </div> */}
+              <div className="sidebar-bottom"></div>
+            </div>
           </div>
         </div>
       </header>
@@ -206,7 +372,10 @@ const Checkout = () => {
           <div className="dz-flex-box">
             <ul className="dz-list-group">
               <div className="mb-3">
-                <label className="custom_font_size_bold pb-2 ps-2" htmlFor="notes">
+                <label
+                  className="custom_font_size_bold pb-2 ps-2"
+                  htmlFor="notes"
+                >
                   Additional Notes:
                 </label>
                 <textarea
@@ -293,7 +462,10 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 pt-0">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 custom_font_size pt-1" style={{ color: "#a5a5a5" }}>
+                    <span
+                      className="ps-2 custom_font_size pt-1"
+                      style={{ color: "#a5a5a5" }}
+                    >
                       Service Charges ({serviceChargesPercent}%)
                     </span>
                     <span className="pe-2 custom_font_size fw-medium">
@@ -303,7 +475,10 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 mb-0 py-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 custom_font_size" style={{ color: "#a5a5a5" }}>
+                    <span
+                      className="ps-2 custom_font_size"
+                      style={{ color: "#a5a5a5" }}
+                    >
                       GST ({gstPercent}%)
                     </span>
                     <span className="pe-2 custom_font_size fw-medium text-start">
@@ -313,7 +488,10 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 mb-0 pt-0 pb-1">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 custom_font_size" style={{ color: "#a5a5a5" }}>
+                    <span
+                      className="ps-2 custom_font_size"
+                      style={{ color: "#a5a5a5" }}
+                    >
                       Discount ({discountPercent}%)
                     </span>
                     <span className="pe-2 custom_font_size">
@@ -352,16 +530,20 @@ const Checkout = () => {
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
-           
             <div className="circle">
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
-            
-            <span className="gray-text custom_font_size_bold">Your Order Successfully Placed</span>
+
+            <span className="gray-text custom_font_size_bold">
+              Your Order Successfully Placed
+            </span>
             <p className="gray-text custom_font_size_bold">
               You have successfully made payment and placed your order.
             </p>
-            <button className="btn btn-primary rounded-pill  mt-3 custom_font_size_bold" onClick={closePopup}>
+            <button
+              className="btn btn-primary rounded-pill  mt-3 custom_font_size_bold"
+              onClick={closePopup}
+            >
               View Order
             </button>
           </div>

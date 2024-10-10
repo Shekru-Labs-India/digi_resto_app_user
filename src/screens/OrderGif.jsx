@@ -7,11 +7,11 @@ const OrderGif = () => {
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    <div >
       <img 
         src={isDarkMode ? darkModeGif : lightModeGif} 
         alt="Cooking stew" 
-        style={{ width: '100%', height: '70%' }} 
+        className='img-fluid'
       />
     </div>
   );

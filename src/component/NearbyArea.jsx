@@ -354,10 +354,11 @@ const NearbyArea = () => {
                           }}
                         ></i>
                       </div>
-                      <span className="custom_font_size_bold text-wrap">
+                      <span className="">
                         <Link
                           to={`/ProductDetails/${menuItem.menu_id}`}
                           state={{ menu_cat_id: menuItem.menu_cat_id }}
+                          className="custom_font_size_bold text-wrap"
                         >
                           {toTitleCase(menuItem.name)}
                         </Link>
