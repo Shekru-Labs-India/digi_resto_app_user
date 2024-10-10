@@ -11,19 +11,24 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  padding-top: 4px;
   border-radius: 50%;
   background-color: #f0f0f0; /* Light gray background, adjust as needed */
   margin-left: 8px;
+}
+
+.arrow-icon {
+  font-size: 16px;
+  color: #333; /* Adjust color as needed */
   transition: transform 0.3s ease;
-  
+}
+
+.arrow-icon.rotated {
+  transform: rotate(-180deg);
 }
 
 
 
-.rotate_icon {
-  transform: rotate(360deg);
-  transition: transform 0.3s ease;
-}
 
 .tab {
   width: 100%;

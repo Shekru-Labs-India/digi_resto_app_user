@@ -408,14 +408,14 @@ const OrdersTab = ({ orders, type }) => {
             />
             <label className="tab-label" htmlFor={`chck${date}-${type}`}>
               <span>{date}</span>
-              <span className="">
-                <span className="gray-text ps-2 pe-2 small-number">
+              <span className="d-flex align-items-center">
+                <span className="gray-text pe-2 small-number">
                   {dateOrders.length}
                 </span>
                 <span className="icon-circle">
                   <i
-                    className={`ri-arrow-down-s-line ${
-                      checkedItems[`${date}-${type}`] ? "rotate_icon" : ""
+                    className={`ri-arrow-down-s-line arrow-icon ${
+                      checkedItems[`${date}-${type}`] ? "rotated" : ""
                     }`}
                   ></i>
                 </span>
@@ -474,7 +474,6 @@ const OrdersTab = ({ orders, type }) => {
       )}
       <Bottom></Bottom>
     </div>
-    
   );
 };
 
