@@ -4,6 +4,7 @@ import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
+import "../assets/css/Tab.css"; 
 
 const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -357,40 +358,23 @@ const MyOrder = () => {
 
 const OrdersTab = ({ orders, type }) => {
   const navigate = useNavigate();
-
-  const calculateOldPrice = (totalBill) => {
-    // Calculate the old price as 10% more than the total bill
-    return (parseFloat(totalBill) * 1.1).toFixed(2);
+  const [checkedItems, setCheckedItems] = useState({});
+  
+  const toggleChecked = (date) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [date]: !prev[date],
+    }));
   };
 
   const handleOrderClick = (orderNumber) => {
-    // Navigate to the TrackOrder component with the order_number
     navigate(`/TrackOrder/${orderNumber}`);
-  };
-
-  const formatDateTime = (dateTime) => {
-    const [date, time] = dateTime.split(" ");
-    const [hours, minutes] = time.split(":");
-
-    // Convert hours to 12-hour format
-    let hours12 = parseInt(hours, 10);
-    const period = hours12 >= 12 ? "PM" : "AM";
-    hours12 = hours12 % 12 || 12; // Convert 0 to 12 for midnight
-
-    // Pad single-digit hours and minutes with leading zeros
-    const formattedHours = hours12.toString().padStart(2, "0");
-    const formattedMinutes = minutes.padStart(2, "0");
-
-    return `${formattedHours}:${formattedMinutes} ${period} ${date}`;
   };
 
   return (
     <div className="row g-1">
-      {orders.length === 0 ? (
-        <div
-          className="d-flex justify-content-center align-items-center flex-column"
-          style={{ height: "80vh" }}
-        >
+      {Object.keys(orders).length === 0 ? (
+        <div className="d-flex justify-content-center align-items-center flex-column" style={{ height: "80vh" }}>
           <p className="custom_font_size_bold fw-semibold gray-text">
             You haven't placed any orders yet.
           </p>
@@ -399,56 +383,65 @@ const OrdersTab = ({ orders, type }) => {
           </Link>
         </div>
       ) : (
-        orders.map((order) => (
-          <>
-            <div className="">Date from api</div>
-            <div
-              key={order.order_number}
-              className="card mb-3"
-              onClick={() => handleOrderClick(order.order_number)} // Add click handler
-              style={{ cursor: "pointer" }} // Add pointer cursor for better UX
-            >
-              <div className="card-body">
-                <div className="row align-items-center">
-                  <div className="col-4">
-                    <span className="card-title mb-1 custom_font_size_bold">
-                      {order.order_number}
-                    </span>
-                  </div>
-                  <div className="col-8 text-end">
-                    <span className="card-text gray-text mb-0 custom_font_size_bold">
-                      {formatDateTime(order.date_time)}
-                    </span>
+        Object.entries(orders).map(([date, dateOrders]) => (
+          <div className="tab" key={date}>
+            <input
+              type="checkbox"
+              id={`chck${date}`}
+              checked={checkedItems[date] || false}
+              onChange={() => toggleChecked(date)}
+            />
+            <label className="tab-label" htmlFor={`chck${date}`}>
+              <span>{date}</span>
+              <span className="">
+                <i className="ri-arrow-down-s-line"></i>
+                <span className="gray-text ps-2 small-number">{dateOrders.length}</span>
+              </span>
+            </label>
+            <div className="tab-content">
+              {dateOrders.map((order) => (
+                <div className="custom-card my-2" key={order.order_number}>
+                  <div className="card-body" onClick={() => handleOrderClick(order.order_number)}>
+                    <div className="row align-items-center">
+                      <div className="col-4">
+                        <span className="card-title mb-1 custom_font_size_bold">
+                          {order.order_number}
+                        </span>
+                      </div>
+                      <div className="col-8 text-end">
+                        <span className="card-text gray-text mb-0 custom_font_size_bold">
+                          {order.date_time}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="order-details-row">
+                      <div className="restaurant-info">
+                        <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                        <span className="restaurant-name custom_font_size_bold">
+                          {order.restaurant_name.toUpperCase()}
+                        </span>
+                        <span className="table-number custom_font_size_bold gray-text">
+                          <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
+                          {order.table_number}
+                        </span>
+                      </div>
+                      <div className="menu-info">
+                        <i className="ri-bowl-line pe-2 gray-text"></i>
+                        <span className="gray-text">
+                          {order.menu_count === 0 ? "No ongoing orders" : `${order.menu_count} Menu`}
+                        </span>
+                      </div>
+                      <div className="price-info">
+                        <span className="text-info custom_font_size_bold">
+                          ₹{order.grand_total}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="order-details-row">
-                  <div className="restaurant-info">
-                    <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                    <span className="restaurant-name  custom_font_size_bold">
-                      {order.restaurant_name.toUpperCase()}
-                    </span>
-                    <span className="table-number custom_font_size_bold gray-text">
-                      <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
-                      {order.table_number}
-                    </span>
-                  </div>
-                  <div className="menu-info">
-                    <i className="ri-bowl-line pe-2 gray-text "></i>
-                    <span className="gray-text">
-                      {order.menu_count === 0
-                        ? "No ongoing orders"
-                        : `${order.menu_count} Menu`}
-                    </span>
-                  </div>
-                  <div className="price-info">
-                    <span className="text-info custom_font_size_bold">
-                      ₹{order.grand_total}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
-          </>
+          </div>
         ))
       )}
       <Bottom />

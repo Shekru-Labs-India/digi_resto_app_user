@@ -418,41 +418,36 @@ const TrackOrder = () => {
   // Use above code after correcting the date format in the backend
 
   const formatDateTime = (dateTime) => {
-    const [date, time] = dateTime.split(" ");
-    const [day, month, year] = date.split("-");
-    const [hours, minutes] = time.split(":");
-
+    if (!dateTime) return ""; // Return empty string if dateTime is undefined or null
+    
+    const parts = dateTime.split(" ");
+    if (parts.length < 2) return dateTime; // Return original string if it doesn't have expected parts
+    
+    const [date, time] = parts;
+    const [hours, minutes] = (time || "").split(":");
+    
+    if (!hours || !minutes) return dateTime; // Return original string if hours or minutes are missing
+  
     // Convert hours to 12-hour format
     let hours12 = parseInt(hours, 10);
     const period = hours12 >= 12 ? "PM" : "AM";
     hours12 = hours12 % 12 || 12; // Convert 0 to 12 for midnight
-
+  
     // Pad single-digit hours and minutes with leading zeros
     const formattedHours = hours12.toString().padStart(2, "0");
     const formattedMinutes = minutes.padStart(2, "0");
-
+  
     // Array of month abbreviations
     const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
-
-    const currentMonth = new Date().getMonth(); // 0-11
-    const monthIndex = month ? parseInt(month, 10) - 1 : currentMonth;
-    // Get month abbreviation
-    const monthAbbr = monthNames[monthIndex] || monthNames[currentMonth];
-
-    return `${formattedHours}:${formattedMinutes} ${period} ${day}-${monthAbbr}-${year}`;
+  
+    const [day, month, year] = (date || "").split("-");
+    const monthIndex = month ? parseInt(month, 10) - 1 : new Date().getMonth();
+    const monthAbbr = monthNames[monthIndex] || "";
+  
+    return `${formattedHours}:${formattedMinutes} ${period} ${day || ""}-${monthAbbr}-${year || ""}`;
   };
 
   if (loading || !orderDetails) {
