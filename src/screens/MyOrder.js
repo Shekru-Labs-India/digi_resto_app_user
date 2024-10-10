@@ -359,6 +359,14 @@ const MyOrder = () => {
 const OrdersTab = ({ orders, type }) => {
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
+   const [checkedItems, setCheckedItems] = useState({});
+  
+  const toggleChecked = (orderNumber) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [orderNumber]: !prev[orderNumber],
+    }));
+  };
 
   const calculateOldPrice = (totalBill) => {
     // Calculate the old price as 10% more than the total bill
@@ -401,73 +409,71 @@ const OrdersTab = ({ orders, type }) => {
           </Link>
         </div>
       ) : (
-        orders.map((order) => (
-          <>
-          <div className="tab">
+        <>
+          {orders.map((order) => (
+            <div className="tab" key={order.order_number}>
               <input
                 type="checkbox"
-                id="chck1"
-                checked={isChecked}
-                onChange={() => setIsChecked(!isChecked)}
+                id={`chck${order.order_number}`}
+                checked={checkedItems[order.order_number] || false}
+                onChange={() => toggleChecked(order.order_number)}
               />
-              <label className="tab-label" htmlFor="chck1">
-                10 Oct 2024
+              <label
+                className="tab-label"
+                htmlFor={`chck${order.order_number}`}
+              >
+                <span>{formatDateTime(order.date_time)}</span>
+                <span className="">
+                  <i class="ri-arrow-down-s-line"></i>
+                  <span className="gray-text ps-2 small-number">10</span>
+                </span>
               </label>
-              {isChecked && (
-                <div className="tab-content">
-                  
-                </div>
-              )}
-            </div>
-            <div
-              key={order.order_number}
-              className="card mb-3"
-              onClick={() => handleOrderClick(order.order_number)} // Add click handler
-              style={{ cursor: "pointer" }} // Add pointer cursor for better UX
-            >
-              <div className="card-body">
-                <div className="row align-items-center">
-                  <div className="col-4">
-                    <span className="card-title mb-1 custom_font_size_bold">
-                      {order.order_number}
-                    </span>
-                  </div>
-                  <div className="col-8 text-end">
-                    <span className="card-text gray-text mb-0 custom_font_size_bold">
-                      {formatDateTime(order.date_time)}
-                    </span>
-                  </div>
-                </div>
-                <div className="order-details-row">
-                  <div className="restaurant-info">
-                    <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                    <span className="restaurant-name  custom_font_size_bold">
-                      {order.restaurant_name.toUpperCase()}
-                    </span>
-                    <span className="table-number custom_font_size_bold gray-text">
-                      <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
-                      {order.table_number}
-                    </span>
-                  </div>
-                  <div className="menu-info">
-                    <i className="ri-bowl-line pe-2 gray-text "></i>
-                    <span className="gray-text">
-                      {order.menu_count === 0
-                        ? "No ongoing orders"
-                        : `${order.menu_count} Menu`}
-                    </span>
-                  </div>
-                  <div className="price-info">
-                    <span className="text-info custom_font_size_bold">
-                      ₹{order.grand_total}
-                    </span>
+              <div className="tab-content">
+                <div className="custom-card my-2">
+                  <div className="card-body">
+                    <div className="row align-items-center">
+                      <div className="col-4">
+                        <span className="card-title mb-1 custom_font_size_bold">
+                          {order.order_number}
+                        </span>
+                      </div>
+                      <div className="col-8 text-end">
+                        <span className="card-text gray-text mb-0 custom_font_size_bold">
+                          {formatDateTime(order.date_time)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="order-details-row">
+                      <div className="restaurant-info">
+                        <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                        <span className="restaurant-name custom_font_size_bold">
+                          {order.restaurant_name.toUpperCase()}
+                        </span>
+                        <span className="table-number custom_font_size_bold gray-text">
+                          <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
+                          {order.table_number}
+                        </span>
+                      </div>
+                      <div className="menu-info">
+                        <i className="ri-bowl-line pe-2 gray-text"></i>
+                        <span className="gray-text">
+                          {order.menu_count === 0
+                            ? "No ongoing orders"
+                            : `${order.menu_count} Menu`}
+                        </span>
+                      </div>
+                      <div className="price-info">
+                        <span className="text-info custom_font_size_bold">
+                          ₹{order.grand_total}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            
-          </>
-        ))
+          ))}
+        </>
       )}
       <Bottom />
     </div>
