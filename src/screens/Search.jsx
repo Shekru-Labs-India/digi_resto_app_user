@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
 import { Toast } from "primereact/toast";
@@ -8,6 +8,12 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 const Search = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Initialize state from local storage
+    return localStorage.getItem("isDarkMode") === "true";
+  }); // State for theme
+  const isLoggedIn = !!localStorage.getItem("userData");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchedMenu, setSearchedMenu] = useState([]);
@@ -212,6 +218,31 @@ const Search = () => {
     setShowHistory(false); // Hide history when a term is clicked
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+  };
+
+  const getFirstName = (name) => {
+    if (!name) return "User"; // Return "User" if name is undefined or null
+    const words = name.split(" ");
+    return words[0]; // Return the first word
+  };
+
+  const toggleTheme = () => {
+    const newIsDarkMode = !isDarkMode;
+    setIsDarkMode(newIsDarkMode);
+    localStorage.setItem("isDarkMode", newIsDarkMode);
+  };
+
+  useEffect(() => {
+    // Apply the theme class based on the current state
+    if (isDarkMode) {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
+
   return (
     <div className="page-wrapper">
       {/* Header */}
@@ -226,6 +257,161 @@ const Search = () => {
             </div>
           </div>
         </div>
+
+        <header className="header header-fixed style-3">
+          <div className="header-content">
+            <div
+              className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}
+            >
+              <header className="header header-fixed pt-2">
+                <div className="header-content d-flex justify-content-between">
+                  <div className="left-content">
+                    <Link
+                      className="back-btn dz-icon icon-sm"
+                      onClick={() => navigate(-1)}
+                    >
+                      <i className="ri-arrow-left-line fs-2"></i>
+                    </Link>
+                  </div>
+                  <div className="mid-content">
+                    <span className="custom_font_size_bold me-3">
+                  Search
+                    </span>
+                  </div>
+                  <div className="right-content gap-1">
+                    <div className="menu-toggler" onClick={toggleSidebar}>
+                      {isLoggedIn ? (
+                        <i className="ri-menu-line fs-1"></i>
+                      ) : (
+                        <Link to="/Signinscreen">
+                          <i className="ri-login-circle-line fs-1"></i>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              {/* Dark overlay for sidebar */}
+              <div
+                className={`dark-overlay ${
+                  sidebarOpen ? "dark-overlay active" : ""
+                }`}
+                onClick={toggleSidebar}
+              ></div>
+
+              {/* Sidebar */}
+              <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
+                <div className="author-box">
+                  <div className="d-flex justify-content-start align-items-center m-0">
+                    <i
+                      className={
+                        userData && userData.customer_id
+                          ? "ri-user-3-fill fs-3"
+                          : "ri-user-3-line fs-3"
+                      }
+                    ></i>
+                  </div>
+                  <div className="custom_font_size_bold">
+                    <span className="ms-3 pt-4">
+                      {userData?.name
+                        ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                        : "Hello, User"}
+                    </span>
+                    <div className="mail ms-3 gray-text custom_font_size_bold">
+                      {userData?.mobile}
+                    </div>
+                    <div className="dz-mode mt-3 me-4">
+                      <div className="theme-btn" onClick={toggleTheme}>
+                        <i
+                          className={`ri ${
+                            isDarkMode ? "ri-sun-line" : "ri-moon-line"
+                          } sun`}
+                        ></i>
+                        <i
+                          className={`ri ${
+                            isDarkMode ? "ri-moon-line" : "ri-sun-line"
+                          } moon`}
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul className="nav navbar-nav">
+                  <li>
+                    <Link className="nav-link active" to="/Menu">
+                      <span className="dz-icon icon-sm">
+                        <i className="ri-bowl-line fs-3"></i>
+                      </span>
+                      <span className="custom_font_size_bold">Menu</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="nav-link active" to="/Category">
+                      <span className="dz-icon icon-sm">
+                        <i className="ri-list-check-2 fs-3"></i>
+                      </span>
+                      <span className="custom_font_size_bold">Category</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="nav-link active" to="/Wishlist">
+                      <span className="dz-icon icon-sm">
+                        <i className="ri-heart-2-line fs-3"></i>
+                      </span>
+                      <span className="custom_font_size_bold">Favourite</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="nav-link active" to="/MyOrder">
+                      <span className="dz-icon icon-sm">
+                        <i className="ri-drinks-2-line fs-3"></i>
+                      </span>
+                      <span className="custom_font_size_bold">My Orders</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="nav-link active" to="/Cart">
+                      <span className="dz-icon icon-sm">
+                        <i className="ri-shopping-cart-line fs-3"></i>
+                      </span>
+                      <span className="custom_font_size_bold">Cart</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="nav-link active" to="/Profile">
+                      <span className="dz-icon icon-sm">
+                        <i
+                          className={
+                            userData && userData.customer_id
+                              ? "ri-user-3-fill fs-3"
+                              : "ri-user-3-line fs-3"
+                          }
+                        ></i>
+                      </span>
+                      <span className="custom_font_size_bold">Profile</span>
+                    </Link>
+                  </li>
+                </ul>
+                {/* <div className="dz-mode mt-4 me-4">
+          <div className="theme-btn" onClick={toggleTheme}>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-sun-line" : "ri-moon-line"
+              } sun`}
+            ></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-moon-line" : "ri-sun-line"
+              } moon`}
+            ></i>
+          </div>
+        </div> */}
+                <div className="sidebar-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </header>
       </header>
 
       {/* Main Content Start */}
@@ -289,7 +475,9 @@ const Search = () => {
                       />
                     </div>
                     <div className="col-8 pt-3 pb-0 pe-0 ps-2 ">
-                      <div className="custom_font_size_bold">{menu.menu_name}</div>
+                      <div className="custom_font_size_bold">
+                        {menu.menu_name}
+                      </div>
                       <div className="row">
                         <div className="col-7 mt-1 pe-0">
                           <span

@@ -4,7 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import CompanyVersion from "../constants/CompanyVersion";
 
 const Sidebar = () => {
-    const { restaurantName } = useRestaurantId();
+  const { restaurantName } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { table_number } = useParams();
 
@@ -14,7 +14,7 @@ const Sidebar = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
-  });// State for theme
+  }); // State for theme
   const { restaurantDetails } = useRestaurantId(); // Consume context
   const isLoggedIn = !!localStorage.getItem("userData");
   // const [restaurantName, setRestaurantName] = useState(
@@ -27,9 +27,7 @@ const Sidebar = () => {
       setUserData(updatedUserData);
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
     }
-  }, [table_number, ]);
-
-  
+  }, [table_number]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -48,7 +46,6 @@ const Sidebar = () => {
     });
   };
 
-  
   useEffect(() => {
     // Apply the theme class based on the current state
     if (isDarkMode) {
@@ -77,10 +74,19 @@ const Sidebar = () => {
 
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-      {/* Header */}
       <header className="header header-fixed pt-2">
         <div className="header-content d-flex justify-content-between">
-          <div className="left-content">
+          <div className="d-flex flex-column">
+            <span className=" fw-medium hotel-name">
+              <i className="ri-store-2-line me-2"></i>
+              {restaurantName.toUpperCase() || "Restaurant Name"}
+            </span>
+            <span className="fw-medium custom-text-gray">
+              <i class="ri-user-location-line me-2 gray-text"></i>
+              {userData.tableNumber || ""}
+            </span>
+          </div>
+          <div className="right-content gap-1">
             <div className="menu-toggler" onClick={toggleSidebar}>
               {isLoggedIn ? (
                 <i className="ri-menu-line fs-1"></i>
@@ -90,20 +96,6 @@ const Sidebar = () => {
                 </Link>
               )}
             </div>
-          </div>
-          <div className="right-content gap-1">
-            <h3 className="title fw-medium hotel-name">
-              {/* {userData.restaurantName && userData.restaurantName.length > 0
-                ? userData.restaurantName.toUpperCase()
-                : "Restaurant Default"} */}
-
-              {restaurantName.toUpperCase() || "Restaurant Name"}
-              <i className="ri-store-2-line ps-2"></i>
-            </h3>
-            {/* <h2>{restaurantName || "Restaurant Name"}</h2> */}
-            <h6 className="title fw-medium h6 custom-text-gray table-number">
-              Table: {userData.tableNumber || ""}
-            </h6>
           </div>
         </div>
       </header>
