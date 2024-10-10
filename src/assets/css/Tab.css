@@ -2,6 +2,29 @@
 
 /* Accordion styles */
 
+
+
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f0f0f0; /* Light gray background, adjust as needed */
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+  
+}
+
+
+
+.rotate_icon {
+  transform: rotate(360deg);
+  transition: transform 0.3s ease;
+}
+
 .tab {
   width: 100%;
   overflow: hidden;
