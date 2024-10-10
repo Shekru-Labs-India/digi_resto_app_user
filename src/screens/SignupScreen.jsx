@@ -190,7 +190,7 @@ const Signupscreen = () => {
                     <input
                       type="text"
                       id="name"
-                      className={`form-control custom_font_size_bold ${
+                      className={`form-control custom_font_size_bold ps-2 ${
                         nameError ? "is-invalid" : ""
                       }`}
                       placeholder="Name"
@@ -213,7 +213,7 @@ const Signupscreen = () => {
                     <input
                       type="tel"
                       id="mobile"
-                      className={`form-control custom_font_size_bold ${
+                      className={`form-control custom_font_size_bold ps-2 ${
                         mobileError ? "is-invalid" : ""
                       }`}
                       placeholder="Enter Mobile Number"
@@ -262,7 +262,7 @@ const Signupscreen = () => {
                   <button
                     id="signupButton"
                     type="submit"
-                    className="dz-btn btn custom_font_size_bold btn-primary rounded-xl"
+                    className="dz-btn btn custom_font_size_bold btn-color text-white rounded-xl"
                   >
                     Create Account
                   </button>

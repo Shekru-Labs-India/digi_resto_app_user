@@ -361,7 +361,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2">
-                    <span className="title custom_font_size_bold mb-1">
+                    <span className="title custom_font_size_bold mb-1 ps-1">
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -371,7 +371,7 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 pt-1 ps-2  fw-medium  px-0">
+                    <div className="dz-quantity detail-content category-text m-0 pt-1 ms-2 ps-1   fw-medium  px-0">
                       <i className="ri-restaurant-line  me-1 category-text "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -406,7 +406,7 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-4 pt-0 ps-0 pe-5 quantity-container">
+                  <div className="col-4 pt-0 ps-1 pe-5 quantity-container">
                     <button
                       onClick={() => handleQuantityChange(-1)}
                       className="quantity-button"
@@ -441,9 +441,9 @@ const MenuDetails = () => {
               <div className="container ps-0">
                 <div className="product-info">
                   <div>
-                    <p className="custom_font_size text-wrap m-0">
+                    <span className="custom_font_size text-wrap m-0">
                       {productDetails.description}
-                    </p>
+                    </span>
                   </div>
 
                   {showQuantityError && (

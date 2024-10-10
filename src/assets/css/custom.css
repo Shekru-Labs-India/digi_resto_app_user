@@ -27,14 +27,9 @@
 
 
 
-/* 
-.custom_font_size{
-  font-size: 14px;
-}
-.custom_font_size_bold{
-  font-size: 14px !important;
-  font-weight: 600;
-} */
+
+
+
 
 
 .order-details-row {
@@ -69,6 +64,11 @@
   font-size: 1.1rem;
   font-weight: 500;
 }
+
+.custom_font_size{
+  font-size: 14px;
+}
+
 .custom_font_size_bold{
   font-size: 14px !important;
   font-weight: 600;

@@ -485,7 +485,7 @@ const Wishlist = () => {
                               </div>
                             </Link>
                           </div>
-                          <div className="col-2 text-end fs-4 ps-0 pe-2 ">
+                          <div className="col-2 text-end fs-4 ps-2 pe-0 ">
                             <i
                               className="ri-close-line  icon-adjust "
                               onClick={() =>
@@ -530,7 +530,7 @@ const Wishlist = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="col-2 px-0 d-flex align-items-center">
+                            <div className="col-2 px-0 d-flex align-items-center ps-2">
                               <span className="custom_font_size fw-semibold gray-text favRating">
                                 <i className="ri-star-half-line  ratingStar"></i>
                                 {menu.rating || 0.1}

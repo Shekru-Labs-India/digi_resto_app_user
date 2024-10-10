@@ -201,16 +201,20 @@ const OfferBanner = () => {
                           </p>
                         </ul>
                         <div className="row">
-                          <div className="col-12">
+                          <div className="col-8 pe-0">
                             <span className="custom_font_size offer-color">
                               {menu.offer || "No "}% Off
                             </span>
-                            <span className="custom_font_size fw-semibold gray-text ms-3">
-                              <i className="ri-star-half-line ratingStar"></i>
+                            </div>
+
+                            <div className="col-4 ps-0">
+                              <span className="custom_font_size fw-semibold gray-text mx-0">
+                                <i className="ri-star-half-line ratingStar"></i>
                               {menu.rating}
                             </span>
+                            </div>
                           </div>
-                        </div>
+                        
                       </div>
                     </div>
                   </Link>

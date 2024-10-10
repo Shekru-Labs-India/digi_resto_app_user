@@ -428,7 +428,7 @@ const Verifyotp = () => {
                   </div>
                 ) : (
                   <button
-                    className="dz-btn btn btn-thin btn-lg btn-primary rounded-xl"
+                    className="dz-btn btn-color text-white rounded-xl"
                     onClick={handleVerify}
                     disabled={otp.some((digit) => !digit.trim())}
                   >

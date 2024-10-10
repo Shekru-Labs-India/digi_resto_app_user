@@ -521,9 +521,9 @@ const Search = () => {
                           </span>
 
                           <span
-                            className="mb-0 mt-1 ms-3 custom_font_size offerSearch"
+                            className="mb-0 mt-1 ms-2 custom_font_size offerSearch"
                             onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
+                           
                           >
                             <span className="custom_font_size px-0 text-start offer-color offer ">
                               {menu.offer || "No "}% Off
@@ -553,7 +553,7 @@ const Search = () => {
                     </div>
                     <div className="col-1 px-0 pt-2">
                       <span
-                        className="text-muted fs-4"
+                        className=" fs-4"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRemoveItem(menu.menu_id);

@@ -141,9 +141,9 @@
                 <div className="section-head">
                   <Logoname />
                   <div className="d-flex justify-content-center">
-                    <span className="custom_font_size_bold text-muted">
+                    <span className="custom_font_size_bold ">
                       Welcome Back You've{" "}
-                      <span className="custom_font_size_bold mt-1 text-muted">
+                      <span className="custom_font_size_bold mt-1 ">
                         {" "}
                         Been Missed!
                       </span>
@@ -166,7 +166,7 @@
                       <input
                         type="tel"
                         id="mobile"
-                        className={`form-control custom_font_size_bold ${
+                        className={`form-control custom_font_size_bold ps-2 ${
                           mobileError ? "is-invalid" : ""
                         }`}
                         placeholder="Enter Mobile Number"
@@ -194,7 +194,7 @@
                   ) : (
                     <button
                       type="button"
-                      className="dz-btn btn custom_font_size_bold btn-primary rounded-xl"
+                      className="dz-btn btn-color custom_font_size_bold  rounded-xl text-white"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >
