@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/digi_resto_app_user/static/css/main.51982c27.css",
-    "main.js": "/digi_resto_app_user/static/js/main.5e53c49b.js",
+    "main.css": "/digi_resto_app_user/static/css/main.d76976d5.css",
+    "main.js": "/digi_resto_app_user/static/js/main.ee74d698.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/order_success.gif": "/digi_resto_app_user/static/media/order_success.ff087a254745acb5e294.gif",
     "static/media/primeicons.svg": "/digi_resto_app_user/static/media/primeicons.6ed59f962963a4a73af2.svg",
@@ -12,17 +12,18 @@
     "static/media/primeicons.eot": "/digi_resto_app_user/static/media/primeicons.ff0c4cd79b2ffca2de54.eot",
     "static/media/primeicons.woff": "/digi_resto_app_user/static/media/primeicons.8931fda1930c3bd21e96.woff",
     "static/media/primeicons.ttf": "/digi_resto_app_user/static/media/primeicons.a5c2a53d1ff7a9ff5933.ttf",
+    "static/media/loader-animated.gif": "/digi_resto_app_user/static/media/loader-animated.adf5f896d8e971c381f3.gif",
     "static/media/primeicons.woff2": "/digi_resto_app_user/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "static/media/chiken.jpg": "/digi_resto_app_user/static/media/chiken.f854f364c15359a79764.jpg",
     "static/media/Menu Mitra logo 1.png": "/digi_resto_app_user/static/media/Menu Mitra logo 1.f2669b4d1fd2fad7e4ff.png",
     "static/media/google lens.svg": "/digi_resto_app_user/static/media/google lens.52ef07f8871b69c3c7aae684053f079a.svg",
     "index.html": "/digi_resto_app_user/index.html",
-    "main.51982c27.css.map": "/digi_resto_app_user/static/css/main.51982c27.css.map",
-    "main.5e53c49b.js.map": "/digi_resto_app_user/static/js/main.5e53c49b.js.map",
+    "main.d76976d5.css.map": "/digi_resto_app_user/static/css/main.d76976d5.css.map",
+    "main.ee74d698.js.map": "/digi_resto_app_user/static/js/main.ee74d698.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.51982c27.css",
-    "static/js/main.5e53c49b.js"
+    "static/css/main.d76976d5.css",
+    "static/js/main.ee74d698.js"
   ]
 }
