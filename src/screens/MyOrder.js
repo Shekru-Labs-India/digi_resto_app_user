@@ -5,6 +5,8 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
 import "../assets/css/Tab.css";
+import OrderGif from './OrderGif';
+
 
 const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -279,9 +281,10 @@ const MyOrder = () => {
           {loading ? (
             <div id="preloader">
               <div className="loader">
-                <div className="spinner-border text-primary" role="status">
+                {/* <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
-                </div>
+                </div> */}
+                <OrderGif/>
               </div>
             </div>
           ) : (
@@ -415,7 +418,7 @@ const OrdersTab = ({ orders, type }) => {
                 <span className="icon-circle">
                   <i
                     className={`ri-arrow-down-s-line arrow-icon ${
-                      checkedItems[`${date}-${type}`] ? "rotated" : ""
+                      checkedItems[`${date}-${type}`] ? "rotated" : "rotated-1"
                     }`}
                   ></i>
                 </span>

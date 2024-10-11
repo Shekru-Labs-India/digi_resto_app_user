@@ -131,6 +131,8 @@ import { Link, useNavigate } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
 const OrderTracking = () => {
   const [orders, setOrders] = useState([]);
@@ -188,9 +190,10 @@ const OrderTracking = () => {
           {loading ? (
             <div id="preloader">
               <div className="loader">
-                <div className="spinner-border text-primary" role="status">
+                {/* <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
-                </div>
+                </div> */}
+                <LoaderGif />
               </div>
             </div>
           ) : (

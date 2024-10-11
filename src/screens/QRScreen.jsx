@@ -95,7 +95,7 @@ const QRScanner = () => {
           />
         </div>
       )}
-      <div className="container">
+      <div className="container px-0">
         <HotelList />
       </div>
     </div>

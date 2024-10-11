@@ -221,6 +221,8 @@ import { Toast } from "primereact/toast"; // Import Toast from primereact
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
 const Verifyotp = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -384,10 +386,15 @@ const Verifyotp = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <span className="custom_font_size_bold ms-4 ps-2">Enter OTP</span>
+                <span className="custom_font_size_bold ms-4 ps-2">
+                  Enter OTP
+                </span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
-                <label className="custom_font_size_bold ms-4 ps-1" htmlFor="otp">
+                <label
+                  className="custom_font_size_bold ms-4 ps-1"
+                  htmlFor="otp"
+                >
                   <span className="required-star">*</span>OTP
                 </label>
                 <div
@@ -418,12 +425,13 @@ const Verifyotp = () => {
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      <div
+                      {/* <div
                         className="spinner-border text-primary"
                         role="status"
                       >
                         <span className="visually-hidden">Loading...</span>
-                      </div>
+                      </div> */}
+                      <LoaderGif />
                     </div>
                   </div>
                 ) : (

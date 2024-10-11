@@ -4,6 +4,8 @@ import Bottom from "../component/bottom";
 import defaultImg from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import south from "../assets/MenuDefault.png";
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
 const Category = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -103,9 +105,10 @@ const Category = () => {
       {loading ? (
         <div id="preloader">
           <div className="loader">
-            <div className="spinner-border text-primary" role="status">
+            {/* <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
-            </div>
+            </div> */}
+            <LoaderGif />
           </div>
         </div>
       ) : (

@@ -7,6 +7,7 @@ import OrderGif from "../screens/OrderGif"; // Ensure this import path is correc
 import "../assets/css/custom.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
+import LoaderGif from "./LoaderGIF.jsx";
 
 const TrackOrder = () => {
   // Define displayCartItems
@@ -454,9 +455,10 @@ const TrackOrder = () => {
     return (
       <div id="preloader">
         <div className="loader">
-          <div className="spinner-border text-primary" role="status">
+          {/* <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
-          </div>
+          </div> */}
+          <LoaderGif />
         </div>
       </div>
     );

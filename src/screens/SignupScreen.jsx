@@ -6,6 +6,8 @@ import CompanyVersion from "../constants/CompanyVersion";
 import { Toast } from "primereact/toast"; // Import Toast from primereact
 import "primereact/resources/themes/saga-blue/theme.css"; // Theme
 import "primereact/resources/primereact.min.css"; // Core CSS
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
 const Signupscreen = () => {
   const navigate = useNavigate();
@@ -250,12 +252,13 @@ const Signupscreen = () => {
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      <div
+                      {/* <div
                         className="spinner-border text-primary"
                         role="status"
                       >
                         <span className="visually-hidden">Loading...</span>
-                      </div>
+                      </div> */}
+                      <LoaderGif />
                     </div>
                   </div>
                 ) : (

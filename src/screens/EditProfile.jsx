@@ -10,6 +10,8 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css"; 
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
 
 const EditProfile = () => {
@@ -139,9 +141,10 @@ const EditProfile = () => {
           {loading ? (
             <div id="preloader">
               <div className="loader">
-                <div className="spinner-border text-primary" role="status">
+                {/* <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
-                </div>
+                </div> */}
+                <LoaderGif />
               </div>
             </div>
           ) : (
@@ -183,7 +186,9 @@ const EditProfile = () => {
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   onClick={handleUpdateProfile}
                 >
-                  <span className="custom_font_size_bold text-white">Save Changes</span>
+                  <span className="custom_font_size_bold text-white">
+                    Save Changes
+                  </span>
                 </button>
               </div>
             </div>

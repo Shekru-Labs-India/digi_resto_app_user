@@ -6,6 +6,8 @@
   import { Toast } from "primereact/toast"; // Import Toast from primereact
   import "primereact/resources/themes/saga-blue/theme.css"; // Theme
   import "primereact/resources/primereact.min.css"; // Core CSS
+import OrderGif from "./OrderGif";
+import LoaderGif from "./LoaderGIF";
 
   const Signinscreen = () => {
     const [mobile, setMobile] = useState("");
@@ -153,10 +155,7 @@
 
                 <form onSubmit={(e) => e.preventDefault()}>
                   <div className="m-b15">
-                    <label
-                      className=" custom_font_size_bold"
-                      htmlFor="mobile"
-                    >
+                    <label className=" custom_font_size_bold" htmlFor="mobile">
                       <span className="required-star">*</span> Mobile
                     </label>
                     <div className="input-group text-muted">
@@ -183,12 +182,13 @@
                   {loading ? (
                     <div id="preloader">
                       <div className="loader">
-                        <div
+                        {/* <div
                           className="spinner-border text-primary"
                           role="status"
                         >
                           <span className="visually-hidden">Loading...</span>
-                        </div>
+                        </div> */}
+                        <LoaderGif />
                       </div>
                     </div>
                   ) : (
@@ -216,8 +216,12 @@
           </div>
         </main>
         <div className="text-center mt-5 pt-5">
-          <div className="gray-text custom_font_size_bold mt-5">Powered by </div>
-          <div className="gray-text custom_font_size_bold">Shekru Labs India Pvt. Ltd.</div>
+          <div className="gray-text custom_font_size_bold mt-5">
+            Powered by{" "}
+          </div>
+          <div className="gray-text custom_font_size_bold">
+            Shekru Labs India Pvt. Ltd.
+          </div>
           <div className="gray-text  custom_font_size_bold ">v1.1</div>
         </div>
       </div>

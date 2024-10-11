@@ -7,6 +7,8 @@ import "swiper/swiper-bundle.css"; // Correctly import Swiper CSS
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import OrderGif from "../screens/OrderGif";
+import LoaderGif from "../screens/LoaderGIF";
 
 const OfferBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -156,9 +158,10 @@ const OfferBanner = () => {
       {loading ? (
         <div id="preloader">
           <div className="loader">
-            <div className="spinner-border text-primary" role="status">
+            {/* <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
-            </div>
+            </div> */}
+            <LoaderGif />
           </div>
         </div>
       ) : (
@@ -205,16 +208,15 @@ const OfferBanner = () => {
                             <span className="custom_font_size offer-color">
                               {menu.offer || "No "}% Off
                             </span>
-                            </div>
+                          </div>
 
-                            <div className="col-4 ps-0">
-                              <span className="custom_font_size fw-semibold gray-text mx-0">
-                                <i className="ri-star-half-line ratingStar"></i>
+                          <div className="col-4 ps-0">
+                            <span className="custom_font_size fw-semibold gray-text mx-0">
+                              <i className="ri-star-half-line ratingStar"></i>
                               {menu.rating}
                             </span>
-                            </div>
                           </div>
-                        
+                        </div>
                       </div>
                     </div>
                   </Link>
