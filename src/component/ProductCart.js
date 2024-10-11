@@ -6,7 +6,9 @@ import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
 import Signinscreen from "./../screens/Signinscreen";
+import LoaderGif from "../screens/LoaderGIF";
 import { Toast } from "primereact/toast";
+
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -35,6 +37,7 @@ const ProductCard = () => {
   const hasFetchedData = useRef(false);
   const swiperRef = useRef(null);
    const toast = useRef(null);
+   const [loading, setLoading] = useState(true);
 
   // Sync cartItems with localStorage
   useEffect(() => {
@@ -281,6 +284,16 @@ const ProductCard = () => {
   const isMenuItemInCart = (menuId) => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
+
+  if (isLoading || menuList.length === 0) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

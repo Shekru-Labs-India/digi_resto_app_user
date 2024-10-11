@@ -765,7 +765,7 @@ const Product = () => {
         </div>
 
         {/* Sort and Filter Buttons */}
-        {/* <div
+        <div
           className="footer fixed"
           style={{ zIndex: 1, position: "fixed", bottom: "70px" }}
         >
@@ -891,7 +891,7 @@ const Product = () => {
               </div>
             </div>
           )}
-        </div> */}
+        </div>
       </main>
 
       <Bottom />

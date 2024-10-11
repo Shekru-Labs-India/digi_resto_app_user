@@ -5,8 +5,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
 import "../assets/css/Tab.css";
-import OrderGif from './OrderGif';
-
+import OrderGif from "./OrderGif";
 
 const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -47,7 +46,7 @@ const MyOrder = () => {
             },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              order_status: activeTab === "ongoing" ? "Ongoing" : "Completed",
+              order_status: activeTab === "ongoing" ? "ongoing" : "completed",
               customer_id: customerId,
             }),
           }
@@ -284,7 +283,7 @@ const MyOrder = () => {
                 {/* <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div> */}
-                <OrderGif/>
+                <OrderGif />
               </div>
             </div>
           ) : (
@@ -314,7 +313,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link custom_font_size_bold ${
+                          className={`nav-link custom_font_size_bold   ${
                             activeTab === "completed" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("completed")}
@@ -361,10 +360,12 @@ const MyOrder = () => {
 const OrdersTab = ({ orders, type }) => {
   const navigate = useNavigate();
   const [checkedItems, setCheckedItems] = useState({});
+  const [expandAll, setExpandAll] = useState(false);
 
   useEffect(() => {
     // Reset checkedItems when orders or type changes
     setCheckedItems({});
+    setExpandAll(false);
   }, [orders, type]);
 
   const toggleChecked = (date) => {
@@ -378,6 +379,16 @@ const OrdersTab = ({ orders, type }) => {
     navigate(`/TrackOrder/${orderNumber}`);
   };
 
+  const toggleExpandAll = () => {
+    const newExpandAll = !expandAll;
+    setExpandAll(newExpandAll);
+    const newCheckedItems = {};
+    Object.keys(orders).forEach((date) => {
+      newCheckedItems[`${date}-${type}`] = newExpandAll;
+    });
+    setCheckedItems(newCheckedItems);
+  };
+
   const formatDateTime = (dateTimeString) => {
     if (!dateTimeString) return "";
     const [date, time] = dateTimeString.split(" ");
@@ -388,6 +399,24 @@ const OrdersTab = ({ orders, type }) => {
 
   return (
     <div className="row g-1">
+      {Object.keys(orders).length > 0 && (
+        <div className="d-flex justify-content-end my-1 py-0 ps-0 pe-3">
+          <div
+            className="d-flex align-items-center cursor-pointer icon-border py-0"
+            onClick={toggleExpandAll}
+            role="button"
+            aria-label={expandAll ? "Collapse All" : "Expand All"}
+          >
+            <span className="icon-circle">
+              <i
+                className={`ri-arrow-down-s-line arrow-icon ${
+                  expandAll ? "rotated" : "rotated-1"
+                }`}
+              ></i>
+            </span>
+          </div>
+        </div>
+      )}
       {Object.keys(orders).length === 0 ? (
         <div
           className="d-flex justify-content-center align-items-center flex-column"
@@ -402,14 +431,14 @@ const OrdersTab = ({ orders, type }) => {
         </div>
       ) : (
         Object.entries(orders).map(([date, dateOrders]) => (
-          <div className="tab" key={`${date}-${type}`}>
+          <div className="tab mt-0" key={`${date}-${type}`}>
             <input
               type="checkbox"
               id={`chck${date}-${type}`}
               checked={checkedItems[`${date}-${type}`] || false}
               onChange={() => toggleChecked(`${date}-${type}`)}
             />
-            <label className="tab-label" htmlFor={`chck${date}-${type}`}>
+            <label className="tab-label pt-1 pb-0" htmlFor={`chck${date}-${type}`}>
               <span>{date}</span>
               <span className="d-flex align-items-center">
                 <span className="gray-text pe-2 small-number">

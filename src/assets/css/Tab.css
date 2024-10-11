@@ -2,7 +2,16 @@
 
 /* Accordion styles */
 
+.btn .icon-circle {
+  width: 20px;
+  height: 20px;
+  padding-top: 2px;
+  background-color: #f0f0f0;
+}
 
+.btn .arrow-icon {
+  font-size: 14px;
+}
 
 
 .icon-circle {
@@ -11,10 +20,23 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  padding-top: 4px;
+  
   border-radius: 50%;
-  background-color: #f0f0f0; /* Light gray background, adjust as needed */
-  margin-left: 8px;
+  background-color: #f0f0f0; 
+ 
+ 
+}
+
+.icon-border{
+  border: 1px solid gray;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  
 }
 
 .arrow-icon {
