@@ -9,8 +9,6 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import LoaderGif from "./LoaderGIF";
-
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -279,7 +277,7 @@ const Wishlist = () => {
     }
   }, [isDarkMode]);
 
-  if (isLoading ) {
+  if (isLoading) {
     return (
       <div id="preloader">
         <div className="loader">
@@ -291,7 +289,6 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-      
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <header className="header header-fixed style-3">
@@ -459,34 +456,23 @@ const Wishlist = () => {
       </header>
 
       <main className="page-content space-top p-b0 mt-3 mb-5 pb-3 ">
-        {loading ? (
-          <div id="preloader">
-            <div className="loader">
-              <LoaderGif />
-            </div>
-          </div>
-        ) : customerId ? (
+        {customerId ? (
           Object.keys(menuList).length > 0 ? (
             <>
               <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
-               
-                 
-                    <div
-                      className="d-flex align-items-center cursor-pointer ps-0 py-0 icon-border"
-                      onClick={toggleExpandAll}
-                      role="button"
-                      aria-label={expandAll ? "Collapse All" : "Expand All"}
-                    >
-                      
-                      <span className="icon-circle">
-                        <i
-                          className={`ri-arrow-down-s-line arrow-icon ${
-                            expandAll ? "rotated" : "rotated-1"
-                          }`}
-                        ></i>
-                      </span>
-                   
-                 
+                <div
+                  className="d-flex align-items-center cursor-pointer ps-0 py-0 icon-border"
+                  onClick={toggleExpandAll}
+                  role="button"
+                  aria-label={expandAll ? "Collapse All" : "Expand All"}
+                >
+                  <span className="icon-circle">
+                    <i
+                      className={`ri-arrow-down-s-line arrow-icon ${
+                        expandAll ? "rotated" : "rotated-1"
+                      }`}
+                    ></i>
+                  </span>
                 </div>
               </div>
               {Object.keys(menuList).map((restaurantName) => (

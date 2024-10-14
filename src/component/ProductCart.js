@@ -389,7 +389,7 @@ const ProductCard = () => {
                       state={{ menu_cat_id: menu.menu_cat_id }}
                     >
                       <div
-                        className="dz-quantity detail-content fs-xs fw-medium"
+                        className="dz-quantity detail-content action_icon_size"
                         style={{ color: "#0a795b" }}
                       >
                         <i
