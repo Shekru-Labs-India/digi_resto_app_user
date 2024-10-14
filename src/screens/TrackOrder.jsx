@@ -367,7 +367,7 @@ const TrackOrder = () => {
   const handleSubmitOrder = async () => {
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/add_to_order",
+        "https://menumitra.com/user_api/add_to_existing_order",
         {
           method: "POST",
           headers: {
@@ -982,7 +982,7 @@ const TrackOrder = () => {
                 <div className="row g-3 mb-3">
                   <div className="d-flex justify-content-between align-items-center mb-2 mt-0">
                     <h6 className="customFontSizeBold mb-0 gray-text">
-                      Newly Added Itmes
+                      Newly Added In Basket
                     </h6>
                   </div>
                   {pendingItems.map((menu) => (
@@ -1080,7 +1080,7 @@ const TrackOrder = () => {
               {/* Original menu items */}
               <div className="row ">
                 <span className="custom_font_size_bold gray-text ms-1 mb-2 ">
-                  Ordered Items
+                  Existing Ordered Items
                 </span>
                 {[...menu_details, ...orderedItems].map((menu) => {
                   const oldPrice = (
