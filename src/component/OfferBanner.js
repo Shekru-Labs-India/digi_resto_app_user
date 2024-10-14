@@ -174,14 +174,10 @@ const OfferBanner = () => {
                     to={`/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
                   >
-                    <div className="cart-list rounded-4 style-2-custom">
-                      <div className="dz-media media-100">
+                    <div className="cart-list  style-2-custom">
+                      <div className="dz-media media-100 rounded-start-3 rounded-end-0">
                         <img
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
+                           style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
                           src={menu.image || images} // Use default image if menu.image is null
                           alt={menu.name}
                           onError={(e) => {

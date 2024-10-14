@@ -4,6 +4,7 @@ import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
+import LoaderGif from "./LoaderGIF";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
@@ -12,14 +13,26 @@ import LoaderGif from "./LoaderGIF";
 
 
 const Wishlist = () => {
-    const [checkedItems, setCheckedItems] = useState({});
+  const [checkedItems, setCheckedItems] = useState({});
+  const [expandAll, setExpandAll] = useState(false);
 
-    const toggleChecked = (restaurantName) => {
-      setCheckedItems((prev) => ({
-        ...prev,
-        [restaurantName]: !prev[restaurantName],
-      }));
-    };
+  const toggleChecked = (restaurantName) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [restaurantName]: !prev[restaurantName],
+    }));
+  };
+
+  const toggleExpandAll = () => {
+    const newExpandAll = !expandAll;
+    setExpandAll(newExpandAll);
+    const newCheckedItems = {};
+    Object.keys(menuList).forEach((restaurantName) => {
+      newCheckedItems[restaurantName] = newExpandAll;
+    });
+    setCheckedItems(newCheckedItems);
+  };
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
@@ -27,7 +40,7 @@ const Wishlist = () => {
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [menuList, setMenuList] = useState({});
-  const [loading, setLoading] = useState(true);
+
   const [cartItems, setCartItems] = useState(
     () => JSON.parse(localStorage.getItem("cartItems")) || []
   );
@@ -40,6 +53,7 @@ const Wishlist = () => {
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     if (restaurantId) {
@@ -69,9 +83,18 @@ const Wishlist = () => {
         }
       );
 
-      // ... rest of the function remains the same
+      const data = await response.json();
+
+      if (response.ok && data.st === 1) {
+        console.log("Item removed successfully");
+        return true;
+      } else {
+        console.error("Failed to remove item:", data.msg || "Unknown error");
+        throw new Error(data.msg || "Failed to remove item");
+      }
     } catch (error) {
-      // ... error handling remains the same
+      console.error("Error removing favorite item:", error);
+      throw error;
     }
   };
 
@@ -196,8 +219,40 @@ const Wishlist = () => {
     fetchFavoriteItems();
   }, [customerId, restaurantId]);
 
-  const handleRemoveItemClick = (restaurantName, menuId, restaurantId) => {
-    removeItem(restaurantName, menuId, restaurantId);
+  const handleRemoveItemClick = async (restaurantId, menuId) => {
+    if (!customerId || !menuId || !restaurantId) {
+      console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
+      return;
+    }
+
+    try {
+      await removeItem(restaurantId, menuId, customerId);
+      // After successful removal, update the UI
+      setMenuList((prevMenuList) => {
+        const updatedMenuList = { ...prevMenuList };
+        Object.keys(updatedMenuList).forEach((restaurantName) => {
+          updatedMenuList[restaurantName] = updatedMenuList[
+            restaurantName
+          ].filter((item) => item.menu_id !== menuId);
+        });
+        return updatedMenuList;
+      });
+
+      toast.current.show({
+        severity: "success",
+        summary: "Item Removed",
+        detail: "Item has been removed from favorites",
+        life: 3000,
+      });
+    } catch (error) {
+      console.error("Error removing item:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to remove item from favorites",
+        life: 3000,
+      });
+    }
   };
 
   const toggleSidebar = () => {
@@ -224,6 +279,16 @@ const Wishlist = () => {
     }
   }, [isDarkMode]);
 
+  if (isLoading ) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-wrapper full-height">
       
@@ -244,7 +309,7 @@ const Wishlist = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold me-3">
+                  <span className="custom_font_size_bold me-3 title">
                     Favourite{" "}
                     {Object.keys(menuList).length > 0 && (
                       <span className="gray-text small-number">
@@ -282,8 +347,112 @@ const Wishlist = () => {
 
             {/* Sidebar */}
             <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
-              {/* Sidebar content */}
-              {/* ... (keep the existing sidebar content) ... */}
+              <div className="author-box">
+                <div className="d-flex justify-content-start align-items-center m-0">
+                  <i
+                    className={
+                      userData && userData.customer_id
+                        ? "ri-user-3-fill fs-3"
+                        : "ri-user-3-line fs-3"
+                    }
+                  ></i>
+                </div>
+                <div className="custom_font_size_bold">
+                  <span className="ms-3 pt-4">
+                    {userData?.name
+                      ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                      : "Hello, User"}
+                  </span>
+                  <div className="mail ms-3 gray-text custom_font_size_bold">
+                    {userData?.mobile}
+                  </div>
+                  <div className="dz-mode mt-3 me-4">
+                    <div className="theme-btn" onClick={toggleTheme}>
+                      <i
+                        className={`ri ${
+                          isDarkMode ? "ri-sun-line" : "ri-moon-line"
+                        } sun`}
+                      ></i>
+                      <i
+                        className={`ri ${
+                          isDarkMode ? "ri-moon-line" : "ri-sun-line"
+                        } moon`}
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ul className="nav navbar-nav">
+                <li>
+                  <Link className="nav-link active" to="/Menu">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-bowl-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Menu</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Category">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-list-check-2 fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Category</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Wishlist">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-heart-2-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Favourite</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/MyOrder">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-drinks-2-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">My Orders</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Cart">
+                    <span className="dz-icon icon-sm">
+                      <i className="ri-shopping-cart-line fs-3"></i>
+                    </span>
+                    <span className="custom_font_size_bold">Cart</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link className="nav-link active" to="/Profile">
+                    <span className="dz-icon icon-sm">
+                      <i
+                        className={
+                          userData && userData.customer_id
+                            ? "ri-user-3-fill fs-3"
+                            : "ri-user-3-line fs-3"
+                        }
+                      ></i>
+                    </span>
+                    <span className="custom_font_size_bold">Profile</span>
+                  </Link>
+                </li>
+              </ul>
+              {/* <div className="dz-mode mt-4 me-4">
+          <div className="theme-btn" onClick={toggleTheme}>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-sun-line" : "ri-moon-line"
+              } sun`}
+            ></i>
+            <i
+              className={`ri ${
+                isDarkMode ? "ri-moon-line" : "ri-sun-line"
+              } moon`}
+            ></i>
+          </div>
+        </div> */}
+              <div className="sidebar-bottom"></div>
             </div>
           </div>
         </div>
@@ -298,155 +467,185 @@ const Wishlist = () => {
           </div>
         ) : customerId ? (
           Object.keys(menuList).length > 0 ? (
-            Object.keys(menuList).map((restaurantName) => (
-              <div className="container py-0" key={restaurantName}>
-                <div className="tab pt-0">
-                  <input
-                    type="checkbox"
-                    id={`chck${restaurantName}`}
-                    checked={checkedItems[restaurantName] || false}
-                    onChange={() => toggleChecked(restaurantName)}
-                  />
-                  <label
-                    className="tab-label pb-0 px-0"
-                    htmlFor={`chck${restaurantName}`}
-                  >
-                    <span className="">
-                      <span class=" fw-medium hotel-name">
-                        <i class="ri-store-2-line me-2"></i>
-                        {restaurantName.toUpperCase()}
-                      </span>
-                    </span>
-                    <span className="">
-                      <span className="gray-text ps-2 pe-2 small-number">
-                        {menuList[restaurantName].length}
-                      </span>
+            <>
+              <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
+               
+                 
+                    <div
+                      className="d-flex align-items-center cursor-pointer ps-0 py-0 icon-border"
+                      onClick={toggleExpandAll}
+                      role="button"
+                      aria-label={expandAll ? "Collapse All" : "Expand All"}
+                    >
+                      
                       <span className="icon-circle">
                         <i
                           className={`ri-arrow-down-s-line arrow-icon ${
-                            checkedItems[restaurantName]
-                              ? "rotated"
-                              : "rotated-1"
+                            expandAll ? "rotated" : "rotated-1"
                           }`}
                         ></i>
                       </span>
-                    </span>
-                  </label>
-                  <div className="tab-content">
-                    {menuList[restaurantName].map((menu, index) => (
-                      <div className="container py-1 px-0" key={index}>
-                        <div className="custom-card rounded-4 ">
-                          <div className="card-body py-0">
-                            <div className="row">
-                              <div className="col-3 px-0">
-                                <Link
-                                  to={`/ProductDetails/${menu.menu_id}`}
-                                  state={{
-                                    restaurant_id: menu.restaurant_id,
-                                    menu_cat_id: menu.menu_cat_id,
-                                  }}
-                                >
-                                  <img
-                                    src={menu.image || images}
-                                    alt={menu.menu_name}
-                                    className="rounded-4 img-fluid"
-                                    style={{ width: "100px", height: "100px" }}
-                                    onError={(e) => {
-                                      e.target.src = images;
-                                      e.target.style.width = "100px";
-                                      e.target.style.height = "100px";
+                   
+                 
+                </div>
+              </div>
+              {Object.keys(menuList).map((restaurantName) => (
+                <div className="container py-0">
+                  <div key={restaurantName} className="tab pt-0">
+                    <input
+                      type="checkbox"
+                      id={`chck${restaurantName}`}
+                      checked={checkedItems[restaurantName] || false}
+                      onChange={() => toggleChecked(restaurantName)}
+                    />
+                    <label
+                      className="tab-label pb-0 px-0 pt-2"
+                      htmlFor={`chck${restaurantName}`}
+                    >
+                      <span className="">
+                        <span class=" fw-medium hotel-name">
+                          <i class="ri-store-2-line me-2"></i>
+                          {restaurantName.toUpperCase()}
+                        </span>
+                      </span>
+                      <span className="">
+                        <span className="gray-text ps-2 pe-2 small-number">
+                          {menuList[restaurantName].length}
+                        </span>
+                        <span className="icon-circle">
+                          <i
+                            className={`ri-arrow-down-s-line arrow-icon pt-0 ${
+                              checkedItems[restaurantName]
+                                ? "rotated"
+                                : "rotated-1"
+                            }`}
+                          ></i>
+                        </span>
+                      </span>
+                    </label>
+                    <div className="tab-content">
+                      {menuList[restaurantName].map((menu, index) => (
+                        <div className="container py-1 px-0" key={index}>
+                          <div className="custom-card rounded-4 ">
+                            <div className="card-body py-0">
+                              <div className="row">
+                                <div className="col-3 px-0">
+                                  <Link
+                                    to={`/ProductDetails/${menu.menu_id}`}
+                                    state={{
+                                      restaurant_id: menu.restaurant_id,
+                                      menu_cat_id: menu.menu_cat_id,
                                     }}
-                                  />
-                                </Link>
-                              </div>
-                              <div className="col-9 pt-1 p-0">
-                                <div className="row">
-                                  <div className="col-9 pe-2">
-                                    <Link
-                                      to={`/ProductDetails/${menu.menu_id}`}
-                                      state={{
-                                        restaurant_id: menu.restaurant_id,
-                                        menu_cat_id: menu.menu_cat_id,
+                                  >
+                                    <img
+                                      src={menu.image || images}
+                                      alt={menu.menu_name}
+                                      className="rounded-start-3 img-fluid"
+                                      style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "fill",
+                                        aspectRatio: "1/1",
                                       }}
-                                    >
-                                      <div className="ps-2 custom_font_size_bold">
-                                        {menu.menu_name}
-                                      </div>
-                                    </Link>
-                                  </div>
-                                  <div className="col-2 text-end fs-4 ps-0 pe-2">
-                                    <i
-                                      className="ri-hearts-fill icon-adjust heart-fill"
-                                      onClick={() =>
-                                        handleRemoveItemClick(
-                                          restaurantName,
-                                          menu.menu_id,
-                                          menu.restaurant_id
-                                        )
-                                      }
-                                    ></i>
-                                  </div>
+                                      onError={(e) => {
+                                        e.target.src = images;
+                                        e.target.style.width = "100px";
+                                        e.target.style.height = "100px";
+                                      }}
+                                    />
+                                  </Link>
                                 </div>
-                                <div className="row">
-                                  <div className="col-5 pe-0 ps-4">
-                                    <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs fw-medium"></i>
-                                    <span className="category-text fs-xs fw-medium">
-                                      {menu.category_name}
-                                    </span>
+                                <div className="col-9 pt-1 p-0">
+                                  <div className="row">
+                                    <div className="col-9 pe-2">
+                                      <Link
+                                        to={`/ProductDetails/${menu.menu_id}`}
+                                        state={{
+                                          restaurant_id: menu.restaurant_id,
+                                          menu_cat_id: menu.menu_cat_id,
+                                        }}
+                                      >
+                                        <div className="ps-2 custom_font_size_bold">
+                                          {menu.menu_name}
+                                        </div>
+                                      </Link>
+                                    </div>
+                                    <div className="col-2 text-end fs-4 ps-0 pe-2">
+                                      <i
+                                        className="ri-hearts-fill icon-adjust heart-fill"
+                                        onClick={() =>
+                                          handleRemoveItemClick(
+                                            restaurantName,
+                                            menu.menu_id,
+                                            menu.restaurant_id
+                                          )
+                                        }
+                                      ></i>
+                                    </div>
                                   </div>
-                                  <div className="col-5 text-center fireNegative ps-0">
-                                    {menu.spicy_index && (
-                                      <div className="offer-code">
-                                        {Array.from({ length: 5 }).map(
-                                          (_, index) =>
-                                            index < menu.spicy_index ? (
-                                              <i
-                                                className="ri-fire-fill fs-6"
-                                                style={{ color: "#eb8e57" }}
-                                                key={index}
-                                              ></i>
-                                            ) : (
-                                              <i
-                                                className="ri-fire-line fs-6 gray-text"
-                                                key={index}
-                                              ></i>
-                                            )
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="col-2 px-0 d-flex align-items-center">
-                                    <span className="custom_font_size fw-semibold gray-text favRating">
-                                      <i className="ri-star-half-line ratingStar"></i>
-                                      {menu.rating || 0.1}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="row mt-2 ps-2 align-items-center">
-                                  <div className="col-12 d-flex justify-content-between align-items-center">
-                                    <div className="d-flex align-items-center">
-                                      <p className="mb-0 fs-4 me-2 fw-medium">
-                                        <span className="me-1 text-info custom_font_size_bold">
-                                          ₹{menu.price}
-                                        </span>
-                                        <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
-                                          ₹{menu.oldPrice || menu.price}
-                                        </span>
-                                      </p>
-                                      <span className="offer-color favoffer custom_font_size">
-                                        {menu.offer || "No"}% Off
+                                  <div className="row">
+                                    <div className="col-5 pe-0 ps-4">
+                                      <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs fw-medium"></i>
+                                      <span className="category-text fs-xs fw-medium">
+                                        {menu.category_name}
                                       </span>
                                     </div>
-                                    <div
-                                      className="cart-btn cart-align me-3"
-                                      onClick={() => handleAddToCartClick(menu)}
-                                    >
-                                      {isMenuItemInCart(menu.menu_id) ? (
-                                        <i className="ri-shopping-cart-fill fs-2"></i>
-                                      ) : (
-                                        <i className="ri-shopping-cart-line fs-2"></i>
+                                    <div className="col-5 text-center fireNegative ps-0">
+                                      {menu.spicy_index && (
+                                        <div className="offer-code">
+                                          {Array.from({ length: 5 }).map(
+                                            (_, index) =>
+                                              index < menu.spicy_index ? (
+                                                <i
+                                                  className="ri-fire-fill fs-6"
+                                                  style={{ color: "#eb8e57" }}
+                                                  key={index}
+                                                ></i>
+                                              ) : (
+                                                <i
+                                                  className="ri-fire-line fs-6 gray-text"
+                                                  key={index}
+                                                ></i>
+                                              )
+                                          )}
+                                        </div>
                                       )}
+                                    </div>
+                                    <div className="col-2 px-0 d-flex align-items-center">
+                                      <span className="custom_font_size fw-semibold gray-text favRating">
+                                        <i className="ri-star-half-line ratingStar"></i>
+                                        {menu.rating || 0.1}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="row mt-2 ps-2 align-items-center">
+                                    <div className="col-12 d-flex justify-content-between align-items-center">
+                                      <div className="d-flex align-items-center">
+                                        <p className="mb-0 fs-4 me-2 fw-medium">
+                                          <span className="me-1 text-info custom_font_size_bold">
+                                            ₹{menu.price}
+                                          </span>
+                                          <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
+                                            ₹{menu.oldPrice || menu.price}
+                                          </span>
+                                        </p>
+                                        <span className="offer-color favoffer custom_font_size">
+                                          {menu.offer || "No"}% Off
+                                        </span>
+                                      </div>
+                                      <div
+                                        className="cart-btn cart-align me-3"
+                                        onClick={() =>
+                                          handleAddToCartClick(menu)
+                                        }
+                                      >
+                                        {isMenuItemInCart(menu.menu_id) ? (
+                                          <i className="ri-shopping-cart-fill fs-2"></i>
+                                        ) : (
+                                          <i className="ri-shopping-cart-line fs-2"></i>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -454,12 +653,12 @@ const Wishlist = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </>
           ) : (
             <div
               className="container overflow-hidden d-flex justify-content-center align-items-center"

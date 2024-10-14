@@ -194,7 +194,7 @@ import LoaderGif from "./LoaderGIF";
                   ) : (
                     <button
                       type="button"
-                      className="dz-btn btn-color custom_font_size_bold  rounded-xl text-white"
+                      className="btn btn-color custom_font_size_bold  rounded-pill mx-4 text-white"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >

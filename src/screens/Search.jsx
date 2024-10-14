@@ -274,7 +274,7 @@ const Search = () => {
                     </Link>
                   </div>
                   <div className="mid-content">
-                    <span className="custom_font_size_bold me-3">
+                    <span className="custom_font_size_bold me-3 title">
                   Search
                     </span>
                   </div>
@@ -466,8 +466,8 @@ const Search = () => {
                       <img
                         src={menu.image || images}
                         alt={menu.menu_name}
-                        className="img-fluid rounded-4"
-                        style={{ width: "100px", height: "108px" }}
+                        className="img-fluid rounded-start-3 rounded-end-0"
+                        style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
@@ -525,7 +525,7 @@ const Search = () => {
                             onClick={() => handleMenuClick(menu.menu_id)}
                            
                           >
-                            <span className="custom_font_size px-0 text-start offer-color offer ">
+                            <span className="custom_font_size px-0 pe-4 text-start offer-color  offer ">
                               {menu.offer || "No "}% Off
                             </span>
                           </span>

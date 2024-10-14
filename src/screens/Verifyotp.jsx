@@ -413,7 +413,6 @@ const Verifyotp = () => {
                       disabled={!isEditable(index)} // Disable if not editable
                       maxLength="1"
                       style={{ width: "50px", marginRight: "5px" }}
-                      // Disable input if the previous box is empty
                     />
                   ))}
                 </div>
@@ -436,7 +435,7 @@ const Verifyotp = () => {
                   </div>
                 ) : (
                   <button
-                    className="dz-btn btn-color text-white rounded-xl"
+                    className="btn btn-color text-white rounded-pill mx-4"
                     onClick={handleVerify}
                     disabled={otp.some((digit) => !digit.trim())}
                   >

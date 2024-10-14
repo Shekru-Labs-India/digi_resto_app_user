@@ -15761,7 +15761,7 @@ hr.dotted {
       border-color: transparent;
       color: var(--title); }
       .default-tab.style-2 .nav-tabs .nav-item .nav-link.active {
-        background-color: var(--primary);
+        background: linear-gradient(45deg, #0D775E, #00513E);
         color: #fff; }
   
   .dz-tab .nav.nav-tabs {

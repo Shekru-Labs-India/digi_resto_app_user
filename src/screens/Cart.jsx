@@ -5,6 +5,7 @@ import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
+import LoaderGif from "./LoaderGIF";
 import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
@@ -19,6 +20,7 @@ const Cart = () => {
   const toast = useRef(null);
   const { restaurantId } = useRestaurantId();
   const { restaurantName } = useRestaurantId();
+  const [isLoading, setIsLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -57,6 +59,7 @@ const Cart = () => {
 
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is not available.");
+      setIsLoading(false);
       return;
     }
 
@@ -92,6 +95,9 @@ const Cart = () => {
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -248,6 +254,20 @@ const Cart = () => {
       return text.replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
+    
+  if (isLoading || cartDetails.length === 0) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
+
+
+
+
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
@@ -268,7 +288,7 @@ const Cart = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold me-3">
+                  <span className="custom_font_size_bold me-3 title">
                     My Cart{" "}
                     {displayCartItems.length > 0 && (
                       <span className="small-number gray-text">
@@ -443,7 +463,7 @@ const Cart = () => {
                     {restaurantName.toUpperCase() || "Restaurant Name"}
                   </span>
                   <span className="fw-medium custom-text-gray">
-                    <i class="ri-user-location-line me-2 gray-text"></i>
+                    <i class="ri-user-location-line me-2 gray-text "></i>
                     {userData.tableNumber || ""}
                   </span>
                 </div>
@@ -459,7 +479,7 @@ const Cart = () => {
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 }}
               >
-                <div className="row my-auto" style={{ height: "110px" }}>
+                <div className="row my-auto ps-2" >
                   <div className="col-3 px-0">
                     <Link
                       to={{
@@ -473,14 +493,8 @@ const Cart = () => {
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
-                        style={{
-                          height: "110px",
-                          width: "110px",
-                          objectFit: "cover",
-                          borderRadius: "10px",
-                          position: "relative",
-                          left: "10px",
-                        }}
+                        className="img-fluid rounded-start-3 rounded-end-0"
+                        style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
@@ -637,14 +651,12 @@ const Cart = () => {
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
-                            className="ps-2 custom_font_size pt-1"
-                            style={{ color: "#a5a5a5" }}
+                            className="ps-2 custom_font_size pt-1 gray-text"
+                            s
                           >
-                            Service Charges (
-                            {cartDetails.service_charges_percent}
-                            %)
+                            Service Charges <span className="gray-text small-number">({cartDetails.service_charges_percent}%)</span>
                           </span>
-                          <span className="pe-2 custom_font_size fw-medium">
+                          <span className="pe-2 custom_font_size fw-medium gray-text">
                             ₹{cartDetails?.service_charges_amount || 0}
                           </span>
                         </div>
@@ -652,12 +664,12 @@ const Cart = () => {
                       <div className="col-12 mb-0 py-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
-                            className="ps-2 custom_font_size"
-                            style={{ color: "#a5a5a5" }}
+                            className="ps-2 custom_font_size gray-text"
+                          
                           >
-                            GST ({cartDetails.gst_percent}%)
+                            GST <span className="gray-text small-number">({cartDetails.gst_percent}%)</span>
                           </span>
-                          <span className="pe-2 custom_font_size fw-medium text-start">
+                          <span className="pe-2 custom_font_size fw-medium gray-text">
                             ₹{cartDetails?.gst_amount || 0}
                           </span>
                         </div>
@@ -665,12 +677,12 @@ const Cart = () => {
                       <div className="col-12 mb-0 pt-0 pb-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
-                            className="ps-2 custom_font_size"
-                            style={{ color: "#a5a5a5" }}
+                            className="ps-2 custom_font_size gray-text"
+                            
                           >
-                            Discount ({cartDetails?.discount_percent || 0}%)
+                            Discount <span className="gray-text small-number">({cartDetails?.discount_percent || 0}%)</span>
                           </span>
-                          <span className="pe-2 custom_font_size">
+                          <span className="pe-2 custom_font_size gray-text">
                             ₹{cartDetails?.discount_amount || 0}
                           </span>
                         </div>

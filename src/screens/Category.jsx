@@ -131,7 +131,7 @@ const Category = () => {
                       </Link>
                     </div>
                     <div className="mid-content">
-                      <span className="custom_font_size_bold">
+                      <span className="custom_font_size_bold  title">
                         Category
                         {totalCategoriesCount > 0 && (
                           <span className=" small-number gray-text">
