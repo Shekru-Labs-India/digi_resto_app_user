@@ -302,7 +302,7 @@ const ProductCard = () => {
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
             <span className="title p-r50 custom_font_size_bold">
-              Menu Category
+              Menu
             </span>
             <Link to="/Category">
               <i className="ri-arrow-right-line custom_font_size"></i>

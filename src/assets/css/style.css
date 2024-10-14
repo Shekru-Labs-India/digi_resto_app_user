@@ -10476,7 +10476,7 @@ hr.dotted {
     padding-right: 80px; }
   
   .p-t80 {
-    padding-top: 80px !important; }
+    padding-top: 60px !important; }
   
   .p-b80 {
     padding-bottom: 80px; }
@@ -16315,14 +16315,14 @@ hr.dotted {
         background: var(--body-bg);
         border-radius: 30px; }
         .dz-stepper.style-3 .bootstrap-touchspin .input-group-btn .btn {
-          width: 45px;
-          height: 45px;
+          width: 20px;
+          height: 20px;
           font-size: 0;
           border-radius: 50%;
           border: 0;
           background-color: var(--bg-white); }
           .dz-stepper.style-3 .bootstrap-touchspin .input-group-btn .btn.bootstrap-touchspin-up::after {
-            content: "\2b";
+            /* content: "\2b"; */
             font-family: "FontAwesome" !important;
             font-size: 20px;
             position: absolute;
@@ -16331,7 +16331,7 @@ hr.dotted {
             color: var(--title);
             transform: translate(-50%, -50%); }
           .dz-stepper.style-3 .bootstrap-touchspin .input-group-btn .btn.bootstrap-touchspin-down::after {
-            content: "\f068";
+           
             font-family: "FontAwesome" !important;
             font-size: 20px;
             position: absolute;

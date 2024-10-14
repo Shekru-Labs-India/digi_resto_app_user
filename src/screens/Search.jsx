@@ -6,6 +6,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -22,6 +23,7 @@ const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useRef(null);
+  const { restaurantName } = useRestaurantId();
 
   const userData = JSON.parse(localStorage.getItem("userData"));
   const restaurantId = userData ? userData.restaurantId : null;
@@ -275,13 +277,13 @@ const Search = () => {
                   </div>
                   <div className="mid-content">
                     <span className="custom_font_size_bold me-3 title">
-                  Search
+                      Search
                     </span>
                   </div>
                   <div className="right-content gap-1">
                     <div className="menu-toggler" onClick={toggleSidebar}>
                       {isLoggedIn ? (
-                        <i className="ri-menu-line fs-1"></i>
+                        <i className="ri-menu-line fs-3"></i>
                       ) : (
                         <Link to="/Signinscreen">
                           <i className="ri-login-circle-line fs-1"></i>
@@ -416,6 +418,22 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
+        <div className="container pb-1 pt-4 px-3 ">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <i className="ri-store-2-line me-2"></i>
+              <span className="fw-medium hotel-name">
+                {restaurantName.toUpperCase() || "Restaurant Name"}
+              </span>
+            </div>
+            <div className="d-flex align-items-center">
+              <i className="ri-user-location-line me-2 gray-text"></i>
+              <span className="fw-medium custom-text-gray">
+                {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
+              </span>
+            </div>
+          </div>
+        </div>
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded-3">
@@ -459,84 +477,69 @@ const Search = () => {
 
           {searchedMenu.map((menu) => (
             <>
-              <div className="card mb-3 rounded-4" key={menu.menu_id}>
-                <div className="card-body py-0">
-                  <div className="row ">
-                    <div className="col-3 px-0">
-                      <img
-                        src={menu.image || images}
-                        alt={menu.menu_name}
-                        className="img-fluid rounded-start-3 rounded-end-0"
-                        style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
-                        onError={(e) => {
-                          e.target.src = images;
-                        }}
-                        onClick={() => handleMenuClick(menu.menu_id)}
-                      />
-                    </div>
-                    <div className="col-8 pt-3 pb-0 pe-0 ps-2 ">
-                      <div className="custom_font_size_bold">
-                        {menu.menu_name}
+              <Link
+                to={`/ProductDetails/${menu.menu_id}`}
+                state={{ menu_cat_id: menu.menu_cat_id }}
+                className="text-decoration-none text-reset"
+              >
+                <div className="card mb-3 rounded-4" key={menu.menu_id}>
+                  <div className="card-body py-0">
+                    <div className="row">
+                      <div className="col-3 px-0">
+                        <img
+                          src={menu.image || images}
+                          alt={menu.menu_name}
+                          className="img-fluid rounded-start-3 rounded-end-0"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "fill",
+                            aspectRatio: "1/1",
+                          }}
+                          onError={(e) => {
+                            e.target.src = images;
+                          }}
+                        />
                       </div>
-                      <div className="row">
-                        <div className="col-7 mt-1 pe-0">
-                          <span
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
-                          >
+                      <div className="col-8 pt-3 pb-0 pe-0 ps-2">
+                        <div className="custom_font_size_bold">
+                          {menu.menu_name}
+                        </div>
+                        <div className="row">
+                          <div className="col-7 mt-1 pe-0">
                             <div className="mt-0">
-                              <i className="ri-restaurant-line mt-0 me-2  category-text fs-xs fw-medium"></i>
-                              <span className="category-text fs-xs fw-medium ">
+                              <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
+                              <span className="category-text fs-xs fw-medium">
                                 {menu.category_name}
                               </span>
                             </div>
-                          </span>
-                        </div>
+                          </div>
 
-                        <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                          <span
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
-                          >
+                          <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
                             <span className="custom_font_size_bold gray-text">
-                              <i className="ri-star-half-line ms-4  ratingStar"></i>
+                              <i className="ri-star-half-line ms-4 ratingStar"></i>
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
-                          </span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="row mt-3">
-                        <div className="col-8 px-0">
-                          <span
-                            className="mb-0 mt-1 custom_font_size text-start fw-medium"
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <span className="ms-3 me-1 text-info">
-                              ₹{menu.price}
+                        <div className="row mt-3">
+                          <div className="col-8 px-0">
+                            <span className="mb-0 mt-1 custom_font_size text-start fw-medium">
+                              <span className="ms-3 me-1 text-info">
+                                ₹{menu.price}
+                              </span>
+                              <span className="gray-text custom_font_size old-price text-decoration-line-through">
+                                ₹{menu.oldPrice || menu.price}
+                              </span>
                             </span>
-                            <span className="gray-text custom_font_size  old-price text-decoration-line-through">
-                              ₹{menu.oldPrice || menu.price}
-                            </span>
-                          </span>
 
-                          <span
-                            className="mb-0 mt-1 ms-2 custom_font_size offerSearch"
-                            onClick={() => handleMenuClick(menu.menu_id)}
-                           
-                          >
-                            <span className="custom_font_size px-0 pe-4 text-start offer-color  offer ">
-                              {menu.offer || "No "}% Off
+                            <span className="mb-0 mt-1 ms-2 custom_font_size offerSearch">
+                              <span className="custom_font_size px-0 pe-4 text-start offer-color offer">
+                                {menu.offer || "No "}% Off
+                              </span>
                             </span>
-                          </span>
-                        </div>
-                        <div className="col-4 text-center p-0 clickable-icon search-like">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLikeClick(menu.menu_id);
-                            }}
-                          >
+                          </div>
+                          <div className="col-4 text-center p-0 clickable-icon search-like">
                             <i
                               className={`${
                                 menu.is_favourite
@@ -545,31 +548,34 @@ const Search = () => {
                               }`}
                               style={{
                                 color: menu.is_favourite ? "red" : "",
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleLikeClick(menu.menu_id);
                               }}
                             ></i>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="col-1 px-0 pt-2">
-                      <span
-                        className=" fs-4"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveItem(menu.menu_id);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <i className="ri-close-line fs-4"></i>
-                      </span>
+                      <div className="col-1 px-0 pt-2">
+                        <span
+                          className="fs-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRemoveItem(menu.menu_id);
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <i className="ri-close-line fs-4"></i>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-             
-
-             
+              </Link>
             </>
           ))}
         </div>

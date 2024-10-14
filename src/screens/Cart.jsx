@@ -95,8 +95,7 @@ const Cart = () => {
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -249,12 +248,11 @@ const Cart = () => {
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
-    const toTitleCase = (text) => {
-      if (!text) return "";
-      return text.replace(/\b\w/g, (char) => char.toUpperCase());
-    };
+  const toTitleCase = (text) => {
+    if (!text) return "";
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
-    
   if (isLoading || cartDetails.length === 0) {
     return (
       <div id="preloader">
@@ -264,9 +262,6 @@ const Cart = () => {
       </div>
     );
   }
-
-
-
 
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
@@ -299,9 +294,9 @@ const Cart = () => {
                 </div>
 
                 <div className="right-content gap-1">
-                  <div className="menu-toggler" onClick={toggleSidebar}>
+                  <div className="menu-toggler " onClick={toggleSidebar}>
                     {isLoggedIn ? (
-                      <i className="ri-menu-line fs-1"></i>
+                      <i className="ri-menu-line fs-3"></i>
                     ) : (
                       <Link to="/Signinscreen">
                         <i className="ri-login-circle-line fs-1"></i>
@@ -454,101 +449,83 @@ const Cart = () => {
         </main>
       ) : (
         <main className="page-content space-top p-b200">
-          <div className="container scrollable-section pt-0">
-            <div className="container py-3 p-0">
-              <div className="d-flex justify-content-start">
-                <div className="d-flex flex-column">
-                  <span className=" fw-medium hotel-name">
-                    <i className="ri-store-2-line me-2"></i>
-                    {restaurantName.toUpperCase() || "Restaurant Name"}
-                  </span>
-                  <span className="fw-medium custom-text-gray">
-                    <i class="ri-user-location-line me-2 gray-text "></i>
-                    {userData.tableNumber || ""}
-                  </span>
-                </div>
+          <div className="container pb-3 pt-4 ">
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center">
+                <i className="ri-store-2-line me-2"></i>
+                <span className="fw-medium hotel-name">
+                  {restaurantName.toUpperCase() || "Restaurant Name"}
+                </span>
+              </div>
+              <div className="d-flex align-items-center">
+                <i className="ri-user-location-line me-2 gray-text"></i>
+                <span className="fw-medium custom-text-gray">
+                  {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
+                </span>
               </div>
             </div>
-
+          </div>
+          <div className="container scrollable-section pt-0">
             {displayCartItems.map((item, index) => (
-              <div
+              <Link
                 key={index}
-                className="card mb-3"
-                style={{
-                  borderRadius: "15px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                to={{
+                  pathname: `/ProductDetails/${item.menu_id}`,
                 }}
+                state={{
+                  restaurant_id: userData.restaurantId,
+                  menu_cat_id: item.menu_cat_id,
+                }}
+                className="text-decoration-none text-reset"
               >
-                <div className="row my-auto ps-2" >
-                  <div className="col-3 px-0">
-                    <Link
-                      to={{
-                        pathname: `/ProductDetails/${item.menu_id}`,
-                      }}
-                      state={{
-                        restaurant_id: userData.restaurantId,
-                        menu_cat_id: item.menu_cat_id,
-                      }}
-                    >
+                <div
+                  className="card mb-3"
+                  style={{
+                    borderRadius: "15px",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <div className="row my-auto ps-2">
+                    <div className="col-3 px-0">
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
                         className="img-fluid rounded-start-3 rounded-end-0"
-                        style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "fill",
+                          aspectRatio: "1/1",
+                        }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
                       />
-                    </Link>
-                  </div>
-                  <div className="col-9 pt-2 pb-0">
-                    <div className="row">
-                      <div className="col-9 my-auto">
-                        <Link
-                          to={{
-                            pathname: `/ProductDetails/${item.menu_id}`,
-                          }}
-                          state={{
-                            restaurant_id: userData.restaurantId,
-                            menu_cat_id: item.menu_cat_id,
-                          }}
-                        >
+                    </div>
+                    <div className="col-9 pt-2 pb-0">
+                      <div className="row">
+                        <div className="col-9 my-auto">
                           <span className="custom_font_size_bold text-truncate">
                             {item.menu_name}
                           </span>
-                        </Link>
-                      </div>
+                        </div>
 
-                      <div className="col-3 text-end pe-4">
-                        <div onClick={() => removeFromCart(item, index)}>
-                          <i className="ri-close-line fs-4  mb-5 icon-adjust"></i>
+                        <div className="col-3 text-end pe-4">
+                          <div
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              removeFromCart(item, index);
+                            }}
+                          >
+                            <i className="ri-close-line fs-4 mb-5 icon-adjust"></i>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <Link
-                      to={{
-                        pathname: `/ProductDetails/${item.menu_id}`,
-                      }}
-                      state={{
-                        restaurant_id: userData.restaurantId,
-                        menu_cat_id: item.menu_cat_id,
-                      }}
-                    >
                       <div className="row">
                         <div className="col-4 fs-sm p-0 fw-medium ms-3 category-text mt-1">
-                          <Link
-                            to={{
-                              pathname: `/ProductDetails/${item.menu_id}`,
-                            }}
-                            state={{
-                              restaurant_id: userData.restaurantId,
-                              menu_cat_id: item.menu_cat_id,
-                            }}
-                            className=" category-text "
-                          >
-                            <i className="ri-restaurant-line me-2 category-text"></i>
-                            {item.menu_cat_name}
-                          </Link>
+                          <i className="ri-restaurant-line me-1 category-text"></i>
+                          {item.menu_cat_name}
                         </div>
                         <div className="col-4 pe-0 ps-2">
                           <div className="offer-code my-auto ">
@@ -570,25 +547,15 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="col-3 px-1 text-start ">
+                        <div className="col-3 pe-3 text-center">
                           <span className="custom_font_size fw-semibold gray-text">
                             <i className="ri-star-half-line  ratingStar"></i>
                             {item.rating}
                           </span>
                         </div>
                       </div>
-                    </Link>
-                    <div className="row pt-2">
-                      <div className="col-10 mx-0 my-auto px-0">
-                        <Link
-                          to={{
-                            pathname: `/ProductDetails/${item.menu_id}`,
-                          }}
-                          state={{
-                            restaurant_id: userData.restaurantId,
-                            menu_cat_id: item.menu_cat_id,
-                          }}
-                        >
+                      <div className="row pt-2">
+                        <div className="col-10 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
                             <span className="ms-3 custom_font_size me-2 text-info">
                               ₹{item.price}
@@ -601,30 +568,38 @@ const Cart = () => {
                               {item.offer || "No "}% Off
                             </span>
                           </p>
-                        </Link>
-                      </div>
+                        </div>
 
-                      <div className="col-2">
-                        <div className="d-flex justify-content-end align-items-center mt-1">
-                          <i
-                            className="ri-subtract-line custom_font_size mx-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => decrementQuantity(item)}
-                          ></i>
-                          <span className="text-light custom_font_size">
-                            {item.quantity}
-                          </span>
-                          <i
-                            className="ri-add-line mx-2 custom_font_size"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => incrementQuantity(item)}
-                          ></i>
+                        <div className="col-2">
+                          <div className="d-flex justify-content-end align-items-center mt-1">
+                            <i
+                              className="ri-subtract-line custom_font_size mx-2"
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                decrementQuantity(item);
+                              }}
+                            ></i>
+                            <span className="text-light custom_font_size">
+                              {item.quantity}
+                            </span>
+                            <i
+                              className="ri-add-line mx-2 custom_font_size"
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                incrementQuantity(item);
+                              }}
+                            ></i>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           {cartDetails && displayCartItems.length > 0 && (
@@ -654,7 +629,10 @@ const Cart = () => {
                             className="ps-2 custom_font_size pt-1 gray-text"
                             s
                           >
-                            Service Charges <span className="gray-text small-number">({cartDetails.service_charges_percent}%)</span>
+                            Service Charges{" "}
+                            <span className="gray-text small-number">
+                              ({cartDetails.service_charges_percent}%)
+                            </span>
                           </span>
                           <span className="pe-2 custom_font_size fw-medium gray-text">
                             ₹{cartDetails?.service_charges_amount || 0}
@@ -663,11 +641,11 @@ const Cart = () => {
                       </div>
                       <div className="col-12 mb-0 py-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span
-                            className="ps-2 custom_font_size gray-text"
-                          
-                          >
-                            GST <span className="gray-text small-number">({cartDetails.gst_percent}%)</span>
+                          <span className="ps-2 custom_font_size gray-text">
+                            GST{" "}
+                            <span className="gray-text small-number">
+                              ({cartDetails.gst_percent}%)
+                            </span>
                           </span>
                           <span className="pe-2 custom_font_size fw-medium gray-text">
                             ₹{cartDetails?.gst_amount || 0}
@@ -676,11 +654,11 @@ const Cart = () => {
                       </div>
                       <div className="col-12 mb-0 pt-0 pb-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span
-                            className="ps-2 custom_font_size gray-text"
-                            
-                          >
-                            Discount <span className="gray-text small-number">({cartDetails?.discount_percent || 0}%)</span>
+                          <span className="ps-2 custom_font_size gray-text">
+                            Discount{" "}
+                            <span className="gray-text small-number">
+                              ({cartDetails?.discount_percent || 0}%)
+                            </span>
                           </span>
                           <span className="pe-2 custom_font_size gray-text">
                             ₹{cartDetails?.discount_amount || 0}

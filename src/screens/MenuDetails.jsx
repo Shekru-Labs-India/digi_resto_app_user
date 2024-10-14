@@ -181,8 +181,6 @@ const MenuDetails = () => {
       localStorage.setItem("cartId", cartId); // Store the cart ID
     }
 
-   
-
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -220,7 +218,6 @@ const MenuDetails = () => {
         setTimeout(() => {
           navigate("/Cart");
         }, 2000);
-
       } else {
         console.error("Failed to add item to cart:", data.msg);
       }
@@ -331,7 +328,9 @@ const MenuDetails = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <span className="custom_font_size_bold me-3 title">Product Details</span>
+              <span className="custom_font_size_bold me-3 title">
+                {toTitleCase(productDetails.name)}
+              </span>
             </div>
           </div>
         </header>
@@ -343,7 +342,11 @@ const MenuDetails = () => {
                 className="product-detail-image mt-5 pt-2"
                 src={productDetails.image || images}
                 alt={productDetails.name}
-                style={{ aspectRatio: "16/9", objectFit: "cover", height: "100%",   }}
+                style={{
+                  aspectRatio: "16/9",
+                  objectFit: "cover",
+                  height: "100%",
+                }}
                 onError={(e) => {
                   e.target.src = images;
                 }}
@@ -371,13 +374,13 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 pt-1 ms-2 ps-1   fw-medium  px-0">
+                    <div className="dz-quantity detail-content category-text m-0 pt-2 ms-2 ps-1   fw-medium  px-0">
                       <i className="ri-restaurant-line  me-1 category-text "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
 
-                  <div className="col-3 ps-4 text-center">
+                  <div className="col-3 ps-4 pt-1 text-center">
                     {productDetails.spicy_index && (
                       <div className="spicy-index">
                         {Array.from({ length: 5 }).map((_, index) =>
@@ -406,24 +409,31 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-4 pt-0 ps-1 pe-5 quantity-container">
-                    <button
-                      onClick={() => handleQuantityChange(-1)}
-                      className="quantity-button"
-                    >
-                      <i className="ri-subtract-line"></i>
-                    </button>
-
-                    <span className="quantity-text">{quantity}</span>
-
-                    <button
-                      onClick={() => handleQuantityChange(1)}
-                      className="quantity-button"
-                    >
-                      <i className="ri-add-line"></i>
-                    </button>
+                  <div className="col-6 pt-0 ps-0">
+                    <div className="dz-stepper style-3">
+                    <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+  <span className="input-group-btn input-group-prepend">
+    <i 
+      className="ri-subtract-line custom_font_size"
+      style={{ cursor: "pointer" }}
+      onClick={() => handleQuantityChange(-1)}
+    ></i>
+  </span>
+  <span className="stepper px-3 rounded-1 bg-light custom_font_size text-center">
+    {quantity}
+  </span>
+  <span className="input-group-btn input-group-append">
+    <i 
+      className="ri-add-line custom_font_size"
+      style={{ cursor: "pointer" }}
+      onClick={() => handleQuantityChange(1)}
+    ></i>
+  </span>
+</div>
+                    </div>
                   </div>
-                  <div className="col-8 pe-2 text-end pt-1">
+
+                  <div className="col-6 pe-1 text-end pt-1">
                     <i
                       className={`ri-${
                         isFavorite ? "hearts-fill" : "heart-2-line"
@@ -438,7 +448,7 @@ const MenuDetails = () => {
                 </div>
               </div>
 
-              <div className="container ps-0">
+              <div className="container ps-0 pt-1">
                 <div className="product-info">
                   <div>
                     <span className="custom_font_size text-wrap m-0">
@@ -454,57 +464,60 @@ const MenuDetails = () => {
             </div>
           </div>
         </main>
-        <div className="container">
-          <footer className="footer mb-4">
-            <div className="row">
-              <hr className="dashed-line me-5 pe-5" />
 
-              <div className="col-6 ps-3 ">
-                <div className="d-flex align-items-center justify-content-between mb-5">
-                  <div className="d-flex flex-column">
-                    <span className="mb-2 custom_font_size_bold">
-                      Total amount
-                    </span>
-                    <div className="d-flex align-items-baseline">
-                      <h4 className="mb-0 price custom_font_size_bold text-info">
-                        ₹{(productDetails.price * quantity).toFixed(0)}
-                      </h4>
-                      <span className="text-decoration-line-through ms-2 custom_font_size_bold gray-text">
-                        ₹{(productDetails.oldPrice * quantity).toFixed(0)}
+        <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
+          <div className="container pt-0">
+            <footer className="footer mb-4">
+              <div className="row">
+                <hr className="dashed-line me-5 pe-5" />
+
+                <div className="col-6 ps-0">
+                  <div className="d-flex align-items-center justify-content-between mb-5">
+                    <div className="d-flex flex-column">
+                      <span className="mb-2 custom_font_size_bold">
+                        Total amount
                       </span>
-                    </div>
-                    <div className="fw-medium d-flex custom_font_size_bold offer-color pt-1">
-                      {productDetails.offer}% Off
+                      <div className="d-flex align-items-baseline">
+                        <h4 className="mb-0 price custom_font_size_bold text-info">
+                          ₹{(productDetails.price * quantity).toFixed(0)}
+                        </h4>
+                        <span className="text-decoration-line-through ms-2 custom_font_size_bold gray-text">
+                          ₹{(productDetails.oldPrice * quantity).toFixed(0)}
+                        </span>
+                      </div>
+                      <div className="fw-medium d-flex custom_font_size_bold offer-color pt-1">
+                        {productDetails.offer}% Off
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div className="col-6 pe-0 text-start">
+                  {isMenuItemInCart(menuId) ? (
+                    <button
+                      className="btn btn-color  rounded-pill custom_font_size_bold"
+                      onClick={() => navigate("/Cart")}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <div className="font-poppins custom_font_size_bold text-nowrap text-white">
+                        Go to Cart
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      to="#"
+                      className="btn btn-color rounded-pill  custom_font_size_bold"
+                      onClick={handleAddToCart}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white custom_font_size_bold"></i>
+                      <div className="text-nowrap text-white custom_font_size_bold">
+                        Add to Cart
+                      </div>
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="col-6 text-end">
-                {isMenuItemInCart(menuId) ? (
-                  <button
-                    className="btn btn-color  py-4  rounded-pill custom_font_size_bold"
-                    onClick={() => navigate("/Cart")}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins custom_font_size_bold text-nowrap text-white">
-                      Go to Cart
-                    </div>
-                  </button>
-                ) : (
-                  <button
-                    to="#"
-                    className="btn  btn-color  py-4  rounded-pill custom_font_size_bold"
-                    onClick={handleAddToCart}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white custom_font_size_bold"></i>
-                    <div className="text-nowrap text-white custom_font_size_bold">
-                      Add to Cart
-                    </div>
-                  </button>
-                )}
-              </div>
-            </div>
-          </footer>
+            </footer>
+          </div>
         </div>
       </div>
       <Bottom />
