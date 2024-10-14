@@ -218,6 +218,7 @@ button{
   justify-content: flex-end;
   align-items: center;
   height: 100%; /* Ensures the div takes the full height of the column */
+  z-index: 50;
 }
 
 
