@@ -32,7 +32,7 @@ const Checkout = () => {
   const [notes, setNotes] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
   const [showNotePopup, setShowNotePopup] = useState(false); // State to show/hide note popup
-
+ const [orderCount, setOrderCount] = useState(0);
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
@@ -92,6 +92,10 @@ const Checkout = () => {
         setServiceChargesPercent(parseFloat(data.service_charges_percent) || 0);
         setGstPercent(parseFloat(data.gst_percent) || 0);
         setDiscountPercent(parseFloat(data.discount_percent) || 0);
+          const uniqueMenuIds = new Set(
+            data.order_items.map((item) => item.menu_id)
+          );
+          setOrderCount(uniqueMenuIds.size);
       } else {
         console.error("Failed to fetch cart details:", data.msg);
         alert(`Error: ${data.msg}`);
@@ -230,7 +234,12 @@ const Checkout = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <h5 className="custom_font_size_bold pe-3">Checkout</h5>
+                  <span className="custom_font_size_bold pe-1">
+                    Checkout 
+                  </span>
+                    <span className="gray-text small-number">
+                      ({orderCount})
+                      </span>
                 </div>
                 <div className="right-content gap-1">
                   <div className="menu-toggler" onClick={toggleSidebar}>
@@ -539,7 +548,7 @@ const Checkout = () => {
                     <span className="ps-2 custom_font_size gray-text">
                       Discount{" "}
                       <span className="gray-text small-number">
-                        (-{discountPercent}%)
+                        ({discountPercent}%)
                       </span>
                     </span>
                     <span className="pe-2 custom_font_size gray-text">
@@ -567,7 +576,7 @@ const Checkout = () => {
                 className="btn btn-color rounded-pill custom_font_size_bold text-white"
                 onClick={handleSubmitOrder}
               >
-                Place Order
+                Place Order ({orderCount})
               </Link>
             </div>
           </div>
