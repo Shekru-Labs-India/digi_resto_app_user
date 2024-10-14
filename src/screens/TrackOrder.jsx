@@ -388,14 +388,13 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        setOrderedItems((prevItems) => [...prevItems, ...pendingItems]);
         setPendingItems([]);
-        toast.current.show({
-          severity: "success",
-          summary: "Order Updated",
-          detail: "Your order has been successfully updated.",
-          life: 3000,
-        });
+      toast.current.show({
+        severity: "success",
+        summary: "Order Updated",
+        detail: "Your order has been successfully updated.",
+        life: 3000,
+      });
         fetchOrderDetails(order_number);
       } else {
         throw new Error(data.msg || "Failed to update order");
