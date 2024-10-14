@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import CompanyVersion from '../constants/CompanyVersion';
 // import '../assets/styles.css'
 // import '../assets/custom.css'
 
@@ -77,7 +78,7 @@ const HotelList = () => {
                     <div className="col-12">
                       <div className="row mt-2">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-store-2-line custom_font_size_bold"></i>
+                          <i className="ri-store-2-line custom_font_size"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
                           <span className="custom_font_size_bold m-0">
@@ -87,7 +88,7 @@ const HotelList = () => {
                       </div>
                       <div className="row mt-1">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-phone-line text-primary custom_font_size_bold"></i>
+                          <i className="ri-phone-line text-primary custom_font_size"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
                           <span className="text-primary custom_font_size_bold">
@@ -97,11 +98,18 @@ const HotelList = () => {
                       </div>
                       <div className="row mt-1 pb-1">
                         <div className="col-1">
-                          <i className="ri-map-pin-line gray-text custom_font_size_bold"></i>
+                          <i className="ri-map-pin-line gray-text custom_font_size"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="gray-text custom_font_size_bold">
-                            {hotel.address.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
+                          <span className="gray-text custom_font_size">
+                            {hotel.address
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() +
+                                  word.slice(1).toLowerCase()
+                              )
+                              .join(" ")}
                           </span>
                         </div>
                       </div>
@@ -113,6 +121,7 @@ const HotelList = () => {
           ))}
         </div>
       </main>
+      <CompanyVersion />
       {/* <div className="menubar-area footer-fixed">
         <div className="toolbar-inner menubar-nav">
           <a className="nav-link" href="#/568400/1">

@@ -66,7 +66,7 @@
 }
 
 .custom_font_size{
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
 .custom_font_size_bold{
@@ -677,7 +677,7 @@ background-color: var(--bg-white);
 
 .popup-content p {
   font-size: 1rem;
-  color: #555;
+  /* color: #555; */
 }
 
 
@@ -845,3 +845,7 @@ hr.dashed {
   font-size: 13px;
   font-weight: 500 !important;
 }
+
+.hints{
+  font-size: 13px !important;
+} 
