@@ -279,6 +279,24 @@ const Category = () => {
           {/* Header End */}
 
           <main className="page-content space-top p-b70">
+            <div className="container pb-1">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                  <i className="ri-store-2-line me-2"></i>
+                  <span className="fw-medium hotel-name">
+                    {restaurantName.toUpperCase() || "Restaurant Name"}
+                  </span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <i className="ri-user-location-line me-2 gray-text"></i>
+                  <span className="fw-medium custom-text-gray">
+                    {userData.tableNumber
+                      ? `Table ${userData.tableNumber}`
+                      : ""}
+                  </span>
+                </div>
+              </div>
+            </div>
             <div className="container">
               <div className="row g-3">
                 {categories.map((category, index) => (

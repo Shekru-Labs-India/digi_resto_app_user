@@ -217,37 +217,64 @@ const Wishlist = () => {
     fetchFavoriteItems();
   }, [customerId, restaurantId]);
 
-  const handleRemoveItemClick = async (restaurantId, menuId) => {
+  const handleRemoveItemClick = async (
+    restaurantName,
+    menuId,
+    restaurantId
+  ) => {
     if (!customerId || !menuId || !restaurantId) {
       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
       return;
     }
 
     try {
-      await removeItem(restaurantId, menuId, customerId);
-      // After successful removal, update the UI
-      setMenuList((prevMenuList) => {
-        const updatedMenuList = { ...prevMenuList };
-        Object.keys(updatedMenuList).forEach((restaurantName) => {
+      const response = await fetch(
+        "https://menumitra.com/user_api/remove_favourite_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: customerId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.st === 1) {
+        setMenuList((prevMenuList) => {
+          const updatedMenuList = { ...prevMenuList };
           updatedMenuList[restaurantName] = updatedMenuList[
             restaurantName
           ].filter((item) => item.menu_id !== menuId);
+          return updatedMenuList;
         });
-        return updatedMenuList;
-      });
 
-      toast.current.show({
-        severity: "success",
-        summary: "Item Removed",
-        detail: "Item has been removed from favorites",
-        life: 3000,
-      });
+        toast.current.show({
+          severity: "success",
+          summary: "Item Removed",
+          detail: "Item has been removed from favorites",
+          life: 3000,
+        });
+      } else {
+        console.error("Failed to remove item:", data.msg || "Unknown error");
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to remove item from favorites",
+          life: 3000,
+        });
+      }
     } catch (error) {
-      console.error("Error removing item:", error);
+      console.error("Error removing favorite item:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to remove item from favorites",
+        detail: "An error occurred while removing the item",
         life: 3000,
       });
     }
@@ -321,9 +348,9 @@ const Wishlist = () => {
                   </span>
                 </div>
                 <div className="right-content gap-1">
-                  <div className="menu-toggler" onClick={toggleSidebar}>
+                  <div className="menu-toggler " onClick={toggleSidebar}>
                     {isLoggedIn ? (
-                      <i className="ri-menu-line fs-1"></i>
+                      <i className="ri-menu-line fs-3"></i>
                     ) : (
                       <Link to="/Signinscreen">
                         <i className="ri-login-circle-line fs-1"></i>
@@ -354,13 +381,13 @@ const Wishlist = () => {
                     }
                   ></i>
                 </div>
-                <div className="custom_font_size_bold">
-                  <span className="ms-3 pt-4">
+                <div className="custom_font_size">
+                  <span className="ms-3 pt-4 custom_font_size_bold">
                     {userData?.name
                       ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                       : "Hello, User"}
                   </span>
-                  <div className="mail ms-3 gray-text custom_font_size_bold">
+                  <div className="mail ms-3 gray-text custom_font_size">
                     {userData?.mobile}
                   </div>
                   <div className="dz-mode mt-3 me-4">
@@ -456,6 +483,22 @@ const Wishlist = () => {
       </header>
 
       <main className="page-content space-top p-b0 mt-3 mb-5 pb-3 ">
+        <div className="container pb-3 pt-1">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <i className="ri-store-2-line me-2"></i>
+              <span className="fw-medium hotel-name">
+                {restaurantName.toUpperCase() || "Restaurant Name"}
+              </span>
+            </div>
+            <div className="d-flex align-items-center">
+              <i className="ri-user-location-line me-2 gray-text"></i>
+              <span className="fw-medium custom-text-gray">
+                {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
+              </span>
+            </div>
+          </div>
+        </div>
         {customerId ? (
           Object.keys(menuList).length > 0 ? (
             <>
@@ -513,16 +556,17 @@ const Wishlist = () => {
                       {menuList[restaurantName].map((menu, index) => (
                         <div className="container py-1 px-0" key={index}>
                           <div className="custom-card rounded-4 ">
-                            <div className="card-body py-0">
-                              <div className="row">
-                                <div className="col-3 px-0">
-                                  <Link
-                                    to={`/ProductDetails/${menu.menu_id}`}
-                                    state={{
-                                      restaurant_id: menu.restaurant_id,
-                                      menu_cat_id: menu.menu_cat_id,
-                                    }}
-                                  >
+                            <Link
+                              to={`/ProductDetails/${menu.menu_id}`}
+                              state={{
+                                restaurant_id: menu.restaurant_id,
+                                menu_cat_id: menu.menu_cat_id,
+                              }}
+                              className="text-decoration-none text-reset"
+                            >
+                              <div className="card-body py-0">
+                                <div className="row">
+                                  <div className="col-3 px-0">
                                     <img
                                       src={menu.image || images}
                                       alt={menu.menu_name}
@@ -539,104 +583,98 @@ const Wishlist = () => {
                                         e.target.style.height = "100px";
                                       }}
                                     />
-                                  </Link>
-                                </div>
-                                <div className="col-9 pt-1 p-0">
-                                  <div className="row">
-                                    <div className="col-9 pe-2">
-                                      <Link
-                                        to={`/ProductDetails/${menu.menu_id}`}
-                                        state={{
-                                          restaurant_id: menu.restaurant_id,
-                                          menu_cat_id: menu.menu_cat_id,
-                                        }}
-                                      >
+                                  </div>
+                                  <div className="col-9 pt-1 p-0">
+                                    <div className="row">
+                                      <div className="col-9 pe-2">
                                         <div className="ps-2 custom_font_size_bold">
                                           {menu.menu_name}
                                         </div>
-                                      </Link>
+                                      </div>
+                                      <div className="col-2 text-end fs-4 ps-0 pe-1">
+                                        <i
+                                          className="ri-hearts-fill icon-adjust heart-fill"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleRemoveItemClick(
+                                              restaurantName,
+                                              menu.menu_id,
+                                              menu.restaurant_id
+                                            );
+                                          }}
+                                        ></i>
+                                      </div>
                                     </div>
-                                    <div className="col-2 text-end fs-4 ps-0 pe-2">
-                                      <i
-                                        className="ri-hearts-fill icon-adjust heart-fill"
-                                        onClick={() =>
-                                          handleRemoveItemClick(
-                                            restaurantName,
-                                            menu.menu_id,
-                                            menu.restaurant_id
-                                          )
-                                        }
-                                      ></i>
-                                    </div>
-                                  </div>
-                                  <div className="row">
-                                    <div className="col-5 pe-0 ps-4">
-                                      <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs fw-medium"></i>
-                                      <span className="category-text fs-xs fw-medium">
-                                        {menu.category_name}
-                                      </span>
-                                    </div>
-                                    <div className="col-5 text-center fireNegative ps-0">
-                                      {menu.spicy_index && (
-                                        <div className="offer-code">
-                                          {Array.from({ length: 5 }).map(
-                                            (_, index) =>
-                                              index < menu.spicy_index ? (
-                                                <i
-                                                  className="ri-fire-fill fs-6"
-                                                  style={{ color: "#eb8e57" }}
-                                                  key={index}
-                                                ></i>
-                                              ) : (
-                                                <i
-                                                  className="ri-fire-line fs-6 gray-text"
-                                                  key={index}
-                                                ></i>
-                                              )
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="col-2 px-0 d-flex align-items-center">
-                                      <span className="custom_font_size fw-semibold gray-text favRating">
-                                        <i className="ri-star-half-line ratingStar"></i>
-                                        {menu.rating || 0.1}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <div className="row mt-2 ps-2 align-items-center">
-                                    <div className="col-12 d-flex justify-content-between align-items-center">
-                                      <div className="d-flex align-items-center">
-                                        <p className="mb-0 fs-4 me-2 fw-medium">
-                                          <span className="me-1 text-info custom_font_size_bold">
-                                            ₹{menu.price}
-                                          </span>
-                                          <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
-                                            ₹{menu.oldPrice || menu.price}
-                                          </span>
-                                        </p>
-                                        <span className="offer-color favoffer custom_font_size">
-                                          {menu.offer || "No"}% Off
+                                    <div className="row">
+                                      <div className="col-5 pe-0 ps-4">
+                                        <i className="ri-restaurant-line mt-0 me-1 category-text fs-xs fw-medium"></i>
+                                        <span className="category-text fs-xs fw-medium">
+                                          {menu.category_name}
                                         </span>
                                       </div>
-                                      <div
-                                        className="cart-btn cart-align me-3"
-                                        onClick={() =>
-                                          handleAddToCartClick(menu)
-                                        }
-                                      >
-                                        {isMenuItemInCart(menu.menu_id) ? (
-                                          <i className="ri-shopping-cart-fill fs-2"></i>
-                                        ) : (
-                                          <i className="ri-shopping-cart-line fs-2"></i>
+                                      <div className="col-5 text-center fireNegative ps-0">
+                                        {menu.spicy_index && (
+                                          <div className="offer-code">
+                                            {Array.from({ length: 5 }).map(
+                                              (_, index) =>
+                                                index < menu.spicy_index ? (
+                                                  <i
+                                                    className="ri-fire-fill fs-6"
+                                                    style={{ color: "#eb8e57" }}
+                                                    key={index}
+                                                  ></i>
+                                                ) : (
+                                                  <i
+                                                    className="ri-fire-line fs-6 gray-text"
+                                                    key={index}
+                                                  ></i>
+                                                )
+                                            )}
+                                          </div>
                                         )}
+                                      </div>
+                                      <div className="col-2 pe-0 ps-2 d-flex align-items-center">
+                                        <span className="custom_font_size fw-semibold gray-text favRating">
+                                          <i className="ri-star-half-line ratingStar"></i>
+                                          {menu.rating || 0.1}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="row mt-2 ps-2 align-items-center">
+                                      <div className="col-12 d-flex justify-content-between align-items-center">
+                                        <div className="d-flex align-items-center">
+                                          <p className="mb-0 fs-4 me-2 fw-medium">
+                                            <span className="me-1 text-info custom_font_size_bold">
+                                              ₹{menu.price}
+                                            </span>
+                                            <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
+                                              ₹{menu.oldPrice || menu.price}
+                                            </span>
+                                          </p>
+                                          <span className="offer-color favoffer custom_font_size">
+                                            {menu.offer || "No"}% Off
+                                          </span>
+                                        </div>
+                                        <div
+                                          className="cart-btn cart-align me-2 pe-1"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleAddToCartClick(menu);
+                                          }}
+                                        >
+                                          {isMenuItemInCart(menu.menu_id) ? (
+                                            <i className="ri-shopping-cart-fill fs-2"></i>
+                                          ) : (
+                                            <i className="ri-shopping-cart-line fs-2"></i>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </Link>
                           </div>
                         </div>
                       ))}

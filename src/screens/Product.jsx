@@ -547,16 +547,18 @@ const Product = () => {
       </header>
 
       <main className={`page-content space-top p-b80`}>
-        <div className="container">
-          <div className="header-contentd-flex justify-content-start">
-            <div className="d-flex flex-column">
-              <span className=" fw-medium hotel-name">
-                <i className="ri-store-2-line me-2"></i>
+        <div className="container pb-3 pt-4">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <i className="ri-store-2-line me-2"></i>
+              <span className="fw-medium hotel-name">
                 {restaurantName.toUpperCase() || "Restaurant Name"}
               </span>
+            </div>
+            <div className="d-flex align-items-center">
+              <i className="ri-user-location-line me-2 gray-text"></i>
               <span className="fw-medium custom-text-gray">
-                <i class="ri-user-location-line me-2 gray-text"></i>
-                {userData.tableNumber || ""}
+                {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
               </span>
             </div>
           </div>
@@ -626,7 +628,11 @@ const Product = () => {
                       <img
                         src={menuItem.image || images}
                         alt={menuItem.name || "Menu item"}
-                        style={{ aspectRatio: "1/1", objectFit: "cover", height: "100%",   }}
+                        style={{
+                          aspectRatio: "1/1",
+                          objectFit: "cover",
+                          height: "100%",
+                        }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
@@ -765,7 +771,7 @@ const Product = () => {
         </div>
 
         {/* Sort and Filter Buttons */}
-        <div
+        {/* <div
           className="footer fixed"
           style={{ zIndex: 1, position: "fixed", bottom: "70px" }}
         >
@@ -891,7 +897,7 @@ const Product = () => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
       </main>
 
       <Bottom />

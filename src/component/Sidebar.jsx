@@ -87,9 +87,9 @@ const Sidebar = () => {
             </span>
           </div>
           <div className="right-content gap-1">
-            <div className="menu-toggler" onClick={toggleSidebar}>
+            <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
               {isLoggedIn ? (
-                <i className="ri-menu-line fs-1"></i>
+                <i className="ri-menu-line fs-3"></i>
               ) : (
                 <Link to="/Signinscreen">
                   <i className="ri-login-circle-line fs-1"></i>
@@ -124,7 +124,7 @@ const Sidebar = () => {
                 ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 : "Hello, User"}
             </span>
-            <div className="mail ms-3 gray-text custom_font_size_bold">
+            <div className="mail ms-3 gray-text custom_font_size">
               {userData?.mobile}
             </div>
             <div className="dz-mode mt-3 me-4">
