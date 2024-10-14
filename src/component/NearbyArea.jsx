@@ -326,7 +326,7 @@ const NearbyArea = () => {
                           state={{ menu_cat_id: menuItem.menu_cat_id }}
                         >
                           <div
-                            className="dz-quantity detail-content category-text fw-medium text-truncate"
+                            className="dz-quantity detail-content action_icon_size  "
                             style={{ color: "#0a795b" }}
                           >
                             <i

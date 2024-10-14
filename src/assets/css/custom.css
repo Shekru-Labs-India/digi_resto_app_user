@@ -840,3 +840,8 @@ hr.dashed {
 .heart-fill{
    color: #fe0809;
   }
+
+.action_icon_size{
+  font-size: 13px;
+  font-weight: 500 !important;
+}
