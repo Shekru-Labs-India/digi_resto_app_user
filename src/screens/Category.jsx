@@ -72,8 +72,9 @@ const Category = () => {
   };
 
   const handleCategoryClick = (category) => {
-    navigate(`/Product?category=${category.menu_cat_id}`);
+    navigate(`/Menu/${category.menu_cat_id}`);
   };
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -303,8 +304,7 @@ const Category = () => {
                   <div className="col-6" key={index}>
                     <div className="dz-category-items border border-success overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
                       <Link
-                        to="/Menu"
-                        onClick={() => handleCategoryClick(category)}
+                        to={`/Menu/${category.menu_cat_id}`}
                         className="d-block"
                       >
                         <div className="d-flex justify-content-center bg-white">

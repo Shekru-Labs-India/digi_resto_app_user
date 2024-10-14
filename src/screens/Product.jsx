@@ -46,6 +46,7 @@ const Product = () => {
   const swiperRef = useRef(null); // Define swiperRef
   const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
   const { restaurantName } = useRestaurantId();
+  const { categoryId } = useParams();
 
   const toast = useRef(null);
   const { table_number } = useParams();
@@ -155,6 +156,14 @@ const Product = () => {
   }, [restaurantId, isLoading, userData]);
 
   useEffect(() => {
+    if (categoryId) {
+      setSelectedCategory(parseInt(categoryId, 10));
+    } else {
+      setSelectedCategory(null);
+    }
+  }, [categoryId]);
+
+  useEffect(() => {
     let isMounted = true;
     if (restaurantId && !isLoading && !initialFetchDone.current && isMounted) {
       fetchMenuData();
@@ -235,48 +244,59 @@ const Product = () => {
     }
   };
 
-  // Handle category selection
-  const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId);
-    if (categoryId === null) {
-      setFilteredMenuList(menuList);
-    } else {
-      const filteredMenus = menuList.filter(
-        (menu) => menu.menu_cat_id === categoryId
-      );
-      setFilteredMenuList(filteredMenus);
-    }
-  };
-
+  
+  
   useEffect(() => {
-    // Extract category ID from query parameters
-    const queryParams = new URLSearchParams(location.search);
-    const categoryId = queryParams.get("category");
-
-    if (categoryId) {
-      setSelectedCategory(parseInt(categoryId, 10));
+    if (location.state && location.state.selectedCategory) {
+      setSelectedCategory(parseInt(location.state.selectedCategory, 10));
+    } else {
+      setSelectedCategory(null); // Default to "All" if no category is selected
     }
-  }, [location.search]);
+  }, [location]);
+  
+ 
+
 
   useEffect(() => {
     if (categories.length > 0) {
+      if (swiperRef.current) {
+        swiperRef.current.destroy();
+      }
       swiperRef.current = new Swiper(".category-slide", {
         slidesPerView: "auto",
         spaceBetween: 10,
-        initialSlide: categories.findIndex(
+        initialSlide: selectedCategory ? categories.findIndex(
           (category) => category.menu_cat_id === selectedCategory
-        ),
-      });
-
-      // Add scroll event listener
-      const swiperContainer = document.querySelector(".category-slide");
-      swiperContainer.addEventListener("scroll", () => {
-        if (swiperContainer.scrollLeft === 0) {
-          handleCategorySelect(categories[0].menu_cat_id);
-        }
+        ) : 0,
       });
     }
   }, [categories, selectedCategory]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = menuList.filter(item => item.menu_cat_id === selectedCategory);
+      setFilteredMenuList(filtered);
+    } else {
+      setFilteredMenuList(menuList);
+    }
+  }, [selectedCategory, menuList]);
+
+  
+
+  
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    if (swiperRef.current) {
+      const activeIndex = categoryId ? categories.findIndex(
+        (category) => category.menu_cat_id === categoryId
+      ) : 0;
+      if (activeIndex !== -1) {
+        swiperRef.current.slideTo(activeIndex);
+      }
+    }
+  };
+  
+
 
   // Add item to cart
   const handleAddToCartClick = async (menuItem) => {
@@ -566,54 +586,46 @@ const Product = () => {
 
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
-          <div className="swiper category-slide">
-            <div className="swiper-wrapper">
-              {categories.length > 0 && (
-                <div
-                  className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
-                    selectedCategory === null ? "active" : ""
-                  }`}
-                  onClick={() => handleCategorySelect(null)}
-                  style={{
-                    backgroundColor: selectedCategory === null ? "#0D775E" : "",
-                    color: selectedCategory === null ? "#ffffff" : "",
-                  }}
-                >
-                  All{" "}
-                  <span className="small-number gray-text">
-                    ({categoryCounts.All})
-                  </span>
-                </div>
-              )}
-              {categories.map((category) => (
-                <div key={category.menu_cat_id} className="swiper-slide">
-                  <div
-                    className={`category-btn border border-2 rounded-5 custom_font_size_bold ${
-                      selectedCategory === category.menu_cat_id ? "active" : ""
-                    }`}
-                    onClick={() => handleCategorySelect(category.menu_cat_id)}
-                    style={{
-                      backgroundColor:
-                        selectedCategory === category.menu_cat_id
-                          ? "#0D775E"
-                          : "",
-                      color:
-                        selectedCategory === category.menu_cat_id
-                          ? "#ffffff"
-                          : "",
-                    }}
-                  >
-                    {category.name}{" "}
-                    <span className="small-number gray-text">
-                      ({categoryCounts[category.name] || 0})
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+      <div className="swiper category-slide">
+        <div className="swiper-wrapper">
+        <div
+            className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
+              selectedCategory === null ? "active" : ""
+            }`}
+            onClick={() => handleCategorySelect(null)}
+            style={{
+              backgroundColor: selectedCategory === null ? "#0D775E" : "",
+              color: selectedCategory === null ? "#ffffff" : ""
+            }}
+          >
+            All{" "}
+            <span className="small-number gray-text">
+              ({menuList.length})
+            </span>
           </div>
+          {categories.map((category) => (
+            <div
+              key={category.menu_cat_id}
+              className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
+                selectedCategory === category.menu_cat_id ? "active" : ""
+              }`}
+              onClick={() => handleCategorySelect(category.menu_cat_id)}
+              style={{
+                backgroundColor:
+                  selectedCategory === category.menu_cat_id ? "#0D775E" : "",
+                color:
+                  selectedCategory === category.menu_cat_id ? "#ffffff" : "",
+              }}
+            >
+              {category.category_name}{" "}
+              <span className="small-number gray-text">
+                ({category.menu_count})
+              </span>
+            </div>
+          ))}
         </div>
-
+      </div>
+    </div>
         {/* Menu Items */}
         <div className="container mb-5 pt-0">
           <div className="row g-3 grid-style-1">

@@ -71,7 +71,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/EditProfile" element={<EditProfile />} />
             <Route path="/MyOrder" element={<MyOrder />} />
-            <Route path="/Menu" element={<Product />} />
+            <Route path="/Menu/:categoryId?" element={<Product />} />
             <Route path="/Search" element={<Search />} />
             <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
             <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
