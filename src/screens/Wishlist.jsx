@@ -8,6 +8,8 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import LoaderGif from "./LoaderGIF";
+
 
 const Wishlist = () => {
     const [checkedItems, setCheckedItems] = useState({});
@@ -224,6 +226,7 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
+      
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <header className="header header-fixed style-3">
@@ -287,11 +290,17 @@ const Wishlist = () => {
       </header>
 
       <main className="page-content space-top p-b0 mt-3 mb-5 pb-3 ">
-        {customerId ? (
+        {loading ? (
+          <div id="preloader">
+            <div className="loader">
+              <LoaderGif />
+            </div>
+          </div>
+        ) : customerId ? (
           Object.keys(menuList).length > 0 ? (
             Object.keys(menuList).map((restaurantName) => (
-              <div className="container py-0">
-                <div key={restaurantName} className="tab pt-0">
+              <div className="container py-0" key={restaurantName}>
+                <div className="tab pt-0">
                   <input
                     type="checkbox"
                     id={`chck${restaurantName}`}

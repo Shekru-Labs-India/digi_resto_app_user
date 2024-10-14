@@ -63,7 +63,7 @@ const HotelList = () => {
             </div>
           </a>
         </div> */}
-        <div className="container py-1">
+        <div className="container py-1 px-0">
           <div className="d-flex justify-content-center">
             {/* <button type="button" className="btn btn-primary my-3">
               <i className="ri-qr-scan-2-line pe-2 fs-2"></i>Scan QR

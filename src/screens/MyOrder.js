@@ -6,6 +6,7 @@ import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
 import "../assets/css/Tab.css";
 import OrderGif from './OrderGif';
+import LoaderGif from "./LoaderGIF";
 
 
 const MyOrder = () => {
@@ -284,7 +285,7 @@ const MyOrder = () => {
                 {/* <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div> */}
-                <OrderGif/>
+                <LoaderGif />
               </div>
             </div>
           ) : (
