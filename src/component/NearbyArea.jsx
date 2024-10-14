@@ -299,7 +299,8 @@ const NearbyArea = () => {
                 <div>
                   <div
                     className="card-item style-6 rounded-3"
-                    style={{ width: "216px", height: "auto" }}
+                    style={{ width: "200px", height: "auto" }}
+                    
                   >
                     <div className="dz-media ">
                       <Link
@@ -308,7 +309,7 @@ const NearbyArea = () => {
                       >
                         <img
                           src={menuItem.image || images}
-                          style={{ height: "100%", width: "100%", objectFit: "fill", aspectRatio: 1 }}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", aspectRatio: 1 }}
                           onError={(e) => {
                             e.target.src = images;
                           }}

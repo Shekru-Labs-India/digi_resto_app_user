@@ -59,6 +59,7 @@ const Cart = () => {
 
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is not available.");
+      setIsLoading(false);
       return;
     }
 
@@ -94,6 +95,9 @@ const Cart = () => {
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -251,15 +255,15 @@ const Cart = () => {
     };
 
     
-  // if (isLoading || cartDetails.length === 0) {
-  //   return (
-  //     <div id="preloader">
-  //       <div className="loader">
-  //         <LoaderGif />
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading || cartDetails.length === 0) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
 
 
 
@@ -284,7 +288,7 @@ const Cart = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold me-3">
+                  <span className="custom_font_size_bold me-3 title">
                     My Cart{" "}
                     {displayCartItems.length > 0 && (
                       <span className="small-number gray-text">

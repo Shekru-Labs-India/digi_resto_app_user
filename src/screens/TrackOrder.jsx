@@ -20,6 +20,7 @@ const TrackOrder = () => {
   const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
   const navigate = useNavigate();
   const { order_number } = useParams();
+  const { orderId } = useParams();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
   const customerId = userData ? userData.customer_id : null;
@@ -68,37 +69,53 @@ const TrackOrder = () => {
   const handleBack = () => {
     navigate(-1);
   };
-
-  const handleIncrement = (menuId) => {
+  const handleIncrement = (menuItem) => {
     setQuantities((prev) => {
-      const newQuantity = Math.min(getQuantity(menuId) + 1, 20);
-      if (newQuantity !== prev[menuId]) {
-        const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
+      const newQuantity = Math.min((prev[menuItem] || 1) + 1, 20);
+      if (newQuantity === 20) {
+        toast.current.show({
+          severity: "info",
+          summary: "Maximum Quantity",
+          detail: `You've reached the maximum quantity for ${menuItem.menu}`,
+          life: 3000,
+        });
+      } else {
         toast.current.show({
           severity: "success",
           summary: "Quantity Increased",
-          detail: menuItem ? menuItem.menu_name : `Item #${menuId}`,
+          detail: `${menuItem.menu_name} quantity increased to ${newQuantity}`,
           life: 3000,
         });
       }
-      return { ...prev, [menuId]: newQuantity };
+      return { ...prev, [menuItem]: newQuantity };
     });
   };
 
-  const handleDecrement = (menuId) => {
+  const handleDecrement = (menuItem) => {
     setQuantities((prev) => {
-      const newQuantity = Math.max(getQuantity(menuId) - 1, 1);
-      if (newQuantity !== prev[menuId]) {
-        const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
+      const newQuantity = Math.max((prev[menuItem] || 1) - 1, 1);
+      if (newQuantity === 1) {
         toast.current.show({
           severity: "info",
+          summary: "Minimum Quantity",
+          detail: `You've reached the minimum quantity for ${menuItem.menu_name}`,
+          life: 3000,
+        });
+      } else {
+        toast.current.show({
+          severity: "success",
           summary: "Quantity Decreased",
-          detail: menuItem ? menuItem.menu_name : `Item #${menuId}`,
+          detail: `${menuItem.menu_name} quantity decreased to ${newQuantity}`,
           life: 3000,
         });
       }
-      return { ...prev, [menuId]: newQuantity };
+      return { ...prev, [menuItem]: newQuantity };
     });
+  };
+
+  const calculatePrice = (menu) => {
+    const quantity = quantities[menu.menu_id] || 1;
+    return (parseFloat(menu.price) * quantity).toFixed(2);
   };
 
   const handleMenuClick = (menuId) => {
@@ -273,47 +290,158 @@ const TrackOrder = () => {
     });
   };
 
+  const isItemAdded = (menuId) => {
+    return (
+      pendingItems.some((item) => item.menu_id === menuId) ||
+      orderedItems.some((item) => item.menu_id === menuId)
+    );
+  };
+
   const handleAddToOrder = (menuItem) => {
-    setPendingItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.menu_id === menuItem.menu_id
-      );
-      if (existingItemIndex !== -1) {
-        // If item already exists, update its quantity (max 20)
-        const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity = Math.min(
-          updatedItems[existingItemIndex].quantity + 1,
-          20
-        );
-        toast.current.show({
-          severity: "success",
-          summary: "Updated Quantity",
-          detail: menuItem.menu_name,
-          life: 3000,
-        });
-        return updatedItems;
-      } else {
-        // If item doesn't exist, add it with quantity 1
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Order",
-          detail: menuItem.menu_name,
-          life: 3000,
-        });
-        return [...prevItems, { ...menuItem, quantity: 1 }];
-      }
-    });
+    if (isItemAdded(menuItem.menu_id)) {
+      return; // Item is already added, do nothing
+    }
+
+    const quantity = quantities[menuItem.menu_id] || 1;
+    const price = parseFloat(menuItem.price);
+
+    setPendingItems((prevItems) => [
+      ...prevItems,
+      {
+        ...menuItem,
+        quantity: quantity,
+        totalPrice: (price * quantity).toFixed(2),
+      },
+    ]);
+
     // Remove the item from searchedMenu
     setSearchedMenu((prevMenu) =>
       prevMenu.filter((item) => item.menu_id !== menuItem.menu_id)
     );
+
+    toast.current.show({
+      severity: "success",
+      summary: "Added to Order",
+      detail: `${menuItem.menu_name} (Qty: ${quantity})`,
+      life: 3000,
+    });
   };
 
-  const handleSubmitOrder = () => {
-    // Add pendingItems to orderedItems
-    setOrderedItems([...orderedItems, ...pendingItems]);
-    // Clear pendingItems
-    setPendingItems([]);
+  const fetchOrderDetails = async (orderNumber) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_order_details",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_number: orderNumber,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.st === 1 && data.lists) {
+          setOrderDetails(data.lists);
+          setIsCompleted(
+            data.lists.order_details.order_status.toLowerCase() === "completed"
+          );
+        } else {
+          console.error("Invalid data format:", data);
+        }
+      } else {
+        console.error("Network response was not ok.");
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitOrder = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: orderDetails.order_details.order_id,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            order_items: pendingItems.map((item) => ({
+              menu_id: item.menu_id,
+              quantity: item.quantity.toString(),
+            })),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        setOrderedItems((prevItems) => [...prevItems, ...pendingItems]);
+        setPendingItems([]);
+        toast.current.show({
+          severity: "success",
+          summary: "Order Updated",
+          detail: "Your order has been successfully updated.",
+          life: 3000,
+        });
+        fetchOrderDetails(order_number);
+      } else {
+        throw new Error(data.msg || "Failed to update order");
+      }
+    } catch (error) {
+      console.error("Error submitting order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to update order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+
+  const fetchOrderStatus = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_order_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_status: "completed",
+            customer_id: customerId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && Array.isArray(data.lists)) {
+          const isCompleted = data.lists.some(
+            (order) => order.order_number === order_number
+          );
+          setIsCompleted(isCompleted);
+        }
+      } else {
+        console.error("Network response was not ok.");
+      }
+    } catch (error) {
+      console.error("Error fetching order status:", error);
+    }
   };
 
   const handleCategoryClick = (categoryId, categoryName) => {
@@ -323,80 +451,10 @@ const TrackOrder = () => {
   };
 
   useEffect(() => {
-    const fetchOrderDetails = async (orderNumber) => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_order_details",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              order_number: orderNumber,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-
-          if (data.st === 1 && data.lists) {
-            setOrderDetails(data.lists);
-            setIsCompleted(
-              data.lists.order_details.order_status.toLowerCase() ===
-                "completed"
-            );
-          } else {
-            console.error("Invalid data format:", data);
-          }
-        } else {
-          console.error("Network response was not ok.");
-        }
-      } catch (error) {
-        console.error("Error fetching order details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchOrderStatus = async () => {
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_order_list",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              restaurant_id: restaurantId,
-              order_status: "completed",
-              customer_id: customerId,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (
-            data.st === 1 &&
-            data.lists.some((order) => order.order_number === order_number)
-          ) {
-            setIsCompleted(true);
-          }
-        } else {
-          console.error("Network response was not ok.");
-        }
-      } catch (error) {
-        console.error("Error fetching order status:", error);
-      }
-    };
-
     if (order_number && restaurantId && customerId) {
       fetchOrderDetails(order_number);
       fetchOrderStatus();
+      // handleSubmitOrder();
     }
   }, [order_number, restaurantId, customerId]);
 
@@ -807,10 +865,22 @@ const TrackOrder = () => {
                               </div>
                               <div className="col-3">
                                 <span
-                                  className="btn btn-sm btn-color text-white py-2 addOrder-btn"
-                                  onClick={() => handleAddToOrder(menu)}
+                                  className={`btn btn-color px-2 py-1 custom_font_size ${
+                                    isItemAdded(menu.menu_id)
+                                      ? "btn-secondary gray-text"
+                                      : "btn-color text-white addOrder-btn"
+                                  }`}
+                                  onClick={() =>
+                                    !isItemAdded(menu.menu_id) &&
+                                    handleAddToOrder(menu)
+                                  }
+                                  style={{
+                                    cursor: isItemAdded(menu.menu_id)
+                                      ? "default"
+                                      : "pointer",
+                                  }}
                                 >
-                                  Add
+                                  {isItemAdded(menu.menu_id) ? "Added" : "Add"}
                                 </span>
                               </div>
                             </div>
@@ -858,10 +928,14 @@ const TrackOrder = () => {
                                   style={{ cursor: "pointer" }}
                                 >
                                   <span className="ms-3 me-1 text-info">
-                                    ₹{menu.price}
+                                    ₹{calculatePrice(menu)}
                                   </span>
                                   <span className="gray-text custom_font_size old-price text-decoration-line-through">
-                                    ₹{menu.oldPrice || menu.price}
+                                    ₹
+                                    {(
+                                      parseFloat(menu.oldPrice || menu.price) *
+                                      (quantities[menu.menu_id] || 1)
+                                    ).toFixed(2)}
                                   </span>
                                 </span>
                                 <span
@@ -884,7 +958,7 @@ const TrackOrder = () => {
                                     }
                                   ></i>
                                   <span className="custom_font_size">
-                                    {getQuantity(menu.menu_id)}
+                                    {quantities[menu.menu_id] || 1}
                                   </span>
                                   <i
                                     className="ri-add-line mx-2 custom_font_size"
@@ -1045,7 +1119,7 @@ const TrackOrder = () => {
                                 }}
                               />
                             </div>
-                            <div className="col-8 pt-3 pb-0 pe-0 ps-2">
+                            <div className="col-8 pt-2 pb-0 pe-0 ps-2">
                               <div className="custom_font_size_bold">
                                 {menu.menu_name}
                               </div>
@@ -1065,9 +1139,9 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="row mt-3">
+                              <div className="row mt-2">
                                 <div className="col-9 px-0">
-                                  <span className="mb-0 mt-1 customFontSize text-start fw-medium">
+                                  <span className="mt-0 mb-2 customFontSize text-start fw-medium">
                                     <span className="ms-3 me-1 text-info">
                                       ₹{menu.price}
                                     </span>

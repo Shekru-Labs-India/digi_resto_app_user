@@ -331,7 +331,7 @@ const MenuDetails = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <span className="custom_font_size_bold me-3">Product Details</span>
+              <span className="custom_font_size_bold me-3 title">Product Details</span>
             </div>
           </div>
         </header>

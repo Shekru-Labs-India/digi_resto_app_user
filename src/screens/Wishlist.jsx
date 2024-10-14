@@ -277,15 +277,15 @@ const Wishlist = () => {
     }
   }, [isDarkMode]);
 
-  // if (isLoading ) {
-  //   return (
-  //     <div id="preloader">
-  //       <div className="loader">
-  //         <LoaderGif />
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (isLoading ) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-wrapper full-height">
@@ -306,7 +306,7 @@ const Wishlist = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold me-3">
+                  <span className="custom_font_size_bold me-3 title">
                     Favourite{" "}
                     {Object.keys(menuList).length > 0 && (
                       <span className="gray-text small-number">

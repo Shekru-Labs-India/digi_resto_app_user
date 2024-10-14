@@ -402,7 +402,7 @@ const Product = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold me-3">
+                  <span className="custom_font_size_bold me-3 title">
                     Menu{" "}
                     {categories.length > 0 && (
                       <span className="small-number gray-text">
