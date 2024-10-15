@@ -212,7 +212,7 @@
 
 // canvas gpt
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
@@ -243,6 +243,8 @@ const Verifyotp = () => {
       newOtp[index] = value;
       setOtp(newOtp);
 
+     
+
       // Move focus to the next input if a digit is entered
       if (index < otp.length - 1) {
         const nextInput = document.getElementById(`digit-${index + 2}`);
@@ -252,6 +254,14 @@ const Verifyotp = () => {
       }
     }
   };
+
+  useEffect(() => {
+    // Focus on the first input field when component mounts
+    const firstInput = document.getElementById('digit-1');
+    if (firstInput) {
+      firstInput.focus();
+    }
+  }, []);
 
   const isEditable = (index) => {
     // Check if all subsequent boxes are empty
@@ -387,7 +397,7 @@ const Verifyotp = () => {
               <div className="section-head">
                 <Logoname />
                 <span className="custom_font_size_bold ms-4 ps-2">
-                  Enter OTP
+                  Enter OTP sent to{" "}{mobile}
                 </span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
@@ -402,24 +412,26 @@ const Verifyotp = () => {
                   className="digit-group d-flex justify-content-center"
                 >
                   {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      className="form-control text-center"
-                      type="tel"
-                      id={`digit-${index + 1}`}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      disabled={!isEditable(index)} // Disable if not editable
-                      maxLength="1"
-                      style={{ width: "50px", marginRight: "5px" }}
-                    />
+                    
+                      <input
+                        key={index}
+                        className="form-control text-center"
+                        type="tel"
+                        id={`digit-${index + 1}`}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(e, index)}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
+                        disabled={!isEditable(index)}
+                        maxLength="1"
+                        style={{ width: "50px", marginRight: "5px" }}
+                        autoFocus={index === 0} // Add autoFocus to the first input
+                      />
                   ))}
                 </div>
-                <p className="text-center custom_font_size_bold  ">
+                {/* <p className="text-center custom_font_size_bold  ">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
-                </p>
+                </p> */}
                 {error && <p className="text-danger">{error}</p>}
                 {loading ? (
                   <div id="preloader">
@@ -435,7 +447,7 @@ const Verifyotp = () => {
                   </div>
                 ) : (
                   <button
-                    className="btn btn-color text-white rounded-pill mx-4"
+                    className="btn btn-color text-white rounded-pill mx-4 "
                     onClick={handleVerify}
                     disabled={otp.some((digit) => !digit.trim())}
                   >
@@ -450,7 +462,7 @@ const Verifyotp = () => {
                 to="/Signinscreen"
                 className="text-underline custom_font_size_bold"
               >
-                Sign In
+                Login
               </Link>
             </div>
           </div>

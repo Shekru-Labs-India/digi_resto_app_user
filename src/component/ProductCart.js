@@ -434,7 +434,7 @@ const ProductCard = () => {
                   </div>
                   <div className="col-6 text-end mt-2">
                     <i className="ri-star-half-line  fs-6 ratingStar"></i>
-                    <span className="custom_font_size fw-semibold gray-text">
+                    <span className="custom_font_size  gray-text">
                       {menu.rating}
                     </span>
                   </div>

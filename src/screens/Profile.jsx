@@ -6,6 +6,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
+import logo from "../assets/logos/mmua_transparent.png";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -157,7 +158,20 @@ const Profile = () => {
             </div>
           </div>
         </main>
+
         <div className="text-center mt-6 powered-by">
+          <div className="container">
+            <div className="text-center">
+              <img
+                src={logo}
+                alt="logo"
+                className="me-2"
+                width="30"
+                height="30"
+              />
+              <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+            </div>
+          </div>
           <div className="gray-text custom_font_size">Powered by </div>
           <div className="gray-text custom_font_size">
             Shekru Labs India Pvt. Ltd.

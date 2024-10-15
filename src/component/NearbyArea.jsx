@@ -376,7 +376,7 @@ const NearbyArea = () => {
                           </div>
                           <div className="col-6 text-end">
                             <i className="ri-star-half-line fs-6 ratingStar"></i>
-                            <span className="fs-6 fw-semibold gray-text">
+                            <span className="fs-6  gray-text">
                               {menuItem.rating}
                             </span>
                           </div>

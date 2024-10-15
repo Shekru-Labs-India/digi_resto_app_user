@@ -720,7 +720,7 @@ const Product = () => {
                   </div>
                   <div className="col-6 text-end mt-2">
                     <i className="ri-star-half-line pe-1 custom_font_size_bold ratingStar"></i>
-                    <span className="custom_font_size_bold fw-semibold gray-text">
+                    <span className="custom_font_size_bold  gray-text">
                       {menuItem.rating}
                     </span>
                   </div>

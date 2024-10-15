@@ -696,56 +696,77 @@ const TrackOrder = () => {
 
         <div className="container" style={{ paddingBottom: "1px" }}>
           <div className="page-wrapper " style={{ marginTop: "70px" }}>
-            <span className="title pb-2 custom_font_size_bold">
-              {isCompleted ? "Completed Order" : "Ongoing Order"}
+            <span className="title pb-3 custom_font_size_bold">
+              {isCompleted ? (
+                <>
+                  <i class="ri-checkbox-circle-line pe-2"></i>
+                  <span>Completed Order</span>
+                </>
+              ) : (
+                <>
+                  <i className="ri-timer-line pe-2"></i>
+                  <span>Ongoing Order</span>
+                </>
+              )}
+              {/* {isCompleted ? "Completed Order" : "Ongoing Order"} */}
             </span>
             <div
-              className="container custom-container"
+              className="container"
               style={{ paddingTop: "1px" }}
             ></div>
-            <div className="card">
+            <div className="card rounded-3">
               <div className="card-body p-2">
                 <div className="row align-items-center mb-0">
-                  <div className="col-5">
+                  <div className="col-4">
                     <h5 className="card-title mb-0 custom_font_size_bold">
-                      {order_details.order_number}
+                      #{order_details.order_number}
                     </h5>
                   </div>
-                  <div className="col-7 text-end">
-                    <span className="card-text gray-text custom_font_size_bold">
+                  <div className="col-8 text-end">
+                    <span className="card-text gray-text custom_font_size">
                       {formatDateTime(order_details.datetime)}
                     </span>
                   </div>
                 </div>
-                <div className="order-details-row">
-                  <div className="restaurant-info me-0">
-                    <i className="ri-store-2-line pe-2 custom_font_size_bold "></i>
-                    <span className="restaurant-name custom_font_size_bold">
-                      {order_details.restaurant_name.toUpperCase()}
-                    </span>
-                    <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold "></i>
+                <div className="row">
+                  <div className="col-8 text-start">
+                    <div className="restaurant">
+                      <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                      <span className="restaurant-name custom_font_size_bold">
+                        {order_details.restaurant_name.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-4 text-end">
+                    <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold"></i>
                     <span className="table-number custom_font_size_bold">
                       {order_details.table_number}
                     </span>
                   </div>
-                  <div className="menu-info">
-                    <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
-                    <span className="custom_font_size_bold gray-text">
-                      {order_details.menu_count} Menu
-                    </span>
+                </div>
+                <div className="row">
+                  <div className="col-6">
+                    <div className="menu-info">
+                      <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
+                      <span className="custom_font_size_bold gray-text">
+                        {order_details.menu_count} Menu
+                      </span>
+                    </div>
                   </div>
-                  <div className="price-info">
-                    <span className="text-info custom_font_size_bold fw-medium">
-                      ₹{order_details.grand_total}
-                    </span>
-                    <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
-                      ₹
-                      {(
-                        order_details.grand_total /
-                          (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total
-                      ).toFixed(2)}
-                    </span>
+                  <div className="col-6">
+                    <div className="price-info text-end">
+                      <span className="text-info custom_font_size_bold fw-medium">
+                        ₹{order_details.grand_total}
+                      </span>
+                      <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
+                        ₹
+                        {(
+                          order_details.grand_total /
+                            (1 - order_details.discount_percent / 100) ||
+                          order_details.grand_total
+                        ).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -777,8 +798,8 @@ const TrackOrder = () => {
               </div>
             ) : (
               <div className="card-body p-0">
-                <div className="card">
-                  <div className="row py-2 ps-2 pe-0 h-100">
+                <div className="card rounded-3">
+                  <div className="row py-2 my-0 ps-2 pe-0 h-100">
                     <div className="col-3 d-flex align-items-center justify-content-center pe-2">
                       <OrderGif />
                     </div>
@@ -800,7 +821,7 @@ const TrackOrder = () => {
         </ThemeProvider>
 
         <main className="page-content">
-          <div className="container" style={{ paddingBottom: "1px" }}>
+          <div className="container pt-1 pb-1">
             {!isCompleted && (
               <div className="input-group w-100 my-2 border border-muted rounded-3">
                 <span className="input-group-text py-0">
@@ -818,7 +839,7 @@ const TrackOrder = () => {
           </div>
 
           {userData ? (
-            <section className="container mt-1 py-3">
+            <section className="container mt-1 py-1">
               {/* Searched menu items */}
               {!isCompleted && searchedMenu.length > 0 && (
                 <div className="row g-3 mb-4">
@@ -985,8 +1006,19 @@ const TrackOrder = () => {
                     </h6>
                   </div>
                   {pendingItems.map((menu) => (
-                    <div key={menu.menu_id} className="col-12 mt-2">
-                      <div className="card mb-3 rounded-3">
+                    <div
+                      key={menu.menu_id}
+                      className="col-12 mt-2"
+                      onClick={() =>
+                        navigate(`/ProductDetails/${menu.menu_id}`, {
+                          state: {
+                            restaurant_id: restaurantId,
+                            menu_cat_id: menu.menu_cat_id,
+                          },
+                        })
+                      }
+                    >
+                      <div className="card my-2 rounded-3">
                         <div className="card-body py-0">
                           <div className="row">
                             <div className="col-3 px-0">
@@ -1006,27 +1038,32 @@ const TrackOrder = () => {
                               />
                             </div>
                             <div className="col-8 ps-2 pt-1 pe-0">
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="customFontSizeBold ">
-                                  {menu.menu_name}
+                              <div className="row">
+                                <div className="col-11">
+                                  <div className="customFontSizeBold ">
+                                    {menu.menu_name}
+                                  </div>
                                 </div>
-                                <div>
+                                <div className="col-1 text-end px-0">
                                   <i
                                     className="ri-close-line"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      handleRemovePendingItem(menu.menu_id)
-                                    }
+                                    style={{ cursor: "pointer", zIndex: "100" }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleRemovePendingItem(menu.menu_id);
+                                    }}
                                   ></i>
                                 </div>
                               </div>
                               <div className="row mt-2">
-                                <div className="col-7">
+                                <div className="col-8">
+                                  <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
                                   <span className="category-text fs-xs fw-medium">
                                     {menu.category_name}
                                   </span>
                                 </div>
-                                <div className="col-5 text-end">
+                                <div className="col-4 text-end px-0">
                                   <span className="custom_font_size_bold gray-text">
                                     <i className="ri-star-half-line ratingStar"></i>
                                     {parseFloat(menu.rating).toFixed(1)}
@@ -1044,7 +1081,7 @@ const TrackOrder = () => {
                                       menu.quantity}
                                   </span>
                                 </div>
-                                <div className="col-3 text-center">
+                                <div className="col-3 text-end px-0">
                                   <span className="quantity gray-text customFontSizeBold">
                                     x {menu.quantity}
                                   </span>
@@ -1066,7 +1103,7 @@ const TrackOrder = () => {
                     className="btn btn-color text-white btn-sm"
                     onClick={handleSubmitOrder}
                   >
-                    Place Order
+                    Place Order ({pendingItems.length})
                   </button>
                 </div>
               )}
@@ -1099,7 +1136,7 @@ const TrackOrder = () => {
                         })
                       }
                     >
-                      <div className="card mb-3 rounded-4">
+                      <div className="card mb-3 rounded-3">
                         <div className="card-body py-0">
                           <div className="row">
                             <div className="col-3 px-0">
@@ -1123,15 +1160,13 @@ const TrackOrder = () => {
                                 {menu.menu_name}
                               </div>
                               <div className="row">
-                                <div className="col-7 mt-1 pe-0">
-                                  <div className="mt-0">
-                                    <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
-                                    <span className="category-text fs-xs fw-medium">
-                                      {menu.category_name}
-                                    </span>
-                                  </div>
+                                <div className="col-8">
+                                  <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
+                                  <span className="category-text fs-xs fw-medium">
+                                    {menu.category_name}
+                                  </span>
                                 </div>
-                                <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
+                                <div className="col-4 text-end px-0">
                                   <span className="custom_font_size_bold gray-text">
                                     <i className="ri-star-half-line ms-4  ratingStar"></i>
                                     {parseFloat(menu.rating).toFixed(1)}
@@ -1154,7 +1189,7 @@ const TrackOrder = () => {
                                     </span>
                                   </span>
                                 </div>
-                                <div className="col-3 text-center p-0">
+                                <div className="col-3 text-end p-0">
                                   <span className="quantity gray-text customFontSizeBold">
                                     x {menu.quantity}
                                   </span>
@@ -1176,11 +1211,11 @@ const TrackOrder = () => {
 
         {userData && orderDetails && (
           <div
-            className="container  mb-5 pb-5 z-3"
+            className="container mb-4 pt-0 z-3"
             style={{ backgroundColor: "transparent" }}
           >
-            <div className="card-body mt-2 p-0 mb-5">
-              <div className="card mx-auto">
+            <div className="card-body mt-2 p-0 mb-5 ">
+              <div className="card mx-auto rounded-3">
                 <div className="row px-1 py-1">
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1">
@@ -1191,7 +1226,7 @@ const TrackOrder = () => {
                         ₹{orderDetails.order_details.total_total || 0}
                       </span>
                     </div>
-                    <hr className="me-3 p-0 m-0 text-primary" />
+                    <hr className="p-0 m-0 text-primary" />
                   </div>
                   <div className="col-12 pt-0">
                     <div className="d-flex justify-content-between align-items-center py-0">
@@ -1234,12 +1269,12 @@ const TrackOrder = () => {
                         </span>
                       </span>
                       <span className="pe-2 custom_font_size gray-text">
-                        ₹{orderDetails.order_details.discount_amount || 0}
+                        -₹{orderDetails.order_details.discount_amount || 0}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <hr className="me-3 p-0 m-0 text-primary" />
+                    <hr className=" p-0 m-0 text-primary" />
                   </div>
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">

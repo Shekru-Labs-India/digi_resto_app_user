@@ -390,12 +390,12 @@ const OrdersTab = ({ orders, type }) => {
     setCheckedItems(newCheckedItems);
   };
 
-  const formatDateTime = (dateTimeString) => {
+  const formatTime = (dateTimeString) => {
     if (!dateTimeString) return "";
-    const [date, time] = dateTimeString.split(" ");
-    if (!time || !date) return dateTimeString;
+    const [, time] = dateTimeString.split(" ");
+    if (!time) return "";
     const [hours, minutes] = time.split(":");
-    return `${hours}:${minutes} ${date}`;
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -439,7 +439,10 @@ const OrdersTab = ({ orders, type }) => {
               checked={checkedItems[`${date}-${type}`] || false}
               onChange={() => toggleChecked(`${date}-${type}`)}
             />
-            <label className="tab-label pt-1 pb-0" htmlFor={`chck${date}-${type}`}>
+            <label
+              className="tab-label pt-1 pb-0"
+              htmlFor={`chck${date}-${type}`}
+            >
               <span>{date}</span>
               <span className="d-flex align-items-center">
                 <span className="gray-text pe-2 small-number">
@@ -456,50 +459,117 @@ const OrdersTab = ({ orders, type }) => {
             </label>
             <div className="tab-content">
               {dateOrders.map((order) => (
-                <div className="custom-card my-2" key={order.order_number}>
-                  <div
-                    className="card-body"
-                    onClick={() => handleOrderClick(order.order_number)}
+                <>
+                  {/* <div
+                    className="custom-card  rounded-3"
+                    key={order.order_number}
                   >
-                    <div className="row align-items-center">
-                      <div className="col-4">
-                        <span className="card-title mb-1 custom_font_size_bold">
-                          {order.order_number}
-                        </span>
+                    <div
+                      className="card-body"
+                      onClick={() => handleOrderClick(order.order_number)}
+                    >
+                      <div className="row align-items-center">
+                        <div className="col-4">
+                          <span className="card-title mb-1 custom_font_size_bold">
+                            {order.order_number}
+                          </span>
+                        </div>
+                        <div className="col-8 text-end">
+                          <span className="card-text gray-text mb-0 custom_font_size_bold">
+                            {order.date_time}
+                          </span>
+                        </div>
                       </div>
-                      <div className="col-8 text-end">
-                        <span className="card-text gray-text mb-0 custom_font_size_bold">
-                          {order.date_time}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="order-details-row">
-                      <div className="restaurant-info">
-                        <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                        <span className="restaurant-name custom_font_size_bold">
-                          {order.restaurant_name.toUpperCase()}
-                        </span>
-                        <span className="table-number custom_font_size_bold gray-text">
-                          <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
-                          {order.table_number}
-                        </span>
-                      </div>
-                      <div className="menu-info">
-                        <i className="ri-bowl-line pe-2 gray-text"></i>
-                        <span className="gray-text">
-                          {order.menu_count === 0
-                            ? "No orders"
-                            : `${order.menu_count} Menu`}
-                        </span>
-                      </div>
-                      <div className="price-info">
-                        <span className="text-info custom_font_size_bold">
-                          ₹{order.grand_total}
-                        </span>
+                      <div className="order-details-row">
+                        <div className="restaurant-info">
+                          <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                          <span className="restaurant-name custom_font_size_bold">
+                            {order.restaurant_name.toUpperCase()}
+                          </span>
+                          <span className="table-number custom_font_size_bold gray-text">
+                            <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
+                            {order.table_number}
+                          </span>
+                        </div>
+                        <div className="menu-info">
+                          <i className="ri-bowl-line pe-2 gray-text"></i>
+                          <span className="gray-text">
+                            {order.menu_count === 0
+                              ? "No orders"
+                              : `${order.menu_count} Menu`}
+                          </span>
+                        </div>
+                        <div className="price-info">
+                          <span className="text-info custom_font_size_bold">
+                            ₹{order.grand_total}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                  <hr /> */}
+                  <div
+                    className="custom-card my-2 rounded-3 shadow-sm"
+                    key={order.order_number}
+                  >
+                    <div
+                      className="card-body py-2 "
+                      onClick={() => handleOrderClick(order.order_number)}
+                    >
+                      <div className="row align-items-center">
+                        <div className="col-4">
+                          <span className="card-title mb-1 custom_font_size_bold">
+                           #{order.order_number}
+                          </span>
+                        </div>
+                        <div className="col-8 text-end">
+                          <span className="card-text gray-text mb-0 custom_font_size">
+                            {order.date_time}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-6 text-start">
+                          <div className="restaurant">
+                            <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                            <span className="restaurant-name custom_font_size_bold">
+                              {order.restaurant_name.toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-6 text-end">
+                          <span className=" custom_font_size gray-text">
+                            <i className="ri-user-location-line ps-2 pe-1 custom_font_size"></i>
+                            {order.table_number}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="menu-info">
+                            <i className="ri-bowl-line pe-2 gray-text"></i>
+                            <span className="gray-text">
+                              {order.menu_count === 0
+                                ? "No orders"
+                                : `${order.menu_count} Menu`}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-6 text-end">
+                          <div className="price-info">
+                            <span className="text-info custom_font_size_bold">
+                              ₹{order.grand_total}
+                            </span>
+                            <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
+                              ₹
+                              {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
               ))}
             </div>
           </div>

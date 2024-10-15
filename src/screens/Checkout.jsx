@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
-import OrderGif from "../assets/gif/order_success.gif";
+import OrderGif from "../assets/gif/order-success-test.gif";
 import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 
 const Checkout = () => {
@@ -32,7 +32,7 @@ const Checkout = () => {
   const [notes, setNotes] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
   const [showNotePopup, setShowNotePopup] = useState(false); // State to show/hide note popup
-
+ const [orderCount, setOrderCount] = useState(0);
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
@@ -92,6 +92,10 @@ const Checkout = () => {
         setServiceChargesPercent(parseFloat(data.service_charges_percent) || 0);
         setGstPercent(parseFloat(data.gst_percent) || 0);
         setDiscountPercent(parseFloat(data.discount_percent) || 0);
+          const uniqueMenuIds = new Set(
+            data.order_items.map((item) => item.menu_id)
+          );
+          setOrderCount(uniqueMenuIds.size);
       } else {
         console.error("Failed to fetch cart details:", data.msg);
         alert(`Error: ${data.msg}`);
@@ -208,10 +212,10 @@ const Checkout = () => {
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
-    const toTitleCase = (text) => {
-      if (!text) return "";
-      return text.replace(/\b\w/g, (char) => char.toUpperCase());
-    };
+  const toTitleCase = (text) => {
+    if (!text) return "";
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   return (
     <div className="page-wrapper full-height">
@@ -230,7 +234,8 @@ const Checkout = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <h5 className="custom_font_size_bold pe-3">Checkout</h5>
+                  <span className="custom_font_size_bold pe-1">Checkout</span>
+                  <span className="gray-text small-number">({orderCount})</span>
                 </div>
                 <div className="right-content gap-1">
                   <div className="menu-toggler" onClick={toggleSidebar}>
@@ -394,7 +399,7 @@ const Checkout = () => {
                   </div>
                 )} */}
               </div>
-              <ul className="ms-0 custom_font_size_bold ">
+              <ul className="hints ">
                 <li className="  gray-text">
                   &bull; Make mutton thali a bit less spicy
                 </li>
@@ -405,109 +410,121 @@ const Checkout = () => {
             </ul>
 
             <div className="dz-flex-box mt-2">
-              <div className="card">
-                <div className="card-body px-1 pb-0">
-                  {cartItems.length > 0 ? (
-                    cartItems.map((item, index) => (
-                      <div className="row justify-content-center" key={index}>
-                        <div className="col-6 pe-0   pb-1">
-                          <span className="mb-0 custom_font_size_bold ps-2">
-                            {item.menu_name}
-                          </span>
-                          <div className=" ps-2">
-                            <i className="ri-restaurant-line me-2 category-text fw-medium"></i>
-                            <span className="category-text fw-medium ">
-                              {item.menu_cat_name}
-                            </span>
+              {cartItems.length > 0 ? (
+                cartItems.map((item, index) => (
+                  <>
+                    <Link
+                      to={{
+                        pathname: `/ProductDetails/${item.menu_id}`,
+                      }}
+                      state={{ menu_cat_id: item.menu_cat_id }}
+                    >
+                      <div className="card rounded-3 my-1">
+                        <div className="card-body py-2 rounded-3 px-0">
+                          <div className="row" key={index}>
+                            <div className="row">
+                              <div className="col-6">
+                                <span className="mb-0 custom_font_size_bold ps-2">
+                                  {item.menu_name}
+                                </span>
+                              </div>
+                              <div className="col-5 p-0 text-end">
+                                <span className="ms-0 me-2 text-info custom_font_size_bold">
+                                  ₹{item.price}
+                                </span>
+
+                                <span className="gray-text custom_font_size_bold text-decoration-line-through">
+                                  ₹ {item.oldPrice || item.price}
+                                </span>
+                              </div>
+                              <div className="col-1 custom_font_size_bold text-end px-0">
+                                <span>x {item.quantity}</span>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-8">
+                                <div className="ps-2">
+                                  <i className="ri-restaurant-line me-2 category-text fw-medium"></i>
+                                  <span className="action_icon_size category-text fw-medium ">
+                                    {item.menu_cat_name}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="col-4 text-end px-0">
+                                <span className="fs-6 ps-2 offer-color custom_font_size_bold">
+                                  {item.offer || "No "}% Off
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-1 custom_font_size_bold text-end px-0">
-                          x {item.quantity}
-                        </div>
-                        <div className="col-5 text-end ps-0 pe-4">
-                          <p className="mb-2 fs-4 fw-medium">
-                            <span className="ms-0 me-2 text-info custom_font_size_bold">
-                              ₹{item.price}
-                            </span>
-
-                            <span className="gray-text custom_font_size_bold text-decoration-line-through">
-                              ₹ {item.oldPrice || item.price}
-                            </span>
-                            <div>
-                              <span className="fs-6 ps-2 offer-color custom_font_size_bold">
-                                {item.offer || "No "}% Off
-                              </span>
-                            </div>
-                          </p>
-                        </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="custom_font_size_bold">
-                      No items in the cart.
-                    </div>
-                  )}
+                    </Link>
+                  </>
+                ))
+              ) : (
+                <div className="custom_font_size_bold">
+                  No items in the cart.
                 </div>
-              </div>
+              )}
             </div>
-            <div className="card mx-auto">
-              <div className="row px-1 py-1">
-                <div className="col-12">
+            <div className="card mx-auto rounded-3 mt-2">
+              <div className="row px-2 py-1">
+                <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 custom_font_size_bold">
-                      Total
-                    </span>
+                    <span className="ps-2 custom_font_size_bold">Total</span>
                     <span className="pe-2 custom_font_size_bold ">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </div>
-                  <hr className="me-3 p-0 m-0 text-primary" />
+                  <hr className="me-0 p-0 m-0 text-primary" />
                 </div>
-                <div className="col-12 pt-0">
+                <div className="col-12 pt-0 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span
-                      className="ps-2 custom_font_size pt-1 gray-text"
-                     
-                    >
-                      Service Charges <span className="gray-text small-number">({serviceChargesPercent}%)</span>
+                    <span className="ps-2 custom_font_size pt-1 gray-text">
+                      Service Charges{" "}
+                      <span className="gray-text small-number">
+                        ({serviceChargesPercent}%)
+                      </span>
                     </span>
                     <span className="pe-2 custom_font_size gray-text">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
                 </div>
-                <div className="col-12 mb-0 py-1">
+                <div className="col-12 mb-0 py-1 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span
-                      className="ps-2 custom_font_size gray-text"
-                      
-                    >
-                      GST <span className="gray-text small-number">({gstPercent}%)</span>
+                    <span className="ps-2 custom_font_size gray-text">
+                      GST{" "}
+                      <span className="gray-text small-number">
+                        ({gstPercent}%)
+                      </span>
                     </span>
-                      <span className="pe-2 custom_font_size gray-text text-start">
+                    <span className="pe-2 custom_font_size gray-text text-start">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
                 </div>
-                <div className="col-12 mb-0 pt-0 pb-1">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span
-                      className="ps-2 custom_font_size gray-text"
-                      
-                    >
-                        Discount <span className="gray-text small-number">({discountPercent}%)</span>
+                <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-0 pb-2">
+                    <span className="ps-2 custom_font_size gray-text">
+                      Discount{" "}
+                      <span className="gray-text small-number">
+                        ({discountPercent}%)
+                      </span>
                     </span>
                     <span className="pe-2 custom_font_size gray-text">
-                      ₹{parseFloat(discount).toFixed(2)}
+                      -₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
+                  <hr className="me-0 p-0 m-0 text-primary" />
                 </div>
-                <div>
-                  <hr className="me-3 p-0 m-0 text-primary" />
-                </div>
-                <div className="col-12">
+
+                <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 custom_font_size_bold">Grand Total</span>
+                    <span className="ps-2 custom_font_size_bold">
+                      Grand Total
+                    </span>
                     <span className="pe-2 custom_font_size_bold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
@@ -518,10 +535,11 @@ const Checkout = () => {
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-color rounded-pill mt-3 custom_font_size_bold text-white"
+                className="btn btn-color rounded-pill custom_font_size_bold text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order
+                <span className="small-number gray-text ps-1">({orderCount} Items)</span>
               </Link>
             </div>
           </div>
@@ -535,14 +553,14 @@ const Checkout = () => {
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
 
-            <span className="gray-text custom_font_size_bold">
-              Your Order Successfully Placed
+            <span className="text-dark custom_font_size_bold my-5">
+              Order placed successfully
             </span>
-            <p className="gray-text custom_font_size_bold">
+            <p className="gray-text custom_font_size">
               You have successfully made payment and placed your order.
             </p>
             <button
-              className="btn btn-color rounded-pill  mt-3 custom_font_size_bold text-white"
+              className="btn btn-color rounded-pill custom_font_size_bold text-white"
               onClick={closePopup}
             >
               View Order

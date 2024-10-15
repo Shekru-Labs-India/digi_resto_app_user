@@ -92,7 +92,7 @@ const Test = () => {
               <div className="card-body py-2">
                 <div className="row align-items-center mb-0">
                   <div className="col-6">
-                    <h5 className="card-title mb-0">{orderDetails.order_details.order_number}</h5>
+                    <h5 className="card-title mb-0">#{orderDetails.order_details.order_number}</h5>
                   </div>
                   <div className="col-6 text-end">
                     <span className="card-text " style={{ color: "#a5a5a5" }}>

@@ -4,6 +4,7 @@ import { Toast } from "primereact/toast"; // Import Toast from PrimeReact
 import HotelList from "./HotelList";
 import OverlayIcon from "../assets/google lens.svg"; // Import the SVG
 import logo from "../assets/logos/mmua_transparent.png";
+import CompanyVersion from "../constants/CompanyVersion";
 
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
@@ -91,12 +92,20 @@ const QRScanner = () => {
             src={OverlayIcon}
             alt="Overlay"
             className="position-absolute start-0 w-75 h-75"
-            style={{ pointerEvents: "none", top: "50%", left: "50%", transform: "translate(16%, -46%)", filter: "invert(35%) sepia(100%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(90%)" }}
+            style={{
+              pointerEvents: "none",
+              top: "50%",
+              left: "50%",
+              transform: "translate(16%, -46%)",
+              filter:
+                "invert(35%) sepia(100%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(90%)",
+            }}
           />
         </div>
       )}
       <div className="container px-0">
         <HotelList />
+       
       </div>
     </div>
   );
