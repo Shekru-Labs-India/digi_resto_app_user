@@ -493,7 +493,7 @@ const Product = () => {
               >
                 <h3>
                   <div
-                    className="product-title fs-xs fw-medium category-text"
+                    className="product-title fs-xs fw-medium text-success"
                     style={{ color: "#0a795b" }}
                   >
                     <i className="ri-restaurant-line pe-1"></i>

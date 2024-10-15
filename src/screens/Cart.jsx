@@ -368,8 +368,8 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-4 fs-sm p-0 fw-medium ms-3 category-text mt-1">
-                          <i className="ri-restaurant-line me-1 category-text"></i>
+                        <div className="col-4 fs-sm p-0 fw-medium ms-3 text-success mt-1">
+                          <i className="ri-restaurant-line me-1 text-success"></i>
                           {item.menu_cat_name}
                         </div>
                         <div className="col-4 pe-0 ps-2">

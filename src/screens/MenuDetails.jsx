@@ -386,8 +386,8 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0">
-                    <div className="dz-quantity detail-content category-text m-0 pt-2 ms-2 ps-2  fw-medium  px-0">
-                      <i className="ri-restaurant-line  me-1 category-text "></i>
+                    <div className="dz-quantity detail-content text-success m-0 pt-2 ms-2 ps-2  fw-medium  px-0">
+                      <i className="ri-restaurant-line  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>

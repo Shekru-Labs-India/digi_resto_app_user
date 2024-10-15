@@ -346,8 +346,8 @@ const Search = () => {
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
                             <div className="mt-0">
-                              <i className="ri-restaurant-line mt-0 me-2 category-text fs-xs fw-medium"></i>
-                              <span className="category-text fs-xs fw-medium">
+                              <i className="ri-restaurant-line mt-0 me-2 text-success fs-xs fw-medium"></i>
+                              <span className="text-success fs-xs fw-medium">
                                 {menu.category_name}
                               </span>
                             </div>

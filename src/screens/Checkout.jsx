@@ -303,8 +303,8 @@ const Checkout = () => {
                             <div className="row">
                               <div className="col-8">
                                 <div className="ps-2">
-                                  <i className="ri-restaurant-line me-2 category-text fw-medium"></i>
-                                  <span className="action_icon_size category-text fw-medium ">
+                                  <i className="ri-restaurant-line me-2 text-success fw-medium"></i>
+                                  <span className="action_icon_size text-success fw-medium ">
                                     {item.menu_cat_name}
                                   </span>
                                 </div>

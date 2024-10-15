@@ -1,36 +1,9 @@
-
-
-
-
 body {
   margin: 0;
   font-family: 'Poppins','sans-serif';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* 
-cateHov:hover {
-   color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
-    text-decoration: underline; }
-    a:hover {
-      --bs-link-color-rgb: var(--bs-link-hover-color-rgb);
-} */
-
-.offer-color{
-  color: #428B3C;
-}
-
-
-.category-text {
-  font-size: 12px;
-  /* color: black; */
-  color: #0a795b;
-}
-
-.category-text:hover {
-  color: #0d775e;
-}
-
 
 hr.dotted {
   border-top: 3px dotted #000000;
