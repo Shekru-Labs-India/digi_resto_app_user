@@ -40,7 +40,7 @@ const Profile = () => {
 
     return (
       <>
-        <header className="header header-fixed shadow-sm">
+        <header className="header header-fixed style-3 shadow-sm">
           <div className="header-content ">
             <div className="left-content">
               <Link

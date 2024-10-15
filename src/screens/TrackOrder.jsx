@@ -919,7 +919,7 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                                 <div className="col-4 text-end px-0">
-                                  <span className="custom_font_size_bold gray-text">
+                                  <span className="custom_font_size gray-text">
                                     <i className="ri-star-half-line ratingStar"></i>
                                     {parseFloat(menu.rating).toFixed(1)}
                                   </span>

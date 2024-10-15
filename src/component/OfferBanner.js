@@ -171,7 +171,7 @@ const OfferBanner = () => {
         </div>
       ) : (
         <>
-          <div className="swiper featured-swiper mt-3">
+          <div className="swiper featured-swiper mt-0">
           <HotelNameAndTable 
               restaurantName={restaurantName}
               tableNumber={userData.tableNumber}

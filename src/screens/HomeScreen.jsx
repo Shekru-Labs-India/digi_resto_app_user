@@ -59,7 +59,7 @@ const HomeScreen = () => {
   return (
     <div>
       <div className="page-wrapper">
-      <header className="header header-fixed pt-0 shadow-sm">
+      <header className="header header-fixed style-3 shadow-sm">
         <div className="header-content d-flex justify-content-between">
           <div className="">
             
