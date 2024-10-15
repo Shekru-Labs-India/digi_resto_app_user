@@ -9,7 +9,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
-import HotelNameAndTable from '../components/HotelNameAndTable';
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 const MenuDetails = () => {
   const toast = useRef(null);
@@ -20,7 +20,6 @@ const MenuDetails = () => {
   const [totalAmount, setTotalAmount] = useState(0); // Total amount state
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cartItems")) || [];
-
   });
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
@@ -42,8 +41,6 @@ const MenuDetails = () => {
       (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
   };
-
-
 
   // Fetch product details
   const fetchProductDetails = async () => {
@@ -335,18 +332,14 @@ const MenuDetails = () => {
     <>
       <div className="page-wrapper">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
-        <Header 
-          title={toTitleCase(productDetails.name)}
-         
-        />
+        <Header className="fs-6 fw-semibold" title={toTitleCase(productDetails.name)} />
 
         <main className="page-content ">
-
-        <div className="mt-5 pt-1">
-        <HotelNameAndTable 
-     restaurantName={restaurantName}
-     tableNumber={userData.tableNumber}
-   />
+          <div className="mt-5 pt-1">
+            <HotelNameAndTable
+              restaurantName={restaurantName}
+              tableNumber={userData.tableNumber}
+            />
           </div>
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
@@ -376,7 +369,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2 ps-3">
-                    <span className="title custom_font_size_bold mb-1 menu_details-name" >
+                    <span className=" fs-6 fw-semibold mb-1 menu_details-name">
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -424,7 +417,7 @@ const MenuDetails = () => {
                   <div className="col-6 pt-1 ps-0">
                     <div className="dz-stepper style-3 ">
                       <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
-                        <span className="input-group-btn input-group-prepend" >
+                        <span className="input-group-btn input-group-prepend">
                           <i
                             className="ri-subtract-line fs-3 me-2"
                             style={{ cursor: "pointer" }}

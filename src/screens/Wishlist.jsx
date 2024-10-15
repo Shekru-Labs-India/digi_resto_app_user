@@ -436,7 +436,7 @@ const Wishlist = () => {
                                   <div className="col-9 pt-1 p-0">
                                     <div className="row">
                                       <div className="col-9 pe-2">
-                                        <div className="ps-2 custom_font_size_bold">
+                                        <div className="ps-2 fs-6 fw-semibold">
                                           {menu.menu_name}
                                         </div>
                                       </div>

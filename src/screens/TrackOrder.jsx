@@ -735,7 +735,7 @@ const TrackOrder = () => {
                           </div>
                           <div className="col-9 py-2 pe-0 ps-2">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="custom_font_size_bold">
+                              <div className="fs-6 fw-semibold">
                                 {menu.menu_name}
                               </div>
                               <div className="col-3">
@@ -895,7 +895,7 @@ const TrackOrder = () => {
                             <div className="col-8 ps-2 pt-1 pe-0">
                               <div className="row">
                                 <div className="col-11">
-                                  <div className="customFontSizeBold ">
+                                  <div className="fs-6 fw-semibold">
                                     {menu.menu_name}
                                   </div>
                                 </div>
@@ -1011,7 +1011,7 @@ const TrackOrder = () => {
                               />
                             </div>
                             <div className="col-8 pt-2 pb-0 pe-0 ps-2">
-                              <div className="custom_font_size_bold">
+                              <div className="fs-6 fw-semibold">
                                 {menu.menu_name}
                               </div>
                               <div className="row">

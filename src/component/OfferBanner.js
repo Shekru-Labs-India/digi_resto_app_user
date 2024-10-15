@@ -200,7 +200,7 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content d-block">
-                        <span className="custom_font_size_bold ms-0 text-wrap mb-0">
+                        <span className="fs-6 fw-semibold ms-0 text-wrap mb-0">
                           {menu.name}
                         </span>
                         <ul className="dz-meta mt-2">

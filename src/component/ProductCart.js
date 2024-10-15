@@ -412,7 +412,7 @@ const ProductCard = () => {
               </div>
 
               {menu.name && (
-                <div className="custom_font_size_bold text-wrap">
+                <div className="fs-6 fw-semibold text-wrap">
                   {menu.name}
                 </div>
               )}

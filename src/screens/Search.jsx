@@ -249,38 +249,34 @@ const Search = () => {
   return (
     <div className="page-wrapper">
       {/* Header */}
-      <Header 
-        title="Search" 
-        
-      />
+      <Header title="Search" />
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-     
-          <div className="d-flex justify-content-between align-items-center  m-3">
-            <div className="d-flex align-items-center">
-              <i className="ri-store-2-line me-2"></i>
-              <span className="fw-medium hotel-name">
-                {restaurantName.toUpperCase() || "Restaurant Name"}
-              </span>
-            </div>
-            <div className="d-flex align-items-center">
-              <i className="ri-user-location-line me-2 gray-text"></i>
-              <span className="fw-medium custom-text-gray">
-                {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
-              </span>
-            </div>
+        <div className="d-flex justify-content-between align-items-center  m-3">
+          <div className="d-flex align-items-center">
+            <i className="ri-store-2-line me-2"></i>
+            <span className="fw-medium hotel-name">
+              {restaurantName.toUpperCase() || "Restaurant Name"}
+            </span>
           </div>
-       
+          <div className="d-flex align-items-center">
+            <i className="ri-user-location-line me-2 gray-text"></i>
+            <span className="fw-medium custom-text-gray">
+              {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
+            </span>
+          </div>
+        </div>
+
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">
-              <i className="ri-search-line fs-3 gray-text "></i>
+              <i className="ri-search-line fs-3 gray-text"></i>
             </span>
             <input
               type="search"
-              className="form-control bg-white ps-2 custom_font_size_bold"
+              className="form-control  ps-2 custom_font_size_bold "
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
@@ -340,9 +336,7 @@ const Search = () => {
                         />
                       </div>
                       <div className="col-8 pt-3 pb-0 pe-0 ps-2">
-                        <div className="custom_font_size_bold">
-                          {menu.menu_name}
-                        </div>
+                        <div className="fs-6 fw-semibold">{menu.menu_name}</div>
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
                             <div className="mt-0">
@@ -371,10 +365,8 @@ const Search = () => {
                               </span>
                             </span>
 
-                            <span className="mb-0 mt-1 ms-2 custom_font_size offerSearch">
-                              <span className="custom_font_size px-0 pe-4 text-start offer-color offer">
-                                {menu.offer || "No "}% Off
-                              </span>
+                            <span className="ms-2  text-start text-success">
+                              {menu.offer || "No "}% Off
                             </span>
                           </div>
                           <div className="col-4 text-center p-0 clickable-icon search-like">

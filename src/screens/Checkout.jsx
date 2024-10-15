@@ -283,7 +283,7 @@ const Checkout = () => {
                           <div className="row" key={index}>
                             <div className="row">
                               <div className="col-7">
-                                <span className="mb-0 custom_font_size_bold ps-2">
+                                <span className="mb-0 fs-6 fw-semibold ps-2">
                                   {item.menu_name}
                                 </span>
                               </div>
