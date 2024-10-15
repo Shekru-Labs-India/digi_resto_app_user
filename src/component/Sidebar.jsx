@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import CompanyVersion from "../constants/CompanyVersion";
+import logo from "../assets/logos/mmua_transparent.png";
 
 const Sidebar = () => {
   const { restaurantName } = useRestaurantId();
@@ -76,7 +77,24 @@ const Sidebar = () => {
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
       <header className="header header-fixed pt-2 shadow-sm">
         <div className="header-content d-flex justify-content-between">
-          <div className="d-flex flex-column">
+          <div className="">
+            {/* <span className=" fw-medium hotel-name">
+              <i className="ri-store-2-line me-2"></i>
+              {restaurantName.toUpperCase() || "Restaurant Name"}
+            </span>
+            <span className="fw-medium custom-text-gray">
+              <i class="ri-user-location-line me-2 gray-text"></i>
+              {userData.tableNumber || ""}
+            </span> */}
+
+            <img
+              src={logo}
+              alt="logo"
+              className="me-2"
+              width="30"
+              height="30"
+            />
+            <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
           </div>
           <div className="right-content gap-1">
             <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
@@ -90,7 +108,6 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-        
       </header>
 
       {/* Dark overlay for sidebar */}
@@ -206,8 +223,26 @@ const Sidebar = () => {
             ></i>
           </div>
         </div> */}
-        <div className="sidebar-bottom">
-          <CompanyVersion />
+        <div className="sidebar-bottom2">
+
+      
+        <div className="sidebar-logo text-center mt-6">
+        <img
+              src={logo}
+              alt="logo"
+              className="me-2"
+              width="30"
+              height="30"
+            />
+            <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+        </div>
+        <div className="text-center mt-2">
+          <div className="gray-text custom_font_size">Powered by </div>
+          <div className="gray-text custom_font_size">
+            Shekru Labs India Pvt. Ltd.
+          </div>
+          <div className="gray-text custom_font_size">v1.1</div>
+        </div>
         </div>
       </div>
     </div>
