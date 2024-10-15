@@ -247,7 +247,7 @@ const OrdersTab = ({ orders }) => {
                   className="title"
                   style={{ fontSize: "19px", paddingTop: "10px" }}
                 >
-                  {order.order_number}
+                  #{order.order_number}
                 </h5>
                 <ul className="dz-meta">
                   <li className="dz-price">₹{order.total_bill}</li>

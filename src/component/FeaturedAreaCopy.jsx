@@ -142,7 +142,7 @@ const FeaturedArea = () => {
                       </div>
                       <div className="col-6">
                         {" "}
-                        <p className="fs-5 fw-semibold">
+                        <p className="fs-5 ">
                           <i
                             class="ri-star-half-line "
                             

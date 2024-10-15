@@ -175,13 +175,13 @@ const MyOrder = () => {
                     }
                   ></i>
                 </div>
-                <div className="custom_font_size_bold">
-                  <span className="ms-3 pt-4">
+                <div className="custom_font_size">
+                  <span className="ms-3 pt-4 custom_font_size_bold">
                     {userData?.name
                       ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                       : "Hello, User"}
                   </span>
-                  <div className="mail ms-3 gray-text custom_font_size_bold">
+                  <div className="mail ms-3 gray-text custom_font_size">
                     {userData?.mobile}
                   </div>
                   <div className="dz-mode mt-3 me-4">
@@ -390,12 +390,12 @@ const OrdersTab = ({ orders, type }) => {
     setCheckedItems(newCheckedItems);
   };
 
-  const formatDateTime = (dateTimeString) => {
+  const formatTime = (dateTimeString) => {
     if (!dateTimeString) return "";
-    const [date, time] = dateTimeString.split(" ");
-    if (!time || !date) return dateTimeString;
+    const [, time] = dateTimeString.split(" ");
+    if (!time) return "";
     const [hours, minutes] = time.split(":");
-    return `${hours}:${minutes} ${date}`;
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -509,17 +509,17 @@ const OrdersTab = ({ orders, type }) => {
                   </div>
                   <hr /> */}
                   <div
-                    className="custom-card my-2 rounded-3"
+                    className="custom-card my-2 rounded-3 shadow-sm"
                     key={order.order_number}
                   >
                     <div
-                      className="card-body py-2"
+                      className="card-body py-2 "
                       onClick={() => handleOrderClick(order.order_number)}
                     >
                       <div className="row align-items-center">
                         <div className="col-4">
                           <span className="card-title mb-1 custom_font_size_bold">
-                            {order.order_number}
+                           #{order.order_number}
                           </span>
                         </div>
                         <div className="col-8 text-end">
@@ -559,6 +559,10 @@ const OrdersTab = ({ orders, type }) => {
                           <div className="price-info">
                             <span className="text-info custom_font_size_bold">
                               ₹{order.grand_total}
+                            </span>
+                            <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
+                              ₹
+                              {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                             </span>
                           </div>
                         </div>

@@ -72,7 +72,12 @@ const Category = () => {
   };
 
   const handleCategoryClick = (category) => {
-    navigate(`/Menu/${category.menu_cat_id}`);
+    navigate(`/Menu`, {
+      state: { 
+        selectedCategory: category.menu_cat_id,
+        categoryName: category.category_name
+      }
+    });
   };
   
 
@@ -177,13 +182,13 @@ const Category = () => {
                         }
                       ></i>
                     </div>
-                    <div className="custom_font_size_bold">
-                      <span className="ms-3 pt-4">
+                    <div className="custom_font_size">
+                      <span className="ms-3 pt-4 custom_font_size_bold">
                         {userData?.name
                           ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                           : "Hello, User"}
                       </span>
-                      <div className="mail ms-3 gray-text custom_font_size_bold">
+                      <div className="mail ms-3 gray-text custom_font_size">
                         {userData?.mobile}
                       </div>
                       <div className="dz-mode mt-3 me-4">
@@ -280,7 +285,7 @@ const Category = () => {
           {/* Header End */}
 
           <main className="page-content space-top p-b70">
-            <div className="container pb-1">
+            <div className="container mt-3 mb-0 py-2">
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
                   <i className="ri-store-2-line me-2"></i>

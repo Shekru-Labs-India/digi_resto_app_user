@@ -609,13 +609,13 @@ const TrackOrder = () => {
                   }
                 ></i>
               </div>
-              <div className="custom_font_size_bold">
-                <span className="ms-3 pt-4">
+              <div className="custom_font_size">
+                <span className="ms-3 pt-4 custom_font_size_bold">
                   {userData?.name
                     ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                     : "Hello, User"}
                 </span>
-                <div className="mail ms-3 gray-text custom_font_size_bold">
+                <div className="mail ms-3 gray-text custom_font_size">
                   {userData?.mobile}
                 </div>
                 <div className="dz-mode mt-3 me-4">
@@ -719,7 +719,7 @@ const TrackOrder = () => {
                 <div className="row align-items-center mb-0">
                   <div className="col-4">
                     <h5 className="card-title mb-0 custom_font_size_bold">
-                      {order_details.order_number}
+                      #{order_details.order_number}
                     </h5>
                   </div>
                   <div className="col-8 text-end">

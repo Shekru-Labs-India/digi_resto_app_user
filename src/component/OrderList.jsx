@@ -61,7 +61,7 @@ const OrderList = ({ restaurantId, customerId, orderStatus }) => {
           <div className="card-body">
             <div className="row align-items-center">
               <div className="col-6">
-                <h5 className="card-title mb-1">{order.order_number}</h5>
+                <h5 className="card-title mb-1">#{order.order_number}</h5>
               </div>
               <div className="col-6 text-end">
                 <span className="card-text text-muted mb-0">

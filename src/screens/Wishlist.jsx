@@ -13,6 +13,7 @@ import "primeicons/primeicons.css";
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
+  const [hasFavorites, setHasFavorites] = useState(false);
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -52,6 +53,7 @@ const Wishlist = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
   const [isLoading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     if (restaurantId) {
@@ -201,14 +203,17 @@ const Wishlist = () => {
           const data = await response.json();
           if (data.st === 1 && data.lists) {
             setMenuList(data.lists);
+            setHasFavorites(Object.keys(data.lists).length > 0);
           } else {
             console.error("Invalid data format:", data);
+            setHasFavorites(false);
           }
         } else {
           console.error("Network response was not ok:", response.statusText);
         }
       } catch (error) {
         console.error("Error fetching favourite items:", error);
+        setHasFavorites(false);
       } finally {
         setLoading(false);
       }
@@ -251,6 +256,15 @@ const Wishlist = () => {
           updatedMenuList[restaurantName] = updatedMenuList[
             restaurantName
           ].filter((item) => item.menu_id !== menuId);
+          
+          // Check if this was the last item in the restaurant
+          if (updatedMenuList[restaurantName].length === 0) {
+            delete updatedMenuList[restaurantName];
+          }
+          
+          // Update hasFavorites based on the new menuList
+          setHasFavorites(Object.keys(updatedMenuList).length > 0);
+          
           return updatedMenuList;
         });
 
@@ -313,6 +327,7 @@ const Wishlist = () => {
       </div>
     );
   }
+ 
 
   return (
     <div className="page-wrapper full-height">
@@ -483,7 +498,7 @@ const Wishlist = () => {
       </header>
 
       <main className="page-content space-top p-b0 mt-3 mb-5 pb-3 ">
-        <div className="container pb-3 pt-1">
+      <div className="container my-2 py-1">
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <i className="ri-store-2-line me-2"></i>
@@ -500,7 +515,7 @@ const Wishlist = () => {
           </div>
         </div>
         {customerId ? (
-          Object.keys(menuList).length > 0 ? (
+          hasFavorites ? (
             <>
               <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
                 <div
@@ -633,8 +648,8 @@ const Wishlist = () => {
                                           </div>
                                         )}
                                       </div>
-                                      <div className="col-2 pe-0 ps-2 d-flex align-items-center">
-                                        <span className="custom_font_size fw-semibold gray-text favRating">
+                                      <div className="col-2 pe-0  d-flex align-items-center ">
+                                        <span className="custom_font_size  gray-text favRating wishlist-ratin pe-3">
                                           <i className="ri-star-half-line ratingStar"></i>
                                           {menu.rating || 0.1}
                                         </span>

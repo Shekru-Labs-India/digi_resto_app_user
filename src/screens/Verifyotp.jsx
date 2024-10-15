@@ -212,7 +212,7 @@
 
 // canvas gpt
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
@@ -243,6 +243,8 @@ const Verifyotp = () => {
       newOtp[index] = value;
       setOtp(newOtp);
 
+     
+
       // Move focus to the next input if a digit is entered
       if (index < otp.length - 1) {
         const nextInput = document.getElementById(`digit-${index + 2}`);
@@ -252,6 +254,14 @@ const Verifyotp = () => {
       }
     }
   };
+
+  useEffect(() => {
+    // Focus on the first input field when component mounts
+    const firstInput = document.getElementById('digit-1');
+    if (firstInput) {
+      firstInput.focus();
+    }
+  }, []);
 
   const isEditable = (index) => {
     // Check if all subsequent boxes are empty
@@ -402,18 +412,20 @@ const Verifyotp = () => {
                   className="digit-group d-flex justify-content-center"
                 >
                   {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      className="form-control text-center"
-                      type="tel"
-                      id={`digit-${index + 1}`}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(e, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      disabled={!isEditable(index)} // Disable if not editable
-                      maxLength="1"
-                      style={{ width: "50px", marginRight: "5px" }}
-                    />
+                    
+                      <input
+                        key={index}
+                        className="form-control text-center"
+                        type="tel"
+                        id={`digit-${index + 1}`}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(e, index)}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
+                        disabled={!isEditable(index)}
+                        maxLength="1"
+                        style={{ width: "50px", marginRight: "5px" }}
+                        autoFocus={index === 0} // Add autoFocus to the first input
+                      />
                   ))}
                 </div>
                 {/* <p className="text-center custom_font_size_bold  ">
