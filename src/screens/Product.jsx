@@ -249,8 +249,6 @@ const Product = () => {
   useEffect(() => {
     if (location.state && location.state.selectedCategory) {
       setSelectedCategory(parseInt(location.state.selectedCategory, 10));
-    } else {
-      setSelectedCategory(null); // Default to "All" if no category is selected
     }
   }, [location]);
   
@@ -688,7 +686,7 @@ const Product = () => {
                     fontSize: "23px",
                     cursor: "pointer",
                     color: menuItem.is_favourite ? "#fe0809" : "#73757b",
-                    zIndex: 10
+                    zIndex: 2
                   }}
                 ></i>
               </div>

@@ -72,7 +72,12 @@ const Category = () => {
   };
 
   const handleCategoryClick = (category) => {
-    navigate(`/Menu/${category.menu_cat_id}`);
+    navigate(`/Menu`, {
+      state: { 
+        selectedCategory: category.menu_cat_id,
+        categoryName: category.category_name
+      }
+    });
   };
   
 

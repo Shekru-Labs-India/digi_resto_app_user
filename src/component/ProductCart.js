@@ -406,7 +406,7 @@ const ProductCard = () => {
                     right: "0",
                     cursor: "pointer",
                     color: menu.is_favourite ? "#fe0809" : "#73757b",
-                    zIndex: 10
+                    zIndex: 2
                   }}
                 ></i>
               </div>
