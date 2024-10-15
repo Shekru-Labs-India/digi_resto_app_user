@@ -9742,8 +9742,7 @@ hr.dotted {
   .p-t0 {
     padding-top: 0px !important; }
   
-  .p-b0 {
-    padding-bottom: 0px; }
+
   
   .p-lr0 {
     padding-left: 0px;
@@ -11216,7 +11215,7 @@ hr.dotted {
   
   /*==== 5. Layout ====*/
   :root {
-    --headheight: 60px;
+    --headheight: 50px;
     --headwidth: 600px; }
   
   .space-y-large {

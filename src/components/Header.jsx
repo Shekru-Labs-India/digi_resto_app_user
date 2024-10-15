@@ -14,7 +14,7 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
   return (
     <header className="header header-fixed style-3 ">
       <div className="header-content">
-        <div className="container">
+        <div className="container p-0">
           <div className="row align-items-center">
             <div className="col-auto">
               {showBack && (

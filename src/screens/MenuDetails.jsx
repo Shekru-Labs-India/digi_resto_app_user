@@ -9,6 +9,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
+import HotelNameAndTable from '../components/HotelNameAndTable';
 
 const MenuDetails = () => {
   const toast = useRef(null);
@@ -19,7 +20,10 @@ const MenuDetails = () => {
   const [totalAmount, setTotalAmount] = useState(0); // Total amount state
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cartItems")) || [];
+
   });
+  const { restaurantName } = useRestaurantId();
+  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
@@ -38,6 +42,8 @@ const MenuDetails = () => {
       (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
   };
+
+
 
   // Fetch product details
   const fetchProductDetails = async () => {
@@ -108,6 +114,16 @@ const MenuDetails = () => {
       console.error("Error fetching product details:", error);
     }
   };
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setUserData(storedUserData);
+    } else {
+      console.error("User data not found in local storage.");
+    }
+    fetchProductDetails();
+  }, []);
 
   useEffect(() => {
     fetchProductDetails();
@@ -325,10 +341,17 @@ const MenuDetails = () => {
         />
 
         <main className="page-content ">
+
+        <div className="mt-5 pt-1">
+        <HotelNameAndTable 
+     restaurantName={restaurantName}
+     tableNumber={userData.tableNumber}
+   />
+          </div>
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
               <img
-                className="product-detail-image mt-5 pt-2"
+                className="product-detail-image"
                 src={productDetails.image || images}
                 alt={productDetails.name}
                 style={{

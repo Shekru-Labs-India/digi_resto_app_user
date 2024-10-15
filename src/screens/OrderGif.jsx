@@ -1,8 +1,6 @@
 import React, { useContext } from 'react';
-import lightModeGif from "../assets/gif/order-success-test.gif";
-import darkModeGif from "../assets/gif/order-success-test.gif";
 import { ThemeContext } from '../context/ThemeContext.js';
-import OrderGifOP from "../assets/gif/order-success-test.gif";
+import OrderGifOP from "../assets/gif/cooking.gif";
 
 const OrderGif = () => {
   const { isDarkMode } = useContext(ThemeContext);

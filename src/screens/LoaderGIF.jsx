@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext.js";
-import LoaderGIF from "../assets/gif/loader-animated.gif";
+import LoaderGIF from "../assets/gif/cooking.gif";
 
 const LoaderGif = () => {
   const { isDarkMode } = useContext(ThemeContext);

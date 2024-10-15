@@ -12,9 +12,7 @@
 }
 
 
-.toggler-icon{
-  margin-top: -20px;
-}
+
 
 
 
@@ -789,9 +787,7 @@ hr.dashed {
   margin-bottom: 1px;
 }
 
-.custom-container {
-  padding-bottom: 0px; /* This will override Bootstrap's padding-bottom */
-}
+
 
 .price-wrapper .current-price {
     color: #4E74FC;
@@ -911,3 +907,10 @@ hr.dashed {
 .sidebar-bottom2{
   padding-top: 110px;
 }
+
+.date_margin{
+  margin-top: -18px;
+}
+
+
+

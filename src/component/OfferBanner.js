@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 const OfferBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -171,24 +172,10 @@ const OfferBanner = () => {
       ) : (
         <>
           <div className="swiper featured-swiper mt-3">
-            <div className="container mt-2 mb-3 py-0 px-0">
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                  <i className="ri-store-2-line me-2"></i>
-                  <span className="fw-medium hotel-name">
-                    {restaurantName.toUpperCase() || "Restaurant Name"}
-                  </span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <i className="ri-user-location-line me-2 gray-text"></i>
-                  <span className="fw-medium custom-text-gray">
-                    {userData.tableNumber
-                      ? `Table ${userData.tableNumber}`
-                      : ""}
-                  </span>
-                </div>
-              </div>
-            </div>
+          <HotelNameAndTable 
+              restaurantName={restaurantName}
+              tableNumber={userData.tableNumber}
+            />
             <div className="swiper-wrapper">
               {menuLists.map((menu) => (
                 <div key={menu.menu_id} className="swiper-slide">

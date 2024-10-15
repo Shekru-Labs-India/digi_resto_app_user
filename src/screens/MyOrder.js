@@ -123,7 +123,7 @@ const MyOrder = () => {
         count={orders.length}
       />
       
-      <main className="page-content space-top p-b70">
+      <main className="page-content space-top mb-5 pb-3">
         <div className="container">
           {loading ? (
             <div id="preloader">
@@ -248,7 +248,7 @@ const OrdersTab = ({ orders, type }) => {
   return (
     <div className="row g-1">
       {Object.keys(orders).length > 0 && (
-        <div className="d-flex justify-content-end mt-3 mb-2 py-0 ps-0 pe-3">
+        <div className="d-flex justify-content-end my-2 me-3">
           <div
             className="d-flex align-items-center cursor-pointer icon-border py-0"
             onClick={toggleExpandAll}
@@ -287,7 +287,7 @@ const OrdersTab = ({ orders, type }) => {
               onChange={() => toggleChecked(`${date}-${type}`)}
             />
             <label
-              className="tab-label pt-1 pb-0"
+              className="tab-label "
               htmlFor={`chck${date}-${type}`}
             >
               <span>{date}</span>
@@ -366,7 +366,8 @@ const OrdersTab = ({ orders, type }) => {
                       <div className="row align-items-center">
                         <div className="col-4">
                           <span className="card-title mb-1 custom_font_size_bold">
-                           #{order.order_number}
+                          <i className="ri-hashtag pe-2 custom_font_size_bold"></i>
+                           {order.order_number}
                           </span>
                         </div>
                         <div className="col-8 text-end">
@@ -407,7 +408,7 @@ const OrdersTab = ({ orders, type }) => {
                             <span className="text-info custom_font_size_bold">
                               ₹{order.grand_total}
                             </span>
-                            <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
+                            <span className="text-decoration-line-through ms-2 gray-text custom_font_size">
                               ₹
                               {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                             </span>

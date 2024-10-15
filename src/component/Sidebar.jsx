@@ -151,8 +151,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
           </li>
         </ul>
-        <div className="sidebar-bottom">
-          <div className="sidebar-logo text-center mt-6">
+        <div className="sidebar-footer">
+          <div className="sidebar-logo text-center">
             <img
               src={logo}
               alt="logo"

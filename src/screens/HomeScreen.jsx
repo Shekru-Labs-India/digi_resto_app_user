@@ -59,17 +59,10 @@ const HomeScreen = () => {
   return (
     <div>
       <div className="page-wrapper">
-      <header className="header header-fixed pt-2 shadow-sm">
+      <header className="header header-fixed pt-0 shadow-sm">
         <div className="header-content d-flex justify-content-between">
           <div className="">
-            {/* <span className=" fw-medium hotel-name">
-              <i className="ri-store-2-line me-2"></i>
-              {restaurantName.toUpperCase() || "Restaurant Name"}
-            </span>
-            <span className="fw-medium custom-text-gray">
-              <i class="ri-user-location-line me-2 gray-text"></i>
-              {userData.tableNumber || ""}
-            </span> */}
+            
 
             <img
               src={logo}
@@ -230,7 +223,7 @@ const HomeScreen = () => {
         </div>
       </div>
 
-        <main className="page-content p-t80 p-b20">
+        <main className="page-content space-top mb-5 pb-3">
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
             <ProductCart />

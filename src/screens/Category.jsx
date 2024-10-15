@@ -7,7 +7,7 @@ import south from "../assets/MenuDefault.png";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
-
+import HotelNameAndTable from '../components/HotelNameAndTable';
 const Category = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -127,26 +127,14 @@ const Category = () => {
       />
           {/* Header End */}
 
-          <main className="page-content space-top p-b70">
-            <div className="container mt-3 mb-0 py-2">
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                  <i className="ri-store-2-line me-2"></i>
-                  <span className="fw-medium hotel-name">
-                    {restaurantName.toUpperCase() || "Restaurant Name"}
-                  </span>
-                </div>
-                <div className="d-flex align-items-center">
-                  <i className="ri-user-location-line me-2 gray-text"></i>
-                  <span className="fw-medium custom-text-gray">
-                    {userData.tableNumber
-                      ? `Table ${userData.tableNumber}`
-                      : ""}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="container">
+          <main className="page-content space-top mb-5 pb-3">
+
+          <HotelNameAndTable 
+              restaurantName={restaurantName}
+              tableNumber={userData.tableNumber}
+            />
+            
+            <div className="container pt-0">
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>

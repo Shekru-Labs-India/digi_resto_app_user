@@ -11,6 +11,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import HotelNameAndTable from '../components/HotelNameAndTable';
 
 const Cart = () => {
   const isLoggedIn = !!localStorage.getItem("userData");
@@ -53,17 +54,23 @@ const Cart = () => {
     return cartId ? parseInt(cartId, 10) : 1;
   };
 
+  useEffect(() => {
+    fetchCartDetails();
+  }, []);
+
   const fetchCartDetails = async () => {
+   
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
     const cartId = getCartId();
-
+  
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is not available.");
+      setCartDetails({ order_items: [] });
       setIsLoading(false);
       return;
     }
-
+    
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -79,9 +86,14 @@ const Cart = () => {
           }),
         }
       );
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
       const data = await response.json();
       console.log("API response data:", data);
-
+  
       if (data.st === 1) {
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
@@ -93,9 +105,11 @@ const Cart = () => {
         setCartDetails({ order_items: [] });
       } else {
         console.error("Failed to fetch cart details:", data.msg);
+        setCartDetails({ order_items: [] });
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
+      setCartDetails({ order_items: [] });
     } finally {
       setIsLoading(false);
     }
@@ -254,7 +268,7 @@ const Cart = () => {
     return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  if (isLoading || cartDetails.length === 0) {
+  if (isLoading ) {
     return (
       <div id="preloader">
         <div className="loader">
@@ -294,23 +308,12 @@ const Cart = () => {
           </div>
         </main>
       ) : (
-        <main className="page-content space-top p-b200">
-          <div className="container my-4 py-0">
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <i className="ri-store-2-line me-2"></i>
-                <span className="fw-medium hotel-name">
-                  {restaurantName.toUpperCase() || "Restaurant Name"}
-                </span>
-              </div>
-              <div className="d-flex align-items-center">
-                <i className="ri-user-location-line me-2 gray-text"></i>
-                <span className="fw-medium custom-text-gray">
-                  {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
-                </span>
-              </div>
-            </div>
-          </div>
+        <main className="page-content space-top mb-5 pb-3">
+         
+         <HotelNameAndTable 
+        restaurantName={restaurantName} 
+        tableNumber={userData.tableNumber}
+      />
           <div className="container scrollable-section pt-0">
             {displayCartItems.map((item, index) => (
               <Link
@@ -499,7 +502,7 @@ const Cart = () => {
                           <span className="ps-2 custom_font_size gray-text">
                             Discount{" "}
                             <span className="gray-text small-number">
-                              ({cartDetails?.discount_percent || 0}%)
+                              (-{cartDetails?.discount_percent || 0}%)
                             </span>
                           </span>
                           <span className="pe-2 custom_font_size gray-text">

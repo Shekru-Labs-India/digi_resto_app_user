@@ -138,7 +138,7 @@ const EditProfile = () => {
           </div>
         </header>
       </header>
-      <main className="page-content space-top p-b80">
+      <main className="page-content space-top mb-5 pb-3">
         <div className="container">
           {loading ? (
             <div id="preloader">

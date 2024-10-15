@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
-import OrderGif from "../assets/gif/order-success-test.gif";
+import OrderGif from "../assets/gif/cooking.gif";
 import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 import Header from "../components/Header";
+import HotelNameAndTable from '../components/HotelNameAndTable';
 const Checkout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -226,8 +227,12 @@ const Checkout = () => {
         count={cartItems.length}
       />
 
-      <main className="page-content space-top p-b90">
-        <div className="container">
+      <main className="page-content space-top mb-5 pb-3">
+        <HotelNameAndTable 
+              restaurantName={restaurantName}
+              tableNumber={userData.tableNumber}
+            />
+        <div className="m-3">
           <div className="dz-flex-box">
             <ul className="dz-list-group">
               <div className="mb-2">
@@ -277,12 +282,12 @@ const Checkout = () => {
                         <div className="card-body py-2 rounded-3 px-0">
                           <div className="row" key={index}>
                             <div className="row">
-                              <div className="col-6">
+                              <div className="col-7">
                                 <span className="mb-0 custom_font_size_bold ps-2">
                                   {item.menu_name}
                                 </span>
                               </div>
-                              <div className="col-5 p-0 text-end">
+                              <div className="col-4 p-0 text-end">
                                 <span className="ms-0 me-2 text-info custom_font_size_bold">
                                   ₹{item.price}
                                 </span>
@@ -364,7 +369,7 @@ const Checkout = () => {
                     <span className="ps-2 custom_font_size gray-text">
                       Discount{" "}
                       <span className="gray-text small-number">
-                        ({discountPercent}%)
+                        (-{discountPercent}%)
                       </span>
                     </span>
                     <span className="pe-2 custom_font_size gray-text">

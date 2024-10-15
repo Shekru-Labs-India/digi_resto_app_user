@@ -12,6 +12,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import Header from "../components/Header";
 
 const TrackOrder = () => {
   // Define displayCartItems
@@ -389,12 +390,12 @@ const TrackOrder = () => {
 
       if (data.st === 1) {
         setPendingItems([]);
-      toast.current.show({
-        severity: "success",
-        summary: "Order Updated",
-        detail: "Your order has been successfully updated.",
-        life: 3000,
-      });
+        toast.current.show({
+          severity: "success",
+          summary: "Order Updated",
+          detail: "Your order has been successfully updated.",
+          life: 3000,
+        });
         fetchOrderDetails(order_number);
       } else {
         throw new Error(data.msg || "Failed to update order");
@@ -558,148 +559,15 @@ const TrackOrder = () => {
     <>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="page-wrapper full-height">
-        <header className="header header-fixed style-3">
-          <div className="header-content">
-            <div className="left-content">
-              <Link
-                to=""
-                className="back-btn dz-icon  icon-sm"
-                onClick={handleBack}
-              >
-                <i className="ri-arrow-left-line fs-2"></i>
-              </Link>
-            </div>
-            <div className="mid-content">
-              <span className="title custom_font_size_bold me-3">
-                Order Details
-              </span>
-            </div>
-            <div className="right-content gap-1">
-              <div className="menu-toggler" onClick={toggleSidebar}>
-                {isLoggedIn ? (
-                  <i className="ri-menu-line fs-1"></i>
-                ) : (
-                  <Link to="/Signinscreen">
-                    <i className="ri-login-circle-line fs-1"></i>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-          {/* Dark overlay for sidebar */}
-          <div
-            className={`dark-overlay ${
-              sidebarOpen ? "dark-overlay active" : ""
-            }`}
-            onClick={toggleSidebar}
-          ></div>
-
-          {/* Sidebar */}
-          <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
-            <div className="author-box">
-              <div className="d-flex justify-content-start align-items-center m-0">
-                <i
-                  className={
-                    userData && userData.customer_id
-                      ? "ri-user-3-fill fs-3"
-                      : "ri-user-3-line fs-3"
-                  }
-                ></i>
-              </div>
-              <div className="custom_font_size">
-                <span className="ms-3 pt-4 custom_font_size_bold">
-                  {userData?.name
-                    ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
-                    : "Hello, User"}
-                </span>
-                <div className="mail ms-3 gray-text custom_font_size">
-                  {userData?.mobile}
-                </div>
-                <div className="dz-mode mt-3 me-4">
-                  <div className="theme-btn" onClick={toggleTheme}>
-                    <i
-                      className={`ri ${
-                        isDarkMode ? "ri-sun-line" : "ri-moon-line"
-                      } sun`}
-                    ></i>
-                    <i
-                      className={`ri ${
-                        isDarkMode ? "ri-moon-line" : "ri-sun-line"
-                      } moon`}
-                    ></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <ul className="nav navbar-nav">
-              <li>
-                <Link className="nav-link active" to="/Menu">
-                  <span className="dz-icon icon-sm">
-                    <i className="ri-bowl-line fs-3"></i>
-                  </span>
-                  <span className="custom_font_size_bold">Menu</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link active" to="/Category">
-                  <span className="dz-icon icon-sm">
-                    <i className="ri-list-check-2 fs-3"></i>
-                  </span>
-                  <span className="custom_font_size_bold">Category</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link active" to="/Wishlist">
-                  <span className="dz-icon icon-sm">
-                    <i className="ri-heart-2-line fs-3"></i>
-                  </span>
-                  <span className="custom_font_size_bold">Favourite</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link active" to="/MyOrder">
-                  <span className="dz-icon icon-sm">
-                    <i className="ri-drinks-2-line fs-3"></i>
-                  </span>
-                  <span className="custom_font_size_bold">My Orders</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link active" to="/Cart">
-                  <span className="dz-icon icon-sm">
-                    <i className="ri-shopping-cart-line fs-3"></i>
-                  </span>
-                  <span className="custom_font_size_bold">Cart</span>
-                </Link>
-              </li>
-              <li>
-                <Link className="nav-link active" to="/Profile">
-                  <span className="dz-icon icon-sm">
-                    <i
-                      className={
-                        userData && userData.customer_id
-                          ? "ri-user-3-fill fs-3"
-                          : "ri-user-3-line fs-3"
-                      }
-                    ></i>
-                  </span>
-                  <span className="custom_font_size_bold">Profile</span>
-                </Link>
-              </li>
-            </ul>
-            <div className="sidebar-bottom"></div>
-          </div>
-        </div>
-
-        <div className="container" style={{ paddingBottom: "1px" }}>
-          <div className="page-wrapper " style={{ marginTop: "70px" }}>
+      <Header title="Order Details" />
+        
+        <div className="container mt-5 pb-0">
+       
+          <div className="d-flex justify-content-between align-items-center ">
             <span className="title pb-3 custom_font_size_bold">
               {isCompleted ? (
                 <>
-                  <i class="ri-checkbox-circle-line pe-2"></i>
+                  <i className="ri-checkbox-circle-line pe-2"></i>
                   <span>Completed Order</span>
                 </>
               ) : (
@@ -708,86 +576,84 @@ const TrackOrder = () => {
                   <span>Ongoing Order</span>
                 </>
               )}
-              {/* {isCompleted ? "Completed Order" : "Ongoing Order"} */}
             </span>
-            <div
-              className="container"
-              style={{ paddingTop: "1px" }}
-            ></div>
-            <div className="card rounded-3">
-              <div className="card-body p-2">
-                <div className="row align-items-center mb-0">
-                  <div className="col-4">
-                    <h5 className="card-title mb-0 custom_font_size_bold">
-                      #{order_details.order_number}
-                    </h5>
-                  </div>
-                  <div className="col-8 text-end">
-                    <span className="card-text gray-text custom_font_size">
-                      {formatDateTime(order_details.datetime)}
-                    </span>
-                  </div>
+            {!isCompleted && (
+              <span className="custom_font_size gray-text date_margin">
+                {order_details.date}
+              </span>
+            )}
+          </div>
+        
+        <div className="card rounded-3">
+          <div className="card-body p-2">
+            <div className="row align-items-center mb-0">
+              <div className="col-4">
+                <h5 className="card-title mb-0 custom_font_size_bold">
+                  <i className="ri-hashtag pe-2 custom_font_size_bold"></i>
+                  {order_details.order_number}
+                </h5>
+              </div>
+              <div className="col-8 text-end">
+                <span className="card-text gray-text custom_font_size">
+                  {formatDateTime(order_details.time)}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-8 text-start">
+                <div className="restaurant">
+                  <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                  <span className="restaurant-name custom_font_size_bold">
+                    {order_details.restaurant_name.toUpperCase()}
+                  </span>
                 </div>
-                <div className="row">
-                  <div className="col-8 text-start">
-                    <div className="restaurant">
-                      <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                      <span className="restaurant-name custom_font_size_bold">
-                        {order_details.restaurant_name.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-4 text-end">
-                    <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold"></i>
-                    <span className="table-number custom_font_size_bold">
-                      {order_details.table_number}
-                    </span>
-                  </div>
+              </div>
+              <div className="col-4 text-end">
+                <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold"></i>
+                <span className="table-number custom_font_size_bold">
+                  {order_details.table_number}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
+                  <span className="custom_font_size_bold gray-text">
+                    {order_details.menu_count} Menu
+                  </span>
                 </div>
-                <div className="row">
-                  <div className="col-6">
-                    <div className="menu-info">
-                      <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
-                      <span className="custom_font_size_bold gray-text">
-                        {order_details.menu_count} Menu
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="price-info text-end">
-                      <span className="text-info custom_font_size_bold fw-medium">
-                        ₹{order_details.grand_total}
-                      </span>
-                      <span className="text-decoration-line-through ms-2 gray-text custom_font_size_bold">
-                        ₹
-                        {(
-                          order_details.grand_total /
-                            (1 - order_details.discount_percent / 100) ||
-                          order_details.grand_total
-                        ).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
+              </div>
+              <div className="col-6">
+                <div className="price-info text-end">
+                  <span className="text-info custom_font_size_bold fw-medium">
+                    ₹{order_details.grand_total}
+                  </span>
+                  <span className="text-decoration-line-through ms-2 gray-text custom_font_size">
+                    ₹
+                    {(
+                      order_details.grand_total /
+                        (1 - order_details.discount_percent / 100) ||
+                      order_details.grand_total
+                    ).toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        </div>
 
         <ThemeProvider>
           {/* Conditional rendering of the green card or OrderGif based on order status */}
           <div
-            className="container custom-container"
-            style={{ paddingTop: "1px" }}
+            className="container py-0 "
+           
           >
             {isCompleted ? (
               <div
                 className="card-body text-center"
-                style={{
-                  backgroundColor: "#cce3d1",
-                  padding: "20px",
-                  borderRadius: "8px",
-                }}
+              
               >
                 <span
                   className="fs-6 fw-medium h-100 rounded-corner"
@@ -821,7 +687,7 @@ const TrackOrder = () => {
         </ThemeProvider>
 
         <main className="page-content">
-          <div className="container pt-1 pb-1">
+          <div className="container py-0">
             {!isCompleted && (
               <div className="input-group w-100 my-2 border border-muted rounded-3">
                 <span className="input-group-text py-0">
@@ -1265,7 +1131,8 @@ const TrackOrder = () => {
                       <span className="ps-2 custom_font_size gray-text">
                         Discount{" "}
                         <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}% )
+                          (-{orderDetails.order_details.discount_percent || 0}%
+                          )
                         </span>
                       </span>
                       <span className="pe-2 custom_font_size gray-text">

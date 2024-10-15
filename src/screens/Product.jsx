@@ -12,6 +12,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
+import HotelNameAndTable from '../components/HotelNameAndTable';
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -411,23 +412,11 @@ const Product = () => {
       />
 
       <main className={`page-content space-top p-b80`}>
-        <div className="container pb-3 pt-4">
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <i className="ri-store-2-line me-2"></i>
-              <span className="fw-medium hotel-name">
-                {restaurantName.toUpperCase() || "Restaurant Name"}
-              </span>
-            </div>
-            <div className="d-flex align-items-center">
-              <i className="ri-user-location-line me-2 gray-text"></i>
-              <span className="fw-medium custom-text-gray">
-                {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
-              </span>
-            </div>
-          </div>
-        </div>
-
+       
+      <HotelNameAndTable 
+     restaurantName={restaurantName}
+     tableNumber={userData.tableNumber}
+   />
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
       <div className="swiper category-slide">
