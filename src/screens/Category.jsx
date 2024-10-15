@@ -120,7 +120,7 @@ const Category = () => {
               <div
                 className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}
               >
-                <header className="header header-fixed pt-2">
+                <header className="header header-fixed pt-2 shadow-sm">
                   <div className="header-content d-flex justify-content-between">
                     <div className="left-conten ">
                       <Link

@@ -409,7 +409,7 @@ const Product = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-            <header className="header header-fixed pt-2">
+            <header className="header header-fixed pt-2 shadow-sm">
               <div className="header-content d-flex justify-content-between">
                 <div className="left-content">
                   <Link to="#">

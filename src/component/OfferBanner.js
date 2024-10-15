@@ -15,6 +15,10 @@ const OfferBanner = () => {
   const [menuLists, setMenuLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const { restaurantId } = useRestaurantId();
+  const { restaurantName } = useRestaurantId();
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("userData")) || {}
+  );
 
   // Utility function to convert string to title case
   const toTitleCase = (str) => {
@@ -167,6 +171,20 @@ const OfferBanner = () => {
       ) : (
         <>
           <div className="swiper featured-swiper mt-3">
+            <div className="row">
+              <div className="col-6">
+                <span className=" fw-medium hotel-name">
+                  <i className="ri-store-2-line me-2"></i>
+                  {restaurantName.toUpperCase() || "Restaurant Name"}
+                </span>
+              </div>
+              <div className="col-6 text-end">
+                <span className="fw-medium custom-text-gray ps-2">
+                  <i class="ri-user-location-line me-2 gray-text"></i>
+                 Table {userData.tableNumber || ""}
+                </span>
+              </div>
+            </div>
             <div className="swiper-wrapper">
               {menuLists.map((menu) => (
                 <div key={menu.menu_id} className="swiper-slide">
@@ -177,7 +195,12 @@ const OfferBanner = () => {
                     <div className="cart-list  style-2-custom">
                       <div className="dz-media media-100 rounded-start-3 rounded-end-0">
                         <img
-                           style={{ width: "100%", height: "100%", objectFit: "fill", aspectRatio: "1/1" }}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "fill",
+                            aspectRatio: "1/1",
+                          }}
                           src={menu.image || images} // Use default image if menu.image is null
                           alt={menu.name}
                           onError={(e) => {

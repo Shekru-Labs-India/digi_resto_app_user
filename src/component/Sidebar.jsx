@@ -74,17 +74,17 @@ const Sidebar = () => {
 
   return (
     <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-      <header className="header header-fixed pt-2">
+      <header className="header header-fixed pt-2 shadow-sm">
         <div className="header-content d-flex justify-content-between">
           <div className="d-flex flex-column">
-            <span className=" fw-medium hotel-name">
+            {/* <span className=" fw-medium hotel-name">
               <i className="ri-store-2-line me-2"></i>
               {restaurantName.toUpperCase() || "Restaurant Name"}
             </span>
             <span className="fw-medium custom-text-gray">
               <i class="ri-user-location-line me-2 gray-text"></i>
               {userData.tableNumber || ""}
-            </span>
+            </span> */}
           </div>
           <div className="right-content gap-1">
             <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
@@ -98,6 +98,7 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
+        
       </header>
 
       {/* Dark overlay for sidebar */}

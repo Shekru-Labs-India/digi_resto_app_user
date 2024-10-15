@@ -44,8 +44,8 @@ const Profile = () => {
 
     return (
       <>
-        <header className="header header-fixed style-3">
-          <div className="header-content">
+        <header className="header header-fixed shadow-sm">
+          <div className="header-content ">
             <div className="left-content">
               <Link
                 to={`/${userData?.restaurantId || ""}/${

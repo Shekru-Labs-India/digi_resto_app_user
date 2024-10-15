@@ -319,20 +319,25 @@ const MenuDetails = () => {
       <div className="page-wrapper">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <header className="header header-fixed style-3">
-          <div className="header-content">
-            <div className="left-content">
-              <Link to="#">
-                <div className="back-btn  icon-sm" onClick={() => navigate(-1)}>
-                  <i className="ri-arrow-left-line fs-3"></i>
-                </div>
-              </Link>
+          <header className="header header-fixed pt-2 shadow-sm">
+            <div className="header-content">
+              <div className="left-content">
+                <Link to="#">
+                  <div
+                    className="back-btn  icon-sm"
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="ri-arrow-left-line fs-3"></i>
+                  </div>
+                </Link>
+              </div>
+              <div className="mid-content">
+                <span className="custom_font_size_bold me-3 title">
+                  {toTitleCase(productDetails.name)}
+                </span>
+              </div>
             </div>
-            <div className="mid-content">
-              <span className="custom_font_size_bold me-3 title">
-                {toTitleCase(productDetails.name)}
-              </span>
-            </div>
-          </div>
+          </header>
         </header>
 
         <main className="page-content ">
@@ -411,25 +416,25 @@ const MenuDetails = () => {
                 <div className="row">
                   <div className="col-6 pt-0 ps-0">
                     <div className="dz-stepper style-3">
-                    <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-  <span className="input-group-btn input-group-prepend">
-    <i 
-      className="ri-subtract-line custom_font_size"
-      style={{ cursor: "pointer" }}
-      onClick={() => handleQuantityChange(-1)}
-    ></i>
-  </span>
-  <span className="stepper px-3 rounded-1 bg-light custom_font_size text-center">
-    {quantity}
-  </span>
-  <span className="input-group-btn input-group-append">
-    <i 
-      className="ri-add-line custom_font_size"
-      style={{ cursor: "pointer" }}
-      onClick={() => handleQuantityChange(1)}
-    ></i>
-  </span>
-</div>
+                      <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+                        <span className="input-group-btn input-group-prepend">
+                          <i
+                            className="ri-subtract-line custom_font_size"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleQuantityChange(-1)}
+                          ></i>
+                        </span>
+                        <span className="stepper px-3 rounded-1 bg-light custom_font_size text-center">
+                          {quantity}
+                        </span>
+                        <span className="input-group-btn input-group-append">
+                          <i
+                            className="ri-add-line custom_font_size"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleQuantityChange(1)}
+                          ></i>
+                        </span>
+                      </div>
                     </div>
                   </div>
 
