@@ -559,10 +559,9 @@ const TrackOrder = () => {
     <>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="page-wrapper full-height">
-      <Header title="Order Details" />
-        
+        <Header title="Order Details" />
+
         <div className="container mt-5 pb-0">
-       
           <div className="d-flex justify-content-between align-items-center ">
             <span className="title pb-3 custom_font_size_bold">
               {isCompleted ? (
@@ -577,88 +576,78 @@ const TrackOrder = () => {
                 </>
               )}
             </span>
-            {!isCompleted && (
-              <span className="custom_font_size gray-text date_margin">
-                {order_details.date}
-              </span>
-            )}
+
+            <span className="custom_font_size gray-text date_margin">
+              {order_details.date}
+            </span>
           </div>
-        
-        <div className="card rounded-3">
-          <div className="card-body p-2">
-            <div className="row align-items-center mb-0">
-              <div className="col-4">
-                <h5 className="card-title mb-0 custom_font_size_bold">
-                  <i className="ri-hashtag pe-2 custom_font_size_bold"></i>
-                  {order_details.order_number}
-                </h5>
-              </div>
-              <div className="col-8 text-end">
-                <span className="card-text gray-text custom_font_size">
-                  {formatDateTime(order_details.time)}
-                </span>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-8 text-start">
-                <div className="restaurant">
-                  <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                  <span className="restaurant-name custom_font_size_bold">
-                    {order_details.restaurant_name.toUpperCase()}
+
+          <div className="card rounded-3">
+            <div className="card-body p-2">
+              <div className="row align-items-center mb-0">
+                <div className="col-4">
+                  <h5 className="card-title mb-0 custom_font_size_bold">
+                    <i className="ri-hashtag pe-2 custom_font_size_bold"></i>
+                    {order_details.order_number}
+                  </h5>
+                </div>
+                <div className="col-8 text-end">
+                  <span className="card-text gray-text custom_font_size">
+                    {order_details.time}
                   </span>
                 </div>
               </div>
-              <div className="col-4 text-end">
-                <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold"></i>
-                <span className="table-number custom_font_size_bold">
-                  {order_details.table_number}
-                </span>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-6">
-                <div className="menu-info">
-                  <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
-                  <span className="custom_font_size_bold gray-text">
-                    {order_details.menu_count} Menu
+              <div className="row">
+                <div className="col-8 text-start">
+                  <div className="restaurant">
+                    <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
+                    <span className="restaurant-name custom_font_size_bold">
+                      {order_details.restaurant_name.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-4 text-end">
+                  <i className="ri-user-location-line ps-0 pe-1 custom_font_size_bold"></i>
+                  <span className="table-number custom_font_size_bold">
+                    {order_details.table_number}
                   </span>
                 </div>
               </div>
-              <div className="col-6">
-                <div className="price-info text-end">
-                  <span className="text-info custom_font_size_bold fw-medium">
-                    ₹{order_details.grand_total}
-                  </span>
-                  <span className="text-decoration-line-through ms-2 gray-text custom_font_size">
-                    ₹
-                    {(
-                      order_details.grand_total /
-                        (1 - order_details.discount_percent / 100) ||
-                      order_details.grand_total
-                    ).toFixed(2)}
-                  </span>
+              <div className="row">
+                <div className="col-6">
+                  <div className="menu-info">
+                    <i className="ri-bowl-line pe-2 custom_font_size_bold gray-text"></i>
+                    <span className="custom_font_size_bold gray-text">
+                      {order_details.menu_count} Menu
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6">
+                  <div className="price-info text-end">
+                    <span className="text-info custom_font_size_bold fw-medium">
+                      ₹{order_details.grand_total}
+                    </span>
+                    <span className="text-decoration-line-through ms-2 gray-text custom_font_size">
+                      ₹
+                      {(
+                        order_details.grand_total /
+                          (1 - order_details.discount_percent / 100) ||
+                        order_details.grand_total
+                      ).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
 
         <ThemeProvider>
           {/* Conditional rendering of the green card or OrderGif based on order status */}
-          <div
-            className="container py-0 "
-           
-          >
+          <div className="container py-0 ">
             {isCompleted ? (
-              <div
-                className="card-body text-center"
-              
-              >
-                <span
-                  className="fs-6 fw-medium h-100 rounded-corner"
-                  style={{ color: "#2f855a" }}
-                >
+              <div className="card-body text-center bg-success  rounded-3 text-white ">
+                <span className="fs-6 fw-medium h-100  ">
                   Your delicious order has been served
                 </span>
               </div>
@@ -1097,9 +1086,8 @@ const TrackOrder = () => {
                   <div className="col-12 pt-0">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 custom_font_size pt-1 gray-text">
-                        Service Charges{" "}
+                        Service Charges
                         <span className="gray-text small-number">
-                          {" "}
                           (
                           {orderDetails.order_details.service_charges_percent ||
                             0}
