@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import Header from "../components/Header";
 
 const MenuDetails = () => {
   const toast = useRef(null);
@@ -318,27 +319,10 @@ const MenuDetails = () => {
     <>
       <div className="page-wrapper">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
-        <header className="header header-fixed style-3">
-          <header className="header header-fixed pt-2 shadow-sm">
-            <div className="header-content">
-              <div className="left-content">
-                <Link to="#">
-                  <div
-                    className="back-btn  icon-sm"
-                    onClick={() => navigate(-1)}
-                  >
-                    <i className="ri-arrow-left-line fs-3"></i>
-                  </div>
-                </Link>
-              </div>
-              <div className="mid-content">
-                <span className="custom_font_size_bold me-3 title">
-                  {toTitleCase(productDetails.name)}
-                </span>
-              </div>
-            </div>
-          </header>
-        </header>
+        <Header 
+          title={toTitleCase(productDetails.name)}
+         
+        />
 
         <main className="page-content ">
           <div className="swiper product-detail-swiper">

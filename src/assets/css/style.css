@@ -11227,7 +11227,7 @@ hr.dotted {
     background-color: var(--body-bg);
     min-height: var(--headheight);
     max-width: var(--headwidth);
-    z-index: 10;
+    z-index: 150;
     padding: 0 15px; }
     .header.bg-gradient {
       background: linear-gradient(180deg, #97D7BA 100%, #EBF4F0 100%) !important; }

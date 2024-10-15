@@ -11,6 +11,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import Header from "../components/Header";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -404,165 +405,10 @@ const Product = () => {
   return (
     <div>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
-      <header className="header header-fixed style-3">
-        <div className="header-content">
-          <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-            <header className="header header-fixed pt-2 shadow-sm">
-              <div className="header-content d-flex justify-content-between">
-                <div className="left-content">
-                  <Link to="#">
-                    <div
-                      className="back-btn icon-sm"
-                      onClick={() => navigate(-1)}
-                    >
-                      <i className="ri-arrow-left-line fs-3"></i>
-                    </div>
-                  </Link>
-                </div>
-                <div className="mid-content">
-                  <span className="custom_font_size_bold me-3 title">
-                    Menu{" "}
-                    {categories.length > 0 && (
-                      <span className="small-number gray-text">
-                        ({menuList.length})
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="right-content gap-1">
-                  <div className="menu-toggler" onClick={toggleSidebar}>
-                    {isLoggedIn ? (
-                      <i className="ri-menu-line fs-1"></i>
-                    ) : (
-                      <Link to="/Signinscreen">
-                        <i className="ri-login-circle-line fs-1"></i>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            {/* Dark overlay for sidebar */}
-            <div
-              className={`dark-overlay ${
-                sidebarOpen ? "dark-overlay active" : ""
-              }`}
-              onClick={toggleSidebar}
-            ></div>
-
-            {/* Sidebar */}
-            <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
-              <div className="author-box">
-                <div className="d-flex justify-content-start align-items-center m-0">
-                  <i
-                    className={
-                      userData && userData.customer_id
-                        ? "ri-user-3-fill fs-3"
-                        : "ri-user-3-line fs-3"
-                    }
-                  ></i>
-                </div>
-                <div className="custom_font_size">
-                  <span className="ms-3 pt-4 custom_font_size_bold">
-                    {userData?.name
-                      ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
-                      : "Hello, User"}
-                  </span>
-                  <div className="mail ms-3 gray-text custom_font_size">
-                    {userData?.mobile}
-                  </div>
-                  <div className="dz-mode mt-3 me-4">
-                    <div className="theme-btn" onClick={toggleTheme}>
-                      <i
-                        className={`ri ${
-                          isDarkMode ? "ri-sun-line" : "ri-moon-line"
-                        } sun`}
-                      ></i>
-                      <i
-                        className={`ri ${
-                          isDarkMode ? "ri-moon-line" : "ri-sun-line"
-                        } moon`}
-                      ></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <ul className="nav navbar-nav">
-                <li>
-                  <Link className="nav-link active" to="/Menu">
-                    <span className="dz-icon icon-sm">
-                      <i className="ri-bowl-line fs-3"></i>
-                    </span>
-                    <span className="custom_font_size_bold">Menu</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link active" to="/Category">
-                    <span className="dz-icon icon-sm">
-                      <i className="ri-list-check-2 fs-3"></i>
-                    </span>
-                    <span className="custom_font_size_bold">Category</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link active" to="/Wishlist">
-                    <span className="dz-icon icon-sm">
-                      <i className="ri-heart-2-line fs-3"></i>
-                    </span>
-                    <span className="custom_font_size_bold">Favourite</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link active" to="/MyOrder">
-                    <span className="dz-icon icon-sm">
-                      <i className="ri-drinks-2-line fs-3"></i>
-                    </span>
-                    <span className="custom_font_size_bold">My Orders</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link active" to="/Cart">
-                    <span className="dz-icon icon-sm">
-                      <i className="ri-shopping-cart-line fs-3"></i>
-                    </span>
-                    <span className="custom_font_size_bold">Cart</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link className="nav-link active" to="/Profile">
-                    <span className="dz-icon icon-sm">
-                      <i
-                        className={
-                          userData && userData.customer_id
-                            ? "ri-user-3-fill fs-3"
-                            : "ri-user-3-line fs-3"
-                        }
-                      ></i>
-                    </span>
-                    <span className="custom_font_size_bold">Profile</span>
-                  </Link>
-                </li>
-              </ul>
-              {/* <div className="dz-mode mt-4 me-4">
-          <div className="theme-btn" onClick={toggleTheme}>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-sun-line" : "ri-moon-line"
-              } sun`}
-            ></i>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-moon-line" : "ri-sun-line"
-              } moon`}
-            ></i>
-          </div>
-        </div> */}
-              <div className="sidebar-bottom"></div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        title="Menu" 
+        count={menuList.length}
+      />
 
       <main className={`page-content space-top p-b80`}>
         <div className="container pb-3 pt-4">
