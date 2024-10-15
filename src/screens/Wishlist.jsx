@@ -9,6 +9,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import Header from "../component/Header";
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -336,7 +337,7 @@ const Wishlist = () => {
       <header className="header header-fixed style-3">
         <div className="header-content">
           <div className={`page-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
-            <header className="header header-fixed pt-2 shadow-sm">
+            {/* <header className="header header-fixed pt-2 shadow-sm">
               <div className="header-content d-flex justify-content-between">
                 <div className="left-content">
                   <Link
@@ -374,7 +375,8 @@ const Wishlist = () => {
                   </div>
                 </div>
               </div>
-            </header>
+            </header> */}
+            <Header currentPage="Favorite" />
 
             {/* Dark overlay for sidebar */}
             <div
