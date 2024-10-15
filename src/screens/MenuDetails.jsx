@@ -363,8 +363,8 @@ const MenuDetails = () => {
                   </h3>
                 )}
                 <div className="row mt-0 me-1">
-                  <div className="col-7 mt-2">
-                    <span className="title custom_font_size_bold mb-1 ps-1">
+                  <div className="col-7 mt-2 ps-3">
+                    <span className="title custom_font_size_bold mb-1 menu_details-name" >
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -373,8 +373,8 @@ const MenuDetails = () => {
 
               <div className="product-meta ">
                 <div className="row me-1">
-                  <div className="col-5 pe-0 ps-1">
-                    <div className="dz-quantity detail-content category-text m-0 pt-2 ms-2 ps-1   fw-medium  px-0">
+                  <div className="col-5 px-0">
+                    <div className="dz-quantity detail-content category-text m-0 pt-2 ms-2 ps-2  fw-medium  px-0">
                       <i className="ri-restaurant-line  me-1 category-text "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -409,27 +409,27 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-6 pt-0 ps-0">
-                    <div className="dz-stepper style-3">
-                    <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-  <span className="input-group-btn input-group-prepend">
-    <i 
-      className="ri-subtract-line custom_font_size"
-      style={{ cursor: "pointer" }}
-      onClick={() => handleQuantityChange(-1)}
-    ></i>
-  </span>
-  <span className="stepper px-3 rounded-1 bg-light custom_font_size text-center">
-    {quantity}
-  </span>
-  <span className="input-group-btn input-group-append">
-    <i 
-      className="ri-add-line custom_font_size"
-      style={{ cursor: "pointer" }}
-      onClick={() => handleQuantityChange(1)}
-    ></i>
-  </span>
-</div>
+                  <div className="col-6 pt-1 ps-0">
+                    <div className="dz-stepper style-3 ">
+                      <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
+                        <span className="input-group-btn input-group-prepend" >
+                          <i
+                            className="ri-subtract-line fs-3 me-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleQuantityChange(-1)}
+                          ></i>
+                        </span>
+                        <span className="stepper px-3 rounded-1 bg-light custom_font_size_bold text-center">
+                          {quantity}
+                        </span>
+                        <span className="input-group-btn input-group-append">
+                          <i
+                            className="ri-add-line fs-3 ms-2"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleQuantityChange(1)}
+                          ></i>
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -449,7 +449,7 @@ const MenuDetails = () => {
               </div>
 
               <div className="container ps-0 pt-1">
-                <div className="product-info">
+                <div className="product-info menu_details-description">
                   <div>
                     <span className="custom_font_size text-wrap m-0">
                       {productDetails.description}
@@ -467,14 +467,14 @@ const MenuDetails = () => {
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
           <div className="container pt-0">
-            <footer className="footer mb-4">
+            <footer className="footer mb-2">
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 
-                <div className="col-6 ps-0">
+                <div className="col-6 ps-1">
                   <div className="d-flex align-items-center justify-content-between mb-5">
                     <div className="d-flex flex-column">
-                      <span className="mb-2 custom_font_size_bold">
+                      <span className="mb-2 custom_font_size_bold ps-0 menu_details-total-amount">
                         Total amount
                       </span>
                       <div className="d-flex align-items-baseline">
@@ -491,7 +491,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-6 pe-0 text-start">
+                <div className="col-6 pe-0 text-start menu_details-add-to-cart">
                   {isMenuItemInCart(menuId) ? (
                     <button
                       className="btn btn-color  rounded-pill custom_font_size_bold"

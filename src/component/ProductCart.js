@@ -353,171 +353,145 @@ const ProductCard = () => {
       </div>
 
       <div className="row g-3 grid-style-1">
-        {filteredMenuList.length > 0 ? (
-          filteredMenuList.map((menu) => (
-            <div key={menu.menu_id} className="col-6">
-              <div className="card-item style-6 style-6-1 rounded-3">
-                <div className="dz-media ">
-                  <Link
-                    to={{
-                      pathname: `/ProductDetails/${menu.menu_id}`,
-                    }}
-                    state={{ menu_cat_id: menu.menu_cat_id }}
-                  >
-                    <img
-                      src={menu.image || images}
-                      alt={menu.name}
-                      className=""
-                      style={{ height: "100%", width: "100%", objectFit: "fill", aspectRatio: 1 }}
-  
-  
-                      onError={(e) => {
-                        e.target.src = images;
-                      }}
-                    />
-                  </Link>
+  {filteredMenuList.length > 0 ? (
+    filteredMenuList.map((menu) => (
+      <div key={menu.menu_id} className="col-6">
+        <div className="card-item style-6 style-6-1 rounded-3">
+          <Link
+            to={`/ProductDetails/${menu.menu_id}`}
+            state={{ menu_cat_id: menu.menu_cat_id }}
+            className="card-link"
+            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+          >
+            <div className="dz-media">
+              <img
+                src={menu.image || images}
+                alt={menu.name}
+                className=""
+                style={{ height: "100%", width: "100%", objectFit: "fill", aspectRatio: 1 }}
+                onError={(e) => {
+                  e.target.src = images;
+                }}
+              />
+            </div>
+            <div className="dz-content pb-1">
+              <div
+                className="detail-content category-text"
+                style={{ position: "relative" }}
+              >
+                <div
+                  className="dz-quantity detail-content action_icon_size"
+                  style={{ color: "#0a795b" }}
+                >
+                  <i
+                    className="ri-restaurant-line"
+                    style={{ paddingRight: "5px" }}
+                  ></i>
+                  {menu.category}
                 </div>
-                <div className="dz-content pb-1">
-                  <div
-                    className="detail-content category-text"
-                    style={{ position: "relative" }}
-                  >
-                    <Link
-                      to={{
-                        pathname: `/ProductDetails/${menu.menu_id}`,
-                      }}
-                      state={{ menu_cat_id: menu.menu_cat_id }}
-                    >
-                      <div
-                        className="dz-quantity detail-content action_icon_size"
-                        style={{ color: "#0a795b" }}
-                      >
-                        <i
-                          className="ri-restaurant-line"
-                          style={{ paddingRight: "5px" }}
-                        ></i>
-                        {menu.category}
-                      </div>
-                    </Link>
-                    <i
-                      className={` product-like ${
-                        menu.is_favourite
-                          ? "ri-hearts-fill fs-3"
-                          : "ri-heart-2-line fs-3"
-                      }`}
-                      onClick={() => handleLikeClick(menu.menu_id)}
-                      style={{
-                        position: "absolute",
-                        top: "0",
-                        right: "0",
-                       
-                        cursor: "pointer",
-                        color: menu.is_favourite ? "#fe0809" : "#73757b",
-                      }}
-                    ></i>
-                  </div>
+                <i
+                  className={`product-like ${
+                    menu.is_favourite
+                      ? "ri-hearts-fill fs-3"
+                      : "ri-heart-2-line fs-3"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleLikeClick(menu.menu_id);
+                  }}
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    right: "0",
+                    cursor: "pointer",
+                    color: menu.is_favourite ? "#fe0809" : "#73757b",
+                    zIndex: 10
+                  }}
+                ></i>
+              </div>
 
-                  {menu.name && (
-                    <div className="custom_font_size_bold text-wrap">
-                      <Link
-                        className="custom_font_size_bold"
-                        to={{
-                          pathname: `/ProductDetails/${menu.menu_id}`,
-                        }}
-                        state={{ menu_cat_id: menu.menu_cat_id }}
-                      >
-                        {menu.name}
-                      </Link>
-                    </div>
-                  )}
-                  {menu.spicy_index && (
-                    <div className="row">
-                      <div className="col-6">
-                        <div className="offer-code mt-2">
-                          {Array.from({ length: 5 }).map((_, index) =>
-                            index < menu.spicy_index ? (
-                              <i className="ri-fire-fill fs-6" key={index}></i>
-                            ) : (
-                              <i
-                                className="ri-fire-line fs-6 gray-text"
-                                key={index}
-                              ></i>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-6 text-end mt-2">
-                        <i className="ri-star-half-line  fs-6 ratingStar"></i>
-                        <span
-                          className="custom_font_size fw-semibold gray-text"
-                         
-                        >
-                          {menu.rating}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="row">
-                    <div className="col-8">
-                      <div className="footer-wrapper">
-                        <div className="price-wrapper d-flex align-items-baseline">
-                          <p className="mb-1 custom_font_size fw-medium">
-                            <Link
-                              to={{
-                                pathname: `/ProductDetails/${menu.menu_id}`,
-                              }}
-                              state={{ menu_cat_id: menu.menu_cat_id }}
-                            >
-                              <span className="ms- me-2 text-info">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text custom_font_size text-decoration-line-through">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                            </Link>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    
-                    {/* {popupVisible && (
-        <div className="popupCart container">
-          <p>This item is already in the cart.</p>
-        </div>
-      )} */}
-                  </div>
-                  <div className="row">
-                    <div className="col-6">
-                      <span className="custom_font_size  offer-color">
-                        {menu.offer || "No "}% Off
-                      </span>
-                    </div>
-                    <div className="col-6  ">
-                      {userData ? (
-                        <div
-                          onClick={() => handleAddToCartClick(menu)}
-                          className="cart-btn text-end cart-btn-align"
-                        >
+              {menu.name && (
+                <div className="custom_font_size_bold text-wrap">
+                  {menu.name}
+                </div>
+              )}
+              {menu.spicy_index && (
+                <div className="row">
+                  <div className="col-6">
+                    <div className="offer-code mt-2">
+                      {Array.from({ length: 5 }).map((_, index) =>
+                        index < menu.spicy_index ? (
+                          <i className="ri-fire-fill fs-6" key={index}></i>
+                        ) : (
                           <i
-                            className={`ri-shopping-cart-${
-                              isMenuItemInCart(menu.menu_id) ? "fill" : "line"
-                            } fs-2`}
+                            className="ri-fire-line fs-6 gray-text"
+                            key={index}
                           ></i>
-                        </div>
-                      ) : (
-                        <i className="ri-shopping-cart-2-line fs-2"></i>
+                        )
                       )}
+                    </div>
+                  </div>
+                  <div className="col-6 text-end mt-2">
+                    <i className="ri-star-half-line  fs-6 ratingStar"></i>
+                    <span className="custom_font_size fw-semibold gray-text">
+                      {menu.rating}
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div className="row">
+                <div className="col-8">
+                  <div className="footer-wrapper">
+                    <div className="price-wrapper d-flex align-items-baseline">
+                      <p className="mb-1 custom_font_size fw-medium">
+                        <span className="ms- me-2 text-info">
+                          ₹{menu.price}
+                        </span>
+                        <span className="gray-text custom_font_size text-decoration-line-through">
+                          ₹{menu.oldPrice || menu.price}
+                        </span>
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
+              <div className="row">
+                <div className="col-6">
+                  <span className="custom_font_size  offer-color">
+                    {menu.offer || "No "}% Off
+                  </span>
+                </div>
+                <div className="col-6">
+                  {userData ? (
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCartClick(menu);
+                      }}
+                      className="cart-btn text-end cart-btn-align"
+                    >
+                      <i
+                        className={`ri-shopping-cart-${
+                          isMenuItemInCart(menu.menu_id) ? "fill" : "line"
+                        } fs-2`}
+                      ></i>
+                    </div>
+                  ) : (
+                    <i className="ri-shopping-cart-2-line fs-2"></i>
+                  )}
+                </div>
+              </div>
             </div>
-          ))
-        ) : (
-          <p>No items available in this category.</p>
-        )}
+          </Link>
+        </div>
       </div>
+    ))
+  ) : (
+    <p>No items available in this category.</p>
+  )}
+</div>
       <NearbyArea />
     </div>
   );
