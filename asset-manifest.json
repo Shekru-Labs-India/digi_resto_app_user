@@ -1,28 +1,27 @@
 {
   "files": {
-    "main.css": "/digi_resto_app_user/static/css/main.f58c8d00.css",
-    "main.js": "/digi_resto_app_user/static/js/main.d77ca31e.js",
+    "main.css": "/digi_resto_app_user/static/css/main.4520593b.css",
+    "main.js": "/digi_resto_app_user/static/js/main.0a27ad6e.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/primeicons.svg": "/digi_resto_app_user/static/media/primeicons.6ed59f962963a4a73af2.svg",
     "static/media/splash2.jpg": "/digi_resto_app_user/static/media/splash2.bf9840bff9ed4548a01a.jpg",
     "static/media/mmua_transparent.png": "/digi_resto_app_user/static/media/mmua_transparent.c8b5a8c77c0f30a9559c.png",
     "static/media/background.jpg": "/digi_resto_app_user/static/media/background.779f81d1eb8c2285dca9.jpg",
-    "static/media/order-success-test.gif": "/digi_resto_app_user/static/media/order-success-test.aa39a7649be60848dc7e.gif",
+    "static/media/cooking.gif": "/digi_resto_app_user/static/media/cooking.aa39a7649be60848dc7e.gif",
     "static/media/primeicons.eot": "/digi_resto_app_user/static/media/primeicons.ff0c4cd79b2ffca2de54.eot",
     "static/media/primeicons.woff": "/digi_resto_app_user/static/media/primeicons.8931fda1930c3bd21e96.woff",
     "static/media/primeicons.ttf": "/digi_resto_app_user/static/media/primeicons.a5c2a53d1ff7a9ff5933.ttf",
-    "static/media/loader-animated.gif": "/digi_resto_app_user/static/media/loader-animated.adf5f896d8e971c381f3.gif",
     "static/media/primeicons.woff2": "/digi_resto_app_user/static/media/primeicons.024b32cc7bf399b1a847.woff2",
     "static/media/chiken.jpg": "/digi_resto_app_user/static/media/chiken.f854f364c15359a79764.jpg",
     "static/media/Menu Mitra logo 1.png": "/digi_resto_app_user/static/media/Menu Mitra logo 1.f2669b4d1fd2fad7e4ff.png",
     "static/media/google lens.svg": "/digi_resto_app_user/static/media/google lens.52ef07f8871b69c3c7aae684053f079a.svg",
     "index.html": "/digi_resto_app_user/index.html",
-    "main.f58c8d00.css.map": "/digi_resto_app_user/static/css/main.f58c8d00.css.map",
-    "main.d77ca31e.js.map": "/digi_resto_app_user/static/js/main.d77ca31e.js.map",
+    "main.4520593b.css.map": "/digi_resto_app_user/static/css/main.4520593b.css.map",
+    "main.0a27ad6e.js.map": "/digi_resto_app_user/static/js/main.0a27ad6e.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f58c8d00.css",
-    "static/js/main.d77ca31e.js"
+    "static/css/main.4520593b.css",
+    "static/js/main.0a27ad6e.js"
   ]
 }
