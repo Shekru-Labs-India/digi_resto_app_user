@@ -171,18 +171,22 @@ const OfferBanner = () => {
       ) : (
         <>
           <div className="swiper featured-swiper mt-3">
-            <div className="row">
-              <div className="col-6">
-                <span className=" fw-medium hotel-name">
+            <div className="container mt-2 mb-3 py-0 px-0">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
                   <i className="ri-store-2-line me-2"></i>
-                  {restaurantName.toUpperCase() || "Restaurant Name"}
-                </span>
-              </div>
-              <div className="col-6 text-end">
-                <span className="fw-medium custom-text-gray ps-2">
-                  <i class="ri-user-location-line me-2 gray-text"></i>
-                 Table {userData.tableNumber || ""}
-                </span>
+                  <span className="fw-medium hotel-name">
+                    {restaurantName.toUpperCase() || "Restaurant Name"}
+                  </span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <i className="ri-user-location-line me-2 gray-text"></i>
+                  <span className="fw-medium custom-text-gray">
+                    {userData.tableNumber
+                      ? `Table ${userData.tableNumber}`
+                      : ""}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="swiper-wrapper">

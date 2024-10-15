@@ -248,7 +248,7 @@ const OrdersTab = ({ orders, type }) => {
   return (
     <div className="row g-1">
       {Object.keys(orders).length > 0 && (
-        <div className="d-flex justify-content-end my-1 py-0 ps-0 pe-3">
+        <div className="d-flex justify-content-end mt-3 mb-2 py-0 ps-0 pe-3">
           <div
             className="d-flex align-items-center cursor-pointer icon-border py-0"
             onClick={toggleExpandAll}
