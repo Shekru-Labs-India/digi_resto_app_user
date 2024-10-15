@@ -120,21 +120,23 @@ const EditProfile = () => {
     <div className="page-wrapper">
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <header className="header header-fixed style-3">
-        <div className="header-content">
-          <div className="left-content">
-            <Link
-              to="/Profile"
-              className="back-btn dz-icon icon-fill icon-sm"
-              onClick={() => navigate(-1)}
-            >
-              <i className="ri-arrow-left-line fs-3"></i>
-            </Link>
+        <header className="header header-fixed pt-2 shadow-sm">
+          <div className="header-content">
+            <div className="left-content">
+              <Link
+                to="/Profile"
+                className="back-btn dz-icon icon-fill icon-sm"
+                onClick={() => navigate(-1)}
+              >
+                <i className="ri-arrow-left-line fs-3"></i>
+              </Link>
+            </div>
+            <div className="mid-content">
+              <span className="custom_font_size_bold me-3">Edit Profile</span>
+            </div>
+            <div className="right-content"></div>
           </div>
-          <div className="mid-content">
-            <span className="custom_font_size_bold me-3">Edit Profile</span>
-          </div>
-          <div className="right-content"></div>
-        </div>
+        </header>
       </header>
       <main className="page-content space-top p-b80">
         <div className="container">

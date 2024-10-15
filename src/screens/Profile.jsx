@@ -1,13 +1,8 @@
-
-
-
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import logo from "../assets/logos/mmua_transparent.png";
-import Header from "../component/Header";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -71,7 +66,6 @@ const Profile = () => {
             )}
           </div>
         </header>
-        <Header/>
         <main className="page-content space-top p-b40">
           <div className="container">
             <div className="profile-area">
