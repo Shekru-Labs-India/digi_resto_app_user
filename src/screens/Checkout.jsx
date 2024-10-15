@@ -234,12 +234,8 @@ const Checkout = () => {
                   </Link>
                 </div>
                 <div className="mid-content">
-                  <span className="custom_font_size_bold pe-1">
-                    Checkout 
-                  </span>
-                    <span className="gray-text small-number">
-                      ({orderCount})
-                      </span>
+                  <span className="custom_font_size_bold pe-1">Checkout</span>
+                  <span className="gray-text small-number">({orderCount})</span>
                 </div>
                 <div className="right-content gap-1">
                   <div className="menu-toggler" onClick={toggleSidebar}>
@@ -414,51 +410,17 @@ const Checkout = () => {
             </ul>
 
             <div className="dz-flex-box mt-2">
-              <div className="card rounded-3">
-                <div className="card-body py-2 rounded-3 px-0">
-                  {cartItems.length > 0 ? (
-                    cartItems.map((item, index) => (
-                      <>
-                        {/* <div className="row " key={index}>
-                          <div className="col-6 pe-0   pb-1">
-                            <span className="mb-0 custom_font_size_bold ps-2">
-                              {item.menu_name}
-                            </span>
-                            <div className=" ps-2">
-                              <i className="ri-restaurant-line me-2 category-text fw-medium"></i>
-                              <span className="category-text fw-medium ">
-                                {item.menu_cat_name}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="col-5 text-end">
-                            <p className="mb-2 fs-4 fw-medium">
-                              <span className="ms-0 me-2 text-info custom_font_size_bold">
-                                ₹{item.price}
-                              </span>
-
-                              <span className="gray-text custom_font_size_bold text-decoration-line-through">
-                                ₹ {item.oldPrice || item.price}
-                              </span>
-                              <div>
-                                <span className="fs-6 ps-2 offer-color custom_font_size_bold">
-                                  {item.offer || "No "}% Off
-                                </span>
-                              </div>
-                            </p>
-                          </div>
-                          <div className="col-1 custom_font_size_bold text-end px-0">
-                            x {item.quantity}
-                          </div>
-                        </div>
-                        <hr className="me-3 p-0 m-0 text-primary" /> */}
-                        <Link
-                          to={{
-                            pathname: `/ProductDetails/${item.menu_id}`,
-                          }}
-                          state={{ menu_cat_id: item.menu_cat_id }}
-                        >
+              {cartItems.length > 0 ? (
+                cartItems.map((item, index) => (
+                  <>
+                    <Link
+                      to={{
+                        pathname: `/ProductDetails/${item.menu_id}`,
+                      }}
+                      state={{ menu_cat_id: item.menu_cat_id }}
+                    >
+                      <div className="card rounded-3 my-1">
+                        <div className="card-body py-2 rounded-3 px-0">
                           <div className="row" key={index}>
                             <div className="row">
                               <div className="col-6">
@@ -495,18 +457,18 @@ const Checkout = () => {
                               </div>
                             </div>
                           </div>
-                        </Link>
-                      </>
-                    ))
-                  ) : (
-                    <div className="custom_font_size_bold">
-                      No items in the cart.
-                    </div>
-                  )}
+                        </div>
+                      </div>
+                    </Link>
+                  </>
+                ))
+              ) : (
+                <div className="custom_font_size_bold">
+                  No items in the cart.
                 </div>
-              </div>
+              )}
             </div>
-            <div className="card mx-auto rounded-3">
+            <div className="card mx-auto rounded-3 mt-2">
               <div className="row px-2 py-1">
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1">
@@ -576,7 +538,8 @@ const Checkout = () => {
                 className="btn btn-color rounded-pill custom_font_size_bold text-white"
                 onClick={handleSubmitOrder}
               >
-                Place Order ({orderCount})
+                Place Order
+                <span className="small-number gray-text ps-1">({orderCount} Items)</span>
               </Link>
             </div>
           </div>

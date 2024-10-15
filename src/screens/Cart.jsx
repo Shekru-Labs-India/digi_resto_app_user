@@ -479,13 +479,9 @@ const Cart = () => {
                 className="text-decoration-none text-reset"
               >
                 <div
-                  className="card mb-3"
-                  style={{
-                    borderRadius: "15px",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  }}
+                  className="card mb-3 rounded-3"
                 >
-                  <div className="row my-auto ps-2">
+                  <div className="row my-auto ps-3">
                     <div className="col-3 px-0">
                       <img
                         src={item.image || images}
@@ -609,7 +605,7 @@ const Cart = () => {
             >
               <div className="container">
                 <div className="">
-                  <div className="card mx-auto rounded-2">
+                  <div className="card mx-auto rounded-3">
                     <div className="row px-1 py-1">
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1">
@@ -661,7 +657,7 @@ const Cart = () => {
                             </span>
                           </span>
                           <span className="pe-2 custom_font_size gray-text">
-                            ₹{cartDetails?.discount_amount || 0}
+                            -₹{cartDetails?.discount_amount || 0}
                           </span>
                         </div>
                       </div>

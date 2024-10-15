@@ -387,7 +387,7 @@ const Verifyotp = () => {
               <div className="section-head">
                 <Logoname />
                 <span className="custom_font_size_bold ms-4 ps-2">
-                  Enter OTP
+                  Enter OTP sent to{" "}{mobile}
                 </span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
@@ -416,10 +416,10 @@ const Verifyotp = () => {
                     />
                   ))}
                 </div>
-                <p className="text-center custom_font_size_bold  ">
+                {/* <p className="text-center custom_font_size_bold  ">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
-                </p>
+                </p> */}
                 {error && <p className="text-danger">{error}</p>}
                 {loading ? (
                   <div id="preloader">
@@ -435,7 +435,7 @@ const Verifyotp = () => {
                   </div>
                 ) : (
                   <button
-                    className="btn btn-color text-white rounded-pill mx-4"
+                    className="btn btn-color text-white rounded-pill mx-4 "
                     onClick={handleVerify}
                     disabled={otp.some((digit) => !digit.trim())}
                   >
@@ -450,7 +450,7 @@ const Verifyotp = () => {
                 to="/Signinscreen"
                 className="text-underline custom_font_size_bold"
               >
-                Sign In
+                Login
               </Link>
             </div>
           </div>
