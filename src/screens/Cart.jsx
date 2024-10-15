@@ -350,7 +350,7 @@ const Cart = () => {
                     <div className="col-9 pt-2 pb-0">
                       <div className="row">
                         <div className="col-9 my-auto">
-                          <span className="custom_font_size_bold text-truncate">
+                          <span className="fs-6 fw-semibold text-truncate">
                             {item.menu_name}
                           </span>
                         </div>

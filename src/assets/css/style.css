@@ -1718,7 +1718,7 @@ hr.dotted {
       display: block;
       padding: 0; }
     .form-control::placeholder {
-      color: var(--bs-secondary-color);
+      color:#bbbaba;
       opacity: 1; 
       font-family: Poppins;}
     .form-control:disabled {

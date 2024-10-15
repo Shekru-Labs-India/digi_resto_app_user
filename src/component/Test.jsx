@@ -184,7 +184,7 @@ const Test = () => {
                         </div>
                         <div className="col-9">
                           <div className="card-body py-2">
-                            <h6 className="title fs-3 mb-1">{toTitleCase(menu.menu_name)}</h6>
+                            <h6 className="title fs-6 fw-semibold mb-1">{toTitleCase(menu.menu_name)}</h6>
                             <div className="d-flex justify-content-between align-items-center mb-1">
                               <span style={{ color: "#0d775e" }}>
                                 <i className="ri-restaurant-line"></i>

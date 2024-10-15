@@ -365,7 +365,7 @@ const NearbyArea = () => {
                             }}
                           ></i>
                         </div>
-                        <span className="custom_font_size_bold text-wrap">
+                        <span className="fs-6 fw-semibold text-wrap">
                           {toTitleCase(menuItem.name)}
                         </span>
                         <div className="row">
