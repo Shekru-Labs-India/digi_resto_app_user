@@ -12,8 +12,8 @@ const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
           </span>
         </div>
         <div className="d-flex align-items-center">
-          <i className="ri-user-location-line me-2 gray-text fs-6"></i>
-          <span className="fw-medium gray-text fs-6">
+          <i className="ri-user-location-line me-2 gray-text font_size_12"></i>
+          <span className="fw-medium gray-text font_size_12">
             {tableNumber ? `Table ${tableNumber}` : ""}
           </span>
         </div>

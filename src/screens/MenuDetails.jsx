@@ -332,14 +332,19 @@ const MenuDetails = () => {
     <>
       <div className="page-wrapper">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
-        <Header className="fs-6 fw-semibold" title={toTitleCase(productDetails.name)} />
+        <Header
+          className="fs-6 fw-semibold"
+          title={toTitleCase(productDetails.name)}
+        />
 
         <main className="page-content ">
           <div className="mt-5 pt-1">
-            <HotelNameAndTable
-              restaurantName={restaurantName}
-              tableNumber={userData.tableNumber}
-            />
+            <div className="container py-0 my-0 ">
+              <HotelNameAndTable
+                restaurantName={restaurantName}
+                tableNumber={userData.tableNumber}
+              />
+            </div>
           </div>
           <div className="swiper product-detail-swiper">
             <div className="product-detail-image img">
@@ -379,7 +384,7 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0">
-                    <div className="ps-3 text-success font_size_14 ">
+                    <div className="ps-3 text-success font_size_12 ">
                       <i className="ri-restaurant-line  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -490,7 +495,7 @@ const MenuDetails = () => {
                           ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                         </span>
                       </div>
-                      <div className="font_size_14 text-success">
+                      <div className="font_size_12 text-success">
                         {productDetails.offer}% Off
                       </div>
                     </div>

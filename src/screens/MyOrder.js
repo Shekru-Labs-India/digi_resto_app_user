@@ -368,7 +368,7 @@ const OrdersTab = ({ orders, type }) => {
                           </span>
                         </div>
                         <div className="col-8 text-end">
-                          <span className="gray-text font_size_14">
+                          <span className="gray-text font_size_12">
                             {order.date_time}
                           </span>
                         </div>

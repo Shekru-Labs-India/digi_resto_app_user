@@ -221,7 +221,7 @@ const OfferBanner = () => {
                         </ul>
                         <div className="row">
                           <div className="col-8 pe-0">
-                            <span className="font_size_14 text-success">
+                            <span className="font_size_12 text-success">
                               {menu.offer || "No "}% Off
                             </span>
                           </div>

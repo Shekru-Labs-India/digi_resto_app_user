@@ -592,7 +592,7 @@ const TrackOrder = () => {
                   </h5>
                 </div>
                 <div className="col-8 text-end">
-                  <span className="font_size_14 gray-text  ">
+                  <span className="font_size_12 gray-text  ">
                     {order_details.time}
                   </span>
                 </div>
@@ -607,8 +607,8 @@ const TrackOrder = () => {
                   </div>
                 </div>
                 <div className="col-4 text-end">
-                  <span className="fs-6 gray-text fw-medium">
-                    <i className="ri-user-location-line ps-0 pe-1 "></i>
+                  <i className="ri-user-location-line ps-0 pe-1 font_size_12 gray-text"></i>
+                  <span className="fs-6 gray-text fw-medium font_size_12">
                     {order_details.table_number}
                   </span>
                 </div>
@@ -699,13 +699,8 @@ const TrackOrder = () => {
               {!isCompleted && searchedMenu.length > 0 && (
                 <div className="row g-3 mb-4">
                   <div className="d-flex justify-content-between align-items-center mb-2 mt-0">
-                    <div className="  mb-0 gray-text">
-                      Search Results
-                    </div>
-                    <div
-                      className="  gray-text"
-                      onClick={handleClearAll}
-                    >
+                    <div className="  mb-0 gray-text">Search Results</div>
+                    <div className="  gray-text" onClick={handleClearAll}>
                       Clear All
                     </div>
                   </div>
@@ -775,7 +770,7 @@ const TrackOrder = () => {
                                       }
                                       style={{ cursor: "pointer" }}
                                     >
-                                      <span className="text-success font_size_14">
+                                      <span className="text-success font_size_12">
                                         <i className="ri-restaurant-line mt-0 me-2"></i>
                                         {menu.category_name}
                                       </span>
@@ -818,7 +813,7 @@ const TrackOrder = () => {
                                   onClick={() => handleMenuClick(menu.menu_id)}
                                   style={{ cursor: "pointer" }}
                                 >
-                                  <span className="  px-0 text-start font_size_14 text-success">
+                                  <span className="  px-0 text-start font_size_12 text-success">
                                     {menu.offer || "No "}% Off
                                   </span>
                                 </span>
@@ -856,9 +851,7 @@ const TrackOrder = () => {
               {!isCompleted && pendingItems.length > 0 && (
                 <div className="row g-3 mb-3">
                   <div className="d-flex justify-content-between align-items-center mb-2 mt-0">
-                    <h6 className="  mb-0 gray-text">
-                      Newly Added In Basket
-                    </h6>
+                    <h6 className="  mb-0 gray-text">Newly Added In Basket</h6>
                   </div>
                   {pendingItems.map((menu) => (
                     <div
@@ -913,14 +906,14 @@ const TrackOrder = () => {
                               </div>
                               <div className="row mt-2">
                                 <div className="col-8">
-                                  <span className="text-success font_size_14 fw-medium">
-                                  <i className="ri-restaurant-line mt-0 me-2"></i>
+                                  <span className="text-success font_size_12 fw-medium">
+                                    <i className="ri-restaurant-line mt-0 me-2"></i>
                                     {menu.category_name}
                                   </span>
                                 </div>
                                 <div className="col-4 text-end px-0">
-                                  <span className="  gray-text font_size_14 fw-medium">
-                                    <i className="ri-star-half-line ratingStar"></i>
+                                  <i className="ri-star-half-line ratingStar font_size_12"></i>
+                                  <span className="  gray-text font_size_12 fw-medium">
                                     {parseFloat(menu.rating).toFixed(1)}
                                   </span>
                                 </div>
@@ -1039,7 +1032,7 @@ const TrackOrder = () => {
                                     </span>
                                   </span>
                                   <span className="mb-0 mt-1 ms-3   offerSearch">
-                                    <span className="  px-0 text-start font_size_14 text-success">
+                                    <span className="  px-0 text-start font_size_12 text-success">
                                       {menu.offer || "No "}% Off
                                     </span>
                                   </span>
@@ -1119,8 +1112,7 @@ const TrackOrder = () => {
                       <span className="ps-2 font_size_14 gray-text">
                         Discount{" "}
                         <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}%
-                          )
+                          ({orderDetails.order_details.discount_percent || 0}% )
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">

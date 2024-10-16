@@ -344,10 +344,12 @@ const Wishlist = () => {
       <Header title="Favourite" count={wishlistCount} />
 
       <main className="page-content space-top mb-5 pb-3">
-        <HotelNameAndTable
-          restaurantName={restaurantName}
-          tableNumber={userData.tableNumber}
-        />
+        <div className="container">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData.tableNumber}
+          />
+        </div>
         {customerId ? (
           hasFavorites ? (
             <>
@@ -456,8 +458,8 @@ const Wishlist = () => {
                                     </div>
                                     <div className="row">
                                       <div className="col-5 pe-0 ps-4">
-                                        <span className="font_size_14 text-success">
-                                        <i className="ri-restaurant-line mt-0 me-1"></i>
+                                        <span className="font_size_12 text-success">
+                                          <i className="ri-restaurant-line mt-0 me-1"></i>
                                           {menu.category_name}
                                         </span>
                                       </div>
@@ -501,7 +503,7 @@ const Wishlist = () => {
                                               ₹{menu.oldPrice || menu.price}
                                             </span>
                                           </p>
-                                          <span className="text-success font_size_14 ">
+                                          <span className="text-success font_size_12 ">
                                             {menu.offer || "No"}% Off
                                           </span>
                                         </div>
@@ -539,9 +541,7 @@ const Wishlist = () => {
             >
               <div className="m-b20 dz-flex-box text-center">
                 <div className="dz-cart-about">
-                  <h5 className=" ">
-                    Nothing to show in favourites.
-                  </h5>
+                  <h5 className=" ">Nothing to show in favourites.</h5>
                   <p>Add some products to show here!</p>
                   <Link to="/Menu" className="btn btn-outline-primary btn-sm">
                     Browse Menus

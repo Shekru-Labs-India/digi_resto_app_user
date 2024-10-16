@@ -332,7 +332,7 @@ const NearbyArea = () => {
                           style={{ position: "relative" }}
                         >
                           <div
-                            className="font_size_14 text-success"
+                            className="font_size_12 text-success"
                             style={{ color: "#0a795b" }}
                           >
                             <i
@@ -413,7 +413,7 @@ const NearbyArea = () => {
                         </div>
                         <div className="row">
                           <div className="col-12">
-                            <span className="font_size_14 text-success">
+                            <span className="font_size_12 text-success">
                               {menuItem.offer || "No "}% Off
                             </span>
                           </div>

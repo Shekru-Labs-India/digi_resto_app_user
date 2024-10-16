@@ -220,26 +220,20 @@ const Checkout = () => {
 
   return (
     <div className="page-wrapper full-height">
-
-
-        <Header 
-        title="Checkout" 
-        count={cartItems.length}
-      />
+      <Header title="Checkout" count={cartItems.length} />
 
       <main className="page-content space-top mb-5 pb-3">
-        <HotelNameAndTable 
-              restaurantName={restaurantName}
-              tableNumber={userData.tableNumber}
-            />
+        <div className="container py-0 my-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData.tableNumber}
+          />
+        </div>
         <div className="m-3">
           <div className="dz-flex-box">
             <ul className="dz-list-group">
               <div className="mb-2">
-                <label
-                  className="    pb-2 ps-2"
-                  htmlFor="notes"
-                >
+                <label className="    pb-2 ps-2" htmlFor="notes">
                   Additional Notes:
                 </label>
                 <textarea
@@ -303,14 +297,14 @@ const Checkout = () => {
                             <div className="row">
                               <div className="col-8">
                                 <div className="ps-2">
-                                  <span className="text-success font_size_14">
-                                  <i className="ri-restaurant-line me-2"></i>
+                                  <span className="text-success font_size_12">
+                                    <i className="ri-restaurant-line me-2"></i>
                                     {item.menu_cat_name}
                                   </span>
                                 </div>
                               </div>
                               <div className="col-4 text-end px-0">
-                                <span className="fs-6 ps-2 text-success font_size_14">
+                                <span className="fs-6 ps-2 text-success font_size_12">
                                   {item.offer || "No "}% Off
                                 </span>
                               </div>
@@ -322,9 +316,7 @@ const Checkout = () => {
                   </>
                 ))
               ) : (
-                <div className="   ">
-                  No items in the cart.
-                </div>
+                <div className="   ">No items in the cart.</div>
               )}
             </div>
             <div className="card mx-auto rounded-3 mt-2">
@@ -381,9 +373,7 @@ const Checkout = () => {
 
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 fs-6 fw-semibold">
-                      Grand Total
-                    </span>
+                    <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
                     <span className="pe-2 fs-5 fw-semibold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
@@ -398,7 +388,9 @@ const Checkout = () => {
                 onClick={handleSubmitOrder}
               >
                 Place Order
-                <span className="small-number gray-text ps-1">({orderCount} Items)</span>
+                <span className="small-number gray-text ps-1">
+                  ({orderCount} Items)
+                </span>
               </Link>
             </div>
           </div>

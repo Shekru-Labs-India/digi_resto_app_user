@@ -307,10 +307,12 @@ const Cart = () => {
         </main>
       ) : (
         <main className="page-content space-top mb-5 pb-3">
-          <HotelNameAndTable
-            restaurantName={restaurantName}
-            tableNumber={userData.tableNumber}
-          />
+          <div className="container">
+            <HotelNameAndTable
+              restaurantName={restaurantName}
+              tableNumber={userData.tableNumber}
+            />{" "}
+          </div>
           <div className="container scrollable-section pt-0">
             {displayCartItems.map((item, index) => (
               <Link
@@ -364,7 +366,7 @@ const Cart = () => {
                       </div>
                       <div className="row">
                         <div className="col-4 px-0">
-                          <span className="ps-3  text-success mt-1 font_size_14">
+                          <span className="ps-3  text-success mt-1 font_size_12">
                             <i className="ri-restaurant-line me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
@@ -406,7 +408,7 @@ const Cart = () => {
                               ₹{item.oldPrice || item.price}
                             </span>
 
-                            <span className="ps-2 text-success font_size_14">
+                            <span className="ps-2 text-success font_size_12">
                               {item.offer || "No "}% Off
                             </span>
                           </p>
@@ -467,10 +469,7 @@ const Cart = () => {
                       </div>
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span
-                            className="ps-2 font_size_14 pt-1 gray-text"
-                            s
-                          >
+                          <span className="ps-2 font_size_14 pt-1 gray-text" s>
                             Service Charges{" "}
                             <span className="gray-text small-number">
                               ({cartDetails.service_charges_percent}%)

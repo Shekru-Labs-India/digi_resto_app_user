@@ -311,7 +311,7 @@ const ProductCard = () => {
           <div className="swiper-wrapper">
             {totalMenuCount > 0 && menuCategories.length > 0 && (
               <div
-                className={`category-btn border border-2 rounded-5 swiper-slide     ${
+                className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
                   selectedCategoryId === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
@@ -330,7 +330,7 @@ const ProductCard = () => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn border border-2 rounded-5     ${
+                  className={`category-btn font_size_14 border border-2 rounded-5     ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -389,7 +389,7 @@ const ProductCard = () => {
                   </div>
                   <div className="dz-content pb-1">
                     <div className="detail-content">
-                      <div className="font_size_14 text-success">
+                      <div className="font_size_12 text-success">
                         <i className="ri-restaurant-line pe-1"></i>
                         {menu.category}
                       </div>
@@ -441,7 +441,7 @@ const ProductCard = () => {
                         </div>
                         <div className="col-6 text-end mt-2">
                           <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
-                          <span className="font_size_14 fw-normal gray-text">
+                          <span className="font_size_12 fw-normal gray-text">
                             {menu.rating}
                           </span>
                         </div>
@@ -452,7 +452,7 @@ const ProductCard = () => {
                         <div className="footer-wrapper">
                           <div className="price-wrapper d-flex align-items-baseline">
                             <p className="mb-1 custom_font_size fw-medium">
-                              <span className="ms- me-2 text-info">
+                              <span className="fs-5 me-2 text-info">
                                 ₹{menu.price}
                               </span>
                               <span className="gray-text text-decoration-line-through fs-6 fw-normal">
@@ -465,7 +465,7 @@ const ProductCard = () => {
                     </div>
                     <div className="row">
                       <div className="col-6">
-                        <span className="font_size_14 text-success">
+                        <span className="font_size_12 text-success">
                           {menu.offer || "No "}% Off
                         </span>
                       </div>

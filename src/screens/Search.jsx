@@ -340,7 +340,7 @@ const Search = () => {
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
                             
-                              <span className="text-success font_size_14">
+                              <span className="text-success font_size_12">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
                                 {menu.category_name}
                               </span>
@@ -365,7 +365,7 @@ const Search = () => {
                               </span>
                             </span>
 
-                            <span className="ms-2  text-start font_size_14 text-success">
+                            <span className="ms-2  text-start font_size_12 text-success">
                               {menu.offer || "No "}% Off
                             </span>
                           </div>
