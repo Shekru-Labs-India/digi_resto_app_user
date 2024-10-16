@@ -17,8 +17,8 @@ git commit -m "$1"
 git pull origin main
 
 # Set correct permissions for the new repo
-chmod -R 777 ../digi_resto_app_user/
-chown -R root:root ../digi_resto_app_user/
+# chmod -R 777 ../digi_resto_app_user/
+# chown -R root:root ../digi_resto_app_user/
 
 # Push changes to master branch
 git push origin HEAD:main
