@@ -98,52 +98,56 @@ const NearbyArea = () => {
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        localStorage.removeItem("menuItems");
         const response = await fetch(
-          "https://menumitra.com/user_api/get_all_menu_list_by_category",
+          "https://menumitra.com/user_api/get_special_menu_list",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              customer_id: customerId || null, // Send customer_id if logged in
+              customer_id: customerId || null,
               restaurant_id: restaurantId,
             }),
           }
         );
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("API response data:", data);
-
-          if (data.st === 1 && Array.isArray(data.MenuList)) {
-            const formattedMenuItems = data.MenuList.map((menu) => ({
-              ...menu,
-              oldPrice: Math.floor(menu.price * 1.1),
-              is_favourite: menu.is_favourite === 1,
-            }));
-
-            setMenuItems(formattedMenuItems);
-            localStorage.setItem(
-              "menuItems",
-              JSON.stringify(formattedMenuItems)
-            );
-          } else {
-            console.error("Invalid data format:", data);
-          }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        console.log("API response data:", data);
+  
+        if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
+          const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
+            ...menu,
+            name: menu.menu_name,
+            oldPrice: Math.floor(menu.price * 1.1),
+            is_favourite: false, // Assuming this is not provided in the API response
+          }));
+  
+          setMenuItems(formattedMenuItems);
         } else {
-          console.error("Network response was not ok:", response.statusText);
+          console.error("Invalid data format:", data);
+          setMenuItems([]);
         }
       } catch (error) {
         console.error("Error fetching menu data:", error);
+        setMenuItems([]);
       }
     };
-
+  
     if (restaurantId) {
       fetchMenuData();
     }
-  }, [restaurantId]);
+  }, [restaurantId, customerId]);
+
+  useEffect(() => {
+    console.log("restaurantId:", restaurantId);
+    console.log("customerId:", customerId);
+    // ... rest of the code
+  }, [restaurantId, customerId]);
 
   const handleLikeClick = async (menuId) => {
     if (!customerId || !restaurantId) {
@@ -280,154 +284,154 @@ const NearbyArea = () => {
 
   return (
     <div className="dz-box style-2 nearby-area">
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />{" "}
-      <div className="title-bar1 align-items-start mb-5">
-        <div className="left">
-          {menuItems.length > 0 && (
-            <h4 className="title mb-1    ">Special Menu</h4>
-          )}
-        </div>
+    <Toast ref={toast} position="bottom-center" className="custom-toast" />
+    <div className="title-bar1 align-items-start mb-5">
+      <div className="left">
+        {menuItems.length > 0 && (
+          <h4 className="font_size_14 fw-medium">Our Speciality</h4>
+        )}
       </div>
-      <div className="swiper product-swiper swiper-center">
-        <div className="swiper-wrapper">
-          {menuItems.map((menuItem, index) => (
-            <div className="swiper-slide col-6" key={index}>
-              <div className="row g-3 grid-style-1">
-                <div>
-                  <div
-                    className="card-item style-6 rounded-3"
+    </div>
+    <div className="swiper product-swiper swiper-center">
+      <div className="swiper-wrapper">
+        {menuItems.map((menuItem, index) => (
+          <div className="swiper-slide col-6" key={index}>
+            <div className="row g-3 grid-style-1">
+              <div>
+                <div
+                  className="card-item style-6 rounded-3"
+                  style={{
+                    width: "200px",
+                    height: "auto",
+                    position: "relative",
+                  }}
+                >
+                  <Link
+                    to={`/ProductDetails/${menuItem.menu_id}`}
+                    state={{ menu_cat_id: menuItem.menu_cat_id }}
+                    className="card-link"
                     style={{
-                      width: "200px",
-                      height: "auto",
-                      position: "relative",
+                      textDecoration: "none",
+                      color: "inherit",
+                      display: "block",
                     }}
                   >
-                    <Link
-                      to={`/ProductDetails/${menuItem.menu_id}`}
-                      state={{ menu_cat_id: menuItem.menu_cat_id }}
-                      className="card-link"
-                      style={{
-                        textDecoration: "none",
-                        color: "inherit",
-                        display: "block",
-                      }}
-                    >
-                      <div className="dz-media">
-                        <img
-                          src={menuItem.image || images}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            aspectRatio: 1,
-                          }}
-                          onError={(e) => {
-                            e.target.src = images;
-                          }}
-                        />
-                      </div>
-                      <div className="dz-content">
+                    <div className="dz-media">
+                      <img
+                        src={menuItem.image || images}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          aspectRatio: 1,
+                        }}
+                        onError={(e) => {
+                          e.target.src = images;
+                        }}
+                      />
+                    </div>
+                    <div className="dz-content">
+                      <div
+                        className="detail-content"
+                        style={{ position: "relative" }}
+                      >
                         <div
-                          className="detail-content"
-                          style={{ position: "relative" }}
+                          className="font_size_12 text-success"
+                          style={{ color: "#0a795b" }}
                         >
-                          <div
-                            className="font_size_12 text-success"
-                            style={{ color: "#0a795b" }}
-                          >
-                            <i
-                              className="ri-restaurant-line"
-                              style={{ paddingRight: "5px" }}
-                            ></i>
-                            {toTitleCase(menuItem.category_name)}
-                          </div>
                           <i
-                            className={`nearby-area-heart ${
-                              menuItem.is_favourite
-                                ? "ri-hearts-fill fs-3"
-                                : "ri-heart-2-line fs-3"
-                            } fs-2`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleLikeClick(menuItem.menu_id);
-                            }}
-                            style={{
-                              position: "absolute",
-                              top: "0",
-                              right: "0",
-                              fontSize: "23px",
-                              cursor: "pointer",
-                              color: menuItem.is_favourite
-                                ? "#fe0809"
-                                : "#73757b",
-                              zIndex: 10,
-                            }}
+                            className="ri-restaurant-line"
+                            style={{ paddingRight: "5px" }}
                           ></i>
+                          {toTitleCase(menuItem.category_name)}
                         </div>
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {toTitleCase(menuItem.name)}
-                        </span>
+                        <i
+                          className={`nearby-area-heart ${
+                            menuItem.is_favourite
+                              ? "ri-hearts-fill fs-3"
+                              : "ri-heart-2-line fs-3"
+                          } fs-2`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menuItem.menu_id);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            right: "0",
+                            fontSize: "23px",
+                            cursor: "pointer",
+                            color: menuItem.is_favourite
+                              ? "#fe0809"
+                              : "#73757b",
+                            zIndex: 10,
+                          }}
+                        ></i>
+                      </div>
+                      <span className="font_size_14 fw-medium text-wrap">
+                        {toTitleCase(menuItem.name)}
+                      </span>
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="offer-code mx-0">
+                            {renderSpiceIcons(menuItem.spicy_index)}
+                          </div>
+                        </div>
+                        <div className="col-6 text-end">
+                          <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
+                          <span className="font_size_12 fw-normal gray-text">
+                            {menuItem.rating}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="">
                         <div className="row">
-                          <div className="col-6">
-                            <div className="offer-code mx-0">
-                              {renderSpiceIcons(menuItem.spicy_index)}
-                            </div>
+                          <div className="col-9">
+                            <p className="mb-2   fw-medium">
+                              <span className="me-2 text-info font_size_14 fw-semibold">
+                                ₹{menuItem.price}
+                              </span>
+                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                ₹{menuItem.oldPrice || menuItem.price}
+                              </span>
+                            </p>
                           </div>
-                          <div className="col-6 text-end">
-                            <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
-                            <span className="font_size_12 fw-normal gray-text">
-                              {menuItem.rating}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="">
-                          <div className="row">
-                            <div className="col-9">
-                              <p className="mb-2   fw-medium">
-                                <span className="me-2 text-info font_size_14 fw-semibold">
-                                  ₹{menuItem.price}
-                                </span>
-                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                  ₹{menuItem.oldPrice || menuItem.price}
-                                </span>
-                              </p>
+                          <div className="col-2 me-3">
+                            <div
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menuItem);
+                              }}
+                              className="cart-btn"
+                            >
+                              {isMenuItemInCart(menuItem.menu_id) ? (
+                                <i className="ri-shopping-cart-fill fs-2"></i>
+                              ) : (
+                                <i className="ri-shopping-cart-line fs-2"></i>
+                              )}
                             </div>
-                            <div className="col-2 me-3">
-                              <div
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleAddToCartClick(menuItem);
-                                }}
-                                className="cart-btn"
-                              >
-                                {isMenuItemInCart(menuItem.menu_id) ? (
-                                  <i className="ri-shopping-cart-fill fs-2"></i>
-                                ) : (
-                                  <i className="ri-shopping-cart-line fs-2"></i>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-12">
-                            <span className="font_size_12 text-success">
-                              {menuItem.offer || "No "}% Off
-                            </span>
                           </div>
                         </div>
                       </div>
-                    </Link>
-                  </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <span className="font_size_12 text-success">
+                            {menuItem.offer || "No "}% Off
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
+  </div>
   );
 };
 

@@ -7,7 +7,7 @@ const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
       <div className="d-flex justify-content-between align-items-center  m-3 mx-1">
         <div className="d-flex align-items-center">
           <i className="ri-store-2-line me-2 fs-6"></i>
-          <span className="fs-6 fw-medium">
+          <span className="font_size_14 fw-medium">
             {restaurantName.toUpperCase() || "Restaurant Name"}
           </span>
         </div>

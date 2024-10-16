@@ -397,7 +397,7 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill firefill offer-code"
+                              className="ri-fire-fill text-danger firefill offer-code"
                             ></i>
                           ) : (
                             <i

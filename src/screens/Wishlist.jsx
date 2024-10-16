@@ -383,7 +383,7 @@ const Wishlist = () => {
                       htmlFor={`chck${restaurantName}`}
                     >
                       <span className="">
-                        <span class="fs-6 fw-medium">
+                        <span class="font_size_14 fw-medium">
                           <i class="ri-store-2-line me-2"></i>
                           {restaurantName.toUpperCase()}
                         </span>
@@ -470,8 +470,7 @@ const Wishlist = () => {
                                               (_, index) =>
                                                 index < menu.spicy_index ? (
                                                   <i
-                                                    className="ri-fire-fill fs-6"
-                                                    style={{ color: "#eb8e57" }}
+                                                    className="ri-fire-fill text-danger fs-6"
                                                     key={index}
                                                   ></i>
                                                 ) : (

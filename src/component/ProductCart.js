@@ -301,9 +301,9 @@ const ProductCard = () => {
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
-            <span className="title ">Menu</span>
+            <span className=" font_size_14 fw-medium">Menu</span>
             <Link to="/Category">
-              <i className="ri-arrow-right-line  "></i>
+              <i className="ri-arrow-right-line"></i>
             </Link>
           </div>
         )}
@@ -508,7 +508,7 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
-      <NearbyArea />
+      
     </div>
   );
 };

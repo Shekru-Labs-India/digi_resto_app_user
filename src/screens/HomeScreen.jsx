@@ -7,6 +7,7 @@ import OfferBanner from "../component/OfferBanner";
 import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/mmua_transparent.png";
+import NearbyArea from "../component/NearbyArea";
 
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
@@ -227,6 +228,7 @@ const HomeScreen = () => {
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
             <ProductCart />
+            <NearbyArea/>
           </div>
         </main>
 

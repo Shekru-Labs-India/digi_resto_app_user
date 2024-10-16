@@ -546,13 +546,13 @@ const Product = () => {
                               {Array.from({ length: 5 }).map((_, index) =>
                                 index < menuItem.spicy_index ? (
                                   <i
-                                    className="ri-fire-fill fs-6"
+                                    className="ri-fire-fill text-danger fs-6"
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
-                                    className="ri-fire-line fs-6"
-                                    style={{ color: "#bbbaba" }}
+                                    className="ri-fire-line gray-text fs-6"
+                                   
                                     key={index}
                                   ></i>
                                 )

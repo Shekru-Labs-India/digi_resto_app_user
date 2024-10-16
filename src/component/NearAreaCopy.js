@@ -88,7 +88,7 @@ const NearbyArea = () => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "https://menumitra.com/user_api/get_all_menu_list_by_category",
+          "https://menumitra.com/user_api/get_special_menu_list",
           {
             method: "POST",
             headers: {
@@ -216,7 +216,7 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill fs-6" key={index}></i>
+        <i className="ri-fire-fill text-danger fs-6" key={index}></i>
       ) : (
         <i
           className="ri-fire-line fs-6"
@@ -231,7 +231,7 @@ const NearbyArea = () => {
     <div className="dz-box style-2 nearby-area">
       <div className="title-bar1 align-items-start">
         <div className="left">
-          <h4 className="title mb-1 fs-5">Special Menu</h4>
+          <h4 className=" mb-1 font_size_14 fw-medium">Our Speciality</h4>
         </div>
       </div>
       <div className="swiper product-swiper swiper-center">

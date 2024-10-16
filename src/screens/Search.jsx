@@ -256,13 +256,13 @@ const Search = () => {
         <div className="d-flex justify-content-between align-items-center  m-3">
           <div className="d-flex align-items-center">
             <i className="ri-store-2-line me-2"></i>
-            <span className="fw-medium hotel-name">
+            <span className="fw-medium font_size_14">
               {restaurantName.toUpperCase() || "Restaurant Name"}
             </span>
           </div>
           <div className="d-flex align-items-center">
             <i className="ri-user-location-line me-2 gray-text"></i>
-            <span className="fw-medium custom-text-gray">
+            <span className="fw-medium font_size_12 gray-text">
               {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
             </span>
           </div>
