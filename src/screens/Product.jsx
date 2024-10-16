@@ -406,341 +406,218 @@ const Product = () => {
   return (
     <div>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
-      <Header 
-        title="Menu" 
-        count={menuList.length}
-      />
+      <Header title="Menu" count={menuList.length} />
 
       <main className={`page-content space-top p-b80`}>
-       
-      <HotelNameAndTable 
-     restaurantName={restaurantName}
-     tableNumber={userData.tableNumber}
-   />
+        <HotelNameAndTable
+          restaurantName={restaurantName}
+          tableNumber={userData.tableNumber}
+        />
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
-      <div className="swiper category-slide">
-        <div className="swiper-wrapper">
-        <div
-            className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
-              selectedCategory === null ? "active" : ""
-            }`}
-            onClick={() => handleCategorySelect(null)}
-            style={{
-              backgroundColor: selectedCategory === null ? "#0D775E" : "",
-              color: selectedCategory === null ? "#ffffff" : ""
-            }}
-          >
-            All{" "}
-            <span className="small-number gray-text">
-              ({menuList.length})
-            </span>
-          </div>
-          {categories.map((category) => (
-            <div
-              key={category.menu_cat_id}
-              className={`category-btn border border-2 rounded-5 swiper-slide custom_font_size_bold ${
-                selectedCategory === category.menu_cat_id ? "active" : ""
-              }`}
-              onClick={() => handleCategorySelect(category.menu_cat_id)}
-              style={{
-                backgroundColor:
-                  selectedCategory === category.menu_cat_id ? "#0D775E" : "",
-                color:
-                  selectedCategory === category.menu_cat_id ? "#ffffff" : "",
-              }}
-            >
-              {category.category_name}{" "}
-              <span className="small-number gray-text">
-                ({category.menu_count})
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-        {/* Menu Items */}
-        <div className="container mb-5 pt-0">
-  <div className="row g-3 grid-style-1">
-    {filteredMenuList.map((menuItem) => (
-      <div key={menuItem.menu_id} className="col-6">
-        <div className="card-item style-6 rounded-3">
-          <Link
-            to={`/ProductDetails/${menuItem.menu_id}`}
-            state={{ menu_cat_id: menuItem.menu_cat_id }}
-            className="card-link"
-            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-          >
-            <div className="dz-media">
-              <img
-                src={menuItem.image || images}
-                alt={menuItem.name || "Menu item"}
-                style={{
-                  aspectRatio: "1/1",
-                  objectFit: "cover",
-                  height: "100%",
-                }}
-                onError={(e) => {
-                  e.target.src = images;
-                }}
-              />
-            </div>
-
-            <div className="dz-content">
+          <div className="swiper category-slide">
+            <div className="swiper-wrapper">
               <div
-                className="detail-content"
-                style={{ position: "relative" }}
+                className={`category-btn border border-2 rounded-5 swiper-slide     ${
+                  selectedCategory === null ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect(null)}
+                style={{
+                  backgroundColor: selectedCategory === null ? "#0D775E" : "",
+                  color: selectedCategory === null ? "#ffffff" : "",
+                }}
               >
-                <h3>
-                  <div
-                    className="product-title fs-xs fw-medium text-success"
-                    style={{ color: "#0a795b" }}
-                  >
-                    <i className="ri-restaurant-line pe-1"></i>
-                    {categories.find(
-                      (category) =>
-                        category.menu_cat_id === menuItem.menu_cat_id
-                    )?.name || menuItem.category}
-                  </div>
-                </h3>
-                <i
-                  className={`${
-                    menuItem.is_favourite
-                      ? "ri-hearts-fill fs-3 mt-0"
-                      : "ri-heart-2-line fs-3 mt-0"
+                All{" "}
+                <span className="small-number gray-text">
+                  ({menuList.length})
+                </span>
+              </div>
+              {categories.map((category) => (
+                <div
+                  key={category.menu_cat_id}
+                  className={`category-btn border border-2 rounded-5 swiper-slide     ${
+                    selectedCategory === category.menu_cat_id ? "active" : ""
                   }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleLikeClick(menuItem.menu_id);
-                  }}
+                  onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
-                    position: "absolute",
-                    top: "0",
-                    right: "0",
-                    fontSize: "23px",
-                    cursor: "pointer",
-                    color: menuItem.is_favourite ? "#fe0809" : "#73757b",
-                    zIndex: 2
+                    backgroundColor:
+                      selectedCategory === category.menu_cat_id
+                        ? "#0D775E"
+                        : "",
+                    color:
+                      selectedCategory === category.menu_cat_id
+                        ? "#ffffff"
+                        : "",
                   }}
-                ></i>
-              </div>
-
-              {menuItem.name && (
-                <div className="fs-6 fw-semibold text-wrap">
-                  {menuItem.name}
-                </div>
-              )}
-              {menuItem.spicy_index && (
-                <div className="row">
-                  <div className="col-6">
-                    <div className="offer-code mt-2">
-                      {Array.from({ length: 5 }).map((_, index) =>
-                        index < menuItem.spicy_index ? (
-                          <i
-                            className="ri-fire-fill fs-6"
-                            key={index}
-                          ></i>
-                        ) : (
-                          <i
-                            className="ri-fire-line fs-6"
-                            style={{ color: "#bbbaba" }}
-                            key={index}
-                          ></i>
-                        )
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-6 text-end mt-2">
-                    <i className="ri-star-half-line pe-1 custom_font_size_bold ratingStar"></i>
-                    <span className="custom_font_size_bold  gray-text">
-                      {menuItem.rating}
-                    </span>
-                  </div>
-                </div>
-              )}
-              <div className="row">
-                <div className="col-8">
-                  <div className="footer-wrapper">
-                    <div className="price-wrapper d-flex align-items-baseline">
-                      <p className="mb-1 custom_font_size_bold fw-medium">
-                        <span className="ms- me-2 text-info">
-                          ₹{menuItem.price}
-                        </span>
-                        <span className="gray-text custom_font_size_bold text-decoration-line-through">
-                          ₹{menuItem.oldPrice || menuItem.price}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-4">
-                  {userData ? (
-                    <div
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleAddToCartClick(menuItem);
-                      }}
-                      className="cart-btn text-end"
-                    >
-                      <i
-                        className={`ri-shopping-cart-${
-                          isMenuItemInCart(menuItem.menu_id)
-                            ? "fill"
-                            : "line"
-                        } fs-2`}
-                      ></i>
-                    </div>
-                  ) : (
-                    <i className="ri-shopping-cart-line fs-2"></i>
-                  )}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-12">
-                  <span className="custom_font_size_bold offer-color">
-                    {menuItem.offer || "No "}% Off
+                >
+                  {category.category_name}{" "}
+                  <span className="small-number gray-text">
+                    ({category.menu_count})
                   </span>
                 </div>
-              </div>
+              ))}
             </div>
-          </Link>
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
+        {/* Menu Items */}
+        <div className="container mb-5 pt-0">
+          <div className="row g-3 grid-style-1">
+            {filteredMenuList.map((menuItem) => (
+              <div key={menuItem.menu_id} className="col-6">
+                <div className="card-item style-6 rounded-3">
+                  <Link
+                    to={`/ProductDetails/${menuItem.menu_id}`}
+                    state={{ menu_cat_id: menuItem.menu_cat_id }}
+                    className="card-link"
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                      display: "block",
+                    }}
+                  >
+                    <div className="dz-media">
+                      <img
+                        src={menuItem.image || images}
+                        alt={menuItem.name || "Menu item"}
+                        style={{
+                          aspectRatio: "1/1",
+                          objectFit: "cover",
+                          height: "100%",
+                        }}
+                        onError={(e) => {
+                          e.target.src = images;
+                        }}
+                      />
+                    </div>
 
-        {/* Sort and Filter Buttons */}
-        {/* <div
-          className="footer fixed"
-          style={{ zIndex: 1, position: "fixed", bottom: "70px" }}
-        >
-          <ul className="dz-product-filter">
-            <li>
-              <a className="custom_font_size_bold"
-                href="javascript:void(0);"
-                onClick={() => setSortByOpen(!sortByOpen)}
-              >
-                <i className="fi fi-rr-arrow-up"></i>Sort
-              </a>
-            </li>
-            <li>
-              <a className="custom_font_size_bold"
-                href="javascript:void(0);"
-                onClick={() => setFilterOpen(!filterOpen)}
-              >
-                <i className="fi fi-rr-filter"></i>Filter
-              </a>
-            </li>
-          </ul>
+                    <div className="dz-content">
+                      <div
+                        className="detail-content"
+                        style={{ position: "relative" }}
+                      >
+                        <h3>
+                          <div
+                            className="fw-medium text-success font_size_14"
+                            style={{ color: "#0a795b" }}
+                          >
+                            <i className="ri-restaurant-line pe-1"></i>
+                            {categories.find(
+                              (category) =>
+                                category.menu_cat_id === menuItem.menu_cat_id
+                            )?.name || menuItem.category}
+                          </div>
+                        </h3>
+                        <i
+                          className={`${
+                            menuItem.is_favourite
+                              ? "ri-hearts-fill fs-3 mt-0"
+                              : "ri-heart-2-line fs-3 mt-0"
+                          }`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menuItem.menu_id);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            right: "0",
+                            fontSize: "23px",
+                            cursor: "pointer",
+                            color: menuItem.is_favourite
+                              ? "#fe0809"
+                              : "#73757b",
+                            zIndex: 2,
+                          }}
+                        ></i>
+                      </div>
 
-        
-          {sortByOpen && (
-            <div
-              className="offcanvas offcanvas-bottom p-b60"
-              tabIndex="-1"
-              id="offcanvasBottom1"
-              aria-labelledby="offcanvasBottomLabel1"
-            >
-              <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvasBottomLabel1">
-                  Sort By
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setSortByOpen(false)}
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="offcanvas-body">
-                <ul>
-                  <li
-                    onClick={() => {
-                      setSortCriteria("popularity");
-                      applySort();
-                    }}
-                  >
-                    Popularity
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSortCriteria("discount");
-                      applySort();
-                    }}
-                  >
-                    Discount
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSortCriteria("priceHighToLow");
-                      applySort();
-                    }}
-                  >
-                    Price High to Low
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSortCriteria("priceLowToHigh");
-                      applySort();
-                    }}
-                  >
-                    Price Low to High
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSortCriteria("rating");
-                      applySort();
-                    }}
-                  >
-                    Rating
-                  </li>
-                </ul>
-              </div>
-            </div>
-          )}
+                      {menuItem.name && (
+                        <div className="fs-6 fw-semibold text-wrap">
+                          {menuItem.name}
+                        </div>
+                      )}
+                      {menuItem.spicy_index && (
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="offer-code mt-2">
+                              {Array.from({ length: 5 }).map((_, index) =>
+                                index < menuItem.spicy_index ? (
+                                  <i
+                                    className="ri-fire-fill fs-6"
+                                    key={index}
+                                  ></i>
+                                ) : (
+                                  <i
+                                    className="ri-fire-line fs-6"
+                                    style={{ color: "#bbbaba" }}
+                                    key={index}
+                                  ></i>
+                                )
+                              )}
+                            </div>
+                          </div>
+                          <div className="col-6 text-end mt-2">
+                            <i className="ri-star-half-line pe-1     ratingStar"></i>
+                            <span className="font_size_14 fw-normal gray-text">
+                              {menuItem.rating}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="row">
+                        <div className="col-8">
+                          <div className="footer-wrapper">
+                            <div className="price-wrapper d-flex align-items-baseline">
+                              <p className="mb-1 fs-5 fw-semibold text-info">
+                                <span className="ms- me-2 text-info">
+                                  ₹{menuItem.price}
+                                </span>
+                              </p>
+                              <span className="gray-text text-decoration-line-through fs-6 fw-normal">
+                                ₹{menuItem.oldPrice || menuItem.price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
 
-          
-          {filterOpen && (
-            <div
-              className="offcanvas offcanvas-bottom p-b60"
-              tabIndex="-1"
-              id="offcanvasBottom2"
-              aria-labelledby="offcanvasBottomLabel2"
-            >
-              <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="offcanvasBottomLabel2">
-                  Filters
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setFilterOpen(false)}
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="offcanvas-body">
-                <div className="filter-inner-content">
-                  <div className="title-bar">
-                    <h5 className="sub-title">Price Range:</h5>
-                    <Slider
-                      value={priceRange}
-                      onChange={(e, newValue) => setPriceRange(newValue)}
-                      valueLabelDisplay="auto"
-                      min={0}
-                      max={2000}
-                      step={10}
-                    />
-                  </div>
-                 
+                        <div className="col-4">
+                          {userData ? (
+                            <div
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menuItem);
+                              }}
+                              className="cart-btn text-end"
+                            >
+                              <i
+                                className={`ri-shopping-cart-${
+                                  isMenuItemInCart(menuItem.menu_id)
+                                    ? "fill"
+                                    : "line"
+                                } fs-2`}
+                              ></i>
+                            </div>
+                          ) : (
+                            <i className="ri-shopping-cart-line fs-2"></i>
+                          )}
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <span className="font_size_14 text-success">
+                            {menuItem.offer || "No "}% Off
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
               </div>
-            </div>
-          )}
-        </div> */}
+            ))}
+          </div>
+        </div>
       </main>
 
       <Bottom />

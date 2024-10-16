@@ -281,12 +281,8 @@ const Cart = () => {
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
-     
-      <Header 
-        title="Cart" 
-        count={cartDetails.order_items.length} 
-      />
 
+      <Header title="Cart" count={cartDetails.order_items.length} />
 
       {displayCartItems.length === 0 ? (
         <main className="page-content ">
@@ -296,8 +292,8 @@ const Cart = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <h5 className="custom_font_size_bold">Your Cart is Empty</h5>
-                <p className="custom_font_size">
+                <h5 className="   ">Your Cart is Empty</h5>
+                <p className=" ">
                   Add items to your cart from the product details page.
                 </p>
                 <Link to="/Menu" className="btn btn-outline-primary btn-sm">
@@ -309,11 +305,10 @@ const Cart = () => {
         </main>
       ) : (
         <main className="page-content space-top mb-5 pb-3">
-         
-         <HotelNameAndTable 
-        restaurantName={restaurantName} 
-        tableNumber={userData.tableNumber}
-      />
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData.tableNumber}
+          />
           <div className="container scrollable-section pt-0">
             {displayCartItems.map((item, index) => (
               <Link
@@ -327,9 +322,7 @@ const Cart = () => {
                 }}
                 className="text-decoration-none text-reset"
               >
-                <div
-                  className="card mb-3 rounded-3"
-                >
+                <div className="card mb-3 rounded-3">
                   <div className="row my-auto ps-3">
                     <div className="col-3 px-0">
                       <img
@@ -350,7 +343,7 @@ const Cart = () => {
                     <div className="col-9 pt-2 pb-0">
                       <div className="row">
                         <div className="col-9 my-auto">
-                          <span className="fs-6 fw-semibold text-truncate">
+                          <span className="fs-6 fw-semibold text-wra">
                             {item.menu_name}
                           </span>
                         </div>
@@ -368,11 +361,13 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-4 fs-sm p-0 fw-medium ms-3 text-success mt-1">
-                          <i className="ri-restaurant-line me-1 text-success"></i>
-                          {item.menu_cat_name}
+                        <div className="col-4 px-0">
+                          <span className="ps-3  text-success mt-1 font_size_14">
+                            <i className="ri-restaurant-line me-1 text-success"></i>
+                            {item.menu_cat_name}
+                          </span>
                         </div>
-                        <div className="col-4 pe-0 ps-2">
+                        <div className="col-5 pe-0 ps-2">
                           <div className="offer-code my-auto ">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
@@ -392,8 +387,8 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="col-3 pe-3 text-center">
-                          <span className="custom_font_size  gray-text">
+                        <div className="col-2 text-end px-0">
+                          <span className="text-center    gray-text">
                             <i className="ri-star-half-line  ratingStar"></i>
                             {item.rating}
                           </span>
@@ -402,14 +397,14 @@ const Cart = () => {
                       <div className="row pt-2">
                         <div className="col-10 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
-                            <span className="ms-3 custom_font_size me-2 text-info">
+                            <span className="ms-3 fs-5 fw-semibold text-info">
                               ₹{item.price}
                             </span>
-                            <span className="gray-text custom_font_size text-decoration-line-through">
+                            <span className="gray-text fs-6 text-decoration-line-through fw-normal ms-2">
                               ₹{item.oldPrice || item.price}
                             </span>
 
-                            <span className="custom_font_size ps-2 offer-color">
+                            <span className="ps-2 text-success font_size_14">
                               {item.offer || "No "}% Off
                             </span>
                           </p>
@@ -418,7 +413,7 @@ const Cart = () => {
                         <div className="col-2">
                           <div className="d-flex justify-content-end align-items-center mt-1">
                             <i
-                              className="ri-subtract-line custom_font_size mx-2"
+                              className="ri-subtract-line fs-2 mx-2"
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -426,11 +421,11 @@ const Cart = () => {
                                 decrementQuantity(item);
                               }}
                             ></i>
-                            <span className="text-light custom_font_size">
+                            <span className="text-light  ">
                               {item.quantity}
                             </span>
                             <i
-                              className="ri-add-line mx-2 custom_font_size"
+                              className="ri-add-line mx-2 fs-2"
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -458,11 +453,11 @@ const Cart = () => {
                     <div className="row px-1 py-1">
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1">
-                          <span className="ps-2 custom_font_size_bold fw-medium">
+                          <span className="ps-2 font_size_14 fw-semibold">
                             Total
                           </span>
 
-                          <span className="pe-2 custom_font_size_bold fw-medium">
+                          <span className="pe-2 fw-semibold font_size_14">
                             ₹{cartDetails?.total_bill || 0}
                           </span>
                         </div>
@@ -471,7 +466,7 @@ const Cart = () => {
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span
-                            className="ps-2 custom_font_size pt-1 gray-text"
+                            className="ps-2 font_size_14 pt-1 gray-text"
                             s
                           >
                             Service Charges{" "}
@@ -479,33 +474,33 @@ const Cart = () => {
                               ({cartDetails.service_charges_percent}%)
                             </span>
                           </span>
-                          <span className="pe-2 custom_font_size fw-medium gray-text">
+                          <span className="pe-2 font_size_14 gray-text">
                             ₹{cartDetails?.service_charges_amount || 0}
                           </span>
                         </div>
                       </div>
                       <div className="col-12 mb-0 py-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 custom_font_size gray-text">
+                          <span className="ps-2 font_size_14 gray-text">
                             GST{" "}
                             <span className="gray-text small-number">
                               ({cartDetails.gst_percent}%)
                             </span>
                           </span>
-                          <span className="pe-2 custom_font_size fw-medium gray-text">
+                          <span className="pe-2 font_size_14 gray-text">
                             ₹{cartDetails?.gst_amount || 0}
                           </span>
                         </div>
                       </div>
                       <div className="col-12 mb-0 pt-0 pb-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 custom_font_size gray-text">
+                          <span className="ps-2 font_size_14 gray-text">
                             Discount{" "}
                             <span className="gray-text small-number">
                               (-{cartDetails?.discount_percent || 0}%)
                             </span>
                           </span>
-                          <span className="pe-2 custom_font_size gray-text">
+                          <span className="pe-2 font_size_14 gray-text">
                             -₹{cartDetails?.discount_amount || 0}
                           </span>
                         </div>
@@ -515,10 +510,10 @@ const Cart = () => {
                       </div>
                       <div className="col-12 ">
                         <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                          <span className="ps-2 custom_font_size_bold">
+                          <span className="ps-2 fs-6 fw-semibold">
                             Grand Total
                           </span>
-                          <span className="pe-2 custom_font_size_bold">
+                          <span className="pe-2 fs-6 fw-semibold">
                             ₹{cartDetails?.grand_total || 0}
                           </span>
                         </div>
@@ -531,7 +526,7 @@ const Cart = () => {
                 <Link
                   to="/Checkout"
                   state={{ cartItems: displayCartItems }}
-                  className="btn btn-color custom_font_size rounded-pill text-white px-5"
+                  className="btn btn-color   rounded-pill text-white px-5"
                 >
                   Proceed to Buy &nbsp;{" "}
                   <b>

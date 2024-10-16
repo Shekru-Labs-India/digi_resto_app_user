@@ -237,13 +237,13 @@ const Checkout = () => {
             <ul className="dz-list-group">
               <div className="mb-2">
                 <label
-                  className="custom_font_size_bold pb-2 ps-2"
+                  className="    pb-2 ps-2"
                   htmlFor="notes"
                 >
                   Additional Notes:
                 </label>
                 <textarea
-                  className="form-control dz-textarea custom_font_size pb-0"
+                  className="form-control dz-textarea   pb-0"
                   name="notes"
                   id="notes"
                   rows="4"
@@ -288,29 +288,29 @@ const Checkout = () => {
                                 </span>
                               </div>
                               <div className="col-4 p-0 text-end">
-                                <span className="ms-0 me-2 text-info custom_font_size_bold">
+                                <span className="ms-0 me-2 text-info fs-5 fw-semibold">
                                   ₹{item.price}
                                 </span>
 
-                                <span className="gray-text custom_font_size_bold text-decoration-line-through">
+                                <span className="gray-text fs-6 fw-normal text-decoration-line-through">
                                   ₹ {item.oldPrice || item.price}
                                 </span>
                               </div>
-                              <div className="col-1 custom_font_size_bold text-end px-0">
+                              <div className="col-1     text-end px-0">
                                 <span>x {item.quantity}</span>
                               </div>
                             </div>
                             <div className="row">
                               <div className="col-8">
                                 <div className="ps-2">
-                                  <i className="ri-restaurant-line me-2 text-success fw-medium"></i>
-                                  <span className="action_icon_size text-success fw-medium ">
+                                  <span className="text-success font_size_14">
+                                  <i className="ri-restaurant-line me-2"></i>
                                     {item.menu_cat_name}
                                   </span>
                                 </div>
                               </div>
                               <div className="col-4 text-end px-0">
-                                <span className="fs-6 ps-2 offer-color custom_font_size_bold">
+                                <span className="fs-6 ps-2 text-success font_size_14">
                                   {item.offer || "No "}% Off
                                 </span>
                               </div>
@@ -322,7 +322,7 @@ const Checkout = () => {
                   </>
                 ))
               ) : (
-                <div className="custom_font_size_bold">
+                <div className="   ">
                   No items in the cart.
                 </div>
               )}
@@ -331,8 +331,8 @@ const Checkout = () => {
               <div className="row px-2 py-1">
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 custom_font_size_bold">Total</span>
-                    <span className="pe-2 custom_font_size_bold ">
+                    <span className="ps-2 font_size_14 fw-semibold">Total</span>
+                    <span className="pe-2 font_size_14 fw-semibold">
                       ₹{parseFloat(total).toFixed(2)}
                     </span>
                   </div>
@@ -340,39 +340,39 @@ const Checkout = () => {
                 </div>
                 <div className="col-12 pt-0 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 custom_font_size pt-1 gray-text">
+                    <span className="ps-2 font_size_14 pt-1 gray-text">
                       Service Charges{" "}
                       <span className="gray-text small-number">
                         ({serviceChargesPercent}%)
                       </span>
                     </span>
-                    <span className="pe-2 custom_font_size gray-text">
+                    <span className="pe-2 font_size_14 gray-text">
                       ₹{parseFloat(serviceCharges).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 py-1 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 custom_font_size gray-text">
+                    <span className="ps-2 font_size_14 gray-text">
                       GST{" "}
                       <span className="gray-text small-number">
                         ({gstPercent}%)
                       </span>
                     </span>
-                    <span className="pe-2 custom_font_size gray-text text-start">
+                    <span className="pe-2 font_size_14 gray-text text-start">
                       ₹{parseFloat(tax).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 <div className="col-12 mb-0 pt-0 pb-1 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0 pb-2">
-                    <span className="ps-2 custom_font_size gray-text">
+                    <span className="ps-2 font_size_14 gray-text">
                       Discount{" "}
                       <span className="gray-text small-number">
                         (-{discountPercent}%)
                       </span>
                     </span>
-                    <span className="pe-2 custom_font_size gray-text">
+                    <span className="pe-2 font_size_14 gray-text">
                       -₹{parseFloat(discount).toFixed(2)}
                     </span>
                   </div>
@@ -381,10 +381,10 @@ const Checkout = () => {
 
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 custom_font_size_bold">
+                    <span className="ps-2 fs-6 fw-semibold">
                       Grand Total
                     </span>
-                    <span className="pe-2 custom_font_size_bold">
+                    <span className="pe-2 fs-5 fw-semibold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
                   </div>
@@ -394,7 +394,7 @@ const Checkout = () => {
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-color rounded-pill custom_font_size_bold text-white"
+                className="btn btn-color rounded-pill     text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order
@@ -412,14 +412,14 @@ const Checkout = () => {
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
 
-            <span className="text-dark custom_font_size_bold my-5">
+            <span className="text-dark     my-5">
               Order placed successfully
             </span>
-            <p className="gray-text custom_font_size">
+            <p className="gray-text  ">
               You have successfully made payment and placed your order.
             </p>
             <button
-              className="btn btn-color rounded-pill custom_font_size_bold text-white"
+              className="btn btn-color rounded-pill     text-white"
               onClick={closePopup}
             >
               View Order

@@ -144,7 +144,7 @@ const Category = () => {
                         className="d-block"
                       >
                         <div className="d-flex justify-content-center bg-white">
-                          <span className="py-2 rounded-bottom-3 text-center m-0 custom_font_size_bold">
+                          <span className="py-2 rounded-bottom-3 text-center m-0 font_size-14 text-success">
                             {toTitleCase(category.category_name)}
                             <span className=" small-number gray-text">
                               <span className=""> ({category.menu_count})</span>

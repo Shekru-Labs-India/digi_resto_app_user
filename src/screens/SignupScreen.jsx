@@ -178,11 +178,11 @@ const Signupscreen = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <h2 className="custom_font_size_bold">Create your account</h2>
+                <h2 className="   ">Create your account</h2>
               </div>
               <form onSubmit={handleSignUp}>
                 <div className="mb-3">
-                  <label className=" custom_font_size_bold" htmlFor="name">
+                  <label className="    " htmlFor="name">
                     <span className="required-star">*</span>Name
                   </label>
                   <div className="input-group">
@@ -192,7 +192,7 @@ const Signupscreen = () => {
                     <input
                       type="text"
                       id="name"
-                      className={`form-control custom_font_size_bold ps-2 ${
+                      className={`form-control     ps-2 ${
                         nameError ? "is-invalid" : ""
                       }`}
                       placeholder="Name"
@@ -205,7 +205,7 @@ const Signupscreen = () => {
                   )}
                 </div>
                 <div className="m-b15">
-                  <label className="custom_font_size_bold" htmlFor="mobile">
+                  <label className="   " htmlFor="mobile">
                     <span className="required-star">*</span> Mobile
                   </label>
                   <div className="input-group">
@@ -215,7 +215,7 @@ const Signupscreen = () => {
                     <input
                       type="tel"
                       id="mobile"
-                      className={`form-control custom_font_size_bold ps-2 ${
+                      className={`form-control     ps-2 ${
                         mobileError ? "is-invalid" : ""
                       }`}
                       placeholder="Enter Mobile Number"
@@ -239,7 +239,7 @@ const Signupscreen = () => {
                     }}
                   />
                   <label
-                    className="form-check-label custom_font_size_bold"
+                    className="form-check-label    "
                     htmlFor="Checked-1"
                   >
                     I agree to all Terms, Privacy, and Fees
@@ -265,18 +265,18 @@ const Signupscreen = () => {
                   <button
                     id="signupButton"
                     type="submit"
-                    className="dz-btn btn custom_font_size_bold btn-color text-white rounded-xl"
+                    className="dz-btn btn     btn-color text-white rounded-xl"
                   >
                     Create Account
                   </button>
                 )}
               </form>
             </div>
-            <div className="text-center mt-auto custom_font_size">
+            <div className="text-center mt-auto  ">
               Already have an account?{" "}
               <Link
                 to="/Signinscreen"
-                className="text-underline custom_font_size_bold"
+                className="text-underline    "
               >
                 Sign In
               </Link>

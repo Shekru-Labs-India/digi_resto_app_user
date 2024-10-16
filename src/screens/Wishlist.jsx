@@ -344,10 +344,10 @@ const Wishlist = () => {
       <Header title="Favourite" count={wishlistCount} />
 
       <main className="page-content space-top mb-5 pb-3">
-      <HotelNameAndTable 
-     restaurantName={restaurantName}
-     tableNumber={userData.tableNumber}
-   />
+        <HotelNameAndTable
+          restaurantName={restaurantName}
+          tableNumber={userData.tableNumber}
+        />
         {customerId ? (
           hasFavorites ? (
             <>
@@ -381,7 +381,7 @@ const Wishlist = () => {
                       htmlFor={`chck${restaurantName}`}
                     >
                       <span className="">
-                        <span class=" fw-medium hotel-name">
+                        <span class="fs-6 fw-medium">
                           <i class="ri-store-2-line me-2"></i>
                           {restaurantName.toUpperCase()}
                         </span>
@@ -456,8 +456,8 @@ const Wishlist = () => {
                                     </div>
                                     <div className="row">
                                       <div className="col-5 pe-0 ps-4">
-                                        <i className="ri-restaurant-line mt-0 me-1 text-success fs-xs fw-medium"></i>
-                                        <span className="text-success fs-xs fw-medium">
+                                        <span className="font_size_14 text-success">
+                                        <i className="ri-restaurant-line mt-0 me-1"></i>
                                           {menu.category_name}
                                         </span>
                                       </div>
@@ -482,9 +482,9 @@ const Wishlist = () => {
                                           </div>
                                         )}
                                       </div>
-                                      <div className="col-2 pe-0  d-flex align-items-center ">
-                                        <span className="custom_font_size  gray-text favRating wishlist-ratin pe-3">
-                                          <i className="ri-star-half-line ratingStar"></i>
+                                      <div className="col-2 text-end ps-0 ms-0 ">
+                                        <span className="font_size_14 fw-normal gray-text">
+                                          <i className="ri-star-half-line ratingStar me-1"></i>
                                           {menu.rating || 0.1}
                                         </span>
                                       </div>
@@ -494,14 +494,14 @@ const Wishlist = () => {
                                       <div className="col-12 d-flex justify-content-between align-items-center">
                                         <div className="d-flex align-items-center">
                                           <p className="mb-0 fs-4 me-2 fw-medium">
-                                            <span className="me-1 text-info custom_font_size_bold">
+                                            <span className="fs-5 fw-semibold text-info">
                                               ₹{menu.price}
                                             </span>
-                                            <span className="gray-text fs-6 text-decoration-line-through custom_font_size_bold">
+                                            <span className="gray-text fs-6 text-decoration-line-through fw-normal ms-2">
                                               ₹{menu.oldPrice || menu.price}
                                             </span>
                                           </p>
-                                          <span className="offer-color favoffer custom_font_size">
+                                          <span className="text-success font_size_14 ">
                                             {menu.offer || "No"}% Off
                                           </span>
                                         </div>
@@ -539,7 +539,7 @@ const Wishlist = () => {
             >
               <div className="m-b20 dz-flex-box text-center">
                 <div className="dz-cart-about">
-                  <h5 className="custom_font_size">
+                  <h5 className=" ">
                     Nothing to show in favourites.
                   </h5>
                   <p>Add some products to show here!</p>
@@ -557,11 +557,11 @@ const Wishlist = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <span className="custom_font_size">
+                <span className=" ">
                   Please log in to view your favourites.
                 </span>
                 <Link
-                  className="btn btn-outline-primary mt-3 custom_font_size"
+                  className="btn btn-outline-primary mt-3  "
                   to="/Signinscreen"
                 >
                   <i className="ri-lock-2-line me-2 "></i> Login
@@ -572,7 +572,6 @@ const Wishlist = () => {
         )}
       </main>
       <Bottom />
-      
     </div>
   );
 };

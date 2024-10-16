@@ -369,7 +369,7 @@ const MenuDetails = () => {
                 )}
                 <div className="row mt-0 me-1">
                   <div className="col-7 mt-2 ps-3">
-                    <span className=" fs-6 fw-semibold mb-1 menu_details-name">
+                    <span className=" fs-6 fw-semibold mb-1">
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -379,7 +379,7 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0">
-                    <div className="dz-quantity detail-content text-success m-0 pt-2 ms-2 ps-2  fw-medium  px-0">
+                    <div className="ps-3 text-success font_size_14 ">
                       <i className="ri-restaurant-line  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -405,8 +405,8 @@ const MenuDetails = () => {
                     )}
                   </div>
                   <div className="col-4 text-end px-0 ">
-                    <i className="ri-star-half-line fs-6  ratingStar"></i>
-                    <span className="custom_font_size_bold gray-text">
+                    <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
+                    <span className="font_size_14 fw-normal gray-text">
                       {productDetails.rating}
                     </span>
                   </div>
@@ -419,17 +419,17 @@ const MenuDetails = () => {
                       <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
                         <span className="input-group-btn input-group-prepend">
                           <i
-                            className="ri-subtract-line fs-3 me-2"
+                            className="ri-subtract-line fs-2 me-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => handleQuantityChange(-1)}
                           ></i>
                         </span>
-                        <span className="stepper px-3 rounded-1 bg-light custom_font_size_bold text-center">
+                        <span className="stepper px-3 rounded-1 bg-light     text-center">
                           {quantity}
                         </span>
                         <span className="input-group-btn input-group-append">
                           <i
-                            className="ri-add-line fs-3 ms-2"
+                            className="ri-add-line fs-2 ms-2"
                             style={{ cursor: "pointer" }}
                             onClick={() => handleQuantityChange(1)}
                           ></i>
@@ -456,7 +456,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <span className="custom_font_size text-wrap m-0">
+                    <span className="  text-wrap m-0">
                       {productDetails.description}
                     </span>
                   </div>
@@ -479,18 +479,18 @@ const MenuDetails = () => {
                 <div className="col-6 ps-1">
                   <div className="d-flex align-items-center justify-content-between mb-5">
                     <div className="d-flex flex-column">
-                      <span className="mb-2 custom_font_size_bold ps-0 menu_details-total-amount">
+                      <span className="mb-2     ps-0 menu_details-total-amount">
                         Total amount
                       </span>
                       <div className="d-flex align-items-baseline">
-                        <h4 className="mb-0 price custom_font_size_bold text-info">
+                        <h4 className="fs-5 fw-semibold text-info">
                           ₹{(productDetails.price * quantity).toFixed(0)}
                         </h4>
-                        <span className="text-decoration-line-through ms-2 custom_font_size_bold gray-text">
+                        <span className="text-decoration-line-through ms-2 fs-6 fw-normal gray-text">
                           ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                         </span>
                       </div>
-                      <div className="fw-medium d-flex custom_font_size_bold offer-color pt-1">
+                      <div className="font_size_14 text-success">
                         {productDetails.offer}% Off
                       </div>
                     </div>
@@ -499,22 +499,22 @@ const MenuDetails = () => {
                 <div className="col-6 pe-0 text-start menu_details-add-to-cart">
                   {isMenuItemInCart(menuId) ? (
                     <button
-                      className="btn btn-color  rounded-pill custom_font_size_bold"
+                      className="btn btn-color  rounded-pill    "
                       onClick={() => navigate("/Cart")}
                     >
                       <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                      <div className="font-poppins custom_font_size_bold text-nowrap text-white">
+                      <div className="font-poppins     text-nowrap text-white">
                         Go to Cart
                       </div>
                     </button>
                   ) : (
                     <button
                       to="#"
-                      className="btn btn-color rounded-pill  custom_font_size_bold"
+                      className="btn btn-color rounded-pill     "
                       onClick={handleAddToCart}
                     >
-                      <i className="ri-shopping-cart-line pe-1 text-white custom_font_size_bold"></i>
-                      <div className="text-nowrap text-white custom_font_size_bold">
+                      <i className="ri-shopping-cart-line pe-1 text-white    "></i>
+                      <div className="text-nowrap text-white    ">
                         Add to Cart
                       </div>
                     </button>

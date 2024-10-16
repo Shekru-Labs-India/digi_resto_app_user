@@ -284,7 +284,7 @@ const NearbyArea = () => {
       <div className="title-bar1 align-items-start mb-5">
         <div className="left">
           {menuItems.length > 0 && (
-            <h4 className="title mb-1 custom_font_size_bold">Special Menu</h4>
+            <h4 className="title mb-1    ">Special Menu</h4>
           )}
         </div>
       </div>
@@ -332,7 +332,7 @@ const NearbyArea = () => {
                           style={{ position: "relative" }}
                         >
                           <div
-                            className="dz-quantity detail-content action_icon_size"
+                            className="font_size_14 text-success"
                             style={{ color: "#0a795b" }}
                           >
                             <i
@@ -375,8 +375,8 @@ const NearbyArea = () => {
                             </div>
                           </div>
                           <div className="col-6 text-end">
-                            <i className="ri-star-half-line fs-6 ratingStar"></i>
-                            <span className="fs-6  gray-text">
+                            <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
+                            <span className="font_size_14 fw-normal gray-text">
                               {menuItem.rating}
                             </span>
                           </div>
@@ -384,11 +384,11 @@ const NearbyArea = () => {
                         <div className="">
                           <div className="row">
                             <div className="col-9">
-                              <p className="mb-2 custom_font_size fw-medium">
-                                <span className="ms-0 me-2 text-info">
+                              <p className="mb-2   fw-medium">
+                                <span className="me-2 text-info fs-5 fw-semibold">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="gray-text custom_font_size text-decoration-line-through">
+                                <span className="gray-text text-decoration-line-through fs-6 fw-normal">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </p>
@@ -413,7 +413,7 @@ const NearbyArea = () => {
                         </div>
                         <div className="row">
                           <div className="col-12">
-                            <span className="custom_font_size offer-color">
+                            <span className="font_size_14 text-success">
                               {menuItem.offer || "No "}% Off
                             </span>
                           </div>

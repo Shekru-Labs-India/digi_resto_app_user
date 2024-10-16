@@ -143,9 +143,9 @@ import LoaderGif from "./LoaderGIF";
                 <div className="section-head">
                   <Logoname />
                   <div className="d-flex justify-content-center">
-                    <span className="custom_font_size_bold ">
+                    <span className="    ">
                       Welcome Back You've{" "}
-                      <span className="custom_font_size_bold mt-1 ">
+                      <span className="    mt-1 ">
                         {" "}
                         Been Missed!
                       </span>
@@ -155,7 +155,7 @@ import LoaderGif from "./LoaderGIF";
 
                 <form onSubmit={(e) => e.preventDefault()}>
                   <div className="m-b15">
-                    <label className=" custom_font_size_bold" htmlFor="mobile">
+                    <label className="    " htmlFor="mobile">
                       <span className="required-star">*</span> Mobile
                     </label>
                     <div className="input-group text-muted">
@@ -165,7 +165,7 @@ import LoaderGif from "./LoaderGIF";
                       <input
                         type="tel"
                         id="mobile"
-                        className={`form-control custom_font_size_bold ps-2 ${
+                        className={`form-control     ps-2 ${
                           mobileError ? "is-invalid" : ""
                         }`}
                         placeholder="Enter Mobile Number"
@@ -194,7 +194,7 @@ import LoaderGif from "./LoaderGIF";
                   ) : (
                     <button
                       type="button"
-                      className="btn btn-color custom_font_size_bold  rounded-pill mx-4 text-white"
+                      className="btn btn-color      rounded-pill mx-4 text-white"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >
@@ -203,11 +203,11 @@ import LoaderGif from "./LoaderGIF";
                   )}
                 </form>
               </div>
-              <div className="text-center mt-auto custom_font_size">
+              <div className="text-center mt-auto  ">
                 Not a member?{" "}
                 <Link
                   to="/Signupscreen"
-                  className="text-underline custom_font_size_bold"
+                  className="text-underline    "
                 >
                   Create an account
                 </Link>
@@ -216,13 +216,13 @@ import LoaderGif from "./LoaderGIF";
           </div>
         </main>
         <div className="text-center mt-5 pt-5">
-          <div className="gray-text custom_font_size_bold mt-5">
+          <div className="gray-text     mt-5">
             Powered by{" "}
           </div>
-          <div className="gray-text custom_font_size_bold">
+          <div className="gray-text    ">
             Shekru Labs India Pvt. Ltd.
           </div>
-          <div className="gray-text  custom_font_size_bold ">v1.1</div>
+          <div className="gray-text      ">v1.1</div>
         </div>
       </div>
     );

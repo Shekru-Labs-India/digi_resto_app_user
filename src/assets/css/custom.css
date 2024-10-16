@@ -95,14 +95,7 @@ input::placeholder {
   font-weight: 500;
 }
 
-.custom_font_size{
-  font-size: 14px !important;
-}
 
-.custom_font_size_bold{
-  font-size: 14px !important;
-  font-weight: 600;
-}
 
 
 button{
@@ -443,10 +436,6 @@ background-color: var(--bg-white);
     font-size: 1rem; /* from .fs-sm */
 }
 
-.hotel-name{
-  font-size: 14px;
-  font-weight: 600;
-}
 
 .table-number{
   font-size: 14px;
@@ -483,10 +472,6 @@ background-color: var(--bg-white);
 
 
 
-.custom-text-gray{
-  /* color:#adb5bd; */
-  color:#bbbaba;
-}
  
  
  
@@ -915,8 +900,7 @@ hr.dashed {
   margin-top: -18px;
 }
 
-.custom_category_size{
-  font-size: 13px;
-  font-weight: 500 !important;
+.font_size_14{
+  font-size: 14px;
 }
 

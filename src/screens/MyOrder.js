@@ -146,7 +146,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link custom_font_size_bold  ${
+                          className={`nav-link      ${
                             activeTab === "ongoing" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("ongoing")}
@@ -161,7 +161,7 @@ const MyOrder = () => {
                         }`}
                       >
                         <button
-                          className={`nav-link custom_font_size_bold   ${
+                          className={`nav-link       ${
                             activeTab === "completed" ? "active" : ""
                           }`}
                           onClick={() => handleTabChange("completed")}
@@ -270,10 +270,10 @@ const OrdersTab = ({ orders, type }) => {
           className="d-flex justify-content-center align-items-center flex-column"
           style={{ height: "80vh" }}
         >
-          <p className="custom_font_size_bold fw-semibold gray-text">
+          <p className="    fw-semibold gray-text">
             You haven't placed any {type} orders yet.
           </p>
-          <Link to="/Menu" className="mt-2 custom_font_size_bold fw-semibold">
+          <Link to="/Menu" className="mt-2     fw-semibold">
             Explore our menus
           </Link>
         </div>
@@ -286,10 +286,7 @@ const OrdersTab = ({ orders, type }) => {
               checked={checkedItems[`${date}-${type}`] || false}
               onChange={() => toggleChecked(`${date}-${type}`)}
             />
-            <label
-              className="tab-label "
-              htmlFor={`chck${date}-${type}`}
-            >
+            <label className="tab-label " htmlFor={`chck${date}-${type}`}>
               <span>{date}</span>
               <span className="d-flex align-items-center">
                 <span className="gray-text pe-2 small-number">
@@ -317,24 +314,24 @@ const OrdersTab = ({ orders, type }) => {
                     >
                       <div className="row align-items-center">
                         <div className="col-4">
-                          <span className="card-title mb-1 custom_font_size_bold">
+                          <span className="card-title mb-1    ">
                             {order.order_number}
                           </span>
                         </div>
                         <div className="col-8 text-end">
-                          <span className="card-text gray-text mb-0 custom_font_size_bold">
+                          <span className="card-text gray-text mb-0    ">
                             {order.date_time}
                           </span>
                         </div>
                       </div>
                       <div className="order-details-row">
                         <div className="restaurant-info">
-                          <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                          <span className="restaurant-name custom_font_size_bold">
+                          <i className="ri-store-2-line pe-2    "></i>
+                          <span className="restaurant-name    ">
                             {order.restaurant_name.toUpperCase()}
                           </span>
-                          <span className="table-number custom_font_size_bold gray-text">
-                            <i className="ri-user-location-line ps-2 pe-1 custom_font_size_bold"></i>
+                          <span className="table-number     gray-text">
+                            <i className="ri-user-location-line ps-2 pe-1    "></i>
                             {order.table_number}
                           </span>
                         </div>
@@ -347,7 +344,7 @@ const OrdersTab = ({ orders, type }) => {
                           </span>
                         </div>
                         <div className="price-info">
-                          <span className="text-info custom_font_size_bold">
+                          <span className="text-info    ">
                             ₹{order.grand_total}
                           </span>
                         </div>
@@ -365,13 +362,13 @@ const OrdersTab = ({ orders, type }) => {
                     >
                       <div className="row align-items-center">
                         <div className="col-4">
-                          <span className="card-title mb-1 custom_font_size_bold">
-                          <i className="ri-hashtag pe-2 custom_font_size_bold"></i>
-                           {order.order_number}
+                          <span className="fw-semibold fs-6">
+                            <i className="ri-hashtag pe-2    "></i>
+                            {order.order_number}
                           </span>
                         </div>
                         <div className="col-8 text-end">
-                          <span className="card-text gray-text mb-0 custom_font_size">
+                          <span className="gray-text font_size_14">
                             {order.date_time}
                           </span>
                         </div>
@@ -379,15 +376,15 @@ const OrdersTab = ({ orders, type }) => {
                       <div className="row">
                         <div className="col-6 text-start">
                           <div className="restaurant">
-                            <i className="ri-store-2-line pe-2 custom_font_size_bold"></i>
-                            <span className="restaurant-name custom_font_size_bold">
+                            <i className="ri-store-2-line pe-2    "></i>
+                            <span className="fw-medium fs-6">
                               {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <span className=" custom_font_size gray-text">
-                            <i className="ri-user-location-line ps-2 pe-1 custom_font_size"></i>
+                          <span className="fs-6 gray-text fw-medium">
+                            <i className="ri-user-location-line ps-2 pe-1  "></i>
                             {order.table_number}
                           </span>
                         </div>
@@ -396,7 +393,7 @@ const OrdersTab = ({ orders, type }) => {
                         <div className="col-6">
                           <div className="menu-info">
                             <i className="ri-bowl-line pe-2 gray-text"></i>
-                            <span className="gray-text">
+                            <span className="gray-text font_size_14">
                               {order.menu_count === 0
                                 ? "No orders"
                                 : `${order.menu_count} Menu`}
@@ -404,15 +401,15 @@ const OrdersTab = ({ orders, type }) => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <div className="price-info">
-                            <span className="text-info custom_font_size_bold">
+                        
+                            <span className="text-info fs-5 fw-semibold">
                               ₹{order.grand_total}
                             </span>
-                            <span className="text-decoration-line-through ms-2 gray-text custom_font_size">
+                            <span className="text-decoration-line-through ms-2 fs-6 fw-normal">
                               ₹
                               {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                             </span>
-                          </div>
+                          
                         </div>
                       </div>
                     </div>

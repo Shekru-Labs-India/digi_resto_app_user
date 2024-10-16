@@ -54,7 +54,7 @@ const Profile = () => {
               </Link>
             </div>
             <div className="mid-content">
-              <span className="custom_font_size_bold me-2 title">Profile</span>
+              <span className="    me-2 title">Profile</span>
             </div>
             {isLoggedIn && (
               <div className="right-content">
@@ -72,7 +72,7 @@ const Profile = () => {
               <div className="main-profile">
                 <div className="d-flex align-items-center">
                   <h4 className="name mb-0">
-                    <div className="custom_font_size_bold">
+                    <div className="   ">
                       <i
                         className={
                           isLoggedIn
@@ -96,7 +96,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-bowl-line me-2 fs-2"></i>
-                      <span className="custom_font_size">Menu</span>
+                      <span className=" ">Menu</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -105,7 +105,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-drinks-2-line me-2 fs-2"></i>
-                      <span className="custom_font_size">My Order</span>
+                      <span className=" ">My Order</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -114,7 +114,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-shopping-cart-line me-2 fs-2"></i>
-                      <span className="custom_font_size">Cart</span>
+                      <span className=" ">Cart</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -123,7 +123,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="ri-heart-2-line me-2 fs-2"></i>
-                      <span className="custom_font_size">Favourite</span>
+                      <span className=" ">Favourite</span>
                     </Link>
                   </li>
                 </ul>
@@ -132,7 +132,7 @@ const Profile = () => {
                 <div className="container p-0">
                   <Link to="/EditProfile" className="item-content item-link">
                     <div className="title-bar">
-                      <span className=" mb-0 custom_font_size_bold  ">
+                      <span className=" mb-0      ">
                         Account Settings
                       </span>
                     </div>
@@ -141,7 +141,7 @@ const Profile = () => {
                         {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
                         <i className="ri-user-3-line fs-3"></i>
                       </div>
-                      <div className="col text-start px-1 custom_font_size_bold">
+                      <div className="col text-start px-1    ">
                         Edit Profile
                       </div>
                       <div className="col-auto text-end ms-auto">
@@ -168,11 +168,11 @@ const Profile = () => {
               <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
             </div>
           </div>
-          <div className="gray-text custom_font_size">Powered by </div>
-          <div className="gray-text custom_font_size">
+          <div className="gray-text  ">Powered by </div>
+          <div className="gray-text  ">
             Shekru Labs India Pvt. Ltd.
           </div>
-          <div className="gray-text custom_font_size">v1.1</div>
+          <div className="gray-text  ">v1.1</div>
         </div>
       </>
     );

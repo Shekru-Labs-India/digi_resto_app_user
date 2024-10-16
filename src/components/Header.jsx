@@ -28,7 +28,7 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
               )}
             </div>
             <div className="col text-center">
-            <span className="custom_font_size_bold me-3 title">
+            <span className="    me-3 title">
                 {title || getScreenName()}
                 {count !== undefined && count > 0 && (
                   <span className="gray-text small-number ms-1">({count})</span>

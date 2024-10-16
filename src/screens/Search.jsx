@@ -276,7 +276,7 @@ const Search = () => {
             </span>
             <input
               type="search"
-              className="form-control  ps-2 custom_font_size_bold "
+              className="form-control  ps-2     "
               placeholder="Search Best items for You"
               onChange={handleSearch}
               value={searchTerm}
@@ -299,7 +299,7 @@ const Search = () => {
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
               <div
-                className="custom_font_size_bold gray-text"
+                className="    gray-text"
                 onClick={handleClearAll}
               >
                 Clear All
@@ -339,33 +339,33 @@ const Search = () => {
                         <div className="fs-6 fw-semibold">{menu.menu_name}</div>
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
-                            <div className="mt-0">
-                              <i className="ri-restaurant-line mt-0 me-2 text-success fs-xs fw-medium"></i>
-                              <span className="text-success fs-xs fw-medium">
+                            
+                              <span className="text-success font_size_14">
+                              <i className="ri-restaurant-line mt-0 me-2"></i>
                                 {menu.category_name}
                               </span>
-                            </div>
+                       
                           </div>
 
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <span className="custom_font_size_bold gray-text">
-                              <i className="ri-star-half-line ms-4 ratingStar"></i>
+                            <span className="font_size_14 fw-normal gray-text">
+                              <i className="ri-star-half-line ms-4 ratingStar pe-2"></i>
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
                           </div>
                         </div>
                         <div className="row mt-3">
                           <div className="col-8 px-0">
-                            <span className="mb-0 mt-1 custom_font_size text-start fw-medium">
-                              <span className="ms-3 me-1 text-info">
+                            <span className="mb-0 mt-1   text-start fw-medium">
+                              <span className="ms-3 me-1 fs-5  fw-semibold text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text custom_font_size old-price text-decoration-line-through">
+                              <span className="gray-text text-decoration-line-through fs-6 fw-normal">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </span>
 
-                            <span className="ms-2  text-start text-success">
+                            <span className="ms-2  text-start font_size_14 text-success">
                               {menu.offer || "No "}% Off
                             </span>
                           </div>

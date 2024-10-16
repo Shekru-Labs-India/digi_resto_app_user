@@ -396,13 +396,13 @@ const Verifyotp = () => {
             <div className="account-section">
               <div className="section-head">
                 <Logoname />
-                <span className="custom_font_size_bold ms-4 ps-2">
+                <span className="    ms-4 ps-2">
                   Enter OTP sent to{" "}{mobile}
                 </span>
               </div>
               <form onSubmit={(e) => e.preventDefault()}>
                 <label
-                  className="custom_font_size_bold ms-4 ps-1"
+                  className="    ms-4 ps-1"
                   htmlFor="otp"
                 >
                   <span className="required-star">*</span>OTP
@@ -428,7 +428,7 @@ const Verifyotp = () => {
                       />
                   ))}
                 </div>
-                {/* <p className="text-center custom_font_size_bold  ">
+                {/* <p className="text-center      ">
                   An Authentication Code Has Sent
                   <span className="text-lowercase text-primary"></span>
                 </p> */}
@@ -456,11 +456,11 @@ const Verifyotp = () => {
                 )}
               </form>
             </div>
-            <div className="text-center mt-auto custom_font_size">
+            <div className="text-center mt-auto  ">
               Back to{" "}
               <Link
                 to="/Signinscreen"
-                className="text-underline custom_font_size_bold"
+                className="text-underline    "
               >
                 Login
               </Link>

@@ -172,10 +172,12 @@ const OfferBanner = () => {
       ) : (
         <>
           <div className="swiper featured-swiper mt-0">
-          <HotelNameAndTable 
-              restaurantName={restaurantName}
-              tableNumber={userData.tableNumber}
-            />
+            <div className="m-0">
+              <HotelNameAndTable
+                restaurantName={restaurantName}
+                tableNumber={userData.tableNumber}
+              />
+            </div>
             <div className="swiper-wrapper">
               {menuLists.map((menu) => (
                 <div key={menu.menu_id} className="swiper-slide">
@@ -200,29 +202,29 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content d-block">
-                        <span className="fs-6 fw-semibold ms-0 text-wrap mb-0">
+                        <span className="fs-6 fw-semibold text-wrap">
                           {menu.name}
                         </span>
                         <ul className="dz-meta mt-2">
-                          <p className="mb-2 custom_font_size fw-medium">
-                            <span className="ms-0 me-2 text-info">
+                          <p className="mb-2   fw-medium">
+                            <span className="me-2 text-info fs-5 fw-semibold">
                               ₹{menu.price}
                             </span>
-                            <span className="gray-text custom_font_size text-decoration-line-through">
+                            <span className="gray-text text-decoration-line-through fs-6 fw-normal">
                               ₹{menu.oldPrice || menu.price}
                             </span>
                           </p>
                         </ul>
                         <div className="row">
                           <div className="col-8 pe-0">
-                            <span className="custom_font_size offer-color">
+                            <span className="font_size_14 text-success">
                               {menu.offer || "No "}% Off
                             </span>
                           </div>
 
                           <div className="col-4 ps-0">
-                            <span className="custom_font_size  gray-text mx-0">
-                              <i className="ri-star-half-line ratingStar"></i>
+                            <span className="font_size_14 fw-normal gray-text">
+                              <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
                               {menu.rating}
                             </span>
                           </div>

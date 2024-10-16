@@ -105,13 +105,13 @@ const HomeScreen = () => {
               }
             ></i>
           </div>
-          <div className="custom_font_size">
-            <span className="ms-3 pt-4 custom_font_size_bold">
+          <div className=" ">
+            <span className="ms-3 pt-4    ">
               {userData?.name
                 ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 : "Hello, User"}
             </span>
-            <div className="mail ms-3 gray-text custom_font_size">
+            <div className="mail ms-3 gray-text  ">
               {userData?.mobile}
             </div>
             <div className="dz-mode mt-3 me-4">
@@ -136,7 +136,7 @@ const HomeScreen = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-bowl-line fs-3"></i>
               </span>
-              <span className="custom_font_size_bold">Menu</span>
+              <span className="   ">Menu</span>
             </Link>
           </li>
           <li>
@@ -144,7 +144,7 @@ const HomeScreen = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-list-check-2 fs-3"></i>
               </span>
-              <span className="custom_font_size_bold">Category</span>
+              <span className="   ">Category</span>
             </Link>
           </li>
           <li>
@@ -152,7 +152,7 @@ const HomeScreen = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-heart-2-line fs-3"></i>
               </span>
-              <span className="custom_font_size_bold">Favourite</span>
+              <span className="   ">Favourite</span>
             </Link>
           </li>
           <li>
@@ -160,7 +160,7 @@ const HomeScreen = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-drinks-2-line fs-3"></i>
               </span>
-              <span className="custom_font_size_bold">My Orders</span>
+              <span className="   ">My Orders</span>
             </Link>
           </li>
           <li>
@@ -168,7 +168,7 @@ const HomeScreen = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-shopping-cart-line fs-3"></i>
               </span>
-              <span className="custom_font_size_bold">Cart</span>
+              <span className="   ">Cart</span>
             </Link>
           </li>
           <li>
@@ -182,7 +182,7 @@ const HomeScreen = () => {
                   }
                 ></i>
               </span>
-              <span className="custom_font_size_bold">Profile</span>
+              <span className="   ">Profile</span>
             </Link>
           </li>
         </ul>
@@ -214,11 +214,11 @@ const HomeScreen = () => {
             <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
         </div>
         <div className="text-center mt-2">
-          <div className="gray-text custom_font_size">Powered by </div>
-          <div className="gray-text custom_font_size">
+          <div className="gray-text  ">Powered by </div>
+          <div className="gray-text  ">
             Shekru Labs India Pvt. Ltd.
           </div>
-          <div className="gray-text custom_font_size">v1.1</div>
+          <div className="gray-text  ">v1.1</div>
         </div>
         </div>
       </div>
