@@ -1009,8 +1009,8 @@ const TrackOrder = () => {
                               </div>
                               <div className="row">
                                 <div className="col-8">
-                                  <i className="ri-restaurant-line mt-0 me-2 text-success fs-xs fw-medium"></i>
-                                  <span className="text-success fs-xs fw-medium">
+                                  <i className="ri-restaurant-line mt-0 me-2  font_size_12 text-success"></i>
+                                  <span className="text-success font_size_12">
                                     {menu.category_name}
                                   </span>
                                 </div>

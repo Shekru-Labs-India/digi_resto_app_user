@@ -383,8 +383,9 @@ const OrdersTab = ({ orders, type }) => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <span className="fs-6 gray-text fw-medium">
-                            <i className="ri-user-location-line ps-2 pe-1  "></i>
+                        <i className="ri-user-location-line ps-2 pe-1  font_size_12 gray-text"></i>
+                          <span className="font_size_12 gray-text">
+                            
                             {order.table_number}
                           </span>
                         </div>
