@@ -193,7 +193,7 @@ const Test = () => {
                               <div>
                                 {[...Array(5)].map((_, i) => {
                                   const spicyIndex = parseInt(menu.spicy_index);
-<<<<<<< HEAD
+ 
                                   let iconClass = 'ri-fire-line gray-text';
                                   
 

@@ -174,7 +174,7 @@ var PlantZoneUiSlider = function(){
 		priceRangeSlider("slider-tooltips5");
 	}
 	
-	// Moving the slider by clicking pips  ============ 
+	// Moving the slider by clicking pips ===== 
 	var handleSliderpips = function() {
 		if(jQuery('#slider-pips').length > 0){
 			var pipsSlider = document.getElementById('slider-pips');
