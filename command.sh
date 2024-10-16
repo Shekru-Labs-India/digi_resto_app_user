@@ -21,4 +21,4 @@ chmod -R 777 ../digi_resto_app_user/
 chown -R root:root ../digi_resto_app_user/
 
 # Push changes to master branch
-git push origin HEAD:master
+git push origin HEAD:main

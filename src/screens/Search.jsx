@@ -298,10 +298,7 @@ const Search = () => {
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
-              <div
-                className="    gray-text"
-                onClick={handleClearAll}
-              >
+              <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
               </div>
             </div>
@@ -339,12 +336,10 @@ const Search = () => {
                         <div className="fs-6 fw-semibold">{menu.menu_name}</div>
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
-                            
-                              <span className="text-success font_size_12">
+                            <span className="text-success font_size_12">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
-                                {menu.category_name}
-                              </span>
-                       
+                              {menu.category_name}
+                            </span>
                           </div>
 
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
@@ -354,7 +349,7 @@ const Search = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="row mt-3">
+                        <div className="row mt-2">
                           <div className="col-8 px-0">
                             <span className="mb-0 mt-1   text-start fw-medium">
                               <span className="ms-3 me-1 fs-5  fw-semibold text-info">

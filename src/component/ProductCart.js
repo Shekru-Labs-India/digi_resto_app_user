@@ -301,7 +301,7 @@ const ProductCard = () => {
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
-            <span className="title p-r50    ">Menu</span>
+            <span className="title ">Menu</span>
             <Link to="/Category">
               <i className="ri-arrow-right-line  "></i>
             </Link>
@@ -420,22 +420,23 @@ const ProductCard = () => {
                           cursor: "pointer",
                           color: menu.is_favourite ? "#fe0809" : "#73757b",
                           zIndex: 2,
+                          marginTop: "-5px",
                         }}
                       ></i>
                     </div>
                     {menu.name && (
-                      <div className="fs-6 fw-semibold text-wrap">
+                      <div className="font_size_14 fw-medium text-wrap">
                         {menu.name}
                       </div>
                     )}
                     {menu.spicy_index && (
                       <div className="row">
                         <div className="col-6">
-                          <div className="offer-code mt-2">
+                          <div className=" mt-2">
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="ri-fire-fill fs-6"
+                                  className="ri-fire-fill text-danger fs-6"
                                   key={index}
                                 ></i>
                               ) : (
@@ -460,10 +461,10 @@ const ProductCard = () => {
                         <div className="footer-wrapper">
                           <div className="price-wrapper d-flex align-items-baseline">
                             <p className="mb-1 custom_font_size fw-medium">
-                              <span className="fs-5 me-2 text-info">
+                              <span className="font_size_14 me-2 text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text text-decoration-line-through fs-6 fw-normal">
+                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </p>
