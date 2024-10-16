@@ -16,11 +16,15 @@ git commit -m "$1"
 # Pull the latest changes from the remote master branch
 git pull origin main
 
-# Set correct permissions for the new repo
-chmod -R 777 ../digi_resto_app_user/
-chown -R root:root ../digi_resto_app_user/
+# Check if the system is Linux, then set correct permissions for the new repo
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    chmod -R 777 ../digi_resto_app_user/
+    chown -R root:root ../digi_resto_app_user/
+fi
 
 # Push changes to master branch
 git push origin HEAD:main
+
 npm run build
+
 npm run deploy
