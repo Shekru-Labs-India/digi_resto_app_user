@@ -344,7 +344,7 @@ const Wishlist = () => {
       <Header title="Favourite" count={wishlistCount} />
 
       <main className="page-content space-top mb-5 pb-3">
-        <div className="container px-3 py-0">
+        <div className="container">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData.tableNumber}
@@ -383,7 +383,7 @@ const Wishlist = () => {
                       htmlFor={`chck${restaurantName}`}
                     >
                       <span className="">
-                        <span class="font_size_14 fw-medium">
+                        <span class="fs-6 fw-medium">
                           <i class="ri-store-2-line me-2"></i>
                           {restaurantName.toUpperCase()}
                         </span>
@@ -470,7 +470,8 @@ const Wishlist = () => {
                                               (_, index) =>
                                                 index < menu.spicy_index ? (
                                                   <i
-                                                    className="ri-fire-fill text-danger fs-6"
+                                                    className="ri-fire-fill fs-6"
+                                                    style={{ color: "#eb8e57" }}
                                                     key={index}
                                                   ></i>
                                                 ) : (

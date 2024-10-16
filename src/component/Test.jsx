@@ -193,6 +193,7 @@ const Test = () => {
                               <div>
                                 {[...Array(5)].map((_, i) => {
                                   const spicyIndex = parseInt(menu.spicy_index);
+<<<<<<< HEAD
                                   let iconClass = 'ri-fire-line gray-text';
                                   
 
@@ -202,6 +203,17 @@ const Test = () => {
                                   } else if (i === spicyIndex && spicyIndex % 1 !== 0) {
                                     iconClass = 'ri-fire-fill text-danger';
                                     
+=======
+                                  let iconClass = 'ri-fire-line';
+                                  let iconColor = '#a5a5a5';
+
+                                  if (i < spicyIndex) {
+                                    iconClass = 'ri-fire-fill';
+                                    iconColor = '#eb8e57';
+                                  } else if (i === spicyIndex && spicyIndex % 1 !== 0) {
+                                    iconClass = 'ri-fire-fill';
+                                    iconColor = '#eb8e57';
+>>>>>>> e155df6124f5bb539500098a6cd2d5115fbff4f7
                                     return (
                                       <i
                                         key={i}
