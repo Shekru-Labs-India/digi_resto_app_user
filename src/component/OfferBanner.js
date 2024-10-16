@@ -206,15 +206,15 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content d-block">
-                        <span className="fs-6 fw-semibold text-wrap">
+                        <span className="font_size_14 fw-medium text-wrap">
                           {menu.name}
                         </span>
                         <ul className="dz-meta mt-2">
                           <p className="mb-2   fw-medium">
-                            <span className="me-2 text-info fs-5 fw-semibold">
+                            <span className="me-2 text-info font_size_14 fw-semibold">
                               ₹{menu.price}
                             </span>
-                            <span className="gray-text text-decoration-line-through fs-6 fw-normal">
+                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
                               ₹{menu.oldPrice || menu.price}
                             </span>
                           </p>
@@ -227,7 +227,7 @@ const OfferBanner = () => {
                           </div>
 
                           <div className="col-4 ps-0">
-                            <span className="font_size_14 fw-normal gray-text">
+                            <span className="font_size_12 fw-normal gray-text">
                               <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
                               {menu.rating}
                             </span>

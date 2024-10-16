@@ -346,10 +346,10 @@ const Verifyotp = () => {
           life: 2000,
         });
 
-        // Wait for 2 seconds before navigating
+       
         setTimeout(() => {
           navigate(`/${userData.restaurantCode}/${userData.tableNumber}`);
-        }, 2000);
+        }, 1000);
 
         localStorage.removeItem("otp");
         localStorage.removeItem("mobile");
@@ -360,7 +360,7 @@ const Verifyotp = () => {
           severity: "error",
           summary: "Error",
           detail: "Incorrect OTP. Please try again.",
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {
@@ -371,7 +371,7 @@ const Verifyotp = () => {
         severity: "error",
         summary: "Error",
         detail: "Verification failed. Please try again.",
-        life: 3000,
+        life: 2000,
       });
     } finally {
       setLoading(false);

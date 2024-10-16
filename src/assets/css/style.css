@@ -17012,11 +17012,7 @@ hr.dotted {
     line-height: 1.4;
     font-weight: 500;
   }
-  .card-item.style-6 .dz-content .offer-code {
-    color: #eb8e57;
-    font-size: 12px;
-    margin-bottom: 10px;
-  }
+  
   .card-item.style-6 .footer-wrapper {
     display: flex;
     align-items: center;
@@ -17674,7 +17670,7 @@ hr.dotted {
       margin: 0 -15px;
       padding: 30px 15px; }
     .dz-box.style-3 {
-      margin-bottom: 35px; }
+      margin-bottom: 15px; }
   
   .dz-gallery {
     margin: 20px -15px 30px;

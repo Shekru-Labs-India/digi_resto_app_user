@@ -344,7 +344,7 @@ const Wishlist = () => {
       <Header title="Favourite" count={wishlistCount} />
 
       <main className="page-content space-top mb-5 pb-3">
-        <div className="container">
+        <div className="container px-3 py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData.tableNumber}

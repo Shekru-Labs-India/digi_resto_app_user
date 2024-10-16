@@ -586,10 +586,10 @@ const TrackOrder = () => {
             <div className="card-body p-2">
               <div className="row align-items-center mb-0">
                 <div className="col-4">
-                  <h5 className="card-title mb-0    ">
+                  <span className="fs-6 fw-semibold mb-0">
                     <i className="ri-hashtag pe-2    "></i>
                     {order_details.order_number}
-                  </h5>
+                  </span>
                 </div>
                 <div className="col-8 text-end">
                   <span className="font_size_12 gray-text  ">
@@ -1038,7 +1038,7 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                                 <div className="col-3 text-end p-0">
-                                  <span className="quantity gray-text  ">
+                                  <span className="font_size_14 gray-text  ">
                                     x {menu.quantity}
                                   </span>
                                 </div>

@@ -271,7 +271,7 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill fs-6" key={index}></i>
+        <i className="ri-fire-fill fs-6 text-danger" key={index}></i>
       ) : (
         <i className="ri-fire-line fs-6 gray-text" key={index}></i>
       )
@@ -365,7 +365,7 @@ const NearbyArea = () => {
                             }}
                           ></i>
                         </div>
-                        <span className="fs-6 fw-semibold text-wrap">
+                        <span className="font_size_14 fw-medium text-wrap">
                           {toTitleCase(menuItem.name)}
                         </span>
                         <div className="row">
@@ -376,7 +376,7 @@ const NearbyArea = () => {
                           </div>
                           <div className="col-6 text-end">
                             <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
-                            <span className="font_size_14 fw-normal gray-text">
+                            <span className="font_size_12 fw-normal gray-text">
                               {menuItem.rating}
                             </span>
                           </div>
@@ -385,10 +385,10 @@ const NearbyArea = () => {
                           <div className="row">
                             <div className="col-9">
                               <p className="mb-2   fw-medium">
-                                <span className="me-2 text-info fs-5 fw-semibold">
+                                <span className="me-2 text-info font_size_14 fw-semibold">
                                   ₹{menuItem.price}
                                 </span>
-                                <span className="gray-text text-decoration-line-through fs-6 fw-normal">
+                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
                                   ₹{menuItem.oldPrice || menuItem.price}
                                 </span>
                               </p>

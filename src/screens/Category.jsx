@@ -128,11 +128,12 @@ const Category = () => {
           {/* Header End */}
 
           <main className="page-content space-top mb-5 pb-3">
-
+          <div className="container px-3 py-0">
           <HotelNameAndTable 
               restaurantName={restaurantName}
               tableNumber={userData.tableNumber}
             />
+            </div>
             
             <div className="container pt-0">
               <div className="row g-3">

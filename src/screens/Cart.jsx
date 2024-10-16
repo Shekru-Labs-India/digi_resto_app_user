@@ -281,16 +281,16 @@ const Cart = () => {
   }
 
   return (
-    <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
+    <div className="page-wrapper full-height d-flex flex-column" style={{ minHeight: '100vh' }}>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <Header title="Cart" count={cartDetails.order_items.length} />
 
       {displayCartItems.length === 0 ? (
-        <main className="page-content ">
+         <main className="page-content flex-grow-1" style={{ overflowY: "auto", paddingBottom: "60px" }}>
           <div
             className="container overflow-hidden d-flex justify-content-center align-items-center"
-            style={{ height: "100vh" }}
+            
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
@@ -307,7 +307,7 @@ const Cart = () => {
         </main>
       ) : (
         <main className="page-content space-top mb-5 pb-3">
-          <div className="container">
+          <div className="container px-3 py-0">
             <HotelNameAndTable
               restaurantName={restaurantName}
               tableNumber={userData.tableNumber}
@@ -346,8 +346,8 @@ const Cart = () => {
                     </div>
                     <div className="col-9 pt-2 pb-0">
                       <div className="row">
-                        <div className="col-9 my-auto">
-                          <span className="fs-6 fw-semibold text-wra">
+                        <div className="col-9 my-auto pe-0">
+                          <span className="fs-6 fw-semibold ">
                             {item.menu_name}
                           </span>
                         </div>
@@ -365,13 +365,13 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-4 px-0">
-                          <span className="ps-3  text-success mt-1 font_size_12">
-                            <i className="ri-restaurant-line me-1 text-success"></i>
+                        <div className="col-5 px-0">
+                          <span className="ps-3 text-success mt-1 font_size_12">
+                            <i className="ri-restaurant-line me-1 text-success font_size_12"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>
-                        <div className="col-5 pe-0 ps-2">
+                        <div className="col-4 pe-0 ps-2">
                           <div className="offer-code my-auto ">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
@@ -398,7 +398,7 @@ const Cart = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="row pt-2">
+                      <div className="row">
                         <div className="col-10 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
                             <span className="ms-3 fs-5 fw-semibold text-info">

@@ -354,7 +354,7 @@ const Search = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="row mt-3">
+                        <div className="row mt-2">
                           <div className="col-8 px-0">
                             <span className="mb-0 mt-1   text-start fw-medium">
                               <span className="ms-3 me-1 fs-5  fw-semibold text-info">
