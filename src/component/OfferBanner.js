@@ -115,12 +115,16 @@ const OfferBanner = () => {
       }
     };
 
+      // Add a 2-second timeout before calling fetchData
+  const timeoutId = setTimeout(() => {
     fetchData();
+  }, 1000);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [restaurantId]);
+  return () => {
+    isMounted = false;
+    clearTimeout(timeoutId); // Clear the timeout if the component unmounts
+  };
+}, [restaurantId]);
 
   // useEffect(() => {
   //   if (banners.length > 0) {

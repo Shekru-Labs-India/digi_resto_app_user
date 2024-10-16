@@ -36,7 +36,7 @@ const Cart = () => {
     } else {
       console.error("User data not found in local storage.");
     }
-    fetchCartDetails();
+    
   }, []);
 
   const getCustomerId = () => {
@@ -54,9 +54,7 @@ const Cart = () => {
     return cartId ? parseInt(cartId, 10) : 1;
   };
 
-  useEffect(() => {
-    fetchCartDetails();
-  }, []);
+  
 
   const fetchCartDetails = async () => {
    
@@ -114,6 +112,10 @@ const Cart = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCartDetails();
+  }, []);
 
   const removeFromCart = async (item, index) => {
     const customerId = getCustomerId();

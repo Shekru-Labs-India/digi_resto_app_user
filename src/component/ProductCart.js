@@ -388,32 +388,44 @@ const ProductCard = () => {
                     />
                   </div>
                   <div className="dz-content pb-1">
-                    <div className="detail-content">
-                      <div className="custom_category_size text-success">
-                        <i className="ri-restaurant-line pe-1"></i>
-                        {menu.category}
-
+                    <div
+                      className="detail-content category-text"
+                      style={{ position: "relative" }}
+                    >
+                      <div
+                        className="dz-quantity detail-content action_icon_size"
+                        style={{ color: "#0a795b" }}
+                      >
                         <i
-                          className={`product-like ps-4 ms-2 ${
-                            menu.is_favourite
-                              ? "ri-hearts-fill fs-3"
-                              : "ri-heart-line fs-3"
-                          }`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            color: menu.is_favourite ? "#fe0809" : "#73757b",
-                            fontSize: "1.2rem",
-                          }}
+                          className="ri-restaurant-line"
+                          style={{ paddingRight: "5px" }}
                         ></i>
+                        {menu.category}
                       </div>
+                      <i
+                        className={`product-like ${
+                          menu.is_favourite
+                            ? "ri-hearts-fill fs-3"
+                            : "ri-heart-2-line fs-3"
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleLikeClick(menu.menu_id);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: "0",
+                          right: "0",
+                          cursor: "pointer",
+                          color: menu.is_favourite ? "#fe0809" : "#73757b",
+                          zIndex: 2,
+                        }}
+                      ></i>
                     </div>
+
                     {menu.name && (
-                      <div className="fs-6 fw-semibold text-wrap">
+                      <div className="custom_font_size_bold text-wrap">
                         {menu.name}
                       </div>
                     )}
@@ -448,11 +460,11 @@ const ProductCard = () => {
                       <div className="col-8">
                         <div className="footer-wrapper">
                           <div className="price-wrapper d-flex align-items-baseline">
-                            <p className="mb-1 ">
-                              <span className="me-2 text-info fs-5 fw-semibold">
+                            <p className="mb-1 custom_font_size fw-medium">
+                              <span className="ms- me-2 text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text text-decoration-line-through fs-6">
+                              <span className="gray-text custom_font_size text-decoration-line-through">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </p>
