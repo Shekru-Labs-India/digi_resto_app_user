@@ -388,9 +388,18 @@ const ProductCard = () => {
                     />
                   </div>
                   <div className="dz-content pb-1">
-                    <div className="detail-content">
-                      <div className="font_size_12 text-success">
-                        <i className="ri-restaurant-line pe-1"></i>
+                    <div
+                      className="detail-content category-text"
+                      style={{ position: "relative" }}
+                    >
+                      <div
+                        className="font_size_12 text-success"
+                        style={{ color: "#0a795b" }}
+                      >
+                        <i
+                          className="ri-restaurant-line"
+                          style={{ paddingRight: "5px" }}
+                        ></i>
                         {menu.category}
                       </div>
                       <i
@@ -414,7 +423,6 @@ const ProductCard = () => {
                         }}
                       ></i>
                     </div>
-
                     {menu.name && (
                       <div className="fs-6 fw-semibold text-wrap">
                         {menu.name}

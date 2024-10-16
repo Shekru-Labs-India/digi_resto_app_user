@@ -497,7 +497,7 @@ const Product = () => {
                       >
                         <h3>
                           <div
-                            className="fw-medium text-success font_size_14"
+                            className="fw-medium text-success font_size_12"
                             style={{ color: "#0a795b" }}
                           >
                             <i className="ri-restaurant-line pe-1"></i>
@@ -606,7 +606,7 @@ const Product = () => {
                       </div>
                       <div className="row">
                         <div className="col-12">
-                          <span className="font_size_14 text-success">
+                          <span className="font_size_12 text-success">
                             {menuItem.offer || "No "}% Off
                           </span>
                         </div>

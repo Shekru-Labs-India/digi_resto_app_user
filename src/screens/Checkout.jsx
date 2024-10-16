@@ -304,7 +304,7 @@ const Checkout = () => {
                                 </div>
                               </div>
                               <div className="col-4 text-end px-0">
-                                <span className="fs-6 ps-2 text-success font_size_12">
+                                <span className="ps-2 text-success font_size_12">
                                   {item.offer || "No "}% Off
                                 </span>
                               </div>
