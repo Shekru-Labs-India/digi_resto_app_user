@@ -36,8 +36,8 @@ const ProductCard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
   const swiperRef = useRef(null);
-   const toast = useRef(null);
-   const [loading, setLoading] = useState(true);
+  const toast = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   // Sync cartItems with localStorage
   useEffect(() => {
@@ -166,66 +166,66 @@ const ProductCard = () => {
     }
   }, [menuCategories]);
 
-     const handleLikeClick = async (menuId) => {
-       if (!customerId || !restaurantId) {
-         console.error("Missing required data");
-         navigate("/Signinscreen");
-         return;
-       }
+  const handleLikeClick = async (menuId) => {
+    if (!customerId || !restaurantId) {
+      console.error("Missing required data");
+      navigate("/Signinscreen");
+      return;
+    }
 
-       const menuItem = menuList.find((item) => item.menu_id === menuId);
-       const isFavorite = menuItem.is_favourite;
+    const menuItem = menuList.find((item) => item.menu_id === menuId);
+    const isFavorite = menuItem.is_favourite;
 
-       const apiUrl = isFavorite
-         ? "https://menumitra.com/user_api/remove_favourite_menu"
-         : "https://menumitra.com/user_api/save_favourite_menu";
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/remove_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
 
-       try {
-         const response = await fetch(apiUrl, {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-           },
-           body: JSON.stringify({
-             restaurant_id: restaurantId,
-             menu_id: menuId,
-             customer_id: customerId,
-           }),
-         });
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: customerId,
+        }),
+      });
 
-         if (response.ok) {
-           const data = await response.json();
-           if (data.st === 1) {
-             const updatedMenuList = menuList.map((item) =>
-               item.menu_id === menuId
-                 ? { ...item, is_favourite: !isFavorite }
-                 : item
-             );
-             setMenuList(updatedMenuList);
-             setFilteredMenuList(
-               updatedMenuList.filter(
-                 (item) =>
-                   item.menu_cat_id === selectedCategoryId ||
-                   selectedCategoryId === null
-               )
-             );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          const updatedMenuList = menuList.map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
+          );
+          setMenuList(updatedMenuList);
+          setFilteredMenuList(
+            updatedMenuList.filter(
+              (item) =>
+                item.menu_cat_id === selectedCategoryId ||
+                selectedCategoryId === null
+            )
+          );
 
-             // Show toast notification
-             toast.current.show({
-               severity: isFavorite ? "error" : "success",
-               summary: isFavorite
-                 ? "Removed from Favourites"
-                 : "Added to Favourites",
-               detail: menuItem.name,
-               life: 3000,
-              //  position: "bottom-center", // Change this line to set the position
-             });
-           }
-         }
-       } catch (error) {
-         console.error("Error updating favorite status:", error);
-       }
-     };
+          // Show toast notification
+          toast.current.show({
+            severity: isFavorite ? "error" : "success",
+            summary: isFavorite
+              ? "Removed from Favourites"
+              : "Added to Favourites",
+            detail: menuItem.name,
+            life: 3000,
+            //  position: "bottom-center", // Change this line to set the position
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+    }
+  };
 
   const [popupVisible, setPopupVisible] = useState(false);
   const handleAddToCartClick = async (menu) => {
@@ -451,8 +451,8 @@ const ProductCard = () => {
                       <div className="col-8">
                         <div className="footer-wrapper">
                           <div className="price-wrapper d-flex align-items-baseline">
-                            <p className="mb-1 ">
-                              <span className="me-2 text-info fs-5 fw-semibold">
+                            <p className="mb-1 custom_font_size fw-medium">
+                              <span className="ms- me-2 text-info">
                                 ₹{menu.price}
                               </span>
                               <span className="gray-text text-decoration-line-through fs-6 fw-normal">

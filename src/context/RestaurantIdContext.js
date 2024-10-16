@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RestaurantIdContext = createContext();
@@ -9,17 +9,17 @@ export const useRestaurantId = () => {
 
 export const RestaurantIdProvider = ({ children }) => {
   const [restaurantId, setRestaurantId] = useState(null);
-  const [restaurantName, setRestaurantName] = useState(
-    localStorage.getItem("name") || ""
-  );
-  const [restaurantCode, setRestaurantCode] = useState(
-    localStorage.getItem("restaurantCode") || ""
-  );
+  const [restaurantName, setRestaurantName] = useState("");
+  const [restaurantCode, setRestaurantCode] = useState("");
   const navigate = useNavigate();
+  const lastFetchedCode = useRef(null);
 
   useEffect(() => {
+    
     const fetchRestaurantDetails = async () => {
-      if (!restaurantCode) return;
+      if (!restaurantCode || restaurantCode === lastFetchedCode.current) return;
+
+      lastFetchedCode.current = restaurantCode;
 
       try {
         const response = await fetch(
@@ -43,7 +43,6 @@ export const RestaurantIdProvider = ({ children }) => {
           const userData = JSON.parse(localStorage.getItem("userData")) || {};
           userData.restaurantId = restaurant_id;
           userData.restaurantName = name;
-          userData.restaurantCode = restaurantCode; // Store restaurantCode
           localStorage.setItem("userData", JSON.stringify(userData));
         }
 
@@ -58,7 +57,7 @@ export const RestaurantIdProvider = ({ children }) => {
     };
 
     fetchRestaurantDetails();
-  }, [restaurantCode]);
+  }, [restaurantCode, navigate]);
 
   return (
     <RestaurantIdContext.Provider
