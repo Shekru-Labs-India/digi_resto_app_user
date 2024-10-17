@@ -48,6 +48,8 @@ const MenuDetails = () => {
     return orderedItems.some(item => item.menu_id === menuId);
   };
 
+  
+
   // Fetch product details
   const fetchProductDetails = async () => {
     try {
@@ -136,51 +138,9 @@ const MenuDetails = () => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // const fetchCartDetails = async () => {
-  //   const customerId = getCustomerId();
-  //   const restaurantId = getRestaurantId();
-  //   const cartId = getCartId();
 
-  //   if (!customerId || !restaurantId) {
-  //     console.error("Customer ID or Restaurant ID is not available.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch(
-  //       "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           cart_id: cartId,
-  //           customer_id: customerId,
-  //           restaurant_id: restaurantId,
-  //         }),
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     console.log("API response data:", data); // Debug log
-
-  //     if (data.st === 1) {
-  //       // Calculate old price for each item
-  //       const updatedOrderItems = data.order_items.map((item) => ({
-  //         ...item,
-  //         oldPrice: Math.floor(item.price * 1.1), // Old price calculation
-  //       }));
-  //       setCartDetails({ ...data, order_items: updatedOrderItems });
-  //       console.log("Cart details set:", data); // Debug log
-  //     } else if (data.st === 2) {
-  //       setCartDetails({ order_items: [] });
-  //     } else {
-  //       console.error("Failed to fetch cart details:", data.msg);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching cart details:", error);
-  //   }
-  // };
+  
+  
 
   const handleAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -510,11 +470,11 @@ const MenuDetails = () => {
                 <div className="col-6 pe-0 text-start menu_details-add-to-cart">
                 {isItemOrdered(menuId) ? (
                   <button
-                    className="btn btn-secondary rounded-pill"
+                    className="btn btn-outline-primary rounded-pill"
                     disabled
                   >
-                    <i className="ri-check-line pe-1 text-white"></i>
-                    <div className="font-poppins text-nowrap text-white">
+                    <i className="ri-check-line pe-1"></i>
+                    <div className="font-poppins  text-nowrap ">
                       Ordered
                     </div>
                   </button>
