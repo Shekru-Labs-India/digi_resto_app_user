@@ -12,13 +12,14 @@ const Checkout = () => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
   }); // State for theme
-  const { restaurantName } = useRestaurantId();
+  const { restaurantName} = useRestaurantId();
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   console.log("Restaurant ID:", restaurantId);
   // const { isDarkMode } = useContext(ThemeContext);
+  
 
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
@@ -39,7 +40,7 @@ const Checkout = () => {
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
-
+  const [restaurantCode, setRestaurantCode] = useState(() => localStorage.getItem("restaurantCode") || "");
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
     console.log("Cart ID:", cartId);
@@ -55,9 +56,11 @@ const Checkout = () => {
     });
 
     if (!cartId || !customerId || !restaurantId) {
-      alert("Missing cart, customer, or restaurant data.");
+      console.log("Missing cart, customer, or restaurant data. Navigating to home.");
+      navigate(`/${restaurantCode}/${tableNumber || ""}`);
       return;
     }
+
 
     try {
       const response = await fetch(
@@ -99,7 +102,7 @@ const Checkout = () => {
           setOrderCount(uniqueMenuIds.size);
       } else {
         console.error("Failed to fetch cart details:", data.msg);
-        alert(`Error: ${data.msg}`);
+        navigate(`/${restaurantCode}/${tableNumber || ""}`);
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
@@ -107,12 +110,10 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    console.log(
-      "useEffect triggered, restaurantId:",
-      restaurantId,
-      "customerId:",
-      customerId
-    );
+    const storedRestaurantCode = localStorage.getItem("restaurantCode");
+    if (storedRestaurantCode) {
+      setRestaurantCode(storedRestaurantCode);
+    }
     fetchCartDetails();
   }, [restaurantId, customerId]);
 
@@ -276,7 +277,7 @@ const Checkout = () => {
                         <div className="card-body py-2 rounded-3 px-0">
                           <div className="row" key={index}>
                             <div className="row">
-                              <div className="col-7">
+                              <div className="col-7 pe-0 ">
                                 <span className="mb-0 fs-6 fw-semibold ps-2">
                                   {item.menu_name}
                                 </span>

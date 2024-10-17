@@ -594,10 +594,7 @@ const TrackOrder = () => {
                     {order_details.order_number}
                   </span>
 
-                  <h5 className="card-title mb-0    ">
-                    <i className="ri-hashtag pe-2    "></i>
-                    {order_details.order_number}
-                  </h5>
+                  
 
                 </div>
                 <div className="col-8 text-end">
@@ -609,8 +606,8 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                    <span className="fs-6 fw-medium">
                       <i className="ri-store-2-line pe-2 "></i>
+                    <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>
                   </div>
@@ -633,10 +630,10 @@ const TrackOrder = () => {
                 </div>
                 <div className="col-6">
                   <div className="text-end">
-                    <span className="text-info fs-6 fw-semibold">
+                    <span className="text-info font_size_14 fw-semibold">
                       ₹{order_details.grand_total}
                     </span>
-                    <span className="text-decoration-line-through ms-2 gray-text fs-6 fw-normal">
+                    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                       ₹
                       {(
                         order_details.grand_total /
@@ -806,10 +803,10 @@ const TrackOrder = () => {
                                   onClick={() => handleMenuClick(menu.menu_id)}
                                   style={{ cursor: "pointer" }}
                                 >
-                                  <span className="ms-3 me-1 text-info fs-5 fw-semibold">
+                                  <span className="ms-3 me-1 text-info font_size_14 fw-semibold">
                                     ₹{calculatePrice(menu)}
                                   </span>
-                                  <span className="gray-text fs-6 fw-normal text-decoration-line-through">
+                                  <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
                                     ₹
                                     {(
                                       parseFloat(menu.oldPrice || menu.price) *
@@ -1022,8 +1019,8 @@ const TrackOrder = () => {
                                   <i className="ri-restaurant-line mt-0 me-2  font_size_12 text-success"></i>
                                 
 
-                                  <i className="ri-restaurant-line mt-0 me-2 text-success fs-xs fw-medium"></i>
-                                  <span className="text-success fs-xs fw-medium">
+                                  
+                                  <span className="text-success font_size_12 fw-medium">
 
                                     {menu.category_name}
                                   </span>
@@ -1037,11 +1034,11 @@ const TrackOrder = () => {
                               </div>
                               <div className="row mt-2">
                                 <div className="col-9 px-0">
-                                  <span className="mt-0 mb-2 customFontSize text-start fw-medium">
-                                    <span className="ms-3 me-1 fs-5 fw-semibold text-info">
+                                  <span className="mt-0 mb-2  text-start ">
+                                    <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
                                       ₹{menu.price}
                                     </span>
-                                    <span className="gray-text fs-6 fw-normal text-decoration-line-through">
+                                    <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
                                       ₹{oldPrice}
                                     </span>
                                   </span>
@@ -1142,10 +1139,10 @@ const TrackOrder = () => {
                   </div>
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
-                      <span className="ps-2 font_size_14 fw-semibold fs-6">
+                      <span className="ps-2 fw-semibold fs-6">
                         Grand Total
                       </span>
-                      <span className="pe-2 font_size_14 fw-semibold fs-6">
+                      <span className="pe-2  fw-semibold fs-6">
                         ₹{orderDetails.order_details.grand_total || 0}
                       </span>
                     </div>

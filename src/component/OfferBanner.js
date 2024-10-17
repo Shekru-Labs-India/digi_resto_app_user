@@ -21,6 +21,16 @@ const OfferBanner = () => {
     JSON.parse(localStorage.getItem("userData")) || {}
   );
 
+  const renderSpiceIcons = (spicyIndex) => {
+    return Array.from({ length: 5 }).map((_, index) =>
+      index < spicyIndex ? (
+        <i className="ri-fire-fill font_size_14 text-danger" key={index}></i>
+      ) : (
+        <i className="ri-fire-line font_size_14 gray-text" key={index}></i>
+      )
+    );
+  };
+
   // Utility function to convert string to title case
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -206,34 +216,36 @@ const OfferBanner = () => {
                         />
                       </div>
                       <div className="dz-content d-block">
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {menu.name}
-                        </span>
-                        <ul className="dz-meta mt-2">
-                          <p className="mb-2   fw-medium">
-                            <span className="me-2 text-info font_size_14 fw-semibold">
-                              ₹{menu.price}
-                            </span>
-                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                              ₹{menu.oldPrice || menu.price}
-                            </span>
-                          </p>
-                        </ul>
-                        <div className="row">
-                          <div className="col-8 pe-0">
-                            <span className="font_size_12 text-success">
-                              {menu.offer || "No "}% Off
-                            </span>
-                          </div>
-
-                          <div className="col-4 ps-0">
-                            <span className="font_size_12 fw-normal gray-text">
-                              <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
-                              {menu.rating}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+      <span className="font_size_14 fw-medium text-wrap">
+        {menu.name}
+      </span>
+      <div className="d-flex justify-content-between align-items-center mt-2">
+        <div>
+          <span className="me-2 text-info font_size_14 fw-semibold">
+            ₹{menu.price}
+          </span>
+          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+            ₹{menu.oldPrice || menu.price}
+          </span>
+        </div>
+        <div className="offer-code mx-0">
+          {renderSpiceIcons(menu.spicy_index)}
+        </div>
+      </div>
+      <div className="row mt-2">
+        <div className="col-8 pe-0">
+          <span className="font_size_12 text-success">
+            {menu.offer || "No "}% Off
+          </span>
+        </div>
+        <div className="col-4 ps-0">
+          <span className="font_size_12 fw-normal gray-text">
+            <i className="ri-star-half-line font_size_14  ratingStar"></i>
+            {menu.rating}
+          </span>
+        </div>
+      </div>
+    </div>
                     </div>
                   </Link>
                 </div>

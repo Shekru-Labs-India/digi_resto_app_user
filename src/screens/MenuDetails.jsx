@@ -364,7 +364,7 @@ const MenuDetails = () => {
             </div>
           </div>
 
-          <div className="container pb-0">
+          <div className="container py-0">
             <div className="dz-product-detail">
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
@@ -373,8 +373,8 @@ const MenuDetails = () => {
                   </h3>
                 )}
                 <div className="row mt-0 me-1">
-                  <div className="col-7 mt-2 ps-3">
-                    <span className=" fs-6 fw-semibold mb-1">
+                  <div className="col-12">
+                    <span className=" font_size_14 fw-semibold mb-1">
                       {toTitleCase(productDetails.name)}
                     </span>
                   </div>
@@ -397,12 +397,12 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill text-danger firefill offer-code"
+                              className="ri-fire-fill text-danger font_size_14 firefill offer-code"
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line  gray-text"
+                              className="ri-fire-line  gray-text font_size_14"
                             ></i>
                           )
                         )}
@@ -410,8 +410,8 @@ const MenuDetails = () => {
                     )}
                   </div>
                   <div className="col-4 text-end px-0 ">
-                    <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
-                    <span className="font_size_14 fw-normal gray-text">
+                    <i className="ri-star-half-line font_size_14 ratingStar"></i>
+                    <span className="font_size_12  fw-normal gray-text">
                       {productDetails.rating}
                     </span>
                   </div>
@@ -488,10 +488,10 @@ const MenuDetails = () => {
                         Total amount
                       </span>
                       <div className="d-flex align-items-baseline">
-                        <h4 className="fs-5 fw-semibold text-info">
+                        <h4 className="font_size_14 fw-semibold text-info">
                           ₹{(productDetails.price * quantity).toFixed(0)}
                         </h4>
-                        <span className="text-decoration-line-through ms-2 fs-6 fw-normal gray-text">
+                        <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
                           ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                         </span>
                       </div>

@@ -556,7 +556,7 @@ const Product = () => {
                                 index < menuItem.spicy_index ? (
                                   <i
  
-                                    className="ri-fire-fill text-danger fs-6"
+                                    className="ri-fire-fill text-danger font_size_14"
 
                                   
 
@@ -565,7 +565,7 @@ const Product = () => {
                                 ) : (
                                   <i
  
-                                    className="ri-fire-line gray-text fs-6"
+                                    className="ri-fire-line gray-text font_size_14"
                                    
 
                                     
@@ -578,8 +578,8 @@ const Product = () => {
                             </div>
                           </div>
                           <div className="col-6 text-end mt-2">
-                            <i className="ri-star-half-line pe-1     ratingStar"></i>
-                            <span className="font_size_14 fw-normal gray-text">
+                            <i className="ri-star-half-line font_size_14    ratingStar"></i>
+                            <span className="font_size_12  fw-normal gray-text">
                               {menuItem.rating}
                             </span>
                           </div>

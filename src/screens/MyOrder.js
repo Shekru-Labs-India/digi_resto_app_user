@@ -376,23 +376,20 @@ const OrdersTab = ({ orders, type }) => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-6 text-start">
+                        <div className="col-8 text-start">
                           <div className="restaurant">
                             <i className="ri-store-2-line pe-2    "></i>
-                            <span className="fw-medium fs-6">
+                            <span className="fw-medium font_size_14">
                               {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
                         </div>
-                        <div className="col-6 text-end">
+                        <div className="col-4 text-end">
  
                         <i className="ri-user-location-line ps-2 pe-1  font_size_12 gray-text"></i>
                           <span className="font_size_12 gray-text">
                             
-                        </span>
-                            <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text  "></i>
-                          <span className="font_size_12 gray-text fw-medium">
-
+                        
                             {order.table_number}
                           </span>
                         </div>
@@ -410,10 +407,10 @@ const OrdersTab = ({ orders, type }) => {
                         </div>
                         <div className="col-6 text-end">
                         
-                            <span className="text-info fs-5 fw-semibold">
+                            <span className="text-info font_size_14 fw-semibold">
                               ₹{order.grand_total}
                             </span>
-                            <span className="text-decoration-line-through ms-2 fs-6 fw-normal">
+                            <span className="text-decoration-line-through ms-2 font_size_12 fw-normal">
                               ₹
                               {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                             </span>

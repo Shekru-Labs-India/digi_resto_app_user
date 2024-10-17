@@ -78,10 +78,10 @@ const HotelList = () => {
                     <div className="col-12">
                       <div className="row mt-2">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-store-2-line fs-6 fw-medium"></i>
+                          <i className="ri-store-2-line font_size_14 fw-medium"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="fs-6 fw-medium m-0">
+                          <span className="font_size_14 fw-medium m-0">
                             {hotel.restaurant_name.toUpperCase()}
                           </span>
                         </div>
@@ -91,7 +91,7 @@ const HotelList = () => {
                           <i className="ri-phone-line text-primary  "></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="text-primary    ">
+                          <span className="text-primary font_size_12 ">
                             {hotel.mobile}
                           </span>
                         </div>
@@ -101,7 +101,7 @@ const HotelList = () => {
                           <i className="ri-map-pin-line gray-text  "></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
-                          <span className="gray-text  ">
+                          <span className="gray-text font_size_14">
                             {hotel.address
                               .split(" ")
                               .map(

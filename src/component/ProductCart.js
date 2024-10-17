@@ -394,20 +394,20 @@ const ProductCard = () => {
                     >
                       <div
                         className="font_size_12 text-success"
-                        style={{ color: "#0a795b" }}
+                        
                       >
                         <i
-                          className="ri-restaurant-line"
-                          style={{ paddingRight: "5px" }}
+                          className="ri-restaurant-line pe-1"
+                          
                         ></i>
                         {menu.category}
                       </div>
                       <i
-                        className={`product-like ${
+                        className={` ${
                           menu.is_favourite
-                            ? "ri-hearts-fill fs-3"
-                            : "ri-heart-2-line fs-3"
-                        }`}
+                            ? "ri-hearts-fill text-danger"
+                            : "ri-heart-2-line gray-text"
+                        } fs-3`}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -417,10 +417,7 @@ const ProductCard = () => {
                           position: "absolute",
                           top: "0",
                           right: "0",
-                          cursor: "pointer",
-                          color: menu.is_favourite ? "#fe0809" : "#73757b",
-                          zIndex: 2,
-                          marginTop: "-5px",
+                          
                         }}
                       ></i>
                     </div>
@@ -436,12 +433,12 @@ const ProductCard = () => {
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="ri-fire-fill text-danger fs-6"
+                                  className="ri-fire-fill text-danger font_size_14"
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ri-fire-line fs-6 gray-text"
+                                  className="ri-fire-line font_size_14 gray-text"
                                   key={index}
                                 ></i>
                               )
@@ -449,36 +446,28 @@ const ProductCard = () => {
                           </div>
                         </div>
                         <div className="col-6 text-end mt-2">
-                          <i className="ri-star-half-line fs-6 me-1 ratingStar"></i>
+                          <i className="ri-star-half-line font_size_14  ratingStar"></i>
                           <span className="font_size_12 fw-normal gray-text">
                             {menu.rating}
                           </span>
                         </div>
                       </div>
                     )}
-                    <div className="row">
+                    <div className="row mt-1">
                       <div className="col-8">
-                        <div className="footer-wrapper">
-                          <div className="price-wrapper d-flex align-items-baseline">
-                            <p className="mb-1 custom_font_size fw-medium">
-                              <span className="font_size_14 me-2 text-info">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                            </p>
-                          </div>
+                        <div className="price-wrapper d-flex align-items-baseline">
+                          <span className="font_size_14 me-2 text-info">
+                            ₹{menu.price}
+                          </span>
+                          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                            ₹{menu.oldPrice || menu.price}
+                          </span>
                         </div>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-6">
                         <span className="font_size_12 text-success">
                           {menu.offer || "No "}% Off
                         </span>
                       </div>
-                      <div className="col-6">
+                      <div className="col-4 text-end">
                         {userData ? (
                           <div
                             onClick={(e) => {
@@ -486,12 +475,12 @@ const ProductCard = () => {
                               e.stopPropagation();
                               handleAddToCartClick(menu);
                             }}
-                            className="cart-btn text-end cart-btn-align"
+                            
                           >
                             <i
                               className={`ri-shopping-cart-${
                                 isMenuItemInCart(menu.menu_id) ? "fill" : "line"
-                              } fs-2`}
+                              } fs-2 `}
                             ></i>
                           </div>
                         ) : (
@@ -508,7 +497,6 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
-      
     </div>
   );
 };

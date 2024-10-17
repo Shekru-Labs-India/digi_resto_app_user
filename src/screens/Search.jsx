@@ -253,7 +253,8 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-        <div className="d-flex justify-content-between align-items-center  m-3">
+        <div className="container py-0">
+        <div className="d-flex justify-content-between align-items-center  my-2">
           <div className="d-flex align-items-center">
             <i className="ri-store-2-line me-2"></i>
             <span className="fw-medium font_size_14">
@@ -267,6 +268,7 @@ const Search = () => {
             </span>
           </div>
         </div>
+        </div>
 
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
@@ -277,7 +279,7 @@ const Search = () => {
             <input
               type="search"
               className="form-control  ps-2     "
-              placeholder="Search Best items for You"
+              placeholder="Search Best items for You"cd
               onChange={handleSearch}
               value={searchTerm}
             />
@@ -348,8 +350,8 @@ const Search = () => {
                           </div>
 
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <span className="font_size_14 fw-normal gray-text">
-                              <i className="ri-star-half-line ms-4 ratingStar pe-2"></i>
+                              <i className="ri-star-half-line font_size_14 ms-4 ratingStar "></i>
+                            <span className="font_size_12 fw-normal gray-text">
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
                           </div>
@@ -357,10 +359,10 @@ const Search = () => {
                         <div className="row mt-2">
                           <div className="col-8 px-0">
                             <span className="mb-0 mt-1   text-start fw-medium">
-                              <span className="ms-3 me-1 fs-5  fw-semibold text-info">
+                              <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text text-decoration-line-through fs-6 fw-normal">
+                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </span>

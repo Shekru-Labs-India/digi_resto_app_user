@@ -107,6 +107,10 @@ const Wishlist = () => {
       navigate("/Signinscreen");
       return;
     }
+    const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+    setCartItems(updatedCartItems); // Update the shared cart state
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+
 
     if (isMenuItemInCart(item.menu_id)) {
       toast.current.show({
@@ -118,9 +122,7 @@ const Wishlist = () => {
       return;
     }
 
-    const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-    setCartItems(updatedCartItems);
+    
 
     try {
       const response = await fetch(
@@ -344,7 +346,7 @@ const Wishlist = () => {
       <Header title="Favourite" count={wishlistCount} />
 
       <main className="page-content space-top mb-5 pb-3">
-        <div className="container">
+        <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData.tableNumber}
@@ -383,7 +385,7 @@ const Wishlist = () => {
                       htmlFor={`chck${restaurantName}`}
                     >
                       <span className="">
-                        <span class="fs-6 fw-medium">
+                        <span class="font_size_14 fw-medium">
                           <i class="ri-store-2-line me-2"></i>
                           {restaurantName.toUpperCase()}
                         </span>
@@ -470,13 +472,13 @@ const Wishlist = () => {
                                               (_, index) =>
                                                 index < menu.spicy_index ? (
                                                   <i
-                                                    className="ri-fire-fill fs-6"
-                                                    style={{ color: "#eb8e57" }}
+                                                    className="ri-fire-fill font_size_14 text-danger"
+                                                    
                                                     key={index}
                                                   ></i>
                                                 ) : (
                                                   <i
-                                                    className="ri-fire-line fs-6 gray-text"
+                                                    className="ri-fire-line font_size_14 gray-text"
                                                     key={index}
                                                   ></i>
                                                 )
@@ -484,22 +486,22 @@ const Wishlist = () => {
                                           </div>
                                         )}
                                       </div>
-                                      <div className="col-2 text-end ps-0 ms-0 ">
-                                        <span className="font_size_14 fw-normal gray-text">
-                                          <i className="ri-star-half-line ratingStar me-1"></i>
+                                      <div className="col-2 text-end ps-0 ms-0 pe-4">
+                                        <i className="ri-star-half-line font_size_14 ratingStar "></i>
+                                        <span className="font_size_12  fw-normal gray-text">
                                           {menu.rating || 0.1}
                                         </span>
                                       </div>
                                     </div>
 
-                                    <div className="row mt-2 ps-2 align-items-center">
+                                    <div className="row  ps-2 align-items-center">
                                       <div className="col-12 d-flex justify-content-between align-items-center">
                                         <div className="d-flex align-items-center">
-                                          <p className="mb-0 fs-4 me-2 fw-medium">
-                                            <span className="fs-5 fw-semibold text-info">
+                                          <p className="mb-0  me-2 fw-medium">
+                                            <span className="font_size_14 fw-semibold text-info">
                                               ₹{menu.price}
                                             </span>
-                                            <span className="gray-text fs-6 text-decoration-line-through fw-normal ms-2">
+                                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                               ₹{menu.oldPrice || menu.price}
                                             </span>
                                           </p>

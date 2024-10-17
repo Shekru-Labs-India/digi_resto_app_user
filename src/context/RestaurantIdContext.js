@@ -47,7 +47,7 @@ export const RestaurantIdProvider = ({ children }) => {
         }
 
         if (data.st === 2) {
-          navigate("QRScreen");
+          navigate("Index");
         } else {
           console.error("Failed to fetch restaurant details:", data.msg);
         }
@@ -58,6 +58,15 @@ export const RestaurantIdProvider = ({ children }) => {
 
     fetchRestaurantDetails();
   }, [restaurantCode, navigate]);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("userData")) || {};
+    if (storedData.restaurantId) {
+      setRestaurantId(storedData.restaurantId);
+      setRestaurantName(storedData.restaurantName);
+      setRestaurantCode(storedData.restaurantCode);
+    }
+  }, []);
 
   return (
     <RestaurantIdContext.Provider

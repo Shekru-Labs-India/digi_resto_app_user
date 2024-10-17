@@ -68,6 +68,12 @@ const Cart = () => {
       setIsLoading(false);
       return;
     }
+
+    if (!cartId || !customerId || !restaurantId) {
+      console.log("Missing cart, customer, or restaurant data.");
+      setIsLoading(false); // Add this line
+      return; // Don't navigate away, just return
+    }
     
     try {
       const response = await fetch(
@@ -307,7 +313,7 @@ const Cart = () => {
         </main>
       ) : (
         <main className="page-content space-top mb-5 pb-3">
-          <div className="container">
+          <div className="container py-0">
             <HotelNameAndTable
               restaurantName={restaurantName}
               tableNumber={userData.tableNumber}
@@ -344,10 +350,10 @@ const Cart = () => {
                         }}
                       />
                     </div>
-                    <div className="col-9 pt-2 pb-0">
+                    <div className="col-9 pt-1 pb-0">
                       <div className="row">
-                        <div className="col-9 my-auto">
-                          <span className="fs-6 fw-semibold text-wra">
+                        <div className="col-9 ">
+                          <span className="font_size_14 fw-semibold">
                             {item.menu_name}
                           </span>
                         </div>
@@ -365,21 +371,21 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-4 px-0">
+                        <div className="col-5 px-0">
                           <span className="ps-3  text-success mt-1 font_size_12">
                             <i className="ri-restaurant-line me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>
-                        <div className="col-5 pe-0 ps-2">
+                        <div className="col-4 px-0 text-center">
                           <div className="offer-code my-auto ">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
                                 key={index}
                                 className={`ri-fire-${
                                   index < (item.spicy_index || 0)
-                                    ? "fill fs-6"
-                                    : "line fs-6"
+                                    ? "fill font_size_14 text-danger"
+                                    : "line font_size_14 gray-text"
                                 }`}
                                 style={{
                                   color:
@@ -391,20 +397,20 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="col-2 text-end px-0">
-                          <span className="text-center    gray-text">
-                            <i className="ri-star-half-line  ratingStar"></i>
+                        <div className="col-2 text-end ps-0 pe-1">
+                            <i className="ri-star-half-line font_size_14  ratingStar"></i>
+                          <span className="text-center  font_size_12  gray-text">
                             {item.rating}
                           </span>
                         </div>
                       </div>
-                      <div className="row pt-2">
+                      <div className="row ">
                         <div className="col-10 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
-                            <span className="ms-3 fs-5 fw-semibold text-info">
+                            <span className="ms-3 font_size_14 fw-semibold text-info">
                               ₹{item.price}
                             </span>
-                            <span className="gray-text fs-6 text-decoration-line-through fw-normal ms-2">
+                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                               ₹{item.oldPrice || item.price}
                             </span>
 

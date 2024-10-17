@@ -75,7 +75,7 @@ function App() {
             <Route path="/Search" element={<Search />} />
             <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
             <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
-            <Route path="/QRScreen" element={<QRScreen />} />
+            <Route path="/Index" element={<QRScreen />} />
           </Routes>
         </CartProvider>
       </RestaurantIdProvider>
