@@ -11,7 +11,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import HotelNameAndTable from '../components/HotelNameAndTable';
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 const Cart = () => {
   const isLoggedIn = !!localStorage.getItem("userData");
@@ -36,7 +36,6 @@ const Cart = () => {
     } else {
       console.error("User data not found in local storage.");
     }
-    
   }, []);
 
   const getCustomerId = () => {
@@ -54,14 +53,11 @@ const Cart = () => {
     return cartId ? parseInt(cartId, 10) : 1;
   };
 
-  
-
   const fetchCartDetails = async () => {
-   
     const customerId = getCustomerId();
     const restaurantId = getRestaurantId();
     const cartId = getCartId();
-  
+
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is not available.");
       setCartDetails({ order_items: [] });
@@ -74,7 +70,7 @@ const Cart = () => {
       setIsLoading(false); // Add this line
       return; // Don't navigate away, just return
     }
-    
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -90,14 +86,14 @@ const Cart = () => {
           }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("API response data:", data);
-  
+
       if (data.st === 1) {
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
@@ -276,7 +272,7 @@ const Cart = () => {
     return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  if (isLoading ) {
+  if (isLoading) {
     return (
       <div id="preloader">
         <div className="loader">
@@ -398,7 +394,7 @@ const Cart = () => {
                           </div>
                         </div>
                         <div className="col-2 text-end ps-0 pe-1">
-                            <i className="ri-star-half-line font_size_14  ratingStar"></i>
+                          <i className="ri-star-half-line font_size_14  ratingStar"></i>
                           <span className="text-center  font_size_12  gray-text">
                             {item.rating}
                           </span>
@@ -542,6 +538,14 @@ const Cart = () => {
                       ({displayCartItems.length} items)
                     </span>
                   </b>
+                </Link>
+              </div>
+              <div className="d-flex align-items-center justify-content-center mt-2">
+                <Link
+                  to="/Menu"
+                  className="btn btn-outline-primary  rounded-pill  px-5"
+                >
+                  Shop More
                 </Link>
               </div>
             </div>

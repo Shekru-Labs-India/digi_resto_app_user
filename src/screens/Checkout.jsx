@@ -394,6 +394,14 @@ const Checkout = () => {
                 </span>
               </Link>
             </div>
+            <div className="d-flex align-items-center justify-content-center mt-3">
+                <Link
+                  to="/Menu"
+                  className="btn btn-outline-primary  rounded-pill  px-5"
+                >
+                  Shop More
+                </Link>
+              </div>
           </div>
         </div>
       </main>

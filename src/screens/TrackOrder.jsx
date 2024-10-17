@@ -1074,11 +1074,11 @@ const TrackOrder = () => {
         {userData && orderDetails && (
           <div
             className="container mb-4 pt-0 z-3"
-            style={{ backgroundColor: "transparent" }}
+            
           >
             <div className="card mt-2 p-0 mb-5 ">
-              <div className="card-body mx-auto rounded-3">
-                <div className="row px-1 py-1">
+              <div className="card-body mx-auto rounded-3 p-0">
+                <div className="row p-1">
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1">
                       <span className="ps-2 font_size_14 fw-semibold">

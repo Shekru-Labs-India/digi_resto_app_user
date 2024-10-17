@@ -10,8 +10,33 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import styled, { keyframes } from 'styled-components';
 
-const OfferBanner = () => {
+
+const pulse = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+`;
+
+const AnimatedCard = styled.div`
+  animation: ${pulse} 2s infinite;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
+  const [latestOngoingOrder, setLatestOngoingOrder] = useState(initialLatestOngoingOrder);
   const [banners, setBanners] = useState([]);
   const [menuLists, setMenuLists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +45,51 @@ const OfferBanner = () => {
   const [userData, setUserData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
+  const customerId = userData.customer_id;
+
+  useEffect(() => {
+    if (customerId && restaurantId) {
+      fetchLatestOngoingOrder();
+    }
+  }, [customerId, restaurantId]);
+
+  const fetchLatestOngoingOrder = async () => {
+    try {
+      const response = await fetch("https://menumitra.com/user_api/get_order_list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          order_status: "ongoing",
+          customer_id: customerId,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && data.lists && Object.keys(data.lists).length > 0) {
+          // Get the latest date
+          const latestDate = Object.keys(data.lists).sort().pop();
+          // Get the latest order from the latest date
+          const latestOrder = data.lists[latestDate][0];
+          setLatestOngoingOrder(latestOrder);
+        } else {
+          setLatestOngoingOrder(null);
+        }
+      } else {
+        console.error("Network response was not ok.");
+        setLatestOngoingOrder(null);
+      }
+    } catch (error) {
+      console.error("Error fetching latest ongoing order:", error);
+      setLatestOngoingOrder(null);
+    }
+  };
+
+
+  
 
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
@@ -252,6 +322,66 @@ const OfferBanner = () => {
               ))}
             </div>
           </div>
+          {latestOngoingOrder && (
+    <div className="container">
+      <h5 className="text-center gray-text mb-3">Latest Ongoing Order</h5>
+      <Link to={`/TrackOrder/${latestOngoingOrder.order_number}`} className="text-decoration-none">
+        <AnimatedCard className="custom-card my-2 rounded-3 shadow-sm">
+          <div className="card-body py-2">
+            <div className="row align-items-center">
+              <div className="col-4">
+                <span className="fw-semibold fs-6">
+                  <i className="ri-hashtag pe-2"></i>
+                  {latestOngoingOrder.order_number}
+                </span>
+              </div>
+              <div className="col-8 text-end">
+                <span className="gray-text font_size_12">
+                  {latestOngoingOrder.date_time}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-8 text-start">
+                <div className="restaurant">
+                  <i className="ri-store-2-line pe-2"></i>
+                  <span className="fw-medium font_size_14">
+                    {latestOngoingOrder.restaurant_name.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              <div className="col-4 text-end">
+                <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
+                <span className="font_size_12 gray-text">
+                  {latestOngoingOrder.table_number}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2 gray-text"></i>
+                  <span className="gray-text font_size_14">
+                    {latestOngoingOrder.menu_count === 0
+                      ? "No orders"
+                      : `${latestOngoingOrder.menu_count} Menu`}
+                  </span>
+                </div>
+              </div>
+              <div className="col-6 text-end">
+                <span className="text-info font_size_14 fw-semibold">
+                  ₹{latestOngoingOrder.grand_total}
+                </span>
+                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                  ₹{(parseFloat(latestOngoingOrder.grand_total) * 1.1).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </AnimatedCard>
+      </Link>
+    </div>
+  )}
         </>
       )}
     </div>

@@ -431,6 +431,8 @@ const NearbyArea = () => {
         ))}
       </div>
     </div>
+
+    
   </div>
   );
 };
