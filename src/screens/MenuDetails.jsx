@@ -42,6 +42,12 @@ const MenuDetails = () => {
     );
   };
 
+  const orderedItems = location.state?.orderedItems || [];
+
+  const isItemOrdered = (menuId) => {
+    return orderedItems.some(item => item.menu_id === menuId);
+  };
+
   // Fetch product details
   const fetchProductDetails = async () => {
     try {
@@ -502,31 +508,40 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-6 pe-0 text-start menu_details-add-to-cart">
-                  {isMenuItemInCart(menuId) ? (
-                    <button
-                      className="btn btn-color  rounded-pill    "
-                      onClick={() => navigate("/Cart")}
-                    >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                      <div className="font-poppins     text-nowrap text-white">
-                        Go to Cart
-                      </div>
-                    </button>
-                  ) : (
-                    <button
-                      to="#"
-                      className="btn btn-color rounded-pill     "
-                      onClick={handleAddToCart}
-                    >
-                      <i className="ri-shopping-cart-line pe-1 text-white    "></i>
-                      <div className="text-nowrap text-white    ">
-                        Add to Cart
-                      </div>
-                    </button>
-                  )}
-                </div>
+                {isItemOrdered(menuId) ? (
+                  <button
+                    className="btn btn-secondary rounded-pill"
+                    disabled
+                  >
+                    <i className="ri-check-line pe-1 text-white"></i>
+                    <div className="font-poppins text-nowrap text-white">
+                      Ordered
+                    </div>
+                  </button>
+                ) : isMenuItemInCart(menuId) ? (
+                  <button
+                    className="btn btn-color rounded-pill"
+                    onClick={() => navigate("/Cart")}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="font-poppins text-nowrap text-white">
+                      Go to Cart
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-color rounded-pill"
+                    onClick={handleAddToCart}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="text-nowrap text-white">
+                      Add to Cart
+                    </div>
+                  </button>
+                )}
               </div>
-            </footer>
+            </div>
+          </footer>
           </div>
         </div>
       </div>

@@ -410,7 +410,7 @@ const OrdersTab = ({ orders, type }) => {
                             <span className="text-info font_size_14 fw-semibold">
                               ₹{order.grand_total}
                             </span>
-                            <span className="text-decoration-line-through ms-2 font_size_12 fw-normal">
+                            <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                               ₹
                               {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                             </span>

@@ -614,7 +614,7 @@ const TrackOrder = () => {
                 </div>
                 <div className="col-4 text-end">
                   <i className="ri-user-location-line ps-0 pe-1 font_size_12 gray-text"></i>
-                  <span className="fs-6 gray-text fw-medium font_size_12">
+                  <span className="fs-6 gray-text font_size_12">
                     {order_details.table_number}
                   </span>
                 </div>
@@ -734,14 +734,14 @@ const TrackOrder = () => {
                               onClick={() => handleMenuClick(menu.menu_id)}
                             />
                           </div>
-                          <div className="col-9 pt-2 pb-0 pe-0 ps-2">
+                          <div className="col-9 pt-1 pb-0 pe-0 ps-2">
                             <div className="d-flex justify-content-between align-items-center">
                               <div className="font_size_14 fw-medium">
                                 {menu.menu_name}
                               </div>
                               <div className="col-3">
                                 <span
-                                  className={`btn btn-color px-2 py-1   ${
+                                  className={`btn btn-color px-2 py-1 ${
                                     isItemAdded(menu.menu_id)
                                       ? "btn-secondary gray-text"
                                       : "btn-color text-white addOrder-btn"
@@ -986,6 +986,7 @@ const TrackOrder = () => {
                           state: {
                             restaurant_id: restaurantId,
                             menu_cat_id: menu.menu_cat_id,
+                            orderedItems: [...menu_details, ...orderedItems] // Pass all ordered items
                           },
                         })
                       }
@@ -1013,7 +1014,7 @@ const TrackOrder = () => {
                               <div className="font_size_14 fw-medium">
                                 {menu.menu_name}
                               </div>
-                              <div className="row">
+                              <div className="row pt-1">
                                 <div className="col-8">
  
                                   <i className="ri-restaurant-line mt-0 me-2  font_size_12 text-success"></i>
