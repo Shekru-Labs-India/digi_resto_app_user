@@ -544,7 +544,7 @@ const Product = () => {
                       </div>
 
                       {menuItem.name && (
-                        <div className="fs-6 fw-semibold text-wrap">
+                        <div className="font_size_14 fw-medium text-wrap">
                           {menuItem.name}
                         </div>
                       )}

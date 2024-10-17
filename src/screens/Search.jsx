@@ -338,7 +338,7 @@ const Search = () => {
                         />
                       </div>
                       <div className="col-8 pt-3 pb-0 pe-0 ps-2">
-                        <div className="fs-6 fw-semibold">{menu.menu_name}</div>
+                        <div className="font_size_14 fw-medium">{menu.menu_name}</div>
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
                             

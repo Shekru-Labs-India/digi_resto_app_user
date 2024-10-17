@@ -622,7 +622,7 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-6">
                   <div className="menu-info">
-                    <span className="font_size_14  fw-semibold gray-text">
+                    <span className="font_size_14   gray-text">
                       <i className="ri-bowl-line pe-2 "></i>
                       {order_details.menu_count} Menu
                     </span>
@@ -704,7 +704,7 @@ const TrackOrder = () => {
               {/* Searched menu items */}
               {!isCompleted && searchedMenu.length > 0 && (
                 <div className="row g-3 mb-4">
-                  <div className="d-flex justify-content-between align-items-center mb-2 mt-0">
+                  <div className="d-flex justify-content-between align-items-center mt-3">
                     <div className="  mb-0 gray-text">Search Results</div>
                     <div className="  gray-text" onClick={handleClearAll}>
                       Clear All
@@ -734,9 +734,9 @@ const TrackOrder = () => {
                               onClick={() => handleMenuClick(menu.menu_id)}
                             />
                           </div>
-                          <div className="col-9 py-2 pe-0 ps-2">
+                          <div className="col-9 pt-2 pb-0 pe-0 ps-2">
                             <div className="d-flex justify-content-between align-items-center">
-                              <div className="fs-6 fw-semibold">
+                              <div className="font_size_14 fw-medium">
                                 {menu.menu_name}
                               </div>
                               <div className="col-3">
@@ -824,8 +824,8 @@ const TrackOrder = () => {
                                   </span>
                                 </span>
                               </div>
-                              <div className="col-4">
-                                <div className="d-flex justify-content-end align-items-center mt-1">
+                              <div className="col-4 increment-decrement">
+                                <div className="d-flex justify-content-end align-items-center ">
                                   <i
                                     className="ri-subtract-line   mx-2 fs-2"
                                     style={{ cursor: "pointer" }}
@@ -856,7 +856,7 @@ const TrackOrder = () => {
 
               {!isCompleted && pendingItems.length > 0 && (
                 <div className="row g-3 mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2 mt-0">
+                  <div className="d-flex justify-content-between align-items-center mt-3">
                     <h6 className="  mb-0 gray-text">Newly Added In Basket</h6>
                   </div>
                   {pendingItems.map((menu) => (
@@ -894,7 +894,7 @@ const TrackOrder = () => {
                             <div className="col-8 ps-2 pt-1 pe-0">
                               <div className="row">
                                 <div className="col-11">
-                                  <div className="fs-6 fw-semibold">
+                                  <div className="font_size_14 fw-medium">
                                     {menu.menu_name}
                                   </div>
                                 </div>
@@ -1010,7 +1010,7 @@ const TrackOrder = () => {
                               />
                             </div>
                             <div className="col-8 pt-2 pb-0 pe-0 ps-2">
-                              <div className="fs-6 fw-semibold">
+                              <div className="font_size_14 fw-medium">
                                 {menu.menu_name}
                               </div>
                               <div className="row">

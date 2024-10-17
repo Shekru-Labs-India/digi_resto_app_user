@@ -440,7 +440,7 @@ const Wishlist = () => {
                                   <div className="col-9 pt-1 p-0">
                                     <div className="row">
                                       <div className="col-9 pe-2">
-                                        <div className="ps-2 fs-6 fw-semibold">
+                                        <div className="ps-2 font_size_14 fw-medium">
                                           {menu.menu_name}
                                         </div>
                                       </div>

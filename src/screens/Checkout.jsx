@@ -57,7 +57,7 @@ const Checkout = () => {
 
     if (!cartId || !customerId || !restaurantId) {
       console.log("Missing cart, customer, or restaurant data. Navigating to home.");
-      navigate(`/${restaurantCode}/${tableNumber || ""}`);
+     
       return;
     }
 
@@ -278,7 +278,7 @@ const Checkout = () => {
                           <div className="row" key={index}>
                             <div className="row">
                               <div className="col-7 pe-0 ">
-                                <span className="mb-0 fs-6 fw-semibold ps-2">
+                                <span className="mb-0 fs-6 fw-medium ps-2">
                                   {item.menu_name}
                                 </span>
                               </div>

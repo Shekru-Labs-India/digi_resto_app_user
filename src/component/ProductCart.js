@@ -456,7 +456,7 @@ const ProductCard = () => {
                     <div className="row mt-1">
                       <div className="col-8">
                         <div className="price-wrapper d-flex align-items-baseline">
-                          <span className="font_size_14 me-2 text-info">
+                          <span className="font_size_14 me-2 text-info fw-semibold">
                             ₹{menu.price}
                           </span>
                           <span className="gray-text text-decoration-line-through font_size_12 fw-normal">

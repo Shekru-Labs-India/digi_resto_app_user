@@ -333,7 +333,7 @@ const MenuDetails = () => {
       <div className="page-wrapper">
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <Header
-          className="fs-6 fw-semibold"
+          className="fs-6 fw-medium"
           title={toTitleCase(productDetails.name)}
         />
 
