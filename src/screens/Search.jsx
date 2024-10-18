@@ -264,7 +264,7 @@ const Search = () => {
           <div className="d-flex align-items-center">
             <i className="ri-user-location-line me-2 gray-text"></i>
             <span className="fw-medium font_size_12 gray-text">
-              {userData.tableNumber ? `Table ${userData.tableNumber}` : ""}
+            {userData && userData.tableNumber ? `Table ${userData.tableNumber}` : "Table 1"}
             </span>
           </div>
         </div>

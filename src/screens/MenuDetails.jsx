@@ -219,6 +219,7 @@ const MenuDetails = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !restaurantId) {
       console.error("Missing required data");
+      navigate("/Signinscreen");
       return;
     }
 
@@ -308,7 +309,7 @@ const MenuDetails = () => {
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData.tableNumber}
+                tableNumber={userData?.tableNumber || '1'}
               />
             </div>
           </div>
@@ -467,7 +468,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-6 pe-0 text-start menu_details-add-to-cart">
+                <div className="col-6 px-0 text-start menu_details-add-to-cart">
                 {isItemOrdered(menuId) ? (
                   <button
                     className="btn btn-outline-primary rounded-pill"

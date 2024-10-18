@@ -21,7 +21,7 @@ const Cart = () => {
   const navigate = useNavigate();
   const toastBottomCenter = useRef(null);
   const toast = useRef(null);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -53,24 +53,23 @@ const Cart = () => {
     return cartId ? parseInt(cartId, 10) : 1;
   };
 
- 
   const fetchCartDetails = async () => {
     const customerId = getCustomerId();
     const cartId = getCartId();
-  
+
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is not available.");
       setCartDetails({ order_items: [] });
       setIsLoading(false);
       return;
     }
-  
+
     if (!cartId || !customerId || !restaurantId) {
       console.log("Missing cart, customer, or restaurant data.");
       setIsLoading(false);
       return;
     }
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -86,14 +85,14 @@ const Cart = () => {
           }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("API response data:", data);
-  
+
       if (data.st === 1) {
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
@@ -119,17 +118,15 @@ const Cart = () => {
     }
   };
 
-  
-  
   useEffect(() => {
     fetchCartDetails();
   }, [restaurantId]); // Add restaurantId as a dependency
-  
+
   const removeFromCart = async (item, index) => {
     const customerId = getCustomerId();
     const cartId = getCartId();
     const menuId = item.menu_id;
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/remove_from_cart",
@@ -146,30 +143,34 @@ const Cart = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (data.st === 1) {
         console.log("Item removed from cart successfully.");
-        
-        setCartDetails(prevDetails => ({
+
+        setCartDetails((prevDetails) => ({
           ...prevDetails,
-          order_items: prevDetails.order_items.filter(orderItem => orderItem.menu_id !== menuId)
+          order_items: prevDetails.order_items.filter(
+            (orderItem) => orderItem.menu_id !== menuId
+          ),
         }));
-  
+
         // Update local storage
         const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-        const updatedCartItems = cartItems.filter(cartItem => cartItem.menu_id !== menuId);
+        const updatedCartItems = cartItems.filter(
+          (cartItem) => cartItem.menu_id !== menuId
+        );
         localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        
+
         console.log("Updated cart items in local storage:", updatedCartItems);
-  
+
         toast.current.show({
           severity: "success",
           summary: "Item Removed",
           detail: `${item.menu_name} has been removed from your cart.`,
           life: 2000,
         });
-  
+
         // Optionally, you can call fetchCartDetails() here to get the latest cart state from the server
         fetchCartDetails();
       } else {
@@ -184,7 +185,7 @@ const Cart = () => {
 
   const updateCartQuantity = async (menuId, quantity) => {
     const customerId = getCustomerId();
-    
+
     const cartId = getCartId();
 
     try {
@@ -299,6 +300,7 @@ const Cart = () => {
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <Header title="Cart" count={cartDetails.order_items.length} />
+      
 
       {displayCartItems.length === 0 ? (
         <main className="page-content ">
@@ -324,8 +326,8 @@ const Cart = () => {
           <div className="container py-0">
             <HotelNameAndTable
               restaurantName={restaurantName}
-              tableNumber={userData.tableNumber}
-            />{" "}
+              tableNumber={userData?.tableNumber || "1"}
+            />
           </div>
           <div className="container scrollable-section pt-0">
             {displayCartItems.map((item, index) => (

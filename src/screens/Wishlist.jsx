@@ -19,6 +19,7 @@ const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState({});
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
+  const [cartRestaurantId, setCartRestaurantId] = useState(null);
   
  
 
@@ -104,7 +105,8 @@ const Wishlist = () => {
         const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
         setCartItems(updatedCartItems);
         localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        
+        localStorage.setItem("cartId", data.cart_id);
+  
         // Dispatch a custom event to notify other components of the cart update
         window.dispatchEvent(new CustomEvent('cartUpdated', { detail: updatedCartItems }));
   
@@ -138,7 +140,9 @@ const Wishlist = () => {
   };
 
   
- 
+  const isCartFromDifferentRestaurant = (itemRestaurantId) => {
+    return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
+  };
   
   const fetchFavoriteItems = async () => {
     if (!customerId || !restaurantId) {
@@ -146,6 +150,8 @@ const Wishlist = () => {
       setIsLoading(false);
       return;
     }
+
+   
   
     setIsLoading(true);
     try {
@@ -192,9 +198,14 @@ const Wishlist = () => {
   };
 
    
-    useEffect(() => {
-      fetchFavoriteItems();
-    }, [customerId, restaurantId]);
+  useEffect(() => {
+    fetchFavoriteItems();
+    // Add this to get the restaurant ID of items in the cart
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    if (cartItems.length > 0) {
+      setCartRestaurantId(cartItems[0].restaurant_id);
+    }
+  }, [customerId, restaurantId]);
 
   
   const wishlistCount = Object.keys(menuList).reduce(
@@ -318,7 +329,7 @@ const Wishlist = () => {
         <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData.tableNumber}
+            tableNumber={userData?.tableNumber || '1'}
           />
         </div>
         {customerId ? (

@@ -418,9 +418,9 @@ const Product = () => {
       
 
         <HotelNameAndTable
-          restaurantName={restaurantName}
-          tableNumber={userData.tableNumber}
-        />
+        restaurantName={restaurantName}
+        tableNumber={userData?.tableNumber || '1'}
+      />
  
         </div>
 

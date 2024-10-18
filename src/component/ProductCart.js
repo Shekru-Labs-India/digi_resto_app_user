@@ -228,6 +228,7 @@ const ProductCard = () => {
   };
 
   const [popupVisible, setPopupVisible] = useState(false);
+
   const handleAddToCartClick = async (menu) => {
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
@@ -268,7 +269,6 @@ const ProductCard = () => {
         setCartItems(updatedCartItems);
         localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         localStorage.setItem("cartId", data.cart_id);
-     
 
         // Show toast notification for item added to cart
         toast.current.show({
@@ -394,14 +394,8 @@ const ProductCard = () => {
                       className="detail-content category-text"
                       style={{ position: "relative" }}
                     >
-                      <div
-                        className="font_size_12 text-success"
-                        
-                      >
-                        <i
-                          className="ri-restaurant-line pe-1"
-                          
-                        ></i>
+                      <div className="font_size_12 text-success">
+                        <i className="ri-restaurant-line pe-1"></i>
                         {menu.category}
                       </div>
                       <i
@@ -419,7 +413,6 @@ const ProductCard = () => {
                           position: "absolute",
                           top: "0",
                           right: "0",
-                          
                         }}
                       ></i>
                     </div>
@@ -477,7 +470,6 @@ const ProductCard = () => {
                               e.stopPropagation();
                               handleAddToCartClick(menu);
                             }}
-                            
                           >
                             <i
                               className={`ri-shopping-cart-${
@@ -486,7 +478,14 @@ const ProductCard = () => {
                             ></i>
                           </div>
                         ) : (
-                          <i className="ri-shopping-cart-2-line fs-2"></i>
+                          <i
+                            className="ri-shopping-cart-2-line fs-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate("/Signinscreen");
+                            }}
+                          ></i>
                         )}
                       </div>
                     </div>

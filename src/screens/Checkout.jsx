@@ -227,7 +227,7 @@ const Checkout = () => {
         <div className="container py-0 my-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData.tableNumber}
+            tableNumber={userData?.tableNumber || '1'}
           />
         </div>
         <div className="m-3">

@@ -6,12 +6,13 @@ const LoaderGif = () => {
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
-    <div>
+    <div className="d-flex flex-column align-items-center justify-content-center">
       <img
         src={LoaderGIF}
         alt="Cooking stew"
         className="img-fluid"
       />
+      <h5 className="text-white ">Loading please wait...</h5>
     </div>
   );
 };

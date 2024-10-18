@@ -259,7 +259,7 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
             <div className="m-0">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData.tableNumber}
+                tableNumber={userData?.tableNumber || '1'}
               />
             </div>
             <div className="swiper-wrapper">

@@ -134,7 +134,7 @@ const Category = () => {
           <div className="container px-3 py-0">
           <HotelNameAndTable 
               restaurantName={restaurantName}
-              tableNumber={userData.tableNumber}
+              tableNumber={userData?.tableNumber || '1'}
             />
  
             </div>
