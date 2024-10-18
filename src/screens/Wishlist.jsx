@@ -63,6 +63,17 @@ const Wishlist = () => {
       return;
     }
 
+    if (isCartFromDifferentRestaurant(item.restaurant_id)) {
+      toast.current.show({
+        severity: "error",
+        summary: "Different Restaurant",
+        detail:
+          "This item is from a different restaurant. Clear your cart first.",
+        life: 3000,
+      });
+      return;
+    }
+
     if (isMenuItemInCart(item.menu_id)) {
       toast.current.show({
         severity: "error",
@@ -131,10 +142,6 @@ const Wishlist = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  const isCartFromDifferentRestaurant = (itemRestaurantId) => {
-    return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
-  };
-
   const fetchFavoriteItems = async () => {
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is missing.");
@@ -187,12 +194,16 @@ const Wishlist = () => {
 
   useEffect(() => {
     fetchFavoriteItems();
-    // Add this to get the restaurant ID of items in the cart
+    // Get the restaurant ID of items in the cart
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     if (cartItems.length > 0) {
       setCartRestaurantId(cartItems[0].restaurant_id);
     }
-  }, [customerId, restaurantId]);
+  }, [customerId]);
+
+  const isCartFromDifferentRestaurant = (itemRestaurantId) => {
+    return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
+  };
 
   const wishlistCount = Object.keys(menuList).reduce(
     (total, key) => total + menuList[key].length,
@@ -271,22 +282,6 @@ const Wishlist = () => {
     }
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const getFirstName = (name) => {
-    if (!name) return "User";
-    const words = name.split(" ");
-    return words[0];
-  };
-
-  const toggleTheme = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", newIsDarkMode);
-  };
-
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("theme-dark");
@@ -309,8 +304,7 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
-      <Header title="Favourite" count={wishlistCount} />
-
+     <Header title="Favourite" count={Object.keys(wishlistItems).reduce((total, key) => total + wishlistItems[key].length, 0)} />
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0">
           <HotelNameAndTable
@@ -337,8 +331,9 @@ const Wishlist = () => {
                   </span>
                 </div>
               </div>
-              {Object.keys(wishlistItems).map((restaurantName) => (
-                menuList[restaurantName] && menuList[restaurantName].length > 0 ? (
+              {Object.keys(wishlistItems).map((restaurantName) =>
+                menuList[restaurantName] &&
+                menuList[restaurantName].length > 0 ? (
                   <div className="container py-0" key={restaurantName}>
                     <div className="tab pt-0">
                       <input
@@ -364,142 +359,154 @@ const Wishlist = () => {
                           <span className="icon-circle">
                             <i
                               className={`ri-arrow-down-s-line arrow-icon pt-0 ${
-                                checkedItems[restaurantName] ? "rotated" : "rotated-1"
+                                checkedItems[restaurantName]
+                                  ? "rotated"
+                                  : "rotated-1"
                               }`}
                             ></i>
                           </span>
                         </span>
                       </label>
+                      
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
-                        <div className="container py-1 px-0" key={index}>
-                          <div className="custom-card rounded-4 ">
-                            <Link
-                              to={`/ProductDetails/${menu.menu_id}`}
-                              state={{
-                                restaurant_id: menu.restaurant_id,
-                                menu_cat_id: menu.menu_cat_id,
-                              }}
-                              className="text-decoration-none text-reset"
-                            >
-                              <div className="card-body py-0">
-                                <div className="row">
-                                  <div className="col-3 px-0">
-                                    <img
-                                      src={menu.image || images}
-                                      alt={menu.menu_name}
-                                      className="rounded-start-3 img-fluid"
-                                      style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "fill",
-                                        aspectRatio: "1/1",
-                                      }}
-                                      onError={(e) => {
-                                        e.target.src = images;
-                                        e.target.style.width = "100px";
-                                        e.target.style.height = "100px";
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="col-9 pt-1 p-0">
-                                    <div className="row">
-                                      <div className="col-9 pe-2">
-                                        <div className="ps-2 font_size_14 fw-medium">
-                                          {menu.menu_name}
+                          <div className="container py-1 px-0" key={index}>
+                            <div className="custom-card rounded-4 ">
+                              <Link
+                                to={`/ProductDetails/${menu.menu_id}`}
+                                state={{
+                                  restaurant_id: menu.restaurant_id,
+                                  menu_cat_id: menu.menu_cat_id,
+                                }}
+                                className="text-decoration-none text-reset"
+                              >
+                                <div className="card-body py-0">
+                                  <div className="row">
+                                    <div className="col-3 px-0">
+                                      <img
+                                        src={menu.image || images}
+                                        alt={menu.menu_name}
+                                        className="rounded-start-3 img-fluid"
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "fill",
+                                          aspectRatio: "1/1",
+                                        }}
+                                        onError={(e) => {
+                                          e.target.src = images;
+                                          e.target.style.width = "100px";
+                                          e.target.style.height = "100px";
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="col-9 pt-1 p-0">
+                                      <div className="row">
+                                        <div className="col-9 pe-2">
+                                          <div className="ps-2 font_size_14 fw-medium">
+                                            {menu.menu_name}
+                                          </div>
+                                        </div>
+                                        <div className="col-2 text-end fs-4 ps-0 pe-1">
+                                          <i
+                                            className="ri-hearts-fill icon-adjust heart-fill"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              handleRemoveItemClick(
+                                                restaurantName,
+                                                menu.menu_id,
+                                                menu.restaurant_id
+                                              );
+                                            }}
+                                          ></i>
                                         </div>
                                       </div>
-                                      <div className="col-2 text-end fs-4 ps-0 pe-1">
-                                        <i
-                                          className="ri-hearts-fill icon-adjust heart-fill"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleRemoveItemClick(
-                                              restaurantName,
-                                              menu.menu_id,
-                                              menu.restaurant_id
-                                            );
-                                          }}
-                                        ></i>
-                                      </div>
-                                    </div>
-                                    <div className="row">
-                                      <div className="col-5 pe-0 ps-4">
-                                        <span className="font_size_12 text-success">
-                                          <i className="ri-restaurant-line mt-0 me-1"></i>
-                                          {menu.category_name}
-                                        </span>
-                                      </div>
-                                      <div className="col-5 text-center fireNegative ps-0">
-                                        {menu.spicy_index && (
-                                          <div className="offer-code">
-                                            {Array.from({ length: 5 }).map(
-                                              (_, index) =>
-                                                index < menu.spicy_index ? (
-                                                  <i
-                                                    className="ri-fire-fill font_size_14 text-danger"
-                                                    key={index}
-                                                  ></i>
-                                                ) : (
-                                                  <i
-                                                    className="ri-fire-line font_size_14 gray-text"
-                                                    key={index}
-                                                  ></i>
-                                                )
-                                            )}
-                                          </div>
-                                        )}
-                                      </div>
-                                      <div className="col-2 text-end ps-0 ms-0 pe-4">
-                                        <i className="ri-star-half-line font_size_14 ratingStar "></i>
-                                        <span className="font_size_12  fw-normal gray-text">
-                                          {menu.rating || 0.1}
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    <div className="row  ps-2 align-items-center">
-                                      <div className="col-12 d-flex justify-content-between align-items-center">
-                                        <div className="d-flex align-items-center">
-                                          <p className="mb-0  me-2 fw-medium">
-                                            <span className="font_size_14 fw-semibold text-info">
-                                              ₹{menu.price}
-                                            </span>
-                                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                              ₹{menu.oldPrice || menu.price}
-                                            </span>
-                                          </p>
-                                          <span className="text-success font_size_12 ">
-                                            {menu.offer || "No"}% Off
+                                      <div className="row">
+                                        <div className="col-5 pe-0 ps-4">
+                                          <span className="font_size_12 text-success">
+                                            <i className="ri-restaurant-line mt-0 me-1"></i>
+                                            {menu.category_name}
                                           </span>
                                         </div>
-                                        <div
-                                          className="cart-btn cart-align me-2 pe-1"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleAddToCartClick(menu);
-                                          }}
-                                        >
-                                          {isMenuItemInCart(menu.menu_id) ? (
-                                            <i className="ri-shopping-cart-fill fs-2"></i>
-                                          ) : (
-                                            <i className="ri-shopping-cart-line fs-2"></i>
+                                        <div className="col-5 text-center fireNegative ps-0">
+                                          {menu.spicy_index && (
+                                            <div className="offer-code">
+                                              {Array.from({ length: 5 }).map(
+                                                (_, index) =>
+                                                  index < menu.spicy_index ? (
+                                                    <i
+                                                      className="ri-fire-fill font_size_14 text-danger"
+                                                      key={index}
+                                                    ></i>
+                                                  ) : (
+                                                    <i
+                                                      className="ri-fire-line font_size_14 gray-text"
+                                                      key={index}
+                                                    ></i>
+                                                  )
+                                              )}
+                                            </div>
                                           )}
+                                        </div>
+                                        <div className="col-2 text-end ps-0 ms-0 pe-4">
+                                          <i className="ri-star-half-line font_size_14 ratingStar "></i>
+                                          <span className="font_size_12  fw-normal gray-text">
+                                            {menu.rating || 0.1}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      <div className="row  ps-2 align-items-center">
+                                        <div className="col-12 d-flex justify-content-between align-items-center">
+                                          <div className="d-flex align-items-center">
+                                            <p className="mb-0  me-2 fw-medium">
+                                              <span className="font_size_14 fw-semibold text-info">
+                                                ₹{menu.price}
+                                              </span>
+                                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                                ₹{menu.oldPrice || menu.price}
+                                              </span>
+                                            </p>
+                                            <span className="text-success font_size_12 ">
+                                              {menu.offer || "No"}% Off
+                                            </span>
+                                          </div>
+                                          <div
+                                            className="cart-btn cart-align me-2 pe-1"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              handleAddToCartClick(menu);
+                                            }}
+                                          >
+                                            {isCartFromDifferentRestaurant(
+                                              menu.restaurant_id
+                                            ) ? (
+                                              <i
+                                                className="ri-shopping-cart-off-line fs-2"
+                                                title="Different Restaurant"
+                                              ></i>
+                                            ) : isMenuItemInCart(
+                                                menu.menu_id
+                                              ) ? (
+                                              <i className="ri-shopping-cart-fill fs-2"></i>
+                                            ) : (
+                                              <i className="ri-shopping-cart-line fs-2"></i>
+                                            )}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </Link>
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
                 ) : null
-              ))}
+              )}
             </>
           ) : (
             <div
