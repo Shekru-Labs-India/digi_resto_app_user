@@ -399,7 +399,7 @@ const Checkout = () => {
                   to="/Menu"
                   className="btn btn-outline-primary  rounded-pill  px-5"
                 >
-                  Shop More
+                  Order More
                 </Link>
               </div>
           </div>

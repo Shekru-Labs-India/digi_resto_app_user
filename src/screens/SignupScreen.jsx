@@ -78,7 +78,7 @@ const Signupscreen = () => {
             severity: "success",
             summary: "Success",
             detail: "Account created successfully!",
-            life: 3000,
+            life: 2000,
           });
         }
 
@@ -100,7 +100,7 @@ const Signupscreen = () => {
             severity: "warn",
             summary: "Warning",
             detail: errorMessage, // Use the response message from the API
-            life: 3000,
+            life: 2000,
           });
         }
       } else {
@@ -111,7 +111,7 @@ const Signupscreen = () => {
             severity: "error",
             summary: "Error",
             detail: "An error occurred. Please try again.",
-            life: 3000,
+            life: 2000,
           });
         }
       }
@@ -123,7 +123,7 @@ const Signupscreen = () => {
           severity: "error",
           summary: "Error",
           detail: error.message, // Use the error message
-          life: 3000,
+          life: 2000,
         });
       }
     } finally {

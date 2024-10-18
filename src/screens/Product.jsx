@@ -1,6 +1,3 @@
- 
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -15,7 +12,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
-import HotelNameAndTable from '../components/HotelNameAndTable';
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -187,12 +184,12 @@ const Product = () => {
 
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
-    if (!userData || !restaurantId) return;
-
-    if (!userData.customer_id) {
+    if (!userData || !userData.customer_id) {
       navigate("/Signinscreen");
       return;
     }
+
+    if (!restaurantId) return;
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -240,7 +237,7 @@ const Product = () => {
             detail: isFavorite
               ? "Item has been removed from your favourites."
               : "Item has been added to your favourites.",
-            life: 3000,
+            life: 2000,
           });
         }
       }
@@ -249,16 +246,11 @@ const Product = () => {
     }
   };
 
-  
-  
   useEffect(() => {
     if (location.state && location.state.selectedCategory) {
       setSelectedCategory(parseInt(location.state.selectedCategory, 10));
     }
   }, [location]);
-  
- 
-
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -268,38 +260,39 @@ const Product = () => {
       swiperRef.current = new Swiper(".category-slide", {
         slidesPerView: "auto",
         spaceBetween: 10,
-        initialSlide: selectedCategory ? categories.findIndex(
-          (category) => category.menu_cat_id === selectedCategory
-        ) : 0,
+        initialSlide: selectedCategory
+          ? categories.findIndex(
+              (category) => category.menu_cat_id === selectedCategory
+            )
+          : 0,
       });
     }
   }, [categories, selectedCategory]);
 
   useEffect(() => {
     if (selectedCategory) {
-      const filtered = menuList.filter(item => item.menu_cat_id === selectedCategory);
+      const filtered = menuList.filter(
+        (item) => item.menu_cat_id === selectedCategory
+      );
       setFilteredMenuList(filtered);
     } else {
       setFilteredMenuList(menuList);
     }
   }, [selectedCategory, menuList]);
 
-  
-
-  
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
     if (swiperRef.current) {
-      const activeIndex = categoryId ? categories.findIndex(
-        (category) => category.menu_cat_id === categoryId
-      ) : 0;
+      const activeIndex = categoryId
+        ? categories.findIndex(
+            (category) => category.menu_cat_id === categoryId
+          )
+        : 0;
       if (activeIndex !== -1) {
         swiperRef.current.slideTo(activeIndex);
       }
     }
   };
-  
-
 
   // Add item to cart
   const handleAddToCartClick = async (menuItem) => {
@@ -318,7 +311,7 @@ const Product = () => {
         severity: "error",
         summary: "Item in Cart",
         detail: "This item is already in the cart!",
-        life: 3000,
+        life: 2000,
       });
       return;
     }
@@ -353,7 +346,7 @@ const Product = () => {
           severity: "success",
           summary: "Added to Cart",
           detail: "Item has been added to your cart.",
-          life: 3000,
+          life: 2000,
         });
       } else {
         console.error("Failed to add item to cart:", data.msg);
@@ -411,17 +404,12 @@ const Product = () => {
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <Header title="Menu" count={menuList.length} />
 
- 
       <main className={`page-content space-top`}>
         <div className="container px-3 py-0">
-
-      
-
-        <HotelNameAndTable
-        restaurantName={restaurantName}
-        tableNumber={userData?.tableNumber || '1'}
-      />
- 
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
         </div>
 
         {/* Category Swiper */}
@@ -555,22 +543,13 @@ const Product = () => {
                               {Array.from({ length: 5 }).map((_, index) =>
                                 index < menuItem.spicy_index ? (
                                   <i
- 
                                     className="ri-fire-fill text-danger font_size_14"
-
-                                  
-
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
- 
                                     className="ri-fire-line gray-text font_size_14"
-                                   
-
-                                    
                                     style={{ color: "#bbbaba" }}
-
                                     key={index}
                                   ></i>
                                 )
@@ -602,26 +581,22 @@ const Product = () => {
                         </div>
 
                         <div className="col-4">
-                          {userData ? (
-                            <div
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menuItem);
-                              }}
-                              className="cart-btn text-end"
-                            >
-                              <i
-                                className={`ri-shopping-cart-${
-                                  isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill"
-                                    : "line"
-                                } fs-2`}
-                              ></i>
-                            </div>
-                          ) : (
-                            <i className="ri-shopping-cart-line fs-2"></i>
-                          )}
+                          <div
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCartClick(menuItem);
+                            }}
+                            className="cart-btn text-end"
+                          >
+                            <i
+                              className={`ri-shopping-cart-${
+                                isMenuItemInCart(menuItem.menu_id)
+                                  ? "fill"
+                                  : "line"
+                              } fs-2`}
+                            ></i>
+                          </div>
                         </div>
                       </div>
                       <div className="row">
@@ -646,6 +621,3 @@ const Product = () => {
 };
 
 export default Product;
- 
-
-

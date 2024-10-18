@@ -42,13 +42,14 @@ const MenuDetails = () => {
     );
   };
 
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
+    useState(false);
+
   const orderedItems = location.state?.orderedItems || [];
 
   const isItemOrdered = (menuId) => {
-    return orderedItems.some(item => item.menu_id === menuId);
+    return orderedItems.some((item) => item.menu_id === menuId);
   };
-
-  
 
   // Fetch product details
   const fetchProductDetails = async () => {
@@ -109,6 +110,9 @@ const MenuDetails = () => {
 
           // Set the initial total amount
           setTotalAmount(discountedPrice * quantity);
+          setIsFromDifferentRestaurant(
+            data.details.restaurant_id !== restaurantId
+          );
         } else {
           console.error("Invalid data format:", data);
         }
@@ -137,10 +141,6 @@ const MenuDetails = () => {
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
-
-
-  
-  
 
   const handleAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -192,7 +192,7 @@ const MenuDetails = () => {
           severity: "success",
           summary: "Added to Cart",
           detail: "Item has been added to your cart.",
-          life: 3000,
+          life: 2000,
         });
 
         setTimeout(() => {
@@ -262,7 +262,7 @@ const MenuDetails = () => {
             detail: isFavorite
               ? "Item has been removed from your favorites."
               : "Item has been added to your favorites.",
-            life: 3000,
+            life: 2000,
           });
         } else {
           console.error("Failed to update favorite status:", data.msg);
@@ -309,7 +309,7 @@ const MenuDetails = () => {
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || '1'}
+                tableNumber={userData?.tableNumber || "1"}
               />
             </div>
           </div>
@@ -330,6 +330,15 @@ const MenuDetails = () => {
               />
             </div>
           </div>
+
+          {isFromDifferentRestaurant && (
+            <div className="container mt-3">
+              <div className="alert alert-warning" role="alert">
+                This item is from a different restaurant. You can view details,
+                but can't add it to your current cart.
+              </div>
+            </div>
+          )}
 
           <div className="container py-0">
             <div className="dz-product-detail">
@@ -469,40 +478,45 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-6 px-0 text-start menu_details-add-to-cart">
-                {isItemOrdered(menuId) ? (
-                  <button
-                    className="btn btn-outline-primary rounded-pill"
-                    disabled
-                  >
-                    <i className="ri-check-line pe-1"></i>
-                    <div className="font-poppins  text-nowrap ">
-                      Ordered
-                    </div>
-                  </button>
-                ) : isMenuItemInCart(menuId) ? (
-                  <button
-                    className="btn btn-color rounded-pill"
-                    onClick={() => navigate("/Cart")}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins text-nowrap text-white">
-                      Go to Cart
-                    </div>
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-color rounded-pill"
-                    onClick={handleAddToCart}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="text-nowrap text-white">
-                      Add to Cart
-                    </div>
-                  </button>
-                )}
+                  {isFromDifferentRestaurant ? (
+                    <button
+                      className="btn btn-outline-secondary rounded-pill"
+                      disabled
+                    >
+                      <div className="font-poppins text-nowrap">
+                        Different Restaurant
+                      </div>
+                    </button>
+                  ) : isItemOrdered(menuId) ? (
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      disabled
+                    >
+                      <i className="ri-check-line pe-1"></i>
+                      <div className="font-poppins text-nowrap">Ordered</div>
+                    </button>
+                  ) : isMenuItemInCart(menuId) ? (
+                    <button
+                      className="btn btn-color rounded-pill"
+                      onClick={() => navigate("/Cart")}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <div className="font-poppins text-nowrap text-white">
+                        Go to Cart
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-color rounded-pill"
+                      onClick={handleAddToCart}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <div className="text-nowrap text-white">Add to Cart</div>
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          </footer>
+            </footer>
           </div>
         </div>
       </div>

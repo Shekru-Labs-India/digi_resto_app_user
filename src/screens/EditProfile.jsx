@@ -78,7 +78,7 @@ const EditProfile = () => {
           severity: "success",
           summary: "Profile Updated",
           detail: "Your profile has been updated successfully!",
-          life: 3000,
+          life: 2000,
         });
         setTimeout(() => {
           navigate("/Profile");

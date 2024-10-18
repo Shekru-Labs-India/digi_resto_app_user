@@ -112,7 +112,7 @@
 //           severity: "error",
 //           summary: "Error",
 //           detail: "Incorrect OTP. Please try again.",
-//           life: 3000,
+//           life: 2000,
 //         });
 //       }
 //     } catch (error) {
@@ -123,7 +123,7 @@
 //         severity: "error",
 //         summary: "Error",
 //         detail: "Verification failed. Please try again.",
-//         life: 3000,
+//         life: 2000,
 //       });
 //     } finally {
 //       setLoading(false);
@@ -595,7 +595,7 @@ export default Verifyotp;
 //           severity: "error",
 //           summary: "Error",
 //           detail: "Incorrect OTP. Please try again.",
-//           life: 3000,
+//           life: 2000,
 //         });
 //       }
 //     } catch (error) {
@@ -606,7 +606,7 @@ export default Verifyotp;
 //         severity: "error",
 //         summary: "Error",
 //         detail: "Verification failed. Please try again.",
-//         life: 3000,
+//         life: 2000,
 //       });
 //     } finally {
 //       setLoading(false);

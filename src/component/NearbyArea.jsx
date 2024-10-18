@@ -193,14 +193,14 @@ const NearbyArea = () => {
           detail: isFavorite
             ? "Removed from Favourites"
             : "Added to Favourites",
-          life: 3000,
+          life: 2000,
         });
       } else {
         toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Failed to update favorite status",
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {
@@ -220,7 +220,7 @@ const NearbyArea = () => {
         severity: "error",
         summary: "Item Already in Cart",
         detail: menuItem.name,
-        life: 3000,
+        life: 2000,
       });
       return;
     }
@@ -253,14 +253,14 @@ const NearbyArea = () => {
           severity: "success",
           summary: "Success",
           detail: "Added to cart",
-          life: 3000,
+          life: 2000,
         });
       } else {
         toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Failed to add to cart",
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {

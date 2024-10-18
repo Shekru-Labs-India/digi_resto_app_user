@@ -217,7 +217,7 @@ const ProductCard = () => {
               ? "Removed from Favourites"
               : "Added to Favourites",
             detail: menuItem.name,
-            life: 3000,
+            life: 2000,
             //  position: "bottom-center", // Change this line to set the position
           });
         }
@@ -241,7 +241,7 @@ const ProductCard = () => {
         severity: "error",
         summary: "Item Already in Cart",
         detail: menu.name,
-        life: 3000,
+        life: 2000,
       });
       return;
     }
@@ -275,7 +275,7 @@ const ProductCard = () => {
           severity: "success",
           summary: "Added to Cart",
           detail: menu.name,
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {

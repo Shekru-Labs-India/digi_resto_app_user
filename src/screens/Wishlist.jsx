@@ -10,7 +10,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
-import HotelNameAndTable from '../components/HotelNameAndTable';
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -20,8 +20,6 @@ const Wishlist = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
   const [cartRestaurantId, setCartRestaurantId] = useState(null);
-  
- 
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -44,7 +42,6 @@ const Wishlist = () => {
     return localStorage.getItem("isDarkMode") === "true";
   });
 
- 
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [menuList, setMenuList] = useState({});
@@ -56,15 +53,8 @@ const Wishlist = () => {
   const navigate = useNavigate();
   const toast = useRef(null);
 
- 
- 
-
-   const userData = JSON.parse(localStorage.getItem("userData"));
+  const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
-
-  
-
-  
 
   const handleAddToCartClick = async (item) => {
     if (!customerId || !restaurantId) {
@@ -72,17 +62,17 @@ const Wishlist = () => {
       navigate("/Signinscreen");
       return;
     }
-  
+
     if (isMenuItemInCart(item.menu_id)) {
       toast.current.show({
         severity: "error",
         summary: "Item Already in Cart",
         detail: item.menu_name,
-        life: 3000,
+        life: 2000,
       });
       return;
     }
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -99,29 +89,31 @@ const Wishlist = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
         setCartItems(updatedCartItems);
         localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         localStorage.setItem("cartId", data.cart_id);
-  
+
         // Dispatch a custom event to notify other components of the cart update
-        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: updatedCartItems }));
-  
+        window.dispatchEvent(
+          new CustomEvent("cartUpdated", { detail: updatedCartItems })
+        );
+
         toast.current.show({
           severity: "success",
           summary: "Added to Cart",
           detail: item.menu_name,
-          life: 3000,
+          life: 2000,
         });
       } else {
         toast.current.show({
           severity: "error",
           summary: "Error",
           detail: "Failed to add item to cart.",
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {
@@ -130,7 +122,7 @@ const Wishlist = () => {
         severity: "error",
         summary: "Error",
         detail: "An error occurred while adding the item to the cart.",
-        life: 3000,
+        life: 2000,
       });
     }
   };
@@ -139,11 +131,10 @@ const Wishlist = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  
   const isCartFromDifferentRestaurant = (itemRestaurantId) => {
     return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
   };
-  
+
   const fetchFavoriteItems = async () => {
     if (!customerId || !restaurantId) {
       console.error("Customer ID or Restaurant ID is missing.");
@@ -151,8 +142,6 @@ const Wishlist = () => {
       return;
     }
 
-   
-  
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -164,11 +153,10 @@ const Wishlist = () => {
           },
           body: JSON.stringify({
             customer_id: customerId,
-            
           }),
         }
       );
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1 && data.lists) {
@@ -197,7 +185,6 @@ const Wishlist = () => {
     }
   };
 
-   
   useEffect(() => {
     fetchFavoriteItems();
     // Add this to get the restaurant ID of items in the cart
@@ -207,7 +194,6 @@ const Wishlist = () => {
     }
   }, [customerId, restaurantId]);
 
-  
   const wishlistCount = Object.keys(menuList).reduce(
     (total, key) => total + menuList[key].length,
     0
@@ -263,7 +249,7 @@ const Wishlist = () => {
           severity: "success",
           summary: "Item Removed",
           detail: "Item has been removed from favorites",
-          life: 3000,
+          life: 2000,
         });
       } else {
         console.error("Failed to remove item:", data.msg || "Unknown error");
@@ -271,7 +257,7 @@ const Wishlist = () => {
           severity: "error",
           summary: "Error",
           detail: "Failed to remove item from favorites",
-          life: 3000,
+          life: 2000,
         });
       }
     } catch (error) {
@@ -280,7 +266,7 @@ const Wishlist = () => {
         severity: "error",
         summary: "Error",
         detail: "An error occurred while removing the item",
-        life: 3000,
+        life: 2000,
       });
     }
   };
@@ -329,7 +315,7 @@ const Wishlist = () => {
         <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || '1'}
+            tableNumber={userData?.tableNumber || "1"}
           />
         </div>
         {customerId ? (
@@ -352,41 +338,40 @@ const Wishlist = () => {
                 </div>
               </div>
               {Object.keys(wishlistItems).map((restaurantName) => (
-                <div className="container py-0">
-                  <div key={restaurantName} className="tab pt-0">
-                    <input
-                      type="checkbox"
-                      id={`chck${restaurantName}`}
-                      checked={checkedItems[restaurantName] || false}
-                      onChange={() => toggleChecked(restaurantName)}
-                    />
-                    <label
-                      className="tab-label pb-0 px-0 pt-2"
-                      htmlFor={`chck${restaurantName}`}
-                    >
-                      <span className="">
-                        <span class="font_size_14 fw-medium">
-                          <i class="ri-store-2-line me-2"></i>
-                          {restaurantName.toUpperCase()}
+                menuList[restaurantName] && menuList[restaurantName].length > 0 ? (
+                  <div className="container py-0" key={restaurantName}>
+                    <div className="tab pt-0">
+                      <input
+                        type="checkbox"
+                        id={`chck${restaurantName}`}
+                        checked={checkedItems[restaurantName] || false}
+                        onChange={() => toggleChecked(restaurantName)}
+                      />
+                      <label
+                        className="tab-label pb-0 px-0 pt-2"
+                        htmlFor={`chck${restaurantName}`}
+                      >
+                        <span className="">
+                          <span className="font_size_14 fw-medium">
+                            <i className="ri-store-2-line me-2"></i>
+                            {restaurantName.toUpperCase()}
+                          </span>
                         </span>
-                      </span>
-                      <span className="">
-                        <span className="gray-text ps-2 pe-2 small-number">
-                          {menuList[restaurantName].length}
+                        <span className="">
+                          <span className="gray-text ps-2 pe-2 small-number">
+                            {menuList[restaurantName].length}
+                          </span>
+                          <span className="icon-circle">
+                            <i
+                              className={`ri-arrow-down-s-line arrow-icon pt-0 ${
+                                checkedItems[restaurantName] ? "rotated" : "rotated-1"
+                              }`}
+                            ></i>
+                          </span>
                         </span>
-                        <span className="icon-circle">
-                          <i
-                            className={`ri-arrow-down-s-line arrow-icon pt-0 ${
-                              checkedItems[restaurantName]
-                                ? "rotated"
-                                : "rotated-1"
-                            }`}
-                          ></i>
-                        </span>
-                      </span>
-                    </label>
-                    <div className="tab-content">
-                      {menuList[restaurantName].map((menu, index) => (
+                      </label>
+                      <div className="tab-content">
+                        {menuList[restaurantName].map((menu, index) => (
                         <div className="container py-1 px-0" key={index}>
                           <div className="custom-card rounded-4 ">
                             <Link
@@ -453,7 +438,6 @@ const Wishlist = () => {
                                                 index < menu.spicy_index ? (
                                                   <i
                                                     className="ri-fire-fill font_size_14 text-danger"
-                                                    
                                                     key={index}
                                                   ></i>
                                                 ) : (
@@ -514,6 +498,7 @@ const Wishlist = () => {
                     </div>
                   </div>
                 </div>
+                ) : null
               ))}
             </>
           ) : (

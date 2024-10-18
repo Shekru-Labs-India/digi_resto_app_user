@@ -80,14 +80,14 @@ const TrackOrder = () => {
           severity: "info",
           summary: "Maximum Quantity",
           detail: `You've reached the maximum quantity for ${menuItem.menu}`,
-          life: 3000,
+          life: 2000,
         });
       } else {
         toast.current.show({
           severity: "success",
           summary: "Quantity Increased",
           detail: `${menuItem.menu_name} quantity increased to ${newQuantity}`,
-          life: 3000,
+          life: 2000,
         });
       }
       return { ...prev, [menuItem]: newQuantity };
@@ -102,14 +102,14 @@ const TrackOrder = () => {
           severity: "info",
           summary: "Minimum Quantity",
           detail: `You've reached the minimum quantity for ${menuItem.menu_name}`,
-          life: 3000,
+          life: 2000,
         });
       } else {
         toast.current.show({
           severity: "success",
           summary: "Quantity Decreased",
           detail: `${menuItem.menu_name} quantity decreased to ${newQuantity}`,
-          life: 3000,
+          life: 2000,
         });
       }
       return { ...prev, [menuItem]: newQuantity };
@@ -326,7 +326,7 @@ const TrackOrder = () => {
       severity: "success",
       summary: "Added to Order",
       detail: `${menuItem.menu_name} (Qty: ${quantity})`,
-      life: 3000,
+      life: 2000,
     });
   };
 
@@ -396,7 +396,7 @@ const TrackOrder = () => {
           severity: "success",
           summary: "Order Updated",
           detail: "Your order has been successfully updated.",
-          life: 3000,
+          life: 2000,
         });
         fetchOrderDetails(order_number);
       } else {
@@ -408,7 +408,7 @@ const TrackOrder = () => {
         severity: "error",
         summary: "Error",
         detail: error.message || "Failed to update order. Please try again.",
-        life: 3000,
+        life: 2000,
       });
     }
   };

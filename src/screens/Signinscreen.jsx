@@ -62,7 +62,7 @@ import LoaderGif from "./LoaderGIF";
              severity: "success",
              summary: "Success",
              detail: "OTP has been sent successfully!",
-             life: 3000,
+             life: 2000,
            });
 
            navigate("/Verifyotp");
@@ -72,7 +72,7 @@ import LoaderGif from "./LoaderGIF";
              severity: "info",
              summary: "Info",
              detail: data.msg || "Sign in failed. Please try again.",
-             life: 3000,
+             life: 2000,
            });
          }
        } else {
@@ -81,7 +81,7 @@ import LoaderGif from "./LoaderGIF";
            severity: "warn",
            summary: "Warning",
            detail: data.msg || `HTTP error! Status: ${response.status}`,
-           life: 3000,
+           life: 2000,
          });
 
          if (data.st === 2) {
@@ -96,7 +96,7 @@ import LoaderGif from "./LoaderGIF";
          severity: "error",
          summary: "Error",
          detail: "Sign in failed. Please try again.",
-         life: 3000,
+         life: 2000,
        });
      } finally {
        setLoading(false);
