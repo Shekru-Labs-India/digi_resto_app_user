@@ -266,7 +266,9 @@ const ProductCard = () => {
       if (response.ok && data.st === 1) {
         const updatedCartItems = [...cartItems, { ...menu, quantity: 1 }];
         setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         localStorage.setItem("cartId", data.cart_id);
+     
 
         // Show toast notification for item added to cart
         toast.current.show({

@@ -16,6 +16,9 @@ const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const [hasFavorites, setHasFavorites] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState({});
+  const { restaurantId, restaurantName } = useRestaurantId();
+  const [isLoading, setIsLoading] = useState(true);
   
  
 
@@ -39,7 +42,8 @@ const Wishlist = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  const { restaurantName } = useRestaurantId();
+
+ 
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [menuList, setMenuList] = useState({});
@@ -47,59 +51,19 @@ const Wishlist = () => {
   const [cartItems, setCartItems] = useState(
     () => JSON.parse(localStorage.getItem("cartItems")) || []
   );
+
   const navigate = useNavigate();
   const toast = useRef(null);
 
-  const { restaurantId: contextRestaurantId } = useRestaurantId();
-  const storedRestaurantId = localStorage.getItem("RestaurantId");
-  const restaurantId = contextRestaurantId || storedRestaurantId;
+ 
+ 
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
+   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
-  const [isLoading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (restaurantId) {
-      localStorage.setItem("restaurantId", restaurantId);
-    }
-  }, [restaurantId]);
+  
 
-  const removeItem = async (restaurantName, menuId, restaurantId) => {
-    if (!customerId || !menuId || !restaurantId) {
-      console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/remove_favourite_menu",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.st === 1) {
-        console.log("Item removed successfully");
-        return true;
-      } else {
-        console.error("Failed to remove item:", data.msg || "Unknown error");
-        throw new Error(data.msg || "Failed to remove item");
-      }
-    } catch (error) {
-      console.error("Error removing favorite item:", error);
-      throw error;
-    }
-  };
+  
 
   const handleAddToCartClick = async (item) => {
     if (!customerId || !restaurantId) {
@@ -107,11 +71,7 @@ const Wishlist = () => {
       navigate("/Signinscreen");
       return;
     }
-    const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
-    setCartItems(updatedCartItems); // Update the shared cart state
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-
+  
     if (isMenuItemInCart(item.menu_id)) {
       toast.current.show({
         severity: "error",
@@ -121,9 +81,7 @@ const Wishlist = () => {
       });
       return;
     }
-
-    
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -140,9 +98,16 @@ const Wishlist = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
+        const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+        setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        
+        // Dispatch a custom event to notify other components of the cart update
+        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: updatedCartItems }));
+  
         toast.current.show({
           severity: "success",
           summary: "Added to Cart",
@@ -150,11 +115,6 @@ const Wishlist = () => {
           life: 3000,
         });
       } else {
-        const revertedCartItems = updatedCartItems.filter(
-          (cartItem) => cartItem.menu_id !== item.menu_id
-        );
-        localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
-        setCartItems(revertedCartItems);
         toast.current.show({
           severity: "error",
           summary: "Error",
@@ -163,11 +123,7 @@ const Wishlist = () => {
         });
       }
     } catch (error) {
-      const revertedCartItems = updatedCartItems.filter(
-        (cartItem) => cartItem.menu_id !== item.menu_id
-      );
-      localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
-      setCartItems(revertedCartItems);
+      console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -181,51 +137,64 @@ const Wishlist = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  const toTitleCase = (text) => {
-    if (!text) return "";
-    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+  
+ 
+  
+  const fetchFavoriteItems = async () => {
+    if (!customerId || !restaurantId) {
+      console.error("Customer ID or Restaurant ID is missing.");
+      setIsLoading(false);
+      return;
+    }
+  
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_favourite_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: customerId,
+            
+          }),
+        }
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && data.lists) {
+          setWishlistItems(data.lists);
+          setMenuList(data.lists); // Update menuList as well
+          setHasFavorites(Object.keys(data.lists).length > 0);
+        } else {
+          console.error("Invalid data format:", data);
+          setWishlistItems({});
+          setMenuList({});
+          setHasFavorites(false);
+        }
+      } else {
+        console.error("Network response was not ok:", response.statusText);
+        setWishlistItems({});
+        setMenuList({});
+        setHasFavorites(false);
+      }
+    } catch (error) {
+      console.error("Error fetching favourite items:", error);
+      setWishlistItems({});
+      setMenuList({});
+      setHasFavorites(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const fetchFavoriteItems = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_favourite_list",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customer_id: customerId,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.st === 1 && data.lists) {
-            setMenuList(data.lists);
-            setHasFavorites(Object.keys(data.lists).length > 0);
-          } else {
-            console.error("Invalid data format:", data);
-            setHasFavorites(false);
-          }
-        } else {
-          console.error("Network response was not ok:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching favourite items:", error);
-        setHasFavorites(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFavoriteItems();
-  }, [customerId, restaurantId]);
+   
+    useEffect(() => {
+      fetchFavoriteItems();
+    }, [customerId, restaurantId]);
 
   
   const wishlistCount = Object.keys(menuList).reduce(
@@ -371,7 +340,7 @@ const Wishlist = () => {
                   </span>
                 </div>
               </div>
-              {Object.keys(menuList).map((restaurantName) => (
+              {Object.keys(wishlistItems).map((restaurantName) => (
                 <div className="container py-0">
                   <div key={restaurantName} className="tab pt-0">
                     <input
