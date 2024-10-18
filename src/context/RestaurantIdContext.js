@@ -11,11 +11,11 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantId, setRestaurantId] = useState(null);
   const [restaurantName, setRestaurantName] = useState("");
   const [restaurantCode, setRestaurantCode] = useState("");
+  const [tableNumber, setTableNumber] = useState("");
   const navigate = useNavigate();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    
     const fetchRestaurantDetails = async () => {
       if (!restaurantCode || restaurantCode === lastFetchedCode.current) return;
 
@@ -39,14 +39,17 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantId(restaurant_id);
           setRestaurantName(name);
 
-          // Update userData in local storage
-          const userData = JSON.parse(localStorage.getItem("userData")) || {};
-          userData.restaurantId = restaurant_id;
-          userData.restaurantName = name;
-          localStorage.setItem("userData", JSON.stringify(userData));
-        }
-
-        if (data.st === 2) {
+          // Store restaurant data separately
+          localStorage.setItem("restaurantId", restaurant_id);
+          localStorage.setItem("restaurantName", name);
+          localStorage.setItem("restaurantCode", restaurantCode);
+        } else if (data.st === 2) {
+          // Invalid restaurant code
+          setRestaurantId(null);
+          setRestaurantName("");
+          localStorage.removeItem("restaurantId");
+          localStorage.removeItem("restaurantName");
+          localStorage.removeItem("restaurantCode");
           navigate("Index");
         } else {
           console.error("Failed to fetch restaurant details:", data.msg);
@@ -60,13 +63,27 @@ export const RestaurantIdProvider = ({ children }) => {
   }, [restaurantCode, navigate]);
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("userData")) || {};
-    if (storedData.restaurantId) {
-      setRestaurantId(storedData.restaurantId);
-      setRestaurantName(storedData.restaurantName);
-      setRestaurantCode(storedData.restaurantCode);
-    }
+    // Load restaurant data from localStorage on initial render
+    const storedRestaurantId = localStorage.getItem("restaurantId");
+    const storedRestaurantName = localStorage.getItem("restaurantName");
+    const storedRestaurantCode = localStorage.getItem("restaurantCode");
+    const storedTableNumber = localStorage.getItem("tableNumber");
+
+    if (storedRestaurantId) setRestaurantId(storedRestaurantId);
+    if (storedRestaurantName) setRestaurantName(storedRestaurantName);
+    if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
+    if (storedTableNumber) setTableNumber(storedTableNumber);
   }, []);
+
+  const updateRestaurantCode = (code) => {
+    setRestaurantCode(code);
+    localStorage.setItem("restaurantCode", code);
+  };
+
+  const updateTableNumber = (number) => {
+    setTableNumber(number);
+    localStorage.setItem("tableNumber", number);
+  };
 
   return (
     <RestaurantIdContext.Provider
@@ -74,7 +91,10 @@ export const RestaurantIdProvider = ({ children }) => {
         restaurantId,
         restaurantName,
         restaurantCode,
-        setRestaurantCode,
+        tableNumber,
+        updateRestaurantCode,
+        updateTableNumber,
+        setRestaurantCode, 
       }}
     >
       {children}
