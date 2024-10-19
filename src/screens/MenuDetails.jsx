@@ -342,7 +342,7 @@ const MenuDetails = () => {
           {isFromDifferentRestaurant && (
             <div className="container mt-3">
               <div className="alert alert-warning" role="alert">
-                This item is from a different restaurant. You can view details,
+                This Menu is from a different restaurant. You can view details,
                 but can't add it to your current cart.
               </div>
             </div>
@@ -487,7 +487,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-7 px-0 text-start menu_details-add-to-cart">
+                <div className="col-7 px-0 text-center menu_details-add-to-cart">
                   {isFromDifferentRestaurant ? (
                     <button
                       className="btn btn-outline-secondary rounded-pill p-3"

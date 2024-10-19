@@ -53,6 +53,8 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
     }
   }, [customerId, restaurantId]);
 
+  
+
   const fetchLatestOngoingOrder = async () => {
     try {
       const response = await fetch("https://menumitra.com/user_api/get_order_list", {
@@ -124,6 +126,8 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
 
     const fetchData = async (retryCount = 0) => {
       try {
+        
+        localStorage.removeItem("menuItems");
         console.log("Fetching data...");
         const url =
           "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
@@ -158,25 +162,18 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
         }
 
         if (data.st === 1 && data.data.offer_menu_list) {
-          // Fetching menu items from API and title-casing names
           const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
             ...menu,
             name: toTitleCase(menu.menu_name),
-
             menu_cat_name: toTitleCase(menu.category_name),
-
           }));
 
-          // Merge local menu items and API data
-          const localMenuItems = getLocalMenuItems();
-          const mergedMenuItems = [...localMenuItems, ...formattedMenuLists];
-
           if (isMounted) {
-            setMenuLists(mergedMenuItems);
+            setMenuLists(formattedMenuLists);
           }
 
           // Save updated menu list to localStorage
-          saveLocalMenuItems(mergedMenuItems);
+          saveLocalMenuItems(formattedMenuLists);
         }
       } catch (error) {
         console.error("Error fetching data:", error);

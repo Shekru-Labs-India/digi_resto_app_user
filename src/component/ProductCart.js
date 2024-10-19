@@ -47,14 +47,20 @@ const ProductCard = () => {
 
   const fetchMenuData = useCallback(
     async (categoryId) => {
-      if (isLoading || hasFetchedData.current) return;
+      if (isLoading) return;
       setIsLoading(true);
-      hasFetchedData.current = true;
+
+      localStorage.removeItem("menuItems");
+
       try {
+        
+
         const requestBody = {
           customer_id: customerId,
           restaurant_id: restaurantId,
         };
+
+        console.log("Sending request with body:", requestBody); // Log the request body
 
         const response = await fetch(
           "https://menumitra.com/user_api/get_all_menu_list_by_category",
@@ -68,7 +74,9 @@ const ProductCard = () => {
         );
 
         const data = await response.json();
+        console.log("Received data:", data); 
 
+        
         if (response.ok && data.st === 1) {
           if (Array.isArray(data.data.category)) {
             const formattedCategories = data.data.category.map((category) => ({
@@ -98,6 +106,7 @@ const ProductCard = () => {
               );
               setFilteredMenuList(filteredMenus);
             }
+            // Save updated menu list to localStorage
             localStorage.setItem(
               "menuItems",
               JSON.stringify(formattedMenuList)
@@ -108,11 +117,13 @@ const ProductCard = () => {
             setFilteredMenuList([]);
           }
         } else {
+          console.error("API response error:", data);
           setMenuCategories([]);
           setMenuList([]);
           setFilteredMenuList([]);
         }
       } catch (error) {
+        console.error("Error fetching menu data:", error);
         setMenuCategories([]);
         setMenuList([]);
         setFilteredMenuList([]);
@@ -120,22 +131,23 @@ const ProductCard = () => {
         setIsLoading(false);
       }
     },
-    [customerId, restaurantId, isLoading]
+    [customerId, restaurantId]
   );
 
-  const debouncedFetchMenuData = useCallback(
+  const debouncedFetchMenuData = useRef(
     debounce((categoryId) => {
       fetchMenuData(categoryId);
-    }, 300),
-    [fetchMenuData]
-  );
+    }, 300)
+  ).current;
 
   useEffect(() => {
     if (restaurantId) {
+      console.log("Restaurant ID changed:", restaurantId); // Log when restaurantId changes
       debouncedFetchMenuData(null);
       setSelectedCategoryId(null);
     }
-  }, [restaurantId, debouncedFetchMenuData]);
+  }, [restaurantId]);// Remove debouncedFetchMenuData from dependencies
+
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
