@@ -22,9 +22,11 @@ const HomeScreen = () => {
       setRestaurantCode(restaurantCode);
       localStorage.setItem("restaurantCode", restaurantCode);
       localStorage.removeItem("menuItems");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("cartId");
     }
   }, [restaurantCode, setRestaurantCode]);
-
+  
   useEffect(() => {
     if (restaurantId && restaurantDetails) {
       const updatedUserData = { ...userData, restaurantId, restaurantName: restaurantDetails.name, tableNumber: table_number || '1' };

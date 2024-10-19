@@ -19,7 +19,7 @@ const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState({});
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
-  const [cartRestaurantId, setCartRestaurantId] = useState(null);
+ 
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -56,87 +56,13 @@ const Wishlist = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
 
-  const handleAddToCartClick = async (item) => {
-    if (!customerId || !restaurantId) {
-      console.error("Customer ID or Restaurant ID is missing.");
-      navigate("/Signinscreen");
-      return;
-    }
 
-    if (isCartFromDifferentRestaurant(item.restaurant_id)) {
-      toast.current.show({
-        severity: "error",
-        summary: "Different Restaurant",
-        detail:
-          "This item is from a different restaurant. Clear your cart first.",
-        life: 3000,
-      });
-      return;
-    }
+  const [cartRestaurantId, setCartRestaurantId] = useState(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    return cartItems.length > 0 ? cartItems[0].restaurant_id : null;
+  });
 
-    if (isMenuItemInCart(item.menu_id)) {
-      toast.current.show({
-        severity: "error",
-        summary: "Item Already in Cart",
-        detail: item.menu_name,
-        life: 2000,
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: item.menu_id,
-            customer_id: customerId,
-            quantity: 1,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
-        setCartItems(updatedCartItems);
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        localStorage.setItem("cartId", data.cart_id);
-
-        // Dispatch a custom event to notify other components of the cart update
-        window.dispatchEvent(
-          new CustomEvent("cartUpdated", { detail: updatedCartItems })
-        );
-
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: item.menu_name,
-          life: 2000,
-        });
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to add item to cart.",
-          life: 2000,
-        });
-      }
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "An error occurred while adding the item to the cart.",
-        life: 2000,
-      });
-    }
-  };
+ 
 
   const isMenuItemInCart = (menuId) => {
     return cartItems.some((item) => item.menu_id === menuId);
@@ -194,15 +120,103 @@ const Wishlist = () => {
 
   useEffect(() => {
     fetchFavoriteItems();
-    // Get the restaurant ID of items in the cart
+    updateCartRestaurantId();
+  }, [customerId, restaurantId]);
+
+  const updateCartRestaurantId = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     if (cartItems.length > 0) {
       setCartRestaurantId(cartItems[0].restaurant_id);
+    } else {
+      setCartRestaurantId(restaurantId);
     }
-  }, [customerId]);
+  };
 
   const isCartFromDifferentRestaurant = (itemRestaurantId) => {
     return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
+  };
+
+  const handleAddToCartClick = async (item) => {
+    if (!customerId || !restaurantId) {
+      console.error("Customer ID or Restaurant ID is missing.");
+      navigate("/Signinscreen");
+      return;
+    }
+
+    if (isCartFromDifferentRestaurant(item.restaurant_id)) {
+      toast.current.show({
+        severity: "error",
+        summary: "Different Restaurant",
+        detail:
+          "This item is from a different restaurant. Clear your cart first.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (isMenuItemInCart(item.menu_id)) {
+      toast.current.show({
+        severity: "error",
+        summary: "Item Already in Cart",
+        detail: item.menu_name,
+        life: 2000,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: item.menu_id,
+            customer_id: customerId,
+            quantity: 1,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+        setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        localStorage.setItem("cartId", data.cart_id);
+        setCartRestaurantId(item.restaurant_id);
+
+        // Dispatch a custom event to notify other components of the cart update
+        window.dispatchEvent(
+          new CustomEvent("cartUpdated", { detail: updatedCartItems })
+        );
+
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: item.menu_name,
+          life: 2000,
+        });
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to add item to cart.",
+          life: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "An error occurred while adding the item to the cart.",
+        life: 2000,
+      });
+    }
   };
 
   const wishlistCount = Object.keys(menuList).reduce(
@@ -377,6 +391,7 @@ const Wishlist = () => {
                                 state={{
                                   restaurant_id: menu.restaurant_id,
                                   menu_cat_id: menu.menu_cat_id,
+                                  fromWishlist: true
                                 }}
                                 className="text-decoration-none text-reset"
                               >

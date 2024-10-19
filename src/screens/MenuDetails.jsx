@@ -53,6 +53,10 @@ const MenuDetails = () => {
 
   // Fetch product details
   const fetchProductDetails = async () => {
+    const { state } = location;
+    const currentRestaurantId = state?.fromWishlist
+      ? state.restaurant_id
+      : restaurantId;
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_menu_details",
@@ -62,7 +66,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            restaurant_id: currentRestaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             customer_id: customerId,
@@ -104,6 +108,7 @@ const MenuDetails = () => {
             offer,
             rating,
             is_favorite,
+            restaurant_id: currentRestaurantId,
           });
 
           setIsFavorite(data.details.is_favourite); // Use the correct source
@@ -136,7 +141,7 @@ const MenuDetails = () => {
 
   useEffect(() => {
     fetchProductDetails();
-  }, [menuId, restaurantId]);
+  }, [menuId, location.state]);
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -232,6 +237,8 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
+      const currentRestaurantId = productDetails.restaurant_id || restaurantId; 
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -239,7 +246,7 @@ const MenuDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          restaurant_id: currentRestaurantId,
           menu_id: menuId,
           customer_id: userData.customer_id,
         }),
@@ -255,15 +262,16 @@ const MenuDetails = () => {
             is_favourite: updatedFavoriteStatus,
           });
           toast.current.show({
-            severity: isFavorite ? "info" : "success",
-            summary: isFavorite
-              ? "Removed from Favorites"
-              : "Added to Favorites",
-            detail: isFavorite
-              ? "Item has been removed from your favorites."
-              : "Item has been added to your favorites.",
+            severity: updatedFavoriteStatus ? "success" : "info",
+            summary: updatedFavoriteStatus
+              ? "Added to Favorites"
+              : "Removed from Favorites",
+            detail: updatedFavoriteStatus
+              ? "Item has been added to your favorites."
+              : "Item has been removed from your favorites.",
             life: 2000,
           });
+          window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -359,7 +367,7 @@ const MenuDetails = () => {
 
               <div className="product-meta ">
                 <div className="row me-1">
-                  <div className="col-5 px-0">
+                  <div className="col-5 px-0 pt-2">
                     <div className="ps-3 text-success font_size_12 ">
                       <i className="ri-restaurant-line  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
@@ -396,27 +404,29 @@ const MenuDetails = () => {
               <div className="container ps-2 pt-1">
                 <div className="row">
                   <div className="col-6 pt-1 ps-0">
-                    <div className="dz-stepper style-3 ">
-                      <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
-                        <span className="input-group-btn input-group-prepend">
-                          <i
-                            className="ri-subtract-line fs-2 me-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleQuantityChange(-1)}
-                          ></i>
-                        </span>
-                        <span className="stepper px-3 rounded-1 bg-light     text-center">
-                          {quantity}
-                        </span>
-                        <span className="input-group-btn input-group-append">
-                          <i
-                            className="ri-add-line fs-2 ms-2"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleQuantityChange(1)}
-                          ></i>
-                        </span>
+                    {!isFromDifferentRestaurant && (
+                      <div className="dz-stepper style-3 ">
+                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
+                          <span className="input-group-btn input-group-prepend">
+                            <i
+                              className="ri-subtract-line fs-2 me-2"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleQuantityChange(-1)}
+                            ></i>
+                          </span>
+                          <span className="stepper px-3 rounded-1 bg-light text-center">
+                            {quantity}
+                          </span>
+                          <span className="input-group-btn input-group-append">
+                            <i
+                              className="ri-add-line fs-2 ms-2"
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleQuantityChange(1)}
+                            ></i>
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="col-6 pe-1 text-end pt-1">
@@ -457,7 +467,7 @@ const MenuDetails = () => {
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 
-                <div className="col-6 ps-1">
+                <div className="col-5 ps-1 pe-0">
                   <div className="d-flex align-items-center justify-content-between mb-5">
                     <div className="d-flex flex-column">
                       <span className="mb-2     ps-0 menu_details-total-amount">
@@ -477,13 +487,13 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-6 px-0 text-start menu_details-add-to-cart">
+                <div className="col-7 px-0 text-start menu_details-add-to-cart">
                   {isFromDifferentRestaurant ? (
                     <button
-                      className="btn btn-outline-secondary rounded-pill"
+                      className="btn btn-outline-secondary rounded-pill p-3"
                       disabled
                     >
-                      <div className="font-poppins text-nowrap">
+                      <div className="font-poppins text-break">
                         Different Restaurant
                       </div>
                     </button>
