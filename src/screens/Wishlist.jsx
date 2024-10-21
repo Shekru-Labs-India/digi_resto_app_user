@@ -11,31 +11,14 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
-import { useCart } from "../context/CartContext";
-
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const [hasFavorites, setHasFavorites] = useState(false);
   const [wishlistItems, setWishlistItems] = useState({});
-  const [menuList, setMenuList] = useState({});
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
-  const { cartItems, addToCart } = useCart();
-  const navigate = useNavigate();
-  const toast = useRef(null);
-
-  const [userData, setUserData] = useState(null);
-  const [customerId, setCustomerId] = useState(null);
-
-  useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
-      setUserData(storedUserData);
-      setCustomerId(storedUserData.customer_id);
-    }
-  }, []);
  
 
   const toggleChecked = (restaurantName) => {
@@ -61,7 +44,17 @@ const Wishlist = () => {
 
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+  const [menuList, setMenuList] = useState({});
+
+  const [cartItems, setCartItems] = useState(
+    () => JSON.parse(localStorage.getItem("cartItems")) || []
+  );
+
+  const navigate = useNavigate();
+  const toast = useRef(null);
+
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const customerId = userData ? userData.customer_id : null;
 
 
   const [cartRestaurantId, setCartRestaurantId] = useState(() => {
@@ -71,7 +64,9 @@ const Wishlist = () => {
 
  
 
-  
+  const isMenuItemInCart = (menuId) => {
+    return cartItems.some((item) => item.menu_id === menuId);
+  };
 
   const fetchFavoriteItems = async () => {
     if (!customerId || !restaurantId) {
@@ -99,7 +94,7 @@ const Wishlist = () => {
         const data = await response.json();
         if (data.st === 1 && data.lists) {
           setWishlistItems(data.lists);
-          setMenuList(data.lists);
+          setMenuList(data.lists); // Update menuList as well
           setHasFavorites(Object.keys(data.lists).length > 0);
         } else {
           console.error("Invalid data format:", data);
@@ -124,10 +119,8 @@ const Wishlist = () => {
   };
 
   useEffect(() => {
-    if (customerId && restaurantId) {
-      fetchFavoriteItems();
-      updateCartRestaurantId();
-    }
+    fetchFavoriteItems();
+    updateCartRestaurantId();
   }, [customerId, restaurantId]);
 
   const updateCartRestaurantId = () => {
@@ -137,10 +130,6 @@ const Wishlist = () => {
     } else {
       setCartRestaurantId(restaurantId);
     }
-  };
-
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some((item) => item.menu_id === menuId);
   };
 
   const isCartFromDifferentRestaurant = (itemRestaurantId) => {
@@ -176,13 +165,49 @@ const Wishlist = () => {
     }
 
     try {
-      await addToCart(item, customerId, restaurantId);
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: item.menu_name,
-        life: 2000,
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: item.menu_id,
+            customer_id: customerId,
+            quantity: 1,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        const updatedCartItems = [...cartItems, { ...item, quantity: 1 }];
+        setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        localStorage.setItem("cartId", data.cart_id);
+        setCartRestaurantId(item.restaurant_id);
+
+        // Dispatch a custom event to notify other components of the cart update
+        window.dispatchEvent(
+          new CustomEvent("cartUpdated", { detail: updatedCartItems })
+        );
+
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: item.menu_name,
+          life: 2000,
+        });
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to add item to cart.",
+          life: 2000,
+        });
+      }
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
@@ -199,7 +224,11 @@ const Wishlist = () => {
     0
   );
 
-  const handleRemoveItemClick = async (restaurantName, menuId, restaurantId) => {
+  const handleRemoveItemClick = async (
+    restaurantName,
+    menuId,
+    restaurantId
+  ) => {
     if (!customerId || !menuId || !restaurantId) {
       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
       return;
@@ -230,10 +259,12 @@ const Wishlist = () => {
             restaurantName
           ].filter((item) => item.menu_id !== menuId);
 
+          // Check if this was the last item in the restaurant
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
           }
 
+          // Update hasFavorites based on the new menuList
           setHasFavorites(Object.keys(updatedMenuList).length > 0);
 
           return updatedMenuList;

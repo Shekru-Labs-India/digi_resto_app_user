@@ -18,6 +18,7 @@ import MenuDetails from "./screens/MenuDetails";
 import Sidebar from "./component/Sidebar";
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
@@ -45,8 +46,9 @@ function App() {
         restaurantCode={restaurantCode}
         restaurantId={restaurantId}
       >
-        <CartProvider>
-          <Routes>
+        {/* <FavoritesProvider> */}
+          <CartProvider>
+            <Routes>
             <Route
               path="/:restaurantCode/:table_number"
               element={<HomeScreen />}
@@ -76,8 +78,9 @@ function App() {
             <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
             <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
             <Route path="/Index" element={<QRScreen />} />
-          </Routes>
-        </CartProvider>
+            </Routes>
+          </CartProvider>
+        {/* </FavoritesProvider> */}
       </RestaurantIdProvider>
     </ThemeProvider>
   );

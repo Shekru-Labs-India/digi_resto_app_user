@@ -46,83 +46,79 @@ const ProductCard = () => {
     }
   }, []);
 
-  const fetchMenuData = useCallback(
-    async (categoryId) => {
-      if (isLoading || hasFetchedData.current) return;
-      setIsLoading(true);
-      hasFetchedData.current = true;
-      try {
-        const requestBody = {
-          customer_id: customerId,
-          restaurant_id: restaurantId,
-        };
-
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_all_menu_list_by_category",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.ok && data.st === 1) {
-          if (Array.isArray(data.data.category)) {
-            const formattedCategories = data.data.category.map((category) => ({
-              ...category,
-              name: toTitleCase(category.category_name),
-            }));
-            setMenuCategories(formattedCategories);
-          }
-
-          if (Array.isArray(data.data.menus)) {
-            const formattedMenuList = data.data.menus.map((menu) => ({
-              ...menu,
-              image: menu.image || images,
-              category: toTitleCase(menu.category_name),
-              name: toTitleCase(menu.menu_name),
-              oldPrice: Math.floor(menu.price * 1.1),
-              is_favourite: menu.is_favourite === 1,
-            }));
-            setMenuList(formattedMenuList);
-            setTotalMenuCount(formattedMenuList.length);
-
-            if (categoryId === null) {
-              setFilteredMenuList(formattedMenuList);
-            } else {
-              const filteredMenus = formattedMenuList.filter(
-                (menu) => menu.menu_cat_id === categoryId
-              );
-              setFilteredMenuList(filteredMenus);
-            }
-            localStorage.setItem(
-              "menuItems",
-              JSON.stringify(formattedMenuList)
-            );
-          } else {
-            setMenuCategories([]);
-            setMenuList([]);
-            setFilteredMenuList([]);
-          }
-        } else {
-          setMenuCategories([]);
-          setMenuList([]);
-          setFilteredMenuList([]);
+  const fetchMenuData = useCallback(async (categoryId) => {
+    if (!customerId || !restaurantId) return;
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customer_id: customerId, restaurant_id: restaurantId }),
         }
-      } catch (error) {
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.st === 1) {
+        const formattedCategories = data.data.category.map((category) => ({
+          ...category,
+          name: toTitleCase(category.category_name),
+        }));
+        setMenuCategories(formattedCategories);
+
+        const formattedMenuList = data.data.menus.map((menu) => ({
+          ...menu,
+          image: menu.image || images,
+          category: toTitleCase(menu.category_name),
+          name: toTitleCase(menu.menu_name),
+          oldPrice: Math.floor(menu.price * 1.1),
+          is_favourite: menu.is_favourite === 1,
+        }));
+        setMenuList(formattedMenuList);
+        setTotalMenuCount(formattedMenuList.length);
+
+        const filteredMenus = categoryId === null
+          ? formattedMenuList
+          : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
+        setFilteredMenuList(filteredMenus);
+      } else {
         setMenuCategories([]);
         setMenuList([]);
         setFilteredMenuList([]);
-      } finally {
-        setIsLoading(false);
       }
-    },
-    [customerId, restaurantId, isLoading]
-  );
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+      setMenuCategories([]);
+      setMenuList([]);
+      setFilteredMenuList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [customerId, restaurantId]);
+
+  useEffect(() => {
+    if (customerId && restaurantId) {
+      fetchMenuData(null);
+    }
+  }, [customerId, restaurantId, fetchMenuData]);
+
+
+
+  useEffect(() => {
+    const handleFavoritesUpdated = () => {
+      fetchMenuData(selectedCategoryId);
+    };
+
+    window.addEventListener('favoritesUpdated', handleFavoritesUpdated);
+    window.addEventListener('focus', handleFavoritesUpdated);
+
+    return () => {
+      window.removeEventListener('favoritesUpdated', handleFavoritesUpdated);
+      window.removeEventListener('focus', handleFavoritesUpdated);
+    };
+  }, [fetchMenuData, selectedCategoryId]);
 
   const debouncedFetchMenuData = useCallback(
     debounce((categoryId) => {
@@ -168,8 +164,8 @@ const ProductCard = () => {
   }, [menuCategories]);
 
   const handleLikeClick = async (menuId) => {
-    if (!customerId || !restaurantId) {
-      console.error("Missing required data");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData || !userData.customer_id || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
@@ -184,44 +180,40 @@ const ProductCard = () => {
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           restaurant_id: restaurantId,
           menu_id: menuId,
-          customer_id: customerId,
+          customer_id: userData.customer_id,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
+          const updatedFavoriteStatus = !isFavorite;
           const updatedMenuList = menuList.map((item) =>
-            item.menu_id === menuId
-              ? { ...item, is_favourite: !isFavorite }
-              : item
+            item.menu_id === menuId ? { ...item, is_favourite: updatedFavoriteStatus } : item
           );
           setMenuList(updatedMenuList);
-          setFilteredMenuList(
-            updatedMenuList.filter(
-              (item) =>
-                item.menu_cat_id === selectedCategoryId ||
-                selectedCategoryId === null
-            )
-          );
+          setFilteredMenuList(updatedMenuList.filter(
+            (item) => item.menu_cat_id === selectedCategoryId || selectedCategoryId === null
+          ));
 
-          // Show toast notification
           toast.current.show({
-            severity: isFavorite ? "error" : "success",
-            summary: isFavorite
-              ? "Removed from Favourites"
-              : "Added to Favourites",
-            detail: menuItem.name,
-            life: 3000,
-            //  position: "bottom-center", // Change this line to set the position
+            severity: updatedFavoriteStatus ? "success" : "info",
+            summary: updatedFavoriteStatus ? "Added to Favorites" : "Removed from Favorites",
+            detail: updatedFavoriteStatus
+              ? "Item has been added to your favorites."
+              : "Item has been removed from your favorites.",
+            life: 2000,
           });
+          window.dispatchEvent(new CustomEvent("favoritesUpdated"));
+        } else {
+          console.error("Failed to update favorite status:", data.msg);
         }
+      } else {
+        console.error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);

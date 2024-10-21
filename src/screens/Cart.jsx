@@ -12,6 +12,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
+import NearbyArea from "../component/NearbyArea";
 
 const Cart = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
@@ -98,6 +99,23 @@ const Cart = () => {
       fetchCartDetails();
     }
   }, [userData, restaurantId, fetchCartDetails]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (userData && restaurantId) {
+        fetchCartDetails();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [userData, restaurantId, fetchCartDetails]);
+
+
+  
 
   const handleRemoveFromCart = async (item) => {
     try {
@@ -367,7 +385,7 @@ const Cart = () => {
           </div>
           {cartDetails && cartDetails.order_items.length > 0 && (
             <div
-              className="pb-5 mb-5"
+              className=""
               style={{ bottom: "75px", backgroundColor: "transparent" }}
             >
               <div className="container">
@@ -467,8 +485,14 @@ const Cart = () => {
               </div>
             </div>
           )}
+          <div className="container py-0">
+          <NearbyArea />
+          </div>
+
         </main>
+           
       )}
+
       <Bottom />
     </div>
   );
