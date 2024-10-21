@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/digi_resto_app_user/static/css/main.d5d9872c.css",
-    "main.js": "/digi_resto_app_user/static/js/main.66137ced.js",
+    "main.js": "/digi_resto_app_user/static/js/main.eb74a740.js",
     "static/js/453.2cecc6e0.chunk.js": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js",
     "static/media/primeicons.svg": "/digi_resto_app_user/static/media/primeicons.6ed59f962963a4a73af2.svg",
     "static/media/splash2.jpg": "/digi_resto_app_user/static/media/splash2.bf9840bff9ed4548a01a.jpg",
@@ -17,11 +17,11 @@
     "static/media/google lens.svg": "/digi_resto_app_user/static/media/google lens.52ef07f8871b69c3c7aae684053f079a.svg",
     "index.html": "/digi_resto_app_user/index.html",
     "main.d5d9872c.css.map": "/digi_resto_app_user/static/css/main.d5d9872c.css.map",
-    "main.66137ced.js.map": "/digi_resto_app_user/static/js/main.66137ced.js.map",
+    "main.eb74a740.js.map": "/digi_resto_app_user/static/js/main.eb74a740.js.map",
     "453.2cecc6e0.chunk.js.map": "/digi_resto_app_user/static/js/453.2cecc6e0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d5d9872c.css",
-    "static/js/main.66137ced.js"
+    "static/js/main.eb74a740.js"
   ]
 }
