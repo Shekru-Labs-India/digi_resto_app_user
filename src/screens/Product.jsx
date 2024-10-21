@@ -13,7 +13,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
-
+import { useCart } from "../context/CartContext";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -31,7 +31,7 @@ const Product = () => {
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [cartItemsCount, setCartItemsCount] = useState(0);
+ 
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [sortByOpen, setSortByOpen] = useState(false);
@@ -45,10 +45,12 @@ const Product = () => {
   const [sortCriteria, setSortCriteria] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const initialFetchDone = useRef(false);
-  const swiperRef = useRef(null); // Define swiperRef
-  const [cartItems, setCartItems] = useState([]); // Define cartItems and setCartItems
+      const swiperRef = useRef(null); // Define swiperRef
   const { restaurantName } = useRestaurantId();
   const { categoryId } = useParams();
+
+  const { cartItems, addToCart, } = useCart();
+  const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
   const toast = useRef(null);
   const { table_number } = useParams();
@@ -294,6 +296,11 @@ const Product = () => {
     }
   };
 
+
+  const isMenuItemInCart = (menuItemId) => {
+    return cartItems.some((item) => item.menu_id === menuItemId);
+  };
+
   // Add item to cart
   const handleAddToCartClick = async (menuItem) => {
     if (!userData || !userData.customer_id) {
@@ -301,78 +308,28 @@ const Product = () => {
       return;
     }
 
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const isAlreadyInCart = cartItems.some(
-      (item) => item.menu_id === menuItem.menu_id
-    );
-
-    if (isAlreadyInCart) {
+    try {
+      await addToCart(menuItem, userData.customer_id, restaurantId);
+      setCartItemsCount(cartItems.length + 1);
       toast.current.show({
-        severity: "error",
-        summary: "Item in Cart",
-        detail: "This item is already in the cart!",
+        severity: "success",
+        summary: "Added to Cart",
+        detail: "Item has been added to your cart.",
         life: 2000,
       });
-      return;
-    }
-
-    // Update local storage and state immediately
-    const updatedCartItems = [...cartItems, { ...menuItem, quantity: 1 }];
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-    setCartItemsCount(updatedCartItems.length);
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuItem.menu_id,
-            customer_id: userData.customer_id,
-            quantity: 1,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        console.log("Item added to cart successfully.");
-        localStorage.setItem("cartId", data.cart_id); // Store the cart ID in local storage
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: "Item has been added to your cart.",
-          life: 2000,
-        });
-      } else {
-        console.error("Failed to add item to cart:", data.msg);
-        // Revert the local storage and state update if the API call fails
-        const revertedCartItems = updatedCartItems.filter(
-          (cartItem) => cartItem.menu_id !== menuItem.menu_id
-        );
-        localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
-        setCartItemsCount(revertedCartItems.length);
-      }
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      // Revert the local storage and state update if the API call fails
-      const revertedCartItems = updatedCartItems.filter(
-        (cartItem) => cartItem.menu_id !== menuItem.menu_id
-      );
-      localStorage.setItem("cartItems", JSON.stringify(revertedCartItems));
-      setCartItemsCount(revertedCartItems.length);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add item to cart.",
+        life: 2000,
+      });
     }
   };
 
   // Check if a menu item is in the cart
-  const isMenuItemInCart = (menuId) => {
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    return cartItems.some((item) => item.menu_id === menuId);
-  };
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state

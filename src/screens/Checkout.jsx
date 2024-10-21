@@ -8,6 +8,7 @@ import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import 
 import Header from "../components/Header";
 import HotelNameAndTable from '../components/HotelNameAndTable';
 import NearbyArea from "../component/NearbyArea";
+import { useCart } from "../context/CartContext";
 
 const Checkout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -21,6 +22,10 @@ const Checkout = () => {
   const { restaurantId } = useRestaurantId();
   console.log("Restaurant ID:", restaurantId);
   // const { isDarkMode } = useContext(ThemeContext);
+  const { clearCart } = useCart(); 
+
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   
 
   const [cartItems, setCartItems] = useState([]);
@@ -43,6 +48,9 @@ const Checkout = () => {
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
   const [restaurantCode, setRestaurantCode] = useState(() => localStorage.getItem("restaurantCode") || "");
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null);
+
 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
@@ -141,14 +149,13 @@ const Checkout = () => {
       quantity: item.quantity,
     }));
 
-    // Capture the current system time
     const currentTime = new Date();
     const formattedTime = currentTime.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: true,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Ensure local time zone is used
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
     const orderData = {
@@ -157,8 +164,8 @@ const Checkout = () => {
       cart_id: getCartId(),
       note: notes,
       order_items: orderItems,
-      table_number: tableNumber, // Use tableNumber from userData
-      order_time: formattedTime, // Add the current time to the order data
+      table_number: tableNumber,
+      order_time: formattedTime,
     };
 
     try {
@@ -175,15 +182,54 @@ const Checkout = () => {
 
       const responseData = await response.json();
 
-      if (response.ok) {
+      if (response.ok && responseData.st === 1) {
         setShowPopup(true);
-        localStorage.removeItem("cartItems"); // Clear cart items from local storage
+        clearCart();
+      } else if (responseData.st === 2) {
+        setErrorMessage(responseData.msg);
+        setShowErrorPopup(true);
       } else {
         throw new Error(responseData.msg || "Failed to submit order");
       }
     } catch (error) {
       console.error("Error submitting order:", error);
       alert(`Failed to submit order: ${error.message}`);
+    }
+  };
+
+
+  const handleCancelOrder = async (orderId) => {
+    setCancellingOrderId(orderId);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/cancle_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+            customer_id: customerId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+        // Order cancelled successfully
+        setShowCancelPopup(true);
+        clearCart(); // Clear the cart after cancelling the order
+      } else {
+        setErrorMessage(data.msg || "Failed to cancel order");
+        setShowErrorPopup(true);
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      setErrorMessage("An error occurred while cancelling the order");
+      setShowErrorPopup(true);
+    } finally {
+      setCancellingOrderId(null);
     }
   };
 
@@ -233,6 +279,21 @@ const Checkout = () => {
             tableNumber={userData?.tableNumber || '1'}
           />
         </div>
+
+        {showErrorPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h3>Order Error</h3>
+              <p>{errorMessage}</p>
+              <button
+                className="btn btn-color rounded-pill text-white"
+                onClick={() => setShowErrorPopup(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
         <div className="m-3">
           <div className="dz-flex-box">
             <ul className="dz-list-group">
@@ -400,7 +461,7 @@ const Checkout = () => {
             <div className="d-flex align-items-center justify-content-center mt-3">
                 <Link
                   to="/Menu"
-                  className="btn btn-outline-primary  rounded-pill  px-5"
+                  className="btn btn-outline-primary  rounded-pill  px-3"
                 >
                   Order More
                 </Link>

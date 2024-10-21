@@ -323,7 +323,7 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
             </div>
           </div>
           {latestOngoingOrder && (
-    <div className="container">
+    <div className="container px-3">
       <h5 className="text-center gray-text mb-3">Latest Ongoing Order</h5>
       <Link to={`/TrackOrder/${latestOngoingOrder.order_number}`} className="text-decoration-none">
         <AnimatedCard className="custom-card my-2 rounded-3 shadow-sm">

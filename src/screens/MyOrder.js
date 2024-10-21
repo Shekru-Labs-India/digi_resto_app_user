@@ -124,8 +124,24 @@ const MyOrder = () => {
         title="My Order" 
         count={orders.length}
       />
+
+
       
       <main className="page-content space-top mb-5 pb-3">
+      <div className="container mt-3">
+        <div className="nav nav-tabs nav-fill" role="tablist">
+          {["placed", "ongoing", "completed", "cancel"].map((tab) => (
+            <button
+              key={tab}
+              className={`nav-link ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => handleTabChange(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
         <div className="container">
           {loading ? (
             <div id="preloader">
@@ -140,40 +156,7 @@ const MyOrder = () => {
             <>
               {userData ? (
                 <div className="default-tab style-2 pb-5 mb-3">
-                  <div className="dz-tabs mb-5 pb-5">
-                    <ul className="nav nav-tabs" role="tablist">
-                      <li
-                        className={`nav-item ${
-                          activeTab === "ongoing" ? "active" : ""
-                        }`}
-                      >
-                        <button
-                          className={`nav-link      ${
-                            activeTab === "ongoing" ? "active" : ""
-                          }`}
-                          onClick={() => handleTabChange("ongoing")}
-                        >
-                          <i class="ri-timer-line pe-2"></i>
-                          Ongoing
-                        </button>
-                      </li>
-                      <li
-                        className={`nav-item ${
-                          activeTab === "completed" ? "active" : ""
-                        }`}
-                      >
-                        <button
-                          className={`nav-link       ${
-                            activeTab === "completed" ? "active" : ""
-                          }`}
-                          onClick={() => handleTabChange("completed")}
-                        >
-                          <i className="ri-checkbox-circle-line pe-2"></i>
-                          Completed
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+                 
 
                   <div className="tab-content">
                     <div
