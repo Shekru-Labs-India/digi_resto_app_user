@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swiper from "swiper";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import { Toast } from "primereact/toast";
+import { dispatchMenuUpdateEvent } from "../utils/events";
+import { useCart } from "../context/CartContext";
 
 const NearbyArea = () => {
   const swiperRef = useRef(null);
@@ -13,19 +15,15 @@ const NearbyArea = () => {
     const storedItems = localStorage.getItem("menuItems");
     return storedItems ? JSON.parse(storedItems) : [];
   });
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
-  });
+  const { cartItems, addToCart } = useCart();
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const [customerId, setCustomerId] = useState(null);
 
   useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      setCustomerId(userData.customer_id);
+      setCustomerId(storedUserData.customer_id);
     }
   }, []);
 
@@ -67,81 +65,56 @@ const NearbyArea = () => {
       .join(" ");
   };
 
-  const fetchAllMenuListByCategory = async () => {
+  
+
+  const fetchMenuData = useCallback(async () => {
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        "https://menumitra.com/user_api/get_special_menu_list",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: customerId || null, // Send customer_id if logged in
+            customer_id: customerId || null,
             restaurant_id: restaurantId,
           }),
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("API response data:", data);
-        // Handle the response data as needed
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
+        const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
+          ...menu,
+          name: menu.menu_name,
+          oldPrice: Math.floor(menu.price * 1.1),
+          is_favourite: menu.is_favourite === 1,
+        }));
+
+        setMenuItems(formattedMenuItems);
       } else {
-        console.error("Failed to fetch menu data. Status:", response.status);
+        console.error("Invalid data format:", data);
+        setMenuItems([]);
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_special_menu_list",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customer_id: customerId || null,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-  
-        const data = await response.json();
-        console.log("API response data:", data);
-  
-        if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
-          const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
-            ...menu,
-            name: menu.menu_name,
-            oldPrice: Math.floor(menu.price * 1.1),
-            is_favourite: false, // Assuming this is not provided in the API response
-          }));
-  
-          setMenuItems(formattedMenuItems);
-        } else {
-          console.error("Invalid data format:", data);
-          setMenuItems([]);
-        }
-      } catch (error) {
-        console.error("Error fetching menu data:", error);
-        setMenuItems([]);
-      }
-    };
-  
-    if (restaurantId) {
-      fetchMenuData();
+      setMenuItems([]);
     }
   }, [restaurantId, customerId]);
+
+
+  useEffect(() => {
+    fetchMenuData();
+  }, [fetchMenuData]);
+
+  // Add a new effect to refetch data when the component receives focus
+
 
   useEffect(() => {
     console.log("restaurantId:", restaurantId);
@@ -156,14 +129,14 @@ const NearbyArea = () => {
       return;
     }
 
+    const menuItem = menuItems.find((item) => item.menu_id === menuId);
+    const isFavorite = menuItem.is_favourite;
+
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/remove_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
+
     try {
-      const menuItem = menuItems.find((item) => item.menu_id === menuId);
-      const isFavorite = menuItem.is_favourite;
-
-      const apiUrl = isFavorite
-        ? "https://menumitra.com/user_api/remove_favourite_menu"
-        : "https://menumitra.com/user_api/save_favourite_menu";
-
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -185,8 +158,8 @@ const NearbyArea = () => {
         );
 
         setMenuItems(updatedMenuItems);
-        localStorage.setItem("menuItems", JSON.stringify(updatedMenuItems));
-
+        dispatchMenuUpdateEvent();
+        
         toast.current.show({
           severity: isFavorite ? "error" : "success",
           summary: "Success",
@@ -215,7 +188,6 @@ const NearbyArea = () => {
       return;
     }
     if (isMenuItemInCart(menuItem.menu_id)) {
-      // Show toast notification for item already in cart
       toast.current.show({
         severity: "error",
         summary: "Item Already in Cart",
@@ -224,50 +196,27 @@ const NearbyArea = () => {
       });
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuItem.menu_id,
-            customer_id: customerId,
-            quantity: 1,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        const updatedCartItems = [...cartItems, { ...menuItem, quantity: 1 }];
-        setCartItems(updatedCartItems);
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        localStorage.setItem("cartId", data.cart_id);
-
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Added to cart",
-          life: 2000,
-        });
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to add to cart",
-          life: 2000,
-        });
-      }
+      await addToCart(menuItem, customerId, restaurantId);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Added to cart",
+        life: 2000,
+      });
     } catch (error) {
       console.error("Error adding item to cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add to cart",
+        life: 2000,
+      });
     }
   };
 
+  
   const isMenuItemInCart = (menuId) => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
@@ -298,24 +247,24 @@ const NearbyArea = () => {
           <div className="swiper-slide col-6" key={index}>
             <div className="row g-3 grid-style-1">
               <div>
-                <div
-                  className="card-item style-6 rounded-3"
-                  style={{
-                    width: "200px",
-                    height: "auto",
-                    position: "relative",
-                  }}
-                >
-                  <Link
-                    to={`/ProductDetails/${menuItem.menu_id}`}
-                    state={{ menu_cat_id: menuItem.menu_cat_id }}
-                    className="card-link"
+              <div
+                    className="card-item style-6 rounded-3"
                     style={{
-                      textDecoration: "none",
-                      color: "inherit",
-                      display: "block",
+                      width: "200px",
+                      height: "auto",
+                      position: "relative",
                     }}
                   >
+                    <Link
+                      to={`/ProductDetails/${menuItem.menu_id}`}
+                      state={{ menu_cat_id: menuItem.menu_cat_id }}
+                      className="card-link"
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        display: "block",
+                      }}
+                    >
                     <div className="dz-media">
                       <img
                         src={menuItem.image || images}

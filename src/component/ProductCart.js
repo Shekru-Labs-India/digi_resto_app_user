@@ -8,6 +8,8 @@ import NearbyArea from "./NearbyArea";
 import Signinscreen from "./../screens/Signinscreen";
 import LoaderGif from "../screens/LoaderGIF";
 import { Toast } from "primereact/toast";
+import { useCart } from '../context/CartContext';
+
 
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
@@ -20,18 +22,19 @@ const toTitleCase = (text) => {
 };
 
 const ProductCard = () => {
+  
+  
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [totalMenuCount, setTotalMenuCount] = useState(0);
   const [filteredMenuList, setFilteredMenuList] = useState([]);
-  const [cartItems, setCartItems] = useState(
-    () => JSON.parse(localStorage.getItem("cartItems")) || []
-  );
+  
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   const userData = JSON.parse(localStorage.getItem("userData"));
-  const customerId = userData ? userData.customer_id : null;
+  const { cartItems, addToCart } = useCart();
+  const [customerId, setCustomerId] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
@@ -39,28 +42,24 @@ const ProductCard = () => {
   const toast = useRef(null);
   const [loading, setLoading] = useState(true);
 
-  // Sync cartItems with localStorage
   useEffect(() => {
-    localStorage.removeItem("menuItems");
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setCustomerId(storedUserData.customer_id);
+    }
+  }, []);
+ 
 
   const fetchMenuData = useCallback(
     async (categoryId) => {
-      if (isLoading) return;
+      if (isLoading || hasFetchedData.current) return;
       setIsLoading(true);
-
-      localStorage.removeItem("menuItems");
-
+      hasFetchedData.current = true;
       try {
-        
-
         const requestBody = {
           customer_id: customerId,
           restaurant_id: restaurantId,
         };
-
-        console.log("Sending request with body:", requestBody); // Log the request body
 
         const response = await fetch(
           "https://menumitra.com/user_api/get_all_menu_list_by_category",
@@ -74,9 +73,7 @@ const ProductCard = () => {
         );
 
         const data = await response.json();
-        console.log("Received data:", data); 
 
-        
         if (response.ok && data.st === 1) {
           if (Array.isArray(data.data.category)) {
             const formattedCategories = data.data.category.map((category) => ({
@@ -106,7 +103,6 @@ const ProductCard = () => {
               );
               setFilteredMenuList(filteredMenus);
             }
-            // Save updated menu list to localStorage
             localStorage.setItem(
               "menuItems",
               JSON.stringify(formattedMenuList)
@@ -117,13 +113,11 @@ const ProductCard = () => {
             setFilteredMenuList([]);
           }
         } else {
-          console.error("API response error:", data);
           setMenuCategories([]);
           setMenuList([]);
           setFilteredMenuList([]);
         }
       } catch (error) {
-        console.error("Error fetching menu data:", error);
         setMenuCategories([]);
         setMenuList([]);
         setFilteredMenuList([]);
@@ -131,23 +125,22 @@ const ProductCard = () => {
         setIsLoading(false);
       }
     },
-    [customerId, restaurantId]
+    [customerId, restaurantId, isLoading]
   );
 
-  const debouncedFetchMenuData = useRef(
+  const debouncedFetchMenuData = useCallback(
     debounce((categoryId) => {
       fetchMenuData(categoryId);
-    }, 300)
-  ).current;
+    }, 300),
+    [fetchMenuData]
+  );
 
   useEffect(() => {
     if (restaurantId) {
-      console.log("Restaurant ID changed:", restaurantId); // Log when restaurantId changes
       debouncedFetchMenuData(null);
       setSelectedCategoryId(null);
     }
-  }, [restaurantId]);// Remove debouncedFetchMenuData from dependencies
-
+  }, [restaurantId, debouncedFetchMenuData]);
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
@@ -229,7 +222,7 @@ const ProductCard = () => {
               ? "Removed from Favourites"
               : "Added to Favourites",
             detail: menuItem.name,
-            life: 2000,
+            life: 3000,
             //  position: "bottom-center", // Change this line to set the position
           });
         }
@@ -239,8 +232,7 @@ const ProductCard = () => {
     }
   };
 
-  const [popupVisible, setPopupVisible] = useState(false);
-
+  
   const handleAddToCartClick = async (menu) => {
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
@@ -248,48 +240,23 @@ const ProductCard = () => {
       return;
     }
     if (isMenuItemInCart(menu.menu_id)) {
-      // Show toast notification for item already in cart
       toast.current.show({
         severity: "error",
         summary: "Item Already in Cart",
         detail: menu.name,
-        life: 2000,
+        life: 3000,
       });
       return;
     }
 
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menu.menu_id,
-            customer_id: customerId,
-            quantity: 1,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        const updatedCartItems = [...cartItems, { ...menu, quantity: 1 }];
-        setCartItems(updatedCartItems);
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        localStorage.setItem("cartId", data.cart_id);
-
-        // Show toast notification for item added to cart
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: menu.name,
-          life: 2000,
-        });
-      }
+      await addToCart(menu, customerId, restaurantId);
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: menu.name,
+        life: 3000,
+      });
     } catch (error) {
       console.error("Error adding item to cart:", error);
     }
@@ -406,8 +373,14 @@ const ProductCard = () => {
                       className="detail-content category-text"
                       style={{ position: "relative" }}
                     >
-                      <div className="font_size_12 text-success">
-                        <i className="ri-restaurant-line pe-1"></i>
+                      <div
+                        className="font_size_12 text-success"
+                        
+                      >
+                        <i
+                          className="ri-restaurant-line pe-1"
+                          
+                        ></i>
                         {menu.category}
                       </div>
                       <i
@@ -425,6 +398,7 @@ const ProductCard = () => {
                           position: "absolute",
                           top: "0",
                           right: "0",
+                          
                         }}
                       ></i>
                     </div>
@@ -482,6 +456,7 @@ const ProductCard = () => {
                               e.stopPropagation();
                               handleAddToCartClick(menu);
                             }}
+                            
                           >
                             <i
                               className={`ri-shopping-cart-${
@@ -490,14 +465,7 @@ const ProductCard = () => {
                             ></i>
                           </div>
                         ) : (
-                          <i
-                            className="ri-shopping-cart-2-line fs-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              navigate("/Signinscreen");
-                            }}
-                          ></i>
+                          <i className="ri-shopping-cart-2-line fs-2"></i>
                         )}
                       </div>
                     </div>

@@ -22,8 +22,8 @@ const HomeScreen = () => {
       setRestaurantCode(restaurantCode);
       localStorage.setItem("restaurantCode", restaurantCode);
       localStorage.removeItem("menuItems");
-      localStorage.removeItem("cartItems");
-      localStorage.removeItem("cartId");
+      // localStorage.removeItem("cartItems");
+      // localStorage.removeItem("cartId");
     }
   }, [restaurantCode, setRestaurantCode]);
   

@@ -2,38 +2,48 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/CartContext";
 import Bottom from "../component/bottom";
 import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import LoaderGif from "./LoaderGIF";
 
 const MenuDetails = () => {
   const toast = useRef(null);
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [quantity, setQuantity] = useState(1); // Default quantity is 1
+  const [quantity, setQuantity] = useState(1);
   const [showQuantityError, setShowQuantityError] = useState(false);
-  const [totalAmount, setTotalAmount] = useState(0); // Total amount state
-  const [cartItems, setCartItems] = useState(() => {
-    return JSON.parse(localStorage.getItem("cartItems")) || [];
-  });
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
+  const { cartItems, addToCart } = useCart();
+  
+  const [customerId, setCustomerId] = useState(null);
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
-  const { addToCart } = useCart();
+ 
   const location = useLocation();
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
-  const [cartDetails, setCartDetails] = useState({ order_items: [] });
-  const customerId = JSON.parse(localStorage.getItem("userData"))?.customer_id;
+
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setUserData(storedUserData);
+      setCustomerId(storedUserData.customer_id);
+    }
+  }, []);
+ 
   const toTitleCase = (str) => {
     if (!str) return "";
     return str.replace(
@@ -42,8 +52,7 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
-    useState(false);
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(false);
 
   const orderedItems = location.state?.orderedItems || [];
 
@@ -51,12 +60,10 @@ const MenuDetails = () => {
     return orderedItems.some((item) => item.menu_id === menuId);
   };
 
-  // Fetch product details
   const fetchProductDetails = async () => {
+    setIsLoading(true);
     const { state } = location;
-    const currentRestaurantId = state?.fromWishlist
-      ? state.restaurant_id
-      : restaurantId;
+    const currentRestaurantId = state?.fromWishlist ? state.restaurant_id : restaurantId;
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_menu_details",
@@ -76,7 +83,7 @@ const MenuDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("API Response:", data); // Debugging line
+        console.log("API Response:", data);
 
         if (data.st === 1 && data.details) {
           const {
@@ -92,7 +99,7 @@ const MenuDetails = () => {
           } = data.details;
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
-          const oldPrice = offer ? Math.floor(price * 1.1) : null; // Calculate
+          const oldPrice = offer ? Math.floor(price * 1.1) : null;
 
           setProductDetails({
             name: menu_name,
@@ -111,13 +118,9 @@ const MenuDetails = () => {
             restaurant_id: currentRestaurantId,
           });
 
-          setIsFavorite(data.details.is_favourite); // Use the correct source
-
-          // Set the initial total amount
+          setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
-          setIsFromDifferentRestaurant(
-            data.details.restaurant_id !== restaurantId
-          );
+          setIsFromDifferentRestaurant(data.details.restaurant_id !== restaurantId);
         } else {
           console.error("Invalid data format:", data);
         }
@@ -126,86 +129,33 @@ const MenuDetails = () => {
       }
     } catch (error) {
       console.error("Error fetching product details:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
-      setUserData(storedUserData);
-    } else {
-      console.error("User data not found in local storage.");
-    }
     fetchProductDetails();
-  }, []);
-
-  useEffect(() => {
-    fetchProductDetails();
-  }, [menuId, location.state]);
-
-  useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+  }, [menuId, location.state, customerId]);
 
   const handleAddToCart = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData || !userData.customer_id) {
+    if (!customerId || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
 
-    const customerId = userData.customer_id;
-    let cartId = localStorage.getItem("cartId");
-
-    if (!cartId) {
-      cartId = await (customerId, restaurantId);
-      if (!cartId) {
-        console.error("Failed to create cart");
-        return;
-      }
-      localStorage.setItem("cartId", cartId); // Store the cart ID
-    }
-
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            quantity: quantity,
-          }),
-        }
-      );
+      await addToCart({ ...productDetails, quantity }, customerId, restaurantId);
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: "Item has been added to your cart.",
+        life: 2000,
+      });
 
-      const data = await response.json();
-      if (data.st === 1) {
-        console.log("Item added to cart successfully.");
-        const updatedCartItems = [
-          ...cartItems,
-          { ...productDetails, quantity: 1 },
-        ];
-        setCartItems(updatedCartItems);
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-        localStorage.setItem("cartId", data.cart_id);
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: "Item has been added to your cart.",
-          life: 2000,
-        });
-
-        setTimeout(() => {
-          navigate("/Cart");
-        }, 2000);
-      } else {
-        console.error("Failed to add item to cart:", data.msg);
-      }
+      setTimeout(() => {
+        navigate("/Cart");
+      }, 2000);
     } catch (error) {
       console.error("Error adding item to cart:", error);
     }
@@ -215,9 +165,7 @@ const MenuDetails = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  if (!productDetails) {
-    return <div></div>;
-  }
+  
 
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
@@ -287,6 +235,7 @@ const MenuDetails = () => {
     const newQuantity = quantity + change;
     if (newQuantity >= 1 && newQuantity <= 20) {
       setQuantity(newQuantity);
+      setTotalAmount(productDetails.discountedPrice * newQuantity);
       toast.current.show({
         severity: "info",
         summary: "Quantity Updated",
@@ -302,6 +251,33 @@ const MenuDetails = () => {
       });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div id="preloader">
+        <div className="loader">
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
+
+  if (!productDetails) {
+    return (
+      <div className="page-wrapper">
+        <Header title="Menu Details" />
+        <main className="page-content">
+          <div className="container">
+            <p>Product not found or error loading details.</p>
+          </div>
+        </main>
+        <Bottom />
+      </div>
+    );
+  }
+
+
+
 
   return (
     <>

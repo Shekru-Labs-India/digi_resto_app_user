@@ -1,33 +1,26 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
-import SigninButton from "../constants/SigninButton";
-import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import Bottom from "../component/bottom";
+import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import { useCart } from "../context/CartContext";
 
 const Cart = () => {
-  const isLoggedIn = !!localStorage.getItem("userData");
   const { restaurantId, restaurantName } = useRestaurantId();
+  const { cartItems, updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
-  const toastBottomCenter = useRef(null);
   const toast = useRef(null);
-
   const [isLoading, setIsLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Initialize state from local storage
-    return localStorage.getItem("isDarkMode") === "true";
-  }); // State for theme
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -38,34 +31,23 @@ const Cart = () => {
     }
   }, []);
 
-  const getCustomerId = () => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    return storedUserData?.customer_id || null;
-  };
+  const getCustomerId = useCallback(() => {
+    return userData?.customer_id || null;
+  }, [userData]);
 
-  const getRestaurantId = () => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    return storedUserData?.restaurantId || null;
-  };
+  const getCartId = useCallback(() => {
+    return localStorage.getItem("cartId") || null;
+  }, []);
 
-  const getCartId = () => {
-    const cartId = localStorage.getItem("cartId");
-    return cartId ? parseInt(cartId, 10) : 1;
-  };
-
-  const fetchCartDetails = async () => {
+  const fetchCartDetails = useCallback(async () => {
     const customerId = getCustomerId();
     const cartId = getCartId();
 
-    if (!customerId || !restaurantId) {
-      console.error("Customer ID or Restaurant ID is not available.");
-      setCartDetails({ order_items: [] });
-      setIsLoading(false);
-      return;
-    }
+    console.log("Fetching cart details with:", { customerId, cartId, restaurantId });
 
-    if (!cartId || !customerId || !restaurantId) {
-      console.log("Missing cart, customer, or restaurant data.");
+    if (!customerId || !restaurantId || !cartId) {
+      console.error("Missing required data:", { customerId, cartId, restaurantId });
+      setCartDetails({ order_items: [] });
       setIsLoading(false);
       return;
     }
@@ -93,99 +75,53 @@ const Cart = () => {
       const data = await response.json();
       console.log("API response data:", data);
 
-      if (data.st === 1) {
+      if (data.st === 1 && data.order_items && data.order_items.length > 0) {
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
           oldPrice: Math.floor(item.price * 1.1),
         }));
         setCartDetails({ ...data, order_items: updatedOrderItems });
-        localStorage.setItem("cartItems", JSON.stringify(updatedOrderItems));
-        console.log("Cart details set:", data);
-      } else if (data.st === 2) {
-        setCartDetails({ order_items: [] });
-        localStorage.removeItem("cartItems");
       } else {
-        console.error("Failed to fetch cart details:", data.msg);
+        console.log("No items in cart or invalid response:", data);
         setCartDetails({ order_items: [] });
-        localStorage.removeItem("cartItems");
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
       setCartDetails({ order_items: [] });
-      localStorage.removeItem("cartItems");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [getCustomerId, getCartId, restaurantId]);
 
   useEffect(() => {
-    fetchCartDetails();
-  }, [restaurantId]); // Add restaurantId as a dependency
+    if (userData && restaurantId) {
+      fetchCartDetails();
+    }
+  }, [userData, restaurantId, fetchCartDetails]);
 
-  const removeFromCart = async (item, index) => {
-    const customerId = getCustomerId();
-    const cartId = getCartId();
-    const menuId = item.menu_id;
-
+  const handleRemoveFromCart = async (item) => {
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/remove_from_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.st === 1) {
-        console.log("Item removed from cart successfully.");
-
-        setCartDetails((prevDetails) => ({
-          ...prevDetails,
-          order_items: prevDetails.order_items.filter(
-            (orderItem) => orderItem.menu_id !== menuId
-          ),
-        }));
-
-        // Update local storage
-        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-        const updatedCartItems = cartItems.filter(
-          (cartItem) => cartItem.menu_id !== menuId
-        );
-        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-        console.log("Updated cart items in local storage:", updatedCartItems);
-
-        toast.current.show({
-          severity: "success",
-          summary: "Item Removed",
-          detail: `${item.menu_name} has been removed from your cart.`,
-          life: 2000,
-        });
-
-        // Optionally, you can call fetchCartDetails() here to get the latest cart state from the server
-        fetchCartDetails();
-      } else {
-        console.error("Failed to remove item from cart:", data.msg);
-      }
+      await removeFromCart(item.menu_id, userData.customer_id, restaurantId);
+      toast.current.show({
+        severity: "success",
+        summary: "Item Removed",
+        detail: `${item.menu_name} has been removed from your cart.`,
+        life: 2000,
+      });
+      fetchCartDetails(); // Refresh cart details after removal
     } catch (error) {
       console.error("Error removing item from cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to remove item from cart.",
+        life: 2000,
+      });
     }
   };
 
-  // ... existing code ...
-
   const updateCartQuantity = async (menuId, quantity) => {
     const customerId = getCustomerId();
-
     const cartId = getCartId();
 
     try {
@@ -207,29 +143,36 @@ const Cart = () => {
       );
       const data = await response.json();
       if (data.st === 1) {
-        fetchCartDetails(); // Refresh cart details
+        fetchCartDetails(); // Refresh cart details after update
+        toast.current.show({
+          severity: "success",
+          summary: "Quantity Updated",
+          detail: `Item quantity has been updated.`,
+          life: 2000,
+        });
       } else {
         console.error("Failed to update cart quantity:", data.msg);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to update item quantity.",
+          life: 2000,
+        });
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "An error occurred while updating item quantity.",
+        life: 2000,
+      });
     }
   };
 
-  // ... existing code ...
-
-  // ... existing code ...
-
   const incrementQuantity = (item) => {
     if (item.quantity < 20) {
-      const newQuantity = item.quantity + 1;
-      updateCartQuantity(item.menu_id, newQuantity);
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: `Increased quantity of ${item.menu_name} to ${newQuantity}`,
-        life: 2000,
-      });
+      updateCartQuantity(item.menu_id, item.quantity + 1);
     } else {
       toast.current.show({
         severity: "warn",
@@ -242,47 +185,8 @@ const Cart = () => {
 
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
-      const newQuantity = item.quantity - 1;
-      updateCartQuantity(item.menu_id, newQuantity);
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: `Decreased quantity of ${item.menu_name} to ${newQuantity}`,
-        life: 2000,
-      });
+      updateCartQuantity(item.menu_id, item.quantity - 1);
     }
-  };
-
-  const displayCartItems = cartDetails.order_items; // Debug log
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
-  };
-
-  const getFirstName = (name) => {
-    if (!name) return "User"; // Return "User" if name is undefined or null
-    const words = name.split(" ");
-    return words[0]; // Return the first word
-  };
-
-  const toggleTheme = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", newIsDarkMode);
-  };
-
-  useEffect(() => {
-    // Apply the theme class based on the current state
-    if (isDarkMode) {
-      document.body.classList.add("theme-dark");
-    } else {
-      document.body.classList.remove("theme-dark");
-    }
-  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
-
-  const toTitleCase = (text) => {
-    if (!text) return "";
-    return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   if (isLoading) {
@@ -297,51 +201,50 @@ const Cart = () => {
 
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
+    <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
-      <Header title="Cart" count={cartDetails.order_items.length} />
-      
+    <Header title="Cart" count={cartDetails.order_items.length} />
 
-      {displayCartItems.length === 0 ? (
-        <main className="page-content ">
-          <div
-            className="container overflow-hidden d-flex justify-content-center align-items-center"
-            style={{ height: "100vh" }}
-          >
-            <div className="m-b20 dz-flex-box text-center">
-              <div className="dz-cart-about">
-                <h5 className="   ">Your Cart is Empty</h5>
-                <p className=" ">
-                  Add items to your cart from the product details page.
-                </p>
-                <Link to="/Menu" className="btn btn-outline-primary btn-sm">
-                  Return to Shop
-                </Link>
-              </div>
+    {cartDetails.order_items.length === 0 ? (
+      <main className="page-content ">
+        <div
+          className="container overflow-hidden d-flex justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
+          <div className="m-b20 dz-flex-box text-center">
+            <div className="dz-cart-about">
+              <h5 className="   ">Your Cart is Empty</h5>
+              <p className=" ">
+                Add items to your cart from the product details page.
+              </p>
+              <Link to="/Menu" className="btn btn-outline-primary btn-sm">
+                Return to Shop
+              </Link>
             </div>
           </div>
-        </main>
-      ) : (
-        <main className="page-content space-top mb-5 pb-3">
-          <div className="container py-0">
-            <HotelNameAndTable
-              restaurantName={restaurantName}
-              tableNumber={userData?.tableNumber || "1"}
-            />
-          </div>
-          <div className="container scrollable-section pt-0">
-            {displayCartItems.map((item, index) => (
-              <Link
-                key={index}
-                to={{
-                  pathname: `/ProductDetails/${item.menu_id}`,
-                }}
-                state={{
-                  restaurant_id: userData.restaurantId,
-                  menu_cat_id: item.menu_cat_id,
-                }}
-                className="text-decoration-none text-reset"
-              >
+        </div>
+      </main>
+    ) : (
+      <main className="page-content space-top mb-5 pb-3">
+        <div className="container py-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
+        </div>
+        <div className="container scrollable-section pt-0">
+          {cartDetails.order_items.map((item, index) => (
+            <Link
+              key={index}
+              to={{
+                pathname: `/ProductDetails/${item.menu_id}`,
+              }}
+              state={{
+                restaurant_id: userData.restaurantId,
+                menu_cat_id: item.menu_cat_id,
+              }}
+              className="text-decoration-none text-reset"
+            >
                 <div className="card mb-3 rounded-3">
                   <div className="row my-auto ps-3">
                     <div className="col-3 px-0">
@@ -373,7 +276,7 @@ const Cart = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              removeFromCart(item, index);
+                              handleRemoveFromCart(item, index);
                             }}
                           >
                             <i className="ri-close-line fs-4 mb-5 icon-adjust"></i>
@@ -462,7 +365,7 @@ const Cart = () => {
               </Link>
             ))}
           </div>
-          {cartDetails && displayCartItems.length > 0 && (
+          {cartDetails && cartDetails.order_items.length > 0 && (
             <div
               className="pb-5 mb-5"
               style={{ bottom: "75px", backgroundColor: "transparent" }}
@@ -542,14 +445,14 @@ const Cart = () => {
               <div className="container d-flex align-items-center justify-content-center pt-0">
                 <Link
                   to="/Checkout"
-                  state={{ cartItems: displayCartItems }}
+                  state={{ cartItems: cartDetails.order_items }}
                   className="btn btn-color   rounded-pill text-white px-5"
                 >
                   Proceed to Buy &nbsp;{" "}
                   <b>
                     {" "}
                     <span className="small-number gray-text">
-                      ({displayCartItems.length} items)
+                      ({cartDetails.order_items.length} items)
                     </span>
                   </b>
                 </Link>
