@@ -354,7 +354,7 @@ const Wishlist = () => {
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
-                            <div className="custom-card rounded-4 ">
+                            <div className="custom-card rounded-3 ">
                               <Link
                                 to={`/ProductDetails/${menu.menu_id}`}
                                 state={{
