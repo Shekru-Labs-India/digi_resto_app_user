@@ -7,6 +7,8 @@ import OrderGif from "../assets/gif/cooking.gif";
 import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 import Header from "../components/Header";
 import HotelNameAndTable from '../components/HotelNameAndTable';
+import NearbyArea from "../component/NearbyArea";
+
 const Checkout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -41,6 +43,7 @@ const Checkout = () => {
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
   const [restaurantCode, setRestaurantCode] = useState(() => localStorage.getItem("restaurantCode") || "");
+
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
     console.log("Cart ID:", cartId);
@@ -404,6 +407,10 @@ const Checkout = () => {
               </div>
           </div>
         </div>
+
+        <div className="container py-0">
+          <NearbyArea />
+        </div>
       </main>
 
       {showPopup && (
@@ -427,7 +434,10 @@ const Checkout = () => {
             </button>
           </div>
         </div>
+
+      
       )}
+
 
       <Bottom />
     </div>

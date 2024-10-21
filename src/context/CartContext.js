@@ -1,11 +1,15 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCartItems = localStorage.getItem('cartItems');
+    return savedCartItems ? JSON.parse(savedCartItems) : [];
+  });
+
   const [cartId, setCartId] = useState(null);
 
   useEffect(() => {
@@ -14,6 +18,10 @@ export const CartProvider = ({ children }) => {
       setCartId(storedCartId);
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const updateCart = async (customerId, restaurantId) => {
     if (!customerId || !restaurantId || !cartId) return;
@@ -50,6 +58,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const isMenuItemInCart = useCallback((menuId) => {
+    return cartItems.some(item => item.menu_id === menuId);
+  }, [cartItems]);
+
   const addToCart = async (item, customerId, restaurantId) => {
     try {
       const response = await fetch(
@@ -70,7 +82,15 @@ export const CartProvider = ({ children }) => {
 
       const data = await response.json();
       if (data.st === 1) {
-        setCartItems((prevItems) => [...prevItems, item]);
+        setCartItems((prevItems) => {
+          const existingItem = prevItems.find(i => i.menu_id === item.menu_id);
+          if (existingItem) {
+            return prevItems.map(i => 
+              i.menu_id === item.menu_id ? { ...i, quantity: i.quantity + 1 } : i
+            );
+          }
+          return [...prevItems, { ...item, quantity: 1 }];
+        });
         setCartId(data.cart_id);
         localStorage.setItem('cartId', data.cart_id);
       }
@@ -96,10 +116,24 @@ export const CartProvider = ({ children }) => {
           }),
         }
       );
-
+  
       const data = await response.json();
       if (data.st === 1) {
-        setCartItems((prevItems) => prevItems.filter((item) => item.menu_id !== itemId));
+        // Remove item from state
+        setCartItems((prevItems) => {
+          const updatedItems = prevItems.filter((item) => item.menu_id !== itemId);
+          
+          // Update local storage
+          localStorage.setItem('cartItems', JSON.stringify(updatedItems));
+          
+          return updatedItems;
+        });
+  
+        // If the cart is now empty, remove the cartId from local storage
+        if (cartItems.length === 1) {  // It will be 0 after the removal
+          localStorage.removeItem('cartId');
+          setCartId(null);
+        }
       }
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -120,6 +154,7 @@ export const CartProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     clearCart,
+    isMenuItemInCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

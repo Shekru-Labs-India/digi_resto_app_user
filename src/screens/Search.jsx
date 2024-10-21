@@ -25,10 +25,15 @@ const Search = () => {
   const navigate = useNavigate();
   const toast = useRef(null);
   const { restaurantName } = useRestaurantId();
+  const { restaurantId } = useRestaurantId();
+  const [customerId, setCustomerId] = useState(null);
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  const restaurantId = userData ? userData.restaurantId : null;
-  const customerId = userData ? userData.customer_id : null;
+  useEffect(() => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setCustomerId(storedUserData.customer_id);
+    }
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -264,7 +269,7 @@ const Search = () => {
           <div className="d-flex align-items-center">
             <i className="ri-user-location-line me-2 gray-text"></i>
             <span className="fw-medium font_size_12 gray-text">
-            {userData && userData.tableNumber ? `Table ${userData.tableNumber}` : "Table 1"}
+            {customerId && customerId.tableNumber ? `Table ${customerId.tableNumber}` : "Table 1"}
             </span>
           </div>
         </div>

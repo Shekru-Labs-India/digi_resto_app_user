@@ -1,24 +1,21 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Swiper from "swiper";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
+import Swiper from "swiper/bundle";
+import "swiper/swiper-bundle.css";
 import { Toast } from "primereact/toast";
-import { dispatchMenuUpdateEvent } from "../utils/events";
 import { useCart } from "../context/CartContext";
+import LoaderGif from "../screens/LoaderGIF";
 
 const NearbyArea = () => {
-  const swiperRef = useRef(null);
-  const toast = useRef(null);
-  const { restaurantId } = useRestaurantId();
-  const [menuItems, setMenuItems] = useState(() => {
-    const storedItems = localStorage.getItem("menuItems");
-    return storedItems ? JSON.parse(storedItems) : [];
-  });
-  const { cartItems, addToCart } = useCart();
+  const [menuItems, setMenuItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  const { restaurantId } = useRestaurantId();
+  const { cartItems, addToCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
+  const toast = useRef(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -27,47 +24,17 @@ const NearbyArea = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const swiper = new Swiper(".product-swiper", {
-      loop: true,
-      centeredSlides: true,
-      spaceBetween: 20,
-      breakpoints: {
-        320: { slidesPerView: 2, spaceBetween: 90 },
-        480: { slidesPerView: 2, spaceBetween: -20 },
-        640: { slidesPerView: 3, spaceBetween: 100 },
-        1024: { slidesPerView: 3, spaceBetween: 90 },
-      },
-    });
-
-    swiperRef.current = swiper;
-
-    const interval = setInterval(() => {
-      if (swiperRef.current) {
-        swiperRef.current.slideNext();
-      }
-    }, 3000);
-
-    return () => {
-      clearInterval(interval);
-      if (swiperRef.current) {
-        swiperRef.current.destroy();
-      }
-    };
-  }, []);
-
   const toTitleCase = (str) => {
     if (!str) return "";
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    return str.replace(
+      /\w\S*/g,
+      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
   };
 
-  
-
   const fetchMenuData = useCallback(async () => {
+    if (!restaurantId) return;
+    setIsLoading(true);
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_special_menu_list",
@@ -92,7 +59,8 @@ const NearbyArea = () => {
       if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
         const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
           ...menu,
-          name: menu.menu_name,
+          name: toTitleCase(menu.menu_name),
+          category_name: toTitleCase(menu.category_name),
           oldPrice: Math.floor(menu.price * 1.1),
           is_favourite: menu.is_favourite === 1,
         }));
@@ -105,22 +73,54 @@ const NearbyArea = () => {
     } catch (error) {
       console.error("Error fetching menu data:", error);
       setMenuItems([]);
+    } finally {
+      setIsLoading(false);
     }
   }, [restaurantId, customerId]);
-
 
   useEffect(() => {
     fetchMenuData();
   }, [fetchMenuData]);
 
-  // Add a new effect to refetch data when the component receives focus
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchMenuData();
+    };
 
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [fetchMenuData]);
 
   useEffect(() => {
-    console.log("restaurantId:", restaurantId);
-    console.log("customerId:", customerId);
-    // ... rest of the code
-  }, [restaurantId, customerId]);
+    if (menuItems.length > 0) {
+      const swiper = new Swiper(".nearby-swiper", {
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false,
+        },
+      });
+
+      return () => {
+        swiper.destroy();
+      };
+    }
+  }, [menuItems]);
+
+  const renderSpiceIcons = (spicyIndex) => {
+    return Array.from({ length: 5 }).map((_, index) =>
+      index < spicyIndex ? (
+        <i className="ri-fire-fill font_size_14 text-danger" key={index}></i>
+      ) : (
+        <i className="ri-fire-line font_size_14 gray-text" key={index}></i>
+      )
+    );
+  };
 
   const handleLikeClick = async (menuId) => {
     if (!customerId || !restaurantId) {
@@ -158,8 +158,7 @@ const NearbyArea = () => {
         );
 
         setMenuItems(updatedMenuItems);
-        dispatchMenuUpdateEvent();
-        
+
         toast.current.show({
           severity: isFavorite ? "error" : "success",
           summary: "Success",
@@ -196,7 +195,7 @@ const NearbyArea = () => {
       });
       return;
     }
-  
+
     try {
       await addToCart(menuItem, customerId, restaurantId);
       toast.current.show({
@@ -216,56 +215,37 @@ const NearbyArea = () => {
     }
   };
 
-  
   const isMenuItemInCart = (menuId) => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  const renderSpiceIcons = (spicyIndex) => {
-    return Array.from({ length: 5 }).map((_, index) =>
-      index < spicyIndex ? (
-        <i className="ri-fire-fill font_size_14 text-danger" key={index}></i>
-      ) : (
-        <i className="ri-fire-line font_size_14 gray-text" key={index}></i>
-      )
-    );
-  };
-
   return (
     <div className="dz-box style-2 nearby-area">
-    <Toast ref={toast} position="bottom-center" className="custom-toast" />
-    <div className="title-bar1 align-items-start mb-5">
-      <div className="left">
-        {menuItems.length > 0 && (
-          <h4 className="font_size_14 fw-medium">Our Speciality</h4>
-        )}
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
+      <div className="title-bar1 align-items-start mb-0 ">
+        <div className="left">
+          {menuItems.length > 0 && (
+            <h4 className="font_size_14 fw-medium">Our Speciality</h4>
+          )}
+        </div>
       </div>
-    </div>
-    <div className="swiper product-swiper swiper-center">
-      <div className="swiper-wrapper">
-        {menuItems.map((menuItem, index) => (
-          <div className="swiper-slide col-6" key={index}>
-            <div className="row g-3 grid-style-1">
-              <div>
-              <div
-                    className="card-item style-6 rounded-3"
-                    style={{
-                      width: "200px",
-                      height: "auto",
-                      position: "relative",
-                    }}
-                  >
-                    <Link
-                      to={`/ProductDetails/${menuItem.menu_id}`}
-                      state={{ menu_cat_id: menuItem.menu_cat_id }}
-                      className="card-link"
-                      style={{
-                        textDecoration: "none",
-                        color: "inherit",
-                        display: "block",
-                      }}
-                    >
-                    <div className="dz-media">
+      <div className="dz-box style-3">
+        <div className="swiper nearby-swiper mt-0">
+          <div className="swiper-wrapper">
+            {menuItems.map((menuItem) => (
+              <div key={menuItem.menu_id} className="swiper-slide">
+                <Link
+                  to={`/ProductDetails/${menuItem.menu_id}`}
+                  state={{ menu_cat_id: menuItem.menu_cat_id }}
+                  className="card-link"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                    display: "block",
+                  }}
+                >
+                  <div className="cart-list style-2-custom">
+                    <div className="dz-media media-100 rounded-start-3 rounded-end-0">
                       <img
                         src={menuItem.image || images}
                         style={{
@@ -277,112 +257,70 @@ const NearbyArea = () => {
                         onError={(e) => {
                           e.target.src = images;
                         }}
+                        alt={menuItem.name}
                       />
                     </div>
-                    <div className="dz-content">
-                      <div
-                        className="detail-content"
-                        style={{ position: "relative" }}
-                      >
+                    <div className="row">
+                      <div className="detail-content">
                         <div
                           className="font_size_12 text-success"
-                          style={{ color: "#0a795b" }}
+                          
                         >
                           <i
-                            className="ri-restaurant-line"
-                            style={{ paddingRight: "5px" }}
+                            className="ri-restaurant-line pe-1"
+                            
                           ></i>
-                          {toTitleCase(menuItem.category_name)}
+                          {menuItem.category_name}
+
+
                         </div>
-                        <i
-                          className={`nearby-area-heart ${
-                            menuItem.is_favourite
-                              ? "ri-hearts-fill fs-3"
-                              : "ri-heart-2-line fs-3"
-                          } fs-2`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menuItem.menu_id);
-                          }}
-                          style={{
-                            position: "absolute",
-                            top: "0",
-                            right: "0",
-                            fontSize: "23px",
-                            cursor: "pointer",
-                            color: menuItem.is_favourite
-                              ? "#fe0809"
-                              : "#73757b",
-                            zIndex: 10,
-                          }}
-                        ></i>
+
+
                       </div>
                       <span className="font_size_14 fw-medium text-wrap">
-                        {toTitleCase(menuItem.name)}
+                        {menuItem.name}
                       </span>
                       <div className="row">
-                        <div className="col-6">
+                        <div className="col-8">
                           <div className="offer-code mx-0">
                             {renderSpiceIcons(menuItem.spicy_index)}
                           </div>
                         </div>
-                        <div className="col-6 text-end">
+                        <div className="col-4 text-center">
                           <i className="ri-star-half-line font_size_14 ratingStar"></i>
                           <span className="font_size_12 fw-normal gray-text">
                             {menuItem.rating}
                           </span>
                         </div>
                       </div>
-                      <div className="">
-                        <div className="row">
-                          <div className="col-9">
-                            <p className="mb-2   fw-medium">
-                              <span className="me-2 text-info font_size_14 fw-semibold">
-                                ₹{menuItem.price}
-                              </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menuItem.oldPrice || menuItem.price}
-                              </span>
-                            </p>
-                          </div>
-                          <div className="col-2 me-3">
-                            <div
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menuItem);
-                              }}
-                              className="cart-btn"
-                            >
-                              {isMenuItemInCart(menuItem.menu_id) ? (
-                                <i className="ri-shopping-cart-fill fs-2"></i>
-                              ) : (
-                                <i className="ri-shopping-cart-line fs-2"></i>
-                              )}
-                            </div>
-                          </div>
+
+                      <div className="row ">
+                        <div className="col-8">
+                          <p className="mb-0 fw-medium">
+                            <span className="me-2 text-info font_size_14 fw-semibold">
+                              ₹{menuItem.price}
+                            </span>
+                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                              ₹{menuItem.oldPrice || menuItem.price}
+                            </span>
+                          </p>
                         </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-12">
+
+                        <div className="col-4">
                           <span className="font_size_12 text-success">
                             {menuItem.offer || "No "}% Off
                           </span>
                         </div>
                       </div>
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
-
-    
-  </div>
   );
 };
 
