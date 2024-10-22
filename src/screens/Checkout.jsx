@@ -6,7 +6,7 @@ import "../assets/css/custom.css";
 import OrderGif from "../assets/gif/cooking.gif";
 import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
 import Header from "../components/Header";
-import HotelNameAndTable from '../components/HotelNameAndTable';
+import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
 
@@ -15,18 +15,17 @@ const Checkout = () => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
   }); // State for theme
-  const { restaurantName} = useRestaurantId();
+  const { restaurantName } = useRestaurantId();
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   console.log("Restaurant ID:", restaurantId);
   // const { isDarkMode } = useContext(ThemeContext);
-  const { clearCart } = useCart(); 
+  const { clearCart } = useCart();
 
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
 
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
@@ -41,16 +40,19 @@ const Checkout = () => {
   const [notes, setNotes] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
   const [showNotePopup, setShowNotePopup] = useState(false); // State to show/hide note popup
- const [orderCount, setOrderCount] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
   const userData = JSON.parse(localStorage.getItem("userData"));
   const customerId = userData ? userData.customer_id : null;
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
-  const [restaurantCode, setRestaurantCode] = useState(() => localStorage.getItem("restaurantCode") || "");
+  const [restaurantCode, setRestaurantCode] = useState(
+    () => localStorage.getItem("restaurantCode") || ""
+  );
   const [showCancelPopup, setShowCancelPopup] = useState(false);
   const [cancellingOrderId, setCancellingOrderId] = useState(null);
-
+  const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
+  const [ongoingOrderId, setOngoingOrderId] = useState(null);
 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
@@ -67,11 +69,11 @@ const Checkout = () => {
     });
 
     if (!cartId || !customerId || !restaurantId) {
-      console.log("Missing cart, customer, or restaurant data. Navigating to home.");
-     
+      console.log(
+        "Missing cart, customer, or restaurant data. Navigating to home."
+      );
       return;
     }
-
 
     try {
       const response = await fetch(
@@ -93,10 +95,9 @@ const Checkout = () => {
       console.log("API Data:", data);
 
       if (response.ok) {
-        // Calculate old price for each item
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
-          oldPrice: Math.floor(item.price * 1.1), // Old price calculation
+          oldPrice: Math.floor(item.price * 1.1),
         }));
         setCartItems(updatedOrderItems);
         setTotal(parseFloat(data.total_bill) || 0);
@@ -107,10 +108,10 @@ const Checkout = () => {
         setServiceChargesPercent(parseFloat(data.service_charges_percent) || 0);
         setGstPercent(parseFloat(data.gst_percent) || 0);
         setDiscountPercent(parseFloat(data.discount_percent) || 0);
-          const uniqueMenuIds = new Set(
-            data.order_items.map((item) => item.menu_id)
-          );
-          setOrderCount(uniqueMenuIds.size);
+        const uniqueMenuIds = new Set(
+          data.order_items.map((item) => item.menu_id)
+        );
+        setOrderCount(uniqueMenuIds.size);
       } else {
         console.error("Failed to fetch cart details:", data.msg);
         navigate(`/${restaurantCode}/${tableNumber || ""}`);
@@ -130,7 +131,7 @@ const Checkout = () => {
 
   const handleNotesChange = (e) => {
     const value = e.target.value;
-    const regex = /^[a-zA-Z0-9\s.]*$/; // Only allow alphanumeric characters, spaces, and dots // Only allow alphanumeric characters and spaces, no dots // Only allow alphanumeric characters and spaces
+    const regex = /^[a-zA-Z0-9\s.]*$/;
 
     if (value.length < 3 || value.length > 200) {
       setValidationMessage("Notes must be between 3 and 200 characters.");
@@ -144,6 +145,52 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
+    try {
+      // Check for ongoing orders first
+      const ongoingResponse = await fetch(
+        "https://menumitra.com/user_api/get_order_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            
+            customer_id: customerId,
+          }),
+        }
+      );
+
+      const ongoingData = await ongoingResponse.json();
+      if (
+        ongoingResponse.ok &&
+        ongoingData.st === 1 &&
+        ongoingData.lists &&
+        ongoingData.lists.ongoing
+      ) {
+        // There's an ongoing order
+        const ongoingOrders = Object.values(ongoingData.lists.ongoing).flat();
+        if (ongoingOrders.length > 0) {
+          setOngoingOrderId(ongoingOrders[0].order_number);
+          setShowOngoingOrderPopup(true);
+          return;
+        }
+      }
+
+      // If no ongoing orders, proceed with order submission
+      await proceedWithOrderSubmission();
+    } catch (error) {
+      console.error(
+        "Error checking ongoing orders or submitting order:",
+        error
+      );
+      setErrorMessage("An error occurred. Please try again.");
+      setShowErrorPopup(true);
+    }
+  };
+
+  const proceedWithOrderSubmission = async () => {
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -193,13 +240,12 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Error submitting order:", error);
-      alert(`Failed to submit order: ${error.message}`);
+      setErrorMessage(`Failed to submit order: ${error.message}`);
+      setShowErrorPopup(true);
     }
   };
 
-
-  const handleCancelOrder = async (orderId) => {
-    setCancellingOrderId(orderId);
+  const handleCancelOrders = async () => {
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/cancle_order",
@@ -209,27 +255,55 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            order_id: orderId,
+            order_id: ongoingOrderId,
+            restaurant_id: restaurantId,
+            note: notes,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        clearCart();
+        setShowOngoingOrderPopup(false);
+        navigate("/Menu");
+      } else {
+        throw new Error(data.msg || "Failed to cancel order");
+      }
+    } catch (error) {
+      console.error("Error cancelling orders:", error);
+      setErrorMessage("Failed to cancel orders. Please try again.");
+      setShowErrorPopup(true);
+    }
+  };
+
+  const handleCompleteAndProceed = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/complete_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: ongoingOrderId,
             customer_id: customerId,
           }),
         }
       );
 
       const data = await response.json();
-      if (data.st === 1) {
-        // Order cancelled successfully
-        setShowCancelPopup(true);
-        clearCart(); // Clear the cart after cancelling the order
+      if (response.ok && data.st === 1) {
+        setShowOngoingOrderPopup(false);
+        await proceedWithOrderSubmission();
       } else {
-        setErrorMessage(data.msg || "Failed to cancel order");
-        setShowErrorPopup(true);
+        throw new Error(data.msg || "Failed to complete order");
       }
     } catch (error) {
-      console.error("Error cancelling order:", error);
-      setErrorMessage("An error occurred while cancelling the order");
+      console.error("Error completing order:", error);
+      setErrorMessage("Failed to complete order. Please try again.");
       setShowErrorPopup(true);
-    } finally {
-      setCancellingOrderId(null);
     }
   };
 
@@ -276,17 +350,38 @@ const Checkout = () => {
         <div className="container py-0 my-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || '1'}
+            tableNumber={userData?.tableNumber || "1"}
           />
         </div>
+
+        {showOngoingOrderPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h3>Ongoing Order Detected</h3>
+              <p>You have an ongoing order. What would you like to do?</p>
+              <button
+                className="btn btn-danger rounded-pill text-white me-2"
+                onClick={handleCancelOrders}
+              >
+                Cancel Order
+              </button>
+              <button
+                className="btn btn-success rounded-pill text-white"
+                onClick={handleCompleteAndProceed}
+              >
+                Complete Order
+              </button>
+            </div>
+          </div>
+        )}
 
         {showErrorPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
-              <h3>Order Error</h3>
+              <h3>Error</h3>
               <p>{errorMessage}</p>
               <button
-                className="btn btn-color rounded-pill text-white"
+                className="btn btn-primary rounded-pill text-white"
                 onClick={() => setShowErrorPopup(false)}
               >
                 Close
@@ -294,6 +389,7 @@ const Checkout = () => {
             </div>
           </div>
         )}
+
         <div className="m-3">
           <div className="dz-flex-box">
             <ul className="dz-list-group">
@@ -459,13 +555,13 @@ const Checkout = () => {
               </Link>
             </div>
             <div className="d-flex align-items-center justify-content-center mt-3">
-                <Link
-                  to="/Menu"
-                  className="btn btn-outline-primary  rounded-pill  px-3"
-                >
-                  Order More
-                </Link>
-              </div>
+              <Link
+                to="/Menu"
+                className="btn btn-outline-primary  rounded-pill  px-3"
+              >
+                Order More
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -495,10 +591,7 @@ const Checkout = () => {
             </button>
           </div>
         </div>
-
-      
       )}
-
 
       <Bottom />
     </div>

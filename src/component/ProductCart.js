@@ -46,57 +46,79 @@ const ProductCard = () => {
     }
   }, []);
 
-  const fetchMenuData = useCallback(async (categoryId) => {
-    if (!customerId || !restaurantId) return;
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_all_menu_list_by_category",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ customer_id: customerId, restaurant_id: restaurantId }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.st === 1) {
-        const formattedCategories = data.data.category.map((category) => ({
-          ...category,
-          name: toTitleCase(category.category_name),
-        }));
-        setMenuCategories(formattedCategories);
-
-        const formattedMenuList = data.data.menus.map((menu) => ({
-          ...menu,
-          image: menu.image || images,
-          category: toTitleCase(menu.category_name),
-          name: toTitleCase(menu.menu_name),
-          oldPrice: Math.floor(menu.price * 1.1),
-          is_favourite: menu.is_favourite === 1,
-        }));
-        setMenuList(formattedMenuList);
-        setTotalMenuCount(formattedMenuList.length);
-
-        const filteredMenus = categoryId === null
-          ? formattedMenuList
-          : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
-        setFilteredMenuList(filteredMenus);
-      } else {
-        setMenuCategories([]);
-        setMenuList([]);
-        setFilteredMenuList([]);
+ const fetchMenuData = useCallback(async (categoryId) => {
+  if (!restaurantId || hasFetchedData.current) return;
+  setIsLoading(true);
+  try {
+    const response = await fetch(
+      "https://menumitra.com/user_api/get_all_menu_list_by_category",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ restaurant_id: restaurantId }),
       }
-    } catch (error) {
-      console.error("Error fetching menu data:", error);
+    );
+
+    const data = await response.json();
+    console.log("API response:", JSON.stringify(data, null, 2));
+
+    if (response.ok && data.st === 1) {
+      const formattedCategories = data.data.category.map((category) => ({
+        ...category,
+        name: toTitleCase(category.category_name),
+      }));
+      setMenuCategories(formattedCategories);
+
+      const formattedMenuList = data.data.menus.map((menu) => ({
+        ...menu,
+        image: menu.image || images,
+        category: toTitleCase(menu.category_name),
+        name: toTitleCase(menu.menu_name),
+        oldPrice: calculateOldPrice(menu.price, menu.offer),
+        is_favourite: menu.is_favourite === 1,
+        offer: parseOffer(menu.offer),
+      }));
+      setMenuList(formattedMenuList);
+      setTotalMenuCount(formattedMenuList.length);
+
+      const filteredMenus = categoryId === null
+        ? formattedMenuList
+        : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
+      setFilteredMenuList(filteredMenus);
+      hasFetchedData.current = true;
+
+      // Save to local storage
+      localStorage.setItem('menuCategories', JSON.stringify(formattedCategories));
+      localStorage.setItem('menuList', JSON.stringify(formattedMenuList));
+    } else {
+      console.error("Invalid data format:", data);
       setMenuCategories([]);
       setMenuList([]);
       setFilteredMenuList([]);
-    } finally {
-      setIsLoading(false);
     }
-  }, [customerId, restaurantId]);
+  } catch (error) {
+    console.error("Error fetching menu data:", error);
+    setMenuCategories([]);
+    setMenuList([]);
+    setFilteredMenuList([]);
+  } finally {
+    setIsLoading(false);
+  }
+}, [restaurantId]);
+  
+  // Helper function to calculate old price
+  const calculateOldPrice = (price, offer) => {
+    const offerPercentage = parseOffer(offer);
+    return Math.floor(price / (1 - offerPercentage / 100));
+  };
+  
+  // Helper function to parse offer
+  const parseOffer = (offer) => {
+    if (typeof offer === 'number') return offer;
+    const match = offer.match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  };
+
 
   useEffect(() => {
     if (customerId && restaurantId) {
@@ -128,6 +150,35 @@ const ProductCard = () => {
   );
 
   useEffect(() => {
+    if (menuCategories.length > 0) {
+      // Use a short timeout to ensure the DOM has updated
+      const timer = setTimeout(() => {
+        swiperRef.current = new Swiper(".category-slide", {
+          slidesPerView: "auto",
+          spaceBetween: 10,
+        });
+  
+        const swiperContainer = document.querySelector(".category-slide");
+        if (swiperContainer) {
+          const handleScroll = () => {
+            if (swiperContainer.scrollLeft === 0) {
+              handleCategorySelect(menuCategories[0].menu_cat_id);
+            }
+          };
+  
+          swiperContainer.addEventListener("scroll", handleScroll);
+  
+          return () => {
+            swiperContainer.removeEventListener("scroll", handleScroll);
+          };
+        }
+      }, 0);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [menuCategories]);
+
+  useEffect(() => {
     if (restaurantId) {
       debouncedFetchMenuData(null);
       setSelectedCategoryId(null);
@@ -152,14 +203,23 @@ const ProductCard = () => {
         slidesPerView: "auto",
         spaceBetween: 10,
       });
-
+  
       // Add scroll event listener
       const swiperContainer = document.querySelector(".category-slide");
-      swiperContainer.addEventListener("scroll", () => {
-        if (swiperContainer.scrollLeft === 0) {
-          handleCategorySelect(menuCategories[0].menu_cat_id);
-        }
-      });
+      if (swiperContainer) {
+        const handleScroll = () => {
+          if (swiperContainer.scrollLeft === 0) {
+            handleCategorySelect(menuCategories[0].menu_cat_id);
+          }
+        };
+  
+        swiperContainer.addEventListener("scroll", handleScroll);
+  
+        // Cleanup function
+        return () => {
+          swiperContainer.removeEventListener("scroll", handleScroll);
+        };
+      }
     }
   }, [menuCategories]);
 
@@ -262,7 +322,7 @@ const ProductCard = () => {
     return cartItems.some((item) => item.menu_id === menuId);
   };
 
-  if (isLoading || menuList.length === 0) {
+  if (isLoading) {
     return (
       <div id="preloader">
         <div className="loader">

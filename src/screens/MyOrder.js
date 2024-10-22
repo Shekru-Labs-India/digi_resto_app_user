@@ -50,7 +50,7 @@ const MyOrder = () => {
             },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              order_status: activeTab === "ongoing" ? "ongoing" : "completed",
+              
               customer_id: customerId,
             }),
           }
@@ -59,22 +59,22 @@ const MyOrder = () => {
         if (response.ok) {
           const data = await response.json();
           console.log("API response data:", data);
-          if (data.st === 1 && data.lists) {
-            setOrders(data.lists); // Ensure orders are being set correctly
-            console.log("Fetched Orders:", data.lists); // Log the fetched orders
+          if (data.st === 1 && data.lists && data.lists[activeTab]) {
+            setOrders(data.lists[activeTab]);
+            console.log("Fetched Orders:", data.lists[activeTab]);
           } else {
             console.error("Invalid data format:", data);
-            setOrders([]); // Set orders to empty if data format is incorrect
+            setOrders({});
           }
         } else {
           console.error("Network response was not ok.");
-          setOrders([]); // Set orders to empty if network response is not ok
+          setOrders({});
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
-        setOrders([]); // Set orders to empty if there's an error
+        setOrders({});
       } finally {
-        setLoading(false); // Set loading to false after API call
+        setLoading(false);
         console.log("Loading state set to false");
       }
     };
@@ -83,7 +83,7 @@ const MyOrder = () => {
       fetchOrders();
     } else {
       console.log("Missing customerId or restaurantId");
-      setLoading(false); // Set loading to false if customerId or restaurantId is missing
+      setLoading(false);
     }
   }, [activeTab, customerId, restaurantId]);
 
@@ -154,10 +154,8 @@ const MyOrder = () => {
             </div>
           ) : (
             <>
-              {userData ? (
+               {userData ? (
                 <div className="default-tab style-2 pb-5 mb-3">
-                 
-
                   <div className="tab-content">
                     <div
                       className={`tab-pane fade ${
@@ -177,6 +175,25 @@ const MyOrder = () => {
                     >
                       <OrdersTab orders={orders} type="completed" />
                     </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "cancel" ? "show active" : ""
+                      }`}
+                      id="contact"
+                      role="tabpanel"
+                    >
+                      <OrdersTab orders={orders} type="cancel" />
+                    </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "placed" ? "show active" : ""
+                      }`}
+                      id="contact"
+                      role="tabpanel"
+                    >
+                      <OrdersTab orders={orders} type="placed" />
+                    </div>
+
                   </div>
                 </div>
               ) : (
@@ -232,20 +249,9 @@ const OrdersTab = ({ orders, type }) => {
   };
 
   const renderOrders = () => {
-    if (!orders) return <p>No orders available</p>;
+    if (!orders || Object.keys(orders).length === 0) return <p>No orders available</p>;
 
-    let processedOrders;
-    if (Array.isArray(orders)) {
-      // If orders is already an array, use it directly
-      processedOrders = { "Current Orders": orders };
-    } else if (typeof orders === 'object') {
-      // If orders is an object, use it as is
-      processedOrders = orders;
-    } else {
-      return <p>Invalid order data</p>;
-    }
-
-    return Object.entries(processedOrders).map(([date, dateOrders]) => (
+    return Object.entries(orders).map(([date, dateOrders]) => (
       <div className="tab mt-0" key={`${date}-${type}`}>
         <input
           type="checkbox"
