@@ -290,9 +290,9 @@ const Verifyotp = () => {
       setError("OTP is required");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const url = "https://menumitra.com/user_api/account_verify_otp";
       const requestOptions = {
@@ -305,41 +305,27 @@ const Verifyotp = () => {
           otp: otpStored,
         }),
       };
-
+  
       const response = await fetch(url, requestOptions);
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       if (data.st === 1) {
         console.log("OTP verification success:", data);
-
-        const { customer_id, name, mobile, tableNumber } =
-          data.customer_details;
-
-        const storedUserData = JSON.parse(
-          localStorage.getItem("userData") || "{}"
-        );
-        const storedTableNumber = localStorage.getItem("tableNumber");
-
+  
+        const { customer_id, name, mobile } = data.customer_details;
+  
+        // Store only customer_id, name, and mobile in localStorage
         const userData = {
           customer_id,
           name,
-
-          mobile,
-          restaurantId: restaurantId,
-          tableNumber:
-            storedTableNumber ||
-            storedUserData.tableNumber ||
-            data.customer_details.tableNumber ||
-            "1",
-          restaurantCode: restaurantCode,
+          mobile
         };
         localStorage.setItem("userData", JSON.stringify(userData));
-        localStorage.setItem("tableNumber", userData.tableNumber);
-
+  
         // Show success toast message
         toast.current.show({
           severity: "success",
@@ -347,14 +333,11 @@ const Verifyotp = () => {
           detail: "OTP verified successfully!",
           life: 2000,
         });
-
- 
-       
+  
         setTimeout(() => {
-          navigate(`/${userData.restaurantCode}/${userData.tableNumber}`);
+          navigate(`/${restaurantCode}/${localStorage.getItem("tableNumber") || "1"}`);
         }, 1000);
-
-
+  
         localStorage.removeItem("otp");
         localStorage.removeItem("mobile");
       } else {
@@ -364,9 +347,7 @@ const Verifyotp = () => {
           severity: "error",
           summary: "Error",
           detail: "Incorrect OTP. Please try again.",
- 
           life: 2000,
-
         });
       }
     } catch (error) {
@@ -377,9 +358,7 @@ const Verifyotp = () => {
         severity: "error",
         summary: "Error",
         detail: "Verification failed. Please try again.",
- 
         life: 2000,
-
       });
     } finally {
       setLoading(false);

@@ -131,7 +131,7 @@ export const CartProvider = ({ children }) => {
           return updatedItems;
         });
   
-        if (cartItems.length === 1) {  // It will be 0 after the removal
+        if (cartItems.length === 0) {  // It will be 0 after the removal
           setCartId(null);
         }
       } else {
