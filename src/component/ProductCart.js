@@ -30,7 +30,7 @@ const ProductCard = () => {
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
   const userData = JSON.parse(localStorage.getItem("userData"));
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, removeFromCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -227,26 +227,35 @@ const ProductCard = () => {
       navigate("/Signinscreen");
       return;
     }
-    if (isMenuItemInCart(menu.menu_id)) {
+  
+    try {
+      if (isMenuItemInCart(menu.menu_id)) {
+        // Remove from cart
+        await removeFromCart(menu.menu_id, customerId, restaurantId);
+        toast.current.show({
+          severity: "info",
+          summary: "Removed from Cart",
+          detail: menu.name,
+          life: 3000,
+        });
+      } else {
+        // Add to cart
+        await addToCart(menu, customerId, restaurantId);
+        toast.current.show({
+          severity: "success",
+          summary: "Added to Cart",
+          detail: menu.name,
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating cart:", error);
       toast.current.show({
         severity: "error",
-        summary: "Item Already in Cart",
-        detail: menu.name,
+        summary: "Error",
+        detail: "Failed to update cart. Please try again.",
         life: 3000,
       });
-      return;
-    }
-
-    try {
-      await addToCart(menu, customerId, restaurantId);
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: menu.name,
-        life: 3000,
-      });
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
     }
   };
 

@@ -478,7 +478,7 @@ const Cart = () => {
               <div className="d-flex align-items-center justify-content-center mt-2">
                 <Link
                   to="/Menu"
-                  className="btn btn-outline-primary  rounded-pill  px-5"
+                  className="btn btn-outline-primary  rounded-pill  px-3"
                 >
                   Order More
                 </Link>

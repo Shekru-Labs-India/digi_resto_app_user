@@ -27,7 +27,8 @@ const MenuDetails = () => {
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
-  const { cartItems, addToCart } = useCart();
+  const { cartItems,  } = useCart();
+  const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
   
   const [customerId, setCustomerId] = useState(null);
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
@@ -160,12 +161,38 @@ const MenuDetails = () => {
       }, 2000);
     } catch (error) {
       console.error("Error adding item to cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add item to cart.",
+        life: 2000,
+      });
     }
   };
 
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some((item) => item.menu_id === menuId);
+  const handleRemoveFromCart = async () => {
+    try {
+      await removeFromCart(productDetails.menu_id, customerId, restaurantId);
+      toast.current.show({
+        severity: "info",
+        summary: "Removed from Cart",
+        detail: "Item has been removed from your cart.",
+        life: 2000,
+      });
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to remove item from cart.",
+        life: 2000,
+      });
+    }
   };
+
+
+
+  
 
   
 
@@ -512,44 +539,44 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-7 px-0 text-center menu_details-add-to-cart">
-                  {isFromDifferentRestaurant ? (
-                    <button
-                      className="btn btn-outline-secondary rounded-pill p-3"
-                      disabled
-                    >
-                      <div className="font-poppins text-break">
-                        Different Restaurant
-                      </div>
-                    </button>
-                  ) : isItemOrdered(menuId) ? (
-                    <button
-                      className="btn btn-outline-primary rounded-pill"
-                      disabled
-                    >
-                      <i className="ri-check-line pe-1"></i>
-                      <div className="font-poppins text-nowrap">Ordered</div>
-                    </button>
-                  ) : isMenuItemInCart(menuId) ? (
-                    <button
-                      className="btn btn-color rounded-pill"
-                      onClick={() => navigate("/Cart")}
-                    >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                      <div className="font-poppins text-nowrap text-white">
-                        Go to Cart
-                      </div>
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-color rounded-pill"
-                      onClick={handleAddToCart}
-                    >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                      <div className="text-nowrap text-white">Add to Cart</div>
-                    </button>
-                  )}
-                </div>
+                {isFromDifferentRestaurant ? (
+                  <button
+                    className="btn btn-outline-secondary rounded-pill p-3"
+                    disabled
+                  >
+                    <div className="font-poppins text-break">
+                      Different Restaurant
+                    </div>
+                  </button>
+                ) : isItemOrdered(menuId) ? (
+                  <button
+                    className="btn btn-outline-primary rounded-pill"
+                    disabled
+                  >
+                    <i className="ri-check-line pe-1"></i>
+                    <div className="font-poppins text-nowrap">Ordered</div>
+                  </button>
+                ) : isMenuItemInCart(menuId) ? (
+                  <button
+                    className="btn btn-color rounded-pill"
+                    onClick={handleRemoveFromCart}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="font-poppins text-nowrap text-white">
+                      Remove from Cart
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-color rounded-pill"
+                    onClick={handleAddToCart}
+                  >
+                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                    <div className="text-nowrap text-white">Add to Cart</div>
+                  </button>
+                )}
               </div>
+            </div>
             </footer>
           </div>
         </div>

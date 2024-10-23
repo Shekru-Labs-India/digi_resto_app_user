@@ -10,20 +10,23 @@ export const CartProvider = ({ children }) => {
     return savedCartItems ? JSON.parse(savedCartItems) : [];
   });
 
-  const [cartId, setCartId] = useState(null);
-
-  useEffect(() => {
-    const storedCartId = localStorage.getItem('cartId');
-    if (storedCartId) {
-      setCartId(storedCartId);
-    }
-  }, []);
+  const [cartId, setCartId] = useState(() => {
+    return localStorage.getItem('cartId') || null;
+  });
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const updateCart = async (customerId, restaurantId) => {
+  useEffect(() => {
+    if (cartId) {
+      localStorage.setItem('cartId', cartId);
+    } else {
+      localStorage.removeItem('cartId');
+    }
+  }, [cartId]);
+
+  const updateCart = useCallback(async (customerId, restaurantId) => {
     if (!customerId || !restaurantId || !cartId) return;
 
     try {
@@ -56,7 +59,7 @@ export const CartProvider = ({ children }) => {
       console.error("Error fetching cart details:", error);
       setCartItems([]);
     }
-  };
+  }, [cartId]);
 
   const isMenuItemInCart = useCallback((menuId) => {
     return cartItems.some(item => item.menu_id === menuId);
@@ -92,7 +95,6 @@ export const CartProvider = ({ children }) => {
           return [...prevItems, { ...item, quantity: 1 }];
         });
         setCartId(data.cart_id);
-        localStorage.setItem('cartId', data.cart_id);
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
@@ -100,6 +102,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (itemId, customerId, restaurantId) => {
+    if (!cartId) {
+      console.error("Cart ID is missing");
+      return;
+    }
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/remove_from_cart",
@@ -119,21 +126,16 @@ export const CartProvider = ({ children }) => {
   
       const data = await response.json();
       if (data.st === 1) {
-        // Remove item from state
         setCartItems((prevItems) => {
           const updatedItems = prevItems.filter((item) => item.menu_id !== itemId);
-          
-          // Update local storage
-          localStorage.setItem('cartItems', JSON.stringify(updatedItems));
-          
           return updatedItems;
         });
   
-        // If the cart is now empty, remove the cartId from local storage
-        if (cartItems.length === 1) {  // It will be 0 after the removal
-          localStorage.removeItem('cartId');
+        if (cartItems.length === 0) {  // It will be 0 after the removal
           setCartId(null);
         }
+      } else {
+        console.error("Failed to remove item from cart:", data.msg);
       }
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -142,10 +144,9 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem('cartId');
     setCartId(null);
   };
-
+  
   const value = {
     cartItems,
     cartId,
