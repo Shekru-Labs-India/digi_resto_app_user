@@ -36,6 +36,9 @@ const MenuDetails = () => {
   const location = useLocation();
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
+  const [showModal, setShowModal] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState('full');
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -141,14 +144,24 @@ const MenuDetails = () => {
     fetchProductDetails();
   }, [menuId, location.state, customerId]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!customerId || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
 
+    setShowModal(true);
+  };
+
+  const handleConfirmAddToCart = async () => {
     try {
-      await addToCart({ ...productDetails, quantity }, customerId, restaurantId);
+      await addToCart({ 
+        ...productDetails, 
+        quantity, 
+        notes, 
+        half_or_full: portionSize // Make sure this is included
+      }, customerId, restaurantId);
+      
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
@@ -156,6 +169,7 @@ const MenuDetails = () => {
         life: 2000,
       });
 
+      setShowModal(false);
       setTimeout(() => {
         navigate("/Cart");
       }, 2000);
@@ -226,6 +240,7 @@ const MenuDetails = () => {
           restaurant_id: currentRestaurantId,
           menu_id: menuId,
           customer_id: userData.customer_id,
+          // half_or_full: portionSize,
         }),
       });
 
@@ -582,6 +597,54 @@ const MenuDetails = () => {
         </div>
       </div>
       <Bottom />
+
+      <div className={`modal fade ${showModal ? 'show' : ''}`} id="addToCartModal" tabIndex="-1" aria-labelledby="addToCartModalLabel" aria-hidden={!showModal} style={{display: showModal ? 'block' : 'none'}}>
+        <div className="modal-dialog">
+          <div className="modal-content d-flex align-items-center justify-content-center vh-60">
+            <div className="modal-header">
+              <h5 className="modal-title" id="addToCartModalLabel">Add to Cart</h5>
+              <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label htmlFor="notes" className="form-label">Special Instructions</label>
+                <textarea 
+                  className="form-control" 
+                  id="notes" 
+                  rows="3" 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any special instructions here..."
+                ></textarea>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Portion Size</label>
+                <div>
+                  <button 
+                    type="button"
+                    className={`btn me-2 ${portionSize === 'half' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('half')}
+                  >
+                    Half
+                  </button>
+                  <button 
+                    type="button"
+                    className={`btn ${portionSize === 'full' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('full')}
+                  >
+                    Full
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+              <button type="button" className="btn btn-primary" onClick={handleConfirmAddToCart}>Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </>
   );
 };

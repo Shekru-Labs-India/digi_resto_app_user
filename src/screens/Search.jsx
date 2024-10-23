@@ -251,6 +251,20 @@ const Search = () => {
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
+  const isMenuItemInCart = (menuId) => {
+    // Implement the logic to check if the menu item is in the cart
+    // This is a placeholder implementation
+    return false;
+  };
+
+  const handleAddToCartClick = (menu) => {
+    // Implement the logic to add the menu item to the cart
+    // This is a placeholder implementation
+    console.log("Adding to cart:", menu);
+  };
+
+  const userData = JSON.parse(localStorage.getItem("userData"));
+
   return (
     <div className="page-wrapper">
       {/* Header */}
@@ -259,20 +273,22 @@ const Search = () => {
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
         <div className="container py-0">
-        <div className="d-flex justify-content-between align-items-center  my-2">
-          <div className="d-flex align-items-center">
-            <i className="ri-store-2-line me-2"></i>
-            <span className="fw-medium font_size_14">
-              {restaurantName.toUpperCase() || "Restaurant Name"}
-            </span>
+          <div className="d-flex justify-content-between align-items-center  my-2">
+            <div className="d-flex align-items-center">
+              <i className="ri-store-2-line me-2"></i>
+              <span className="fw-medium font_size_14">
+                {restaurantName.toUpperCase() || "Restaurant Name"}
+              </span>
+            </div>
+            <div className="d-flex align-items-center">
+              <i className="ri-user-location-line me-2 gray-text"></i>
+              <span className="fw-medium font_size_12 gray-text">
+                {customerId && customerId.tableNumber
+                  ? `Table ${customerId.tableNumber}`
+                  : "Table 1"}
+              </span>
+            </div>
           </div>
-          <div className="d-flex align-items-center">
-            <i className="ri-user-location-line me-2 gray-text"></i>
-            <span className="fw-medium font_size_12 gray-text">
-            {customerId && customerId.tableNumber ? `Table ${customerId.tableNumber}` : "Table 1"}
-            </span>
-          </div>
-        </div>
         </div>
 
         <Toast ref={toast} position="bottom-center" className="custom-toast" />
@@ -284,7 +300,8 @@ const Search = () => {
             <input
               type="search"
               className="form-control  ps-2     "
-              placeholder="Search Best items for You"cd
+              placeholder="Search Best items for You"
+              cd
               onChange={handleSearch}
               value={searchTerm}
             />
@@ -305,10 +322,7 @@ const Search = () => {
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
-              <div
-                className="    gray-text"
-                onClick={handleClearAll}
-              >
+              <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
               </div>
             </div>
@@ -326,7 +340,10 @@ const Search = () => {
                 <div className="card mb-3 rounded-4" key={menu.menu_id}>
                   <div className="card-body py-0">
                     <div className="row">
-                      <div className="col-3 px-0">
+                      <div
+                        className="col-3 px-0"
+                        style={{ position: "relative", left: "-1px" }}
+                      >
                         <img
                           src={menu.image || images}
                           alt={menu.menu_name}
@@ -341,29 +358,73 @@ const Search = () => {
                             e.target.src = images;
                           }}
                         />
+                        {menu.offer > 0 && (
+                          <div
+                            className="gradient_bg d-flex justify-content-center align-items-center"
+                            style={{
+                              position: "absolute",
+                              top: "0px",
+                              left: "0px",
+                              height: "17px",
+                              width: "70px",
+                              borderRadius: "7px 0px 7px 0px",
+                            }}
+                          >
+                            <span className="text-white">
+                              <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                              <span className="font_size_10">
+                                {menu.offer}% Off
+                              </span>
+                            </span>
+                          </div>
+                        )}
+                        <div
+                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                          style={{
+                            position: "absolute",
+                            bottom: "3px",
+                            right: "3px",
+                            height: "20px",
+                            width: "20px",
+                          }}
+                        >
+                          <i
+                            className={`${
+                              menu.is_favourite
+                                ? "ri-hearts-fill text-danger"
+                                : "ri-heart-2-line"
+                            } fs-6`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleLikeClick(menu.menu_id);
+                            }}
+                          ></i>
+                        </div>
                       </div>
-                      <div className="col-8 pt-3 pb-0 pe-0 ps-2">
-                        <div className="font_size_14 fw-medium">{menu.menu_name}</div>
+                      <div className="col-8  pb-0 pe-0 ps-2">
                         <div className="row">
                           <div className="col-7 mt-1 pe-0">
-                            
-                              <span className="text-success font_size_12">
+                            <span className="text-success font_size_12">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
-                                {menu.category_name}
-                              </span>
-                       
+                              {menu.category_name}
+                            </span>
                           </div>
 
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                              <i className="ri-star-half-line font_size_14 ms-4 ratingStar "></i>
+                            <i className="ri-star-half-line font_size_14 ms-4 ratingStar "></i>
                             <span className="font_size_12 fw-normal gray-text">
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
                           </div>
                         </div>
+                        <div className="font_size_14 fw-medium pt-3">
+                          {menu.menu_name}
+                        </div>
+
                         <div className="row mt-2">
-                          <div className="col-8 px-0">
-                            <span className="mb-0 mt-1   text-start fw-medium">
+                          <div className="col-10 px-0">
+                            <span className="mb-0 mt-1 text-start fw-medium">
                               <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
                                 ₹{menu.price}
                               </span>
@@ -371,43 +432,51 @@ const Search = () => {
                                 ₹{menu.oldPrice || menu.price}
                               </span>
                             </span>
-
-                            <span className="ms-2  text-start font_size_12 text-success">
-                              {menu.offer || "No "}% Off
-                            </span>
                           </div>
-                          <div className="col-4 text-center p-0 clickable-icon search-like">
-                            <i
-                              className={`${
-                                menu.is_favourite
-                                  ? "ri-hearts-fill fs-3"
-                                  : "ri-heart-2-line fs-3"
-                              }`}
-                              style={{
-                                color: menu.is_favourite ? "red" : "",
-                                cursor: "pointer",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleLikeClick(menu.menu_id);
-                              }}
-                            ></i>
+                          <div className="col-2 px-0 d-flex justify-content-end">
+                            {userData ? (
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCartClick(menu);
+                                }}
+                              >
+                                <i
+                                  className={`ri-shopping-cart-${
+                                    isMenuItemInCart(menu.menu_id)
+                                      ? "fill"
+                                      : "line"
+                                  } fs-6 `}
+                                ></i>
+                              </div>
+                            ) : (
+                              <div
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              >
+                                <i className="ri-shopping-cart-2-line fs-6"></i>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </div>
-                      <div className="col-1 px-0 pt-2">
-                        <span
-                          className="fs-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleRemoveItem(menu.menu_id);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <i className="ri-close-line fs-4"></i>
-                        </span>
                       </div>
                     </div>
                   </div>

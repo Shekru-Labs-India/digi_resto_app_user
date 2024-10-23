@@ -31,7 +31,7 @@ const Product = () => {
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
- 
+
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [sortByOpen, setSortByOpen] = useState(false);
@@ -45,11 +45,11 @@ const Product = () => {
   const [sortCriteria, setSortCriteria] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const initialFetchDone = useRef(false);
-      const swiperRef = useRef(null); // Define swiperRef
+  const swiperRef = useRef(null); // Define swiperRef
   const { restaurantName } = useRestaurantId();
   const { categoryId } = useParams();
 
-  const { cartItems, addToCart, } = useCart();
+  const { cartItems, addToCart } = useCart();
   const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
   const toast = useRef(null);
@@ -296,7 +296,6 @@ const Product = () => {
     }
   };
 
-
   const isMenuItemInCart = (menuItemId) => {
     return cartItems.some((item) => item.menu_id === menuItemId);
   };
@@ -329,7 +328,6 @@ const Product = () => {
   };
 
   // Check if a menu item is in the cart
-  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -444,48 +442,73 @@ const Product = () => {
                           e.target.src = images;
                         }}
                       />
-                    </div>
-
-                    <div className="dz-content">
+                      {menuItem.offer !== 0 && (
+                        <div
+                          className="gradient_bg d-flex justify-content-center align-items-center"
+                          style={{
+                            position: "absolute",
+                            top: "-1px",
+                            left: "0px",
+                            height: "17px",
+                            width: "70px",
+                            borderRadius: "0px 0px 7px 0px",
+                          }}
+                        >
+                          <span className="text-white">
+                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                            <span className="font_size_10">
+                              {menuItem.offer}% Off
+                            </span>
+                          </span>
+                        </div>
+                      )}
                       <div
-                        className="detail-content"
-                        style={{ position: "relative" }}
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
                       >
-                        <h3>
-                          <div
-                            className="fw-medium text-success font_size_12"
-                            style={{ color: "#0a795b" }}
-                          >
-                            <i className="ri-restaurant-line pe-1"></i>
-                            {categories.find(
-                              (category) =>
-                                category.menu_cat_id === menuItem.menu_cat_id
-                            )?.name || menuItem.category}
-                          </div>
-                        </h3>
                         <i
-                          className={`${
+                          className={` ${
                             menuItem.is_favourite
-                              ? "ri-hearts-fill fs-3 mt-0"
-                              : "ri-heart-2-line fs-3 mt-0"
-                          }`}
+                              ? "ri-hearts-fill text-danger"
+                              : "ri-heart-2-line"
+                          } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             handleLikeClick(menuItem.menu_id);
                           }}
-                          style={{
-                            position: "absolute",
-                            top: "0",
-                            right: "0",
-                            fontSize: "23px",
-                            cursor: "pointer",
-                            color: menuItem.is_favourite
-                              ? "#fe0809"
-                              : "#73757b",
-                            zIndex: 2,
-                          }}
                         ></i>
+                      </div>
+                    </div>
+
+                    <div className="dz-content pb-1">
+                      <div
+                        className="detail-content"
+                        style={{ position: "relative" }}
+                      >
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="fw-medium text-success font_size_12">
+                              <i className="ri-restaurant-line pe-1"></i>
+                              {categories.find(
+                                (category) =>
+                                  category.menu_cat_id === menuItem.menu_cat_id
+                              )?.name || menuItem.category}
+                            </div>
+                          </div>
+                          <div className="col-6 text-end">
+                            <i className="ri-star-half-line font_size_14 ratingStar"></i>
+                            <span className="font_size_12 fw-normal gray-text">
+                              {menuItem.rating}
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
                       {menuItem.name && (
@@ -513,16 +536,10 @@ const Product = () => {
                               )}
                             </div>
                           </div>
-                          <div className="col-6 text-end mt-2">
-                            <i className="ri-star-half-line font_size_14    ratingStar"></i>
-                            <span className="font_size_12  fw-normal gray-text">
-                              {menuItem.rating}
-                            </span>
-                          </div>
                         </div>
                       )}
                       <div className="row">
-                        <div className="col-8">
+                        <div className="col-9 d-flex align-items-end mb-1">
                           <div className="footer-wrapper">
                             <div className="price-wrapper d-flex align-items-baseline">
                               <p className="mb-1 fs-5 fw-semibold text-info">
@@ -537,30 +554,48 @@ const Product = () => {
                           </div>
                         </div>
 
-                        <div className="col-4">
-                          <div
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleAddToCartClick(menuItem);
-                            }}
-                            className="cart-btn text-end"
-                          >
-                            <i
-                              className={`ri-shopping-cart-${
-                                isMenuItemInCart(menuItem.menu_id)
-                                  ? "fill"
-                                  : "line"
-                              } fs-2`}
-                            ></i>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-12">
-                          <span className="font_size_12 text-success">
-                            {menuItem.offer || "No "}% Off
-                          </span>
+                        <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
+                          {userData ? (
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menuItem);
+                              }}
+                            >
+                              <i
+                                className={`ri-shopping-cart-${
+                                  isMenuItemInCart(menuItem.menu_id)
+                                    ? "fill"
+                                    : "line"
+                                } fs-6 `}
+                              ></i>
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

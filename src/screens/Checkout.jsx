@@ -235,7 +235,7 @@ const Checkout = () => {
 
   const closePopup = () => {
     setShowPopup(false);
-    navigate("/MyOrder");
+    navigate("/MyOrder", { state: { selectedTab: "placed" } });
   };
 
   const toggleSidebar = () => {

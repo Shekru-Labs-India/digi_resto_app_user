@@ -79,6 +79,8 @@ export const CartProvider = ({ children }) => {
             restaurant_id: restaurantId,
             menu_id: item.menu_id,
             quantity: item.quantity || 1,
+            half_or_full: item.half_or_full,
+            notes: item.notes,
           }),
         }
       );
@@ -95,9 +97,14 @@ export const CartProvider = ({ children }) => {
           return [...prevItems, { ...item, quantity: 1 }];
         });
         setCartId(data.cart_id);
+      } else {
+        // Handle error case
+        console.error("Failed to add item to cart:", data.msg);
+        throw new Error(data.msg || "Failed to add item to cart");
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
+      throw error; // Re-throw the error so it can be caught in the component
     }
   };
 

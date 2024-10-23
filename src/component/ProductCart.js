@@ -39,6 +39,11 @@ const ProductCard = () => {
   const toast = useRef(null);
   const [loading, setLoading] = useState(true);
 
+  const [showModal, setShowModal] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState('full');
+  const [selectedMenu, setSelectedMenu] = useState(null);
+
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
@@ -47,9 +52,13 @@ const ProductCard = () => {
   }, []);
 
   const fetchMenuData = useCallback(async (categoryId) => {
-    if (!customerId || !restaurantId) return;
+    if (!customerId || !restaurantId) {
+      console.log("Missing customerId or restaurantId:", { customerId, restaurantId });
+      return;
+    }
     setIsLoading(true);
     try {
+      console.log("Fetching menu data...");
       const response = await fetch(
         "https://menumitra.com/user_api/get_all_menu_list_by_category",
         {
@@ -60,6 +69,7 @@ const ProductCard = () => {
       );
 
       const data = await response.json();
+      console.log("API response:", data);
 
       if (response.ok && data.st === 1) {
         const formattedCategories = data.data.category.map((category) => ({
@@ -85,6 +95,7 @@ const ProductCard = () => {
           : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
         setFilteredMenuList(filteredMenus);
       } else {
+        console.log("API returned error or empty data");
         setMenuCategories([]);
         setMenuList([]);
         setFilteredMenuList([]);
@@ -101,7 +112,10 @@ const ProductCard = () => {
 
   useEffect(() => {
     if (customerId && restaurantId) {
+      console.log("Triggering fetchMenuData");
       fetchMenuData(null);
+    } else {
+      console.log("Missing customerId or restaurantId for initial fetch");
     }
   }, [customerId, restaurantId, fetchMenuData]);
 
@@ -128,6 +142,7 @@ const ProductCard = () => {
 
   useEffect(() => {
     if (restaurantId) {
+      console.log("Restaurant ID changed, fetching menu data");
       debouncedFetchMenuData(null);
       setSelectedCategoryId(null);
     }
@@ -221,39 +236,45 @@ const ProductCard = () => {
     }
   };
 
-  const handleAddToCartClick = async (menu) => {
+  const handleAddToCartClick = (menu) => {
     if (!customerId || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
     }
-  
+
+    setSelectedMenu(menu);
+    setShowModal(true);
+  };
+
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
+
     try {
-      if (isMenuItemInCart(menu.menu_id)) {
-        // Remove from cart
-        await removeFromCart(menu.menu_id, customerId, restaurantId);
-        toast.current.show({
-          severity: "info",
-          summary: "Removed from Cart",
-          detail: menu.name,
-          life: 3000,
-        });
-      } else {
-        // Add to cart
-        await addToCart(menu, customerId, restaurantId);
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: menu.name,
-          life: 3000,
-        });
-      }
+      await addToCart({
+        ...selectedMenu,
+        quantity: 1, // Default to 1 for ProductCard
+        notes,
+        half_or_full: portionSize
+      }, customerId, restaurantId);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: selectedMenu.name,
+        life: 3000,
+      });
+
+      setShowModal(false);
+      setNotes('');
+      setPortionSize('full');
+      setSelectedMenu(null);
     } catch (error) {
-      console.error("Error updating cart:", error);
+      console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to update cart. Please try again.",
+        detail: "Failed to add item to cart. Please try again.",
         life: 3000,
       });
     }
@@ -513,6 +534,63 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
+
+      {/* Add this modal at the end of the component's return statement */}
+      <div className={`modal fade ${showModal ? 'show' : ''}`} id="addToCartModal" tabIndex="-1" aria-labelledby="addToCartModalLabel" aria-hidden={!showModal} style={{display: showModal ? 'block' : 'none'}}>
+        <div className="modal-dialog">
+          <div className="modal-content d-flex align-items-center justify-content-center"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '350px',
+          }}
+          >
+            <div className="modal-header">
+              <h5 className="modal-title" id="addToCartModalLabel">Add to Cart</h5>
+              <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
+            </div>
+            <div className="modal-body p-0">
+              <div className="mb-3">
+                <label htmlFor="notes" className="form-label text-center">Special Instructions</label>
+                <textarea 
+                  className="form-control" 
+                  id="notes" 
+                  rows="3" 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any special instructions here..."
+                ></textarea>
+              </div>
+              <div className="mb-3">
+                <label className="form-label d-flex justify-content-center">Portion Size</label>
+                <div>
+                  <button 
+                    type="button"
+                    className={`btn rounded-pill me-2 ${portionSize === 'half' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('half')}
+                  >
+                    Half
+                  </button>
+                  <button 
+                    type="button"
+                    className={`btn rounded-pill ${portionSize === 'full' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('full')}
+                  >
+                    Full
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer p-0 pb-2">
+              <button type="button" className="btn btn-secondary rounded-pill" onClick={() => setShowModal(false)}>Cancel</button>
+              <button type="button" className="btn btn-primary rounded-pill" onClick={handleConfirmAddToCart}>Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </div>
   );
 };

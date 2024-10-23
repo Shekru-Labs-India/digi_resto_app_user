@@ -426,28 +426,33 @@ const Wishlist = () => {
                                         }}
                                         onError={(e) => {
                                           e.target.src = images;
-                                          e.target.style.width = "100px";
-                                          e.target.style.height = "100px";
+                                          e.target.style.width = "100%";
+                                          e.target.style.height = "100%";
+                                          e.target.style.aspectRatio = "1/1";
                                         }}
                                       />
-                                      <div
-                                        className="gradient_bg d-flex justify-content-center align-items-center"
-                                        style={{
-                                          position: "absolute",
-                                          top: "-1px",
-                                          left: "0px",
-                                          height: "17px",
-                                          width: "70px",
-                                          borderRadius: "0px 0px 7px 0px",
-                                        }}
-                                      >
-                                        <span className="text-white">
-                                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                          <span className="font_size_10">
-                                            {menu.offer || "No "}% Off
+                                      {menu.offer && menu.offer !== "0" && (
+                                        <div
+                                          className="gradient_bg d-flex justify-content-center align-items-center"
+                                          style={{
+                                            position: "absolute",
+                                            top: "-1px",
+                                            left: "0px",
+                                            height: "17px",
+                                            width: "70px",
+                                            borderRadius: "7px 0px 7px 0px",
+                                            marginTop: "1px",
+                                            marginLeft: "1px",
+                                          }}
+                                        >
+                                          <span className="text-white">
+                                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                                            <span className="font_size_10">
+                                              {menu.offer}% Off
+                                            </span>
                                           </span>
-                                        </span>
-                                      </div>
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="col-9 pt-1 p-0">
                                       <div className="row">
@@ -457,17 +462,6 @@ const Wishlist = () => {
                                           </div>
                                         </div>
                                         <div className="col-2 text-end font_size_10">
-                                          {/* <i
-                                            className="ri-hearts-fill icon-adjust heart-fill"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              handleRemoveItemClick(
-                                                restaurantName,
-                                                menu.menu_id,
-                                                menu.restaurant_id
-                                              );
-                                            }}
-                                          ></i> */}
                                           <div
                                             onClick={(e) => {
                                               e.preventDefault();
@@ -531,7 +525,7 @@ const Wishlist = () => {
                                         </div>
 
                                         <div className="col-6 d-flex justify-content-end">
-                                          {customerId ? (
+                                          {customerId && menu.restaurant_id === restaurantId ? (
                                             <div
                                               className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
                                               style={{
@@ -549,7 +543,7 @@ const Wishlist = () => {
                                                   isCartFromDifferentRestaurant(
                                                     menu.restaurant_id
                                                   )
-                                                    ? "off"
+                                                    ? ""
                                                     : isMenuItemInCart(
                                                         menu.menu_id
                                                       )
@@ -565,21 +559,7 @@ const Wishlist = () => {
                                                 }
                                               ></i>
                                             </div>
-                                          ) : (
-                                            <div
-                                              style={{
-                                                border: "1px solid gray",
-                                                borderRadius: "50%",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                width: "25px",
-                                                height: "25px",
-                                              }}
-                                            >
-                                              <i className="ri-shopping-cart-2-line fs-6"></i>
-                                            </div>
-                                          )}
+                                          ) : null}
                                         </div>
                                       </div>
                                     </div>
