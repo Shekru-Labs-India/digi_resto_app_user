@@ -73,7 +73,8 @@ const ProductCard = () => {
           image: menu.image || images,
           category: toTitleCase(menu.category_name),
           name: toTitleCase(menu.menu_name),
-          oldPrice: Math.floor(menu.price * 1.1),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
           is_favourite: menu.is_favourite === 1,
         }));
         setMenuList(formattedMenuList);
@@ -103,8 +104,6 @@ const ProductCard = () => {
       fetchMenuData(null);
     }
   }, [customerId, restaurantId, fetchMenuData]);
-
-
 
   useEffect(() => {
     const handleFavoritesUpdated = () => {
@@ -163,7 +162,10 @@ const ProductCard = () => {
     }
   }, [menuCategories]);
 
-  const handleLikeClick = async (menuId) => {
+  const handleLikeClick = async (e, menuId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !userData.customer_id || !restaurantId) {
       navigate("/Signinscreen");
@@ -208,7 +210,6 @@ const ProductCard = () => {
               : "Item has been removed from your favorites.",
             life: 2000,
           });
-          window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -355,11 +356,13 @@ const ProductCard = () => {
                       }}
                     />
                     <div
-                      className="border border-1 rounded-circle py-1 px-2 bg-white opacity-75 "
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
                         position: "absolute",
-                        bottom: "5px",
-                        right: "5px",
+                        bottom: "3px",
+                        right: "3px",
+                        height: "20px",
+                        width: "20px",
                       }}
                     >
                       <i
@@ -367,24 +370,41 @@ const ProductCard = () => {
                           menu.is_favourite
                             ? "ri-hearts-fill text-danger"
                             : "ri-heart-2-line"
-                        } fs-4`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleLikeClick(menu.menu_id);
-                        }}
+                        } fs-6`}
+                        onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>
                     </div>
+
+                    {menu.offer !== 0 && (
+                      <div
+                        className="gradient_bg d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          top: "-1px",
+                          left: "0px",
+                          height: "17px",
+                          width: "70px",
+                          borderRadius: "0px 0px 7px 0px",
+                        }}
+                      >
+                        <span className="text-white">
+                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                          <span className="font_size_10">
+                            {menu.offer}% Off
+                          </span>
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="dz-content pb-1">
-                    <div
-                      className="detail-content category-text"
-                    >
+                    <div className="detail-content category-text">
                       <div className="font_size_12 ">
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="ri-restaurant-line pe-1"></i>
-                            {menu.category}
+                            <span className="font_size_10">
+                              {menu.category}
+                            </span>
                           </div>
                           <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
                             <i className="ri-star-half-line font_size_14 ratingStar me-1"></i>
@@ -421,19 +441,28 @@ const ProductCard = () => {
                               <span className="font_size_14 me-2 text-info fw-semibold">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                              <span className="ps-2 font_size_12 text-success">
-                                {menu.offer || "No "}% Off
-                              </span>
+                              {menu.oldPrice !== 0 && menu.oldPrice !== null && (
+                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                  ₹{menu.oldPrice}
+                                </span>
+                              )}
+                             
                             </div>
                           </div>
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
                           {userData ? (
                             <div
-                              className="border border-1 rounded-circle py-1 px-2 bg-white opacity-75"
+                              className="border border-1 rounded-circle bg-white opacity-75"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -445,7 +474,7 @@ const ProductCard = () => {
                                   isMenuItemInCart(menu.menu_id)
                                     ? "fill"
                                     : "line"
-                                } fs-5 `}
+                                } fs-6 `}
                               ></i>
                             </div>
                           ) : (
@@ -456,11 +485,11 @@ const ProductCard = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                width: "35px",
-                                height: "35px",
+                                width: "25px",
+                                height: "25px",
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-2"></i>
+                              <i className="ri-shopping-cart-2-line fs-6"></i>
                             </div>
                           )}
                         </div>

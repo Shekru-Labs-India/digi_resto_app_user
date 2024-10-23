@@ -340,11 +340,6 @@ button{
   margin-top: -3px;
 }
 
-.fireNegative{
-  margin-left: -10px;
-  margin-top: -2px;
-}
-
 
 .style-2-custom{
 background-color: var(--bg-white);
@@ -903,8 +898,31 @@ hr.dashed {
 .font_size_12{
   font-size: 12px;
 }
+.font_size_10{
+  font-size: 10px;
+}
 
 .increment-decrement{
   margin-top: -6px;
+}
+
+
+.gradient_bg {
+	background: linear-gradient(-45deg, #9b59b6, #e91e63, #ffeb3b, #03a9f4, #1de9b6);
+	background-size: 500% 500%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
 

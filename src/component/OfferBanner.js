@@ -8,6 +8,9 @@ import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
+import { useCart } from "../context/CartContext"; // Add this import
+import { Toast } from "primereact/toast"; // Add this import
+import { useRef } from "react"; // Add this import
 
 const pulse = keyframes`
   0% {
@@ -45,6 +48,8 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
   );
   const customerId = userData.customer_id;
   const navigate = useNavigate();
+  const { cartItems, addToCart } = useCart(); // Add this line
+  const toast = useRef(null); // Add this line
   useEffect(() => {
     if (customerId && restaurantId) {
       fetchLatestOngoingOrder();
@@ -117,84 +122,72 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
     localStorage.setItem("menuItems", JSON.stringify(menuItems));
   };
 
+  const fetchData = async () => {
+    try {
+      console.log("Fetching data...");
+      const url =
+        "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+        }),
+      };
+
+      const response = await fetch(url, requestOptions);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1 ) {
+        // Fetching banners
+        // const bannerUrls = data.data.banner_list
+        //   .filter((item) => item.image)
+        //   .map((item) => item.image);
+        // setBanners(bannerUrls);
+      } else {
+        console.error("Invalid data format:", data);
+      }
+
+      if (data.st === 1 && data.data.offer_menu_list) {
+        const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
+          ...menu,
+          name: toTitleCase(menu.menu_name),
+          menu_cat_name: toTitleCase(menu.category_name),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price
+        }));
+
+        // Merge local menu items and API data
+        const localMenuItems = getLocalMenuItems();
+        const mergedMenuItems = [...localMenuItems, ...formattedMenuLists];
+
+        setMenuLists(mergedMenuItems);
+
+        // Save updated menu list to localStorage
+        saveLocalMenuItems(mergedMenuItems);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData = async (retryCount = 0) => {
-      try {
-        console.log("Fetching data...");
-        const url =
-          "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-          }),
-        };
-
-        const response = await fetch(url, requestOptions);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.st === 1 && data.data.banner_list) {
-          // Fetching banners
-          const bannerUrls = data.data.banner_list
-            .filter((item) => item.image)
-            .map((item) => item.image);
-          if (isMounted) {
-            setBanners(bannerUrls);
-          }
-        } else {
-          console.error("Invalid data format:", data);
-        }
-
-        if (data.st === 1 && data.data.offer_menu_list) {
-          // Fetching menu items from API and title-casing names
-          const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
-            ...menu,
-            name: toTitleCase(menu.menu_name),
-
-            menu_cat_name: toTitleCase(menu.category_name),
-          }));
-
-          // Merge local menu items and API data
-          const localMenuItems = getLocalMenuItems();
-          const mergedMenuItems = [...localMenuItems, ...formattedMenuLists];
-
-          if (isMounted) {
-            setMenuLists(mergedMenuItems);
-          }
-
-          // Save updated menu list to localStorage
-          saveLocalMenuItems(mergedMenuItems);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        if (retryCount < 3) {
-          console.log(`Retrying... (${retryCount + 1})`);
-          fetchData(retryCount + 1);
-        } else {
-          if (isMounted) {
-            setLoading(false);
-          }
-        }
-        return;
-      }
-      if (isMounted) {
-        setLoading(false);
-      }
-    };
-
-    // Add a 2-second timeout before calling fetchData
+    // Add a 1-second timeout before calling fetchData
     const timeoutId = setTimeout(() => {
-      fetchData();
+      if (isMounted) {
+        fetchData();
+      }
     }, 1000);
 
     return () => {
@@ -239,51 +232,90 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
     }
   }, [menuLists]);
 
-   const handleLikeClick = async (menuId) => {
-     if (!customerId || !restaurantId) {
-       console.error("Missing required data");
-       navigate("/Signinscreen");
-       return;
-     }
+  const handleLikeClick = async (menuId) => {
+    if (!customerId || !restaurantId) {
+      console.error("Missing required data");
+      navigate("/Signinscreen");
+      return;
+    }
 
-     const menuItem = menuLists.find((item) => item.menu_id === menuId);
-     const isFavorite = menuItem.is_favourite;
+    const menuItem = menuLists.find((item) => item.menu_id === menuId);
+    const isFavorite = menuItem.is_favourite;
 
-     const apiUrl = isFavorite
-       ? "https://menumitra.com/user_api/remove_favourite_menu"
-       : "https://menumitra.com/user_api/save_favourite_menu";
+    const apiUrl = isFavorite
+      ? "https://menumitra.com/user_api/remove_favourite_menu"
+      : "https://menumitra.com/user_api/save_favourite_menu";
 
-     try {
-       const response = await fetch(apiUrl, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           restaurant_id: restaurantId,
-           menu_id: menuId,
-           customer_id: customerId,
-         }),
-       });
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId,
+          customer_id: customerId,
+        }),
+      });
 
-       if (response.ok) {
-         const data = await response.json();
-         if (data.st === 1) {
-           const updatedMenuLists = menuLists.map((item) =>
-             item.menu_id === menuId
-               ? { ...item, is_favourite: !isFavorite }
-               : item
-           );
-           setMenuLists(updatedMenuLists);
-         }
-       }
-     } catch (error) {
-       console.error("Error updating favorite status:", error);
-     }
-   };
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          const updatedMenuLists = menuLists.map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
+          );
+          setMenuLists(updatedMenuLists);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+    }
+  };
+  const handleAddToCartClick = async (menu) => {
+    if (!customerId || !restaurantId) {
+      console.error("Missing required data");
+      navigate("/Signinscreen");
+      return;
+    }
+    if (isMenuItemInCart(menu.menu_id)) {
+      toast.current.show({
+        severity: "error",
+        summary: "Item Already in Cart",
+        detail: menu.name,
+        life: 3000,
+      });
+      return;
+    }
+
+    try {
+      await addToCart({
+        menu_id: menu.menu_id,
+        name: menu.name,
+        price: menu.price,
+        quantity: 1,
+        image: menu.image,
+      });
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: menu.name,
+        life: 3000,
+      });
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+    }
+  };
+
+ const isMenuItemInCart = (menuId) => {
+   return cartItems.some((item) => item.menu_id === menuId);
+ };
 
   return (
     <div className="dz-box style-3">
+      <Toast ref={toast} />
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -325,11 +357,13 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
                           }}
                         />
                         <div
-                          className="border border-1 rounded-circle py-1 px-2 bg-white opacity-75"
+                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                           style={{
                             position: "absolute",
-                            bottom: "5px",
-                            right: "5px",
+                            bottom: "3px",
+                            right: "3px",
+                            height: "20px",
+                            width: "20px",
                           }}
                         >
                           <i
@@ -337,7 +371,7 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
                               menu.is_favourite
                                 ? "ri-hearts-fill text-danger"
                                 : "ri-heart-2-line"
-                            } fs-4`}
+                            } fs-6`}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -345,17 +379,33 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
                             }}
                           ></i>
                         </div>
+                        {menu.offer !== 0 && (
+                          <div
+                            className="gradient_bg d-flex justify-content-center align-items-center"
+                            style={{
+                              position: "absolute",
+                              top: "-1px",
+                              left: "0px",
+                              height: "17px",
+                              width: "70px",
+                              borderRadius: "0px 0px 7px 0px",
+                            }}
+                          >
+                            <span className="text-white">
+                              <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                              <span className="font_size_10">
+                                {menu.offer}% Off
+                              </span>
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="dz-content d-block">
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {menu.name}
-                        </span>
-                        <div className="mt-2">
-                          <div className="row">
-                            <div className="col-8">
-                              <div className="offer-code mx-0">
-                                {renderSpiceIcons(menu.spicy_index)}
-                              </div>
+                        <div className="category-text">
+                          <div className="row mt-1">
+                            <div className="col-8 text-success font_size_10">
+                              <i className="ri-restaurant-line pe-1"></i>
+                              {menu.menu_cat_name}
                             </div>
                             <div className="col-4 ps-0 text-end">
                               <span className="font_size_12 fw-normal gray-text me-2">
@@ -365,20 +415,72 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
                             </div>
                           </div>
                         </div>
-                        <div className="row mt-2">
-                          <div className="col-12 pe-0">
+                        <span className="font_size_14 fw-medium text-wrap">
+                          {menu.name}
+                        </span>
+                        <div className="mt-2">
+                          <div className="row">
+                            <div className="col-6">
+                              <div className="">
+                                {renderSpiceIcons(menu.spicy_index)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row ">
+                          <div className="col-6 pe-0 mt-1 mb-1">
                             <span className="me-2 text-info font_size_14 fw-semibold">
                               ₹{menu.price}
                             </span>
-                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                              ₹{menu.oldPrice || menu.price}
-                            </span>
-                            <span className="font_size_12 text-success ps-2">
-                              {menu.offer || "No "}% Off
-                            </span>
+                            {menu.oldPrice && (
+                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                ₹{menu.oldPrice}
+                              </span>
+                            )}
                           </div>
-                          
-                       
+                          <div className="d-flex justify-content-end col-6">
+                            {userData ? (
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCartClick(menu);
+                                }}
+                              >
+                                <i
+                                  className={`ri-shopping-cart-${
+                                    isMenuItemInCart(menu.menu_id)
+                                      ? "fill"
+                                      : "line"
+                                  } fs-6 `}
+                                ></i>
+                              </div>
+                            ) : (
+                              <div
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              >
+                                <i className="ri-shopping-cart-2-line fs-6"></i>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -92,6 +92,7 @@ const MenuDetails = () => {
             spicy_index,
             price,
             description,
+            ingredients,
             image,
             offer,
             rating,
@@ -109,6 +110,7 @@ const MenuDetails = () => {
             discountedPrice,
             oldPrice,
             description,
+            ingredients,
             image,
             menu_cat_name: category_name,
             menu_id: menuId,
@@ -297,21 +299,64 @@ const MenuDetails = () => {
               />
             </div>
           </div>
-          <div className="swiper product-detail-swiper">
-            <div className="product-detail-image img">
-              <img
-                className="product-detail-image"
-                src={productDetails.image || images}
-                alt={productDetails.name}
+          <div className="container py-0">
+            <div className="swiper product-detail-swiper">
+              <div className="product-detail-image img">
+                <img
+                  className="product-detail-image rounded-3"
+                  src={productDetails.image || images}
+                  alt={productDetails.name}
+                  style={{
+                    aspectRatio: "16/9",
+                    objectFit: "cover",
+                    height: "100%",
+                  }}
+                  onError={(e) => {
+                    e.target.src = images;
+                  }}
+                />
+                <div
+                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      right: "3px",
+                      height: "20px",
+                      width: "20px",
+                  }}
+                >
+                  <i
+                    className={` ${
+                      productDetails.is_favourite
+                        ? "ri-hearts-fill text-danger"
+                        : "ri-heart-2-line"
+                    } fs-6`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleLikeClick(productDetails.menu_id);
+                    }}
+                  ></i>
+                </div>
+              </div>
+              <div
+                className="gradient_bg d-flex justify-content-center align-items-center"
                 style={{
-                  aspectRatio: "16/9",
-                  objectFit: "cover",
-                  height: "100%",
+                  position: "absolute",
+                  top: "-1px",
+                  left: "0px",
+                  height: "17px",
+                  width: "70px",
+                  borderRadius: "7px 0px 7px 0px",
                 }}
-                onError={(e) => {
-                  e.target.src = images;
-                }}
-              />
+              >
+                <span className="text-white">
+                  <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                  <span className="font_size_10">
+                    {productDetails.offer || "No "}% Off
+                  </span>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -383,45 +428,51 @@ const MenuDetails = () => {
                     {!isFromDifferentRestaurant && (
                       <div className="dz-stepper style-3 ">
                         <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
-                          <span className="input-group-btn input-group-prepend">
-                            <i
-                              className="ri-subtract-line fs-2 me-2"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleQuantityChange(-1)}
-                            ></i>
+                          <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
+                            <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{
+                              height: "20px",
+                              width: "20px",
+                            }}>
+                              <i
+                                className="ri-subtract-line fs-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleQuantityChange(-1)}
+                              ></i>
+                            </div>
                           </span>
-                          <span className="stepper px-3 rounded-1 bg-light text-center">
+                          <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
                             {quantity}
                           </span>
-                          <span className="input-group-btn input-group-append">
-                            <i
-                              className="ri-add-line fs-2 ms-2"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleQuantityChange(1)}
-                            ></i>
+                          <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
+                            <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{
+                              height: "20px",
+                              width: "20px",
+                            }}>
+                              <i
+                                className="ri-add-line fs-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleQuantityChange(1)}
+                              ></i>
+                            </div>
                           </span>
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  <div className="col-6 pe-1 text-end pt-1">
-                    <i
-                      className={`ri-${
-                        isFavorite ? "hearts-fill" : "heart-2-line"
-                      } fs-3`}
-                      onClick={handleLikeClick}
-                      style={{
-                        cursor: "pointer",
-                        color: isFavorite ? "#fe0809" : "#73757b",
-                      }}
-                    ></i>
                   </div>
                 </div>
               </div>
 
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
+                  <div>
+                    <i class="ri-restaurant-2-line me-2"></i>
+                    <span className="  text-wrap m-0 gray-text font_size_12">
+                      {toTitleCase(productDetails.ingredients)}
+                    </span>
+                  </div>
+                  <hr />
                   <div>
                     <span className="  text-wrap m-0">
                       {productDetails.description}
@@ -456,9 +507,6 @@ const MenuDetails = () => {
                         <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
                           ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                         </span>
-                      </div>
-                      <div className="font_size_12 text-success">
-                        {productDetails.offer}% Off
                       </div>
                     </div>
                   </div>
