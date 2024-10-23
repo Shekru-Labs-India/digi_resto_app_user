@@ -39,6 +39,9 @@ const MenuDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [notes, setNotes] = useState('');
   const [portionSize, setPortionSize] = useState('full');
+  const [halfPrice, setHalfPrice] = useState(null);
+  const [fullPrice, setFullPrice] = useState(null);
+  const [isPriceFetching, setIsPriceFetching] = useState(false);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -144,22 +147,76 @@ const MenuDetails = () => {
     fetchProductDetails();
   }, [menuId, location.state, customerId]);
 
+  const fetchHalfFullPrices = async () => {
+    setIsPriceFetching(true);
+    try {
+      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setHalfPrice(data.menu_detail.half_price);
+        setFullPrice(data.menu_detail.full_price);
+      } else {
+        console.error("API Error:", data.msg);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: data.msg || "Failed to fetch price information",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching half/full prices:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to fetch price information",
+        life: 3000,
+      });
+    } finally {
+      setIsPriceFetching(false);
+    }
+  };
+
   const handleAddToCart = () => {
     if (!customerId || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
 
+    fetchHalfFullPrices(); // Fetch prices when opening the modal
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
+    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
+    
+    if (!selectedPrice) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Price information is not available.",
+        life: 2000,
+      });
+      return;
+    }
+
     try {
       await addToCart({ 
         ...productDetails, 
         quantity, 
         notes, 
-        half_or_full: portionSize // Make sure this is included
+        half_or_full: portionSize,
+        price: selectedPrice
       }, customerId, restaurantId);
       
       toast.current.show({
@@ -358,13 +415,13 @@ const MenuDetails = () => {
                   }}
                 />
                 <div
-                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      right: "3px",
-                      height: "20px",
-                      width: "20px",
+                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                  style={{
+                    position: "absolute",
+                    bottom: "3px",
+                    right: "3px",
+                    height: "20px",
+                    width: "20px",
                   }}
                 >
                   <i
@@ -471,11 +528,13 @@ const MenuDetails = () => {
                       <div className="dz-stepper style-3 ">
                         <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
                           <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
-                            <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{
-                              height: "20px",
-                              width: "20px",
-                            }}>
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "20px",
+                                width: "20px",
+                              }}
+                            >
                               <i
                                 className="ri-subtract-line fs-2"
                                 style={{ cursor: "pointer" }}
@@ -487,11 +546,13 @@ const MenuDetails = () => {
                             {quantity}
                           </span>
                           <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
-                            <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{
-                              height: "20px",
-                              width: "20px",
-                            }}>
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "20px",
+                                width: "20px",
+                              }}
+                            >
                               <i
                                 className="ri-add-line fs-2"
                                 style={{ cursor: "pointer" }}
@@ -554,97 +615,144 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-7 px-0 text-center menu_details-add-to-cart">
-                {isFromDifferentRestaurant ? (
-                  <button
-                    className="btn btn-outline-secondary rounded-pill p-3"
-                    disabled
-                  >
-                    <div className="font-poppins text-break">
-                      Different Restaurant
-                    </div>
-                  </button>
-                ) : isItemOrdered(menuId) ? (
-                  <button
-                    className="btn btn-outline-primary rounded-pill"
-                    disabled
-                  >
-                    <i className="ri-check-line pe-1"></i>
-                    <div className="font-poppins text-nowrap">Ordered</div>
-                  </button>
-                ) : isMenuItemInCart(menuId) ? (
-                  <button
-                    className="btn btn-color rounded-pill"
-                    onClick={handleRemoveFromCart}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="font-poppins text-nowrap text-white">
-                      Remove from Cart
-                    </div>
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-color rounded-pill"
-                    onClick={handleAddToCart}
-                  >
-                    <i className="ri-shopping-cart-line pe-1 text-white"></i>
-                    <div className="text-nowrap text-white">Add to Cart</div>
-                  </button>
-                )}
+                  {isFromDifferentRestaurant ? (
+                    <button
+                      className="btn btn-outline-secondary rounded-pill p-3"
+                      disabled
+                    >
+                      <div className="font-poppins text-break">
+                        Different Restaurant
+                      </div>
+                    </button>
+                  ) : isItemOrdered(menuId) ? (
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      disabled
+                    >
+                      <i className="ri-check-line pe-1"></i>
+                      <div className="font-poppins text-nowrap">Ordered</div>
+                    </button>
+                  ) : isMenuItemInCart(menuId) ? (
+                    <button
+                      className="btn btn-color rounded-pill"
+                      onClick={handleRemoveFromCart}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <div className="font-poppins text-nowrap text-white">
+                        Remove from Cart
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-color rounded-pill"
+                      onClick={handleAddToCart}
+                    >
+                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <div className="text-nowrap text-white">Add to Cart</div>
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
             </footer>
           </div>
         </div>
       </div>
       <Bottom />
 
-      <div className={`modal fade ${showModal ? 'show' : ''}`} id="addToCartModal" tabIndex="-1" aria-labelledby="addToCartModalLabel" aria-hidden={!showModal} style={{display: showModal ? 'block' : 'none'}}>
-        <div className="modal-dialog">
-          <div className="modal-content d-flex align-items-center justify-content-center vh-60">
-            <div className="modal-header">
-              <h5 className="modal-title" id="addToCartModalLabel">Add to Cart</h5>
-              <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label htmlFor="notes" className="form-label">Special Instructions</label>
-                <textarea 
-                  className="form-control" 
-                  id="notes" 
-                  rows="3" 
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add any special instructions here..."
-                ></textarea>
+      <div className="d-flex justify-content-center">
+        <div
+          className={`modal fade ${showModal ? "show" : ""}`}
+          id="addToCartModal"
+          tabIndex="-1"
+          aria-labelledby="addToCartModalLabel"
+          aria-hidden={!showModal}
+          style={{ display: showModal ? "block" : "none" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content d-flex align-items-center justify-content-center">
+              <div className="modal-header">
+                <h5 className="modal-title" id="addToCartModalLabel">
+                  Add to Cart
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close"
+                ></button>
               </div>
-              <div className="mb-3">
-                <label className="form-label">Portion Size</label>
-                <div>
-                  <button 
-                    type="button"
-                    className={`btn me-2 ${portionSize === 'half' ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => setPortionSize('half')}
-                  >
-                    Half
-                  </button>
-                  <button 
-                    type="button"
-                    className={`btn ${portionSize === 'full' ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => setPortionSize('full')}
-                  >
-                    Full
-                  </button>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="notes" className="form-label">
+                    Special Instructions
+                  </label>
+                  <textarea
+                    className="form-control"
+                    id="notes"
+                    rows="3"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any special instructions here..."
+                  ></textarea>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Portion Size</label>
+                  <div>
+                    {isPriceFetching ? (
+                      <p>Loading prices...</p>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={`btn me-2 ${
+                            portionSize === "half"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                          }`}
+                          onClick={() => setPortionSize("half")}
+                          disabled={!halfPrice}
+                        >
+                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn ${
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                          }`}
+                          onClick={() => setPortionSize("full")}
+                          disabled={!fullPrice}
+                        >
+                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="button" className="btn btn-primary" onClick={handleConfirmAddToCart}>Add to Cart</button>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleConfirmAddToCart}
+                  disabled={isPriceFetching || (!halfPrice && !fullPrice)}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        {showModal && <div className="modal-backdrop fade show"></div>}
       </div>
-      {showModal && <div className="modal-backdrop fade show"></div>}
     </>
   );
 };

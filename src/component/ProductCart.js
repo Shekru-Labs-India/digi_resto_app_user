@@ -29,7 +29,6 @@ const ProductCard = () => {
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const userData = JSON.parse(localStorage.getItem("userData"));
   const { cartItems, addToCart, removeFromCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
 
@@ -46,14 +45,17 @@ const ProductCard = () => {
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
+    if (storedUserData && storedUserData.customer_id) {
       setCustomerId(storedUserData.customer_id);
     }
   }, []);
 
   const fetchMenuData = useCallback(async (categoryId) => {
-    if (!customerId || !restaurantId) {
-      console.log("Missing customerId or restaurantId:", { customerId, restaurantId });
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!restaurantId) {
+      console.log("Missing restaurantId:", { restaurantId });
       return;
     }
     setIsLoading(true);
@@ -64,7 +66,10 @@ const ProductCard = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ customer_id: customerId, restaurant_id: restaurantId }),
+          body: JSON.stringify({ 
+            customer_id: currentCustomerId, 
+            restaurant_id: restaurantId 
+          }),
         }
       );
 
@@ -108,16 +113,16 @@ const ProductCard = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [customerId, restaurantId]);
+  }, [restaurantId]);
 
   useEffect(() => {
-    if (customerId && restaurantId) {
+    if (restaurantId) {
       console.log("Triggering fetchMenuData");
       fetchMenuData(null);
     } else {
-      console.log("Missing customerId or restaurantId for initial fetch");
+      console.log("Missing restaurantId for initial fetch");
     }
-  }, [customerId, restaurantId, fetchMenuData]);
+  }, [restaurantId, fetchMenuData]);
 
   useEffect(() => {
     const handleFavoritesUpdated = () => {
@@ -237,7 +242,10 @@ const ProductCard = () => {
   };
 
   const handleAddToCartClick = (menu) => {
-    if (!customerId || !restaurantId) {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!currentCustomerId || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
@@ -250,13 +258,22 @@ const ProductCard = () => {
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
 
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!currentCustomerId) {
+      console.error("Customer ID not found");
+      navigate("/Signinscreen");
+      return;
+    }
+
     try {
       await addToCart({
         ...selectedMenu,
         quantity: 1, // Default to 1 for ProductCard
         notes,
         half_or_full: portionSize
-      }, customerId, restaurantId);
+      }, currentCustomerId, restaurantId);
 
       toast.current.show({
         severity: "success",
@@ -481,7 +498,7 @@ const ProductCard = () => {
                           </div>
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
-                          {userData ? (
+                          {customerId ? (
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75"
                               style={{
