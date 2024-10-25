@@ -66,6 +66,10 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = async (item, customerId, restaurantId) => {
+    if (isMenuItemInCart(item.menu_id)) {
+      throw new Error("Item is already in the cart");
+    }
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -87,24 +91,15 @@ export const CartProvider = ({ children }) => {
 
       const data = await response.json();
       if (data.st === 1) {
-        setCartItems((prevItems) => {
-          const existingItem = prevItems.find(i => i.menu_id === item.menu_id);
-          if (existingItem) {
-            return prevItems.map(i => 
-              i.menu_id === item.menu_id ? { ...i, quantity: i.quantity + 1 } : i
-            );
-          }
-          return [...prevItems, { ...item, quantity: 1 }];
-        });
+        setCartItems((prevItems) => [...prevItems, { ...item, quantity: 1 }]);
         setCartId(data.cart_id);
       } else {
-        // Handle error case
         console.error("Failed to add item to cart:", data.msg);
         throw new Error(data.msg || "Failed to add item to cart");
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      throw error; // Re-throw the error so it can be caught in the component
+      throw error;
     }
   };
 

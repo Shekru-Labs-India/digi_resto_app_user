@@ -45,7 +45,7 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   );
   const customerId = userData.customer_id;
   const navigate = useNavigate();
-  const { cartItems, addToCart } = useCart(); // Add this line
+  const { cartItems, addToCart, isMenuItemInCart } = useCart(); // Add this line
   const toast = useRef(null); // Add this line
   const [showModal, setShowModal] = useState(false);
   const [notes, setNotes] = useState('');
@@ -55,11 +55,35 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
 
+
   useEffect(() => {
     if (customerId && restaurantId) {
       fetchLatestOngoingOrder();
     }
   }, [customerId, restaurantId]);
+
+  useEffect(() => {
+    updateCartRestaurantId();
+  }, []);
+
+  const [cartRestaurantId, setCartRestaurantId] = useState(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    return cartItems.length > 0 ? cartItems[0].restaurant_id : null;
+  });
+
+  const updateCartRestaurantId = () => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    if (cartItems.length > 0) {
+      setCartRestaurantId(cartItems[0].restaurant_id);
+    } else {
+      setCartRestaurantId(null);
+    }
+  };
+
+  const isCartFromDifferentRestaurant = (itemRestaurantId) => {
+    return cartRestaurantId && cartRestaurantId !== itemRestaurantId;
+  };
+
 
   const fetchLatestOngoingOrder = async () => {
     try {
@@ -243,14 +267,14 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
       navigate("/Signinscreen");
       return;
     }
-
+  
     const menuItem = menuLists.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
-
+  
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
-
+  
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -263,22 +287,60 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
           customer_id: customerId,
         }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
+          const updatedFavoriteStatus = !isFavorite;
           const updatedMenuLists = menuLists.map((item) =>
             item.menu_id === menuId
-              ? { ...item, is_favourite: !isFavorite }
+              ? { ...item, is_favourite: updatedFavoriteStatus }
               : item
           );
           setMenuLists(updatedMenuLists);
+  
+          // Dispatch the favoriteUpdated event
+          window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
+            detail: { menuId, isFavorite: updatedFavoriteStatus } 
+          }));
+  
+          // Optionally, you can add a toast notification here
+          toast.current.show({
+            severity: updatedFavoriteStatus ? "success" : "error",
+            summary: updatedFavoriteStatus ? "Added to Favorites" : "Removed from Favorites",
+            detail: `${menuItem.name} has been ${updatedFavoriteStatus ? "added to" : "removed from"} your favorites.`,
+            life: 3000,
+          });
         }
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
+      // Optionally, you can add an error toast notification here
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update favorite status. Please try again.",
+        life: 3000,
+      });
     }
   };
+
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setMenuLists((prevMenuLists) =>
+        prevMenuLists.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+        )
+      );
+    };
+  
+    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
+  
+    return () => {
+      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
+    };
+  }, []);
 
   const handleModalClick = (e) => {
     if (e.target.classList.contains('modal')) {
@@ -332,11 +394,22 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
       navigate("/Signinscreen");
       return;
     }
-    if (isMenuItemInCart(menu.menu_id)) {
+
+    if (isCartFromDifferentRestaurant(restaurantId)) {
       toast.current.show({
         severity: "error",
+        summary: "Different Restaurant",
+        detail: "This item is from a different restaurant. Clear your cart first.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (isMenuItemInCart(menu.menu_id)) {
+      toast.current.show({
+        severity: "info",
         summary: "Item Already in Cart",
-        detail: menu.name,
+        detail: "This item is already in your cart.",
         life: 3000,
       });
       return;
@@ -369,7 +442,7 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
         notes,
         half_or_full: portionSize,
         price: selectedPrice
-      });
+      }, customerId, restaurantId);
 
       toast.current.show({
         severity: "success",
@@ -382,6 +455,21 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
+
+      // Update cart items in local storage and state
+      const updatedCartItems = await fetchCartItems();
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+
+      // Update cart restaurant ID
+      if (updatedCartItems.length > 0) {
+        setCartRestaurantId(updatedCartItems[0].restaurant_id);
+      } else {
+        setCartRestaurantId(null);
+      }
+
+      // Dispatch a custom event to notify other components of the cart update
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
+
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
@@ -393,13 +481,40 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
     }
   };
 
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some((item) => item.menu_id === menuId);
+  
+
+  const fetchCartItems = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: localStorage.getItem("cartId"),
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1 && data.order_items) {
+        return data.order_items;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      return [];
+    }
   };
 
   return (
     <div className="dz-box style-3">
-      <Toast ref={toast} />
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -721,7 +836,7 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
               <div className="modal-footer justify-content-center">
                 <button
                   type="button"
-                  className="btn btn-secondary rounded-pill"
+                  className="btn btn-outline-primary  rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel

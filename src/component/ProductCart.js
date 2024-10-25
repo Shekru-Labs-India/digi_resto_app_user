@@ -29,7 +29,7 @@ const ProductCard = () => {
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const { cartItems, addToCart, removeFromCart } = useCart();
+  const { cartItems, addToCart, removeFromCart ,isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -232,14 +232,14 @@ const ProductCard = () => {
       navigate("/Signinscreen");
       return;
     }
-
+  
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
-
+  
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
-
+  
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -250,7 +250,7 @@ const ProductCard = () => {
           customer_id: userData.customer_id,
         }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
@@ -262,9 +262,14 @@ const ProductCard = () => {
           setFilteredMenuList(updatedMenuList.filter(
             (item) => item.menu_cat_id === selectedCategoryId || selectedCategoryId === null
           ));
-
+  
+          // Dispatch a custom event to notify other components of the favorite update
+          window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
+            detail: { menuId, isFavorite: updatedFavoriteStatus } 
+          }));
+  
           toast.current.show({
-            severity: updatedFavoriteStatus ? "success" : "info",
+            severity: updatedFavoriteStatus ? "success" : "error",
             summary: updatedFavoriteStatus ? "Added to Favorites" : "Removed from Favorites",
             detail: updatedFavoriteStatus
               ? "Item has been added to your favorites."
@@ -281,6 +286,28 @@ const ProductCard = () => {
       console.error("Error updating favorite status:", error);
     }
   };
+
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setMenuList((prevMenuList) =>
+        prevMenuList.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+        )
+      );
+      setFilteredMenuList((prevFilteredMenuList) =>
+        prevFilteredMenuList.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+        )
+      );
+    };
+  
+    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
+  
+    return () => {
+      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
+    };
+  }, []);
 
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -332,6 +359,16 @@ const ProductCard = () => {
       return;
     }
 
+    if (isMenuItemInCart(menu.menu_id)) {
+      toast.current.show({
+        severity: "info",
+        summary: "Item Already in Cart",
+        detail: "This item is already in your cart.",
+        life: 3000,
+      });
+      return;
+    }
+
     setSelectedMenu(menu);
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
@@ -339,16 +376,16 @@ const ProductCard = () => {
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-
+  
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
-
+  
     if (!currentCustomerId) {
       console.error("Customer ID not found");
       navigate("/Signinscreen");
       return;
     }
-
+  
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
@@ -360,7 +397,7 @@ const ProductCard = () => {
       });
       return;
     }
-
+  
     try {
       await addToCart({
         ...selectedMenu,
@@ -369,33 +406,39 @@ const ProductCard = () => {
         half_or_full: portionSize,
         price: selectedPrice
       }, currentCustomerId, restaurantId);
-
+  
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
         detail: selectedMenu.name,
         life: 3000,
       });
-
+  
       setShowModal(false);
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
     } catch (error) {
-      console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+      if (error.message === "Item is already in the cart") {
+        toast.current.show({
+          severity: "info",
+          summary: "Item Already in Cart",
+          detail: "This item is already in your cart.",
+          life: 3000,
+        });
+      } else {
+        console.error("Error adding item to cart:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to add item to cart. Please try again.",
+          life: 3000,
+        });
+      }
     }
   };
 
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some((item) => item.menu_id === menuId);
-  };
-
+  
   const handleModalClick = (e) => {
     // Close the modal if the click is outside the modal content
     if (e.target.classList.contains('modal')) {
@@ -695,7 +738,7 @@ const ProductCard = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6"
+                    className="form-control fs-6 border border-primary rounded-3"
                     id="notes"
                     rows="3"
                     value={notes}
@@ -744,7 +787,7 @@ const ProductCard = () => {
               <div className="modal-footer justify-content-center">
                 <button
                   type="button"
-                  className="btn btn-secondary rounded-pill"
+                  className="btn btn-outline-primary  rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel

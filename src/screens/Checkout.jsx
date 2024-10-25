@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -9,6 +9,7 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
+import { Toast } from "primereact/toast";
 
 const Checkout = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -23,7 +24,7 @@ const Checkout = () => {
   console.log("Restaurant ID:", restaurantId);
   // const { isDarkMode } = useContext(ThemeContext);
   const { clearCart } = useCart();
-
+  const toast = useRef(null);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -53,7 +54,15 @@ const Checkout = () => {
   const [cancellingOrderId, setCancellingOrderId] = useState(null);
   const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
   const [ongoingOrderId, setOngoingOrderId] = useState(null);
+  const [isNotesFocused, setIsNotesFocused] = useState(false);
+  const notesRef = useRef(null);
+  const handleNotesFocus = () => {
+    setIsNotesFocused(true);
+  };
 
+  const handleNotesBlur = () => {
+    setIsNotesFocused(false);
+  };
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
     console.log("Cart ID:", cartId);
@@ -156,7 +165,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-            
+
             customer_id: customerId,
           }),
         }
@@ -248,7 +257,7 @@ const Checkout = () => {
   const handleCancelOrders = async () => {
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/cancle_order",
+        "https://menumitra.com/user_api/cancel_order",
         {
           method: "POST",
           headers: {
@@ -257,30 +266,39 @@ const Checkout = () => {
           body: JSON.stringify({
             order_id: ongoingOrderId,
             restaurant_id: restaurantId,
-            note: notes,
+            customer_id: customerId,
           }),
         }
       );
-  
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         clearCart();
         setShowOngoingOrderPopup(false);
-        navigate("/MyOrder", { state: { activeTab: "placed" } });
+        toast.current.show({
+          severity: "success",
+          summary: "Order Cancelled",
+          detail: "Your ongoing order has been cancelled successfully.",
+          life: 3000,
+        });
+        navigate("/MyOrder", { state: { activeTab: "canceled" } });
       } else {
         throw new Error(data.msg || "Failed to cancel order");
       }
     } catch (error) {
-      console.error("Error cancelling orders:", error);
-      setErrorMessage("Failed to cancel orders. Please try again.");
-      setShowErrorPopup(true);
+      console.error("Error cancelling order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to cancel order. Please try again.",
+        life: 3000,
+      });
     }
   };
-  
+
   const handleCompleteAndProceed = async () => {
     try {
-      // First, complete the ongoing order
-      const completeResponse = await fetch(
+      const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
           method: "POST",
@@ -294,38 +312,28 @@ const Checkout = () => {
           }),
         }
       );
-  
-      const completeData = await completeResponse.json();
-      if (completeResponse.ok && completeData.st === 1) {
-        // Then, change the status to completed
-        const changeStatusResponse = await fetch(
-          "https://menumitra.com/user_api/change_status_to_ongoing",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              restaurant_id: restaurantId,
-              order_id: ongoingOrderId,
-            }),
-          }
-        );
-  
-        const changeStatusData = await changeStatusResponse.json();
-        if (changeStatusResponse.ok && changeStatusData.st === 1) {
-          setShowOngoingOrderPopup(false);
-          navigate("/MyOrder", { state: { activeTab: "completed" } });
-        } else {
-          throw new Error(changeStatusData.msg || "Failed to change order status");
-        }
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setShowOngoingOrderPopup(false);
+        toast.current.show({
+          severity: "success",
+          summary: "Order Completed",
+          detail: "Your ongoing order has been marked as completed.",
+          life: 3000,
+        });
+        navigate("/MyOrder", { state: { activeTab: "completed" } });
       } else {
-        throw new Error(completeData.msg || "Failed to complete order");
+        throw new Error(data.msg || "Failed to complete order");
       }
     } catch (error) {
       console.error("Error completing order:", error);
-      setErrorMessage("Failed to complete order. Please try again.");
-      setShowErrorPopup(true);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to complete order. Please try again.",
+        life: 3000,
+      });
     }
   };
 
@@ -381,18 +389,23 @@ const Checkout = () => {
             <div className="popup-content ">
               <h3>Ongoing Order Detected</h3>
               <p>You have an ongoing order. What would you like to do?</p>
-              <button
-                className="btn btn-danger rounded-pill text-white me-2 my-3"
-                onClick={handleCancelOrders}
-              >
-                Cancel Order
-              </button>
+
               <button
                 className="btn btn-success rounded-pill text-white"
                 onClick={handleCompleteAndProceed}
               >
+                <i className="ri-checkbox-circle-line me-2"></i>
                 Complete Order
               </button>
+              <div className="mt-3">
+                <Link
+                  to="#"
+                  className="gray-text me-2 my-3"
+                  onClick={handleCancelOrders}
+                >
+                  Cancel Order
+                </Link>
+              </div>
             </div>
           </div>
         )}
@@ -420,13 +433,18 @@ const Checkout = () => {
                   Additional Notes:
                 </label>
                 <textarea
-                  className="form-control dz-textarea   pb-0"
+                  className={`form-control dz-textarea rounded-3 pb-0 ${
+                    isNotesFocused ? "border-primary" : "border-light"
+                  }`}
                   name="notes"
                   id="notes"
                   rows="4"
                   placeholder="Write Here"
                   value={notes}
                   onChange={handleNotesChange}
+                  onFocus={handleNotesFocus}
+                  onBlur={handleNotesBlur}
+                  ref={notesRef}
                   style={{ height: "60px" }}
                 ></textarea>
                 {/* {validationMessage && (

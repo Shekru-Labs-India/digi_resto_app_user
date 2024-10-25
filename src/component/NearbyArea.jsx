@@ -13,7 +13,7 @@ const NearbyArea = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart,isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const toast = useRef(null);
   const [showModal, setShowModal] = useState(false);
@@ -158,20 +158,26 @@ const NearbyArea = () => {
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
+        const updatedFavoriteStatus = !isFavorite;
         const updatedMenuItems = menuItems.map((item) =>
           item.menu_id === menuId
-            ? { ...item, is_favourite: !isFavorite }
+            ? { ...item, is_favourite: updatedFavoriteStatus }
             : item
         );
 
         setMenuItems(updatedMenuItems);
 
+        // Dispatch a custom event to notify other components of the favorite update
+        window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
+          detail: { menuId, isFavorite: updatedFavoriteStatus } 
+        }));
+
         toast.current.show({
-          severity: isFavorite ? "error" : "success",
+          severity: updatedFavoriteStatus ? "success" : "error",
           summary: "Success",
-          detail: isFavorite
-            ? "Removed from Favourites"
-            : "Added to Favourites",
+          detail: updatedFavoriteStatus
+            ? "Added to Favourites"
+            : "Removed from Favourites",
           life: 2000,
         });
       } else {
@@ -186,6 +192,24 @@ const NearbyArea = () => {
       console.error("Error updating favorite status:", error);
     }
   };
+
+  // Add this useEffect hook to listen for favorite updates
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setMenuItems((prevMenuItems) =>
+        prevMenuItems.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+        )
+      );
+    };
+
+    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
+
+    return () => {
+      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
+    };
+  }, []);
 
   const handleModalClick = (e) => {
     if (e.target.classList.contains('modal')) {
@@ -239,12 +263,13 @@ const NearbyArea = () => {
       navigate("/Signinscreen");
       return;
     }
+
     if (isMenuItemInCart(menuItem.menu_id)) {
       toast.current.show({
-        severity: "error",
+        severity: "info",
         summary: "Item Already in Cart",
-        detail: menuItem.name,
-        life: 2000,
+        detail: `${menuItem.name} is already in your cart.`,
+        life: 3000,
       });
       return;
     }
@@ -281,7 +306,7 @@ const NearbyArea = () => {
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
-        detail: selectedMenu.name,
+        detail: `${selectedMenu.name} has been added to your cart.`,
         life: 3000,
       });
 
@@ -289,6 +314,14 @@ const NearbyArea = () => {
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
+
+      // Update cart items in local storage and state
+      const updatedCartItems = await fetchCartItems();
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+
+      // Dispatch a custom event to notify other components of the cart update
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
+
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
@@ -300,9 +333,38 @@ const NearbyArea = () => {
     }
   };
 
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some((item) => item.menu_id === menuId);
+  
+  const fetchCartItems = async () => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: localStorage.getItem("cartId"),
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1 && data.order_items) {
+        return data.order_items;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      return [];
+    }
   };
+
+
+  
 
   return (
     <div className="dz-box style-2 nearby-area">
@@ -515,7 +577,7 @@ const NearbyArea = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6"
+                    className="form-control fs-6 border border-primary rounded-3"
                     id="notes"
                     rows="3"
                     value={notes}
@@ -564,7 +626,7 @@ const NearbyArea = () => {
               <div className="modal-footer justify-content-center">
                 <button
                   type="button"
-                  className="btn btn-secondary rounded-pill"
+                  className="btn btn-outline-primary  rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
