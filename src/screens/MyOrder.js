@@ -131,11 +131,11 @@ const MyOrder = () => {
 
       <main className="page-content space-top mb-5 pb-3">
         <div className="container mt-3">
-          <div className="nav nav-tabs nav-fill" role="tablist">
+          <div className="nav nav-tabs nav-fill " role="tablist">
             {["placed", "ongoing", "completed", "cancel"].map((tab) => (
               <button
                 key={tab}
-                className={`nav-link ${activeTab === tab ? "active" : ""}`}
+                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
                 onClick={() => handleTabChange(tab)}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -157,7 +157,7 @@ const MyOrder = () => {
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
-                      className={`tab-pane fade ${
+                      className={`tab-pane fade  ${
                         activeTab === "ongoing" ? "show active" : ""
                       }`}
                       id="home"
