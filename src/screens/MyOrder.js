@@ -334,14 +334,14 @@ const OrdersTab = ({ orders, type, activeTab }) => {
         ))}
         {activeTab === "placed" && (
           <div className="d-flex justify-content-center my-5">
-            <CircularCountdown
+            {/* <CircularCountdown
               duration={90}
               backgroundColor="rgba(0, 0, 0, 0.1)"
               progressColor="#0d775e"
               textColor="#333333"
               restaurantId={restaurantId}
               orderId={orders[Object.keys(orders)[0]][0].order_id}
-            />
+            /> */}
           </div>
         )}
       </>
