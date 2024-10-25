@@ -213,46 +213,39 @@ import LoaderGif from "./LoaderGIF";
           <div className="my-4">
             <div class="text-center d-flex justify-content-center">
               <a
-                href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
-                class="footer-link mx-3"
-                target="_blank"
-              >
-                <i class="ri-facebook-circle-fill ri-xl "></i>
-              </a>
-              <a
-                href="https://www.instagram.com/autoprofito/?next=%2F"
-                class="footer-link mx-3"
-                target="_blank"
-              >
-                <i class="ri-instagram-line ri-xl "></i>
-              </a>
-              <a
-                href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
-                class="footer-link mx-3"
-                target="_blank"
-              >
-                <i class="ri-youtube-line ri-xl "></i>
-              </a>
-              <a
-                href="https://www.linkedin.com/company/104616702/admin/dashboard/"
-                class="footer-link mx-3"
-                target="_blank"
-              >
-                <i class="ri-linkedin-fill ri-xl "></i>
-              </a>
-              <a
-                href="https://www.threads.net/@autoprofito"
+                href="https://twitter.com/MenuMitra"
                 class="footer-link mx-3"
                 target="_blank"
               >
                 <i class="ri-twitter-x-line ri-xl "></i>
               </a>
               <a
-                href="https://t.me/Autoprofito"
+                href="https://www.facebook.com/profile"
                 class="footer-link mx-3"
                 target="_blank"
               >
-                <i class="ri-telegram-line ri-xl "></i>
+                <i class="ri-facebook-circle-fill ri-xl "></i>
+              </a>
+              <a
+                href="https://www.instagram.com/menumitra"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-instagram-line ri-xl "></i>
+              </a>
+              <a
+                href="https://mail.google.com/"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-mail-line ri-xl "></i>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/102429337/admin/inbox/"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-linkedin-fill ri-xl "></i>
               </a>
             </div>
           </div>
