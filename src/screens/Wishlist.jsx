@@ -130,6 +130,27 @@ const Wishlist = () => {
   };
 
   useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setWishlistItems((prevWishlistItems) => {
+        const updatedWishlistItems = { ...prevWishlistItems };
+        Object.keys(updatedWishlistItems).forEach((restaurantName) => {
+          updatedWishlistItems[restaurantName] = updatedWishlistItems[restaurantName].map((item) =>
+            item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+          );
+        });
+        return updatedWishlistItems;
+      });
+    };
+  
+    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
+  
+    return () => {
+      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
     fetchFavoriteItems();
     updateCartRestaurantId();
   }, [customerId, restaurantId]);
@@ -732,7 +753,7 @@ const Wishlist = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6"
+                    className="form-control fs-6 border border-primary rounded-3"
                     id="notes"
                     rows="3"
                     value={notes}

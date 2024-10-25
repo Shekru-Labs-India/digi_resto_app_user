@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -8,6 +8,7 @@ import "../assets/css/Tab.css";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
+import { Toast } from "primereact/toast";
 import CountdownTimer from "../components/CountdownTimer";
 import CircularCountdownTimer from "../components/CircularCountdownTimer";
 import CircularCountdown from "../components/CircularCountdown";
@@ -17,6 +18,7 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
+  const toast = useRef(null);
   const { restaurantName, restaurantId } = useRestaurantId();
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -88,8 +90,6 @@ const MyOrder = () => {
     }
   }, [activeTab, customerId, restaurantId]);
 
- 
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -130,17 +130,37 @@ const MyOrder = () => {
       />
 
       <main className="page-content space-top mb-5 pb-3">
-        <div className="container mt-3">
+        <div className="container px-1">
           <div className="nav nav-tabs nav-fill " role="tablist">
-            {["placed", "ongoing", "completed", "cancel"].map((tab) => (
-              <button
-                key={tab}
-                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
-                onClick={() => handleTabChange(tab)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+
+            <button
+              className={`nav-link px-0 ${activeTab === "placed" ? "active" : ""}`}
+              onClick={() => setActiveTab("placed")}
+            >
+              Placed
+            </button>
+            <button
+              className={`nav-link px-0 ${activeTab === "ongoing" ? "active" : ""}`}
+              onClick={() => setActiveTab("ongoing")}
+            >
+              Ongoing
+            </button>
+            <button
+              className={`nav-link px-0 ${
+                activeTab === "completed" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("completed")}
+            >
+              Completed
+            </button>
+            <button
+              className={`nav-link px-0 ${
+                activeTab === "canceled" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("canceled")}
+            >
+              Canceled
+            </button>
           </div>
         </div>
 
@@ -157,24 +177,10 @@ const MyOrder = () => {
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
-                      className={`tab-pane fade  ${
+                      className={`tab-pane fade ${
                         activeTab === "ongoing" ? "show active" : ""
                       }`}
-                      id="home"
-                      role="tabpanel"
-                    >
-                      <OrdersTab
-                        orders={orders[activeTab]}
-                        type={activeTab}
-                        activeTab={activeTab}
-                        setOrders={setOrders}
-                      />
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "completed" ? "show active" : ""
-                      }`}
-                      id="profile"
+                      id="ongoing"
                       role="tabpanel"
                     >
                       <OrdersTab
@@ -200,9 +206,23 @@ const MyOrder = () => {
                     </div>
                     <div
                       className={`tab-pane fade ${
-                        activeTab === "cancel" ? "show active" : ""
+                        activeTab === "completed" ? "show active" : ""
                       }`}
-                      id="cancel"
+                      id="completed"
+                      role="tabpanel"
+                    >
+                      <OrdersTab
+                        orders={orders[activeTab]}
+                        type={activeTab}
+                        activeTab={activeTab}
+                        setOrders={setOrders}
+                      />
+                    </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "canceled" ? "show active" : ""
+                      }`}
+                      id="canceled"
                       role="tabpanel"
                     >
                       <OrdersTab
@@ -231,6 +251,7 @@ const OrdersTab = ({ orders, type, activeTab }) => {
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
   const [setOrders] = useState({});
+  const toast = useRef(null);
 
   useEffect(() => {
     console.log("Orders received:", orders);
@@ -249,7 +270,6 @@ const OrdersTab = ({ orders, type, activeTab }) => {
   const handleOrderClick = (orderNumber) => {
     navigate(`/TrackOrder/${orderNumber}`);
   };
-
 
   const handleCompleteOrder = async (orderId) => {
     try {
@@ -316,6 +336,54 @@ const OrdersTab = ({ orders, type, activeTab }) => {
       alert("Failed to complete order. Please try again.");
     }
   };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const response = await fetch("https://menumitra.com/user_api/cancel_order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.st === 1) {
+        // Update the local state to reflect the cancellation
+        setOrders((prevOrders) => {
+          const updatedOrders = { ...prevOrders };
+          Object.keys(updatedOrders).forEach((date) => {
+            updatedOrders[date] = updatedOrders[date].filter(
+              (order) => order.order_id !== orderId
+            );
+          });
+          return updatedOrders;
+        });
+        // Show success message
+        toast.current.show({
+          severity: "success",
+          summary: "Order Canceled",
+          detail: "Your order has been successfully canceled.",
+          life: 3000,
+        });
+      } else {
+        throw new Error(data.msg || "Failed to cancel order");
+      }
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      // Show error message
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to cancel order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+
+
 
   const toggleExpandAll = () => {
     const newExpandAll = !expandAll;
@@ -420,15 +488,37 @@ const OrdersTab = ({ orders, type, activeTab }) => {
                     </div>
                     {activeTab === "ongoing" && (
                       <div className="card-footer bg-transparent border-top-0 text-end">
-                        <button
-                          className="btn btn-sm btn-success"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCompleteOrder(order.order_id);
-                          }}
-                        >
-                          Complete Order
-                        </button>
+                        {activeTab === "ongoing" && (
+                          <button
+                            className="btn btn-sm btn-success"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCompleteOrder(order.order_id);
+                            }}
+                          >
+                            Complete Order
+                          </button>
+                        )}
+                        {activeTab === "placed" && (
+                          <span className="text-warning">
+                            <i className="ri-time-line me-1"></i>
+                            Waiting for confirmation
+                          </span>
+                        )}
+                        {activeTab === "completed" && (
+                          <span className="text-success">
+                            <i className="ri-check-line me-1"></i>
+                            Order completed
+                          </span>
+                        )}
+                        {activeTab === "canceled" && (
+                          <span className="text-danger">
+                            <i className="ri-close-circle-line me-1"></i>
+                            Order canceled
+                          </span>
+                        )}
+
+
                       </div>
                     )}
                   </div>
@@ -437,18 +527,7 @@ const OrdersTab = ({ orders, type, activeTab }) => {
             </div>
           </div>
         ))}
-        {activeTab === "placed" && (
-          <div className="d-flex justify-content-center my-5">
-            {/* <CircularCountdown
-              duration={90}
-              backgroundColor="rgba(0, 0, 0, 0.1)"
-              progressColor="#0d775e"
-              textColor="#333333"
-              restaurantId={restaurantId}
-              orderId={orders[Object.keys(orders)[0]][0].order_id}
-            /> */}
-          </div>
-        )}
+       
       </>
     );
   };

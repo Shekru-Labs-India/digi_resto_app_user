@@ -642,7 +642,7 @@ const Search = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6"
+                    className="form-control fs-6 border border-primary rounded-3"
                     id="notes"
                     rows="3"
                     value={notes}

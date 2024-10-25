@@ -1,5 +1,3 @@
- 
-
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import images from "../assets/chiken.jpg";
@@ -37,6 +35,111 @@ const TrackOrder = () => {
   );
 
   const isLoggedIn = !!localStorage.getItem("userData");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState(null);
+  const [portionSize, setPortionSize] = useState("full");
+  const [halfPrice, setHalfPrice] = useState(null);
+  const [fullPrice, setFullPrice] = useState(null);
+  const [notes, setNotes] = useState("");
+  const [isPriceFetching, setIsPriceFetching] = useState(false);
+
+  const fetchHalfFullPrices = async (menuId) => {
+    setIsPriceFetching(true);
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setHalfPrice(data.menu_detail.half_price);
+        setFullPrice(data.menu_detail.full_price);
+      } else {
+        console.error("API Error:", data.msg);
+        // Show error toast
+      }
+    } catch (error) {
+      console.error("Error fetching half/full prices:", error);
+      // Show error toast
+    } finally {
+      setIsPriceFetching(false);
+    }
+  };
+
+  const handleAddToCartClick = (menu) => {
+    setSelectedMenu(menu);
+    fetchHalfFullPrices(menu.menu_id);
+    setPortionSize("full"); // Reset to full by default
+    setNotes(""); // Clear any previous notes
+    setShowModal(true);
+  };
+
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
+
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
+    if (!selectedPrice) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Price information is not available.",
+        life: 2000,
+      });
+      return;
+    }
+
+    const quantity = quantities[selectedMenu.menu_id] || 1;
+
+    const newItem = {
+      ...selectedMenu,
+      quantity: quantity,
+      notes: notes,
+      half_or_full: portionSize,
+      price: selectedPrice,
+      totalPrice: (parseFloat(selectedPrice) * quantity).toFixed(2),
+    };
+
+    try {
+      // Add the new item to pendingItems
+      setPendingItems((prevItems) => [...prevItems, newItem]);
+
+      // Remove the item from searchedMenu
+      setSearchedMenu((prevMenu) =>
+        prevMenu.filter((item) => item.menu_id !== selectedMenu.menu_id)
+      );
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Order",
+        detail: `${selectedMenu.menu_name} (${portionSize}, Qty: ${quantity})`,
+        life: 2000,
+      });
+
+      setShowModal(false);
+      setNotes("");
+      setPortionSize("full");
+      setSelectedMenu(null);
+    } catch (error) {
+      console.error("Error adding item to order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add item to order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -168,40 +271,6 @@ const TrackOrder = () => {
     setPendingItems((prevItems) =>
       prevItems.filter((item) => item.menu_id !== menuId)
     );
-  };
-
-  const updateCartQuantity = async (menuId, quantity) => {
-    const customerId = getCustomerId();
-    const restaurantId = getRestaurantId();
-    const cartId = getCartId();
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/update_cart_menu_quantity",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            quantity: quantity,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.st === 1) {
-        setQuantities((prev) => ({ ...prev, [menuId]: quantity }));
-        setPrices((prev) => ({ ...prev, [menuId]: data.price }));
-      } else {
-        console.error("Failed to update cart quantity:", data.msg);
-      }
-    } catch (error) {
-      console.error("Error updating cart quantity:", error);
-    }
   };
 
   const handleClearAll = () => {
@@ -383,6 +452,8 @@ const TrackOrder = () => {
             order_items: pendingItems.map((item) => ({
               menu_id: item.menu_id,
               quantity: item.quantity.toString(),
+              half_or_full: item.half_or_full || "full", // Use the selected portion size
+              comment: item.notes || "", // Use the notes as comments
             })),
           }),
         }
@@ -565,11 +636,21 @@ const TrackOrder = () => {
 
         <div className="container mt-5 pb-0">
           <div className="d-flex justify-content-between align-items-center ">
-            <span className="title pb-3    ">
+            <span className="title pb-3">
               {isCompleted ? (
                 <>
                   <i className="ri-checkbox-circle-line pe-2"></i>
                   <span>Completed Order</span>
+                </>
+              ) : order_details.order_status === "placed" ? (
+                <>
+                  <i className="ri-file-list-3-line pe-2"></i>
+                  <span>Placed Order</span>
+                </>
+              ) : order_details.order_status === "canceled" ? (
+                <>
+                  <i className="ri-close-circle-line pe-2"></i>
+                  <span>Canceled Order</span>
                 </>
               ) : (
                 <>
@@ -579,23 +660,17 @@ const TrackOrder = () => {
               )}
             </span>
 
-            <span className="  gray-text date_margin">
-              {order_details.date}
-            </span>
+            <span className="gray-text date_margin">{order_details.date}</span>
           </div>
 
           <div className="card rounded-3">
             <div className="card-body p-2">
               <div className="row align-items-center mb-0">
                 <div className="col-4">
- 
                   <span className="fs-6 fw-semibold mb-0">
                     <i className="ri-hashtag pe-2    "></i>
                     {order_details.order_number}
                   </span>
-
-                  
-
                 </div>
                 <div className="col-8 text-end">
                   <span className="font_size_12 gray-text  ">
@@ -606,7 +681,7 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                      <i className="ri-store-2-line pe-2 "></i>
+                    <i className="ri-store-2-line pe-2 "></i>
                     <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>
@@ -748,7 +823,7 @@ const TrackOrder = () => {
                                   }`}
                                   onClick={() =>
                                     !isItemAdded(menu.menu_id) &&
-                                    handleAddToOrder(menu)
+                                    handleAddToCartClick(menu)
                                   }
                                   style={{
                                     cursor: isItemAdded(menu.menu_id)
@@ -986,7 +1061,7 @@ const TrackOrder = () => {
                           state: {
                             restaurant_id: restaurantId,
                             menu_cat_id: menu.menu_cat_id,
-                            orderedItems: [...menu_details, ...orderedItems] // Pass all ordered items
+                            orderedItems: [...menu_details, ...orderedItems], // Pass all ordered items
                           },
                         })
                       }
@@ -1016,13 +1091,9 @@ const TrackOrder = () => {
                               </div>
                               <div className="row pt-1">
                                 <div className="col-8">
- 
                                   <i className="ri-restaurant-line mt-0 me-2  font_size_12 text-success"></i>
-                                
 
-                                  
                                   <span className="text-success font_size_12 fw-medium">
-
                                     {menu.category_name}
                                   </span>
                                 </div>
@@ -1050,10 +1121,7 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                                 <div className="col-3 text-end p-0">
- 
                                   <span className="font_size_14 gray-text  ">
-
-                                 
                                     x {menu.quantity}
                                   </span>
                                 </div>
@@ -1073,10 +1141,7 @@ const TrackOrder = () => {
         </main>
 
         {userData && orderDetails && (
-          <div
-            className="container mb-4 pt-0 z-3"
-            
-          >
+          <div className="container mb-4 pt-0 z-3">
             <div className="card mt-2 p-0 mb-5 ">
               <div className="card-body mx-auto rounded-3 p-0">
                 <div className="row p-1">
@@ -1140,14 +1205,91 @@ const TrackOrder = () => {
                   </div>
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
-                      <span className="ps-2 fw-semibold fs-6">
-                        Grand Total
-                      </span>
+                      <span className="ps-2 fw-semibold fs-6">Grand Total</span>
                       <span className="pe-2  fw-semibold fs-6">
                         ₹{orderDetails.order_details.grand_total || 0}
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showModal && selectedMenu && (
+          <div
+            className="modal fade show"
+            style={{ display: "block" }}
+            tabIndex="-1"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{selectedMenu.menu_name}</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Portion Size</label>
+                    <div>
+                      <button
+                        className={`btn ${
+                          portionSize === "half"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                        } me-2`}
+                        onClick={() => setPortionSize("half")}
+                        disabled={!halfPrice}
+                      >
+                        Half (₹{halfPrice || "N/A"})
+                      </button>
+                      <button
+                        className={`btn ${
+                          portionSize === "full"
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                        }`}
+                        onClick={() => setPortionSize("full")}
+                      >
+                        Full (₹{fullPrice || "N/A"})
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="notes" className="form-label">
+                      Special Instructions
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="notes"
+                      rows="3"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Any special requests?"
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleConfirmAddToCart}
+                    disabled={isPriceFetching}
+                  >
+                    {isPriceFetching ? "Loading..." : "Add to Order"}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1160,4 +1302,3 @@ const TrackOrder = () => {
 };
 
 export default TrackOrder;
- 
