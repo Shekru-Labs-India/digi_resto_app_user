@@ -126,12 +126,12 @@ const MyOrder = () => {
       />
 
       <main className="page-content space-top mb-5 pb-3">
-      <div className="container mt-3">
+      <div className="container mt-3 py-0">
         <div className="nav nav-tabs nav-fill" role="tablist">
           {["placed", "ongoing", "completed", "cancel"].map((tab) => (
             <button
               key={tab}
-              className={`nav-link ${activeTab === tab ? 'active' : ''}`}
+              className={`nav-link px-1 ${activeTab === tab ? 'active' : ''}`}
               onClick={() => handleTabChange(tab)}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
