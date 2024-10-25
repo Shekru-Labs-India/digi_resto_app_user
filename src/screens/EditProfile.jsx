@@ -184,7 +184,7 @@ const EditProfile = () => {
               <div className="d-flex justify-content-center align-items-center">
                 <button
                   type="button"
-                  className="btn  btn-color  py-3  rounded-pill    "
+                  className="btn  btn-success  py-3  rounded-pill    "
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   onClick={handleUpdateProfile}
                 >

@@ -464,7 +464,7 @@ const Cart = () => {
                 <Link
                   to="/Checkout"
                   state={{ cartItems: cartDetails.order_items }}
-                  className="btn btn-color   rounded-pill text-white px-5"
+                  className="btn btn-success   rounded-pill text-white px-5"
                 >
                   Proceed to Buy &nbsp;{" "}
                   <b>

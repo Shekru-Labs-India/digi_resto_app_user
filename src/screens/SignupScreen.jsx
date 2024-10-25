@@ -22,12 +22,25 @@ const Signupscreen = () => {
   const [showPopup, setShowPopup] = useState(false); // Popup visibility state
   const checkboxRef = useRef(null); // Reference to the checkbox
   const toast = useRef(null); // Create a ref for the toast
+  const nameInputRef = useRef(null);
+  const mobileInputRef = useRef(null);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!isFormFilled()) {
       setError("Please fill all the fields correctly.");
       setCheckboxError(""); // Clear checkbox error if form is not filled
+      
+      // Focus on empty fields and add red border
+      if (name.trim() === "") {
+        nameInputRef.current.focus();
+        nameInputRef.current.classList.add("is-invalid");
+      }
+      if (mobile.trim() === "") {
+        mobileInputRef.current.focus();
+        mobileInputRef.current.classList.add("is-invalid");
+      }
+      
       return;
     }
     if (!agreed) {
@@ -140,8 +153,10 @@ const Signupscreen = () => {
     setName(value);
     if (value.trim() === "") {
       setNameError("Name is required");
+      nameInputRef.current.classList.add("is-invalid");
     } else {
       setNameError("");
+      nameInputRef.current.classList.remove("is-invalid");
     }
   };
 
@@ -150,10 +165,13 @@ const Signupscreen = () => {
     setMobile(value);
     if (value.trim() === "") {
       setMobileError("Mobile is required");
+      mobileInputRef.current.classList.add("is-invalid");
     } else if (value.length === 10) {
       setMobileError("");
+      mobileInputRef.current.classList.remove("is-invalid");
     } else {
       setMobileError("Mobile number must be exactly 10 digits");
+      mobileInputRef.current.classList.add("is-invalid");
     }
   };
 
@@ -161,7 +179,8 @@ const Signupscreen = () => {
     return (
       name.trim() !== "" &&
       mobile.trim() !== "" &&
-      mobileError === ""
+      mobile.length === 10 &&
+      agreed
     );
   };
 
@@ -185,43 +204,49 @@ const Signupscreen = () => {
                   <label className="    " htmlFor="name">
                     <span className="required-star">*</span>Name
                   </label>
-                  <div className="input-group">
-                    <span className="input-group-text fs-3 py-0">
-                      <i className="ri-user-3-line text-muted" />
-                    </span>
-                    <input
-                      type="text"
-                      id="name"
-                      className={`form-control     ps-2 ${
-                        nameError ? "is-invalid" : ""
-                      }`}
-                      placeholder="Name"
-                      value={name}
-                      onChange={handleNameChange}
-                    />
+                  <div className="border border-1 rounded-3">
+                    <div className="input-group ">
+                      <span className="input-group-text fs-3 py-0 ">
+                        <i className="ri-user-3-line text-muted" />
+                      </span>
+                      <input
+                        type="text"
+                        id="name"
+                        ref={nameInputRef}
+                        className={`form-control ps-2 ${
+                          nameError ? "is-invalid" : ""
+                        }`}
+                        placeholder="Name"
+                        value={name}
+                        onChange={handleNameChange}
+                      />
+                    </div>
+                    {nameError && (
+                      <div className="invalid-feedback">{nameError}</div>
+                    )}
                   </div>
-                  {nameError && (
-                    <div className="invalid-feedback">{nameError}</div>
-                  )}
                 </div>
                 <div className="m-b15">
                   <label className="   " htmlFor="mobile">
                     <span className="required-star">*</span> Mobile
                   </label>
-                  <div className="input-group">
-                    <span className="input-group-text fs-3 py-0">
-                      <i className="ri-smartphone-line text-muted" />
-                    </span>
-                    <input
-                      type="tel"
-                      id="mobile"
-                      className={`form-control     ps-2 ${
-                        mobileError ? "is-invalid" : ""
-                      }`}
-                      placeholder="Enter Mobile Number"
-                      value={mobile}
-                      onChange={handleMobileChange}
-                    />
+                  <div className="border border-1 rounded-3">
+                    <div className="input-group">
+                      <span className="input-group-text fs-3 py-0">
+                        <i className="ri-smartphone-line text-muted" />
+                      </span>
+                      <input
+                        type="tel"
+                        id="mobile"
+                        ref={mobileInputRef}
+                        className={`form-control     ps-2 ${
+                          mobileError ? "is-invalid" : ""
+                        }`}
+                        placeholder="Enter Mobile Number"
+                        value={mobile}
+                        onChange={handleMobileChange}
+                      />
+                    </div>
                   </div>
                   {mobileError && (
                     <div className="invalid-feedback">{mobileError}</div>
@@ -231,18 +256,30 @@ const Signupscreen = () => {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    value={agreed}
+                    checked={agreed}
                     id="Checked-1"
                     onChange={(e) => {
                       setAgreed(e.target.checked);
                       setCheckboxError(""); // Clear checkbox error when checked
                     }}
                   />
-                  <label
-                    className="form-check-label    "
-                    htmlFor="Checked-1"
-                  >
-                    I agree to all Terms, Privacy, and Fees
+                  <label className="form-check-label " htmlFor="Checked-1">
+                    I agree to
+                    <Link
+                      to="https://menumitra.com/privacy/"
+                      className="text-underline px-1"
+                      target="_blank"
+                    >
+                      Privacy Policy
+                    </Link>
+                    and
+                    <Link
+                      to="https://menumitra.com/terms/"
+                      className="text-underline px-1"
+                      target="_blank"
+                    >
+                      Terms.
+                    </Link>
                   </label>
                 </div>
                 {checkboxError && (
@@ -252,12 +289,6 @@ const Signupscreen = () => {
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      {/* <div
-                        className="spinner-border text-primary"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Loading...</span>
-                      </div> */}
                       <LoaderGif />
                     </div>
                   </div>
@@ -265,7 +296,8 @@ const Signupscreen = () => {
                   <button
                     id="signupButton"
                     type="submit"
-                    className="dz-btn btn     btn-color text-white rounded-xl"
+                    className="btn btn-success rounded-pill text-white mt-4"
+                    disabled={!isFormFilled()}
                   >
                     Create Account
                   </button>
@@ -274,20 +306,69 @@ const Signupscreen = () => {
             </div>
             <div className="text-center mt-auto  ">
               Already have an account?{" "}
-              <Link
-                to="/Signinscreen"
-                className="text-underline    "
-              >
+              <Link to="/Signinscreen" className="text-underline    ">
                 Sign In
               </Link>
             </div>
           </div>
         </div>
       </main>
-      <CompanyVersion />
       {showPopup && (
         <div className="popup show">Account Created Successfully</div>
       )}
+      <div className="text-center mt-5">
+        <div className="my-4">
+          <div class="text-center d-flex justify-content-center">
+            <a
+              href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-facebook-circle-fill ri-xl "></i>
+            </a>
+            <a
+              href="https://www.instagram.com/autoprofito/?next=%2F"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-instagram-line ri-xl "></i>
+            </a>
+            <a
+              href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-youtube-line ri-xl "></i>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/104616702/admin/dashboard/"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-linkedin-fill ri-xl "></i>
+            </a>
+            <a
+              href="https://www.threads.net/@autoprofito"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-twitter-x-line ri-xl "></i>
+            </a>
+            <a
+              href="https://t.me/Autoprofito"
+              class="footer-link mx-3"
+              target="_blank"
+            >
+              <i class="ri-telegram-line ri-xl "></i>
+            </a>
+          </div>
+          <p className="text-center text-md-center mt-5">
+            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+            <a href="https://www.shekruweb.com" target="_blank">Shekru Labs India Pvt. Ltd.</a>
+          <div className="">v1.1</div>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

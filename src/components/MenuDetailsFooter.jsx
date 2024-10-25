@@ -59,7 +59,7 @@ const MenuDetailsFooter = ({
                 </button>
               ) : isMenuItemInCart(menuId) ? (
                 <button
-                  className="btn btn-color rounded-pill"
+                  className="btn btn-success rounded-pill"
                   onClick={() => navigate("/Cart")}
                 >
                   <i className="ri-shopping-cart-line pe-1 text-white"></i>
@@ -69,7 +69,7 @@ const MenuDetailsFooter = ({
                 </button>
               ) : (
                 <button
-                  className="btn btn-color rounded-pill"
+                  className="btn btn-success rounded-pill"
                   onClick={handleAddToCart}
                 >
                   <i className="ri-shopping-cart-line pe-1 text-white"></i>

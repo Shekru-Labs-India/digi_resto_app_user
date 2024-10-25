@@ -145,17 +145,14 @@ import LoaderGif from "./LoaderGIF";
                   <div className="d-flex justify-content-center">
                     <span className="    ">
                       Welcome Back You've{" "}
-                      <span className="    mt-1 ">
-                        {" "}
-                        Been Missed!
-                      </span>
+                      <span className="    mt-1 "> Been Missed!</span>
                     </span>
                   </div>
                 </div>
 
                 <form onSubmit={(e) => e.preventDefault()}>
-                  <div className="m-b15">
-                    <label className="    " htmlFor="mobile">
+                  <div className="mb-2">
+                    <label className="my-2" htmlFor="mobile">
                       <span className="required-star">*</span> Mobile
                     </label>
                     <div className="input-group text-muted">
@@ -194,7 +191,7 @@ import LoaderGif from "./LoaderGIF";
                   ) : (
                     <button
                       type="button"
-                      className="btn btn-color      rounded-pill mx-4 text-white"
+                      className="btn btn-success rounded-pill text-white mt-4"
                       onClick={handleSignIn}
                       disabled={!isMobileValid}
                     >
@@ -205,24 +202,67 @@ import LoaderGif from "./LoaderGIF";
               </div>
               <div className="text-center mt-auto  ">
                 Not a member?{" "}
-                <Link
-                  to="/Signupscreen"
-                  className="text-underline    "
-                >
+                <Link to="/Signupscreen" className="text-underline    ">
                   Create an account
                 </Link>
               </div>
             </div>
           </div>
         </main>
-        <div className="text-center mt-5 pt-5">
-          <div className="gray-text     mt-5">
-            Powered by{" "}
+        <div className="text-center mt-3 pt-5">
+          <div className="my-4">
+            <div class="text-center d-flex justify-content-center">
+              <a
+                href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-facebook-circle-fill ri-xl "></i>
+              </a>
+              <a
+                href="https://www.instagram.com/autoprofito/?next=%2F"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-instagram-line ri-xl "></i>
+              </a>
+              <a
+                href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-youtube-line ri-xl "></i>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/104616702/admin/dashboard/"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-linkedin-fill ri-xl "></i>
+              </a>
+              <a
+                href="https://www.threads.net/@autoprofito"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-twitter-x-line ri-xl "></i>
+              </a>
+              <a
+                href="https://t.me/Autoprofito"
+                class="footer-link mx-3"
+                target="_blank"
+              >
+                <i class="ri-telegram-line ri-xl "></i>
+              </a>
+            </div>
           </div>
-          <div className="gray-text    ">
-            Shekru Labs India Pvt. Ltd.
-          </div>
-          <div className="gray-text      ">v1.1</div>
+          <p className="text-center text-md-center mt-5">
+            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+            <a href="https://www.shekruweb.com" target="_blank">
+              Shekru Labs India Pvt. Ltd.
+            </a>
+            <div className="">v1.1</div>
+          </p>
         </div>
       </div>
     );

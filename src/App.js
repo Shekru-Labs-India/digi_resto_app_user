@@ -25,7 +25,7 @@ import { CartProvider } from "./context/CartContext";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
 import QRScreen from "./screens/QRScreen";
-
+import AllOrderList from "./component/AllOrderList";
 import 'primereact/resources/themes/saga-blue/theme.css'; // Theme
 import 'primereact/resources/primereact.min.css';         // Core CSS
 // import 'primeicons/primeicons.css';                       // Icons CSS
@@ -49,6 +49,7 @@ function App() {
         {/* <FavoritesProvider> */}
           <CartProvider>
             <Routes>
+              <Route path="/AllOrderList" element={<AllOrderList />} />
             <Route
               path="/:restaurantCode/:table_number"
               element={<HomeScreen />}

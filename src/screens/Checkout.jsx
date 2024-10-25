@@ -567,7 +567,7 @@ const Checkout = () => {
             <div className="text-center">
               <Link
                 to="#"
-                className="btn btn-color rounded-pill     text-white"
+                className="btn btn-success rounded-pill     text-white"
                 onClick={handleSubmitOrder}
               >
                 Place Order
@@ -606,7 +606,7 @@ const Checkout = () => {
               You have successfully made payment and placed your order.
             </p>
             <button
-              className="btn btn-color rounded-pill     text-white"
+              className="btn btn-success rounded-pill     text-white"
               onClick={closePopup}
             >
               View Order

@@ -42,6 +42,7 @@ const MenuDetails = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -49,7 +50,14 @@ const MenuDetails = () => {
       setUserData(storedUserData);
       setCustomerId(storedUserData.customer_id);
     }
-  }, []);
+
+    // Retrieve the current restaurant ID from localStorage or URL params
+    const storedRestaurantId = localStorage.getItem("currentRestaurantId");
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRestaurantId = urlParams.get("restaurantId");
+    
+    setCurrentRestaurantId(storedRestaurantId || urlRestaurantId || restaurantId);
+  }, [restaurantId]);
  
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -69,8 +77,6 @@ const MenuDetails = () => {
 
   const fetchProductDetails = async () => {
     setIsLoading(true);
-    const { state } = location;
-    const currentRestaurantId = state?.fromWishlist ? state.restaurant_id : restaurantId;
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_menu_details",
@@ -104,6 +110,7 @@ const MenuDetails = () => {
             offer,
             rating,
             is_favorite,
+            restaurant_id: fetchedRestaurantId,
           } = data.details;
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
@@ -124,12 +131,16 @@ const MenuDetails = () => {
             offer,
             rating,
             is_favorite,
-            restaurant_id: currentRestaurantId,
+            restaurant_id: fetchedRestaurantId,
           });
 
           setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
-          setIsFromDifferentRestaurant(data.details.restaurant_id !== restaurantId);
+          setCurrentRestaurantId(fetchedRestaurantId);
+          setIsFromDifferentRestaurant(fetchedRestaurantId !== restaurantId);
+          
+          // Store the restaurant ID of this menu item
+          localStorage.setItem("currentRestaurantId", fetchedRestaurantId);
         } else {
           console.error("Invalid data format:", data);
         }
@@ -144,8 +155,10 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    fetchProductDetails();
-  }, [menuId, location.state, customerId]);
+    if (currentRestaurantId && customerId) {
+      fetchProductDetails();
+    }
+  }, [menuId, currentRestaurantId, customerId]);
 
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);
@@ -188,12 +201,12 @@ const MenuDetails = () => {
   };
 
   const handleAddToCart = () => {
-    if (!customerId || !restaurantId) {
+    if (!customerId || !currentRestaurantId) {
       navigate("/Signinscreen");
       return;
     }
 
-    fetchHalfFullPrices(); // Fetch prices when opening the modal
+    fetchHalfFullPrices();
     setShowModal(true);
   };
 
@@ -217,7 +230,7 @@ const MenuDetails = () => {
         notes, 
         half_or_full: portionSize,
         price: selectedPrice
-      }, customerId, restaurantId);
+      }, customerId, currentRestaurantId);
       
       toast.current.show({
         severity: "success",
@@ -243,7 +256,7 @@ const MenuDetails = () => {
 
   const handleRemoveFromCart = async () => {
     try {
-      await removeFromCart(productDetails.menu_id, customerId, restaurantId);
+      await removeFromCart(productDetails.menu_id, customerId, currentRestaurantId);
       toast.current.show({
         severity: "info",
         summary: "Removed from Cart",
@@ -270,7 +283,7 @@ const MenuDetails = () => {
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData || !restaurantId) {
+    if (!userData || !currentRestaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
@@ -285,7 +298,7 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-      const currentRestaurantId = productDetails.restaurant_id || restaurantId; 
+      const currentRestaurantId = productDetails.restaurant_id || currentRestaurantId; 
 
     try {
       const response = await fetch(apiUrl, {
@@ -530,16 +543,16 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-6 pt-1 ps-0">
+                  <div className="col-5 pt-1 px-0 ">
                     {!isFromDifferentRestaurant && (
-                      <div className="dz-stepper style-3 ">
-                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected menu_details-quantity">
+                      <div className="dz-stepper style-3">
+                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
                           <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                               style={{
-                                height: "20px",
-                                width: "20px",
+                                height: "30px",
+                                width: "30px",
                               }}
                             >
                               <i
@@ -556,8 +569,8 @@ const MenuDetails = () => {
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                               style={{
-                                height: "20px",
-                                width: "20px",
+                                height: "30px",
+                                width: "30px",
                               }}
                             >
                               <i
@@ -577,7 +590,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <i class="ri-restaurant-2-line me-2"></i>
+                    <i classNam="ri-restaurant-2-line me-2"></i>
                     <span className="  text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
@@ -641,7 +654,7 @@ const MenuDetails = () => {
                     </button>
                   ) : isMenuItemInCart(menuId) ? (
                     <button
-                      className="btn btn-color rounded-pill"
+                      className="btn btn-success rounded-pill"
                       onClick={handleRemoveFromCart}
                     >
                       <i className="ri-shopping-cart-line pe-1 text-white"></i>
@@ -651,7 +664,7 @@ const MenuDetails = () => {
                     </button>
                   ) : (
                     <button
-                      className="btn btn-color rounded-pill"
+                      className="btn btn-success rounded-pill"
                       onClick={handleAddToCart}
                     >
                       <i className="ri-shopping-cart-line pe-1 text-white"></i>
@@ -756,12 +769,14 @@ const MenuDetails = () => {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
+                  <i className="ri-shopping-cart-line pe-1"></i>
                   Add to Cart
                 </button>
               </div>

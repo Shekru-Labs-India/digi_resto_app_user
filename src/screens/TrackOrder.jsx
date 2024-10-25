@@ -741,10 +741,10 @@ const TrackOrder = () => {
                               </div>
                               <div className="col-3">
                                 <span
-                                  className={`btn btn-color px-2 py-1 ${
+                                  className={`btn btn-success px-2 py-1 ${
                                     isItemAdded(menu.menu_id)
                                       ? "btn-secondary gray-text"
-                                      : "btn-color text-white addOrder-btn"
+                                      : "btn-success text-white addOrder-btn"
                                   }`}
                                   onClick={() =>
                                     !isItemAdded(menu.menu_id) &&
@@ -954,7 +954,7 @@ const TrackOrder = () => {
               {!isCompleted && pendingItems.length > 0 && (
                 <div className="d-flex justify-content-center my-3">
                   <button
-                    className="btn btn-color text-white btn-sm"
+                    className="btn btn-success text-white btn-sm"
                     onClick={handleSubmitOrder}
                   >
                     Place Order ({pendingItems.length})
