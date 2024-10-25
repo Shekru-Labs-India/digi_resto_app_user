@@ -353,6 +353,13 @@ const MenuDetails = () => {
     }
   };
 
+  const handleModalClick = (e) => {
+    // Close the modal if the click is outside the modal content
+    if (e.target.classList.contains('modal')) {
+      setShowModal(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -659,35 +666,43 @@ const MenuDetails = () => {
       </div>
       <Bottom />
 
-      <div className="d-flex justify-content-center">
+      {showModal && (
         <div
-          className={`modal fade ${showModal ? "show" : ""}`}
-          id="addToCartModal"
-          tabIndex="-1"
-          aria-labelledby="addToCartModalLabel"
-          aria-hidden={!showModal}
-          style={{ display: showModal ? "block" : "none" }}
+          className="modal fade show d-flex align-items-center justify-content-center"
+          style={{ display: "block" }}
+          onClick={handleModalClick}
         >
-          <div className="modal-dialog">
-            <div className="modal-content d-flex align-items-center justify-content-center">
-              <div className="modal-header">
-                <h5 className="modal-title" id="addToCartModalLabel">
+          <div className="modal-dialog modal-dialog-centered">
+            <div
+              className="modal-content"
+              style={{
+                width: "350px",
+                margin: "auto",
+              }}
+            >
+              <div className="modal-header d-flex justify-content-center">
+                <div className="modal-title font_size_16 fw-medium">
                   Add to Cart
-                </h5>
+                </div>
                 <button
                   type="button"
-                  className="btn-close"
+                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
                   onClick={() => setShowModal(false)}
                   aria-label="Close"
-                ></button>
+                >
+                  <i className="ri-close-line"></i>
+                </button>
               </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label htmlFor="notes" className="form-label">
+              <div className="modal-body py-3">
+                <div className="mb-3 mt-0">
+                  <label
+                    htmlFor="notes"
+                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                  >
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control"
+                    className="form-control fs-6"
                     id="notes"
                     rows="3"
                     value={notes}
@@ -696,15 +711,17 @@ const MenuDetails = () => {
                   ></textarea>
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Portion Size</label>
-                  <div>
+                  <label className="form-label d-flex justify-content-center">
+                    Select Portion Size
+                  </label>
+                  <div className="d-flex justify-content-center">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
                         <button
                           type="button"
-                          className={`btn me-2 ${
+                          className={`btn rounded-pill me-2 font_size_14  ${
                             portionSize === "half"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -716,7 +733,7 @@ const MenuDetails = () => {
                         </button>
                         <button
                           type="button"
-                          className={`btn ${
+                          className={`btn rounded-pill font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -731,17 +748,17 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer justify-content-center">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn btn-secondary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
@@ -751,8 +768,8 @@ const MenuDetails = () => {
             </div>
           </div>
         </div>
-        {showModal && <div className="modal-backdrop fade show"></div>}
-      </div>
+      )}
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </>
   );
 };
