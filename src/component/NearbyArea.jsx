@@ -259,57 +259,130 @@ const NearbyArea = () => {
                         }}
                         alt={menuItem.name}
                       />
-                    </div>
-                    <div className="row">
-                      <div className="detail-content">
+                      <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menuItem.is_favourite
+                              ? "ri-hearts-fill text-danger"
+                              : "ri-heart-2-line"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menuItem.menu_id);
+                          }}
+                        ></i>
+                      </div>
+                      {menuItem.offer !== 0 && (
                         <div
-                          className="font_size_12 text-success"
-                          
+                          className="gradient_bg d-flex justify-content-center align-items-center"
+                          style={{
+                            position: "absolute",
+                            top: "-1px",
+                            left: "0px",
+                            height: "17px",
+                            width: "70px",
+                            borderRadius: "0px 0px 7px 0px",
+                          }}
                         >
-                          <i
-                            className="ri-restaurant-line pe-1"
-                            
-                          ></i>
-                          {menuItem.category_name}
-
-
+                          <span className="text-white">
+                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                            <span className="font_size_10">
+                              {menuItem.offer}% Off
+                            </span>
+                          </span>
                         </div>
-
-
+                      )}
+                    </div>
+                    <div className="dz-content d-block">
+                      <div className="category-text">
+                        <div className="row mt-1">
+                          <div className="col-8 text-success font_size_10">
+                            <i className="ri-restaurant-line pe-1"></i>
+                            {menuItem.category_name}
+                          </div>
+                          <div className="col-4 ps-0 text-end">
+                            <span className="font_size_12 fw-normal gray-text me-2">
+                              <i className="ri-star-half-line font_size_14  ratingStar me-1"></i>
+                              {menuItem.rating}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <span className="font_size_14 fw-medium text-wrap">
                         {menuItem.name}
                       </span>
-                      <div className="row">
-                        <div className="col-8">
-                          <div className="offer-code mx-0">
-                            {renderSpiceIcons(menuItem.spicy_index)}
+                      <div className="mt-2">
+                        <div className="row">
+                          <div className="col-6">
+                            <div className="">
+                              {renderSpiceIcons(menuItem.spicy_index)}
+                            </div>
                           </div>
                         </div>
-                        <div className="col-4 text-center">
-                          <i className="ri-star-half-line font_size_14 ratingStar"></i>
-                          <span className="font_size_12 fw-normal gray-text">
-                            {menuItem.rating}
-                          </span>
-                        </div>
                       </div>
-
                       <div className="row ">
-                        <div className="col-8">
-                          <p className="mb-0 fw-medium">
-                            <span className="me-2 text-info font_size_14 fw-semibold">
-                              ₹{menuItem.price}
-                            </span>
-                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                              ₹{menuItem.oldPrice || menuItem.price}
-                            </span>
-                          </p>
-                        </div>
-
-                        <div className="col-4">
-                          <span className="font_size_12 text-success">
-                            {menuItem.offer || "No "}% Off
+                        <div className="col-6 pe-0 mt-1 mb-1">
+                          <span className="me-2 text-info font_size_14 fw-semibold">
+                            ₹{menuItem.price}
                           </span>
+                          {menuItem.oldPrice && (
+                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                              ₹{menuItem.oldPrice}
+                            </span>
+                          )}
+                        </div>
+                        <div className="d-flex justify-content-end col-6">
+                          {customerId ? (
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menuItem);
+                              }}
+                            >
+                              <i
+                                className={`ri-shopping-cart-${
+                                  isMenuItemInCart(menuItem.menu_id)
+                                    ? "fill"
+                                    : "line"
+                                } fs-6 `}
+                              ></i>
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

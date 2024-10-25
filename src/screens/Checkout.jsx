@@ -261,12 +261,12 @@ const Checkout = () => {
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
         clearCart();
         setShowOngoingOrderPopup(false);
-        navigate("/Menu");
+        navigate("/MyOrder", { state: { activeTab: "placed" } });
       } else {
         throw new Error(data.msg || "Failed to cancel order");
       }
@@ -276,10 +276,11 @@ const Checkout = () => {
       setShowErrorPopup(true);
     }
   };
-
+  
   const handleCompleteAndProceed = async () => {
     try {
-      const response = await fetch(
+      // First, complete the ongoing order
+      const completeResponse = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
           method: "POST",
@@ -289,16 +290,37 @@ const Checkout = () => {
           body: JSON.stringify({
             order_id: ongoingOrderId,
             customer_id: customerId,
+            restaurant_id: restaurantId,
           }),
         }
       );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        setShowOngoingOrderPopup(false);
-        await proceedWithOrderSubmission();
+  
+      const completeData = await completeResponse.json();
+      if (completeResponse.ok && completeData.st === 1) {
+        // Then, change the status to completed
+        const changeStatusResponse = await fetch(
+          "https://menumitra.com/user_api/change_status_to_ongoing",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              restaurant_id: restaurantId,
+              order_id: ongoingOrderId,
+            }),
+          }
+        );
+  
+        const changeStatusData = await changeStatusResponse.json();
+        if (changeStatusResponse.ok && changeStatusData.st === 1) {
+          setShowOngoingOrderPopup(false);
+          navigate("/MyOrder", { state: { activeTab: "completed" } });
+        } else {
+          throw new Error(changeStatusData.msg || "Failed to change order status");
+        }
       } else {
-        throw new Error(data.msg || "Failed to complete order");
+        throw new Error(completeData.msg || "Failed to complete order");
       }
     } catch (error) {
       console.error("Error completing order:", error);
@@ -309,7 +331,7 @@ const Checkout = () => {
 
   const closePopup = () => {
     setShowPopup(false);
-    navigate("/MyOrder");
+    navigate("/MyOrder", { state: { selectedTab: "placed" } });
   };
 
   const toggleSidebar = () => {
@@ -356,11 +378,11 @@ const Checkout = () => {
 
         {showOngoingOrderPopup && (
           <div className="popup-overlay">
-            <div className="popup-content">
+            <div className="popup-content ">
               <h3>Ongoing Order Detected</h3>
               <p>You have an ongoing order. What would you like to do?</p>
               <button
-                className="btn btn-danger rounded-pill text-white me-2"
+                className="btn btn-danger rounded-pill text-white me-2 my-3"
                 onClick={handleCancelOrders}
               >
                 Cancel Order

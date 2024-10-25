@@ -29,7 +29,6 @@ const ProductCard = () => {
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const userData = JSON.parse(localStorage.getItem("userData"));
   const { cartItems, addToCart, removeFromCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
 
@@ -39,94 +38,91 @@ const ProductCard = () => {
   const toast = useRef(null);
   const [loading, setLoading] = useState(true);
 
+  const [showModal, setShowModal] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState('full');
+  const [selectedMenu, setSelectedMenu] = useState(null);
+
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
+    if (storedUserData && storedUserData.customer_id) {
       setCustomerId(storedUserData.customer_id);
     }
   }, []);
 
- const fetchMenuData = useCallback(async (categoryId) => {
-  if (!restaurantId || hasFetchedData.current) return;
-  setIsLoading(true);
-  try {
-    const response = await fetch(
-      "https://menumitra.com/user_api/get_all_menu_list_by_category",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ restaurant_id: restaurantId }),
+  const fetchMenuData = useCallback(async (categoryId) => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!restaurantId) {
+      console.log("Missing restaurantId:", { restaurantId });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      console.log("Fetching menu data...");
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            customer_id: currentCustomerId, 
+            restaurant_id: restaurantId 
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("API response:", data);
+
+      if (response.ok && data.st === 1) {
+        const formattedCategories = data.data.category.map((category) => ({
+          ...category,
+          name: toTitleCase(category.category_name),
+        }));
+        setMenuCategories(formattedCategories);
+
+        const formattedMenuList = data.data.menus.map((menu) => ({
+          ...menu,
+          image: menu.image || images,
+          category: toTitleCase(menu.category_name),
+          name: toTitleCase(menu.menu_name),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
+          is_favourite: menu.is_favourite === 1,
+        }));
+        setMenuList(formattedMenuList);
+        setTotalMenuCount(formattedMenuList.length);
+
+        const filteredMenus = categoryId === null
+          ? formattedMenuList
+          : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
+        setFilteredMenuList(filteredMenus);
+      } else {
+        console.log("API returned error or empty data");
+        setMenuCategories([]);
+        setMenuList([]);
+        setFilteredMenuList([]);
       }
-    );
-
-    const data = await response.json();
-    console.log("API response:", JSON.stringify(data, null, 2));
-
-    if (response.ok && data.st === 1) {
-      const formattedCategories = data.data.category.map((category) => ({
-        ...category,
-        name: toTitleCase(category.category_name),
-      }));
-      setMenuCategories(formattedCategories);
-
-      const formattedMenuList = data.data.menus.map((menu) => ({
-        ...menu,
-        image: menu.image || images,
-        category: toTitleCase(menu.category_name),
-        name: toTitleCase(menu.menu_name),
-        oldPrice: calculateOldPrice(menu.price, menu.offer),
-        is_favourite: menu.is_favourite === 1,
-        offer: parseOffer(menu.offer),
-      }));
-      setMenuList(formattedMenuList);
-      setTotalMenuCount(formattedMenuList.length);
-
-      const filteredMenus = categoryId === null
-        ? formattedMenuList
-        : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
-      setFilteredMenuList(filteredMenus);
-      hasFetchedData.current = true;
-
-      // Save to local storage
-      localStorage.setItem('menuCategories', JSON.stringify(formattedCategories));
-      localStorage.setItem('menuList', JSON.stringify(formattedMenuList));
-    } else {
-      console.error("Invalid data format:", data);
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
       setMenuCategories([]);
       setMenuList([]);
       setFilteredMenuList([]);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching menu data:", error);
-    setMenuCategories([]);
-    setMenuList([]);
-    setFilteredMenuList([]);
-  } finally {
-    setIsLoading(false);
-  }
-}, [restaurantId]);
-  
-  // Helper function to calculate old price
-  const calculateOldPrice = (price, offer) => {
-    const offerPercentage = parseOffer(offer);
-    return Math.floor(price / (1 - offerPercentage / 100));
-  };
-  
-  // Helper function to parse offer
-  const parseOffer = (offer) => {
-    if (typeof offer === 'number') return offer;
-    const match = offer.match(/(\d+)/);
-    return match ? parseInt(match[1], 10) : 0;
-  };
-
+  }, [restaurantId]);
 
   useEffect(() => {
-    if (customerId && restaurantId) {
+    if (restaurantId) {
+      console.log("Triggering fetchMenuData");
       fetchMenuData(null);
+    } else {
+      console.log("Missing restaurantId for initial fetch");
     }
-  }, [customerId, restaurantId, fetchMenuData]);
-
-
+  }, [restaurantId, fetchMenuData]);
 
   useEffect(() => {
     const handleFavoritesUpdated = () => {
@@ -180,6 +176,7 @@ const ProductCard = () => {
 
   useEffect(() => {
     if (restaurantId) {
+      console.log("Restaurant ID changed, fetching menu data");
       debouncedFetchMenuData(null);
       setSelectedCategoryId(null);
     }
@@ -223,7 +220,10 @@ const ProductCard = () => {
     }
   }, [menuCategories]);
 
-  const handleLikeClick = async (menuId) => {
+  const handleLikeClick = async (e, menuId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !userData.customer_id || !restaurantId) {
       navigate("/Signinscreen");
@@ -268,7 +268,6 @@ const ProductCard = () => {
               : "Item has been removed from your favorites.",
             life: 2000,
           });
-          window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
           console.error("Failed to update favorite status:", data.msg);
         }
@@ -280,39 +279,57 @@ const ProductCard = () => {
     }
   };
 
-  const handleAddToCartClick = async (menu) => {
-    if (!customerId || !restaurantId) {
+  const handleAddToCartClick = (menu) => {
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!currentCustomerId || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
     }
-  
+
+    setSelectedMenu(menu);
+    setShowModal(true);
+  };
+
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
+
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+
+    if (!currentCustomerId) {
+      console.error("Customer ID not found");
+      navigate("/Signinscreen");
+      return;
+    }
+
     try {
-      if (isMenuItemInCart(menu.menu_id)) {
-        // Remove from cart
-        await removeFromCart(menu.menu_id, customerId, restaurantId);
-        toast.current.show({
-          severity: "info",
-          summary: "Removed from Cart",
-          detail: menu.name,
-          life: 3000,
-        });
-      } else {
-        // Add to cart
-        await addToCart(menu, customerId, restaurantId);
-        toast.current.show({
-          severity: "success",
-          summary: "Added to Cart",
-          detail: menu.name,
-          life: 3000,
-        });
-      }
+      await addToCart({
+        ...selectedMenu,
+        quantity: 1, // Default to 1 for ProductCard
+        notes,
+        half_or_full: portionSize
+      }, currentCustomerId, restaurantId);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: selectedMenu.name,
+        life: 3000,
+      });
+
+      setShowModal(false);
+      setNotes('');
+      setPortionSize('full');
+      setSelectedMenu(null);
     } catch (error) {
-      console.error("Error updating cart:", error);
+      console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to update cart. Please try again.",
+        detail: "Failed to add item to cart. Please try again.",
         life: 3000,
       });
     }
@@ -424,11 +441,13 @@ const ProductCard = () => {
                       }}
                     />
                     <div
-                      className="border border-1 rounded-circle py-1 px-2 bg-white opacity-75 "
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
                         position: "absolute",
-                        bottom: "5px",
-                        right: "5px",
+                        bottom: "3px",
+                        right: "3px",
+                        height: "20px",
+                        width: "20px",
                       }}
                     >
                       <i
@@ -436,24 +455,41 @@ const ProductCard = () => {
                           menu.is_favourite
                             ? "ri-hearts-fill text-danger"
                             : "ri-heart-2-line"
-                        } fs-4`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleLikeClick(menu.menu_id);
-                        }}
+                        } fs-6`}
+                        onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>
                     </div>
+
+                    {menu.offer !== 0 && (
+                      <div
+                        className="gradient_bg d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          top: "-1px",
+                          left: "0px",
+                          height: "17px",
+                          width: "70px",
+                          borderRadius: "0px 0px 7px 0px",
+                        }}
+                      >
+                        <span className="text-white">
+                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                          <span className="font_size_10">
+                            {menu.offer}% Off
+                          </span>
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="dz-content pb-1">
-                    <div
-                      className="detail-content category-text"
-                    >
+                    <div className="detail-content category-text">
                       <div className="font_size_12 ">
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="ri-restaurant-line pe-1"></i>
-                            {menu.category}
+                            <span className="font_size_10">
+                              {menu.category}
+                            </span>
                           </div>
                           <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
                             <i className="ri-star-half-line font_size_14 ratingStar me-1"></i>
@@ -490,19 +526,28 @@ const ProductCard = () => {
                               <span className="font_size_14 me-2 text-info fw-semibold">
                                 ₹{menu.price}
                               </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                              <span className="ps-2 font_size_12 text-success">
-                                {menu.offer || "No "}% Off
-                              </span>
+                              {menu.oldPrice !== 0 && menu.oldPrice !== null && (
+                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                  ₹{menu.oldPrice}
+                                </span>
+                              )}
+                             
                             </div>
                           </div>
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
-                          {userData ? (
+                          {customerId ? (
                             <div
-                              className="border border-1 rounded-circle py-1 px-2 bg-white opacity-75"
+                              className="border border-1 rounded-circle bg-white opacity-75"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -514,7 +559,7 @@ const ProductCard = () => {
                                   isMenuItemInCart(menu.menu_id)
                                     ? "fill"
                                     : "line"
-                                } fs-5 `}
+                                } fs-6 `}
                               ></i>
                             </div>
                           ) : (
@@ -525,11 +570,11 @@ const ProductCard = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                width: "35px",
-                                height: "35px",
+                                width: "25px",
+                                height: "25px",
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-2"></i>
+                              <i className="ri-shopping-cart-2-line fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -544,6 +589,63 @@ const ProductCard = () => {
           <p>No items available in this category.</p>
         )}
       </div>
+
+      {/* Add this modal at the end of the component's return statement */}
+      <div className={`modal fade ${showModal ? 'show' : ''}`} id="addToCartModal" tabIndex="-1" aria-labelledby="addToCartModalLabel" aria-hidden={!showModal} style={{display: showModal ? 'block' : 'none'}}>
+        <div className="modal-dialog">
+          <div className="modal-content d-flex align-items-center justify-content-center"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '350px',
+          }}
+          >
+            <div className="modal-header">
+              <h5 className="modal-title" id="addToCartModalLabel">Add to Cart</h5>
+              <button type="button" className="btn-close" onClick={() => setShowModal(false)} aria-label="Close"></button>
+            </div>
+            <div className="modal-body p-0">
+              <div className="mb-3">
+                <label htmlFor="notes" className="form-label text-center">Special Instructions</label>
+                <textarea 
+                  className="form-control" 
+                  id="notes" 
+                  rows="3" 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add any special instructions here..."
+                ></textarea>
+              </div>
+              <div className="mb-3">
+                <label className="form-label d-flex justify-content-center">Portion Size</label>
+                <div>
+                  <button 
+                    type="button"
+                    className={`btn rounded-pill me-2 ${portionSize === 'half' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('half')}
+                  >
+                    Half
+                  </button>
+                  <button 
+                    type="button"
+                    className={`btn rounded-pill ${portionSize === 'full' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setPortionSize('full')}
+                  >
+                    Full
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer p-0 pb-2">
+              <button type="button" className="btn btn-secondary rounded-pill" onClick={() => setShowModal(false)}>Cancel</button>
+              <button type="button" className="btn btn-primary rounded-pill" onClick={handleConfirmAddToCart}>Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </div>
   );
 };

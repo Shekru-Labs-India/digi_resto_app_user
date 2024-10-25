@@ -230,7 +230,10 @@ const HomeScreen = () => {
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
             <ProductCart />
+            <div className="mb-3">
+
             <NearbyArea/>
+            </div>
           </div>
         </main>
 

@@ -328,7 +328,13 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
-     <Header title="Favourite" count={Object.keys(wishlistItems).reduce((total, key) => total + wishlistItems[key].length, 0)} />
+      <Header
+        title="Favourite"
+        count={Object.keys(wishlistItems).reduce(
+          (total, key) => total + wishlistItems[key].length,
+          0
+        )}
+      />
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0">
           <HotelNameAndTable
@@ -391,7 +397,7 @@ const Wishlist = () => {
                           </span>
                         </span>
                       </label>
-                      
+
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
@@ -401,7 +407,7 @@ const Wishlist = () => {
                                 state={{
                                   restaurant_id: menu.restaurant_id,
                                   menu_cat_id: menu.menu_cat_id,
-                                  fromWishlist: true
+                                  fromWishlist: true,
                                 }}
                                 className="text-decoration-none text-reset"
                               >
@@ -415,26 +421,48 @@ const Wishlist = () => {
                                         style={{
                                           width: "100%",
                                           height: "100%",
-                                          objectFit: "fill",
+                                          // objectFit: "fill",
                                           aspectRatio: "1/1",
                                         }}
                                         onError={(e) => {
                                           e.target.src = images;
-                                          e.target.style.width = "100px";
-                                          e.target.style.height = "100px";
+                                          e.target.style.width = "100%";
+                                          e.target.style.height = "100%";
+                                          e.target.style.aspectRatio = "1/1";
                                         }}
                                       />
+                                      {menu.offer && menu.offer !== "0" && (
+                                        <div
+                                          className="gradient_bg d-flex justify-content-center align-items-center"
+                                          style={{
+                                            position: "absolute",
+                                            top: "-1px",
+                                            left: "0px",
+                                            height: "17px",
+                                            width: "70px",
+                                            borderRadius: "7px 0px 7px 0px",
+                                            marginTop: "1px",
+                                            marginLeft: "1px",
+                                          }}
+                                        >
+                                          <span className="text-white">
+                                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                                            <span className="font_size_10">
+                                              {menu.offer}% Off
+                                            </span>
+                                          </span>
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="col-9 pt-1 p-0">
                                       <div className="row">
-                                        <div className="col-9 pe-2">
+                                        <div className="col-10">
                                           <div className="ps-2 font_size_14 fw-medium">
                                             {menu.menu_name}
                                           </div>
                                         </div>
-                                        <div className="col-2 text-end fs-4 ps-0 pe-1">
-                                          <i
-                                            className="ri-hearts-fill icon-adjust heart-fill"
+                                        <div className="col-2 text-end font_size_10">
+                                          <div
                                             onClick={(e) => {
                                               e.preventDefault();
                                               handleRemoveItemClick(
@@ -443,19 +471,22 @@ const Wishlist = () => {
                                                 menu.restaurant_id
                                               );
                                             }}
-                                          ></i>
+                                          >
+                                            <i class="ri-delete-bin-line me-1 font_size_14 gray-text"></i>
+                                            
+                                          </div>
                                         </div>
                                       </div>
-                                      <div className="row">
-                                        <div className="col-5 pe-0 ps-4">
-                                          <span className="font_size_12 text-success">
+                                      <div className="row mt-1">
+                                        <div className="col-5 text-start">
+                                          <span className="ps-2 font_size_12 text-success">
                                             <i className="ri-restaurant-line mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
-                                        <div className="col-5 text-center fireNegative ps-0">
+                                        <div className="col-3 text-center">
                                           {menu.spicy_index && (
-                                            <div className="offer-code">
+                                            <div className="">
                                               {Array.from({ length: 5 }).map(
                                                 (_, index) =>
                                                   index < menu.spicy_index ? (
@@ -473,7 +504,7 @@ const Wishlist = () => {
                                             </div>
                                           )}
                                         </div>
-                                        <div className="col-2 text-end ps-0 ms-0 pe-4">
+                                        <div className="col-4 text-end">
                                           <i className="ri-star-half-line font_size_14 ratingStar "></i>
                                           <span className="font_size_12  fw-normal gray-text">
                                             {menu.rating || 0.1}
@@ -481,43 +512,54 @@ const Wishlist = () => {
                                         </div>
                                       </div>
 
-                                      <div className="row  ps-2 align-items-center">
-                                        <div className="col-12 d-flex justify-content-between align-items-center">
-                                          <div className="d-flex align-items-center">
-                                            <p className="mb-0  me-2 fw-medium">
-                                              <span className="font_size_14 fw-semibold text-info">
-                                                ₹{menu.price}
-                                              </span>
-                                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                                ₹{menu.oldPrice || menu.price}
-                                              </span>
-                                            </p>
-                                            <span className="text-success font_size_12 ">
-                                              {menu.offer || "No"}% Off
+                                      <div className="row mt-1">
+                                        <div className="col-6">
+                                          <p className="ms-2 mb-0 fw-medium">
+                                            <span className="font_size_14 fw-semibold text-info">
+                                              ₹{menu.price}
                                             </span>
-                                          </div>
-                                          <div
-                                            className="cart-btn cart-align me-2 pe-1"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              handleAddToCartClick(menu);
-                                            }}
-                                          >
-                                            {isCartFromDifferentRestaurant(
-                                              menu.restaurant_id
-                                            ) ? (
+                                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                              ₹{menu.oldPrice || menu.price}
+                                            </span>
+                                          </p>
+                                        </div>
+
+                                        <div className="col-6 d-flex justify-content-end">
+                                          {customerId && menu.restaurant_id === restaurantId ? (
+                                            <div
+                                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                                              style={{
+                                                width: "25px",
+                                                height: "25px",
+                                              }}
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleAddToCartClick(menu);
+                                              }}
+                                            >
                                               <i
-                                                className="ri-shopping-cart-off-line fs-2"
-                                                title="Different Restaurant"
+                                                className={`ri-shopping-cart-${
+                                                  isCartFromDifferentRestaurant(
+                                                    menu.restaurant_id
+                                                  )
+                                                    ? ""
+                                                    : isMenuItemInCart(
+                                                        menu.menu_id
+                                                      )
+                                                    ? "fill"
+                                                    : "line"
+                                                } fs-6`}
+                                                title={
+                                                  isCartFromDifferentRestaurant(
+                                                    menu.restaurant_id
+                                                  )
+                                                    ? "Different Restaurant"
+                                                    : ""
+                                                }
                                               ></i>
-                                            ) : isMenuItemInCart(
-                                                menu.menu_id
-                                              ) ? (
-                                              <i className="ri-shopping-cart-fill fs-2"></i>
-                                            ) : (
-                                              <i className="ri-shopping-cart-line fs-2"></i>
-                                            )}
-                                          </div>
+                                            </div>
+                                          ) : null}
                                         </div>
                                       </div>
                                     </div>
