@@ -149,6 +149,35 @@ const ProductCard = () => {
   );
 
   useEffect(() => {
+    if (menuCategories.length > 0) {
+      // Use a short timeout to ensure the DOM has updated
+      const timer = setTimeout(() => {
+        swiperRef.current = new Swiper(".category-slide", {
+          slidesPerView: "auto",
+          spaceBetween: 10,
+        });
+  
+        const swiperContainer = document.querySelector(".category-slide");
+        if (swiperContainer) {
+          const handleScroll = () => {
+            if (swiperContainer.scrollLeft === 0) {
+              handleCategorySelect(menuCategories[0].menu_cat_id);
+            }
+          };
+  
+          swiperContainer.addEventListener("scroll", handleScroll);
+  
+          return () => {
+            swiperContainer.removeEventListener("scroll", handleScroll);
+          };
+        }
+      }, 0);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [menuCategories]);
+
+  useEffect(() => {
     if (restaurantId) {
       console.log("Restaurant ID changed, fetching menu data");
       debouncedFetchMenuData(null);
@@ -174,14 +203,23 @@ const ProductCard = () => {
         slidesPerView: "auto",
         spaceBetween: 10,
       });
-
+  
       // Add scroll event listener
       const swiperContainer = document.querySelector(".category-slide");
-      swiperContainer.addEventListener("scroll", () => {
-        if (swiperContainer.scrollLeft === 0) {
-          handleCategorySelect(menuCategories[0].menu_cat_id);
-        }
-      });
+      if (swiperContainer) {
+        const handleScroll = () => {
+          if (swiperContainer.scrollLeft === 0) {
+            handleCategorySelect(menuCategories[0].menu_cat_id);
+          }
+        };
+  
+        swiperContainer.addEventListener("scroll", handleScroll);
+  
+        // Cleanup function
+        return () => {
+          swiperContainer.removeEventListener("scroll", handleScroll);
+        };
+      }
     }
   }, [menuCategories]);
 

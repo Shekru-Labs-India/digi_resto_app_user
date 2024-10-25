@@ -28,11 +28,10 @@ const MyOrder = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set the active tab based on the navigation state, if provided
-    if (location.state && location.state.selectedTab) {
-      setActiveTab(location.state.selectedTab);
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
     }
-  }, [location]);
+  }, [location.state]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -89,6 +88,8 @@ const MyOrder = () => {
     }
   }, [activeTab, customerId, restaurantId]);
 
+ 
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -120,25 +121,28 @@ const MyOrder = () => {
 
   return (
     <div className="page-wrapper">
-      <Header 
-        title="My Order" 
-        count={Object.values(orders).reduce((acc, curr) => acc + Object.values(curr).flat().length, 0)}
+      <Header
+        title="My Order"
+        count={Object.values(orders).reduce(
+          (acc, curr) => acc + Object.values(curr).flat().length,
+          0
+        )}
       />
 
       <main className="page-content space-top mb-5 pb-3">
-      <div className="container mt-3 py-0">
-        <div className="nav nav-tabs nav-fill" role="tablist">
-          {["placed", "ongoing", "completed", "cancel"].map((tab) => (
-            <button
-              key={tab}
-              className={`nav-link px-1 ${activeTab === tab ? 'active' : ''}`}
-              onClick={() => handleTabChange(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+        <div className="container mt-3">
+          <div className="nav nav-tabs nav-fill" role="tablist">
+            {["placed", "ongoing", "completed", "cancel"].map((tab) => (
+              <button
+                key={tab}
+                className={`nav-link ${activeTab === tab ? "active" : ""}`}
+                onClick={() => handleTabChange(tab)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
         <div className="container">
           {loading ? (
@@ -159,7 +163,12 @@ const MyOrder = () => {
                       id="home"
                       role="tabpanel"
                     >
-                      <OrdersTab orders={orders[activeTab]} type={activeTab} activeTab={activeTab} />
+                      <OrdersTab
+                        orders={orders[activeTab]}
+                        type={activeTab}
+                        activeTab={activeTab}
+                        setOrders={setOrders}
+                      />
                     </div>
                     <div
                       className={`tab-pane fade ${
@@ -168,7 +177,12 @@ const MyOrder = () => {
                       id="profile"
                       role="tabpanel"
                     >
-                      <OrdersTab orders={orders[activeTab]} type={activeTab} activeTab={activeTab} />
+                      <OrdersTab
+                        orders={orders[activeTab]}
+                        type={activeTab}
+                        activeTab={activeTab}
+                        setOrders={setOrders}
+                      />
                     </div>
                     <div
                       className={`tab-pane fade ${
@@ -177,7 +191,12 @@ const MyOrder = () => {
                       id="placed"
                       role="tabpanel"
                     >
-                      <OrdersTab orders={orders[activeTab]} type={activeTab} activeTab={activeTab} />
+                      <OrdersTab
+                        orders={orders[activeTab]}
+                        type={activeTab}
+                        activeTab={activeTab}
+                        setOrders={setOrders}
+                      />
                     </div>
                     <div
                       className={`tab-pane fade ${
@@ -186,7 +205,12 @@ const MyOrder = () => {
                       id="cancel"
                       role="tabpanel"
                     >
-                      <OrdersTab orders={orders[activeTab]} type={activeTab} activeTab={activeTab} />
+                      <OrdersTab
+                        orders={orders[activeTab]}
+                        type={activeTab}
+                        activeTab={activeTab}
+                        setOrders={setOrders}
+                      />
                     </div>
                   </div>
                 </div>
@@ -206,6 +230,7 @@ const OrdersTab = ({ orders, type, activeTab }) => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
+  const [setOrders] = useState({});
 
   useEffect(() => {
     console.log("Orders received:", orders);
@@ -223,6 +248,73 @@ const OrdersTab = ({ orders, type, activeTab }) => {
 
   const handleOrderClick = (orderNumber) => {
     navigate(`/TrackOrder/${orderNumber}`);
+  };
+
+
+  const handleCompleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/complete_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_id: orderId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        // Update the local state to reflect the change
+        setOrders((prevOrders) => {
+          const updatedOrders = { ...prevOrders };
+          const ongoingOrders = { ...updatedOrders.ongoing };
+          const completedOrders = { ...updatedOrders.completed };
+
+          // Find the order to move
+          for (const date in ongoingOrders) {
+            const orderIndex = ongoingOrders[date].findIndex(
+              (order) => order.order_id === orderId
+            );
+            if (orderIndex !== -1) {
+              const [movedOrder] = ongoingOrders[date].splice(orderIndex, 1);
+              movedOrder.status = "completed";
+
+              // Add to completed orders
+              if (!completedOrders[date]) {
+                completedOrders[date] = [];
+              }
+              completedOrders[date].push(movedOrder);
+
+              // Remove date key if no orders left
+              if (ongoingOrders[date].length === 0) {
+                delete ongoingOrders[date];
+              }
+
+              break;
+            }
+          }
+
+          return {
+            ...updatedOrders,
+            ongoing: ongoingOrders,
+            completed: completedOrders,
+          };
+        });
+
+        // Show a success message to the user
+        alert("Order has been completed successfully!");
+      } else {
+        throw new Error(data.msg || "Failed to complete order");
+      }
+    } catch (error) {
+      console.error("Error completing order:", error);
+      alert("Failed to complete order. Please try again.");
+    }
   };
 
   const toggleExpandAll = () => {
@@ -326,6 +418,19 @@ const OrdersTab = ({ orders, type, activeTab }) => {
                         </div>
                       </div>
                     </div>
+                    {activeTab === "ongoing" && (
+                      <div className="card-footer bg-transparent border-top-0 text-end">
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCompleteOrder(order.order_id);
+                          }}
+                        >
+                          Complete Order
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </>
@@ -359,17 +464,26 @@ const OrdersTab = ({ orders, type, activeTab }) => {
             aria-label={expandAll ? "Collapse All" : "Expand All"}
           >
             <span className="icon-circle">
-              <i className={`ri-arrow-down-s-line arrow-icon ${
-                expandAll ? "rotated" : "rotated-1"
-              }`}></i>
+              <i
+                className={`ri-arrow-down-s-line arrow-icon ${
+                  expandAll ? "rotated" : "rotated-1"
+                }`}
+              ></i>
             </span>
           </div>
         </div>
       )}
       {!orders || Object.keys(orders).length === 0 ? (
-        <div className="d-flex justify-content-center align-items-center flex-column" style={{ height: "80vh" }}>
-          <p className="fw-semibold gray-text">You haven't placed any {type} orders yet.</p>
-          <Link to="/Menu" className="mt-2 fw-semibold">Explore our menus</Link>
+        <div
+          className="d-flex justify-content-center align-items-center flex-column"
+          style={{ height: "80vh" }}
+        >
+          <p className="fw-semibold gray-text">
+            You haven't placed any {type} orders yet.
+          </p>
+          <Link to="/Menu" className="mt-2 fw-semibold">
+            Explore our menus
+          </Link>
         </div>
       ) : (
         renderOrders()

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css"; // Correctly import Swiper CSS
 import images from "../assets/MenuDefault.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
@@ -24,19 +24,17 @@ const pulse = keyframes`
 `;
 
 const AnimatedCard = styled.div`
-  // animation: ${pulse} 2s infinite;
-  // transition: all 0.3s ease;
+  animation: ${pulse} 2s infinite;
+  transition: all 0.3s ease;
 
-  // &:hover {
-  //   transform: translateY(-5px);
-  //   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  // }
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
 `;
 
-const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
-  const [latestOngoingOrder, setLatestOngoingOrder] = useState(
-    initialLatestOngoingOrder
-  );
+const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
+  const [latestOngoingOrder, setLatestOngoingOrder] = useState(initialLatestOngoingOrder);
   const [banners, setBanners] = useState([]);
   const [menuLists, setMenuLists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,20 +63,17 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
 
   const fetchLatestOngoingOrder = async () => {
     try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_status: "ongoing",
-            customer_id: customerId,
-          }),
-        }
-      );
+      const response = await fetch("https://menumitra.com/user_api/get_order_list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          order_status: "ongoing",
+          customer_id: customerId,
+        }),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -100,6 +95,9 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
       setLatestOngoingOrder(null);
     }
   };
+
+
+  
 
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
@@ -197,11 +195,11 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
       }
     }, 1000);
 
-    return () => {
-      isMounted = false;
-      clearTimeout(timeoutId); // Clear the timeout if the component unmounts
-    };
-  }, [restaurantId]);
+  return () => {
+    isMounted = false;
+    clearTimeout(timeoutId); // Clear the timeout if the component unmounts
+  };
+}, [restaurantId]);
 
   // useEffect(() => {
   //   if (banners.length > 0) {
@@ -417,7 +415,7 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
             <div className="m-0">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || "1"}
+                tableNumber={userData?.tableNumber || '1'}
               />
             </div>
             <div className="swiper-wrapper">
@@ -427,7 +425,7 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
                     to={`/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
                   >
-                    <div className="cart-list  style-2-custom rounded-3">
+                    <div className="cart-list  style-2-custom">
                       <div className="dz-media media-100 rounded-start-3 rounded-end-0">
                         <img
                           style={{
@@ -576,73 +574,65 @@ const OfferBanner = ({ latestOngoingOrder: initialLatestOngoingOrder }) => {
             </div>
           </div>
           {latestOngoingOrder && (
-            <div className="container">
-              <h5 className="text-center gray-text mb-3">
-                Latest Ongoing Order
-              </h5>
-              <Link
-                to={`/TrackOrder/${latestOngoingOrder.order_number}`}
-                className="text-decoration-none"
-              >
-                <AnimatedCard className="custom-card my-2 rounded-3 shadow-sm">
-                  <div className="card-body py-2">
-                    <div className="row align-items-center">
-                      <div className="col-4">
-                        <span className="fw-semibold fs-6">
-                          <i className="ri-hashtag pe-2"></i>
-                          {latestOngoingOrder.order_number}
-                        </span>
-                      </div>
-                      <div className="col-8 text-end">
-                        <span className="gray-text font_size_12">
-                          {latestOngoingOrder.date_time}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-8 text-start">
-                        <div className="restaurant">
-                          <i className="ri-store-2-line pe-2"></i>
-                          <span className="fw-medium font_size_14">
-                            {latestOngoingOrder.restaurant_name.toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="col-4 text-end">
-                        <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
-                        <span className="font_size_12 gray-text">
-                          {latestOngoingOrder.table_number}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-6">
-                        <div className="menu-info">
-                          <i className="ri-bowl-line pe-2 gray-text"></i>
-                          <span className="gray-text font_size_14">
-                            {latestOngoingOrder.menu_count === 0
-                              ? "No orders"
-                              : `${latestOngoingOrder.menu_count} Menu`}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="col-6 text-end">
-                        <span className="text-info font_size_14 fw-semibold">
-                          ₹{latestOngoingOrder.grand_total}
-                        </span>
-                        <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                          ₹
-                          {(
-                            parseFloat(latestOngoingOrder.grand_total) * 1.1
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </AnimatedCard>
-              </Link>
+    <div className="container px-3">
+      <h5 className="text-center gray-text mb-3">Latest Ongoing Order</h5>
+      <Link to={`/TrackOrder/${latestOngoingOrder.order_number}`} className="text-decoration-none">
+        <AnimatedCard className="custom-card my-2 rounded-3 shadow-sm">
+          <div className="card-body py-2">
+            <div className="row align-items-center">
+              <div className="col-4">
+                <span className="fw-semibold fs-6">
+                  <i className="ri-hashtag pe-2"></i>
+                  {latestOngoingOrder.order_number}
+                </span>
+              </div>
+              <div className="col-8 text-end">
+                <span className="gray-text font_size_12">
+                  {latestOngoingOrder.date_time}
+                </span>
+              </div>
             </div>
-          )}
+            <div className="row">
+              <div className="col-8 text-start">
+                <div className="restaurant">
+                  <i className="ri-store-2-line pe-2"></i>
+                  <span className="fw-medium font_size_14">
+                    {latestOngoingOrder.restaurant_name.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              <div className="col-4 text-end">
+                <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
+                <span className="font_size_12 gray-text">
+                  {latestOngoingOrder.table_number}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <div className="menu-info">
+                  <i className="ri-bowl-line pe-2 gray-text"></i>
+                  <span className="gray-text font_size_14">
+                    {latestOngoingOrder.menu_count === 0
+                      ? "No orders"
+                      : `${latestOngoingOrder.menu_count} Menu`}
+                  </span>
+                </div>
+              </div>
+              <div className="col-6 text-end">
+                <span className="text-info font_size_14 fw-semibold">
+                  ₹{latestOngoingOrder.grand_total}
+                </span>
+                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                  ₹{(parseFloat(latestOngoingOrder.grand_total) * 1.1).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </AnimatedCard>
+      </Link>
+    </div>
+  )}
         </>
       )}
 
