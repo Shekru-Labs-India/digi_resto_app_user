@@ -212,6 +212,7 @@ const Signupscreen = () => {
                       <input
                         type="text"
                         id="name"
+                        autoFocus
                         ref={nameInputRef}
                         className={`form-control ps-2 ${
                           nameError ? "is-invalid" : ""

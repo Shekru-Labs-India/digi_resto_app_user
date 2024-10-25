@@ -38446,3 +38446,127 @@ hr.dotted {
   padding: 0 10px;
 }
 
+
+
+/* Accordion styles */
+
+/* Accordion styles */
+
+.btn .icon-circle {
+  width: 20px;
+  height: 20px;
+  padding-top: 2px;
+  background-color: #f0f0f0;
+}
+
+.btn .arrow-icon {
+  font-size: 14px;
+}
+
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  
+  border-radius: 50%;
+  background-color: #f0f0f0; 
+ 
+ 
+}
+
+.icon-border{
+  border: 1px solid gray;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  
+}
+
+.arrow-icon {
+  font-size: 16px;
+  color: #333; /* Adjust color as needed */
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.arrow-icon.rotated-1 {
+  transform: rotate(360deg);
+}
+
+.arrow-icon.rotated-2 {
+  transform: rotate(180deg);
+}
+
+
+
+
+.tab {
+  width: 100%;
+  overflow: hidden;
+}
+
+.tab input[type="checkbox"] {
+  display: none;
+}
+
+.tab-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  
+}
+
+.tab-label .icon-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.tab-label .icon-wrapper i {
+  transition: transform 0.3s ease;
+}
+
+.tab-content {
+  max-height: 0;
+  transition: all 0.35s;
+}
+
+.tab-close {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1em;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+input:checked + .tab-label .icon-wrapper i {
+  transform: rotate(180deg);
+}
+
+input:checked ~ .tab-content {
+  max-height: 100vh;
+}
+
+.custom-card {
+
+    background-color: var(--card-bg);
+    transition: all .5s ease-in-out;
+    position: relative;
+    border: 0;
+    border-radius: var(--border-radius);
+    
+    color: var(--body-color); }
+
+ .rotate_icon{
+      transform: rotate(180deg);
+      }

@@ -155,13 +155,14 @@ import LoaderGif from "./LoaderGIF";
                     <label className="my-2" htmlFor="mobile">
                       <span className="required-star">*</span> Mobile
                     </label>
-                    <div className="input-group text-muted">
+                    <div className="input-group text-muted border border-1 rounded-3">
                       <span className="input-group-text py-0">
                         <i className="ri-smartphone-line fs-3 text-muted"></i>
                       </span>
                       <input
                         type="tel"
                         id="mobile"
+                        autoFocus
                         className={`form-control     ps-2 ${
                           mobileError ? "is-invalid" : ""
                         }`}
