@@ -16,6 +16,13 @@ const NearbyArea = () => {
   const { cartItems, addToCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const toast = useRef(null);
+  const [showModal, setShowModal] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState('full');
+  const [halfPrice, setHalfPrice] = useState(null);
+  const [fullPrice, setFullPrice] = useState(null);
+  const [isPriceFetching, setIsPriceFetching] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -180,6 +187,52 @@ const NearbyArea = () => {
     }
   };
 
+  const handleModalClick = (e) => {
+    if (e.target.classList.contains('modal')) {
+      setShowModal(false);
+    }
+  };
+
+  const fetchHalfFullPrices = async (menuId) => {
+    setIsPriceFetching(true);
+    try {
+      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          menu_id: menuId
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setHalfPrice(data.menu_detail.half_price);
+        setFullPrice(data.menu_detail.full_price);
+      } else {
+        console.error("API Error:", data.msg);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: data.msg || "Failed to fetch price information",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching half/full prices:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to fetch price information",
+        life: 3000,
+      });
+    } finally {
+      setIsPriceFetching(false);
+    }
+  };
+
   const handleAddToCartClick = async (menuItem) => {
     if (!customerId || !restaurantId) {
       console.error("Customer ID is missing");
@@ -196,21 +249,53 @@ const NearbyArea = () => {
       return;
     }
 
-    try {
-      await addToCart(menuItem, customerId, restaurantId);
+    setSelectedMenu(menuItem);
+    fetchHalfFullPrices(menuItem.menu_id);
+    setShowModal(true);
+  };
+
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
+
+    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
+    
+    if (!selectedPrice) {
       toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Added to cart",
+        severity: "error",
+        summary: "Error",
+        detail: "Price information is not available.",
         life: 2000,
       });
+      return;
+    }
+
+    try {
+      await addToCart({
+        ...selectedMenu,
+        quantity: 1,
+        notes,
+        half_or_full: portionSize,
+        price: selectedPrice
+      }, customerId, restaurantId);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: selectedMenu.name,
+        life: 3000,
+      });
+
+      setShowModal(false);
+      setNotes('');
+      setPortionSize('full');
+      setSelectedMenu(null);
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to add to cart",
-        life: 2000,
+        detail: "Failed to add item to cart. Please try again.",
+        life: 3000,
       });
     }
   };
@@ -393,6 +478,111 @@ const NearbyArea = () => {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div
+          className="modal fade show d-flex align-items-center justify-content-center"
+          style={{ display: "block" }}
+          onClick={handleModalClick}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div
+              className="modal-content"
+              style={{
+                width: "350px",
+                margin: "auto",
+              }}
+            >
+              <div className="modal-header d-flex justify-content-center">
+                <div className="modal-title font_size_16 fw-medium">
+                  Add to Cart
+                </div>
+                <button
+                  type="button"
+                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close"
+                >
+                  <i className="ri-close-line"></i>
+                </button>
+              </div>
+              <div className="modal-body py-3">
+                <div className="mb-3 mt-0">
+                  <label
+                    htmlFor="notes"
+                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                  >
+                    Special Instructions
+                  </label>
+                  <textarea
+                    className="form-control fs-6"
+                    id="notes"
+                    rows="3"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any special instructions here..."
+                  ></textarea>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label d-flex justify-content-center">
+                    Select Portion Size
+                  </label>
+                  <div className="d-flex justify-content-center">
+                    {isPriceFetching ? (
+                      <p>Loading prices...</p>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={`btn rounded-pill me-2 font_size_14  ${
+                            portionSize === "half"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                          }`}
+                          onClick={() => setPortionSize("half")}
+                          disabled={!halfPrice}
+                        >
+                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn rounded-pill font_size_14 ${
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                          }`}
+                          onClick={() => setPortionSize("full")}
+                          disabled={!fullPrice}
+                        >
+                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer justify-content-center">
+                <button
+                  type="button"
+                  className="btn btn-secondary rounded-pill"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary rounded-pill"
+                  onClick={handleConfirmAddToCart}
+                  disabled={isPriceFetching || (!halfPrice && !fullPrice)}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showModal && <div className="modal-backdrop fade show"></div>}
     </div>
   );
 };
