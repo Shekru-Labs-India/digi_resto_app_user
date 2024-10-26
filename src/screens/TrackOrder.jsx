@@ -13,6 +13,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import Header from "../components/Header";
+import { useCart } from "../context/CartContext";
 
 const TrackOrder = () => {
   // Define displayCartItems
@@ -44,6 +45,11 @@ const TrackOrder = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const customerId = localStorage.getItem("customer_id");
   const customerType = localStorage.getItem("customer_type");
+  
+  const [removedItems, setRemovedItems] = useState(() => {
+    const saved = localStorage.getItem(`removedOrderItems_${order_number}`);
+    return saved ? JSON.parse(saved) : [];
+  });
   
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -79,18 +85,54 @@ const TrackOrder = () => {
   };
 
   const handleAddToCartClick = (menu) => {
+    if (!restaurantId) {
+      console.error("Restaurant ID not found");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information not found",
+        life: 3000,
+      });
+      return;
+    }
+  
+    // Check if item is already added
+    if (isItemAdded(menu.menu_id)) {
+      toast.current.show({
+        severity: "info",
+        summary: "Info",
+        detail: "This item is already in your order",
+        life: 2000,
+      });
+      return;
+    }
+  
     setSelectedMenu(menu);
     fetchHalfFullPrices(menu.menu_id);
-    setPortionSize("full"); // Reset to full by default
-    setNotes(""); // Clear any previous notes
+    setPortionSize("full");
+    setNotes("");
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
-    if (!selectedMenu) return;
-
+    if (!selectedMenu || !restaurantId) return;
+  
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+  
+    if (!currentCustomerId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please login to add items to order",
+        life: 3000,
+      });
+      navigate("/Signinscreen");
+      return;
+    }
+  
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
     if (!selectedPrice) {
       toast.current.show({
         severity: "error",
@@ -100,47 +142,87 @@ const TrackOrder = () => {
       });
       return;
     }
-
-    const quantity = quantities[selectedMenu.menu_id] || 1;
-
-    const newItem = {
-      ...selectedMenu,
-      quantity: quantity,
-      notes: notes,
-      half_or_full: portionSize,
-      price: selectedPrice,
-      totalPrice: (parseFloat(selectedPrice) * quantity).toFixed(2),
-    };
-
+  
     try {
-      // Add the new item to pendingItems
-      setPendingItems((prevItems) => [...prevItems, newItem]);
-
-      // Remove the item from searchedMenu
-      setSearchedMenu((prevMenu) =>
-        prevMenu.filter((item) => item.menu_id !== selectedMenu.menu_id)
-      );
-
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Order",
-        detail: `${selectedMenu.menu_name} (${portionSize}, Qty: ${quantity})`,
-        life: 2000,
-      });
-
-      setShowModal(false);
-      setNotes("");
-      setPortionSize("full");
-      setSelectedMenu(null);
+      // If there's an existing order, add to it directly
+      if (orderDetails?.order_details?.order_id) {
+        const response = await fetch(
+          "https://menumitra.com/user_api/add_to_existing_order",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              order_id: orderDetails.order_details.order_id,
+              customer_id: currentCustomerId,
+              customer_type: currentCustomerType,
+              restaurant_id: restaurantId,
+              order_items: [{
+                menu_id: selectedMenu.menu_id,
+                quantity: (quantities[selectedMenu.menu_id] || 1).toString(),
+                half_or_full: portionSize,
+                comment: notes || "",
+              }],
+            }),
+          }
+        );
+  
+        const data = await response.json();
+        
+        if (data.st === 1) {
+          // Add to pending items locally
+          setPendingItems((prevItems) => [
+            ...prevItems,
+            {
+              ...selectedMenu,
+              quantity: quantities[selectedMenu.menu_id] || 1,
+              price: selectedPrice,
+              half_or_full: portionSize,
+              notes: notes,
+              totalPrice: (selectedPrice * (quantities[selectedMenu.menu_id] || 1)).toFixed(2),
+            },
+          ]);
+  
+          // Remove from search results if present
+          setSearchedMenu((prevMenu) =>
+            prevMenu.filter((item) => item.menu_id !== selectedMenu.menu_id)
+          );
+  
+          // Refresh order details
+          if (order_number) {
+            fetchOrderDetails(order_number);
+          }
+  
+          toast.current.show({
+            severity: "success",
+            summary: "Added to Order",
+            detail: `${selectedMenu.menu_name} (${portionSize}) added successfully`,
+            life: 2000,
+          });
+  
+          setShowModal(false);
+          setNotes("");
+          setPortionSize("full");
+          setSelectedMenu(null);
+        } else {
+          throw new Error(data.msg || "Failed to add item to order");
+        }
+      }
     } catch (error) {
-      console.error("Error adding item to order:", error);
+      console.error("Error adding to order:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to add item to order. Please try again.",
+        detail: error.message || "Failed to add item to order. Please try again.",
         life: 3000,
       });
     }
+  };
+  
+  const isItemAdded = (menuId) => {
+    return pendingItems.some((item) => item.menu_id === menuId) ||
+      (orderDetails?.menu_details || []).some((item) => item.menu_id === menuId);
   };
 
   const toggleSidebar = () => {
@@ -292,7 +374,7 @@ const TrackOrder = () => {
         console.error("Restaurant ID not found in userData");
         return;
       }
-
+    
       if (
         debouncedSearchTerm.trim().length < 3 ||
         debouncedSearchTerm.trim().length > 10
@@ -300,16 +382,28 @@ const TrackOrder = () => {
         setSearchedMenu([]);
         return;
       }
-
+    
       setIsLoading(true);
-
+    
       try {
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const currentCustomerId = 
+          userData?.customer_id || localStorage.getItem("customer_id");
+        const currentCustomerType = 
+          userData?.customer_type || localStorage.getItem("customer_type");
+    
+        if (!currentCustomerId) {
+          console.error("Customer ID not found");
+          return;
+        }
+    
         const requestBody = {
           restaurant_id: parseInt(restaurantId, 10),
           keyword: debouncedSearchTerm.trim(),
-          customer_id: customerId || null,
+          customer_id: currentCustomerId,
+          customer_type: currentCustomerType
         };
-
+    
         const response = await fetch(
           "https://menumitra.com/user_api/search_menu",
           {
@@ -320,7 +414,7 @@ const TrackOrder = () => {
             body: JSON.stringify(requestBody),
           }
         );
-
+    
         if (response.ok) {
           const data = await response.json();
           if (data.st === 1 && Array.isArray(data.menu_list)) {
@@ -340,7 +434,7 @@ const TrackOrder = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-
+    
       setIsLoading(false);
     };
 
@@ -353,41 +447,137 @@ const TrackOrder = () => {
     });
   };
 
-  const isItemAdded = (menuId) => {
-    return (
-      pendingItems.some((item) => item.menu_id === menuId) ||
-      orderedItems.some((item) => item.menu_id === menuId)
-    );
-  };
+ 
 
-  const handleAddToOrder = (menuItem) => {
-    if (isItemAdded(menuItem.menu_id)) {
-      return; // Item is already added, do nothing
+  
+  
+  const handleAddToOrder = async (menuItem) => {
+    if (!restaurantId) {
+      console.error("Restaurant ID not found");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information not found",
+        life: 3000,
+      });
+      return;
     }
-
-    const quantity = quantities[menuItem.menu_id] || 1;
-    const price = parseFloat(menuItem.price);
-
-    setPendingItems((prevItems) => [
-      ...prevItems,
-      {
-        ...menuItem,
-        quantity: quantity,
-        totalPrice: (price * quantity).toFixed(2),
-      },
-    ]);
-
-    // Remove the item from searchedMenu
-    setSearchedMenu((prevMenu) =>
-      prevMenu.filter((item) => item.menu_id !== menuItem.menu_id)
-    );
-
-    toast.current.show({
-      severity: "success",
-      summary: "Added to Order",
-      detail: `${menuItem.menu_name} (Qty: ${quantity})`,
-      life: 2000,
-    });
+  
+    // Check if item is already added
+    if (isItemAdded(menuItem.menu_id)) {
+      toast.current.show({
+        severity: "info",
+        summary: "Info",
+        detail: "This item is already in your order",
+        life: 2000,
+      });
+      return;
+    }
+  
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+  
+      if (!currentCustomerId) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please login to add items to order",
+          life: 3000,
+        });
+        return;
+      }
+  
+      const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+      if (!selectedPrice) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Price information is not available",
+          life: 3000,
+        });
+        return;
+      }
+  
+      const quantity = quantities[menuItem.menu_id] || 1;
+  
+      // First add to pending items locally
+      setPendingItems((prevItems) => [
+        ...prevItems,
+        {
+          ...menuItem,
+          quantity: quantity,
+          totalPrice: (selectedPrice * quantity).toFixed(2),
+          half_or_full: portionSize,
+          notes: notes,
+        },
+      ]);
+  
+      // Remove from search results
+      setSearchedMenu((prevMenu) =>
+        prevMenu.filter((item) => item.menu_id !== menuItem.menu_id)
+      );
+  
+      // If there's an existing order, add to it
+      if (orderDetails?.order_details?.order_id) {
+        const response = await fetch(
+          "https://menumitra.com/user_api/add_to_existing_order",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              order_id: orderDetails.order_details.order_id,
+              customer_id: currentCustomerId,
+              customer_type: currentCustomerType,
+              restaurant_id: restaurantId,
+              order_items: [{
+                menu_id: menuItem.menu_id,
+                quantity: quantity.toString(),
+                half_or_full: portionSize,
+                comment: notes || "",
+              }],
+            }),
+          }
+        );
+  
+        const data = await response.json();
+        
+        if (data.st === 1) {
+          setShowModal(false);
+          // Refresh order details
+          if (order_number) {
+            fetchOrderDetails(order_number);
+          }
+          
+          toast.current.show({
+            severity: "success",
+            summary: "Added to Order",
+            detail: `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`,
+            life: 2000,
+          });
+        } else {
+          throw new Error(data.msg || "Failed to add item to order");
+        }
+      }
+  
+    } catch (error) {
+      console.error("Error adding item to order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to add item to order. Please try again.",
+        life: 3000,
+      });
+  
+      // Rollback the pending items change on error
+      setPendingItems((prevItems) =>
+        prevItems.filter((item) => item.menu_id !== menuItem.menu_id)
+      );
+      setSearchedMenu((prevMenu) => [...prevMenu, menuItem]);
+    }
   };
 
   const fetchOrderDetails = async (orderNumber) => {
@@ -492,6 +682,27 @@ const TrackOrder = () => {
 
   const fetchOrderStatus = async () => {
     try {
+      // Get current customer ID from localStorage or userData
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = 
+        userData?.customer_id || localStorage.getItem("customer_id");
+  
+      if (!currentCustomerId) {
+        console.error("Customer ID not found");
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Customer information not found",
+          life: 3000,
+        });
+        return;
+      }
+  
+      if (!restaurantId) {
+        console.error("Restaurant ID not found");
+        return;
+      }
+  
       const response = await fetch(
         "https://menumitra.com/user_api/get_order_list",
         {
@@ -502,11 +713,12 @@ const TrackOrder = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             order_status: "completed",
-            customer_id: customerId,
+            customer_id: currentCustomerId,
+            customer_type: userData?.customer_type || localStorage.getItem("customer_type")
           }),
         }
       );
-
+  
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1 && Array.isArray(data.lists)) {
@@ -517,11 +729,113 @@ const TrackOrder = () => {
         }
       } else {
         console.error("Network response was not ok.");
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to fetch order status",
+          life: 3000,
+        });
       }
     } catch (error) {
       console.error("Error fetching order status:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to check order status",
+        life: 3000,
+      });
     }
   };
+
+  const handleRemoveItem = (menu, e) => {
+    e.stopPropagation(); // Prevent navigation when clicking remove button
+    
+    try {
+      if (orderDetails?.order_details?.order_status.toLowerCase() !== "placed") {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Items can only be removed from placed orders",
+          life: 3000,
+        });
+        return;
+      }
+
+      const updatedRemovedItems = [...removedItems, {
+        menu_id: menu.menu_id,
+        order_id: orderDetails.order_details.order_id,
+        removed_at: new Date().toISOString(),
+        price: menu.price,
+        quantity: menu.quantity
+      }];
+
+      // Update localStorage with order number to handle multiple orders
+      localStorage.setItem(
+        `removedOrderItems_${order_number}`, 
+        JSON.stringify(updatedRemovedItems)
+      );
+      setRemovedItems(updatedRemovedItems);
+
+      // Update order details locally
+      setOrderDetails(prev => ({
+        ...prev,
+        menu_details: prev.menu_details.filter(item => item.menu_id !== menu.menu_id),
+        order_details: {
+          ...prev.order_details,
+          total_total: (
+            parseFloat(prev.order_details.total_total) - 
+            (parseFloat(menu.price) * menu.quantity)
+          ).toFixed(2),
+          grand_total: (
+            parseFloat(prev.order_details.grand_total) - 
+            (parseFloat(menu.price) * menu.quantity)
+          ).toFixed(2)
+        }
+      }));
+
+      toast.current.show({
+        severity: "success",
+        summary: "Item Removed",
+        detail: `${menu.menu_name} removed from order`,
+        life: 2000,
+      });
+    } catch (error) {
+      console.error("Error removing item:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to remove item. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (orderDetails && removedItems.length > 0) {
+      const filteredMenuDetails = orderDetails.menu_details.filter(
+        item => !removedItems.some(
+          removedItem => 
+            removedItem.menu_id === item.menu_id && 
+            removedItem.order_id === orderDetails.order_details.order_id
+        )
+      );
+  
+      if (filteredMenuDetails.length !== orderDetails.menu_details.length) {
+        setOrderDetails(prev => ({
+          ...prev,
+          menu_details: filteredMenuDetails,
+          order_details: {
+            ...prev.order_details,
+            total_total: filteredMenuDetails.reduce(
+              (sum, item) => sum + (parseFloat(item.price) * item.quantity), 
+              0
+            ).toFixed(2)
+          }
+        }));
+      }
+    }
+  }, [orderDetails, removedItems]);
+
 
   useEffect(() => {
     if (order_number) {
@@ -1055,96 +1369,97 @@ const TrackOrder = () => {
               {/* Horizontal line */}
 
               {/* Original menu items */}
-              <div className="row ">
-                <span className="gray-text ms-1 mb-2 ">
+              <div className="row">
+                <span className="gray-text ms-1 mb-2">
                   Existing Ordered Items
                 </span>
-                {[...menu_details, ...orderedItems].map((menu) => {
-                  const oldPrice = (
-                    menu.price /
-                    (1 - menu.offer / 100)
-                  ).toFixed(2);
-                  return (
-                    <div
-                      key={menu.menu_id}
-                      className="col-12"
-                      onClick={() =>
-                        navigate(`/ProductDetails/${menu.menu_id}`, {
-                          state: {
-                            restaurant_id: restaurantId,
-                            menu_cat_id: menu.menu_cat_id,
-                            orderedItems: [...menu_details, ...orderedItems], // Pass all ordered items
-                          },
-                        })
-                      }
-                    >
-                      <div className="card mb-3 rounded-3">
-                        <div className="card-body py-0">
-                          <div className="row">
-                            <div className="col-3 px-0">
-                              <img
-                                src={menu.image || images}
-                                alt={menu.menu_name}
-                                className="img-fluid rounded-start-3 rounded-end-0"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                  aspectRatio: "1/1",
-                                }}
-                                onError={(e) => {
-                                  e.target.src = images;
-                                }}
-                              />
-                            </div>
-                            <div className="col-8 pt-2 pb-0 pe-0 ps-2">
-                              <div className="font_size_14 fw-medium">
-                                {menu.menu_name}
+                {[...menu_details, ...orderedItems]
+                  .filter(menu => !removedItems.some(
+                    item => item.menu_id === menu.menu_id && 
+                    item.order_id === orderDetails?.order_details?.order_id
+                  ))
+                  .map((menu) => {
+                    const oldPrice = (menu.price / (1 - menu.offer / 100)).toFixed(2);
+                    return (
+                      <div
+                        key={menu.menu_id}
+                        className="col-12"
+                        onClick={() =>
+                          navigate(`/ProductDetails/${menu.menu_id}`, {
+                            state: {
+                              restaurant_id: restaurantId,
+                              menu_cat_id: menu.menu_cat_id,
+                              orderedItems: [...menu_details, ...orderedItems],
+                            },
+                          })
+                        }
+                      >
+                        <div className="card mb-3 rounded-3">
+                          <div className="card-body py-0">
+                            <div className="row">
+                              <div className="col-3 px-0">
+                                <img
+                                  src={menu.image || images}
+                                  alt={menu.menu_name}
+                                  className="img-fluid rounded-start-3 rounded-end-0"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    aspectRatio: "1/1",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.src = images;
+                                  }}
+                                />
                               </div>
-                              <div className="row pt-1">
-                                <div className="col-8">
-                                  <i className="ri-restaurant-line mt-0 me-2  font_size_12 text-success"></i>
-
-                                  <span className="text-success font_size_12 fw-medium">
-                                    {menu.category_name}
-                                  </span>
+                              <div className="col-8 pt-2 pb-0 pe-0 ps-2">
+                                <div className="font_size_14 fw-medium">
+                                  {menu.menu_name}
                                 </div>
-                                <div className="col-4 text-end px-0">
-                                  <span className="gray-text font_size_10">
-                                    <i className="ri-star-half-line ms-4 ratingStar font_size_10"></i>
-                                    {parseFloat(menu.rating).toFixed(1)}
-                                  </span>
+                                <div className="row pt-1">
+                                  <div className="col-8">
+                                    <i className="ri-restaurant-line mt-0 me-2 font_size_12 text-success"></i>
+                                    <span className="text-success font_size_12 fw-medium">
+                                      {menu.category_name}
+                                    </span>
+                                  </div>
+                                  <div className="col-4 text-end px-0">
+                                    <span className="gray-text font_size_10">
+                                      <i className="ri-star-half-line ms-4 ratingStar font_size_10"></i>
+                                      {parseFloat(menu.rating).toFixed(1)}
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mt-2">
-                                <div className="col-9 px-0">
-                                  <span className="mt-0 mb-2  text-start ">
-                                    <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                      ₹{menu.price}
+                                <div className="row mt-2">
+                                  <div className="col-9 px-0">
+                                    <span className="mt-0 mb-2  text-start ">
+                                      <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
+                                        ₹{menu.price}
+                                      </span>
+                                      <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                        ₹{oldPrice}
+                                      </span>
                                     </span>
-                                    <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                      ₹{oldPrice}
+                                    <span className="mb-0 mt-1 ms-3   offerSearch">
+                                      <span className="  px-0 text-start font_size_12 text-success">
+                                        {menu.offer || "No "}% Off
+                                      </span>
                                     </span>
-                                  </span>
-                                  <span className="mb-0 mt-1 ms-3   offerSearch">
-                                    <span className="  px-0 text-start font_size_12 text-success">
-                                      {menu.offer || "No "}% Off
+                                  </div>
+                                  <div className="col-3 text-end p-0">
+                                    <span className="font_size_14 gray-text  ">
+                                      x {menu.quantity}
                                     </span>
-                                  </span>
-                                </div>
-                                <div className="col-3 text-end p-0">
-                                  <span className="font_size_14 gray-text  ">
-                                    x {menu.quantity}
-                                  </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </section>
           ) : (

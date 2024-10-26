@@ -21,7 +21,7 @@ const toTitleCase = (text) => {
   return text.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const ProductCard = () => {
+const ProductCard = ({ isVegOnly }) => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -30,7 +30,6 @@ const ProductCard = () => {
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  
 
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
@@ -39,15 +38,59 @@ const ProductCard = () => {
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [notes, setNotes] = useState("");
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const { cartItems, addToCart, removeFromCart, isMenuItemInCart } = useCart();
-const [customerId, setCustomerId] = useState(null);
-const [customerType, setCustomerType] = useState(null);
+  const [customerId, setCustomerId] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
+
+  // Update the filtering logic
+  const applyFilters = useCallback((menus, categoryId, vegOnly) => {
+    let filteredMenus = [...menus];
+
+    if (vegOnly) {
+      filteredMenus = filteredMenus.filter(
+        (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
+      );
+    }
+
+    if (categoryId !== null) {
+      filteredMenus = filteredMenus.filter(
+        (menu) => menu.menu_cat_id === categoryId
+      );
+    }
+
+    setFilteredMenuList(filteredMenus);
+    setTotalMenuCount(filteredMenus.length);
+
+    // Update category counts
+    const menuCountByCategory = filteredMenus.reduce((acc, menu) => {
+      acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
+      return acc;
+    }, {});
+
+    setMenuCategories((prevCategories) =>
+      prevCategories.map((category) => ({
+        ...category,
+        menu_count: menuCountByCategory[category.menu_cat_id] || 0,
+      }))
+    );
+  }, []);
+
+  useEffect(() => {
+    if (menuList.length > 0) {
+      applyFilters(menuList, selectedCategoryId, isVegOnly);
+    }
+  }, [applyFilters, isVegOnly, menuList, selectedCategoryId]);
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategoryId(categoryId);
+    applyFilters(menuList, categoryId, isVegOnly);
+  };
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -55,7 +98,6 @@ const [customerType, setCustomerType] = useState(null);
       setCustomerId(storedUserData.customer_id);
     }
   }, []);
-
 
   useEffect(() => {
     const storedCustomerId = localStorage.getItem("customer_id");
@@ -66,91 +108,84 @@ const [customerType, setCustomerType] = useState(null);
     }
   }, []);
 
-  const fetchMenuData = useCallback(async (categoryId) => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+  const fetchMenuData = useCallback(
+    async (categoryId) => {
+      const storedUserData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = storedUserData
+        ? storedUserData.customer_id
+        : null;
+      const currentRestaurantId =
+        restaurantId || localStorage.getItem("restaurantId");
 
-    if (!restaurantId) {
-      console.log("Missing restaurantId:", { restaurantId });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      console.log("Fetching menu data...");
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_all_menu_list_by_category",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            customer_id: currentCustomerId, 
-            restaurant_id: restaurantId 
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("API response:", data);
-
-      if (response.ok && data.st === 1) {
-        const formattedCategories = data.data.category.map((category) => ({
-          ...category,
-          name: toTitleCase(category.category_name),
-        }));
-        setMenuCategories(formattedCategories);
-
-        const formattedMenuList = data.data.menus.map((menu) => ({
-          ...menu,
-          image: menu.image || images,
-          category: toTitleCase(menu.category_name),
-          name: toTitleCase(menu.menu_name),
-          oldPrice: menu.offer ? menu.price : null,
-          price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
-          is_favourite: menu.is_favourite === 1,
-        }));
-        setMenuList(formattedMenuList);
-        setTotalMenuCount(formattedMenuList.length);
-
-        const filteredMenus = categoryId === null
-          ? formattedMenuList
-          : formattedMenuList.filter((menu) => menu.menu_cat_id === categoryId);
-        setFilteredMenuList(filteredMenus);
-      } else {
-        console.log("API returned error or empty data");
-        setMenuCategories([]);
-        setMenuList([]);
-        setFilteredMenuList([]);
+      if (!currentRestaurantId) {
+        console.log("Missing restaurantId:", { currentRestaurantId });
+        return;
       }
-    } catch (error) {
-      console.error("Error fetching menu data:", error);
-      setMenuCategories([]);
-      setMenuList([]);
-      setFilteredMenuList([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [restaurantId]);
+      setIsLoading(true);
+      try {
+        console.log("Fetching menu data...");
+        const response = await fetch(
+          "https://menumitra.com/user_api/get_all_menu_list_by_category",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customer_id: currentCustomerId,
+              restaurant_id: currentRestaurantId,
+            }),
+          }
+        );
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        if (response.ok && data.st === 1) {
+          const formattedMenuList = data.data.menus.map((menu) => ({
+            ...menu,
+            image: menu.image || images,
+            category: toTitleCase(menu.category_name),
+            name: toTitleCase(menu.menu_name),
+            oldPrice: menu.offer ? menu.price : null,
+            price: menu.offer
+              ? Math.floor(menu.price * (1 - menu.offer / 100))
+              : menu.price,
+            is_favourite: menu.is_favourite === 1,
+          }));
+
+          setMenuList(formattedMenuList);
+
+          const formattedCategories = data.data.category.map((category) => ({
+            ...category,
+            name: toTitleCase(category.category_name),
+          }));
+          setMenuCategories(formattedCategories);
+
+          applyFilters(formattedMenuList, categoryId, isVegOnly);
+        }
+      } catch (error) {
+        console.error("Error fetching menu data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [applyFilters, isVegOnly, restaurantId]
+  );
 
   useEffect(() => {
-    if (restaurantId) {
-      console.log("Triggering fetchMenuData");
-      fetchMenuData(null);
-    } else {
-      console.log("Missing restaurantId for initial fetch");
-    }
-  }, [restaurantId, fetchMenuData]);
+    fetchMenuData();
+  }, [fetchMenuData]);
 
   useEffect(() => {
     const handleFavoritesUpdated = () => {
       fetchMenuData(selectedCategoryId);
     };
 
-    window.addEventListener('favoritesUpdated', handleFavoritesUpdated);
-    window.addEventListener('focus', handleFavoritesUpdated);
+    window.addEventListener("favoritesUpdated", handleFavoritesUpdated);
+    window.addEventListener("focus", handleFavoritesUpdated);
 
     return () => {
-      window.removeEventListener('favoritesUpdated', handleFavoritesUpdated);
-      window.removeEventListener('focus', handleFavoritesUpdated);
+      window.removeEventListener("favoritesUpdated", handleFavoritesUpdated);
+      window.removeEventListener("focus", handleFavoritesUpdated);
     };
   }, [fetchMenuData, selectedCategoryId]);
 
@@ -162,97 +197,35 @@ const [customerType, setCustomerType] = useState(null);
   );
 
   useEffect(() => {
-    if (menuCategories.length > 0) {
-      // Use a short timeout to ensure the DOM has updated
+    if (menuCategories.length > 0 && !swiperRef.current) {
       const timer = setTimeout(() => {
         swiperRef.current = new Swiper(".category-slide", {
           slidesPerView: "auto",
           spaceBetween: 10,
         });
-  
-        const swiperContainer = document.querySelector(".category-slide");
-        if (swiperContainer) {
-          const handleScroll = () => {
-            if (swiperContainer.scrollLeft === 0) {
-              handleCategorySelect(menuCategories[0].menu_cat_id);
-            }
-          };
-  
-          swiperContainer.addEventListener("scroll", handleScroll);
-  
-          return () => {
-            swiperContainer.removeEventListener("scroll", handleScroll);
-          };
-        }
       }, 0);
-  
+
       return () => clearTimeout(timer);
-    }
-  }, [menuCategories]);
-
-  useEffect(() => {
-    if (restaurantId) {
-      console.log("Restaurant ID changed, fetching menu data");
-      debouncedFetchMenuData(null);
-      setSelectedCategoryId(null);
-    }
-  }, [restaurantId, debouncedFetchMenuData]);
-
-  const handleCategorySelect = (categoryId) => {
-    setSelectedCategoryId(categoryId);
-    if (categoryId === null) {
-      setFilteredMenuList(menuList);
-    } else {
-      const filteredMenus = menuList.filter(
-        (menu) => menu.menu_cat_id === categoryId
-      );
-      setFilteredMenuList(filteredMenus);
-    }
-  };
-
-  useEffect(() => {
-    if (menuCategories.length > 0) {
-      swiperRef.current = new Swiper(".category-slide", {
-        slidesPerView: "auto",
-        spaceBetween: 10,
-      });
-  
-      // Add scroll event listener
-      const swiperContainer = document.querySelector(".category-slide");
-      if (swiperContainer) {
-        const handleScroll = () => {
-          if (swiperContainer.scrollLeft === 0) {
-            handleCategorySelect(menuCategories[0].menu_cat_id);
-          }
-        };
-  
-        swiperContainer.addEventListener("scroll", handleScroll);
-  
-        // Cleanup function
-        return () => {
-          swiperContainer.removeEventListener("scroll", handleScroll);
-        };
-      }
     }
   }, [menuCategories]);
 
   const handleLikeClick = async (e, menuId) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData || !userData.customer_id || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
-  
+
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
-  
+
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
-  
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -263,27 +236,37 @@ const [customerType, setCustomerType] = useState(null);
           customer_id: userData.customer_id,
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
           const updatedFavoriteStatus = !isFavorite;
           const updatedMenuList = menuList.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: updatedFavoriteStatus } : item
+            item.menu_id === menuId
+              ? { ...item, is_favourite: updatedFavoriteStatus }
+              : item
           );
           setMenuList(updatedMenuList);
-          setFilteredMenuList(updatedMenuList.filter(
-            (item) => item.menu_cat_id === selectedCategoryId || selectedCategoryId === null
-          ));
-  
+          setFilteredMenuList(
+            updatedMenuList.filter(
+              (item) =>
+                item.menu_cat_id === selectedCategoryId ||
+                selectedCategoryId === null
+            )
+          );
+
           // Dispatch a custom event to notify other components of the favorite update
-          window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
-            detail: { menuId, isFavorite: updatedFavoriteStatus } 
-          }));
-  
+          window.dispatchEvent(
+            new CustomEvent("favoriteUpdated", {
+              detail: { menuId, isFavorite: updatedFavoriteStatus },
+            })
+          );
+
           toast.current.show({
             severity: updatedFavoriteStatus ? "success" : "error",
-            summary: updatedFavoriteStatus ? "Added to Favorites" : "Removed from Favorites",
+            summary: updatedFavoriteStatus
+              ? "Added to Favorites"
+              : "Removed from Favorites",
             detail: updatedFavoriteStatus
               ? "Item has been added to your favorites."
               : "Item has been removed from your favorites.",
@@ -314,9 +297,9 @@ const [customerType, setCustomerType] = useState(null);
         )
       );
     };
-  
+
     window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
-  
+
     return () => {
       window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
     };
@@ -325,16 +308,19 @@ const [customerType, setCustomerType] = useState(null);
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -387,18 +373,18 @@ const [customerType, setCustomerType] = useState(null);
     setShowModal(true);
   };
 
-
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-  
+
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
       console.error("Customer ID not found");
       navigate("/Signinscreen");
       return;
     }
-  
-    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+
+    const currentRestaurantId =
+      restaurantId || localStorage.getItem("restaurantId");
     if (!currentRestaurantId) {
       console.error("Restaurant ID not found");
       toast.current.show({
@@ -409,9 +395,9 @@ const [customerType, setCustomerType] = useState(null);
       });
       return;
     }
-  
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       toast.current.show({
         severity: "error",
@@ -421,27 +407,30 @@ const [customerType, setCustomerType] = useState(null);
       });
       return;
     }
-  
+
     try {
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: currentRestaurantId // Add restaurant_id to the item
-      }, currentRestaurantId);
-  
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: currentRestaurantId, // Add restaurant_id to the item
+        },
+        currentRestaurantId
+      );
+
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
         detail: selectedMenu.name,
         life: 3000,
       });
-  
+
       setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
+      setNotes("");
+      setPortionSize("full");
       setSelectedMenu(null);
     } catch (error) {
       if (error.message === "Item is already in the cart") {
@@ -463,10 +452,9 @@ const [customerType, setCustomerType] = useState(null);
     }
   };
 
-  
   const handleModalClick = (e) => {
     // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -572,6 +560,30 @@ const [customerType, setCustomerType] = useState(null);
                         e.target.src = images;
                       }}
                     />
+<div
+  className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+    menu.menu_veg_nonveg.toLowerCase() === "veg"
+      ? "border-success"
+      : "border-danger"
+  }`}
+  style={{
+    position: "absolute",
+    bottom: "3px",
+    left: "3px",
+    height: "20px",
+    width: "20px",
+    borderWidth: "2px",
+    borderRadius: "3px",
+  }}
+>
+  <i
+    className={`${
+      menu.menu_veg_nonveg.toLowerCase() === "veg"
+        ? "ri-checkbox-blank-circle-fill text-success"
+        : "ri-checkbox-blank-circle-fill text-danger"
+    } font_size_12`}
+  ></i>
+</div>
                     <div
                       className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
@@ -585,8 +597,8 @@ const [customerType, setCustomerType] = useState(null);
                       <i
                         className={` ${
                           menu.is_favourite
-                            ? "ri-hearts-fill text-danger"
-                            : "ri-heart-2-line"
+                            ? "ri-heart-3-fill text-danger"
+                            : "ri-heart-3-line"
                         } fs-6`}
                         onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>
@@ -741,7 +753,6 @@ const [customerType, setCustomerType] = useState(null);
                   Add to Cart
                 </div>
                 <span
-                  
                   className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white fs-4"
                   onClick={() => setShowModal(false)}
                   aria-label="Close"

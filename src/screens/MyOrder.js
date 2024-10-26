@@ -18,7 +18,7 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  
+
   const toast = useRef(null);
   const { restaurantName, restaurantId } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,9 +38,11 @@ const MyOrder = () => {
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-    
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType =
+      userData?.customer_type || localStorage.getItem("customer_type");
+
     setIsLoggedIn(!!currentCustomerId);
     setCustomerId(currentCustomerId);
     setCustomerType(currentCustomerType);
@@ -55,10 +57,12 @@ const MyOrder = () => {
       try {
         setLoading(true);
         console.log("Fetching orders...");
-        
+
         const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-        const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+        const currentCustomerId =
+          userData?.customer_id || localStorage.getItem("customer_id");
+        const currentCustomerType =
+          userData?.customer_type || localStorage.getItem("customer_type");
 
         if (!currentCustomerId || !restaurantId) {
           console.log("Missing customerId or restaurantId");
@@ -77,7 +81,7 @@ const MyOrder = () => {
               restaurant_id: restaurantId,
               order_status: activeTab,
               customer_id: currentCustomerId,
-              customer_type: currentCustomerType
+              customer_type: currentCustomerType,
             }),
           }
         );
@@ -109,8 +113,6 @@ const MyOrder = () => {
       fetchOrders();
     }
   }, [activeTab, customerId, restaurantId]);
-
-  
 
   useEffect(() => {
     if (isDarkMode) {
@@ -231,14 +233,18 @@ const MyOrder = () => {
   );
 };
 
-const OrdersTab = ({ orders, type, activeTab }) => {
+const OrdersTab = ({ orders, type, activeTab}) => {
   const navigate = useNavigate();
+  // const [activeTab, setActiveTab] = useState("ongoing");
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
   const [setOrders] = useState({});
   const toast = useRef(null);
-
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [ setActiveTab] = useState("ongoing");
   useEffect(() => {
     console.log("Orders received:", orders);
     console.log("Type:", type);
@@ -259,8 +265,10 @@ const OrdersTab = ({ orders, type, activeTab }) => {
 
   const handleCompleteOrder = async (orderId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType =
+      userData?.customer_type || localStorage.getItem("customer_type");
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
@@ -326,33 +334,57 @@ const OrdersTab = ({ orders, type, activeTab }) => {
     }
   };
 
-  const handleCancelOrder = async (orderId) => {
+  const handleCancelClick = (orderId) => {
+    setSelectedOrderId(orderId);
+    setCancelReason("");
+    setShowCancelModal(true);
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancelReason.trim()) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please provide a reason for cancellation",
+        life: 3000,
+      });
+      return;
+    }
+  
     try {
+      if (!selectedOrderId || !restaurantId) {
+        console.error("Missing required data:", { selectedOrderId, restaurantId });
+        throw new Error("Missing required data for cancellation");
+      }
+  
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const payload = {
+        order_id: selectedOrderId.toString(),
+        restaurant_id: restaurantId.toString(),
+        note: cancelReason.trim()
+      };
+      
       const response = await fetch(
-        "https://menumitra.com/user_api/cancel_order",
+        "https://menumitra.com/user_api/cancel_order", // Fixed typo in URL
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Accept": "application/json"
           },
-          body: JSON.stringify({
-            order_id: orderId,
-          }),
+          body: JSON.stringify(payload)
         }
       );
-
+  
       const data = await response.json();
+      console.log("Cancel order response:", data);
+  
       if (data.st === 1) {
-        // Update the local state to reflect the cancellation
-        setOrders((prevOrders) => {
-          const updatedOrders = { ...prevOrders };
-          Object.keys(updatedOrders).forEach((date) => {
-            updatedOrders[date] = updatedOrders[date].filter(
-              (order) => order.order_id !== orderId
-            );
-          });
-          return updatedOrders;
-        });
+        // Close modal first
+        setShowCancelModal(false);
+        setCancelReason("");
+        setSelectedOrderId(null);
+  
         // Show success message
         toast.current.show({
           severity: "success",
@@ -360,16 +392,42 @@ const OrdersTab = ({ orders, type, activeTab }) => {
           detail: "Your order has been successfully canceled.",
           life: 3000,
         });
+  
+        // Fetch updated order list for canceled tab
+        const response = await fetch(
+          "https://menumitra.com/user_api/get_order_list",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              restaurant_id: restaurantId,
+              order_status: "canceled",
+              customer_id: userData?.customer_id,
+              customer_type: userData?.customer_type,
+            }),
+          }
+        );
+  
+        if (response.ok) {
+          const result = await response.json();
+          if (result.st === 1) {
+            setOrders(result.lists || {});
+            // Switch to canceled tab after updating orders
+            setActiveTab("canceled");
+          }
+        }
+  
       } else {
         throw new Error(data.msg || "Failed to cancel order");
       }
     } catch (error) {
       console.error("Error canceling order:", error);
-      // Show error message
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to cancel order. Please try again.",
+        detail: error.message || "Failed to cancel order. Please try again.",
         life: 3000,
       });
     }
@@ -392,6 +450,7 @@ const OrdersTab = ({ orders, type, activeTab }) => {
 
     return (
       <>
+        <Toast ref={toast} position="bottom-center" className="custom-toast" />
         {Object.entries(orders).map(([date, dateOrders]) => (
           <div className="tab mt-0" key={`${date}-${type}`}>
             <input
@@ -476,9 +535,32 @@ const OrdersTab = ({ orders, type, activeTab }) => {
                         </div>
                       </div>
                     </div>
-                    {activeTab === "ongoing" && (
-                      <div className="card-footer bg-transparent border-top-0 text-end">
-                        {activeTab === "ongoing" && (
+
+                    <div className="card-footer bg-transparent border-top-0">
+                    {activeTab === "placed" && (
+                        <div className="d-flex flex-column gap-2">
+                          <div className="text-center">
+                            <span className="text-warning">
+                              <i className="ri-time-line me-1"></i>
+                              Waiting for confirmation
+                            </span>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="btn btn-sm btn-danger rounded-pill px-4"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancelClick(order.order_id);
+                              }}
+                            >
+                              Cancel Order
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {activeTab === "ongoing" && (
+                        <div className="text-end">
                           <button
                             className="btn btn-sm btn-success"
                             onClick={(e) => {
@@ -488,27 +570,29 @@ const OrdersTab = ({ orders, type, activeTab }) => {
                           >
                             Complete Order
                           </button>
-                        )}
-                        {activeTab === "placed" && (
-                          <span className="text-warning">
-                            <i className="ri-time-line me-1"></i>
-                            Waiting for confirmation
-                          </span>
-                        )}
-                        {activeTab === "completed" && (
+                        </div>
+                      )}
+
+                    
+
+                      {activeTab === "completed" && (
+                        <div className="text-center">
                           <span className="text-success">
                             <i className="ri-check-line me-1"></i>
                             Order completed
                           </span>
-                        )}
-                        {activeTab === "canceled" && (
+                        </div>
+                      )}
+
+                      {activeTab === "canceled" && (
+                        <div className="text-center">
                           <span className="text-danger">
                             <i className="ri-close-circle-line me-1"></i>
                             Order canceled
                           </span>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </>
@@ -553,6 +637,57 @@ const OrdersTab = ({ orders, type, activeTab }) => {
         </div>
       ) : (
         renderOrders()
+      )}
+
+      {showCancelModal && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Cancel Order</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowCancelModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label htmlFor="cancelReason" className="form-label">
+                    Please provide a reason for cancellation
+                  </label>
+                  <textarea
+                    id="cancelReason"
+                    className="form-control"
+                    rows="3"
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Enter your reason here..."
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleCancelOrder}
+                >
+                  Confirm Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       <Bottom />
     </div>

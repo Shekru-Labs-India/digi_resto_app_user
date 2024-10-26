@@ -152,9 +152,13 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
 
   const fetchData = async () => {
     try {
+      if (!restaurantId) {
+        console.error("Restaurant ID not found");
+        return;
+      }
+
       console.log("Fetching data...");
-      const url =
-        "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
+      const url = "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
       const requestOptions = {
         method: "POST",
         headers: {
@@ -173,16 +177,6 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
 
       const data = await response.json();
 
-      if (data.st === 1 ) {
-        // Fetching banners
-        // const bannerUrls = data.data.banner_list
-        //   .filter((item) => item.image)
-        //   .map((item) => item.image);
-        // setBanners(bannerUrls);
-      } else {
-        console.error("Invalid data format:", data);
-      }
-
       if (data.st === 1 && data.data.offer_menu_list) {
         const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
           ...menu,
@@ -197,8 +191,6 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
         const mergedMenuItems = [...localMenuItems, ...formattedMenuLists];
 
         setMenuLists(mergedMenuItems);
-
-        // Save updated menu list to localStorage
         saveLocalMenuItems(mergedMenuItems);
       }
     } catch (error) {

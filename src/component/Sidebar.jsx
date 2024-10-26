@@ -27,6 +27,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
+
+  const [isVegOnly, setIsVegOnly] = useState(() => {
+    return localStorage.getItem("isVegOnly") === "true";
+  });
+
+  const toggleVegNonVeg = () => {
+    const newValue = !isVegOnly;
+    setIsVegOnly(newValue);
+    localStorage.setItem("isVegOnly", newValue);
+  };
   const { restaurantName } = useRestaurantId();
   const navigate = useNavigate();
 
@@ -76,9 +86,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 : "Hello, User"}
             </span>
-            <div className="mail ms-3 gray-text  ">
-              {userData?.mobile}
-            </div>
+            <div className="mail ms-3 gray-text  ">{userData?.mobile}</div>
             <div className="dz-mode mt-3 me-4">
               <div className="theme-btn" onClick={toggleTheme}>
                 <i
@@ -95,13 +103,39 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </div>
           </div>
         </div>
-        <ul className="nav navbar-nav">
+        <ul className="nav navbar-nav pe-0">
           <li>
-            <Link className="nav-link active" to="/Menu">
-              <span className="dz-icon icon-sm">
-                <i className="ri-bowl-line fs-3"></i>
-              </span>
-              <span className="   ">Menu</span>
+            <Link
+              className="nav-link active d-flex align-items-center justify-content-between"
+              to="/Menu"
+            >
+              <div className="d-flex align-items-center">
+                <span className="dz-icon icon-sm">
+                  <i className="ri-bowl-line fs-3"></i>
+                </span>
+                <span className="">Menu</span>
+              </div>
+              <div className="veg-toggle ">
+                <div
+                  className={`toggle-switch  ${isVegOnly ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent navigation
+                    toggleVegNonVeg();
+                  }}
+                >
+                  <div className="toggle-label">
+                    <span className={`non-veg ${!isVegOnly ? "active" : ""}`}>
+                      <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
+                      Non-Veg
+                    </span>
+                    <span className={`veg ${isVegOnly ? "active" : ""}`}>
+                      <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
+                      Veg
+                    </span>
+                  </div>
+                  <div className="toggle-button"></div>
+                </div>
+              </div>
             </Link>
           </li>
           <li>
@@ -164,9 +198,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </div>
           <div className="text-center mt-2">
             <div className="gray-text  ">Powered by </div>
-            <div className="gray-text  ">
-              Shekru Labs India Pvt. Ltd.
-            </div>
+            <div className="gray-text  ">Shekru Labs India Pvt. Ltd.</div>
             <div className="gray-text  ">v1.1</div>
           </div>
         </div>

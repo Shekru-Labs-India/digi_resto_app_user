@@ -186,23 +186,71 @@ const Search = () => {
     }
   };
 
+  const fetchCartItems = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) return [];
+  
+    try {
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: localStorage.getItem("cartId"),
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      return [];
+    }
+  };
+
   const handleAddToCartClick = (menu) => {
-    if (!customerId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
-
+  
+    // Check if item is already in cart (similar to NearbyArea.jsx)
+    if (isMenuItemInCart(menu.menu_id)) {
+      toast.current.show({
+        severity: "info",
+        summary: "Item Already in Cart",
+        detail: "This item is already in your cart.",
+        life: 3000,
+      });
+      return;
+    }
+  
     setSelectedMenu(menu);
-    setPortionSize("full");
     fetchHalfFullPrices(menu.menu_id);
+    setPortionSize("full");
+    setNotes("");
     setShowModal(true);
   };
-
+  
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-
+  
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+  
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
+    
     if (!selectedPrice) {
       toast.current.show({
         severity: "error",
@@ -212,27 +260,36 @@ const Search = () => {
       });
       return;
     }
-
+  
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-        },
-        customerId,
-        restaurantId
-      );
-
+      const cartItem = {
+        menu_id: selectedMenu.menu_id,
+        menu_name: selectedMenu.menu_name,
+        quantity: 1,
+        price: selectedPrice,
+        half_or_full: portionSize,
+        notes: notes,
+        image: selectedMenu.image,
+        category_name: selectedMenu.category_name,
+        rating: selectedMenu.rating,
+        offer: selectedMenu.offer,
+        restaurant_id: restaurantId
+      };
+  
+      await addToCart(cartItem, userData.customer_id, restaurantId);
+  
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
-        detail: selectedMenu.menu_name,
+        detail: `${selectedMenu.menu_name} added successfully`,
         life: 3000,
       });
-
+  
+      // Update cart items like in NearbyArea.jsx
+      const updatedCartItems = await fetchCartItems();
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
+  
       setShowModal(false);
       setNotes("");
       setPortionSize("full");

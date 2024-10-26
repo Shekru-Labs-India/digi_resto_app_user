@@ -11,11 +11,26 @@ import NearbyArea from "../component/NearbyArea";
 
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
-  const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } = useRestaurantId();
+  const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
+    useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem("isDarkMode") === "true");
-  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
+  const [isDarkMode, setIsDarkMode] = useState(
+    () => localStorage.getItem("isDarkMode") === "true"
+  );
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("userData")) || {}
+  );
   const isLoggedIn = !!localStorage.getItem("userData");
+
+  const [isVegOnly, setIsVegOnly] = useState(() => {
+    return localStorage.getItem("isVegOnly") === "true" || false;
+  });
+
+  const toggleVegNonVeg = () => {
+    const newValue = !isVegOnly;
+    setIsVegOnly(newValue);
+    localStorage.setItem("isVegOnly", newValue.toString());
+  };
 
   useEffect(() => {
     if (restaurantCode) {
@@ -26,10 +41,15 @@ const HomeScreen = () => {
       // localStorage.removeItem("cartId");
     }
   }, [restaurantCode, setRestaurantCode]);
-  
+
   useEffect(() => {
     if (restaurantId && restaurantDetails) {
-      const updatedUserData = { ...userData, restaurantId, restaurantName: restaurantDetails.name, tableNumber: table_number || '1' };
+      const updatedUserData = {
+        ...userData,
+        restaurantId,
+        restaurantName: restaurantDetails.name,
+        tableNumber: table_number || "1",
+      };
       setUserData(updatedUserData);
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
       localStorage.setItem("restaurantId", restaurantId);
@@ -56,7 +76,10 @@ const HomeScreen = () => {
 
   const toTitleCase = (str) => {
     if (!str) return "";
-    return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    return str.replace(
+      /\w\S*/g,
+      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
   };
 
   return (
@@ -94,7 +117,6 @@ const HomeScreen = () => {
         {/* Sidebar */}
         <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
           <div className="author-box">
-           
             <div className=" ">
               <span className="ms-3 pt-4    ">
                 {userData?.name ? (
@@ -129,11 +151,39 @@ const HomeScreen = () => {
           </div>
           <ul className="nav navbar-nav">
             <li>
-              <Link className="nav-link active" to="/Menu">
-                <span className="dz-icon icon-sm">
-                  <i className="ri-bowl-line fs-3"></i>
-                </span>
-                <span className="   ">Menu</span>
+              <Link
+                className="nav-link active d-flex align-items-center justify-content-between"
+                to="/Menu"
+              >
+                <div className="d-flex align-items-center">
+                  <span className="dz-icon icon-sm">
+                    <i className="ri-bowl-line fs-3"></i>
+                  </span>
+                  <span className="">Menu</span>
+                </div>
+                <div className="veg-toggle ">
+                  <div
+                    className={`toggle-switch ${isVegOnly ? "active" : ""}`}
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent navigation
+                      toggleVegNonVeg();
+                    }}
+                  >
+                    <div className="toggle-label">
+                      <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
+                      <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
+                        
+                        Non-Veg
+                      </span>
+                      <span className={`veg ${!isVegOnly ? "active" : ""}`}>
+                      <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
+                       
+                        Veg
+                      </span>
+                    </div>
+                    <div className="toggle-button"></div>
+                  </div>
+                </div>
               </Link>
             </li>
             <li>
@@ -270,7 +320,7 @@ const HomeScreen = () => {
         <main className="page-content space-top mb-5 pb-3">
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
-            <ProductCart />
+            <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
             </div>
