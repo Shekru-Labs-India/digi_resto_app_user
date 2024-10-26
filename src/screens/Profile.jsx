@@ -147,7 +147,7 @@ const Profile = () => {
             <li>
               <Link className="nav-link active" to="/Wishlist">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-heart-2-line fs-3"></i>
+                  <i className="ri-heart-3-line fs-3"></i>
                 </span>
                 <span className="   ">Favourite</span>
               </Link>
@@ -318,7 +318,7 @@ const Profile = () => {
                       to="/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-2-line me-2 fs-2"></i>
+                      <i className="ri-heart-3-line me-2 fs-2"></i>
                       <span className=" ">Favourite</span>
                     </Link>
                   </li>
@@ -326,10 +326,10 @@ const Profile = () => {
               </div>
               {isLoggedIn && (
                 <div className="container p-0">
-                  <Link to="/EditProfile" className="item-content item-link">
                     <div className="title-bar">
                       <span className="mb-0      ">Account Settings</span>
                     </div>
+                  <Link to="/EditProfile" className="item-content item-link">
                     <div className="row align-items-center ms-0">
                       <div className="col-auto px-0">
                         {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
@@ -350,9 +350,11 @@ const Profile = () => {
         </main>
 
         {isLoggedIn && (
-          <div className="d-flex justify-content-center align-items-center text-danger">
-            <i className="ri-shut-down-line fs-3" onClick={handleLogout}></i>
-            <span className="ms-2">LogOut</span>
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="" onClick={handleLogout}>
+              <i className="ri-shut-down-line fs-3"></i>
+              <span className="ms-2">Logout</span>
+            </div>
           </div>
         )}
 

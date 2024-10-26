@@ -26,61 +26,19 @@ const Cart = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
+    const [menuItems, setMenuItems] = useState([]);
 
+  // Helper function to get stored restaurant ID
+  const getStoredRestaurantId = useCallback(() => {
+    return localStorage.getItem("restaurantId") || restaurantId;
+  }, [restaurantId]);
 
-  useEffect(() => {
-    const storedCustomerId = localStorage.getItem("customer_id");
-    const storedCustomerType = localStorage.getItem("customer_type");
-    if (storedCustomerId && storedCustomerType) {
-      setUserData({ customer_id: storedCustomerId, customer_type: storedCustomerType });
-    } else {
-      console.error("User data not found in local storage.");
-    }
-    setIsLoading(false);
-  }, []);
-  
-  const getCustomerId = useCallback(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_id || localStorage.getItem("customer_id") || null;
-  }, []);
-
-  const getCartId = useCallback(() => {
-    return localStorage.getItem("cartId") || null;
-  }, []);
-
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const { customerId, customerType, isGuest } = getUserData();
-      
-      if (customerId) {
-        setIsLoggedIn(true);
-        setCustomerId(customerId);
-        setCustomerType(customerType);
-        setUserData({ customer_id: customerId, customer_type: customerType });
-        fetchCartDetails(customerId);
-      } else {
-        setIsLoggedIn(false);
-        setCustomerId(null);
-        setCustomerType(null);
-        setUserData(null);
-        setIsLoading(false);
-      }
-    };
-  
-    checkLoginStatus();
-    const intervalId = setInterval(checkLoginStatus, 5000);
-  
-    return () => clearInterval(intervalId);
-  }, []);
-
+  // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
     const customerId = getCustomerId();
     const cartId = getCartId();
 
-    console.log("Fetching cart details with:", { customerId, cartId, restaurantId });
-
-    if (!customerId || !restaurantId || !cartId) {
-      console.error("Missing required data:", { customerId, cartId, restaurantId });
+    if (!customerId || !cartId || !restaurantId) {
       setCartDetails({ order_items: [] });
       setIsLoading(false);
       return;
@@ -91,9 +49,7 @@ const Cart = () => {
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
             customer_id: customerId,
@@ -102,51 +58,82 @@ const Cart = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      console.log("API response data:", data);
-
-      if (data.st === 1 && data.order_items && data.order_items.length > 0) {
-        const updatedOrderItems = data.order_items.map((item) => ({
-          ...item,
-          oldPrice: Math.floor(item.price * 1.1),
-        }));
-        setCartDetails({ ...data, order_items: updatedOrderItems });
+      if (data.st === 1 && data.order_items?.length > 0) {
+        setCartDetails({
+          ...data,
+          order_items: data.order_items.map(item => ({
+            ...item,
+            oldPrice: Math.floor(item.price * 1.1),
+          }))
+        });
       } else {
-        console.log("No items in cart or invalid response:", data);
         setCartDetails({ order_items: [] });
       }
     } catch (error) {
-      console.error("Error fetching cart details:", error);
+      console.error("Error fetching cart:", error);
       setCartDetails({ order_items: [] });
     } finally {
       setIsLoading(false);
     }
-  }, [getCustomerId, getCartId, restaurantId]);
+  }, [restaurantId]);
 
+  // Initial load effect with restaurant ID check
   useEffect(() => {
-    if (userData && restaurantId) {
-      fetchCartDetails();
-    }
-  }, [userData, restaurantId, fetchCartDetails]);
+    const initializeCart = async () => {
+      const { customerId, customerType } = getUserData();
+      const currentRestaurantId = getStoredRestaurantId();
+      
+      if (customerId && currentRestaurantId) {
+        setIsLoggedIn(true);
+        setCustomerId(customerId);
+        setCustomerType(customerType);
+        setUserData({ customer_id: customerId, customer_type: customerType });
+        await fetchCartDetails();
+      } else {
+        setIsLoggedIn(false);
+        setCustomerId(null);
+        setCustomerType(null);
+        setUserData(null);
+        setIsLoading(false);
+      }
+    };
+  
+    initializeCart();
+  }, [fetchCartDetails, getStoredRestaurantId]);
 
+  // Cart update listener
   useEffect(() => {
-    const handleFocus = () => {
-      if (userData && restaurantId) {
+    const handleCartUpdate = () => {
+      if (restaurantId) {
         fetchCartDetails();
       }
     };
 
-    window.addEventListener('focus', handleFocus);
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, [fetchCartDetails, restaurantId]);
 
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [userData, restaurantId, fetchCartDetails]);
+  // Window focus handler with restaurant ID check
+  useEffect(() => {
+    if (userData && restaurantId) {
+      const handleFocus = () => {
+        fetchCartDetails();
+      };
 
+      window.addEventListener('focus', handleFocus);
+      return () => window.removeEventListener('focus', handleFocus);
+    }
+  }, [userData, fetchCartDetails, restaurantId]);
+
+  const getCustomerId = useCallback(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.customer_id || localStorage.getItem("customer_id") || null;
+  }, []);
+
+  const getCartId = useCallback(() => {
+    return localStorage.getItem("cartId") || null;
+  }, []);
 
   const handleProceedToBuy = () => {
     const checkoutData = {
@@ -241,22 +228,29 @@ const Cart = () => {
     }
   };
 
-  const incrementQuantity = (item) => {
-    if (item.quantity < 20) {
-      updateCartQuantity(item.menu_id, item.quantity + 1);
-    } else {
-      toast.current.show({
-        severity: "warn",
-        summary: "Limit Reached",
-        detail: "You cannot add more than 20 items of this product.",
-        life: 2000,
-      });
+  const handleQuantityUpdate = async (item, newQuantity) => {
+    try {
+      // Update UI optimistically
+      setCartDetails(prev => ({
+        ...prev,
+        order_items: prev.order_items.map(i => 
+          i.menu_id === item.menu_id ? { ...i, quantity: newQuantity } : i
+        )
+      }));
+
+      // Dispatch cart update event
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      // Revert on error
+      fetchCartDetails();
     }
   };
 
+  const incrementQuantity = (item) => handleQuantityUpdate(item, item.quantity + 1);
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
-      updateCartQuantity(item.menu_id, item.quantity - 1);
+      handleQuantityUpdate(item, item.quantity - 1);
     }
   };
 
@@ -289,6 +283,85 @@ const Cart = () => {
     </main>
   );
 
+    const handleLikeClick = async (menuId) => {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      if (!userData?.customer_id) {
+        navigate("/Signinscreen");
+        return;
+      }
+
+      // Get current restaurant ID
+      const currentRestaurantId = getStoredRestaurantId();
+      if (!currentRestaurantId) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Restaurant information is missing",
+          life: 3000,
+        });
+        return;
+      }
+
+      const menuItem = cartDetails.order_items.find((item) => item.menu_id === menuId);
+      if (!menuItem) {
+        console.error("Menu item not found:", menuId);
+        return;
+      }
+
+      const isFavorite = menuItem.is_favourite;
+
+      try {
+        const response = await fetch(
+          `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              restaurant_id: currentRestaurantId, // Use the current restaurant ID
+              menu_id: menuId,
+              customer_id: userData.customer_id,
+              customer_type: userData.customer_type
+            }),
+          }
+        );
+
+        const data = await response.json();
+        if (response.ok && data.st === 1) {
+          setCartDetails((prevCart) => ({
+            ...prevCart,
+            order_items: prevCart.order_items.map((item) =>
+              item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+            )
+          }));
+
+          window.dispatchEvent(
+            new CustomEvent("favoriteUpdated", {
+              detail: { menuId, isFavorite: !isFavorite },
+            })
+          );
+
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+            life: 3000,
+          });
+        } else {
+          throw new Error(data.msg || 'Failed to update favorite status');
+        }
+      } catch (error) {
+        console.error("Error updating favorite status:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to update favorite status",
+          life: 3000,
+        });
+      }
+    };
+
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
@@ -319,7 +392,7 @@ const Cart = () => {
               >
                 <div className="card mb-3 rounded-3">
                   <div className="row my-auto ps-3">
-                    <div className="col-3 px-0">
+                    <div className="col-3 px-0 position-relative">
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
@@ -354,6 +427,29 @@ const Cart = () => {
                           </span>
                         </div>
                       )}
+                      <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            item.is_favourite
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(item.menu_id);
+                          }}
+                        ></i>
+                      </div>
                     </div>
                     <div className="col-9 pt-1 pb-0">
                       <div className="row">

@@ -12,10 +12,10 @@ import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
-import { RadioButton } from 'primereact/radiobutton';
-import { InputTextarea } from 'primereact/inputtextarea';
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { RadioButton } from "primereact/radiobutton";
+import { InputTextarea } from "primereact/inputtextarea";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 const Wishlist = () => {
@@ -28,7 +28,6 @@ const Wishlist = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
- 
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -50,14 +49,9 @@ const Wishlist = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [menuList, setMenuList] = useState({});
-
-  const [cartItems, setCartItems] = useState(
-    () => JSON.parse(localStorage.getItem("cartItems")) || []
-  );
 
   const navigate = useNavigate();
   const toast = useRef(null);
@@ -65,49 +59,56 @@ const Wishlist = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
-  const [portionSize, setPortionSize] = useState('full');
-  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState("full");
+  const [notes, setNotes] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-
 
   const [cartRestaurantId, setCartRestaurantId] = useState(() => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.length > 0 ? cartItems[0].restaurant_id : null;
   });
 
-
+  // Single useEffect for initial data fetch
   useEffect(() => {
-    const { customerId, customerType } = getUserData();
-    const { restaurantId } = getRestaurantData();
+    const initializeData = async () => {
+      const { customerId, customerType } = getUserData();
+      const { restaurantId } = getRestaurantData();
 
-    if (customerId) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(!!customerId);
       setCustomerId(customerId);
       setCustomerType(customerType);
-      fetchFavoriteItems();
-    } else {
-      setIsLoggedIn(false);
-      setCustomerId(null);
-      setCustomerType(null);
-      setIsLoading(false);
-    }
-  }, []);
 
+      if (customerId) {
+        await fetchFavoriteItems();
+      } else {
+        setIsLoading(false);
+      }
+    };
 
- 
+    initializeData();
+  }, []); // Empty dependency array - runs only on mount
 
- 
+  // Remove these duplicate/unnecessary effects
+  // useEffect(() => {
+  //   fetchFavoriteItems();
+  //   updateCartRestaurantId();
+  // }, [customerId, restaurantId]);
+
+  // useEffect(() => {
+  //   const storedCustomerId = localStorage.getItem("customer_id");
+  //   ...
+  // }, []);
 
   const fetchFavoriteItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
-      console.error("Customer ID or Restaurant ID is missing.");
+    if (!userData?.customer_id) {
+      console.error("Customer ID is missing.");
       setIsLoading(false);
       return;
     }
-  
+
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -122,7 +123,7 @@ const Wishlist = () => {
           }),
         }
       );
-  
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1 && data.lists) {
@@ -151,64 +152,36 @@ const Wishlist = () => {
     }
   };
 
+  // Keep the favorite update listener
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
       const { menuId, isFavorite } = event.detail;
       setWishlistItems((prevWishlistItems) => {
         const updatedWishlistItems = { ...prevWishlistItems };
         Object.keys(updatedWishlistItems).forEach((restaurantName) => {
-          updatedWishlistItems[restaurantName] = updatedWishlistItems[restaurantName].map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+          updatedWishlistItems[restaurantName] = updatedWishlistItems[
+            restaurantName
+          ].map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: isFavorite }
+              : item
           );
         });
         return updatedWishlistItems;
       });
     };
-  
+
     window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
-  
     return () => {
       window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
     };
   }, []);
 
+  // 3. Update cart restaurant ID when needed
   useEffect(() => {
-    const handleFavoriteUpdate = (event) => {
-      const { menuId, isFavorite } = event.detail;
-      setWishlistItems((prevWishlistItems) => {
-        const updatedWishlistItems = { ...prevWishlistItems };
-        Object.keys(updatedWishlistItems).forEach((restaurantName) => {
-          updatedWishlistItems[restaurantName] = updatedWishlistItems[restaurantName].map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
-          );
-        });
-        return updatedWishlistItems;
-      });
-    };
-  
-    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
-  
-    return () => {
-      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
-    };
-  }, []);
-
-  useEffect(() => {
-    const storedCustomerId = localStorage.getItem("customer_id");
-    const storedCustomerType = localStorage.getItem("customer_type");
-    
-    setIsLoggedIn(!!storedCustomerId);
-    setCustomerId(storedCustomerId);
-    setCustomerType(storedCustomerType);
-    
-    if (storedCustomerId) {
-      fetchFavoriteItems();
+    if (customerId && restaurantId) {
+      updateCartRestaurantId();
     }
-  }, []);
-
-  useEffect(() => {
-    fetchFavoriteItems();
-    updateCartRestaurantId();
   }, [customerId, restaurantId]);
 
   const updateCartRestaurantId = () => {
@@ -227,16 +200,19 @@ const Wishlist = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -275,7 +251,8 @@ const Wishlist = () => {
       toast.current.show({
         severity: "error",
         summary: "Different Restaurant",
-        detail: "This item is from a different restaurant. Clear your cart first.",
+        detail:
+          "This item is from a different restaurant. Clear your cart first.",
         life: 3000,
       });
       return;
@@ -288,9 +265,9 @@ const Wishlist = () => {
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-  
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       toast.current.show({
         severity: "error",
@@ -300,43 +277,36 @@ const Wishlist = () => {
       });
       return;
     }
-  
+
     try {
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice
-      }, restaurantId);
-  
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+        },
+        restaurantId
+      );
+
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
         detail: selectedMenu.menu_name,
         life: 3000,
       });
-  
+
       setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
+      setNotes("");
+      setPortionSize("full");
       setSelectedMenu(null);
-  
-      // Update cart items in local storage and state
-      const updatedCartItems = await fetchCartItems();
-      setCartItems(updatedCartItems);
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-  
+
       // Update cart restaurant ID
-      if (updatedCartItems.length > 0) {
-        setCartRestaurantId(updatedCartItems[0].restaurant_id);
-      } else {
-        setCartRestaurantId(null);
-      }
-  
-      // Dispatch a custom event to notify other components of the cart update
-      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-  
+      updateCartRestaurantId();
+
+      // Dispatch cart update event
+      window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
@@ -349,59 +319,27 @@ const Wishlist = () => {
   };
 
   const handleModalClick = (e) => {
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
-
-  const fetchCartItems = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      return [];
-    }
-  
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: localStorage.getItem("cartId"),
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
-  
-      const data = await response.json();
-      if (response.ok && data.st === 1 && data.order_items) {
-        return data.order_items;
-      } else {
-        return [];
-      }
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-      return [];
-    }
-  };
-
 
   const wishlistCount = Object.keys(menuList).reduce(
     (total, key) => total + menuList[key].length,
     0
   );
 
-  const handleRemoveItemClick = async (restaurantName, menuId, restaurantId) => {
+  const handleRemoveItemClick = async (
+    restaurantName,
+    menuId,
+    restaurantId
+  ) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !menuId || !restaurantId) {
       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
       return;
     }
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/remove_favourite_menu",
@@ -417,27 +355,27 @@ const Wishlist = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (response.ok && data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
           updatedMenuList[restaurantName] = updatedMenuList[
             restaurantName
           ].filter((item) => item.menu_id !== menuId);
-  
+
           // Check if this was the last item in the restaurant
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
           }
-  
+
           // Update hasFavorites based on the new menuList
           setHasFavorites(Object.keys(updatedMenuList).length > 0);
-  
+
           return updatedMenuList;
         });
-  
+
         toast.current.show({
           severity: "success",
           summary: "Item Removed",
@@ -501,9 +439,9 @@ const Wishlist = () => {
           />
         </div>
         {isLoading ? (
-        <LoaderGif />
-      ) : isLoggedIn ? (
-        hasFavorites ? (
+          <LoaderGif />
+        ) : isLoggedIn ? (
+          hasFavorites ? (
             <>
               <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
                 <div
@@ -760,7 +698,10 @@ const Wishlist = () => {
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
                 <div className="">
-                  <Link className="btn btn-outline-primary rounded-pill" to="/Signinscreen">
+                  <Link
+                    className="btn btn-outline-primary rounded-pill"
+                    to="/Signinscreen"
+                  >
                     <i className="ri-lock-2-line me-2 fs-3"></i> Login
                   </Link>
                 </div>

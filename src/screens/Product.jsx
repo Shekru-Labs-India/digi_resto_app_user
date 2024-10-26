@@ -49,7 +49,7 @@ const Product = () => {
   const { restaurantName } = useRestaurantId();
   const { categoryId } = useParams();
 
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
   const toast = useRef(null);
@@ -304,43 +304,41 @@ const Product = () => {
     }
   };
 
-  const isMenuItemInCart = (menuItemId) => {
-    return cartItems.some((item) => item.menu_id === menuItemId);
-  };
-
   const fetchHalfFullPrices = async (menuId) => {
+    if (!restaurantId) {
+      console.error("Restaurant ID is missing");
+      return;
+    }
+
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        throw new Error(data.msg || "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to fetch price information",
+        detail: error.message || "Failed to fetch price information",
         life: 3000,
       });
     } finally {
@@ -348,11 +346,20 @@ const Product = () => {
     }
   };
 
-
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     if (!userData || !userData.customer_id) {
       navigate("/Signinscreen");
+      return;
+    }
+
+    if (!restaurantId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information is missing",
+        life: 3000,
+      });
       return;
     }
 
@@ -377,14 +384,30 @@ const Product = () => {
       return;
     }
 
+    if (!restaurantId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information is missing",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
+      // Store restaurant ID in localStorage if not already stored
+      if (!localStorage.getItem("restaurantId")) {
+        localStorage.setItem("restaurantId", restaurantId);
+      }
+
       await addToCart({
         ...selectedMenu,
         quantity: 1,
         notes,
         half_or_full: portionSize,
-        price: selectedPrice
-      }, userData.customer_id, restaurantId);
+        price: selectedPrice,
+        restaurant_id: restaurantId // Add restaurant_id to the item
+      }, restaurantId); // Pass restaurantId directly
 
       toast.current.show({
         severity: "success",
@@ -397,13 +420,16 @@ const Product = () => {
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
-      setCartItemsCount(prevCount => prevCount + 1);
+      
+      // Dispatch cart updated event
+      window.dispatchEvent(new Event('cartUpdated'));
+
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
+        detail: error.message || "Failed to add item to cart. Please try again.",
         life: 3000,
       });
     }
@@ -563,8 +589,8 @@ const Product = () => {
                         <i
                           className={` ${
                             menuItem.is_favourite
-                              ? "ri-hearts-fill text-danger"
-                              : "ri-heart-2-line"
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();

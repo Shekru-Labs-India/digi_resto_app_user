@@ -273,8 +273,8 @@ const NearbyArea = () => {
                         <i
                           className={` ${
                             menuItem.is_favourite
-                              ? "ri-hearts-fill"
-                              : "ri-heart-2-line"
+                              ? "ri-heart-3-fill"
+                              : "ri-heart-3-line"
                           } fs-2`}
                           onClick={() => handleLikeClick(menuItem.menu_id)}
                           style={{

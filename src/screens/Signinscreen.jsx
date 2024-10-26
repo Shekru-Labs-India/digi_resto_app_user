@@ -268,12 +268,14 @@ const Signinscreen = () => {
               <Link to="/Signupscreen" className="text-underline    ">
                 Create an account
               </Link>
-              <button
-                className="btn btn-outline-primary rounded-pill btn-sm mt-4"
-                onClick={handleGuestLogin}
-              >
-                Continue as Guest
-              </button>
+              <div className="d-flex justify-content-center">
+                <button
+                  className="btn btn-outline-primary rounded-pill btn-sm mt-4"
+                  onClick={handleGuestLogin}
+                >
+                  Continue as Guest
+                </button>
+              </div>
             </div>
           </div>
         </div>

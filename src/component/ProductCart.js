@@ -577,8 +577,8 @@ const [customerType, setCustomerType] = useState(null);
                       <i
                         className={` ${
                           menu.is_favourite
-                            ? "ri-hearts-fill text-danger"
-                            : "ri-heart-2-line"
+                            ? "ri-heart-3-fill text-danger"
+                            : "ri-heart-3-line"
                         } fs-6`}
                         onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>

@@ -115,7 +115,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <li>
             <Link className="nav-link active" to="/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="ri-heart-2-line fs-3"></i>
+                <i className="ri-heart-3-line fs-3"></i>
               </span>
               <span className="   ">Favourite</span>
             </Link>

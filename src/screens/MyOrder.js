@@ -6,7 +6,7 @@ import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
 import "../assets/css/Tab.css";
 import OrderGif from "./OrderGif";
-import LoaderGif from "./LoaderGIF";
+// import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import { Toast } from "primereact/toast";
 import CountdownTimer from "../components/CountdownTimer";
@@ -152,9 +152,9 @@ const MyOrder = () => {
 
         <div className="container">
           {loading ? (
-            <div id="preloader">
+            <div id="">
               <div className="loader">
-                <LoaderGif />
+                {/* <LoaderGif /> */}
               </div>
             </div>
           ) : (
