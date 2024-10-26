@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CompanyVersion from "../constants/CompanyVersion";
-import axios from "axios";
+
 
 const AllOrderList = () => {
   const [data, setData] = useState(null);
