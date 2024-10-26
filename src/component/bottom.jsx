@@ -11,26 +11,48 @@ const Bottom = () => {
   );
 
   useEffect(() => {
-    const updateCartItemCount = () => {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      setCartItemCount(cartItems.length);
-    };
+    const updateCartItemCount = async () => {
+      const customerId = userData?.customer_id;
+      const cartId = localStorage.getItem("cartId");
+      const restaurantId = localStorage.getItem("restaurantId");
 
-    const handleStorageChange = (e) => {
-      if (e.key === "cartItems") {
-        updateCartItemCount();
-      } else if (e.key === "userData") {
-        setUserData(JSON.parse(e.newValue) || {});
+      if (customerId && cartId && restaurantId) {
+        try {
+          const response = await fetch(
+            "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                cart_id: cartId,
+                customer_id: customerId,
+                restaurant_id: restaurantId,
+              }),
+            }
+          );
+
+          const data = await response.json();
+          if (data.st === 1 && data.order_items) {
+            setCartItemCount(data.order_items.length);
+          } else {
+            setCartItemCount(0);
+          }
+        } catch (error) {
+          console.error("Error fetching cart count:", error);
+          setCartItemCount(0);
+        }
       }
     };
 
     updateCartItemCount();
-    window.addEventListener("storage", handleStorageChange);
 
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+    // Set up an interval to update the cart count every few seconds
+    const intervalId = setInterval(updateCartItemCount, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [userData]);
 
   return (
     <div className="menubar-area footer-fixed">
@@ -62,8 +84,17 @@ const Bottom = () => {
             location.pathname === "/Cart" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="ri-shopping-cart-line fs-3"></i>
-          <span className="name    ">Cart</span>
+          <div className="position-relative">
+            <i className="ri-shopping-cart-line fs-3"></i>
+          </div>
+          <span className="name">
+            Cart
+            {cartItemCount > 0 && (
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {cartItemCount}
+              </span>
+            )}
+          </span>
         </Link>
         <Link
           to="/Search"

@@ -4,7 +4,7 @@ import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
 import "../assets/css/custom.css";
-import "../assets/css/Tab.css";
+// import "../assets/css/Tab.css";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
@@ -221,7 +221,10 @@ const MyOrder = () => {
                   </div>
                 </div>
               ) : (
-                <SigninButton />
+                <>
+                  <SigninButton />
+                  <Bottom />
+                </>
               )}
             </>
           )}

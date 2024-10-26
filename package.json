@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
+    "axios": "^1.7.7",
     "html5-qrcode": "^2.2.7",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.3",

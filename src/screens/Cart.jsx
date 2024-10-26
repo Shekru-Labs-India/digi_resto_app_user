@@ -36,6 +36,7 @@ const Cart = () => {
     } else {
       console.error("User data not found in local storage.");
     }
+    setIsLoading(false);
   }, []);
   
   const getCustomerId = useCallback(() => {
@@ -269,52 +270,53 @@ const Cart = () => {
     );
   }
 
-  return (
-    <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
-    <Toast ref={toast} position="bottom-center" className="custom-toast" />
-
-    <Header title="Cart" count={cartDetails.order_items.length} />
-
-    {cartDetails.order_items.length === 0 ? (
-      <main className="page-content ">
-        <div
-          className="container overflow-hidden d-flex justify-content-center align-items-center"
-          style={{ height: "100vh" }}
-        >
-          <div className="m-b20 dz-flex-box text-center">
-            <div className="dz-cart-about">
-              <h5 className="   ">Your Cart is Empty</h5>
-              <p className=" ">
-                Add items to your cart from the product details page.
-              </p>
-              <Link to="/Menu" className="btn btn-outline-primary btn-sm">
-                Return to Shop
-              </Link>
-            </div>
+  const renderEmptyCart = () => (
+    <main className="page-content">
+      <div
+        className="container overflow-hidden d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <div className="m-b20 dz-flex-box text-center">
+          <div className="dz-cart-about">
+            <h5>Your Cart is Empty</h5>
+            <p>Add items to your cart from the product details page.</p>
+            <Link to="/Menu" className="btn btn-outline-primary btn-sm">
+              Return to Shop
+            </Link>
           </div>
         </div>
-      </main>
-    ) : (
-      <main className="page-content space-top mb-5 pb-3">
-        <div className="container py-0">
-          <HotelNameAndTable
-            restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
-          />
-        </div>
-        <div className="container scrollable-section pt-0">
-          {cartDetails.order_items.map((item, index) => (
-            <Link
-              key={index}
-              to={{
-                pathname: `/ProductDetails/${item.menu_id}`,
-              }}
-              state={{
-                restaurant_id: userData.restaurantId,
-                menu_cat_id: item.menu_cat_id,
-              }}
-              className="text-decoration-none text-reset"
-            >
+      </div>
+    </main>
+  );
+
+  return (
+    <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
+      <Header title="Cart" count={cartDetails.order_items.length} />
+
+      {!userData || cartDetails.order_items.length === 0 ? (
+        renderEmptyCart()
+      ) : (
+        <main className="page-content space-top mb-5 pb-3">
+          <div className="container py-0">
+            <HotelNameAndTable
+              restaurantName={restaurantName}
+              tableNumber={userData?.tableNumber || "1"}
+            />
+          </div>
+          <div className="container scrollable-section pt-0">
+            {cartDetails.order_items.map((item, index) => (
+              <Link
+                key={index}
+                to={{
+                  pathname: `/ProductDetails/${item.menu_id}`,
+                }}
+                state={{
+                  restaurant_id: userData.restaurantId,
+                  menu_cat_id: item.menu_cat_id,
+                }}
+                className="text-decoration-none text-reset"
+              >
                 <div className="card mb-3 rounded-3">
                   <div className="row my-auto ps-3">
                     <div className="col-3 px-0">
@@ -332,6 +334,26 @@ const Cart = () => {
                           e.target.src = images;
                         }}
                       />
+                      {item.offer !== 0 && (
+                        <div
+                          className="gradient_bg d-flex justify-content-center align-items-center"
+                          style={{
+                            position: "absolute",
+                            top: "0px",
+                            left: "1px",
+                            height: "17px",
+                            width: "70px",
+                            borderRadius: "7px 0px 7px 0px",
+                          }}
+                        >
+                          <span className="text-white">
+                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                            <span className="font_size_10">
+                              {item.offer}% Off
+                            </span>
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="col-9 pt-1 pb-0">
                       <div className="row">
@@ -354,14 +376,22 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-5 px-0">
-                          <span className="ps-3  text-success mt-1 font_size_12">
+                        <div className="col-8 px-0">
+                          <span className="ps-3 text-success mt-1 font_size_10">
                             <i className="ri-restaurant-line me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>
-                        <div className="col-4 px-0 text-center">
-                          <div className="offer-code my-auto ">
+                        <div className="col-4 ps-0 text-end">
+                          <span className="font_size_10 fw-normal gray-text me-2">
+                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                            {item.rating}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="offer-code my-auto">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
                                 key={index}
@@ -380,12 +410,6 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
-                        <div className="col-2 text-end ps-0 pe-1">
-                          <i className="ri-star-half-line font_size_14  ratingStar"></i>
-                          <span className="text-center  font_size_12  gray-text">
-                            {item.rating}
-                          </span>
-                        </div>
                       </div>
                       <div className="row ">
                         <div className="col-10 mx-0 my-auto px-0">
@@ -395,10 +419,6 @@ const Cart = () => {
                             </span>
                             <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                               ₹{item.oldPrice || item.price}
-                            </span>
-
-                            <span className="ps-2 text-success font_size_12">
-                              {item.offer || "No "}% Off
                             </span>
                           </p>
                         </div>
@@ -540,7 +560,6 @@ const Cart = () => {
           </div>
 
         </main>
-           
       )}
 
       <Bottom />

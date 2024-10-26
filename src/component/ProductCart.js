@@ -624,8 +624,8 @@ const [customerType, setCustomerType] = useState(null);
                             </span>
                           </div>
                           <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
-                            <i className="ri-star-half-line font_size_14 ratingStar me-1"></i>
-                            <span className="font_size_12 fw-normal gray-text mt-1">
+                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                            <span className="font_size_10 fw-normal gray-text mt-1">
                               {menu.rating}
                             </span>
                           </div>

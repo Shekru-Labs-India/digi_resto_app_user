@@ -582,7 +582,7 @@ const Product = () => {
                       >
                         <div className="row">
                           <div className="col-6">
-                            <div className="fw-medium text-success font_size_12">
+                            <div className="fw-medium text-success font_size_10">
                               <i className="ri-restaurant-line pe-1"></i>
                               {categories.find(
                                 (category) =>
@@ -591,8 +591,8 @@ const Product = () => {
                             </div>
                           </div>
                           <div className="col-6 text-end">
-                            <i className="ri-star-half-line font_size_14 ratingStar"></i>
-                            <span className="font_size_12 fw-normal gray-text">
+                            <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                            <span className="font_size_10 fw-normal gray-text">
                               {menuItem.rating}
                             </span>
                           </div>
