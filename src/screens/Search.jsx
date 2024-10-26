@@ -35,7 +35,7 @@ const Search = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, isMenuItemInCart } = useCart();
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -294,12 +294,16 @@ const Search = () => {
       setNotes("");
       setPortionSize("full");
       setSelectedMenu(null);
+
+      // Dispatch cart updated event
+      window.dispatchEvent(new Event('cartUpdated'));
+      
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
+        detail: error.message || "Failed to add item to cart. Please try again.",
         life: 3000,
       });
     }
@@ -427,12 +431,6 @@ const Search = () => {
       document.body.classList.remove("theme-dark");
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
-
-  const isMenuItemInCart = (menuId) => {
-    // Implement the logic to check if the menu item is in the cart
-    // This is a placeholder implementation
-    return false;
-  };
 
   const userData = JSON.parse(localStorage.getItem("userData"));
 
@@ -562,8 +560,8 @@ const Search = () => {
                           <i
                             className={`${
                               menu.is_favourite
-                                ? "ri-hearts-fill text-danger"
-                                : "ri-heart-2-line"
+                                ? "ri-heart-3-fill text-danger"
+                                : "ri-heart-3-line"
                             } fs-6`}
                             onClick={(e) => {
                               e.preventDefault();

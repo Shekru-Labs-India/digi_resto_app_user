@@ -7,6 +7,7 @@ import "swiper/swiper-bundle.css";
 import { Toast } from "primereact/toast";
 import { useCart } from "../context/CartContext";
 import LoaderGif from "../screens/LoaderGIF";
+import debounce from "lodash/debounce";
 
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -24,13 +25,18 @@ const NearbyArea = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
 
-  // Update initialization of user data
+  // 1. Single useEffect for initialization and data fetching
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
       setCustomerId(userData.customer_id);
     }
-  }, []);
+    
+    // Only fetch if we have a restaurantId
+    if (restaurantId) {
+      fetchMenuData();
+    }
+  }, [restaurantId]); // Only re-run if restaurantId changes
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -86,21 +92,83 @@ const NearbyArea = () => {
     }
   }, [restaurantId, customerId]);
 
-  useEffect(() => {
-    fetchMenuData();
-  }, [fetchMenuData]);
+  // 3. Modify handleConfirmAddToCart to remove unnecessary API call
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
 
-  useEffect(() => {
-    const handleFocus = () => {
-      fetchMenuData();
-    };
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
 
-    window.addEventListener("focus", handleFocus);
+    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
+    
+    if (!selectedPrice) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Price information is not available.",
+        life: 2000,
+      });
+      return;
+    }
 
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-    };
-  }, [fetchMenuData]);
+    try {
+      await addToCart({
+        ...selectedMenu,
+        quantity: 1,
+        notes,
+        half_or_full: portionSize,
+        price: selectedPrice,
+        restaurant_id: restaurantId
+      }, restaurantId);
+
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: selectedMenu.name,
+        life: 3000,
+      });
+
+      setShowModal(false);
+      setNotes('');
+      setPortionSize('full');
+      setSelectedMenu(null);
+      
+      // Remove fetchCartItems call
+      // const updatedCartItems = await fetchCartItems();
+      // localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      
+      // Just dispatch the event
+      window.dispatchEvent(new Event('cartUpdated'));
+
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add item to cart. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+
+  // 5. Keep the focus handler but with a debounce
+  // useEffect(() => {
+  //   const handleFocus = debounce(() => {
+  //     if (restaurantId) {
+  //       fetchMenuData();
+  //     }
+  //   }, 1000);
+
+  //   window.addEventListener("focus", handleFocus);
+
+  //   return () => {
+  //     window.removeEventListener("focus", handleFocus);
+  //     handleFocus.cancel();
+  //   };
+  // }, [fetchMenuData]);
 
   useEffect(() => {
     if (menuItems.length > 0) {
@@ -277,98 +345,6 @@ const NearbyArea = () => {
     setShowModal(true);
   };
 
-  // Update handleConfirmAddToCart function
-  const handleConfirmAddToCart = async () => {
-    if (!selectedMenu) return;
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      navigate("/Signinscreen");
-      return;
-    }
-
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
-    if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
-      return;
-    }
-
-    try {
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
-
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.name,
-        life: 3000,
-      });
-
-      setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
-      setSelectedMenu(null);
-
-      // Update cart items
-      const updatedCartItems = await fetchCartItems();
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      
-      // Dispatch cart update event
-      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
-    }
-  };
-
-  // Update fetchCartItems function
-  const fetchCartItems = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) return [];
-
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: localStorage.getItem("cartId"),
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
-      return [];
-    }
-  };
-
   return (
     <div className="dz-box style-2 nearby-area">
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
@@ -422,8 +398,8 @@ const NearbyArea = () => {
                         <i
                           className={`${
                             menuItem.is_favourite
-                              ? "ri-hearts-fill text-danger"
-                              : "ri-heart-2-line"
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();

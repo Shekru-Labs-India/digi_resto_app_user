@@ -6,53 +6,61 @@ const Bottom = () => {
   const location = useLocation();
   const { restaurantCode } = useRestaurantId();
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("userData")) || {}
-  );
+  const [userData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
 
   useEffect(() => {
+    // Create a reference to track if the API call has been made
+    let isFirstCall = true;
+    
     const updateCartItemCount = async () => {
+      // Only proceed if this is the first call
+      if (!isFirstCall) return;
+      isFirstCall = false;
+
       const customerId = userData?.customer_id;
       const cartId = localStorage.getItem("cartId");
       const restaurantId = localStorage.getItem("restaurantId");
 
-      if (customerId && cartId && restaurantId) {
-        try {
-          const response = await fetch(
-            "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                cart_id: cartId,
-                customer_id: customerId,
-                restaurant_id: restaurantId,
-              }),
-            }
-          );
+      if (!customerId || !cartId || !restaurantId) {
+        setCartItemCount(0);
+        return;
+      }
 
-          const data = await response.json();
-          if (data.st === 1 && data.order_items) {
-            setCartItemCount(data.order_items.length);
-          } else {
-            setCartItemCount(0);
+      try {
+        const response = await fetch(
+          "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cart_id: cartId,
+              customer_id: customerId,
+              restaurant_id: restaurantId,
+            }),
           }
-        } catch (error) {
-          console.error("Error fetching cart count:", error);
+        );
+
+        const data = await response.json();
+        if (data.st === 1 && data.order_items) {
+          setCartItemCount(data.order_items.length);
+        } else {
           setCartItemCount(0);
         }
+      } catch (error) {
+        console.error("Error fetching cart count:", error);
+        setCartItemCount(0);
       }
     };
 
     updateCartItemCount();
 
-    // Set up an interval to update the cart count every few seconds
-    const intervalId = setInterval(updateCartItemCount, 2000);
-
-    return () => clearInterval(intervalId);
-  }, [userData]);
+    // Cleanup function
+    return () => {
+      isFirstCall = false;
+    };
+  }, [userData]); // Only depend on userData
 
   return (
     <div className="menubar-area footer-fixed">
@@ -75,7 +83,7 @@ const Bottom = () => {
             location.pathname === "/Wishlist" ? "nav-link active" : "nav-link"
           }
         >
-          <i className="ri-heart-2-line fs-3"></i>
+          <i className="ri-heart-3-line fs-3"></i>
           <span className="name    ">Favourite</span>
         </Link>
         <Link

@@ -60,7 +60,7 @@ export const RestaurantIdProvider = ({ children }) => {
     };
 
     fetchRestaurantDetails();
-  }, [restaurantCode, navigate]);
+  }, [, navigate]);
 
   useEffect(() => {
     // Load restaurant data from localStorage on initial render
