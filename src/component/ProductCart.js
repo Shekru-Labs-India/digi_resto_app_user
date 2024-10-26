@@ -119,11 +119,11 @@ const ProductCard = () => {
   }, [restaurantId]);
 
   useEffect(() => {
-    if (restaurantId) {
-      console.log("Triggering fetchMenuData");
+    if (restaurantId && !hasFetchedData.current) {
+      console.log("Restaurant ID changed or initial load, fetching menu data");
       fetchMenuData(null);
-    } else {
-      console.log("Missing restaurantId for initial fetch");
+      setSelectedCategoryId(null);
+      hasFetchedData.current = true;
     }
   }, [restaurantId, fetchMenuData]);
 
@@ -176,14 +176,6 @@ const ProductCard = () => {
       return () => clearTimeout(timer);
     }
   }, [menuCategories]);
-
-  useEffect(() => {
-    if (restaurantId) {
-      console.log("Restaurant ID changed, fetching menu data");
-      debouncedFetchMenuData(null);
-      setSelectedCategoryId(null);
-    }
-  }, [restaurantId, debouncedFetchMenuData]);
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);

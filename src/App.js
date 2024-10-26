@@ -26,6 +26,7 @@ import ValidateAndNavigate from "./components/ValidateAndNavigate";
 
 import QRScreen from "./screens/QRScreen";
 import AllOrderList from "./component/AllOrderList";
+import HeartAnimation from "./components/HeartAnimation";
 import 'primereact/resources/themes/saga-blue/theme.css'; // Theme
 import 'primereact/resources/primereact.min.css';         // Core CSS
 // import 'primeicons/primeicons.css';                       // Icons CSS
@@ -50,6 +51,7 @@ function App() {
           <CartProvider>
             <Routes>
               <Route path="/AllOrderList" element={<AllOrderList />} />
+              <Route path="/HeartAnimation" element={<HeartAnimation />} />
             <Route
               path="/:restaurantCode/:table_number"
               element={<HomeScreen />}
