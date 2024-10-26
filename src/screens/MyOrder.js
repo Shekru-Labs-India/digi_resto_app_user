@@ -132,15 +132,18 @@ const MyOrder = () => {
       <main className="page-content space-top mb-5 pb-3">
         <div className="container px-1">
           <div className="nav nav-tabs nav-fill " role="tablist">
-
             <button
-              className={`nav-link px-0 ${activeTab === "placed" ? "active" : ""}`}
+              className={`nav-link px-0 ${
+                activeTab === "placed" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("placed")}
             >
               Placed
             </button>
             <button
-              className={`nav-link px-0 ${activeTab === "ongoing" ? "active" : ""}`}
+              className={`nav-link px-0 ${
+                activeTab === "ongoing" ? "active" : ""
+              }`}
               onClick={() => setActiveTab("ongoing")}
             >
               Ongoing
@@ -235,7 +238,10 @@ const MyOrder = () => {
                   </div>
                 </div>
               ) : (
-                <SigninButton />
+                <>
+                  <SigninButton />
+                  <Bottom />
+                </>
               )}
             </>
           )}

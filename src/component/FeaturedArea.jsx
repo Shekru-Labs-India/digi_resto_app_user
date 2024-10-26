@@ -142,9 +142,9 @@ const FeaturedArea = () => {
                       </div>
                       <div className="col-6">
                         {" "}
-                        <p className="fs-5 ">
+                        <p className="fs-5 font_size_10">
                           <i
-                            class="ri-star-half-line ratingStar"
+                            class="ri-star-half-line ratingStar font_size_10"
                   
                           ></i>
                           {menu.rating}

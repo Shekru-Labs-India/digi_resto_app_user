@@ -363,10 +363,16 @@ const Signupscreen = () => {
               <i class="ri-telegram-line ri-xl "></i>
             </a>
           </div>
-          <p className="text-center text-md-center mt-5">
+          <p className="text-center text-md-center mt-5 gray-text">
             <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
-            <a href="https://www.shekruweb.com" tra>Shekru Labs India Pvt. Ltd.</a>
-          <div className="">v1.1</div>
+            <a
+              className="gray-text"
+              href="https://www.shekruweb.com"
+              target="_blank"
+            >
+              Shekru Labs India Pvt. Ltd.
+            </a>
+            <div className="">v1.1</div>
           </p>
         </div>
       </div>

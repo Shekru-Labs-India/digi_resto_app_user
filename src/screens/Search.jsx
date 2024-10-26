@@ -526,8 +526,8 @@ const Search = () => {
                           </div>
 
                           <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <i className="ri-star-half-line font_size_14 ms-4 ratingStar "></i>
-                            <span className="font_size_12 fw-normal gray-text">
+                            <i className="ri-star-half-line font_size_10 ms-4 ratingStar "></i>
+                            <span className="font_size_10 fw-normal gray-text">
                               {parseFloat(menu.rating).toFixed(1)}
                             </span>
                           </div>

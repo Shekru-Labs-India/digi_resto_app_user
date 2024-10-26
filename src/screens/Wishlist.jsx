@@ -572,7 +572,6 @@ const Wishlist = () => {
                                             }}
                                           >
                                             <i class="ri-delete-bin-line me-1 font_size_14 gray-text"></i>
-                                            
                                           </div>
                                         </div>
                                       </div>
@@ -603,9 +602,9 @@ const Wishlist = () => {
                                             </div>
                                           )}
                                         </div>
-                                        <div className="col-4 text-end">
-                                          <i className="ri-star-half-line font_size_14 ratingStar "></i>
-                                          <span className="font_size_12  fw-normal gray-text">
+                                        <div className="col-4 text-end ">
+                                          <i className="ri-star-half-line font_size_10 ratingStar "></i>
+                                          <span className="font_size_10  fw-normal gray-text">
                                             {menu.rating || 0.1}
                                           </span>
                                         </div>
@@ -624,7 +623,9 @@ const Wishlist = () => {
                                         </div>
 
                                         <div className="col-6 d-flex justify-content-end">
-                                          {customerId && menu.restaurant_id === restaurantId ? (
+                                          {customerId &&
+                                          menu.restaurant_id ===
+                                            restaurantId ? (
                                             <div
                                               className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
                                               style={{
@@ -697,15 +698,14 @@ const Wishlist = () => {
           >
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
-                <span className=" ">
-                  Please log in to view your favourites.
+                <div className="">
+                  <Link className="btn btn-outline-primary rounded-pill" to="/Signinscreen">
+                    <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                  </Link>
+                </div>
+                <span className="mt-4">
+                  Access fresh flavors with a quick login.
                 </span>
-                <Link
-                  className="btn btn-outline-primary mt-3  "
-                  to="/Signinscreen"
-                >
-                  <i className="ri-lock-2-line me-2 "></i> Login
-                </Link>
               </div>
             </div>
           </div>

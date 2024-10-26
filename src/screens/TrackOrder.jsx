@@ -864,8 +864,8 @@ const TrackOrder = () => {
                                   onClick={() => handleMenuClick(menu.menu_id)}
                                   style={{ cursor: "pointer" }}
                                 >
-                                  <span className="    gray-text">
-                                    <i className="ri-star-half-line pe-1  ratingStar"></i>
+                                  <span className=" font_size_10   gray-text">
+                                    <i className="ri-star-half-line pe-1  ratingStar font_size_10"></i>
                                     {parseFloat(menu.rating).toFixed(1)}
                                   </span>
                                 </span>
@@ -993,8 +993,8 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                                 <div className="col-4 text-end px-0">
-                                  <i className="ri-star-half-line ratingStar font_size_12"></i>
-                                  <span className="  gray-text font_size_12 fw-medium">
+                                  <i className="ri-star-half-line ratingStar font_size_10"></i>
+                                  <span className="  gray-text font_size_10 fw-medium">
                                     {parseFloat(menu.rating).toFixed(1)}
                                   </span>
                                 </div>
@@ -1098,8 +1098,8 @@ const TrackOrder = () => {
                                   </span>
                                 </div>
                                 <div className="col-4 text-end px-0">
-                                  <span className="gray-text">
-                                    <i className="ri-star-half-line ms-4 ratingStar"></i>
+                                  <span className="gray-text font_size_10">
+                                    <i className="ri-star-half-line ms-4 ratingStar font_size_10"></i>
                                     {parseFloat(menu.rating).toFixed(1)}
                                   </span>
                                 </div>

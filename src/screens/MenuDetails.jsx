@@ -49,6 +49,9 @@ const MenuDetails = () => {
     if (storedUserData) {
       setUserData(storedUserData);
       setCustomerId(storedUserData.customer_id);
+    } else {
+      // If user is not logged in, redirect to login page
+      navigate("/Signinscreen", { state: { from: location.pathname } });
     }
 
     // Retrieve the current restaurant ID from localStorage or URL params
@@ -57,7 +60,7 @@ const MenuDetails = () => {
     const urlRestaurantId = urlParams.get("restaurantId");
     
     setCurrentRestaurantId(storedRestaurantId || urlRestaurantId || restaurantId);
-  }, [restaurantId]);
+  }, [restaurantId, navigate, location.pathname]);
  
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -202,7 +205,7 @@ const MenuDetails = () => {
 
   const handleAddToCart = () => {
     if (!customerId || !currentRestaurantId) {
-      navigate("/Signinscreen");
+      navigate("/Signinscreen", { state: { from: location.pathname } });
       return;
     }
 
@@ -282,15 +285,15 @@ const MenuDetails = () => {
 
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData || !currentRestaurantId) {
-      console.error("Missing required data");
-      navigate("/Signinscreen");
+    if (!customerId) {
+      navigate("/Signinscreen", { state: { from: location.pathname } });
       return;
     }
 
-    if (!userData.customer_id) {
-      navigate("/Signinscreen");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData || !userData.customer_id) {
+      console.error("Missing required data");
+      navigate("/Signinscreen", { state: { from: location.pathname } });
       return;
     }
 
@@ -298,7 +301,7 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-      const currentRestaurantId = productDetails.restaurant_id || currentRestaurantId; 
+    const restaurantIdToUse = productDetails?.restaurant_id || restaurantId;
 
     try {
       const response = await fetch(apiUrl, {
@@ -307,10 +310,9 @@ const MenuDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurant_id: currentRestaurantId,
+          restaurant_id: restaurantIdToUse,
           menu_id: menuId,
           customer_id: userData.customer_id,
-          // half_or_full: portionSize,
         }),
       });
 
@@ -319,10 +321,10 @@ const MenuDetails = () => {
         if (data.st === 1) {
           const updatedFavoriteStatus = !isFavorite;
           setIsFavorite(updatedFavoriteStatus);
-          setProductDetails({
-            ...productDetails,
+          setProductDetails((prevDetails) => ({
+            ...prevDetails,
             is_favourite: updatedFavoriteStatus,
-          });
+          }));
           toast.current.show({
             severity: updatedFavoriteStatus ? "success" : "info",
             summary: updatedFavoriteStatus
@@ -534,8 +536,8 @@ const MenuDetails = () => {
                     )}
                   </div>
                   <div className="col-4 text-end px-0 ">
-                    <i className="ri-star-half-line font_size_14 ratingStar"></i>
-                    <span className="font_size_12  fw-normal gray-text">
+                    <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                    <span className="font_size_10  fw-normal gray-text">
                       {productDetails.rating}
                     </span>
                   </div>
