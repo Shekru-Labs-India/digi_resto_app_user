@@ -12,6 +12,7 @@ const Profile = () => {
     const { restaurantId, tableNumber, restaurantCode } = JSON.parse(
       localStorage.getItem("userData") || "{}"
     );
+    localStorage.removeItem("customer_id");
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
     localStorage.setItem("RestaurantId", restaurantId);

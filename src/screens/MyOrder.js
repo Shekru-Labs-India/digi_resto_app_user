@@ -18,22 +18,33 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
+  
   const toast = useRef(null);
   const { restaurantName, restaurantId } = useRestaurantId();
-  const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("ongoing");
   const [orders, setOrders] = useState({});
   const navigate = useNavigate();
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  const customerId = userData ? userData.customer_id : null;
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [customerId, setCustomerId] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+    
+    setIsLoggedIn(!!currentCustomerId);
+    setCustomerId(currentCustomerId);
+    setCustomerType(currentCustomerType);
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -44,6 +55,17 @@ const MyOrder = () => {
       try {
         setLoading(true);
         console.log("Fetching orders...");
+        
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+        const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+
+        if (!currentCustomerId || !restaurantId) {
+          console.log("Missing customerId or restaurantId");
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(
           "https://menumitra.com/user_api/get_order_list",
           {
@@ -54,7 +76,8 @@ const MyOrder = () => {
             body: JSON.stringify({
               restaurant_id: restaurantId,
               order_status: activeTab,
-              customer_id: customerId,
+              customer_id: currentCustomerId,
+              customer_type: currentCustomerType
             }),
           }
         );
@@ -84,27 +107,10 @@ const MyOrder = () => {
 
     if (customerId && restaurantId) {
       fetchOrders();
-    } else {
-      console.log("Missing customerId or restaurantId");
-      setLoading(false);
     }
   }, [activeTab, customerId, restaurantId]);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const getFirstName = (name) => {
-    if (!name) return "User";
-    const words = name.split(" ");
-    return words[0];
-  };
-
-  const toggleTheme = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", newIsDarkMode);
-  };
+  
 
   useEffect(() => {
     if (isDarkMode) {
@@ -131,36 +137,16 @@ const MyOrder = () => {
 
       <main className="page-content space-top mb-5 pb-3">
         <div className="container px-1">
-          <div className="nav nav-tabs nav-fill " role="tablist">
-
-            <button
-              className={`nav-link px-0 ${activeTab === "placed" ? "active" : ""}`}
-              onClick={() => setActiveTab("placed")}
-            >
-              Placed
-            </button>
-            <button
-              className={`nav-link px-0 ${activeTab === "ongoing" ? "active" : ""}`}
-              onClick={() => setActiveTab("ongoing")}
-            >
-              Ongoing
-            </button>
-            <button
-              className={`nav-link px-0 ${
-                activeTab === "completed" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("completed")}
-            >
-              Completed
-            </button>
-            <button
-              className={`nav-link px-0 ${
-                activeTab === "canceled" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("canceled")}
-            >
-              Canceled
-            </button>
+          <div className="nav nav-tabs nav-fill" role="tablist">
+            {["placed", "ongoing", "completed", "canceled"].map((tab) => (
+              <button
+                key={tab}
+                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -173,7 +159,7 @@ const MyOrder = () => {
             </div>
           ) : (
             <>
-              {userData ? (
+              {customerId ? (
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
@@ -272,6 +258,9 @@ const OrdersTab = ({ orders, type, activeTab }) => {
   };
 
   const handleCompleteOrder = async (orderId) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
@@ -339,15 +328,18 @@ const OrdersTab = ({ orders, type, activeTab }) => {
 
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await fetch("https://menumitra.com/user_api/cancel_order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/cancel_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (data.st === 1) {
@@ -382,8 +374,6 @@ const OrdersTab = ({ orders, type, activeTab }) => {
       });
     }
   };
-
-
 
   const toggleExpandAll = () => {
     const newExpandAll = !expandAll;
@@ -517,8 +507,6 @@ const OrdersTab = ({ orders, type, activeTab }) => {
                             Order canceled
                           </span>
                         )}
-
-
                       </div>
                     )}
                   </div>
@@ -527,7 +515,6 @@ const OrdersTab = ({ orders, type, activeTab }) => {
             </div>
           </div>
         ))}
-       
       </>
     );
   };

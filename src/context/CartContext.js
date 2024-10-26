@@ -65,11 +65,24 @@ export const CartProvider = ({ children }) => {
     return cartItems.some(item => item.menu_id === menuId);
   }, [cartItems]);
 
-  const addToCart = async (item, customerId, restaurantId) => {
+  const addToCart = async (item, restaurantId) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      throw new Error("User not logged in");
+    }
+  
+    if (!restaurantId) {
+      const storedRestaurantId = localStorage.getItem("restaurantId");
+      if (!storedRestaurantId) {
+        throw new Error("Restaurant ID not found");
+      }
+      restaurantId = storedRestaurantId;
+    }
+  
     if (isMenuItemInCart(item.menu_id)) {
       throw new Error("Item is already in the cart");
     }
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/add_to_cart",
@@ -79,7 +92,8 @@ export const CartProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: customerId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type,
             restaurant_id: restaurantId,
             menu_id: item.menu_id,
             quantity: item.quantity || 1,
@@ -88,11 +102,20 @@ export const CartProvider = ({ children }) => {
           }),
         }
       );
-
+  
       const data = await response.json();
       if (data.st === 1) {
-        setCartItems((prevItems) => [...prevItems, { ...item, quantity: 1 }]);
+        setCartItems((prevItems) => [...prevItems, { 
+          ...item, 
+          quantity: 1,
+          restaurant_id: restaurantId // Add restaurant_id to cart item
+        }]);
         setCartId(data.cart_id);
+        
+        // Store restaurant ID in localStorage if not already stored
+        if (!localStorage.getItem("restaurantId")) {
+          localStorage.setItem("restaurantId", restaurantId);
+        }
       } else {
         console.error("Failed to add item to cart:", data.msg);
         throw new Error(data.msg || "Failed to add item to cart");

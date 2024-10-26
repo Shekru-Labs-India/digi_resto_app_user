@@ -11,6 +11,7 @@ import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import LoaderGif from "./LoaderGIF";
+import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 const MenuDetails = () => {
   const toast = useRef(null);
@@ -201,16 +202,27 @@ const MenuDetails = () => {
   };
 
   const handleAddToCart = () => {
-    if (!customerId || !currentRestaurantId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+  
+    if (!currentCustomerId || !currentRestaurantId) {
       navigate("/Signinscreen");
       return;
     }
-
+  
     fetchHalfFullPrices();
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
+    const { customerId, customerType } = getUserData();
+    const { restaurantId } = getRestaurantData();
+
+    if (!customerId || !restaurantId) {
+      navigate("/Signinscreen");
+      return;
+    }
+
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
@@ -229,8 +241,9 @@ const MenuDetails = () => {
         quantity, 
         notes, 
         half_or_full: portionSize,
-        price: selectedPrice
-      }, customerId, currentRestaurantId);
+        price: selectedPrice,
+        restaurant_id: restaurantId
+      }, restaurantId);
       
       toast.current.show({
         severity: "success",

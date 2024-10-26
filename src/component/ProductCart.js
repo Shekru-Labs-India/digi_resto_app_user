@@ -9,6 +9,7 @@ import Signinscreen from "./../screens/Signinscreen";
 import LoaderGif from "../screens/LoaderGIF";
 import { Toast } from "primereact/toast";
 import { useCart } from "../context/CartContext";
+import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
@@ -29,8 +30,7 @@ const ProductCard = () => {
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const { cartItems, addToCart, removeFromCart ,isMenuItemInCart } = useCart();
-  const [customerId, setCustomerId] = useState(null);
+  
 
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
@@ -45,11 +45,24 @@ const ProductCard = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const { cartItems, addToCart, removeFromCart, isMenuItemInCart } = useCart();
+const [customerId, setCustomerId] = useState(null);
+const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData && storedUserData.customer_id) {
       setCustomerId(storedUserData.customer_id);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    const storedCustomerId = localStorage.getItem("customer_id");
+    const storedCustomerType = localStorage.getItem("customer_type");
+    if (storedCustomerId && storedCustomerType) {
+      setCustomerId(storedCustomerId);
+      setCustomerType(storedCustomerType);
     }
   }, []);
 
@@ -350,10 +363,10 @@ const ProductCard = () => {
   };
 
   const handleAddToCartClick = (menu) => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
+    const { customerId, customerType } = getUserData();
+    const { restaurantId } = getRestaurantData();
 
-    if (!currentCustomerId || !restaurantId) {
+    if (!customerId || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
@@ -374,15 +387,26 @@ const ProductCard = () => {
     setShowModal(true);
   };
 
+
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
   
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = storedUserData ? storedUserData.customer_id : null;
-  
-    if (!currentCustomerId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
       console.error("Customer ID not found");
       navigate("/Signinscreen");
+      return;
+    }
+  
+    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+    if (!currentRestaurantId) {
+      console.error("Restaurant ID not found");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information is missing.",
+        life: 3000,
+      });
       return;
     }
   
@@ -404,8 +428,9 @@ const ProductCard = () => {
         quantity: 1,
         notes,
         half_or_full: portionSize,
-        price: selectedPrice
-      }, currentCustomerId, restaurantId);
+        price: selectedPrice,
+        restaurant_id: currentRestaurantId // Add restaurant_id to the item
+      }, currentRestaurantId);
   
       toast.current.show({
         severity: "success",
@@ -715,14 +740,14 @@ const ProductCard = () => {
                 <div className="modal-title font_size_16 fw-medium">
                   Add to Cart
                 </div>
-                <button
-                  type="button"
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
+                <span
+                  
+                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white fs-4"
                   onClick={() => setShowModal(false)}
                   aria-label="Close"
                 >
-                  <i className="ri-close-line"></i>
-                </button>
+                  <i className="ri-close-line "></i>
+                </span>
                 <button
                   type="button"
                   className="btn-close"

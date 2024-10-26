@@ -40,10 +40,9 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   const [loading, setLoading] = useState(true);
   const { restaurantId } = useRestaurantId();
   const { restaurantName } = useRestaurantId();
-  const [userData, setUserData] = useState(
-    JSON.parse(localStorage.getItem("userData")) || {}
-  );
-  const customerId = userData.customer_id;
+  const [userData, setUserData] = useState(null);
+  const [customerId, setCustomerId] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
   const navigate = useNavigate();
   const { cartItems, addToCart, isMenuItemInCart } = useCart(); // Add this line
   const toast = useRef(null); // Add this line
@@ -262,19 +261,20 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   }, [menuLists]);
 
   const handleLikeClick = async (menuId) => {
-    if (!customerId || !restaurantId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
     }
-  
+
     const menuItem = menuLists.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
-  
+
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
-  
+
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -284,38 +284,36 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
         body: JSON.stringify({
           restaurant_id: restaurantId,
           menu_id: menuId,
-          customer_id: customerId,
+          customer_id: userData.customer_id,
+          customer_type: userData.customer_type
         }),
       });
-  
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1) {
-          const updatedFavoriteStatus = !isFavorite;
-          const updatedMenuLists = menuLists.map((item) =>
-            item.menu_id === menuId
-              ? { ...item, is_favourite: updatedFavoriteStatus }
-              : item
-          );
-          setMenuLists(updatedMenuLists);
-  
-          // Dispatch the favoriteUpdated event
-          window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
-            detail: { menuId, isFavorite: updatedFavoriteStatus } 
-          }));
-  
-          // Optionally, you can add a toast notification here
-          toast.current.show({
-            severity: updatedFavoriteStatus ? "success" : "error",
-            summary: updatedFavoriteStatus ? "Added to Favorites" : "Removed from Favorites",
-            detail: `${menuItem.name} has been ${updatedFavoriteStatus ? "added to" : "removed from"} your favorites.`,
-            life: 3000,
-          });
-        }
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        // Update local state
+        setMenuLists((prevMenuLists) =>
+          prevMenuLists.map((item) =>
+            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+          )
+        );
+
+        // Dispatch event for other components
+        window.dispatchEvent(
+          new CustomEvent("favoriteUpdated", {
+            detail: { menuId, isFavorite: !isFavorite },
+          })
+        );
+
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+          life: 3000,
+        });
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
-      // Optionally, you can add an error toast notification here
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -389,7 +387,8 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   };
 
   const handleAddToCartClick = async (menu) => {
-    if (!customerId || !restaurantId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || !restaurantId) {
       console.error("Missing required data");
       navigate("/Signinscreen");
       return;
@@ -422,7 +421,13 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-
+  
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+  
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
@@ -434,42 +439,36 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
       });
       return;
     }
-
+  
     try {
       await addToCart({
         ...selectedMenu,
         quantity: 1,
         notes,
         half_or_full: portionSize,
-        price: selectedPrice
-      }, customerId, restaurantId);
-
+        price: selectedPrice,
+        restaurant_id: restaurantId
+      }, restaurantId);
+  
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
         detail: selectedMenu.name,
         life: 3000,
       });
-
+  
       setShowModal(false);
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
-
-      // Update cart items in local storage and state
+  
+      // Update cart items
       const updatedCartItems = await fetchCartItems();
       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-      // Update cart restaurant ID
-      if (updatedCartItems.length > 0) {
-        setCartRestaurantId(updatedCartItems[0].restaurant_id);
-      } else {
-        setCartRestaurantId(null);
-      }
-
-      // Dispatch a custom event to notify other components of the cart update
+  
+      // Dispatch cart update event
       window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-
+  
     } catch (error) {
       console.error("Error adding item to cart:", error);
       toast.current.show({
@@ -484,6 +483,9 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
   
 
   const fetchCartItems = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) return [];
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -494,23 +496,29 @@ const OfferBanner = ({latestOngoingOrder: initialLatestOngoingOrder}) => {
           },
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId"),
-            customer_id: customerId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type,
             restaurant_id: restaurantId,
           }),
         }
       );
-
+  
       const data = await response.json();
-      if (response.ok && data.st === 1 && data.order_items) {
-        return data.order_items;
-      } else {
-        return [];
-      }
+      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
     } catch (error) {
       console.error("Error fetching cart items:", error);
       return [];
     }
   };
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (userData) {
+      setUserData(userData);
+      setCustomerId(userData.customer_id);
+      setCustomerType(userData.customer_type);
+    }
+  }, []);
 
   return (
     <div className="dz-box style-3">
