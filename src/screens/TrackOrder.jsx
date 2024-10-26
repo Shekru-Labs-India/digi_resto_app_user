@@ -22,9 +22,9 @@ const TrackOrder = () => {
   const navigate = useNavigate();
   const { order_number } = useParams();
   const { orderId } = useParams();
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
-  const customerId = userData ? userData.customer_id : null;
+  
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
   const [userData2, setUserData] = useState(null);
@@ -42,7 +42,9 @@ const TrackOrder = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [notes, setNotes] = useState("");
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-
+  const customerId = localStorage.getItem("customer_id");
+  const customerType = localStorage.getItem("customer_type");
+  
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
@@ -254,18 +256,7 @@ const TrackOrder = () => {
     localStorage.setItem("pendingItems", JSON.stringify(pendingItems));
   }, [pendingItems]);
 
-  const getCustomerId = () => {
-    return userData ? userData.customer_id : null;
-  };
-
-  const getRestaurantId = () => {
-    return userData ? userData.restaurantId : null;
-  };
-
-  const getCartId = () => {
-    const cartId = localStorage.getItem("cartId");
-    return cartId ? parseInt(cartId, 10) : 1;
-  };
+  
 
   const handleRemovePendingItem = (menuId) => {
     setPendingItems((prevItems) =>
@@ -411,13 +402,15 @@ const TrackOrder = () => {
           },
           body: JSON.stringify({
             order_number: orderNumber,
+            customer_id: customerId,
+            customer_type: customerType,
           }),
         }
       );
-
+  
       if (response.ok) {
         const data = await response.json();
-
+  
         if (data.st === 1 && data.lists) {
           setOrderDetails(data.lists);
           setIsCompleted(
@@ -425,12 +418,24 @@ const TrackOrder = () => {
           );
         } else {
           console.error("Invalid data format:", data);
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to fetch order details. Please try again.",
+            life: 3000,
+          });
         }
       } else {
-        console.error("Network response was not ok.");
+        throw new Error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to fetch order details. Please try again.",
+        life: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -448,12 +453,13 @@ const TrackOrder = () => {
           body: JSON.stringify({
             order_id: orderDetails.order_details.order_id,
             customer_id: customerId,
+            customer_type: customerType,
             restaurant_id: restaurantId,
             order_items: pendingItems.map((item) => ({
               menu_id: item.menu_id,
               quantity: item.quantity.toString(),
-              half_or_full: item.half_or_full || "full", // Use the selected portion size
-              comment: item.notes || "", // Use the notes as comments
+              half_or_full: item.half_or_full || "full",
+              comment: item.notes || "",
             })),
           }),
         }
@@ -516,6 +522,12 @@ const TrackOrder = () => {
       console.error("Error fetching order status:", error);
     }
   };
+
+  useEffect(() => {
+    if (order_number) {
+      fetchOrderDetails(order_number);
+    }
+  }, [order_number]);
 
   const handleCategoryClick = (categoryId, categoryName) => {
     navigate(`/Category/${categoryId}`, {
@@ -774,7 +786,7 @@ const TrackOrder = () => {
             )}
           </div>
 
-          {userData ? (
+          {customerId ? (
             <section className="container mt-1 py-1">
               {/* Searched menu items */}
               {!isCompleted && searchedMenu.length > 0 && (
@@ -1140,7 +1152,7 @@ const TrackOrder = () => {
           )}
         </main>
 
-        {userData && orderDetails && (
+        {customerId && orderDetails && (
           <div className="container mb-4 pt-0 z-3">
             <div className="card mt-2 p-0 mb-5 ">
               <div className="card-body mx-auto rounded-3 p-0">

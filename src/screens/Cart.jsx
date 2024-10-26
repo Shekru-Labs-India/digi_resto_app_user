@@ -13,6 +13,7 @@ import "primeicons/primeicons.css";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
+import { getUserData } from "../utils/userUtils";
 
 const Cart = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
@@ -22,21 +23,54 @@ const Cart = () => {
   const navigate = useNavigate();
   const toast = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [customerId, setCustomerId] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
+
 
   useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
-      setUserData(storedUserData);
+    const storedCustomerId = localStorage.getItem("customer_id");
+    const storedCustomerType = localStorage.getItem("customer_type");
+    if (storedCustomerId && storedCustomerType) {
+      setUserData({ customer_id: storedCustomerId, customer_type: storedCustomerType });
+    } else {
+      console.error("User data not found in local storage.");
     }
     setIsLoading(false);
   }, []);
-
+  
   const getCustomerId = useCallback(() => {
-    return userData?.customer_id || null;
-  }, [userData]);
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.customer_id || localStorage.getItem("customer_id") || null;
+  }, []);
 
   const getCartId = useCallback(() => {
     return localStorage.getItem("cartId") || null;
+  }, []);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const { customerId, customerType, isGuest } = getUserData();
+      
+      if (customerId) {
+        setIsLoggedIn(true);
+        setCustomerId(customerId);
+        setCustomerType(customerType);
+        setUserData({ customer_id: customerId, customer_type: customerType });
+        fetchCartDetails(customerId);
+      } else {
+        setIsLoggedIn(false);
+        setCustomerId(null);
+        setCustomerType(null);
+        setUserData(null);
+        setIsLoading(false);
+      }
+    };
+  
+    checkLoginStatus();
+    const intervalId = setInterval(checkLoginStatus, 5000);
+  
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchCartDetails = useCallback(async () => {
@@ -114,18 +148,38 @@ const Cart = () => {
   }, [userData, restaurantId, fetchCartDetails]);
 
 
-  
+  const handleProceedToBuy = () => {
+    const checkoutData = {
+      cartItems: cartDetails.order_items,
+      totalBill: cartDetails.total_bill,
+      serviceCharges: cartDetails.service_charges_amount,
+      serviceChargesPercent: cartDetails.service_charges_percent,
+      gstAmount: cartDetails.gst_amount,
+      gstPercent: cartDetails.gst_percent,
+      discountAmount: cartDetails.discount_amount,
+      discountPercent: cartDetails.discount_percent,
+      grandTotal: cartDetails.grand_total,
+      customerId: userData.customer_id,
+      customerType: userData.customer_type,
+      restaurantId: restaurantId,
+      restaurantName: restaurantName,
+      cartId: getCartId(),
+    };
+
+    navigate("/Checkout", { state: { checkoutData } });
+  };
 
   const handleRemoveFromCart = async (item) => {
+    const currentCustomerId = getCustomerId();
     try {
-      await removeFromCart(item.menu_id, userData.customer_id, restaurantId);
+      await removeFromCart(item.menu_id, currentCustomerId, restaurantId);
       toast.current.show({
         severity: "success",
         summary: "Item Removed",
         detail: `${item.menu_name} has been removed from your cart.`,
         life: 2000,
       });
-      fetchCartDetails(); // Refresh cart details after removal
+      fetchCartDetails();
     } catch (error) {
       console.error("Error removing item from cart:", error);
       toast.current.show({
@@ -479,20 +533,18 @@ const Cart = () => {
                 </div>
               </div>
               <div className="container d-flex align-items-center justify-content-center pt-0">
-                <Link
-                  to="/Checkout"
-                  state={{ cartItems: cartDetails.order_items }}
-                  className="btn btn-success   rounded-pill text-white px-5"
-                >
-                  Proceed to Buy &nbsp;{" "}
-                  <b>
-                    {" "}
-                    <span className="small-number gray-text">
-                      ({cartDetails.order_items.length} items)
-                    </span>
-                  </b>
-                </Link>
-              </div>
+      <button
+        onClick={handleProceedToBuy}
+        className="btn btn-success rounded-pill text-white px-5"
+      >
+        Proceed to Buy &nbsp;{" "}
+        <b>
+          <span className="small-number gray-text">
+            ({cartDetails.order_items.length} items)
+          </span>
+        </b>
+      </button>
+    </div>
               <div className="d-flex align-items-center justify-content-center mt-2">
                 <Link
                   to="/Menu"

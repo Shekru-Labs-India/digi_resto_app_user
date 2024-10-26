@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CompanyVersion from "../constants/CompanyVersion";
-import axios from "axios";
+
 
 const AllOrderList = () => {
   const [data, setData] = useState(null);
@@ -11,12 +11,18 @@ const AllOrderList = () => {
 
 
   useEffect(() => {
-    axios
-      .post("https://menumitra.com/user_api/get_all_orders_of_restaurant", {
+    fetch("https://menumitra.com/user_api/get_all_orders_of_restaurant", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         restaurant_id: restaurantId,
       })
-      .then((response) => {
-        setData(response.data);
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
         setLoading(false);
       })
       .catch((error) => {

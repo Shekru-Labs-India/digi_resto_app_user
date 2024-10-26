@@ -24,10 +24,11 @@ const NearbyArea = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
 
+  // Update initialization of user data
   useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
-      setCustomerId(storedUserData.customer_id);
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (userData) {
+      setCustomerId(userData.customer_id);
     }
   }, []);
 
@@ -129,9 +130,10 @@ const NearbyArea = () => {
     );
   };
 
+  // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
-    if (!customerId || !restaurantId) {
-      console.error("Customer ID is missing");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
       navigate("/Signinscreen");
       return;
     }
@@ -139,57 +141,52 @@ const NearbyArea = () => {
     const menuItem = menuItems.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
-    const apiUrl = isFavorite
-      ? "https://menumitra.com/user_api/remove_favourite_menu"
-      : "https://menumitra.com/user_api/save_favourite_menu";
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId,
-          customer_id: customerId,
-        }),
-      });
+      const response = await fetch(
+        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
-        const updatedFavoriteStatus = !isFavorite;
-        const updatedMenuItems = menuItems.map((item) =>
-          item.menu_id === menuId
-            ? { ...item, is_favourite: updatedFavoriteStatus }
-            : item
+        setMenuItems((prevItems) =>
+          prevItems.map((item) =>
+            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+          )
         );
 
-        setMenuItems(updatedMenuItems);
-
-        // Dispatch a custom event to notify other components of the favorite update
-        window.dispatchEvent(new CustomEvent("favoriteUpdated", { 
-          detail: { menuId, isFavorite: updatedFavoriteStatus } 
-        }));
+        window.dispatchEvent(
+          new CustomEvent("favoriteUpdated", {
+            detail: { menuId, isFavorite: !isFavorite },
+          })
+        );
 
         toast.current.show({
-          severity: updatedFavoriteStatus ? "success" : "error",
+          severity: "success",
           summary: "Success",
-          detail: updatedFavoriteStatus
-            ? "Added to Favourites"
-            : "Removed from Favourites",
-          life: 2000,
-        });
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to update favorite status",
-          life: 2000,
+          detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+          life: 3000,
         });
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update favorite status",
+        life: 3000,
+      });
     }
   };
 
@@ -257,9 +254,10 @@ const NearbyArea = () => {
     }
   };
 
+  // Update handleAddToCartClick function
   const handleAddToCartClick = async (menuItem) => {
-    if (!customerId || !restaurantId) {
-      console.error("Customer ID is missing");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
@@ -268,7 +266,7 @@ const NearbyArea = () => {
       toast.current.show({
         severity: "info",
         summary: "Item Already in Cart",
-        detail: `${menuItem.name} is already in your cart.`,
+        detail: "This item is already in your cart.",
         life: 3000,
       });
       return;
@@ -279,8 +277,15 @@ const NearbyArea = () => {
     setShowModal(true);
   };
 
+  // Update handleConfirmAddToCart function
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
+
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
 
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
@@ -300,13 +305,14 @@ const NearbyArea = () => {
         quantity: 1,
         notes,
         half_or_full: portionSize,
-        price: selectedPrice
-      }, customerId, restaurantId);
+        price: selectedPrice,
+        restaurant_id: restaurantId
+      }, restaurantId);
 
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
-        detail: `${selectedMenu.name} has been added to your cart.`,
+        detail: selectedMenu.name,
         life: 3000,
       });
 
@@ -315,11 +321,11 @@ const NearbyArea = () => {
       setPortionSize('full');
       setSelectedMenu(null);
 
-      // Update cart items in local storage and state
+      // Update cart items
       const updatedCartItems = await fetchCartItems();
       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-      // Dispatch a custom event to notify other components of the cart update
+      
+      // Dispatch cart update event
       window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
 
     } catch (error) {
@@ -333,8 +339,11 @@ const NearbyArea = () => {
     }
   };
 
-  
+  // Update fetchCartItems function
   const fetchCartItems = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) return [];
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -345,26 +354,20 @@ const NearbyArea = () => {
           },
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId"),
-            customer_id: customerId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type,
             restaurant_id: restaurantId,
           }),
         }
       );
 
       const data = await response.json();
-      if (response.ok && data.st === 1 && data.order_items) {
-        return data.order_items;
-      } else {
-        return [];
-      }
+      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
     } catch (error) {
       console.error("Error fetching cart items:", error);
       return [];
     }
   };
-
-
-  
 
   return (
     <div className="dz-box style-2 nearby-area">

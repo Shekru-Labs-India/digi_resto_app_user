@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
@@ -12,22 +12,16 @@ import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
 
 const Checkout = () => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Initialize state from local storage
-    return localStorage.getItem("isDarkMode") === "true";
-  }); // State for theme
-  const { restaurantName } = useRestaurantId();
-  const isLoggedIn = !!localStorage.getItem("userData");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
-  const { restaurantId } = useRestaurantId();
-  console.log("Restaurant ID:", restaurantId);
-  // const { isDarkMode } = useContext(ThemeContext);
+  const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart } = useCart();
   const toast = useRef(null);
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [customerId, setCustomerId] = useState(null);
+const [customerType, setCustomerType] = useState(null);
 
+  const [checkoutData, setCheckoutData] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -40,25 +34,43 @@ const Checkout = () => {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [notes, setNotes] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
-  const [showNotePopup, setShowNotePopup] = useState(false); // State to show/hide note popup
   const [orderCount, setOrderCount] = useState(0);
+  const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
+  const [ongoingOrderId, setOngoingOrderId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Initialize state from local storage
+    return localStorage.getItem("isDarkMode") === "true";
+  }); // State for theme
+
+  
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  console.log("Restaurant ID:", restaurantId);
+  // const { isDarkMode } = useContext(ThemeContext);
+
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [cancellingOrderId, setCancellingOrderId] = useState(null);
+
+  const [isNotesFocused, setIsNotesFocused] = useState(false);
+  const notesRef = useRef(null);
+
+  // Use the hook here
+
+  const handleNotesFocus = () => {
+    setIsNotesFocused(true);
+  };
+
   const userData = JSON.parse(localStorage.getItem("userData"));
-  const customerId = userData ? userData.customer_id : null;
+  
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
   const [restaurantCode, setRestaurantCode] = useState(
     () => localStorage.getItem("restaurantCode") || ""
   );
-  const [showCancelPopup, setShowCancelPopup] = useState(false);
-  const [cancellingOrderId, setCancellingOrderId] = useState(null);
-  const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
-  const [ongoingOrderId, setOngoingOrderId] = useState(null);
-  const [isNotesFocused, setIsNotesFocused] = useState(false);
-  const notesRef = useRef(null);
-  const handleNotesFocus = () => {
-    setIsNotesFocused(true);
-  };
 
   const handleNotesBlur = () => {
     setIsNotesFocused(false);
@@ -69,15 +81,28 @@ const Checkout = () => {
     return cartId ? parseInt(cartId, 10) : null;
   };
 
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+    
+    setIsLoggedIn(!!currentCustomerId);
+    setCustomerId(currentCustomerId);
+    setCustomerType(currentCustomerType);
+  }, []);
+
   const fetchCartDetails = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
+    
     console.log("Fetching cart details with:", {
       cartId,
-      customerId,
+      currentCustomerId,
       restaurantId,
     });
 
-    if (!cartId || !customerId || !restaurantId) {
+    if (!cartId || !currentCustomerId || !restaurantId) {
       console.log(
         "Missing cart, customer, or restaurant data. Navigating to home."
       );
@@ -94,7 +119,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            customer_id: currentCustomerId,
             restaurant_id: restaurantId,
           }),
         }
@@ -127,8 +152,30 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Error fetching cart details:", error);
+      navigate(`/${restaurantCode}/${tableNumber || ""}`);
     }
   };
+
+  useEffect(() => {
+    const data = location.state?.checkoutData;
+    if (data) {
+      setCheckoutData(data);
+      setCartItems(data.cartItems);
+      setTotal(data.totalBill);
+      setDiscount(data.discountAmount);
+      setTax(data.gstAmount);
+      setGrandTotal(data.grandTotal);
+      setServiceCharges(data.serviceCharges);
+      setServiceChargesPercent(data.serviceChargesPercent);
+      setGstPercent(data.gstPercent);
+      setDiscountPercent(data.discountPercent);
+      setOrderCount(data.cartItems.length);
+    } else {
+      // Instead of navigating, set an error state
+    
+
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -154,8 +201,18 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
+    if (!checkoutData) {
+      setErrorMessage("No checkout data found. Please try again.");
+      setShowErrorPopup(true);
+      return;
+    }
+
     try {
-      // Check for ongoing orders first
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+
+      // Check for ongoing orders for both registered and guest users
       const ongoingResponse = await fetch(
         "https://menumitra.com/user_api/get_order_list",
         {
@@ -165,8 +222,8 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-
-            customer_id: customerId,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
           }),
         }
       );
@@ -188,7 +245,7 @@ const Checkout = () => {
       }
 
       // If no ongoing orders, proceed with order submission
-      await proceedWithOrderSubmission();
+      await proceedWithOrderSubmission(currentCustomerId, currentCustomerType);
     } catch (error) {
       console.error(
         "Error checking ongoing orders or submitting order:",
@@ -199,7 +256,7 @@ const Checkout = () => {
     }
   };
 
-  const proceedWithOrderSubmission = async () => {
+  const proceedWithOrderSubmission = async (currentCustomerId, currentCustomerType) => {
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -215,12 +272,13 @@ const Checkout = () => {
     });
 
     const orderData = {
-      customer_id: customerId,
+      customer_id: currentCustomerId,
+      customer_type: currentCustomerType,
       restaurant_id: restaurantId,
-      cart_id: getCartId(),
+      cart_id: checkoutData.cartId,
       note: notes,
       order_items: orderItems,
-      table_number: tableNumber,
+      table_number: checkoutData.tableNumber || "1",
       order_time: formattedTime,
     };
 
@@ -256,6 +314,10 @@ const Checkout = () => {
 
   const handleCancelOrders = async () => {
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+  
       const response = await fetch(
         "https://menumitra.com/user_api/cancel_order",
         {
@@ -266,11 +328,12 @@ const Checkout = () => {
           body: JSON.stringify({
             order_id: ongoingOrderId,
             restaurant_id: restaurantId,
-            customer_id: customerId,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
         clearCart();
@@ -298,6 +361,10 @@ const Checkout = () => {
 
   const handleCompleteAndProceed = async () => {
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+  
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
@@ -307,12 +374,13 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             order_id: ongoingOrderId,
-            customer_id: customerId,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
             restaurant_id: restaurantId,
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setShowOngoingOrderPopup(false);
@@ -375,6 +443,7 @@ const Checkout = () => {
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
+      <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0 my-0">
@@ -417,7 +486,12 @@ const Checkout = () => {
               <p>{errorMessage}</p>
               <button
                 className="btn btn-primary rounded-pill text-white"
-                onClick={() => setShowErrorPopup(false)}
+                onClick={() => {
+                  setShowErrorPopup(false);
+                  if (!checkoutData) {
+                    navigate("/Cart");
+                  }
+                }}
               >
                 Close
               </button>
