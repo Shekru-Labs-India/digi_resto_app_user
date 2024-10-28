@@ -120,7 +120,7 @@ const MenuDetails = () => {
             price,
             description,
             ingredients,
-            image,
+            images,
             offer,
             rating,
             is_favorite,
@@ -145,7 +145,7 @@ const MenuDetails = () => {
             oldPrice,
             description,
             ingredients,
-            image,
+            images,
             menu_cat_name: category_name,
             menu_id: menuId,
             offer,
@@ -473,7 +473,7 @@ const MenuDetails = () => {
               <div className="product-detail-image img">
                 <img
                   className="product-detail-image rounded-3"
-                  src={productDetails.image || images}
+                  src={productDetails.images || images}
                   alt={productDetails.name}
                   style={{
                     aspectRatio: "16/9",
@@ -520,7 +520,9 @@ const MenuDetails = () => {
                     right: "3px",
                     height: "20px",
                     width: "20px",
+                    cursor: "pointer" // Add cursor pointer
                   }}
+                  onClick={handleLikeClick} // Add click handler here
                 >
                   <i
                     className={`${

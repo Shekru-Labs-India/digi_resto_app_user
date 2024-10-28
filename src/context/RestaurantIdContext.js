@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const RestaurantIdContext = createContext();
 
@@ -13,7 +13,18 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantCode, setRestaurantCode] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const lastFetchedCode = useRef(null);
+
+  useEffect(() => {
+    // Get table number from URL params
+    const params = new URLSearchParams(location.search);
+    const tableNo = params.get('table');
+    if (tableNo) {
+      setTableNumber(tableNo);
+      localStorage.setItem("tableNumber", tableNo);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -94,12 +105,10 @@ export const RestaurantIdProvider = ({ children }) => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
-    const storedTableNumber = localStorage.getItem("tableNumber");
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
     if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
-    if (storedTableNumber) setTableNumber(storedTableNumber);
   }, []);
 
   const updateRestaurantCode = (code) => {
