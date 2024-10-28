@@ -38,8 +38,7 @@ const Checkout = () => {
   const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
   const [ongoingOrderId, setOngoingOrderId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
-
+  const [showErrorPopup, setShowErrorPopup] = useState(false); 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -50,13 +49,8 @@ const Checkout = () => {
   console.log("Restaurant ID:", restaurantId);
   // const { isDarkMode } = useContext(ThemeContext);
 
-  const [showCancelPopup, setShowCancelPopup] = useState(false);
-  const [cancellingOrderId, setCancellingOrderId] = useState(null);
-
   const [isNotesFocused, setIsNotesFocused] = useState(false);
   const notesRef = useRef(null);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [existingOrderId, setExistingOrderId] = useState(null);
 
@@ -64,10 +58,6 @@ const Checkout = () => {
 
   const handleNotesFocus = () => {
     setIsNotesFocused(true);
-  };
-
-  const handleCancelClick = () => {
-    setShowCancelModal(true);
   };
 
   const userData = JSON.parse(localStorage.getItem("userData"));
@@ -208,6 +198,117 @@ const Checkout = () => {
     setNotes(value);
   };
 
+  const checkForOngoingOrder = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+  
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_order_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_status: "ongoing", // Check for ongoing orders
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      console.log("Ongoing order check response:", data);
+  
+      if (data.st === 1 && data.lists && Object.keys(data.lists).length > 0) {
+        // Get the first ongoing order
+        const dates = Object.keys(data.lists);
+        if (dates.length > 0) {
+          const ongoingOrders = data.lists[dates[0]];
+          if (ongoingOrders && ongoingOrders.length > 0) {
+            const ongoingOrder = ongoingOrders[0];
+            setOngoingOrderId(ongoingOrder.order_id);
+            setShowOngoingOrderPopup(true);
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Error checking ongoing order:", error);
+      return false;
+    }
+  };
+
+  const handleCompleteOrder = async () => {
+    if (!ongoingOrderId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Order ID not found",
+        life: 3000,
+      });
+      return;
+    }
+  
+    try {
+      console.log("Completing order with ID:", ongoingOrderId);
+      
+      const response = await fetch(
+        "https://menumitra.com/user_api/complete_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_id: ongoingOrderId.toString()
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      console.log("Complete order API Response:", data);
+  
+      if (response.ok && data.st === 1) {
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Order has been completed successfully!",
+          life: 3000,
+        });
+  
+        setShowOngoingOrderPopup(false);
+        clearCart();
+        navigate("/MyOrder", { state: { activeTab: "completed" } });
+      } else {
+        throw new Error(data.msg || "Failed to complete order");
+      }
+    } catch (error) {
+      console.error("Error completing order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to complete order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+  
+  // Add this to your useEffect or where appropriate
+  useEffect(() => {
+    const checkOrder = async () => {
+      if (isLoggedIn && restaurantId) {
+        await checkForOngoingOrder();
+      }
+    };
+    checkOrder();
+  }, [isLoggedIn, restaurantId]);
+
   const handleSubmitOrder = async () => {
     if (!checkoutData) {
       setErrorMessage("No checkout data found. Please try again.");
@@ -217,10 +318,13 @@ const Checkout = () => {
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-      // Check for existing placed orders
-      const orderResponse = await fetch(
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
+
+      // First check for ongoing orders
+      const ongoingResponse = await fetch(
         "https://menumitra.com/user_api/get_order_list",
         {
           method: "POST",
@@ -230,163 +334,174 @@ const Checkout = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+            order_status: "ongoing",
           }),
         }
       );
 
-      const orderData = await orderResponse.json();
-      
-      if (orderData.st === 1 && orderData.lists?.placed) {
-        const placedOrders = Object.values(orderData.lists.placed).flat();
-        if (placedOrders.length > 0) {
-          setExistingOrderId(placedOrders[0].order_id);
-          setShowExistingOrderModal(true);
-          return;
-        }
+      const ongoingData = await ongoingResponse.json();
+
+      if (
+        ongoingData.st === 1 &&
+        ongoingData.lists?.ongoing &&
+        Object.keys(ongoingData.lists.ongoing).length > 0
+      ) {
+        setShowOngoingOrderPopup(true);
+        return;
       }
 
-      // If no existing orders, proceed with normal order submission
-      await proceedWithOrderSubmission(currentCustomerId);
+      // If no ongoing orders, proceed with checking placed orders
+      const placedResponse = await fetch(
+        "https://menumitra.com/user_api/get_order_list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+            order_status: "placed",
+          }),
+        }
+      );
 
+      const placedData = await placedResponse.json();
+
+      if (
+        placedData.st === 1 &&
+        placedData.lists?.placed &&
+        Object.keys(placedData.lists.placed).length > 0
+      ) {
+        // Handle placed orders...
+        const firstOrderKey = Object.keys(placedData.lists.placed)[0];
+        const firstOrder = placedData.lists.placed[firstOrderKey][0];
+        setExistingOrderId(firstOrder.order_id);
+        setShowExistingOrderModal(true);
+        return;
+      }
+
+      // If no ongoing or placed orders, proceed with new order
+      await proceedWithOrderSubmission(currentCustomerId, currentCustomerType);
     } catch (error) {
-      console.error("Error checking orders:", error);
-      setErrorMessage("An error occurred. Please try again.");
+      console.error("Error during order submission:", error);
+      setErrorMessage(
+        "An error occurred while processing your order. Please try again."
+      );
       setShowErrorPopup(true);
     }
-};
+  };
 
-const handleAddToExistingOrder = async () => {
-  try {
+  const handleAddToExistingOrder = async () => {
+    try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      
-      // First fetch existing order details
-      const orderResponse = await fetch(
-          "https://menumitra.com/user_api/get_order_details",
-          {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                  order_number: existingOrderId.toString(), // Changed from order_id to order_number
-                  customer_id: userData?.customer_id,
-                  customer_type: userData?.customer_type,
-                  restaurant_id: restaurantId.toString()
-              }),
-          }
-      );
+      console.log("Existing Order ID:", existingOrderId); // Debug log
 
-      const orderData = await orderResponse.json();
-      if (!orderData.st === 1) {
-          throw new Error("Failed to fetch existing order details");
-      }
-
-      // Get existing items from the response
-      const existingItems = orderData.lists.menu_details.map(item => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || ""
+      // Format cart items
+      const orderItems = cartItems.map((item) => ({
+        menu_id: item.menu_id.toString(),
+        quantity: item.quantity.toString(),
+        half_or_full: item.half_or_full || "full",
+        comment: item.notes || "",
       }));
 
-      // Format new items from cart
-      const newItems = cartItems.map(item => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || ""
-      }));
+      const requestBody = {
+        order_id: existingOrderId.toString(),
+        customer_id: userData?.customer_id.toString(),
+        customer_type: userData?.customer_type,
+        restaurant_id: restaurantId.toString(),
+        table_number: userData?.tableNumber || "1",
+        order_items: orderItems,
+      };
 
-      // Combine both arrays
-      const combinedItems = [...existingItems, ...newItems];
+      console.log("Request Body:", requestBody); // Debug log
 
-      // Update the order with combined items
-      const updateResponse = await fetch(
-          "https://menumitra.com/user_api/update_placed_order",
-          {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                  order_id: existingOrderId.toString(),
-                  table_number: userData?.tableNumber || "1",
-                  restaurant_id: restaurantId.toString(),
-                  order_items: combinedItems
-              }),
-          }
-      );
-
-      const updateData = await updateResponse.json();
-      if (updateData.st === 1) {
-          toast.current.show({
-              severity: "success",
-              summary: "Success",
-              detail: "Items added to existing order successfully",
-              life: 3000,
-          });
-          
-          // Clear cart and redirect
-          clearCart();
-          localStorage.removeItem("cartItems");
-          
-          // Navigate to MyOrder page with placed tab active
-          navigate("/MyOrder", { state: { activeTab: "placed" } });
-      } else {
-          throw new Error(updateData.msg || "Failed to update order");
-      }
-  } catch (error) {
-      console.error("Error adding items to existing order:", error);
-      toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message || "Failed to add items to order",
-          life: 3000,
-      });
-  } finally {
-      setShowExistingOrderModal(false);
-  }
-};
-
-const handleCancelExistingOrder = async () => {
-  try {
       const response = await fetch(
-          "https://menumitra.com/user_api/cancle_order",
-          {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                  order_id: existingOrderId,
-                  restaurant_id: restaurantId,
-                  note: "Canceled to place new order"
-              }),
-          }
+        "https://menumitra.com/user_api/add_to_existing_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
       );
 
       const data = await response.json();
+      console.log("Add to Existing Order Response:", data); // Debug log
+
       if (data.st === 1) {
-          // After canceling, proceed with new order
-          const userData = JSON.parse(localStorage.getItem("userData"));
-          await proceedWithOrderSubmission(userData?.customer_id);
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Items added to existing order successfully",
+          life: 3000,
+        });
+
+        clearCart();
+        localStorage.removeItem("cartItems");
+
+        navigate("/MyOrder", { state: { activeTab: "placed" } });
       } else {
-          throw new Error(data.msg || "Failed to cancel order");
+        throw new Error(data.msg || "Failed to add items to order");
       }
-  } catch (error) {
+    } catch (error) {
+      console.error("Error adding items to existing order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to add items to order",
+        life: 3000,
+      });
+    } finally {
+      setShowExistingOrderModal(false);
+    }
+  };
+
+  // Update the handleCancelExistingOrder function
+  const handleCancelExistingOrder = async () => {
+    try {
+      console.log("Cancelling order:", existingOrderId); // Debug log
+
+      const response = await fetch(
+        "https://menumitra.com/user_api/cancle_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: existingOrderId.toString(),
+            restaurant_id: restaurantId.toString(),
+            note: "Canceled to place new order",
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Cancel Order Response:", data); // Debug log
+
+      if (data.st === 1) {
+        // After canceling, proceed with new order
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        await proceedWithOrderSubmission(userData?.customer_id);
+      } else {
+        throw new Error(data.msg || "Failed to cancel order");
+      }
+    } catch (error) {
       console.error("Error canceling order:", error);
       toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message || "Failed to cancel order",
-          life: 3000,
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to cancel order",
+        life: 3000,
       });
-  } finally {
+    } finally {
       setShowExistingOrderModal(false);
-  }
-};
-
-
+    }
+  };
 
   const proceedWithOrderSubmission = async (
     currentCustomerId,
@@ -447,123 +562,61 @@ const handleCancelExistingOrder = async () => {
     }
   };
 
-  const handleCancelOrders = async () => {
-    if (!cancelReason.trim()) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please provide a reason for cancellation",
-        life: 3000,
-      });
-      return;
-    }
-
-    try {
-      console.log("Cancel Order Request:", {
-        order_id: ongoingOrderId,
-        restaurant_id: restaurantId,
-        note: cancelReason.trim(),
-      });
-
-      const response = await fetch(
-        "https://menumitra.com/user_api/cancle_order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            order_id: ongoingOrderId.toString(),
-            restaurant_id: restaurantId.toString(),
-            note: cancelReason.trim(),
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("Cancel Order Response:", data);
-
-      if (response.ok && data.st === 1) {
-        setShowCancelModal(false);
-        setCancelReason("");
-        clearCart();
-        setShowOngoingOrderPopup(false);
-
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order cancelled successfully",
-          life: 3000,
-        });
-
-        setTimeout(() => {
-          navigate("/MyOrder", { state: { activeTab: "canceled" } });
-        }, 1000);
-      } else {
-        throw new Error(data.msg || "Failed to cancel order");
-      }
-    } catch (error) {
-      console.error("Error cancelling order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to cancel order",
-        life: 3000,
-      });
-    }
-  };
-
+  // Add this function to handle order completion
   const handleCompleteAndProceed = async () => {
     try {
-      console.log("Complete Order Request:", {
-        order_id: ongoingOrderId,
-        restaurant_id: restaurantId,
-      });
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
 
+      // Fetch the ongoing order details
       const response = await fetch(
-        "https://menumitra.com/user_api/complete_order",
+        "https://menumitra.com/user_api/get_order_list",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
           },
           body: JSON.stringify({
-            order_id: ongoingOrderId.toString(),
-            restaurant_id: restaurantId.toString(),
+            restaurant_id: restaurantId,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+            order_status: "ongoing",
           }),
         }
       );
 
       const data = await response.json();
-      console.log("Complete Order Response:", data);
 
-      if (response.ok && data.st === 1) {
-        clearCart();
-        setShowOngoingOrderPopup(false);
+      if (data.st === 1 && data.lists?.ongoing) {
+        const ongoingOrders = data.lists.ongoing;
+        if (Object.keys(ongoingOrders).length > 0) {
+          const firstOrderKey = Object.keys(ongoingOrders)[0];
+          const ongoingOrder = ongoingOrders[firstOrderKey][0];
 
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order completed successfully",
-          life: 3000,
-        });
-
-        setTimeout(() => {
-          navigate("/MyOrder", { state: { activeTab: "completed" } });
-        }, 1000);
+          // Navigate to the order details page
+          navigate(`/TrackOrder/${ongoingOrder.order_number}`, {
+            state: {
+              order_status: "ongoing",
+              order_id: ongoingOrder.order_id,
+            },
+          });
+        }
       } else {
-        throw new Error(data.msg || "Failed to complete order");
+        throw new Error("No ongoing order found");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+      console.error("Error handling ongoing order:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.message || "Failed to complete order",
+        detail: "Failed to process ongoing order. Please try again.",
         life: 3000,
       });
+    } finally {
+      setShowOngoingOrderPopup(false);
     }
   };
 
@@ -615,71 +668,56 @@ const handleCancelExistingOrder = async () => {
           />
         </div>
 
-        {showOngoingOrderPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content ">
-              <h3>Ongoing Order Detected</h3>
-              <p>You have an ongoing order. What would you like to do?</p>
 
-              <button
-                className="btn btn-success rounded-pill text-white"
-                onClick={handleCompleteAndProceed}
-              >
-                <i className="ri-checkbox-circle-line me-2"></i>
-                Complete Order
-              </button>
-              <div className="mt-3">
-                <Link
-                  to="#"
-                  className="gray-text me-2 my-3"
-                  onClick={handleCancelClick}
-                >
-                  Cancel Order
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showCancelModal && (
-          <div className="popup-overlay">
-            <div className="popup-content">
-              <h5 className="modal-title">Cancel Order</h5>
-              <div className="form-group mt-3">
-                <label htmlFor="cancelReason" className="form-label">
-                  Please provide a reason for cancellation
-                </label>
-                <textarea
-                  id="cancelReason"
-                  className="form-control border border-primary"
-                  rows="3"
-                  value={cancelReason}
-                  onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Enter your reason here..."
-                ></textarea>
-              </div>
-              <div className="d-flex justify-content-end gap-2 mt-3">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowCancelModal(false)}
-                >
-                  Close
-                </button>
-                <button className="btn btn-danger" onClick={handleCancelOrders}>
-                  Confirm Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+       {showOngoingOrderPopup && (
+  <div className="popup-overlay">
+    <div className="popup-content rounded-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3 className="mb-0">Ongoing Order Detected</h3>
+        <button 
+          className="btn p-0"
+          onClick={() => setShowOngoingOrderPopup(false)}
+        >
+          <i className="ri-close-line text-dark fs-3"></i>
+        </button>
+      </div>
+      <p className="text-muted mb-4">
+        Please complete your ongoing order before placing a new one.
+      </p>
+      <div className="d-flex flex-column gap-2">
+        <button
+          className="btn btn-success rounded-pill w-100 py-2"
+          onClick={handleCompleteOrder} // Removed the orderId parameter
+        >
+          <i className="ri-checkbox-circle-line me-2"></i>
+          Complete Order
+        </button>
+        
+        <button
+          className="btn btn-outline-primary rounded-pill w-100 py-2"
+          onClick={handleCompleteAndProceed}
+        >
+          <i className="ri-eye-line me-2"></i>
+          View Order Details
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
         {showErrorPopup && (
           <div className="popup-overlay">
-            <div className="popup-content">
-              <h3>Error</h3>
+            <div className="popup-content rounded-4">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="mb-0">Error</h3>
+                <button
+                  className="btn-close"
+                  onClick={() => setShowErrorPopup(false)}
+                ></button>
+              </div>
               <p>{errorMessage}</p>
               <button
-                className="btn btn-primary rounded-pill text-white"
+                className="btn btn-primary rounded-pill text-white w-100"
                 onClick={() => {
                   setShowErrorPopup(false);
                   if (!checkoutData) {
@@ -693,39 +731,53 @@ const handleCancelExistingOrder = async () => {
           </div>
         )}
 
-
-{showExistingOrderModal && (
-            <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Existing Order Found</h5>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                onClick={() => setShowExistingOrderModal(false)}
-                            ></button>
-                        </div>
-                        <div className="modal-body">
-                            <p>You have an existing order in progress. Would you like to:</p>
-                            <div className="d-flex justify-content-around mt-3">
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={handleAddToExistingOrder}
-                                >
-                                    Add to Existing Order
-                                </button>
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={handleCancelExistingOrder}
-                                >
-                                    Cancel Existing & Place New
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        {showExistingOrderModal && (
+          <div className="popup-overlay">
+            <div
+              className="popup-content rounded-4 p-0"
+              style={{ maxWidth: "90%", width: "400px" }}
+            >
+              {/* Header */}
+              <div className="p-3 border-bottom">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0 fw-semibold">Existing Order Found</h5>
+                  <button
+                    className="btn p-0 fs-3"
+                    onClick={() => setShowExistingOrderModal(false)}
+                  >
+                    <i className="ri-close-line text-dark"></i>
+                  </button>
                 </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-3">
+                <p className="text-center mb-4 text-muted">
+                  You have an existing order in progress. What would you like to
+                  do?
+                </p>
+
+                {/* Buttons */}
+                <div className="d-flex flex-column gap-2">
+                  <button
+                    className="btn btn-success rounded-pill w-100 py-2 my-1"
+                    onClick={handleAddToExistingOrder}
+                  >
+                    <i className="ri-add-line me-2"></i>
+                    Add to Existing Order
+                  </button>
+
+                  <button
+                    className="btn btn-outline-danger rounded-pill w-100 py-2 my-1"
+                    onClick={handleCancelExistingOrder}
+                  >
+                    <i className="ri-close-circle-line me-2"></i>
+                    Cancel Existing & Place New
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         )}
 
         <div className="m-3">
@@ -915,19 +967,25 @@ const handleCancelExistingOrder = async () => {
 
       {showPopup && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div className="popup-content rounded-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h3 className="mb-0">Success</h3>
+              <button
+                className="btn-close"
+                onClick={() => setShowPopup(false)}
+              ></button>
+            </div>
             <div className="circle">
               <img src={OrderGif} alt="Order Success" className="popup-gif" />
             </div>
-
-            <span className="text-dark     my-5">
+            <span className="text-dark my-3 d-block text-center">
               Order placed successfully
             </span>
-            <p className="gray-text  ">
+            <p className="text-muted text-center mb-4">
               You have successfully made payment and placed your order.
             </p>
             <button
-              className="btn btn-success rounded-pill     text-white"
+              className="btn btn-success rounded-pill text-white w-100"
               onClick={closePopup}
             >
               View Order
