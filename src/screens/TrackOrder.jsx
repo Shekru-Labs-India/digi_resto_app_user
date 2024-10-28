@@ -1909,6 +1909,30 @@ const TrackOrder = () => {
                     </div>
                   </div>
                 ))}
+                
+                {/* Add Order More button outside the card, but only for placed and ongoing orders */}
+                {(orderStatus === "placed" || orderStatus === "ongoing") && !isCompleted && (
+  <div className="col-12 mt-3 mb-4">
+    <div className="d-flex justify-content-center">
+      <button
+        className="btn btn-outline-primary rounded-pill px-3"
+        onClick={() => {
+          // Navigate to Menu page with the existing order ID
+          navigate('/Menu', {
+            state: {
+              existingOrderId: orderDetails?.order_details?.order_id,
+              isAddingToOrder: true,
+              orderStatus: orderStatus
+            }
+          });
+        }}
+      >
+        <i className="ri-add-line me-2"></i>
+        Order More Items
+      </button>
+    </div>
+  </div>
+)}
               </div>
             </section>
           ) : (

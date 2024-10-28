@@ -15,6 +15,7 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
+  
 
   const toast = useRef(null);
   const { restaurantName, restaurantId } = useRestaurantId();
@@ -238,6 +239,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
+  const [timeLeft, setTimeLeft] = useState(90);
 
   const toast = useRef(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -256,6 +258,15 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [completedOrders, setCompletedOrders] = useState(new Set());
   const [showOngoingButton, setShowOngoingButton] = useState(false);
 
+  const handleOrderMore = (orderId) => {
+    // Navigate to Menu with the order ID
+    navigate("/Menu", {
+      state: {
+        existingOrderId: orderId,
+        isAddingToOrder: true,
+      },
+    });
+  };
   const toggleChecked = (date) => {
     setCheckedItems((prev) => ({
       ...prev,
@@ -370,8 +381,15 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
       const data = await response.json();
       if (data.st === 1) {
-        // Add order to completed timers set
-        setCompletedTimers((prev) => new Set([...prev, orderId]));
+        // Remove order from local storage
+        localStorage.removeItem(`timer_${orderId}`);
+
+        // Remove from completedTimers set
+        setCompletedTimers((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(orderId);
+          return newSet;
+        });
 
         // Show success toast
         toast.current.show({
@@ -391,6 +409,18 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       });
     }
   };
+
+  // Add this new useEffect for periodic API check
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Check all orders in completedTimers
+      completedTimers.forEach((orderId) => {
+        handleOrderStatusChange(orderId);
+      });
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(intervalId);
+  }, [completedTimers]);
 
   const handleCancelClick = (orderId) => {
     setSelectedOrderId(orderId);
@@ -600,37 +630,56 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         </div>
                       </div>
 
-                      <div className="card-footer bg-transparent border-top-0">
-                        {activeTab === "placed" && (
-                          <div className="d-flex flex-column gap-2">
-                            <div className="text-center">
-                              <CircularCountdown
-                                orderId={order.order_id}
-                                onComplete={() =>
-                                  handleOrderStatusChange(order.order_id)
-                                }
-                                setActiveTab={setActiveTab}
-                              />
-                            </div>
-                            {!completedTimers.has(order.order_id) && (
-                              <div className="text-center">
-                                <button
-                                  className="btn btn-sm btn-danger rounded-pill px-4"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCancelClick(order.order_id);
-                                  }}
-                                >
-                                  Cancel Order
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                      {activeTab === "placed" && (
+  <div className="d-flex flex-column gap-2">
+    {/* Dynamic time remaining text - only show if timer hasn't expired */}
+    {!completedTimers.has(order.order_id) && (
+      <TimeRemaining orderId={order.order_id} />
+    )}
+
+    {/* Countdown and Cancel button row */}
+    <div className="d-flex justify-content-between align-items-center">
+      <div className="text-center">
+        <CircularCountdown
+          orderId={order.order_id}
+          onComplete={() => {
+            handleOrderStatusChange(order.order_id);
+            setCompletedTimers(prev => new Set([...prev, order.order_id]));
+          }}
+          setActiveTab={setActiveTab}
+        />
+      </div>
+
+      {/* Only show cancel button if timer hasn't expired */}
+      {!completedTimers.has(order.order_id) && timeLeft > 0 && (
+        <button
+          className="btn btn-sm btn-danger rounded-pill px-4"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCancelClick(order.order_id);
+          }}
+        >
+          Cancel Order
+        </button>
+      )}
+    </div>
+  </div>
+)}
+
                         {activeTab === "ongoing" && (
-                          <div className="text-end">
+                          <div className="d-flex justify-content-between align-items-center">
                             <button
-                              className="btn btn-sm btn-success"
+                              className="btn btn-sm btn-outline-primary rounded-pill px-4"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOrderMore(order.order_id);
+                              }}
+                            >
+                              Order More
+                            </button>
+                            <button
+                              className="btn btn-sm btn-success rounded-pill px-4"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleCompleteOrder(order.order_id);
@@ -763,6 +812,46 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   );
 };
 
+const TimeRemaining = ({ orderId }) => {
+  const [timeLeft, setTimeLeft] = useState(90);
+  const [isExpired, setIsExpired] = useState(false);
+  const timerKey = `timer_${orderId}`;
+
+  useEffect(() => {
+    const startTime = localStorage.getItem(timerKey);
+
+    if (!startTime) {
+      localStorage.setItem(timerKey, new Date().getTime().toString());
+    }
+
+    const calculateTimeLeft = () => {
+      const start = parseInt(localStorage.getItem(timerKey));
+      const now = new Date().getTime();
+      const elapsed = now - start;
+      const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
+      
+      if (remaining === 0) {
+        setIsExpired(true);
+        clearInterval(timer);
+        return;
+      }
+      setTimeLeft(remaining);
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [orderId, timerKey]);
+
+  if (isExpired || timeLeft === 0) return null;
+  return (
+    <div className="text-muted font_size_14 text-center mb-2">
+      You can cancel the order within <span className="fw-semibold">{timeLeft}</span> seconds
+    </div>
+  );
+};
+
 const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -785,9 +874,9 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
       if (remaining <= 0) {
         clearInterval(timerRef.current);
         localStorage.removeItem(timerKey);
-        onComplete();
         setTimeLeft(0);
         setIsCompleted(true);
+        onComplete();
       } else {
         setTimeLeft(remaining);
       }
@@ -803,20 +892,18 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
     };
   }, [orderId, onComplete, timerKey]);
 
-  const percentage = (timeLeft / 90) * 100;
-
   if (isCompleted) {
     return (
-      <div className="text-center">
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => setActiveTab("ongoing")}
-        >
-          View in Ongoing Orders
-        </button> 
-      </div>
+      <button
+        className="btn btn-primary btn-sm rounded-pill px-3"
+        onClick={() => setActiveTab("ongoing")}
+      >
+        View in Ongoing Orders
+      </button>
     );
   }
+
+  const percentage = (timeLeft / 90) * 100;
 
   return (
     <div className="circular-countdown">
