@@ -483,7 +483,7 @@ const OfferBanner = () => {
             <div className="m-0">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || "1"}
+                tableNumber={userData?.tableNumber || '1'}
               />
             </div>
             <div className="swiper-wrapper">
@@ -508,30 +508,30 @@ const OfferBanner = () => {
                             e.target.src = images; // Set local image source on error
                           }}
                         />
-                        <div
-                          className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "border-success"
-                              : "border-danger"
-                          }`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            left: "3px",
-                            height: "20px",
-                            width: "20px",
-                            borderWidth: "2px",
-                            borderRadius: "3px",
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.menu_veg_nonveg.toLowerCase() === "veg"
-                                ? "ri-checkbox-blank-circle-fill text-success"
-                                : "ri-checkbox-blank-circle-fill text-danger"
-                            } font_size_12`}
-                          ></i>
-                        </div>
+                          <div
+                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          ? "border-success"
+                          : "border-danger"
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
+                      <i
+                        className={`${
+                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                            ? "ri-checkbox-blank-circle-fill text-success"
+                            : "ri-checkbox-blank-circle-fill text-danger"
+                        } font_size_12`}
+                      ></i>
+                    </div>
                         <div
                           className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                           style={{

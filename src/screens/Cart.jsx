@@ -407,6 +407,30 @@ const Cart = () => {
                           e.target.src = images;
                         }}
                       />
+                      <div
+                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                          item.menu_veg_nonveg.toLowerCase() === "veg"
+                            ? "border-success"
+                            : "border-danger"
+                        }`}
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          left: "3px",
+                          height: "20px",
+                          width: "20px",
+                          borderWidth: "2px",
+                          borderRadius: "3px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            item.menu_veg_nonveg.toLowerCase() === "veg"
+                              ? "ri-checkbox-blank-circle-fill text-success"
+                              : "ri-checkbox-blank-circle-fill text-danger"
+                          } font_size_12`}
+                        ></i>
+                      </div>
                       {item.offer !== 0 && (
                         <div
                           className="gradient_bg d-flex justify-content-center align-items-center"
@@ -629,18 +653,18 @@ const Cart = () => {
                 </div>
               </div>
               <div className="container d-flex align-items-center justify-content-center pt-0">
-      <button
-        onClick={handleProceedToBuy}
-        className="btn btn-success rounded-pill text-white px-5"
-      >
-        Proceed to Buy &nbsp;{" "}
-        <b>
-          <span className="small-number gray-text">
-            ({cartDetails.order_items.length} items)
-          </span>
-        </b>
-      </button>
-    </div>
+                <button
+                  onClick={handleProceedToBuy}
+                  className="btn btn-success rounded-pill text-white px-5"
+                >
+                  Proceed to Buy &nbsp;{" "}
+                  <b>
+                    <span className="small-number gray-text">
+                      ({cartDetails.order_items.length} items)
+                    </span>
+                  </b>
+                </button>
+              </div>
               <div className="d-flex align-items-center justify-content-center mt-2">
                 <Link
                   to="/Menu"
@@ -652,9 +676,8 @@ const Cart = () => {
             </div>
           )}
           <div className="container py-0">
-          <NearbyArea />
+            <NearbyArea />
           </div>
-
         </main>
       )}
 
