@@ -57,6 +57,8 @@ const Checkout = () => {
   const notesRef = useRef(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
+  const [existingOrderId, setExistingOrderId] = useState(null);
 
   // Use the hook here
 
@@ -215,13 +217,10 @@ const Checkout = () => {
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
-
-      // Check for ongoing orders for both registered and guest users
-      const ongoingResponse = await fetch(
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      // Check for existing placed orders
+      const orderResponse = await fetch(
         "https://menumitra.com/user_api/get_order_list",
         {
           method: "POST",
@@ -235,33 +234,159 @@ const Checkout = () => {
         }
       );
 
-      const ongoingData = await ongoingResponse.json();
-      if (
-        ongoingResponse.ok &&
-        ongoingData.st === 1 &&
-        ongoingData.lists &&
-        ongoingData.lists.ongoing
-      ) {
-        // There's an ongoing order
-        const ongoingOrders = Object.values(ongoingData.lists.ongoing).flat();
-        if (ongoingOrders.length > 0) {
-          setOngoingOrderId(ongoingOrders[0].order_number);
-          setShowOngoingOrderPopup(true);
+      const orderData = await orderResponse.json();
+      
+      if (orderData.st === 1 && orderData.lists?.placed) {
+        const placedOrders = Object.values(orderData.lists.placed).flat();
+        if (placedOrders.length > 0) {
+          setExistingOrderId(placedOrders[0].order_id);
+          setShowExistingOrderModal(true);
           return;
         }
       }
 
-      // If no ongoing orders, proceed with order submission
-      await proceedWithOrderSubmission(currentCustomerId, currentCustomerType);
+      // If no existing orders, proceed with normal order submission
+      await proceedWithOrderSubmission(currentCustomerId);
+
     } catch (error) {
-      console.error(
-        "Error checking ongoing orders or submitting order:",
-        error
-      );
+      console.error("Error checking orders:", error);
       setErrorMessage("An error occurred. Please try again.");
       setShowErrorPopup(true);
     }
-  };
+};
+
+const handleAddToExistingOrder = async () => {
+  try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      
+      // First fetch existing order details
+      const orderResponse = await fetch(
+          "https://menumitra.com/user_api/get_order_details",
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  order_number: existingOrderId.toString(), // Changed from order_id to order_number
+                  customer_id: userData?.customer_id,
+                  customer_type: userData?.customer_type,
+                  restaurant_id: restaurantId.toString()
+              }),
+          }
+      );
+
+      const orderData = await orderResponse.json();
+      if (!orderData.st === 1) {
+          throw new Error("Failed to fetch existing order details");
+      }
+
+      // Get existing items from the response
+      const existingItems = orderData.lists.menu_details.map(item => ({
+          menu_id: item.menu_id.toString(),
+          quantity: item.quantity.toString(),
+          half_or_full: item.half_or_full || "full",
+          comment: item.notes || ""
+      }));
+
+      // Format new items from cart
+      const newItems = cartItems.map(item => ({
+          menu_id: item.menu_id.toString(),
+          quantity: item.quantity.toString(),
+          half_or_full: item.half_or_full || "full",
+          comment: item.notes || ""
+      }));
+
+      // Combine both arrays
+      const combinedItems = [...existingItems, ...newItems];
+
+      // Update the order with combined items
+      const updateResponse = await fetch(
+          "https://menumitra.com/user_api/update_placed_order",
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  order_id: existingOrderId.toString(),
+                  table_number: userData?.tableNumber || "1",
+                  restaurant_id: restaurantId.toString(),
+                  order_items: combinedItems
+              }),
+          }
+      );
+
+      const updateData = await updateResponse.json();
+      if (updateData.st === 1) {
+          toast.current.show({
+              severity: "success",
+              summary: "Success",
+              detail: "Items added to existing order successfully",
+              life: 3000,
+          });
+          
+          // Clear cart and redirect
+          clearCart();
+          localStorage.removeItem("cartItems");
+          
+          // Navigate to MyOrder page with placed tab active
+          navigate("/MyOrder", { state: { activeTab: "placed" } });
+      } else {
+          throw new Error(updateData.msg || "Failed to update order");
+      }
+  } catch (error) {
+      console.error("Error adding items to existing order:", error);
+      toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to add items to order",
+          life: 3000,
+      });
+  } finally {
+      setShowExistingOrderModal(false);
+  }
+};
+
+const handleCancelExistingOrder = async () => {
+  try {
+      const response = await fetch(
+          "https://menumitra.com/user_api/cancle_order",
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  order_id: existingOrderId,
+                  restaurant_id: restaurantId,
+                  note: "Canceled to place new order"
+              }),
+          }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+          // After canceling, proceed with new order
+          const userData = JSON.parse(localStorage.getItem("userData"));
+          await proceedWithOrderSubmission(userData?.customer_id);
+      } else {
+          throw new Error(data.msg || "Failed to cancel order");
+      }
+  } catch (error) {
+      console.error("Error canceling order:", error);
+      toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to cancel order",
+          life: 3000,
+      });
+  } finally {
+      setShowExistingOrderModal(false);
+  }
+};
+
+
 
   const proceedWithOrderSubmission = async (
     currentCustomerId,
@@ -566,6 +691,41 @@ const Checkout = () => {
               </button>
             </div>
           </div>
+        )}
+
+
+{showExistingOrderModal && (
+            <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Existing Order Found</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                onClick={() => setShowExistingOrderModal(false)}
+                            ></button>
+                        </div>
+                        <div className="modal-body">
+                            <p>You have an existing order in progress. Would you like to:</p>
+                            <div className="d-flex justify-content-around mt-3">
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleAddToExistingOrder}
+                                >
+                                    Add to Existing Order
+                                </button>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={handleCancelExistingOrder}
+                                >
+                                    Cancel Existing & Place New
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         )}
 
         <div className="m-3">
