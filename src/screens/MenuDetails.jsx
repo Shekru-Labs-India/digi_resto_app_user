@@ -31,7 +31,12 @@ const MenuDetails = () => {
   const { cartItems,  } = useCart();
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
   
-  const [customerId, setCustomerId] = useState(null);
+  // At the top with other state declarations
+  const [customerId, setCustomerId] = useState(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.customer_id || null;
+  });
+
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
  
   const location = useLocation();
@@ -43,32 +48,31 @@ const MenuDetails = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const [currentRestaurantId, setCurrentRestaurantId] = useState(null);
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
+    return localStorage.getItem("restaurantId") || null;
+  });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
 
 
 
   useEffect(() => {
+    // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
       setUserData(storedUserData);
       setCustomerId(storedUserData.customer_id);
-    } else {
-      navigate("/Signinscreen", { state: { from: location.pathname } });
     }
 
-    // Get restaurant ID from location state or URL params
-    const locationRestaurantId = location.state?.restaurant_id;
+    // Get restaurant ID with proper fallback chain
+    const storedRestaurantId = localStorage.getItem("restaurantId");
     const urlParams = new URLSearchParams(window.location.search);
     const urlRestaurantId = urlParams.get("restaurantId");
+    const finalRestaurantId = storedRestaurantId || urlRestaurantId || restaurantId;
     
-    // Set the source restaurant ID
-    const effectiveRestaurantId = locationRestaurantId || urlRestaurantId || restaurantId;
-    setSourceRestaurantId(effectiveRestaurantId);
-    setCurrentRestaurantId(effectiveRestaurantId);
-
-  }, [restaurantId, navigate, location.pathname, location.state]);
+    setCurrentRestaurantId(finalRestaurantId);
+    setSourceRestaurantId(finalRestaurantId);
+  }, [restaurantId]);
  
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -97,10 +101,10 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: sourceRestaurantId, // Use sourceRestaurantId instead
+            restaurant_id: currentRestaurantId, // Use currentRestaurantId
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
-            customer_id: customerId,
+            customer_id: customerId || null,
           }),
         }
       );
@@ -116,14 +120,18 @@ const MenuDetails = () => {
             price,
             description,
             ingredients,
-            image,
+            images,
             offer,
             rating,
             is_favorite,
             restaurant_id: fetchedRestaurantId,
           } = data.details;
 
+          // Update restaurant IDs
           setMenuRestaurantId(fetchedRestaurantId);
+          if (fetchedRestaurantId) {
+            localStorage.setItem("restaurantId", fetchedRestaurantId);
+          }
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
           const oldPrice = offer ? Math.floor(price * 1.1) : null;
@@ -137,7 +145,7 @@ const MenuDetails = () => {
             oldPrice,
             description,
             ingredients,
-            image,
+            images,
             menu_cat_name: category_name,
             menu_id: menuId,
             offer,
@@ -164,25 +172,27 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (sourceRestaurantId && customerId) {
+    if (currentRestaurantId) { // Remove customerId dependency
       fetchProductDetails();
     }
-  }, [menuId, sourceRestaurantId, customerId]);
-
+  }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
 
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: currentRestaurantId, // Use currentRestaurantId
+            menu_id: menuId
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -212,22 +222,28 @@ const MenuDetails = () => {
 
   const handleAddToCart = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-  
-    if (!currentCustomerId || !currentRestaurantId) {
-      navigate("/Signinscreen");
+    const currentCustomerId = userData?.customer_id;
+
+    if (!currentCustomerId) {
+      navigate("/Signinscreen", { 
+        state: { 
+          from: location.pathname,
+          menuId: menuId 
+        } 
+      });
       return;
     }
-  
+
     fetchHalfFullPrices();
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
-    const { customerId, customerType } = getUserData();
-    const { restaurantId } = getRestaurantData();
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id;
+    const currentCustomerType = userData?.customer_type;
 
-    if (!customerId || !restaurantId) {
+    if (!currentCustomerId || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
@@ -277,8 +293,16 @@ const MenuDetails = () => {
   };
 
   const handleRemoveFromCart = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id;
+
+    if (!currentCustomerId) {
+      navigate("/Signinscreen");
+      return;
+    }
+
     try {
-      await removeFromCart(productDetails.menu_id, customerId, currentRestaurantId);
+      await removeFromCart(productDetails.menu_id, currentCustomerId, currentRestaurantId);
       toast.current.show({
         severity: "info",
         summary: "Removed from Cart",
@@ -320,7 +344,7 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-    const restaurantIdToUse = productDetails?.restaurant_id || restaurantId;
+    const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
 
     try {
       const response = await fetch(apiUrl, {
@@ -449,7 +473,7 @@ const MenuDetails = () => {
               <div className="product-detail-image img">
                 <img
                   className="product-detail-image rounded-3"
-                  src={productDetails.image || images}
+                  src={productDetails.images || images}
                   alt={productDetails.name}
                   style={{
                     aspectRatio: "16/9",
@@ -496,7 +520,9 @@ const MenuDetails = () => {
                     right: "3px",
                     height: "20px",
                     width: "20px",
+                    cursor: "pointer" // Add cursor pointer
                   }}
+                  onClick={handleLikeClick} // Add click handler here
                 >
                   <i
                     className={`${
@@ -684,7 +710,20 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-7 px-0 text-center menu_details-add-to-cart">
-                  {isFromDifferentRestaurant ? (
+                  {!customerId ? (
+                    <button
+                      className="btn btn-success rounded-pill"
+                      onClick={() => navigate("/Signinscreen", { 
+                        state: { 
+                          from: location.pathname,
+                          menuId: menuId 
+                        } 
+                      })}
+                    >
+                      <i className="ri-login-box-line pe-1 text-white"></i>
+                      <div className="text-nowrap text-white">Login to Order</div>
+                    </button>
+                  ) : isFromDifferentRestaurant ? (
                     <button
                       className="btn btn-outline-secondary rounded-pill p-3"
                       disabled

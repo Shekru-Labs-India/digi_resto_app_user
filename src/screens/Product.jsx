@@ -557,6 +557,30 @@ const Product = () => {
                         }}
                       />
                       <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                          
+                        }}
+                      >
+                        <i
+                          className={` ${
+                            menuItem.is_favourite
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menuItem.menu_id);
+                          }}
+                        ></i>
+                      </div>
+                      <div
                         className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
@@ -600,29 +624,6 @@ const Product = () => {
                           </span>
                         </div>
                       )}
-                      <div
-                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "3px",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                      >
-                        <i
-                          className={` ${
-                            menuItem.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
-                          } fs-6`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menuItem.menu_id);
-                          }}
-                        ></i>
-                      </div>
                     </div>
 
                     <div className="dz-content pb-1">
@@ -846,6 +847,7 @@ const Product = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
+                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

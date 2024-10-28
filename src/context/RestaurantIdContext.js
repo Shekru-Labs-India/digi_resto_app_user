@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const RestaurantIdContext = createContext();
 
@@ -13,7 +13,18 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantCode, setRestaurantCode] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const lastFetchedCode = useRef(null);
+
+  useEffect(() => {
+    // Get table number from URL params
+    const params = new URLSearchParams(location.search);
+    const tableNo = params.get('table');
+    if (tableNo) {
+      setTableNumber(tableNo);
+      localStorage.setItem("tableNumber", tableNo);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -39,18 +50,45 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantId(restaurant_id);
           setRestaurantName(name);
 
-          // Store restaurant data separately
+          // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
+
+          // Update userData if it exists
+          const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+          if (Object.keys(userData).length > 0) {
+            const updatedUserData = {
+              ...userData,
+              restaurantId: restaurant_id,
+              restaurantName: name,
+              restaurantCode: restaurantCode
+            };
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+          }
         } else if (data.st === 2) {
           // Invalid restaurant code
           setRestaurantId(null);
           setRestaurantName("");
+          
+          // Clear restaurant data from localStorage
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
-          navigate("Index");
+          
+          // Update userData if it exists
+          const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+          if (Object.keys(userData).length > 0) {
+            const updatedUserData = {
+              ...userData,
+              restaurantId: null,
+              restaurantName: "",
+              restaurantCode: ""
+            };
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+          }
+          
+          navigate("/Index");
         } else {
           console.error("Failed to fetch restaurant details:", data.msg);
         }
@@ -67,12 +105,10 @@ export const RestaurantIdProvider = ({ children }) => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
-    const storedTableNumber = localStorage.getItem("tableNumber");
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
     if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
-    if (storedTableNumber) setTableNumber(storedTableNumber);
   }, []);
 
   const updateRestaurantCode = (code) => {
