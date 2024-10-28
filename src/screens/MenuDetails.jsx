@@ -394,6 +394,11 @@ const MenuDetails = () => {
     }
   };
 
+  // Helper function to check if menu is veg
+  const isVegMenu = (menuType) => {
+    return menuType?.toLowerCase() === "veg";
+  };
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -455,6 +460,34 @@ const MenuDetails = () => {
                     e.target.src = images;
                   }}
                 />
+                
+                {/* Updated veg/non-veg indicator with proper check */}
+                <div
+                  className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                    isVegMenu(productDetails?.menu_veg_nonveg) 
+                      ? "border-success" 
+                      : "border-danger"
+                  }`}
+                  style={{
+                    position: "absolute",
+                    bottom: "3px",
+                    left: "3px",
+                    height: "20px",
+                    width: "20px",
+                    borderWidth: "2px",
+                    borderRadius: "3px",
+                  }}
+                >
+                  <i
+                    className={`${
+                      isVegMenu(productDetails?.menu_veg_nonveg)
+                        ? "ri-checkbox-blank-circle-fill text-success"
+                        : "ri-checkbox-blank-circle-fill text-danger"
+                    } font_size_12`}
+                  ></i>
+                </div>
+
+                {/* Existing favorite icon */}
                 <div
                   className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                   style={{
@@ -466,16 +499,11 @@ const MenuDetails = () => {
                   }}
                 >
                   <i
-                    className={` ${
+                    className={`${
                       productDetails.is_favourite
                         ? "ri-heart-3-fill text-danger"
                         : "ri-heart-3-line"
                     } fs-6`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleLikeClick(productDetails.menu_id);
-                    }}
                   ></i>
                 </div>
               </div>

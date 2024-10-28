@@ -480,6 +480,10 @@ const handleConfirmAddToCart = async () => {
 
   const userData = JSON.parse(localStorage.getItem("userData"));
 
+  const isVegMenu = (menu_veg_nonveg) => {
+    return menu_veg_nonveg.toLowerCase() === "veg";
+  };
+
   return (
     <div className="page-wrapper">
       {/* Header */}
@@ -546,98 +550,148 @@ const handleConfirmAddToCart = async () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <>
-              <Link
-                to={`/ProductDetails/${menu.menu_id}`}
-                state={{ menu_cat_id: menu.menu_cat_id }}
-                className="text-decoration-none text-reset"
-              >
-                <div className="card mb-3 rounded-4" key={menu.menu_id}>
-                  <div className="card-body py-0">
-                    <div className="row">
+            <div key={menu.menu_id} className="col-12">
+              <div className="card mb-3 rounded-3">
+                <div className="card-body py-0">
+                  <div className="row">
+                    <div className="col-3 px-0 position-relative">
+                      <img
+                        src={menu.image || images}
+                        alt={menu.menu_name}
+                        className="img-fluid rounded-start-3 rounded-end-0"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          aspectRatio: "1/1",
+                        }}
+                        onError={(e) => {
+                          e.target.src = images;
+                        }}
+                      />
+                      {/* Veg/Non-veg indicator */}
                       <div
-                        className="col-3 px-0"
-                        style={{ position: "relative", left: "-1px" }}
+                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                          isVegMenu(menu?.menu_veg_nonveg)
+                            ? "border-success"
+                            : "border-danger"
+                        }`}
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          left: "3px",
+                          height: "20px",
+                          width: "20px",
+                          borderWidth: "2px",
+                          borderRadius: "3px",
+                        }}
                       >
-                        <img
-                          src={menu.image || images}
-                          alt={menu.menu_name}
-                          className="img-fluid rounded-start-3 rounded-end-0"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "fill",
-                            aspectRatio: "1/1",
+                        <i
+                          className={`${
+                            isVegMenu(menu?.menu_veg_nonveg)
+                              ? "ri-checkbox-blank-circle-fill text-success"
+                              : "ri-checkbox-blank-circle-fill text-danger"
+                          } font_size_12`}
+                        ></i>
+                      </div>
+
+                      {/* Heart icon */}
+                      <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menu.is_favourite
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
                           }}
-                          onError={(e) => {
-                            e.target.src = images;
-                          }}
-                        />
-                        {menu.offer > 0 && (
-                          <div
-                            className="gradient_bg d-flex justify-content-center align-items-center"
-                            style={{
-                              position: "absolute",
-                              top: "0px",
-                              left: "0px",
-                              height: "17px",
-                              width: "70px",
-                              borderRadius: "7px 0px 7px 0px",
-                            }}
-                          >
-                            <span className="text-white">
-                              <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                              <span className="font_size_10">
-                                {menu.offer}% Off
-                              </span>
-                            </span>
-                          </div>
-                        )}
+                        ></i>
+                      </div>
+
+                      {/* Offer badge */}
+                      {menu.offer > 0 && (
                         <div
-                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                          className="gradient_bg d-flex justify-content-center align-items-center"
                           style={{
                             position: "absolute",
-                            bottom: "3px",
-                            right: "3px",
-                            height: "20px",
-                            width: "20px",
+                            top: "0px",
+                            left: "0px",
+                            height: "17px",
+                            width: "70px",
+                            borderRadius: "7px 0px 7px 0px",
                           }}
                         >
-                          <i
-                            className={`${
-                              menu.is_favourite
-                                ? "ri-heart-3-fill text-danger"
-                                : "ri-heart-3-line"
-                            } fs-6`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleLikeClick(menu.menu_id);
-                            }}
-                          ></i>
+                          <span className="text-white">
+                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                            <span className="font_size_10">
+                              {menu.offer}% Off
+                            </span>
+                          </span>
                         </div>
-                      </div>
-                      <div className="col-8  pb-0 pe-0 ps-2">
-                        <div className="row">
-                          <div className="col-7 mt-1 pe-0">
+                      )}
+                    </div>
+
+                    <div className="col-8 pb-0 pe-0 ps-2">
+                      <div className="row">
+                        {/* Menu Name and Rating on First Line */}
+                        <div className="col-12 mt-1">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="font_size_14 fw-medium">
+                              {menu.menu_name}
+                            </div>
+                            <div className="text-end">
+                              <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                              <span className="font_size_10 fw-normal gray-text">
+                                {parseFloat(menu.rating).toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Category and Spicy Index on Second Line */}
+                        <div className="row pe-0">
+                          <div className="col-6 mt-1">
                             <span className="text-success font_size_12">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
                               {menu.category_name}
+                              {/* Spicy Index */}
                             </span>
                           </div>
-
-                          <div className="col-4 text-end ms-3 me-0 p-0 mt-1">
-                            <i className="ri-star-half-line font_size_10 ms-4 ratingStar "></i>
-                            <span className="font_size_10 fw-normal gray-text">
-                              {parseFloat(menu.rating).toFixed(1)}
-                            </span>
+                          <div className="col-6 pe-0 text-end">
+                            {menu.spicy_index && (
+                              <span className="ms-2 spicy-index">
+                                {Array.from({ length: 5 }).map((_, index) =>
+                                  index < menu.spicy_index ? (
+                                    <i
+                                      key={index}
+                                      className="ri-fire-fill text-danger font_size_14 firefill offer-code"
+                                    ></i>
+                                  ) : (
+                                    <i
+                                      key={index}
+                                      className="ri-fire-line gray-text font_size_14"
+                                    ></i>
+                                  )
+                                )}
+                              </span>
+                            )}
                           </div>
                         </div>
-                        <div className="font_size_14 fw-medium pt-3">
-                          {menu.menu_name}
-                        </div>
 
-                        <div className="row mt-2">
+                        {/* Price and Cart Section */}
+                        <div className="row mt-2 pe-0">
                           <div className="col-10 px-0">
                             <span className="mb-0 mt-1 text-start fw-medium">
                               <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
@@ -690,8 +744,8 @@ const handleConfirmAddToCart = async () => {
                     </div>
                   </div>
                 </div>
-              </Link>
-            </>
+              </div>
+            </div>
           ))}
         </div>
       </main>

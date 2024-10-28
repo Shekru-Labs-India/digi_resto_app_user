@@ -560,30 +560,30 @@ const ProductCard = ({ isVegOnly }) => {
                         e.target.src = images;
                       }}
                     />
-<div
-  className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-    menu.menu_veg_nonveg.toLowerCase() === "veg"
-      ? "border-success"
-      : "border-danger"
-  }`}
-  style={{
-    position: "absolute",
-    bottom: "3px",
-    left: "3px",
-    height: "20px",
-    width: "20px",
-    borderWidth: "2px",
-    borderRadius: "3px",
-  }}
->
-  <i
-    className={`${
-      menu.menu_veg_nonveg.toLowerCase() === "veg"
-        ? "ri-checkbox-blank-circle-fill text-success"
-        : "ri-checkbox-blank-circle-fill text-danger"
-    } font_size_12`}
-  ></i>
-</div>
+                    <div
+                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          ? "border-success"
+                          : "border-danger"
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
+                      <i
+                        className={`${
+                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                            ? "ri-checkbox-blank-circle-fill text-success"
+                            : "ri-checkbox-blank-circle-fill text-danger"
+                        } font_size_12`}
+                      ></i>
+                    </div>
                     <div
                       className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{

@@ -556,6 +556,30 @@ const Product = () => {
                           e.target.src = images;
                         }}
                       />
+                      <div
+                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                          menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                            ? "border-success"
+                            : "border-danger"
+                        }`}
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          left: "3px",
+                          height: "20px",
+                          width: "20px",
+                          borderWidth: "2px",
+                          borderRadius: "3px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                              ? "ri-checkbox-blank-circle-fill text-success"
+                              : "ri-checkbox-blank-circle-fill text-danger"
+                          } font_size_12`}
+                        ></i>
+                      </div>
                       {menuItem.offer !== 0 && (
                         <div
                           className="gradient_bg d-flex justify-content-center align-items-center"
