@@ -39,18 +39,45 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantId(restaurant_id);
           setRestaurantName(name);
 
-          // Store restaurant data separately
+          // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
+
+          // Update userData if it exists
+          const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+          if (Object.keys(userData).length > 0) {
+            const updatedUserData = {
+              ...userData,
+              restaurantId: restaurant_id,
+              restaurantName: name,
+              restaurantCode: restaurantCode
+            };
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+          }
         } else if (data.st === 2) {
           // Invalid restaurant code
           setRestaurantId(null);
           setRestaurantName("");
+          
+          // Clear restaurant data from localStorage
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
-          navigate("Index");
+          
+          // Update userData if it exists
+          const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+          if (Object.keys(userData).length > 0) {
+            const updatedUserData = {
+              ...userData,
+              restaurantId: null,
+              restaurantName: "",
+              restaurantCode: ""
+            };
+            localStorage.setItem("userData", JSON.stringify(updatedUserData));
+          }
+          
+          navigate("/Index");
         } else {
           console.error("Failed to fetch restaurant details:", data.msg);
         }
@@ -60,7 +87,7 @@ export const RestaurantIdProvider = ({ children }) => {
     };
 
     fetchRestaurantDetails();
-  }, [, navigate]);
+  }, [restaurantCode, navigate]);
 
   useEffect(() => {
     // Load restaurant data from localStorage on initial render

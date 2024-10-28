@@ -52,35 +52,31 @@ function App() {
             <Routes>
               <Route path="/AllOrderList" element={<AllOrderList />} />
               <Route path="/HeartAnimation" element={<HeartAnimation />} />
-            <Route
-              path="/:restaurantCode/:table_number"
-              element={<HomeScreen />}
-            />
-            <Route path="/:restaurantCode" element={<ValidateAndNavigate />} />
-            <Route
-              path="/"
-              element={<Navigate to={`/${restaurantCode}/1`} replace />}
-            />
-            <Route
-              path="/"
-              element={<Navigate to={`/${restaurantCode}/1`} replace />}
-            />
+              <Route
+                path="/:restaurantCode/:table_number"
+                element={<HomeScreen />}
+              />
+              <Route path="/:restaurantCode" element={<ValidateAndNavigate />} />
+              <Route
+                path="/"
+                element={<Navigate to="/Index" replace />}
+              />
 
-            <Route path="/Signinscreen" element={<Signinscreen />} />
-            <Route path="/Signupscreen" element={<Signupscreen />} />
-            <Route path="/Verifyotp" element={<Verifyotp />} />
-            <Route path="/Wishlist" element={<Wishlist />} />
-            <Route path="/Cart" element={<Cart />} />
-            <Route path="/Checkout" element={<Checkout />} />
-            <Route path="/Category" element={<Category />} />
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/EditProfile" element={<EditProfile />} />
-            <Route path="/MyOrder" element={<MyOrder />} />
-            <Route path="/Menu/:categoryId?" element={<Product />} />
-            <Route path="/Search" element={<Search />} />
-            <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
-            <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
-            <Route path="/Index" element={<QRScreen />} />
+              <Route path="/Signinscreen" element={<Signinscreen />} />
+              <Route path="/Signupscreen" element={<Signupscreen />} />
+              <Route path="/Verifyotp" element={<Verifyotp />} />
+              <Route path="/Wishlist" element={<Wishlist />} />
+              <Route path="/Cart" element={<Cart />} />
+              <Route path="/Checkout" element={<Checkout />} />
+              <Route path="/Category" element={<Category />} />
+              <Route path="/Profile" element={<Profile />} />
+              <Route path="/EditProfile" element={<EditProfile />} />
+              <Route path="/MyOrder" element={<MyOrder />} />
+              <Route path="/Menu/:categoryId?" element={<Product />} />
+              <Route path="/Search" element={<Search />} />
+              <Route path="/ProductDetails/:menuId" element={<MenuDetails />} />
+              <Route path="/TrackOrder/:order_number" element={<TrackOrder />} />
+              <Route path="/Index" element={<QRScreen />} />
             </Routes>
           </CartProvider>
         {/* </FavoritesProvider> */}

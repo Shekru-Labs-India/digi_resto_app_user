@@ -50,18 +50,16 @@ const MenuDetails = () => {
     if (storedUserData) {
       setUserData(storedUserData);
       setCustomerId(storedUserData.customer_id);
-    } else {
-      // If user is not logged in, redirect to login page
-      navigate("/Signinscreen", { state: { from: location.pathname } });
     }
-
+    // Remove the redirect to login
+    
     // Retrieve the current restaurant ID from localStorage or URL params
     const storedRestaurantId = localStorage.getItem("currentRestaurantId");
     const urlParams = new URLSearchParams(window.location.search);
     const urlRestaurantId = urlParams.get("restaurantId");
     
     setCurrentRestaurantId(storedRestaurantId || urlRestaurantId || restaurantId);
-  }, [restaurantId, navigate, location.pathname]);
+  }, [restaurantId]);
  
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -93,7 +91,7 @@ const MenuDetails = () => {
             restaurant_id: currentRestaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
-            customer_id: customerId,
+            customer_id: customerId || null, // Make customer_id optional
           }),
         }
       );
@@ -159,10 +157,10 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (currentRestaurantId && customerId) {
+    if (currentRestaurantId) { // Remove customerId dependency
       fetchProductDetails();
     }
-  }, [menuId, currentRestaurantId, customerId]);
+  }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
 
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);
@@ -206,10 +204,16 @@ const MenuDetails = () => {
 
   const handleAddToCart = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerId = userData?.customer_id;
   
-    if (!currentCustomerId || !currentRestaurantId) {
-      navigate("/Signinscreen");
+    if (!currentCustomerId) {
+      // Redirect to login with return URL
+      navigate("/Signinscreen", { 
+        state: { 
+          from: location.pathname,
+          menuId: menuId 
+        } 
+      });
       return;
     }
   
@@ -678,7 +682,20 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-7 px-0 text-center menu_details-add-to-cart">
-                  {isFromDifferentRestaurant ? (
+                  {!customerId ? (
+                    <button
+                      className="btn btn-success rounded-pill"
+                      onClick={() => navigate("/Signinscreen", { 
+                        state: { 
+                          from: location.pathname,
+                          menuId: menuId 
+                        } 
+                      })}
+                    >
+                      <i className="ri-login-box-line pe-1 text-white"></i>
+                      <div className="text-nowrap text-white">Login to Order</div>
+                    </button>
+                  ) : isFromDifferentRestaurant ? (
                     <button
                       className="btn btn-outline-secondary rounded-pill p-3"
                       disabled
