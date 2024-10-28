@@ -44,6 +44,10 @@ const MenuDetails = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState(null);
+  const [menuRestaurantId, setMenuRestaurantId] = useState(null);
+  const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
+
+
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -88,7 +92,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId,
+            restaurant_id: sourceRestaurantId, // Use sourceRestaurantId instead
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             customer_id: customerId || null, // Make customer_id optional
@@ -98,8 +102,7 @@ const MenuDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("API Response:", data);
-
+        
         if (data.st === 1 && data.details) {
           const {
             menu_name,
@@ -114,6 +117,8 @@ const MenuDetails = () => {
             is_favorite,
             restaurant_id: fetchedRestaurantId,
           } = data.details;
+
+          setMenuRestaurantId(fetchedRestaurantId);
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
           const oldPrice = offer ? Math.floor(price * 1.1) : null;
@@ -138,16 +143,13 @@ const MenuDetails = () => {
 
           setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
-          setCurrentRestaurantId(fetchedRestaurantId);
-          setIsFromDifferentRestaurant(fetchedRestaurantId !== restaurantId);
           
-          // Store the restaurant ID of this menu item
-          localStorage.setItem("currentRestaurantId", fetchedRestaurantId);
-        } else {
-          console.error("Invalid data format:", data);
+          // Compare with the context's restaurant ID
+          const contextRestaurantId = restaurantId;
+          const isDifferent = fetchedRestaurantId && contextRestaurantId && 
+                            fetchedRestaurantId !== contextRestaurantId;
+          setIsFromDifferentRestaurant(isDifferent);
         }
-      } else {
-        console.error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error fetching product details:", error);

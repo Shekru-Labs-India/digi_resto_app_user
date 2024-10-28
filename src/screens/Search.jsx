@@ -35,13 +35,27 @@ const Search = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const { addToCart, isMenuItemInCart } = useCart();
+  const { addToCart} = useCart();
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
       setCustomerId(storedUserData.customer_id);
     }
+  }, []);
+
+  useEffect(() => {
+    const loadCartItems = async () => {
+      try {
+        const items = await fetchCartItems();
+        setCartItems(items);
+      } catch (error) {
+        console.error("Error loading cart items:", error);
+      }
+    };
+    
+    loadCartItems();
   }, []);
 
   useEffect(() => {
@@ -143,48 +157,7 @@ const Search = () => {
     fetchSearchedMenu();
   }, [debouncedSearchTerm, restaurantId]);
 
-  const fetchHalfFullPrices = async (menuId) => {
-    setIsPriceFetching(true);
-    try {
-      const response = await fetch(
-        "https://menumitra.com/user_api/get_full_half_price_of_menu",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        setHalfPrice(data.menu_detail.half_price);
-        setFullPrice(data.menu_detail.full_price);
-      } else {
-        console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
-    } finally {
-      setIsPriceFetching(false);
-    }
-  };
+  
 
   const fetchCartItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -201,7 +174,7 @@ const Search = () => {
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId"),
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            
             restaurant_id: restaurantId,
           }),
         }
@@ -215,15 +188,33 @@ const Search = () => {
     }
   };
 
-  const handleAddToCartClick = (menu) => {
+  const isMenuItemInCart = (menuId) => {
+    return cartItems.some(item => item.menu_id === menuId);
+  };
+
+  const handleAddToCartClick = async (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
+    // Get restaurant ID from userData
+    const storedRestaurantId = userData?.restaurantId;
+    
+    if (!userData?.customer_id) {
       navigate("/Signinscreen");
       return;
     }
-  
-    // Check if item is already in cart (similar to NearbyArea.jsx)
-    if (isMenuItemInCart(menu.menu_id)) {
+
+    if (!storedRestaurantId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Restaurant information is missing",
+        life: 3000,
+      });
+      return;
+    }
+
+    // Check if item is already in cart
+    const cartItems = await fetchCartItems();
+    if (cartItems.some(item => item.menu_id === menu.menu_id)) {
       toast.current.show({
         severity: "info",
         summary: "Item Already in Cart",
@@ -232,82 +223,137 @@ const Search = () => {
       });
       return;
     }
-  
-    setSelectedMenu(menu);
-    fetchHalfFullPrices(menu.menu_id);
-    setPortionSize("full");
-    setNotes("");
-    setShowModal(true);
-  };
-  
-  const handleConfirmAddToCart = async () => {
-    if (!selectedMenu) return;
-  
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      navigate("/Signinscreen");
-      return;
+
+    try {
+      setIsPriceFetching(true);
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: storedRestaurantId,
+            menu_id: menu.menu_id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setHalfPrice(data.menu_detail.half_price);
+        setFullPrice(data.menu_detail.full_price);
+        setSelectedMenu({
+          ...menu,
+          restaurant_id: parseInt(storedRestaurantId, 10)
+        });
+        setPortionSize("full");
+        setNotes("");
+        setShowModal(true);
+      } else {
+        throw new Error(data.msg || "Failed to fetch price information");
+      }
+    } catch (error) {
+      console.error("Error fetching half/full prices:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to fetch price information",
+        life: 3000,
+      });
+    } finally {
+      setIsPriceFetching(false);
     }
-  
+};
+
+const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
+
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedRestaurantId = userData?.restaurantId;
+
+    if (!userData?.customer_id) {
+        navigate("/Signinscreen");
+        return;
+    }
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
-      return;
+        toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Price information is not available.",
+            life: 2000,
+        });
+        return;
     }
-  
-    try {
-      const cartItem = {
-        menu_id: selectedMenu.menu_id,
-        menu_name: selectedMenu.menu_name,
-        quantity: 1,
-        price: selectedPrice,
-        half_or_full: portionSize,
-        notes: notes,
-        image: selectedMenu.image,
-        category_name: selectedMenu.category_name,
-        rating: selectedMenu.rating,
-        offer: selectedMenu.offer,
-        restaurant_id: restaurantId
-      };
-  
-      await addToCart(cartItem, userData.customer_id, restaurantId);
-  
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: `${selectedMenu.menu_name} added successfully`,
-        life: 3000,
-      });
-  
-      // Update cart items like in NearbyArea.jsx
-      const updatedCartItems = await fetchCartItems();
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-  
-      setShowModal(false);
-      setNotes("");
-      setPortionSize("full");
-      setSelectedMenu(null);
 
-      // Dispatch cart updated event
-      window.dispatchEvent(new Event('cartUpdated'));
-      
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+    if (!storedRestaurantId) {
+        toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Restaurant information is missing.",
+            life: 2000,
+        });
+        return;
     }
-  };
+
+    try {
+        const response = await fetch(
+          "https://menumitra.com/user_api/add_to_cart",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              customer_id: userData.customer_id,
+              customer_type: userData.customer_type,
+              restaurant_id: storedRestaurantId,
+              menu_id: selectedMenu.menu_id,
+              quantity: 1,
+              half_or_full: portionSize,
+              notes: notes,
+            }),
+          }
+        );
+
+        const data = await response.json();
+        if (data.st === 1) {
+            // Update local cart items state
+            const updatedCartItems = await fetchCartItems();
+            setCartItems(updatedCartItems);
+            localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+            
+            // Dispatch cart update event
+            window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
+
+            toast.current.show({
+                severity: "success",
+                summary: "Added to Cart",
+                detail: `${selectedMenu.menu_name} added successfully`,
+                life: 3000,
+            });
+
+            setShowModal(false);
+            setNotes("");
+            setPortionSize("full");
+            setSelectedMenu(null);
+        } else {
+            throw new Error(data.msg || "Failed to add item to cart");
+        }
+    } catch (error) {
+        console.error("Error adding item to cart:", error);
+        toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: error.message || "Failed to add item to cart. Please try again.",
+            life: 3000,
+        });
+    }
+};
 
   const handleModalClick = (e) => {
     if (e.target.classList.contains("modal")) {
@@ -656,32 +702,42 @@ const Search = () => {
                               </span>
                             </span>
                           </div>
-                          <div className="col-2 px-0 d-flex justify-content-end text-end">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                              style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "25px",
-                                height: "25px",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menu);
-                              }}
-                            >
-                              <i
-                                className={`${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "ri-shopping-cart-fill"
-                                    : "ri-shopping-cart-line"
-                                } fs-6`}
-                              ></i>
-                            </div>
+                          <div className="col-2 px-0 d-flex justify-content-end">
+                            {userData ? (
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCartClick(menu);
+                                }}
+                              >
+                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+                              </div>
+                            ) : (
+                              <div
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              >
+                                <i className="ri-shopping-cart-2-line fs-6"></i>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
