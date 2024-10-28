@@ -31,7 +31,12 @@ const MenuDetails = () => {
   const { cartItems,  } = useCart();
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
   
-  const [customerId, setCustomerId] = useState(null);
+  // At the top with other state declarations
+  const [customerId, setCustomerId] = useState(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.customer_id || null;
+  });
+
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
  
   const location = useLocation();
@@ -43,26 +48,30 @@ const MenuDetails = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const [currentRestaurantId, setCurrentRestaurantId] = useState(null);
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
+    return localStorage.getItem("restaurantId") || null;
+  });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
 
 
 
   useEffect(() => {
+    // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
       setUserData(storedUserData);
       setCustomerId(storedUserData.customer_id);
     }
-    // Remove the redirect to login
-    
-    // Retrieve the current restaurant ID from localStorage or URL params
-    const storedRestaurantId = localStorage.getItem("currentRestaurantId");
+
+    // Get restaurant ID with proper fallback chain
+    const storedRestaurantId = localStorage.getItem("restaurantId");
     const urlParams = new URLSearchParams(window.location.search);
     const urlRestaurantId = urlParams.get("restaurantId");
+    const finalRestaurantId = storedRestaurantId || urlRestaurantId || restaurantId;
     
-    setCurrentRestaurantId(storedRestaurantId || urlRestaurantId || restaurantId);
+    setCurrentRestaurantId(finalRestaurantId);
+    setSourceRestaurantId(finalRestaurantId);
   }, [restaurantId]);
  
   const toTitleCase = (str) => {
@@ -92,10 +101,10 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: sourceRestaurantId, // Use sourceRestaurantId instead
+            restaurant_id: currentRestaurantId, // Use currentRestaurantId
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
-            customer_id: customerId || null, // Make customer_id optional
+            customer_id: customerId || null,
           }),
         }
       );
@@ -118,7 +127,11 @@ const MenuDetails = () => {
             restaurant_id: fetchedRestaurantId,
           } = data.details;
 
+          // Update restaurant IDs
           setMenuRestaurantId(fetchedRestaurantId);
+          if (fetchedRestaurantId) {
+            localStorage.setItem("restaurantId", fetchedRestaurantId);
+          }
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
           const oldPrice = offer ? Math.floor(price * 1.1) : null;
@@ -167,16 +180,19 @@ const MenuDetails = () => {
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: currentRestaurantId, // Use currentRestaurantId
+            menu_id: menuId
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -207,9 +223,8 @@ const MenuDetails = () => {
   const handleAddToCart = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId = userData?.customer_id;
-  
+
     if (!currentCustomerId) {
-      // Redirect to login with return URL
       navigate("/Signinscreen", { 
         state: { 
           from: location.pathname,
@@ -218,16 +233,17 @@ const MenuDetails = () => {
       });
       return;
     }
-  
+
     fetchHalfFullPrices();
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
-    const { customerId, customerType } = getUserData();
-    const { restaurantId } = getRestaurantData();
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id;
+    const currentCustomerType = userData?.customer_type;
 
-    if (!customerId || !restaurantId) {
+    if (!currentCustomerId || !restaurantId) {
       navigate("/Signinscreen");
       return;
     }
@@ -277,8 +293,16 @@ const MenuDetails = () => {
   };
 
   const handleRemoveFromCart = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId = userData?.customer_id;
+
+    if (!currentCustomerId) {
+      navigate("/Signinscreen");
+      return;
+    }
+
     try {
-      await removeFromCart(productDetails.menu_id, customerId, currentRestaurantId);
+      await removeFromCart(productDetails.menu_id, currentCustomerId, currentRestaurantId);
       toast.current.show({
         severity: "info",
         summary: "Removed from Cart",
@@ -320,7 +344,7 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-    const restaurantIdToUse = productDetails?.restaurant_id || restaurantId;
+    const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
 
     try {
       const response = await fetch(apiUrl, {
