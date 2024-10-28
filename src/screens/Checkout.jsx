@@ -18,8 +18,8 @@ const Checkout = () => {
   const { clearCart } = useCart();
   const toast = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [customerId, setCustomerId] = useState(null);
-const [customerType, setCustomerType] = useState(null);
+  const [customerId, setCustomerId] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
 
   const [checkoutData, setCheckoutData] = useState(null);
   const [cartItems, setCartItems] = useState([]);
@@ -45,7 +45,6 @@ const [customerType, setCustomerType] = useState(null);
     return localStorage.getItem("isDarkMode") === "true";
   }); // State for theme
 
-  
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   console.log("Restaurant ID:", restaurantId);
@@ -56,6 +55,8 @@ const [customerType, setCustomerType] = useState(null);
 
   const [isNotesFocused, setIsNotesFocused] = useState(false);
   const notesRef = useRef(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
 
   // Use the hook here
 
@@ -63,8 +64,12 @@ const [customerType, setCustomerType] = useState(null);
     setIsNotesFocused(true);
   };
 
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
   const userData = JSON.parse(localStorage.getItem("userData"));
-  
+
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
   console.log("Customer ID:", customerId);
   console.log("Table Number:", tableNumber); // Log the table number
@@ -83,9 +88,11 @@ const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-    
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType =
+      userData?.customer_type || localStorage.getItem("customer_type");
+
     setIsLoggedIn(!!currentCustomerId);
     setCustomerId(currentCustomerId);
     setCustomerType(currentCustomerType);
@@ -93,9 +100,10 @@ const [customerType, setCustomerType] = useState(null);
 
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
-    
+
     console.log("Fetching cart details with:", {
       cartId,
       currentCustomerId,
@@ -172,8 +180,6 @@ const [customerType, setCustomerType] = useState(null);
       setOrderCount(data.cartItems.length);
     } else {
       // Instead of navigating, set an error state
-    
-
     }
   }, [location.state]);
 
@@ -209,8 +215,10 @@ const [customerType, setCustomerType] = useState(null);
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
 
       // Check for ongoing orders for both registered and guest users
       const ongoingResponse = await fetch(
@@ -223,7 +231,6 @@ const [customerType, setCustomerType] = useState(null);
           body: JSON.stringify({
             restaurant_id: restaurantId,
             customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
           }),
         }
       );
@@ -256,7 +263,10 @@ const [customerType, setCustomerType] = useState(null);
     }
   };
 
-  const proceedWithOrderSubmission = async (currentCustomerId, currentCustomerType) => {
+  const proceedWithOrderSubmission = async (
+    currentCustomerId,
+    currentCustomerType
+  ) => {
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
@@ -313,38 +323,58 @@ const [customerType, setCustomerType] = useState(null);
   };
 
   const handleCancelOrders = async () => {
+    if (!cancelReason.trim()) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please provide a reason for cancellation",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-  
+      console.log("Cancel Order Request:", {
+        order_id: ongoingOrderId,
+        restaurant_id: restaurantId,
+        note: cancelReason.trim(),
+      });
+
       const response = await fetch(
-        "https://menumitra.com/user_api/cancel_order",
+        "https://menumitra.com/user_api/cancle_order",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({
-            order_id: ongoingOrderId,
-            restaurant_id: restaurantId,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
+            order_id: ongoingOrderId.toString(),
+            restaurant_id: restaurantId.toString(),
+            note: cancelReason.trim(),
           }),
         }
       );
-  
+
       const data = await response.json();
+      console.log("Cancel Order Response:", data);
+
       if (response.ok && data.st === 1) {
+        setShowCancelModal(false);
+        setCancelReason("");
         clearCart();
         setShowOngoingOrderPopup(false);
+
         toast.current.show({
           severity: "success",
-          summary: "Order Cancelled",
-          detail: "Your ongoing order has been cancelled successfully.",
+          summary: "Success",
+          detail: "Order cancelled successfully",
           life: 3000,
         });
-        navigate("/MyOrder", { state: { activeTab: "canceled" } });
+
+        setTimeout(() => {
+          navigate("/MyOrder", { state: { activeTab: "canceled" } });
+        }, 1000);
       } else {
         throw new Error(data.msg || "Failed to cancel order");
       }
@@ -353,7 +383,7 @@ const [customerType, setCustomerType] = useState(null);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to cancel order. Please try again.",
+        detail: error.message || "Failed to cancel order",
         life: 3000,
       });
     }
@@ -361,36 +391,43 @@ const [customerType, setCustomerType] = useState(null);
 
   const handleCompleteAndProceed = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-  
+      console.log("Complete Order Request:", {
+        order_id: ongoingOrderId,
+        restaurant_id: restaurantId,
+      });
+
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
           body: JSON.stringify({
-            order_id: ongoingOrderId,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-            restaurant_id: restaurantId,
+            order_id: ongoingOrderId.toString(),
+            restaurant_id: restaurantId.toString(),
           }),
         }
       );
-  
+
       const data = await response.json();
+      console.log("Complete Order Response:", data);
+
       if (response.ok && data.st === 1) {
+        clearCart();
         setShowOngoingOrderPopup(false);
+
         toast.current.show({
           severity: "success",
-          summary: "Order Completed",
-          detail: "Your ongoing order has been marked as completed.",
+          summary: "Success",
+          detail: "Order completed successfully",
           life: 3000,
         });
-        navigate("/MyOrder", { state: { activeTab: "completed" } });
+
+        setTimeout(() => {
+          navigate("/MyOrder", { state: { activeTab: "completed" } });
+        }, 1000);
       } else {
         throw new Error(data.msg || "Failed to complete order");
       }
@@ -399,7 +436,7 @@ const [customerType, setCustomerType] = useState(null);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to complete order. Please try again.",
+        detail: error.message || "Failed to complete order",
         life: 3000,
       });
     }
@@ -407,7 +444,7 @@ const [customerType, setCustomerType] = useState(null);
 
   const closePopup = () => {
     setShowPopup(false);
-    navigate("/MyOrder", { state: { selectedTab: "placed" } });
+    navigate("/MyOrder", { state: { activeTab: "placed" } }); // Changed selectedTab to activeTab and value to "placed"
   };
 
   const toggleSidebar = () => {
@@ -470,10 +507,42 @@ const [customerType, setCustomerType] = useState(null);
                 <Link
                   to="#"
                   className="gray-text me-2 my-3"
-                  onClick={handleCancelOrders}
+                  onClick={handleCancelClick}
                 >
                   Cancel Order
                 </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCancelModal && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h5 className="modal-title">Cancel Order</h5>
+              <div className="form-group mt-3">
+                <label htmlFor="cancelReason" className="form-label">
+                  Please provide a reason for cancellation
+                </label>
+                <textarea
+                  id="cancelReason"
+                  className="form-control border border-primary"
+                  rows="3"
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Enter your reason here..."
+                ></textarea>
+              </div>
+              <div className="d-flex justify-content-end gap-2 mt-3">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  Close
+                </button>
+                <button className="btn btn-danger" onClick={handleCancelOrders}>
+                  Confirm Cancel
+                </button>
               </div>
             </div>
           </div>

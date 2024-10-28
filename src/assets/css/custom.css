@@ -931,3 +931,31 @@ hr.dashed {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.circular-countdown {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-timer {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.timer-text-overlay {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
