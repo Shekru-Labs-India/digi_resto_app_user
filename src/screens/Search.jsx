@@ -795,6 +795,7 @@ const Search = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
+                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

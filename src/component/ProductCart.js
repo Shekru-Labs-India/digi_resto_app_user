@@ -834,6 +834,7 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
+                  <i class="ri-shopping-cart-line pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>
