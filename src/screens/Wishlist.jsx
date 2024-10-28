@@ -28,6 +28,7 @@ const Wishlist = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
+  
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
