@@ -675,6 +675,178 @@ const Checkout = () => {
     return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  // Inside the Checkout component, add this validation
+  const validateCheckoutData = (checkoutData) => {
+    const requiredFields = [
+      'cartItems',
+      'totalBill',
+      'serviceCharges',
+      'serviceChargesPercent', 
+      'gstAmount',
+      'gstPercent',
+      'discountAmount',
+      'discountPercent',
+      'grandTotal',
+      'customerId',
+      'customerType',
+      'restaurantId',
+      'restaurantName',
+      'cartId'
+    ];
+
+    const missingFields = requiredFields.filter(field => !checkoutData?.[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('Missing required checkout fields:', missingFields);
+      return {
+        isValid: false,
+        missingFields
+      };
+    }
+
+    if (!Array.isArray(checkoutData.cartItems) || checkoutData.cartItems.length === 0) {
+      return {
+        isValid: false,
+        error: 'Cart is empty'
+      };
+    }
+
+    return {
+      isValid: true
+    };
+  };
+
+  // Use this validation early in your component
+  useEffect(() => {
+    const data = location.state?.checkoutData;
+    if (!data) {
+      navigate(`/${restaurantCode}/${tableNumber || ""}`);
+      return;
+    }
+
+    const validation = validateCheckoutData(data);
+    if (!validation.isValid) {
+      if (validation.missingFields) {
+        setErrorMessage(`Missing required checkout data: ${validation.missingFields.join(', ')}`);
+      } else {
+        setErrorMessage(validation.error);
+      }
+      setShowErrorPopup(true);
+      return;
+    }
+
+    setCheckoutData(data);
+    setCartItems(data.cartItems);
+    setTotal(data.totalBill);
+    setDiscount(data.discountAmount);
+    setTax(data.gstAmount);
+    setGrandTotal(data.grandTotal);
+    setServiceCharges(data.serviceCharges);
+    setServiceChargesPercent(data.serviceChargesPercent);
+    setGstPercent(data.gstPercent);
+    setDiscountPercent(data.discountPercent);
+    setOrderCount(data.cartItems.length);
+  }, [location.state, navigate, restaurantCode, tableNumber]);
+
+  // Add these quantity management functions
+  const incrementQuantity = (item) => {
+    if (item.quantity < 20) {
+      const updatedCartItems = cartItems.map((cartItem) => {
+        if (cartItem.menu_id === item.menu_id) {
+          return { ...cartItem, quantity: cartItem.quantity + 1 };
+        }
+        return cartItem;
+      });
+      setCartItems(updatedCartItems);
+      updateCartQuantity(item.menu_id, item.quantity + 1);
+    } else {
+      toast.current.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "You cannot add more than 20 items of this product.",
+        life: 3000,
+      });
+    }
+  };
+
+  const decrementQuantity = (item) => {
+    if (item.quantity > 1) {
+      const updatedCartItems = cartItems.map((cartItem) => {
+        if (cartItem.menu_id === item.menu_id) {
+          return { ...cartItem, quantity: cartItem.quantity - 1 };
+        }
+        return cartItem;
+      });
+      setCartItems(updatedCartItems);
+      updateCartQuantity(item.menu_id, item.quantity - 1);
+    }
+  };
+
+  const updateCartQuantity = async (menuId, quantity) => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const cartId = checkoutData.cartId;
+
+      const response = await fetch(
+        "https://menumitra.com/user_api/update_cart_menu_quantity",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: userData?.customer_id,
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            quantity: quantity,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+        // Update local state with new quantities
+        const updatedCartItems = cartItems.map(item => 
+          item.menu_id === menuId ? { ...item, quantity } : item
+        );
+        setCartItems(updatedCartItems);
+        
+        // Recalculate totals
+        if (checkoutData) {
+          const newTotal = updatedCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          setTotal(newTotal);
+          
+          // Update other calculations based on new total
+          const newServiceCharges = (newTotal * serviceChargesPercent) / 100;
+          const newGst = (newTotal * gstPercent) / 100;
+          const newDiscount = (newTotal * discountPercent) / 100;
+          const newGrandTotal = newTotal + newServiceCharges + newGst - newDiscount;
+          
+          setServiceCharges(newServiceCharges);
+          setTax(newGst);
+          setDiscount(newDiscount);
+          setGrandTotal(newGrandTotal);
+        }
+
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Item quantity has been updated.",
+          life: 3000,
+        });
+      } else {
+        throw new Error(data.msg || "Failed to update quantity");
+      }
+    } catch (error) {
+      console.error("Error updating cart quantity:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update item quantity.",
+        life: 3000,
+      });
+    }
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -688,42 +860,41 @@ const Checkout = () => {
           />
         </div>
 
+        {showOngoingOrderPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content rounded-4">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
+                <button
+                  className="btn p-0"
+                  onClick={() => setShowOngoingOrderPopup(false)}
+                >
+                  <i className="ri-close-line text-muted fs-3"></i>
+                </button>
+              </div>
+              <p className="text-muted mb-4">
+                Please complete your ongoing order before placing a new one.
+              </p>
+              <div className="d-flex flex-column gap-2">
+                <button
+                  className="btn btn-success rounded-pill w-100 py-2"
+                  onClick={handleCompleteOrder} // Removed the orderId parameter
+                >
+                  <i className="ri-checkbox-circle-line me-2"></i>
+                  Complete Order
+                </button>
 
-       {showOngoingOrderPopup && (
-  <div className="popup-overlay">
-    <div className="popup-content rounded-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
-        <button 
-          className="btn p-0"
-          onClick={() => setShowOngoingOrderPopup(false)}
-        >
-          <i className="ri-close-line text-muted fs-3"></i>
-        </button>
-      </div>
-      <p className="text-muted mb-4">
-        Please complete your ongoing order before placing a new one.
-      </p>
-      <div className="d-flex flex-column gap-2">
-        <button
-          className="btn btn-success rounded-pill w-100 py-2"
-          onClick={handleCompleteOrder} // Removed the orderId parameter
-        >
-          <i className="ri-checkbox-circle-line me-2"></i>
-          Complete Order
-        </button>
-        
-        <button
-          className="btn btn-outline-primary rounded-pill w-100 py-2"
-          onClick={handleCompleteAndProceed}
-        >
-          <i className="ri-eye-line me-2"></i>
-          View Order Details
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                <button
+                  className="btn btn-outline-primary rounded-pill w-100 py-2"
+                  onClick={handleCompleteAndProceed}
+                >
+                  <i className="ri-eye-line me-2"></i>
+                  View Order Details
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showErrorPopup && (
           <div className="popup-overlay">
@@ -760,7 +931,9 @@ const Checkout = () => {
               {/* Header */}
               <div className="p-3 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">Existing Order Found</h5>
+                  <h5 className="mb-0 fw-semibold text-muted">
+                    Existing Order Found
+                  </h5>
                   <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowExistingOrderModal(false)}
@@ -883,6 +1056,49 @@ const Checkout = () => {
                                 <span className="ps-2 text-success font_size_12">
                                   {item.offer || "No "}% Off
                                 </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row d-flex justify-content-end pe-3">
+                            <div className="col-4 ps-0 ">
+                              <div className="d-flex justify-content-end align-items-center mt-1">
+                                <div
+                                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                  style={{
+                                    height: "30px",
+                                    width: "30px",
+                                  }}
+                                >
+                                  <i
+                                    className="ri-subtract-line fs-2 mx-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      decrementQuantity(item);
+                                    }}
+                                  ></i>
+                                </div>
+                                <span className="text-light  px-2">
+                                  {item.quantity}
+                                </span>
+                                <div
+                                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                  style={{
+                                    height: "30px",
+                                    width: "30px",
+                                  }}
+                                >
+                                  <i
+                                    className="ri-add-line mx-2 fs-2"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      incrementQuantity(item);
+                                    }}
+                                  ></i>
+                                </div>
                               </div>
                             </div>
                           </div>

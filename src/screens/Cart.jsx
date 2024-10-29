@@ -482,8 +482,8 @@ const Cart = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="row ">
-                        <div className="col-10 mx-0 my-auto px-0">
+                      <div className="row pb-2 pe-2">
+                        <div className="col-8 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
                             <span className="ms-3 font_size_14 fw-semibold text-info">
                               ₹{item.price}
@@ -494,29 +494,45 @@ const Cart = () => {
                           </p>
                         </div>
 
-                        <div className="col-2">
+                        <div className="col-4 ps-0">
                           <div className="d-flex justify-content-end align-items-center mt-1">
-                            <i
-                              className="ri-subtract-line fs-2 mx-2"
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                decrementQuantity(item);
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "30px",
+                                width: "30px",
                               }}
-                            ></i>
-                            <span className="text-light  ">
+                            >
+                              <i
+                                className="ri-subtract-line fs-2 mx-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  decrementQuantity(item);
+                                }}
+                              ></i>
+                            </div>
+                            <span className="text-light  px-2">
                               {item.quantity}
                             </span>
-                            <i
-                              className="ri-add-line mx-2 fs-2"
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                incrementQuantity(item);
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "30px",
+                                width: "30px",
                               }}
-                            ></i>
+                            >
+                              <i
+                                className="ri-add-line mx-2 fs-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  incrementQuantity(item);
+                                }}
+                              ></i>
+                            </div>
                           </div>
                         </div>
                       </div>
