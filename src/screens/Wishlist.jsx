@@ -371,6 +371,8 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0">
+        <Header title="Wishlist" count={wishlistCount} />
+
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={customerType?.tableNumber || "1"}

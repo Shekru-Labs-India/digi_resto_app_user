@@ -33,6 +33,7 @@ const TrackOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(
     () => localStorage.getItem("isDarkMode") === "true"
   );
+  const toast = useRef(null);
 
   const isLoggedIn = !!localStorage.getItem("userData");
   const [showModal, setShowModal] = useState(false);
