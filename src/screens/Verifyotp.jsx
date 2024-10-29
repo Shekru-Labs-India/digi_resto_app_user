@@ -11,7 +11,12 @@ const Verifyotp = () => {
   const navigate = useNavigate();
   const restaurantCode = localStorage.getItem("restaurantCode");
   const mobile = localStorage.getItem("mobile");
-  const otpStored = localStorage.getItem("otp");
+  const storedOtp = localStorage.getItem("otp");
+
+  useEffect(() => {
+    console.log("Stored OTP on component mount:", storedOtp);
+    console.log("Stored mobile:", mobile);
+  }, []);
 
   useEffect(() => {
     const firstInput = document.getElementById('digit-1');
@@ -22,37 +27,41 @@ const Verifyotp = () => {
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
+    console.log("Entered OTP:", enteredOtp);
+
     if (!enteredOtp.trim()) {
       setError("OTP is required");
       window.showToast("error", "OTP is required");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const response = await fetch("https://menumitra.com/user_api/account_verify_otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mobile: mobile,
-          otp: otpStored,
+          otp: enteredOtp
         }),
       });
-  
+
       const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
+      console.log("Verify API Response:", data);
+
       if (data.st === 1) {
         console.log("OTP verification success:", data);
-  
-        const { customer_id, name, mobile } = data.customer_details;
-        const userData = { customer_id, name, mobile };
+
+        // Store all customer details as received from API
+        const userData = {
+          customer_id: data.customer_details.customer_id,
+          name: data.customer_details.name,
+          mobile: data.customer_details.mobile,
+          customer_type: data.customer_details.customer_type
+        };
+        
         localStorage.setItem("userData", JSON.stringify(userData));
-  
         window.showToast("success", "OTP verified successfully!");
   
         setTimeout(() => {
