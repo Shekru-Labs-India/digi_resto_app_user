@@ -369,8 +369,8 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <main className="page-content space-top mb-5 pb-3">
-        <div className="container py-0">
+      <main className="page-content space-top mb-5 pb-5">
+        <div className="container ">
         <Header title="Wishlist" count={wishlistCount} />
 
           <HotelNameAndTable

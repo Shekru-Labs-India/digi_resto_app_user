@@ -862,29 +862,31 @@ const Checkout = () => {
 
         {showOngoingOrderPopup && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
+            <div className={`popup-content rounded-4 ${isDarkMode ? 'bg-dark' : 'bg-white'}`}>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="row">
                   <div className="col-11 pe-0 me-0">  
-                    <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
+                    <h3 className={`mb-0 ${isDarkMode ? 'text-white' : 'text-muted'}`}>
+                      Ongoing Order Detected
+                    </h3>
                   </div>
                   <div className="col-1 ps-0">
                     <button
-                      className="btn p-0 "
+                      className={`btn p-0 ${isDarkMode ? 'text-white' : ''}`}
                       onClick={() => setShowOngoingOrderPopup(false)}
                     >
-                      <i className="ri-close-line text-muted fs-3"></i>
+                      <i className={`ri-close-line fs-3 ${isDarkMode ? 'text-white' : 'text-muted'}`}></i>
                     </button>
                   </div>
                 </div>
               </div>
-              <p className="text-muted mb-4">
+              <p className={`${isDarkMode ? 'text-white-50' : 'text-muted'} mb-4`}>
                 Please complete your ongoing order before placing a new one.
               </p>
               <div className="d-flex flex-column gap-2">
                 <button
                   className="btn btn-success rounded-pill w-100 py-2"
-                  onClick={handleCompleteOrder} // Removed the orderId parameter
+                  onClick={handleCompleteOrder}
                 >
                   <i className="ri-checkbox-circle-line me-2"></i>
                   Complete Order
@@ -903,8 +905,8 @@ const Checkout = () => {
         )}
 
         {showErrorPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content rounded-4">
+          <div className="popup-overlay card">
+            <div className="popup-content rounded-4 card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h3 className="mb-0">Error</h3>
                 <button
