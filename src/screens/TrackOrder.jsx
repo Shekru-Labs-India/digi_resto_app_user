@@ -1255,7 +1255,7 @@ const TrackOrder = () => {
                   </div>
                 </div>
                 <div className="col-4 text-end">
-                  <i className="ri-user-location-line ps-0 pe-1 font_size_12 gray-text"></i>
+                  <i className="ri-map-pin-user-fill ps-0 pe-1 font_size_12 gray-text"></i>
                   <span className="fs-6 gray-text font_size_12">
                     {order_details.table_number}
                   </span>

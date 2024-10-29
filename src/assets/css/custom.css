@@ -340,7 +340,7 @@ button{
 
 .style-2-custom{
 background-color: var(--bg-white);
-      border-radius: var(--border-radius-xl);
+      border-radius: var(--bs-border-radius-lg);
       padding: 0px;
 }
 
