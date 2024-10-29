@@ -203,13 +203,19 @@ const OfferBanner = () => {
     }
   }, [menuLists]);
 
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
+
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
-      console.error("Missing required data");
-      navigate("/Signinscreen");
-      return;
-    }
+  if (!userData?.customer_id || userData.customer_type === 'guest') {
+    handleUnauthorizedFavorite(navigate);
+    return;
+  }
 
     const menuItem = menuLists.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -558,7 +564,32 @@ const OfferBanner = () => {
                           </div>
                           <div className="d-flex justify-content-end col-6">
                             {userData ? (
-                              <div
+                              <Link
+                                to={userData ? "#" : "/Signinscreen"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (!userData) {
+                                    navigate("/Signinscreen");
+                                  } else {
+                                    handleAddToCartClick(menu);
+                                  }
+                                }}
+                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                                style={{
+                                  border: "1px solid gray",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                              >
+                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+                              </Link>
+                            ) : (
+                              <Link
+                                to="/Signinscreen"
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
                                   border: "1px solid gray",
@@ -571,32 +602,11 @@ const OfferBanner = () => {
                                 }}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  e.stopPropagation();
-                                  handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i
-                                  className={`ri-shopping-cart-${
-                                    isMenuItemInCart(menu.menu_id)
-                                      ? "fill"
-                                      : "line"
-                                  } fs-6 `}
-                                ></i>
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
+                                  navigate("/Signinscreen");
                                 }}
                               >
                                 <i className="ri-shopping-cart-2-line fs-6"></i>
-                              </div>
+                              </Link>
                             )}
                           </div>
                         </div>

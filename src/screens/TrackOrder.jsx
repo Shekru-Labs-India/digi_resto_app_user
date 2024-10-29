@@ -691,20 +691,27 @@ const TrackOrder = () => {
     };
   }, []);
 
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
+  
   const handleLikeClick = async (menu, e) => {
     e.preventDefault();
     e.stopPropagation();
-
+  
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      navigate("/Signinscreen");
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      handleUnauthorizedFavorite(navigate);
       return;
     }
-
+  
     const currentRestaurantId =
       menu.restaurant_id || localStorage.getItem("restaurantId");
     const isFavorite = favoriteMenus[menu.menu_id] || false;
-
+  
     try {
       const response = await fetch(
         `https://menumitra.com/user_api/${
@@ -719,21 +726,21 @@ const TrackOrder = () => {
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type || "customer",
+            customer_type: userData.customer_type,
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
         const newFavoriteStatus = !isFavorite;
-
+  
         // Update local favorite status
         setFavoriteMenus((prev) => ({
           ...prev,
           [menu.menu_id]: newFavoriteStatus,
         }));
-
+  
         // Update order details
         setOrderDetails((prevDetails) => {
           if (!prevDetails?.order_items) return prevDetails;
@@ -746,7 +753,7 @@ const TrackOrder = () => {
             ),
           };
         });
-
+  
         // Dispatch global event with consistent name
         window.dispatchEvent(
           new CustomEvent("favoriteUpdated", {
@@ -757,8 +764,11 @@ const TrackOrder = () => {
             },
           })
         );
-
-        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
+  
+        window.showToast(
+          "success", 
+          isFavorite ? "Removed from favorites" : "Added to favorites"
+        );
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
@@ -783,15 +793,19 @@ const TrackOrder = () => {
           }),
         }
       );
-
+  
       if (response.ok) {
         const data = await response.json();
-
+  
         if (data.st === 1 && data.lists) {
           setOrderDetails(data.lists);
-          setIsCompleted(
-            data.lists.order_details.order_status.toLowerCase() === "completed"
-          );
+          const orderStatus = data.lists.order_details.order_status.toLowerCase();
+          setIsCompleted(orderStatus === "completed");
+          
+          // Add this line to handle canceled status
+          if (orderStatus === "cancle" || orderStatus === "canceled") {
+            navigate("/MyOrder", { state: { activeTab: "canceled" } });
+          }
         } else {
           console.error("Invalid data format:", data);
           window.showToast("error", "Failed to fetch order details. Please try again.");

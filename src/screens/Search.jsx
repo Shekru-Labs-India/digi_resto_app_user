@@ -287,10 +287,18 @@ const Search = () => {
     }
   };
 
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
+
+
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      navigate("/Signinscreen");
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      handleUnauthorizedFavorite(navigate);
       return;
     }
 
