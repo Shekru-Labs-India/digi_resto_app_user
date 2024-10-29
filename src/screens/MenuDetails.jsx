@@ -482,94 +482,115 @@ const MenuDetails = () => {
             </div>
           </div>
           <div className="container py-0">
-            <div style={{ position: 'relative', width: '100%', marginBottom: '20px' }}>
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                marginBottom: "20px",
+              }}
+            >
               {/* Main Image Container */}
-              <div style={{ 
-                position: 'relative',
-                width: '100%',
-                height: '330px',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                backgroundColor: '#f6f6f6'
-              }}>
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "330px",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  backgroundColor: "#f6f6f6",
+                }}
+              >
                 {productDetails?.images?.length > 0 ? (
                   <>
                     <img
                       src={productDetails.images[currentSlide]}
                       alt={productDetails.name}
-                      onError={(e) => { e.target.src = images }}
+                      onError={(e) => {
+                        e.target.src = images;
+                      }}
                       style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        transition: 'opacity 0.3s ease'
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        transition: "opacity 0.3s ease",
                       }}
                     />
 
                     {/* Navigation Arrows */}
                     {productDetails.images.length > 1 && (
                       <>
-                        <div 
+                        <div
                           onClick={prevSlide}
                           className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                           style={{
-                            position: 'absolute',
-                            left: '10px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            height: '30px',
-                            width: '30px',
-                            cursor: 'pointer',
-                            zIndex: 2
+                            position: "absolute",
+                            left: "10px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            height: "30px",
+                            width: "30px",
+                            cursor: "pointer",
+                            zIndex: 2,
                           }}
                         >
                           <i className="ri-arrow-left-s-line fs-4"></i>
                         </div>
 
-                        <div 
+                        <div
                           onClick={nextSlide}
                           className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                           style={{
-                            position: 'absolute',
-                            right: '10px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            height: '30px',
-                            width: '30px',
-                            cursor: 'pointer',
-                            zIndex: 2
+                            position: "absolute",
+                            right: "10px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            height: "30px",
+                            width: "30px",
+                            cursor: "pointer",
+                            zIndex: 2,
                           }}
                         >
                           <i className="ri-arrow-right-s-line fs-4"></i>
                         </div>
 
                         {/* Pagination Dots */}
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          display: 'flex',
-                          gap: '8px',
-                          zIndex: 2,
-                          padding: '3px 7px',
-                          borderRadius: '15px',
-                          background: 'rgba(255, 255, 255, 0.3)'
-                        }}>
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "10px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            display: "flex",
+                            gap: "8px",
+                            zIndex: 2,
+                            padding: "3px 7px",
+                            borderRadius: "15px",
+                            background: "rgba(255, 255, 255, 0.3)",
+                          }}
+                        >
                           {productDetails.images.map((_, index) => (
                             <div
                               key={index}
                               onClick={() => setCurrentSlide(index)}
                               style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                cursor: 'pointer',
-                                backgroundColor: currentSlide === index ? 'var(--primary)' : '#ffffff',
-                                border: currentSlide === index ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
-                                transition: 'all 0.3s ease',
+                                width: "8px",
+                                height: "8px",
+                                borderRadius: "50%",
+                                cursor: "pointer",
+                                backgroundColor:
+                                  currentSlide === index
+                                    ? "var(--primary)"
+                                    : "#ffffff",
+                                border:
+                                  currentSlide === index
+                                    ? "none"
+                                    : "1px solid rgba(255, 255, 255, 0.8)",
+                                transition: "all 0.3s ease",
                                 opacity: currentSlide === index ? 1 : 0.8,
-                                transform: currentSlide === index ? 'scale(1.2)' : 'scale(1)'
+                                transform:
+                                  currentSlide === index
+                                    ? "scale(1.2)"
+                                    : "scale(1)",
                               }}
                             />
                           ))}
@@ -592,12 +613,13 @@ const MenuDetails = () => {
                         width: "20px",
                         borderWidth: "2px",
                         borderRadius: "3px",
-                        zIndex: 2
+                        zIndex: 2,
                       }}
                     >
                       <i
                         className={`${
-                          productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                          productDetails.menu_veg_nonveg?.toLowerCase() ===
+                          "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
                             : "ri-checkbox-blank-circle-fill text-danger"
                         } font_size_12`}
@@ -613,7 +635,7 @@ const MenuDetails = () => {
                         right: "10px",
                         height: "20px",
                         width: "20px",
-                        zIndex: 2
+                        zIndex: 2,
                       }}
                     >
                       <i
@@ -623,7 +645,7 @@ const MenuDetails = () => {
                             : "ri-heart-3-line"
                         } fs-6`}
                         onClick={handleLikeClick}
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                       ></i>
                     </div>
 
@@ -638,7 +660,7 @@ const MenuDetails = () => {
                           height: "17px",
                           width: "70px",
                           borderRadius: "0px 0px 7px 0px",
-                          zIndex: 2
+                          zIndex: 2,
                         }}
                       >
                         <span className="text-white">
@@ -655,9 +677,9 @@ const MenuDetails = () => {
                     src={images}
                     alt={productDetails.name}
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
                     }}
                   />
                 )}
@@ -729,43 +751,45 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-5 pt-1 px-0 ">
+                  <div className="col-12 pt-1 px-0 ">
                     {!isFromDifferentRestaurant && (
                       <div className="dz-stepper style-3">
-                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
-                          <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "30px",
-                                width: "30px",
-                              }}
-                            >
-                              <i
-                                className="ri-subtract-line fs-2"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleQuantityChange(-1)}
-                              ></i>
-                            </div>
-                          </span>
-                          <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
-                            {quantity}
-                          </span>
-                          <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "30px",
-                                width: "30px",
-                              }}
-                            >
-                              <i
-                                className="ri-add-line fs-2"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleQuantityChange(1)}
-                              ></i>
-                            </div>
-                          </span>
+                        <div className="row ms-1">
+                          <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
+                            <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                style={{
+                                  height: "30px",
+                                  width: "30px",
+                                }}
+                              >
+                                <i
+                                  className="ri-subtract-line fs-2"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleQuantityChange(-1)}
+                                ></i>
+                              </div>
+                            </span>
+                            <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
+                              {quantity}
+                            </span>
+                            <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                style={{
+                                  height: "30px",
+                                  width: "30px",
+                                }}
+                              >
+                                <i
+                                  className="ri-add-line fs-2"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleQuantityChange(1)}
+                                ></i>
+                              </div>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -824,15 +848,19 @@ const MenuDetails = () => {
                   {!customerId ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={() => navigate("/Signinscreen", { 
-                        state: { 
-                          from: location.pathname,
-                          menuId: menuId 
-                        } 
-                      })}
+                      onClick={() =>
+                        navigate("/Signinscreen", {
+                          state: {
+                            from: location.pathname,
+                            menuId: menuId,
+                          },
+                        })
+                      }
                     >
                       <i className="ri-login-box-line pe-1 text-white"></i>
-                      <div className="text-nowrap text-white">Login to Order</div>
+                      <div className="text-nowrap text-white">
+                        Login to Order
+                      </div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button
