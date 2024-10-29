@@ -9,6 +9,7 @@ import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 
+
 const MyOrder = () => {
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -52,19 +53,19 @@ const MyOrder = () => {
       try {
         setLoading(true);
         console.log("Fetching orders...");
-  
+
         const userData = JSON.parse(localStorage.getItem("userData"));
         const currentCustomerId =
           userData?.customer_id || localStorage.getItem("customer_id");
         const currentCustomerType =
           userData?.customer_type || localStorage.getItem("customer_type");
-  
+
         if (!currentCustomerId || !restaurantId) {
           console.log("Missing customerId or restaurantId");
           setLoading(false);
           return;
         }
-  
+
         const response = await fetch(
           "https://menumitra.com/user_api/get_order_list",
           {
@@ -111,14 +112,12 @@ const MyOrder = () => {
         console.log("Loading state set to false");
       }
     };
-  
+
     if (customerId && restaurantId) {
       fetchOrders();
     }
   }, [activeTab, customerId, restaurantId]);
 
-
-  
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("theme-dark");
@@ -134,29 +133,32 @@ const MyOrder = () => {
 
   const calculateOrderCount = (orders) => {
     if (!orders) return 0;
-    
+
     try {
       return Object.values(orders).reduce((acc, curr) => {
         if (!curr) return acc;
-        
+
         // Handle canceled orders which might be under 'cancle' key
         if (curr.cancle) {
           return acc + (Array.isArray(curr.cancle) ? curr.cancle.length : 0);
         }
-        
+
         // Handle regular orders
         if (Array.isArray(curr)) {
           return acc + curr.length;
         }
-        if (typeof curr === 'object') {
-          return acc + Object.values(curr).reduce((sum, val) => {
-            return sum + (Array.isArray(val) ? val.length : 0);
-          }, 0);
+        if (typeof curr === "object") {
+          return (
+            acc +
+            Object.values(curr).reduce((sum, val) => {
+              return sum + (Array.isArray(val) ? val.length : 0);
+            }, 0)
+          );
         }
         return acc;
       }, 0);
     } catch (error) {
-      console.error('Error calculating order count:', error);
+      console.error("Error calculating order count:", error);
       return 0;
     }
   };
@@ -165,10 +167,14 @@ const MyOrder = () => {
     <div className="page-wrapper">
       <Header
         title="My Order"
-        count={orders && (activeTab === "canceled" && orders.cancle 
-          ? (Array.isArray(orders.cancle) ? orders.cancle.length : 0)
-          : calculateOrderCount(orders)
-        )}
+        count={
+          orders &&
+          (activeTab === "canceled" && orders.cancle
+            ? Array.isArray(orders.cancle)
+              ? orders.cancle.length
+              : 0
+            : calculateOrderCount(orders))
+        }
       />
 
       <main className="page-content space-top mb-5 pb-3">
@@ -284,19 +290,19 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   useEffect(() => {
     console.log("Orders received:", orders);
     console.log("Type:", type);
-    
+
     if (orders && Object.keys(orders).length > 0) {
       // Get the first date (top-most order group)
       const firstDate = Object.keys(orders)[0];
-      
+
       // Set only the first date group to be expanded
       setCheckedItems({
-        [`${firstDate}-${type}`]: true
+        [`${firstDate}-${type}`]: true,
       });
     } else {
       setCheckedItems({});
     }
-    
+
     setExpandAll(false);
   }, [orders, type]);
   const [completedTimers, setCompletedTimers] = useState(new Set());
@@ -304,6 +310,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
   const [completedOrders, setCompletedOrders] = useState(new Set());
   const [showOngoingButton, setShowOngoingButton] = useState(false);
+  
 
   const handleOrderMore = (orderId) => {
     // Navigate to Menu with the order ID
@@ -320,7 +327,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       [date]: !prev[date],
     }));
   };
-  
 
   const handleOrderClick = (orderNumber) => {
     navigate(`/TrackOrder/${orderNumber}`);
@@ -638,7 +644,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             <div className="d-flex flex-column gap-2">
                               {/* Dynamic time remaining text - only show if timer hasn't expired */}
                               {!completedTimers.has(order.order_id) && (
-                                <TimeRemaining orderId={order.order_id} />
+                                <TimeRemaining
+                                  orderId={order.order_id}
+                                  completedTimers={completedTimers} // Pass completedTimers as prop
+                                />
                               )}
 
                               {/* Countdown and Cancel button row */}
@@ -659,7 +668,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
                                 {/* Only show cancel button if timer hasn't expired */}
                                 {!completedTimers.has(order.order_id) &&
-                                  timeLeft > 0 && (
+                                  localStorage.getItem(
+                                    `timer_${order.order_id}`
+                                  ) && (
                                     <button
                                       className="btn btn-sm btn-danger rounded-pill px-4"
                                       onClick={(e) => {
@@ -749,24 +760,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   return (
     <>
       <div className="row g-1">
-        {orders && Object.keys(orders).length > 0 && (
-          <div className="d-flex justify-content-end my-2 me-3">
-            <div
-              className="d-flex align-items-center cursor-pointer icon-border py-0"
-              onClick={toggleExpandAll}
-              role="button"
-              aria-label={expandAll ? "Collapse All" : "Expand All"}
-            >
-              <span className="icon-circle">
-                <i
-                  className={`ri-arrow-down-s-line arrow-icon ${
-                    expandAll ? "rotated" : "rotated-1"
-                  }`}
-                ></i>
-              </span>
-            </div>
-          </div>
-        )}
+        
         {!orders || Object.keys(orders).length === 0 ? (
           <div
             className="d-flex justify-content-center align-items-center flex-column"
@@ -839,26 +833,44 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   );
 };
 
-const TimeRemaining = ({ orderId }) => {
+const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
   const timerKey = `timer_${orderId}`;
 
   useEffect(() => {
+    // Check if timer is already completed or expired in localStorage
     const startTime = localStorage.getItem(timerKey);
-
     if (!startTime) {
+      // Set initial timer only if it doesn't exist
       localStorage.setItem(timerKey, new Date().getTime().toString());
+    } else if (completedTimers?.has(orderId)) {
+      setIsExpired(true);
+      return;
+    }
+
+    const now = new Date().getTime();
+    const elapsed = now - parseInt(startTime || new Date().getTime().toString());
+    if (elapsed >= 90000) {
+      setIsExpired(true);
+      localStorage.removeItem(timerKey);
+      return;
     }
 
     const calculateTimeLeft = () => {
       const start = parseInt(localStorage.getItem(timerKey));
+      if (!start) {
+        setIsExpired(true);
+        return;
+      }
+
       const now = new Date().getTime();
       const elapsed = now - start;
       const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
 
       if (remaining === 0) {
         setIsExpired(true);
+        localStorage.removeItem(timerKey);
         clearInterval(timer);
         return;
       }
@@ -869,7 +881,7 @@ const TimeRemaining = ({ orderId }) => {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [orderId, timerKey]);
+  }, [orderId, completedTimers, timerKey]);
 
   if (isExpired || timeLeft === 0) return null;
   return (
@@ -884,17 +896,31 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
-  const timerKey = `order_timer_${orderId}`;
+  const timerKey = `timer_${orderId}`;
 
   useEffect(() => {
+    // Initialize timer if it doesn't exist
     const startTime = localStorage.getItem(timerKey);
-
     if (!startTime) {
       localStorage.setItem(timerKey, new Date().getTime().toString());
     }
 
+    const now = new Date().getTime();
+    const start = parseInt(localStorage.getItem(timerKey));
+    const elapsed = now - start;
+
+    if (elapsed >= 90000) {
+      handleTimerComplete();
+      return;
+    }
+
     const calculateTimeLeft = () => {
       const start = parseInt(localStorage.getItem(timerKey));
+      if (!start) {
+        handleTimerComplete();
+        return;
+      }
+
       const now = new Date().getTime();
       const elapsed = now - start;
       const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
@@ -902,12 +928,10 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
       if (remaining <= 0) {
         clearInterval(timerRef.current);
         localStorage.removeItem(timerKey);
-        setTimeLeft(0);
-        setIsCompleted(true);
-        onComplete();
-      } else {
-        setTimeLeft(remaining);
+        handleTimerComplete();
+        return;
       }
+      setTimeLeft(remaining);
     };
 
     calculateTimeLeft();
@@ -918,9 +942,26 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
         clearInterval(timerRef.current);
       }
     };
-  }, [orderId, onComplete, timerKey]);
+  }, [orderId, onComplete]);
 
-  if (isCompleted) {
+  // New function to handle timer completion
+  const handleTimerComplete = () => {
+    setTimeLeft(0);
+    setIsCompleted(true);
+    onComplete();
+    window.showToast( "Your order is now in ongoing orders!", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+
+  // Only show ongoing button if timer has actually completed
+  if (isCompleted && timeLeft === 0) {
     return (
       <button
         className="btn btn-primary btn-sm rounded-pill px-3"
