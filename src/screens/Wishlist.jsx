@@ -24,7 +24,6 @@ const Wishlist = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
-  
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -96,6 +95,16 @@ const Wishlist = () => {
   //   const storedCustomerId = localStorage.getItem("customer_id");
   //   ...
   // }, []);
+
+  const handleMenuClick = (menu) => {
+    // If the menu is from a different restaurant
+    if (menu.restaurant_id !== restaurantId) {
+      // Store both current and target restaurant IDs
+      localStorage.setItem("previousRestaurantId", restaurantId);
+      localStorage.setItem("currentRestaurantId", menu.restaurant_id);
+      localStorage.setItem("restaurantId", menu.restaurant_id);
+    }
+  };
 
   const fetchFavoriteItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -271,7 +280,9 @@ const Wishlist = () => {
       setSelectedMenu(null);
 
       updateCartRestaurantId();
-      window.dispatchEvent(new Event('cartUpdated'));
+
+      // Dispatch cart update event
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.error("Error adding item to cart:", error);
       window.showToast("error", "Failed to add item to cart. Please try again.");
@@ -360,6 +371,8 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0">
+        <Header title="Wishlist" count={wishlistCount} />
+
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={customerType?.tableNumber || "1"}
@@ -427,15 +440,18 @@ const Wishlist = () => {
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
                             <div className="custom-card rounded-3 ">
-                              <Link
-                                to={`/ProductDetails/${menu.menu_id}`}
-                                state={{
-                                  restaurant_id: menu.restaurant_id,
-                                  menu_cat_id: menu.menu_cat_id,
-                                  fromWishlist: true,
-                                }}
-                                className="text-decoration-none text-reset"
-                              >
+                            <Link
+  to={`/ProductDetails/${menu.menu_id}`}
+  state={{
+    restaurant_id: menu.restaurant_id,
+    menu_cat_id: menu.menu_cat_id,
+    fromWishlist: true,
+    fromDifferentRestaurant: menu.restaurant_id !== restaurantId,
+    previousRestaurantId: restaurantId
+  }}
+  className="text-decoration-none text-reset"
+  onClick={() => handleMenuClick(menu)}
+>
                                 <div className="card-body py-0">
                                   <div className="row">
                                     <div className="col-3 px-0">

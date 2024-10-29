@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import logo from "../assets/logos/mmua_transparent.png";
+import logo from "../assets/logos/menumitra_logo_128.png";
 
 export const SidebarToggler = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

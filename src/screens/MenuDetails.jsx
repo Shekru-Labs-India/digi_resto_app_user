@@ -50,24 +50,53 @@ const MenuDetails = () => {
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+
+  const [customerType, setCustomerType] = useState(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.customer_type || null;
+  });
+  
   useEffect(() => {
     // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData) {
-      setUserData(storedUserData);
-      setCustomerId(storedUserData.customer_id);
+    const storedCustomerId = storedUserData?.customer_id;
+    const storedCustomerType = storedUserData?.customer_type;
+  
+    // Get restaurant data from location state or localStorage
+    const locationState = location.state;
+    let initialRestaurantId;
+  
+    if (locationState?.fromDifferentRestaurant) {
+      // If coming from a different restaurant menu
+      initialRestaurantId = locationState.restaurant_id;
+      setCurrentRestaurantId(initialRestaurantId);
+      
+      // Persist the restaurant ID
+      localStorage.setItem("currentRestaurantId", initialRestaurantId);
+      localStorage.setItem("restaurantId", initialRestaurantId);
+    } else {
+      // Use stored restaurant ID
+      initialRestaurantId = localStorage.getItem("currentRestaurantId") || 
+                           localStorage.getItem("restaurantId");
     }
+  
+    setCustomerId(storedCustomerId);
+    setCustomerType(storedCustomerType);
+    setCurrentRestaurantId(initialRestaurantId);
+  
+    // Clean up function
+    return () => {
+      if (!locationState?.fromDifferentRestaurant) {
+        // Restore previous restaurant ID only if not viewing a different restaurant's menu
+        const previousRestaurantId = localStorage.getItem("previousRestaurantId");
+        if (previousRestaurantId) {
+          localStorage.setItem("restaurantId", previousRestaurantId);
+          localStorage.setItem("currentRestaurantId", previousRestaurantId);
+        }
+      }
+    };
+  }, [location.state]);
 
-    // Get restaurant ID with proper fallback chain
-    const storedRestaurantId = localStorage.getItem("restaurantId");
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlRestaurantId = urlParams.get("restaurantId");
-    const finalRestaurantId = storedRestaurantId || urlRestaurantId || restaurantId;
-    
-    setCurrentRestaurantId(finalRestaurantId);
-    setSourceRestaurantId(finalRestaurantId);
-  }, [restaurantId]);
- 
   const toTitleCase = (str) => {
     if (!str) return "";
     return str.replace(
@@ -79,10 +108,25 @@ const MenuDetails = () => {
   const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(false);
 
   const orderedItems = location.state?.orderedItems || [];
+  const [previousRestaurantId, setPreviousRestaurantId] = useState(null);
 
   const isItemOrdered = (menuId) => {
     return orderedItems.some((item) => item.menu_id === menuId);
   };
+
+  useEffect(() => {
+    const storedPreviousRestaurantId = localStorage.getItem("previousRestaurantId");
+    if (storedPreviousRestaurantId) {
+      setPreviousRestaurantId(storedPreviousRestaurantId);
+    }
+  
+    // Cleanup
+    return () => {
+      if (!location.state?.fromDifferentRestaurant) {
+        localStorage.removeItem("previousRestaurantId");
+      }
+    };
+  }, [location.state?.fromDifferentRestaurant]);
 
   const fetchProductDetails = async () => {
     setIsLoading(true);
@@ -124,8 +168,15 @@ const MenuDetails = () => {
           // Update restaurant IDs
           setMenuRestaurantId(fetchedRestaurantId);
           if (fetchedRestaurantId) {
-            localStorage.setItem("restaurantId", fetchedRestaurantId);
+            localStorage.setItem("currentRestaurantId", fetchedRestaurantId);
           }
+
+          if (location.state?.fromDifferentRestaurant) {
+            setIsFromDifferentRestaurant(true);
+            // Store the current restaurant's name and ID for the warning message
+            localStorage.setItem("differentRestaurantName", data.details.restaurant_name || '');
+          }
+        
 
           const discountedPrice = offer ? price - (price * offer) / 100 : price;
           const oldPrice = offer ? Math.floor(price * 1.1) : null;
