@@ -492,8 +492,8 @@ const Product = () => {
           </div>
         </div>
         {/* Menu Items */}
-        <div className="container mb-5 pt-0">
-          <div className="row g-3 grid-style-1">
+        <div className="container mb-5 pt-0 pb-5">
+          <div className="row g-3 grid-style-1 pb-5">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
                 <div className="card-item style-6 rounded-3">

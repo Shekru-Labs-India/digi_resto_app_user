@@ -44,6 +44,31 @@ const NearbyArea = () => {
     );
   };
 
+
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setMenuItems((prevItems) =>
+        prevItems.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+        )
+      );
+    };
+  
+    const handleCartUpdate = (event) => {
+      // Refresh cart status for all items
+      setMenuItems((prevItems) => [...prevItems]); // Force re-render
+    };
+  
+    window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+    window.addEventListener("cartStatusChanged", handleCartUpdate);
+  
+    return () => {
+      window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+      window.removeEventListener("cartStatusChanged", handleCartUpdate);
+    };
+  }, []);
+
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
     setIsLoading(true);

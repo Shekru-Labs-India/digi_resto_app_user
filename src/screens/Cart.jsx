@@ -199,29 +199,17 @@ const Cart = () => {
     }
   };
 
-  const handleQuantityUpdate = async (item, newQuantity) => {
-    try {
-      // Update UI optimistically
-      setCartDetails(prev => ({
-        ...prev,
-        order_items: prev.order_items.map(i => 
-          i.menu_id === item.menu_id ? { ...i, quantity: newQuantity } : i
-        )
-      }));
-
-      // Dispatch cart update event
-      window.dispatchEvent(new Event('cartUpdated'));
-    } catch (error) {
-      console.error("Error updating quantity:", error);
-      // Revert on error
-      fetchCartDetails();
+  const incrementQuantity = (item) => {
+    if (item.quantity < 20) {
+      updateCartQuantity(item.menu_id, item.quantity + 1);
+    } else {
+      window.showToast("warn", "You cannot add more than 20 items of this product.");
     }
   };
 
-  const incrementQuantity = (item) => handleQuantityUpdate(item, item.quantity + 1);
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
-      handleQuantityUpdate(item, item.quantity - 1);
+      updateCartQuantity(item.menu_id, item.quantity - 1);
     }
   };
 

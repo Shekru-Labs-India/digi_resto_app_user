@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect,useRef } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
@@ -8,6 +8,10 @@ import "../assets/css/custom.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
+import { Toast } from "primereact/toast";
+import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 
@@ -48,10 +52,6 @@ const TrackOrder = () => {
     userData?.customer_id || localStorage.getItem("customer_id");
   const customerType =
     userData?.customer_type || localStorage.getItem("customer_type");
-  const [removedItems, setRemovedItems] = useState(() => {
-    const saved = localStorage.getItem(`removedOrderItems_${order_number}`);
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const [orderStatus, setOrderStatus] = useState(null);
 
@@ -165,22 +165,6 @@ const TrackOrder = () => {
     );
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleTheme = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", newIsDarkMode);
-  };
-
-  const getFirstName = (name) => {
-    if (!name) return "User";
-    const words = name.split(" ");
-    return words[0];
-  };
-
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
@@ -200,9 +184,9 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.min((prev[menuItem] || 1) + 1, 20);
       if (newQuantity === 20) {
-        window.showToast("info", `You've reached the maximum quantity for ${menuItem.menu}`, 2000);
+        window.showToast("info", `You've reached the maximum quantity for ${menuItem.menu}`);
       } else {
-        window.showToast("success", `${menuItem.menu_name} quantity increased to ${newQuantity}`, 2000);
+        window.showToast("success", `${menuItem.menu_name} quantity increased to ${newQuantity}`);
       }
       return { ...prev, [menuItem]: newQuantity };
     });
@@ -212,9 +196,9 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.max((prev[menuItem] || 1) - 1, 1);
       if (newQuantity === 1) {
-        window.showToast("info", `You've reached the minimum quantity for ${menuItem.menu_name}`, 2000);
+        window.showToast("info", `You've reached the minimum quantity for ${menuItem.menu_name}`);
       } else {
-        window.showToast("success", `${menuItem.menu_name} quantity decreased to ${newQuantity}`, 2000);
+        window.showToast("success", `${menuItem.menu_name} quantity decreased to ${newQuantity}`);
       }
       return { ...prev, [menuItem]: newQuantity };
     });
@@ -244,11 +228,26 @@ const TrackOrder = () => {
   const [prices, setPrices] = useState({});
   const getQuantity = (menuId) => quantities[menuId] || 1;
 
-  const [orderedItems, setOrderedItems] = useState([]);
+  const [orderItems, setOrderItems] = useState(null);
   const [pendingItems, setPendingItems] = useState(() => {
     const savedPendingItems = localStorage.getItem("pendingItems");
     return savedPendingItems ? JSON.parse(savedPendingItems) : [];
   });
+
+  const [removedItems, setRemovedItems] = useState(() => {
+    const saved = localStorage.getItem(`removedItems_${order_number}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const searchInputRef = useRef(null);
+  const location = useLocation();
+  const [favoriteMenus, setFavoriteMenus] = useState({});
+
+  useEffect(() => {
+    if (location.state?.orderStatus === "placed" && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [location.state, orderDetails]);
 
   useEffect(() => {
     localStorage.setItem("pendingItems", JSON.stringify(pendingItems));
@@ -281,58 +280,50 @@ const TrackOrder = () => {
     }
   }, [orderDetails]);
 
-  const handleRemoveItem = (menu, e) => {
-    e.stopPropagation();
-
-    if (orderStatus !== "placed" || !isWithinPlacedWindow) {
-      window.showToast("error", "Items can only be removed within 90 seconds of placing the order", 3000);
-      return;
-    }
-
-    try {
-      const updatedRemovedItems = [
-        ...removedItems,
-        {
-          menu_id: menu.menu_id,
-          order_id: orderDetails.order_details.order_id,
-          removed_at: new Date().toISOString(),
-          price: menu.price,
-          quantity: menu.quantity,
-        },
-      ];
-
-      // Update localStorage with order number to handle multiple orders
-      localStorage.setItem(
-        `removedOrderItems_${order_number}`,
-        JSON.stringify(updatedRemovedItems)
+  useEffect(() => {
+    if (order_number) {
+      const savedOrderItems = localStorage.getItem(
+        `orderItems_${order_number}`
       );
-      setRemovedItems(updatedRemovedItems);
+      if (savedOrderItems) {
+        const parsedOrderItems = JSON.parse(savedOrderItems);
+        setOrderItems(parsedOrderItems);
 
-      // Update order details locally
-      setOrderDetails((prev) => ({
-        ...prev,
-        menu_details: prev.menu_details.filter(
-          (item) => item.menu_id !== menu.menu_id
-        ),
-        order_details: {
-          ...prev.order_details,
-          total_total: (
-            parseFloat(prev.order_details.total_total) -
-            parseFloat(menu.price) * menu.quantity
-          ).toFixed(2),
-          grand_total: (
-            parseFloat(prev.order_details.grand_total) -
-            parseFloat(menu.price) * menu.quantity
-          ).toFixed(2),
-        },
-      }));
-
-      window.showToast("success", `${menu.menu_name} removed from order`, 2000);
-    } catch (error) {
-      console.error("Error removing item:", error);
-      window.showToast("error", "Failed to remove item. Please try again.", 3000);
+        // Set initial order details if not already loaded from API
+        if (!orderDetails) {
+          setOrderDetails({
+            menu_details: parsedOrderItems.items,
+            order_details: {
+              order_id: parsedOrderItems.order_id,
+              order_number: order_number,
+              total_total: parsedOrderItems.total_total,
+              grand_total: parsedOrderItems.grand_total,
+              created_at: parsedOrderItems.created_at,
+              order_status: "placed",
+            },
+          });
+        }
+      }
     }
-  };
+  }, [order_number]);
+
+  useEffect(() => {
+    if (orderDetails?.order_details?.created_at && orderStatus === "placed") {
+      const orderTime = new Date(
+        orderDetails.order_details.created_at
+      ).getTime();
+      const currentTime = new Date().getTime();
+      const timeDiff = (currentTime - orderTime) / 1000; // Convert to seconds
+      setIsWithinPlacedWindow(timeDiff <= 90);
+    }
+  }, [orderDetails, orderStatus]);
+
+  useEffect(() => {
+    if (orderStatus === "completed") {
+      localStorage.removeItem(`removedOrderItems_${order_number}`);
+      setRemovedItems([]);
+    }
+  }, [orderStatus, order_number]);
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
@@ -407,7 +398,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        window.showToast("success", "Order updated successfully", 3000);
+        window.showToast("success", "Order updated successfully");
 
         // Refresh order details
         fetchOrderDetails(order_number);
@@ -420,7 +411,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error updating order:", error);
-      window.showToast("error", error.message || "Failed to update order", 3000);
+      window.showToast("error", error.message || "Failed to update order");
     }
   };
 
@@ -534,31 +525,28 @@ const TrackOrder = () => {
   const handleAddToOrder = async (menuItem) => {
     if (!restaurantId) {
       console.error("Restaurant ID not found");
-      window.showToast("error", "Restaurant information not found", 3000);
+      window.showToast("error", "Restaurant information not found");
       return;
     }
 
-    // Check if item is already added
     if (isItemAdded(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your order", 2000);
+      window.showToast("info", "This item is already in your order");
       return;
     }
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
 
       if (!currentCustomerId) {
-        window.showToast("error", "Please login to add items to order", 3000);
+        window.showToast("error", "Please login to add items to order");
         return;
       }
 
       const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
       if (!selectedPrice) {
-        window.showToast("error", "Price information is not available", 3000);
+        window.showToast("error", "Price information is not available");
         return;
       }
 
@@ -616,20 +604,142 @@ const TrackOrder = () => {
             fetchOrderDetails(order_number);
           }
 
-          window.showToast("success", `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`, 2000);
+          window.showToast("success", `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`);
         } else {
           throw new Error(data.msg || "Failed to add item to order");
         }
       }
     } catch (error) {
       console.error("Error adding item to order:", error);
-      window.showToast("error", "Failed to add item to order. Please try again.", 3000);
+      window.showToast("error", "Failed to add item to order. Please try again.");
 
       // Rollback the pending items change on error
       setPendingItems((prevItems) =>
         prevItems.filter((item) => item.menu_id !== menuItem.menu_id)
       );
       setSearchedMenu((prevMenu) => [...prevMenu, menuItem]);
+    }
+  };
+
+  // Update the handleLikeClick function
+  useEffect(() => {
+    if (orderDetails?.order_items) {
+      const initialFavorites = {};
+      orderDetails.order_items.forEach((item) => {
+        initialFavorites[item.menu_id] =
+          item.is_favourite === 1 || item.is_favourite === true;
+      });
+      setFavoriteMenus(initialFavorites);
+    }
+  }, [orderDetails]);
+
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+
+      // Update both states to ensure consistency
+      setFavoriteMenus((prev) => ({
+        ...prev,
+        [menuId]: isFavorite,
+      }));
+
+      setOrderDetails((prevDetails) => {
+        if (!prevDetails?.order_items) return prevDetails;
+        return {
+          ...prevDetails,
+          order_items: prevDetails.order_items.map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: isFavorite }
+              : item
+          ),
+        };
+      });
+    };
+
+    // Listen for both event names to ensure compatibility
+    window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
+    window.addEventListener("favoritesUpdated", handleFavoriteUpdate);
+    window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+
+    return () => {
+      window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
+      window.removeEventListener("favoritesUpdated", handleFavoriteUpdate);
+      window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+    };
+  }, []);
+
+  const handleLikeClick = async (menu, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+
+    const currentRestaurantId =
+      menu.restaurant_id || localStorage.getItem("restaurantId");
+    const isFavorite = favoriteMenus[menu.menu_id] || false;
+
+    try {
+      const response = await fetch(
+        `https://menumitra.com/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: currentRestaurantId,
+            menu_id: menu.menu_id,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type || "customer",
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        const newFavoriteStatus = !isFavorite;
+
+        // Update local favorite status
+        setFavoriteMenus((prev) => ({
+          ...prev,
+          [menu.menu_id]: newFavoriteStatus,
+        }));
+
+        // Update order details
+        setOrderDetails((prevDetails) => {
+          if (!prevDetails?.order_items) return prevDetails;
+          return {
+            ...prevDetails,
+            order_items: prevDetails.order_items.map((item) =>
+              item.menu_id === menu.menu_id
+                ? { ...item, is_favourite: newFavoriteStatus }
+                : item
+            ),
+          };
+        });
+
+        // Dispatch global event with consistent name
+        window.dispatchEvent(
+          new CustomEvent("favoriteUpdated", {
+            detail: {
+              menuId: menu.menu_id,
+              isFavorite: newFavoriteStatus,
+              restaurantId: currentRestaurantId,
+            },
+          })
+        );
+
+        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      window.showToast("error", "Failed to update favorite status");
     }
   };
 
@@ -661,16 +771,67 @@ const TrackOrder = () => {
           );
         } else {
           console.error("Invalid data format:", data);
-          window.showToast("error", "Failed to fetch order details. Please try again.", 3000);
+          window.showToast("error", "Failed to fetch order details. Please try again.");
         }
       } else {
         throw new Error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
-      window.showToast("error", "Failed to fetch order details. Please try again.", 3000);
+      window.showToast("error", "Failed to fetch order details. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Simulate fetching order details
+    const fetchOrderDetails = async () => {
+      // Simulate API call
+      const savedOrderItems = localStorage.getItem(
+        `orderItems_${order_number}`
+      );
+      if (savedOrderItems) {
+        const parsedOrderItems = JSON.parse(savedOrderItems);
+        setOrderDetails(parsedOrderItems);
+
+        // Set order status
+        setOrderStatus("placed");
+
+        // Calculate if within placed window
+        const orderTime = new Date(parsedOrderItems.created_at).getTime();
+        const currentTime = new Date().getTime();
+        const timeDiff = (currentTime - orderTime) / 1000; // Convert to seconds
+        setIsWithinPlacedWindow(timeDiff <= 90);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [order_number]);
+
+  const handleRemoveItem = (menu, e) => {
+    e.stopPropagation();
+
+    if (orderStatus !== "placed" || !isWithinPlacedWindow) {
+      window.showToast(
+        "error", 
+        "Items can only be removed within 90 seconds of placing the order"
+      );
+      return;
+    }
+
+    try {
+      setOrderDetails((prev) => ({
+        ...prev,
+        menu_details: prev.menu_details.filter(
+          (item) => item.menu_id !== menu.menu_id
+        ),
+      }));
+
+      window.showToast("success", `${menu.menu_name} removed from order`);
+    } catch (error) {
+      console.error("Error removing item:", error);
+      window.showToast("error", "Failed to remove item. Please try again.");
     }
   };
 
@@ -684,7 +845,7 @@ const TrackOrder = () => {
       userData?.customer_type || localStorage.getItem("customer_type");
 
     if (!currentCustomerId) {
-      window.showToast("error", "Please login to update order", 3000);
+      window.showToast("error", "Please login to update order");
       navigate("/Signinscreen");
       return;
     }
@@ -735,7 +896,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        window.showToast("success", "Order updated successfully", 3000);
+        window.showToast("success", "Order updated successfully");
 
         setPendingItems([]);
         setRemovedItems([]);
@@ -746,7 +907,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error updating placed order:", error);
-      window.showToast("error", error.message || "Failed to update order", 3000);
+      window.showToast("error", error.message || "Failed to update order");
     }
   };
 
@@ -760,7 +921,7 @@ const TrackOrder = () => {
       userData?.customer_type || localStorage.getItem("customer_type");
 
     if (!currentCustomerId) {
-      window.showToast("error", "Please login to add items", 3000);
+      window.showToast("error", "Please login to add items");
       navigate("/Signinscreen");
       return;
     }
@@ -794,7 +955,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        window.showToast("success", "Items added to order successfully", 3000);
+        window.showToast("success", "Items added to order successfully");
 
         setPendingItems([]);
         fetchOrderDetails(order_number);
@@ -803,7 +964,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error adding to ongoing order:", error);
-      window.showToast("error", error.message || "Failed to add items to order", 3000);
+      window.showToast("error", error.message || "Failed to add items to order");
     }
   };
 
@@ -816,7 +977,7 @@ const TrackOrder = () => {
 
       if (!currentCustomerId) {
         console.error("Customer ID not found");
-        window.showToast("error", "Customer information not found", 3000);
+        window.showToast("error", "Customer information not found");
         return;
       }
 
@@ -852,11 +1013,11 @@ const TrackOrder = () => {
         }
       } else {
         console.error("Network response was not ok.");
-        window.showToast("error", "Failed to fetch order status", 3000);
+        window.showToast("error", "Failed to fetch order status");
       }
     } catch (error) {
       console.error("Error fetching order status:", error);
-      window.showToast("error", "Failed to check order status", 3000);
+      window.showToast("error", "Failed to check order status");
     }
   };
 
@@ -911,9 +1072,12 @@ const TrackOrder = () => {
   };
 
   useEffect(() => {
-    if (order_number) {
-      fetchOrderDetails(order_number);
-    }
+    const fetchData = async () => {
+      if (order_number) {
+        await fetchOrderDetails(order_number);
+      }
+    };
+    fetchData();
   }, [order_number]);
 
   const handleCategoryClick = (categoryId, categoryName) => {
@@ -929,24 +1093,6 @@ const TrackOrder = () => {
       // handleSubmitOrder();
     }
   }, [order_number, restaurantId, customerId]);
-
-  // const formatDateTime = (dateTime) => {
-  //   const [date, time] = dateTime.split(" ");
-  //   const [hours, minutes] = time.split(":");
-
-  //   // Convert hours to 12-hour format
-  //   let hours12 = parseInt(hours, 10);
-  //   const period = hours12 >= 12 ? "PM" : "AM";
-  //   hours12 = hours12 % 12 || 12;  // Convert 0 to 12 for midnight
-
-  //   // Pad single-digit hours and minutes with leading zeros
-  //   const formattedHours = hours12.toString().padStart(2, '0');
-  //   const formattedMinutes = minutes.padStart(2, '0');
-
-  //   return ${formattedHours}:${formattedMinutes} ${period} ${date};
-  // };
-
-  // Use above code after correcting the date format in the backend
 
   const formatDateTime = (dateTime) => {
     if (!dateTime) return ""; // Return empty string if dateTime is undefined or null
@@ -991,85 +1137,6 @@ const TrackOrder = () => {
     return `${formattedHours}:${formattedMinutes} ${period} ${
       day || ""
     }-${monthAbbr}-${year || ""}`;
-  };
-
-  const handleLikeClick = async (menuId) => {
-    if (!customerId || !restaurantId) {
-      console.error("Missing required data");
-      navigate("/Signinscreen");
-      return;
-    }
-
-    const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
-    const isFavorite = menuItem.is_favourite;
-
-    try {
-      const response = await fetch(
-        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: customerId,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1) {
-          const updatedMenu = searchedMenu.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
-          );
-          setSearchedMenu(updatedMenu);
-          
-          window.showToast(
-            isFavorite ? "info" : "success",
-            `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your favourites`
-          );
-        } else {
-          throw new Error(data.msg || "Failed to update favourite status");
-        }
-      }
-    } catch (error) {
-      console.error("Error updating favorite status:", error);
-      window.showToast("error", "Failed to update favourite status");
-    }
-  };
-
-  const handleAddToCart = async (menu) => {
-    if (!customerId) {
-      navigate("/Signinscreen");
-      return;
-    }
-
-    try {
-      const response = await fetch("https://menumitra.com/user_api/add_to_cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menu.menu_id,
-          customer_id: customerId,
-          quantity: 1,
-          portion: "full"
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.st === 1) {
-        window.showToast("success", `${menu.menu_name} added to cart successfully`);
-        // Update cart count or trigger cart refresh
-      } else {
-        window.showToast("error", data.msg || "Failed to add item to cart");
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      window.showToast("error", "Failed to add item to cart");
-    }
   };
 
   if (loading || !orderDetails) {
@@ -1245,8 +1312,9 @@ const TrackOrder = () => {
                   <i className="ri-search-line fs-3 gray-text"></i>
                 </span>
                 <input
+                  ref={searchInputRef}
                   type="search"
-                  className="form-control bg-white ps-2    "
+                  className="form-control bg-white ps-2"
                   placeholder="Search to add more items"
                   onChange={handleSearch}
                   value={searchTerm}
@@ -1321,9 +1389,11 @@ const TrackOrder = () => {
                                   height: "20px",
                                   width: "20px",
                                 }}
+                                onClick={(e) => handleLikeClick(menu, e)}
                               >
                                 <i
                                   className={`${
+                                    favoriteMenus[menu.menu_id] ||
                                     menu.is_favourite
                                       ? "ri-heart-3-fill text-danger"
                                       : "ri-heart-3-line"
@@ -1542,9 +1612,11 @@ const TrackOrder = () => {
                                     height: "20px",
                                     width: "20px",
                                   }}
+                                  onClick={(e) => handleLikeClick(menu, e)}
                                 >
                                   <i
                                     className={`${
+                                      favoriteMenus[menu.menu_id] ||
                                       menu.is_favourite
                                         ? "ri-heart-3-fill text-danger"
                                         : "ri-heart-3-line"
@@ -1719,9 +1791,11 @@ const TrackOrder = () => {
                                 height: "20px",
                                 width: "20px",
                               }}
+                              onClick={(e) => handleLikeClick(menu, e)}
                             >
                               <i
                                 className={`${
+                                  favoriteMenus[menu.menu_id] ||
                                   menu.is_favourite
                                     ? "ri-heart-3-fill text-danger"
                                     : "ri-heart-3-line"
@@ -1755,10 +1829,24 @@ const TrackOrder = () => {
                           <div className="col-8 ps-2 pt-1 pe-0">
                             <div className="row">
                               <div className="col-8">
-                                {/* Menu Name */}
-                                <span className="fw-medium font_size_14 mb-1 d-block">
-                                  {menu.menu_name}
-                                </span>
+                                {/* Menu Name with Delete Icon for placed orders */}
+                                <div className="d-flex justify-content-between align-items-start">
+                                  <span className="fw-medium font_size_14 mb-1 d-block">
+                                    {menu.menu_name}
+                                  </span>
+                                  {orderStatus === "placed" &&
+                                    isWithinPlacedWindow && (
+                                      <div className="col-2 text-end">
+                                        <i
+                                          className="ri-close-line text-danger"
+                                          style={{ cursor: "pointer" }}
+                                          onClick={(e) =>
+                                            handleRemoveItem(menu, e)
+                                          }
+                                        ></i>
+                                      </div>
+                                    )}
+                                </div>
                                 {/* Category with Spicy Index */}
                                 <span className="text-success font_size_12 fw-medium">
                                   <i className="ri-restaurant-line mt-0 me-2"></i>
@@ -1783,7 +1871,7 @@ const TrackOrder = () => {
                                   </span>
                                 )}
                               </div>
-                              
+
                               {/* Rating */}
                               <div className="col-4 text-end px-0">
                                 <i className="ri-star-half-line ratingStar font_size_10"></i>
@@ -1806,7 +1894,6 @@ const TrackOrder = () => {
                                     ).toFixed(2)}
                                   </span>
                                 </span>
-                            
                               </div>
                               <div className="col-3 text-end p-0">
                                 <span className="font_size_14 gray-text">
@@ -1820,30 +1907,32 @@ const TrackOrder = () => {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Add Order More button outside the card, but only for placed and ongoing orders */}
-                {(orderStatus === "placed" || orderStatus === "ongoing") && !isCompleted && (
-  <div className="col-12 mt-3 mb-4">
-    <div className="d-flex justify-content-center">
-      <button
-        className="btn btn-outline-primary rounded-pill px-3"
-        onClick={() => {
-          // Navigate to Menu page with the existing order ID
-          navigate('/Menu', {
-            state: {
-              existingOrderId: orderDetails?.order_details?.order_id,
-              isAddingToOrder: true,
-              orderStatus: orderStatus
-            }
-          });
-        }}
-      >
-        <i className="ri-add-line me-2"></i>
-        Order More Items
-      </button>
-    </div>
-  </div>
-)}
+                {(orderStatus === "placed" || orderStatus === "ongoing") &&
+                  !isCompleted && (
+                    <div className="col-12 mt-3 mb-4">
+                      <div className="d-flex justify-content-center">
+                        <button
+                          className="btn btn-outline-primary rounded-pill px-3"
+                          onClick={() => {
+                            // Navigate to Menu page with the existing order ID
+                            navigate("/Menu", {
+                              state: {
+                                existingOrderId:
+                                  orderDetails?.order_details?.order_id,
+                                isAddingToOrder: true,
+                                orderStatus: orderStatus,
+                              },
+                            });
+                          }}
+                        >
+                          <i className="ri-add-line me-2"></i>
+                          Order More Items
+                        </button>
+                      </div>
+                    </div>
+                  )}
               </div>
             </section>
           ) : (
@@ -1937,7 +2026,9 @@ const TrackOrder = () => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">{selectedMenu.menu_name}</h5>
+                  <h5 className="modal-title text-center">
+                    {selectedMenu.menu_name}
+                  </h5>
                   <button
                     type="button"
                     className="btn-close"
@@ -1976,7 +2067,7 @@ const TrackOrder = () => {
                       Special Instructions
                     </label>
                     <textarea
-                      className="form-control"
+                      className="form-control border-primary  "
                       id="notes"
                       rows="3"
                       value={notes}
