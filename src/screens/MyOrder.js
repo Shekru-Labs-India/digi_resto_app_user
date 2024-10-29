@@ -132,18 +132,43 @@ const MyOrder = () => {
     return text.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  const calculateOrderCount = (orders) => {
+    if (!orders) return 0;
+    
+    try {
+      return Object.values(orders).reduce((acc, curr) => {
+        if (!curr) return acc;
+        
+        // Handle canceled orders which might be under 'cancle' key
+        if (curr.cancle) {
+          return acc + (Array.isArray(curr.cancle) ? curr.cancle.length : 0);
+        }
+        
+        // Handle regular orders
+        if (Array.isArray(curr)) {
+          return acc + curr.length;
+        }
+        if (typeof curr === 'object') {
+          return acc + Object.values(curr).reduce((sum, val) => {
+            return sum + (Array.isArray(val) ? val.length : 0);
+          }, 0);
+        }
+        return acc;
+      }, 0);
+    } catch (error) {
+      console.error('Error calculating order count:', error);
+      return 0;
+    }
+  };
+
   return (
     <div className="page-wrapper">
       <Header
         title="My Order"
-        count={
-          orders 
-            ? Object.values(orders).reduce(
-                (acc, curr) => acc + (curr ? Object.values(curr).flat().length : 0),
-                0
-              )
-            : 0
-        }
+        count={orders && (activeTab === "canceled" && orders.cancle 
+          ? (Array.isArray(orders.cancle) ? orders.cancle.length : 0)
+          : calculateOrderCount(orders)
+        )}
       />
 
       <main className="page-content space-top mb-5 pb-3">
@@ -259,7 +284,19 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   useEffect(() => {
     console.log("Orders received:", orders);
     console.log("Type:", type);
-    setCheckedItems({});
+    
+    if (orders && Object.keys(orders).length > 0) {
+      // Get the first date (top-most order group)
+      const firstDate = Object.keys(orders)[0];
+      
+      // Set only the first date group to be expanded
+      setCheckedItems({
+        [`${firstDate}-${type}`]: true
+      });
+    } else {
+      setCheckedItems({});
+    }
+    
     setExpandAll(false);
   }, [orders, type]);
   const [completedTimers, setCompletedTimers] = useState(new Set());
