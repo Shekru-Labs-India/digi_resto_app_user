@@ -16,16 +16,16 @@ const MenuDetails = () => {
   const [showQuantityError, setShowQuantityError] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
+  
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
-  const { cartItems } = useCart();
+  const { cartItems,  } = useCart();
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
-
+  
   // At the top with other state declarations
   const [customerId, setCustomerId] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -33,13 +33,13 @@ const MenuDetails = () => {
   });
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
-
+ 
   const location = useLocation();
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
-  const [portionSize, setPortionSize] = useState("full");
+  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState('full');
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -48,6 +48,7 @@ const MenuDetails = () => {
   });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     // Get user data
@@ -61,13 +62,12 @@ const MenuDetails = () => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const urlParams = new URLSearchParams(window.location.search);
     const urlRestaurantId = urlParams.get("restaurantId");
-    const finalRestaurantId =
-      storedRestaurantId || urlRestaurantId || restaurantId;
-
+    const finalRestaurantId = storedRestaurantId || urlRestaurantId || restaurantId;
+    
     setCurrentRestaurantId(finalRestaurantId);
     setSourceRestaurantId(finalRestaurantId);
   }, [restaurantId]);
-
+ 
   const toTitleCase = (str) => {
     if (!str) return "";
     return str.replace(
@@ -76,8 +76,7 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
-    useState(false);
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(false);
 
   const orderedItems = location.state?.orderedItems || [];
 
@@ -96,7 +95,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId,
+            restaurant_id: currentRestaurantId, // Use currentRestaurantId
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             customer_id: customerId || null,
@@ -106,7 +105,7 @@ const MenuDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-
+        
         if (data.st === 1 && data.details) {
           const {
             menu_name,
@@ -118,7 +117,7 @@ const MenuDetails = () => {
             images,
             offer,
             rating,
-            is_favourite, // Note: API returns is_favourite
+            is_favorite,
             restaurant_id: fetchedRestaurantId,
           } = data.details;
 
@@ -145,20 +144,17 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
-            is_favourite, // Update this to match API response
+            is_favorite,
             restaurant_id: fetchedRestaurantId,
           });
 
-          // Update the favorite state
-          setIsFavorite(!!is_favourite); // Convert to boolean
-
+          setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
-
+          
+          // Compare with the context's restaurant ID
           const contextRestaurantId = restaurantId;
-          const isDifferent =
-            fetchedRestaurantId &&
-            contextRestaurantId &&
-            fetchedRestaurantId !== contextRestaurantId;
+          const isDifferent = fetchedRestaurantId && contextRestaurantId && 
+                            fetchedRestaurantId !== contextRestaurantId;
           setIsFromDifferentRestaurant(isDifferent);
         }
       }
@@ -170,8 +166,7 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (currentRestaurantId) {
-      // Remove customerId dependency
+    if (currentRestaurantId) { // Remove customerId dependency
       fetchProductDetails();
     }
   }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
@@ -212,11 +207,11 @@ const MenuDetails = () => {
     const currentCustomerId = userData?.customer_id;
 
     if (!currentCustomerId) {
-      navigate("/Signinscreen", {
-        state: {
+      navigate("/Signinscreen", { 
+        state: { 
           from: location.pathname,
-          menuId: menuId,
-        },
+          menuId: menuId 
+        } 
       });
       return;
     }
@@ -235,8 +230,8 @@ const MenuDetails = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
+    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
+    
     if (!selectedPrice) {
       window.showToast("error", "Price information is not available");
       return;
@@ -282,6 +277,12 @@ const MenuDetails = () => {
     }
   };
 
+
+
+  
+
+  
+
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
     if (!customerId) {
@@ -300,8 +301,7 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-    const restaurantIdToUse =
-      currentRestaurantId || productDetails?.restaurant_id;
+    const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
 
     try {
       const response = await fetch(apiUrl, {
@@ -356,7 +356,7 @@ const MenuDetails = () => {
 
   const handleModalClick = (e) => {
     // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains("modal")) {
+    if (e.target.classList.contains('modal')) {
       setShowModal(false);
     }
   };
@@ -365,6 +365,31 @@ const MenuDetails = () => {
   const isVegMenu = (menuType) => {
     return menuType?.toLowerCase() === "veg";
   };
+
+  // Add slider controls
+  const nextSlide = () => {
+    if (productDetails?.images) {
+      setCurrentSlide((prev) => 
+        prev === productDetails.images.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  const prevSlide = () => {
+    if (productDetails?.images) {
+      setCurrentSlide((prev) => 
+        prev === 0 ? productDetails.images.length - 1 : prev - 1
+      );
+    }
+  };
+
+  // Auto slide every 3 seconds
+  useEffect(() => {
+    if (productDetails?.images?.length > 1) {
+      const timer = setInterval(nextSlide, 3000);
+      return () => clearInterval(timer);
+    }
+  }, [productDetails]);
 
   if (isLoading) {
     return (
@@ -408,87 +433,185 @@ const MenuDetails = () => {
             </div>
           </div>
           <div className="container py-0">
-            <div className="swiper product-detail-swiper">
-              <div className="product-detail-image border border-gray-300 img">
-                <img
-                  className="product-detail-image rounded-3"
-                  src={productDetails.images || images}
-                  alt={productDetails.name}
-                  style={{
-                    aspectRatio: "16/9",
-                    objectFit: "cover",
-                    height: "100%",
-                  }}
-                  onError={(e) => {
-                    e.target.src = images;
-                  }}
-                />
+            <div style={{ position: 'relative', width: '100%', marginBottom: '20px' }}>
+              {/* Main Image Container */}
+              <div style={{ 
+                position: 'relative',
+                width: '100%',
+                height: '330px',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                backgroundColor: '#f6f6f6'
+              }}>
+                {productDetails?.images?.length > 0 ? (
+                  <>
+                    <img
+                      src={productDetails.images[currentSlide]}
+                      alt={productDetails.name}
+                      onError={(e) => { e.target.src = images }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transition: 'opacity 0.3s ease'
+                      }}
+                    />
 
-                {/* Updated veg/non-veg indicator with proper check */}
-                <div
-                  className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                    isVegMenu(productDetails?.menu_veg_nonveg)
-                      ? "border-success"
-                      : "border-danger"
-                  }`}
-                  style={{
-                    position: "absolute",
-                    bottom: "3px",
-                    left: "3px",
-                    height: "20px",
-                    width: "20px",
-                    borderWidth: "2px",
-                    borderRadius: "3px",
-                  }}
-                >
-                  <i
-                    className={`${
-                      isVegMenu(productDetails?.menu_veg_nonveg)
-                        ? "ri-checkbox-blank-circle-fill text-success"
-                        : "ri-checkbox-blank-circle-fill text-danger"
-                    } font_size_12`}
-                  ></i>
-                </div>
+                    {/* Navigation Arrows */}
+                    {productDetails.images.length > 1 && (
+                      <>
+                        <div 
+                          onClick={prevSlide}
+                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                          style={{
+                            position: 'absolute',
+                            left: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            height: '30px',
+                            width: '30px',
+                            cursor: 'pointer',
+                            zIndex: 2
+                          }}
+                        >
+                          <i className="ri-arrow-left-s-line fs-4"></i>
+                        </div>
 
-                {/* Existing favorite icon */}
-                <div
-                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                  style={{
-                    position: "absolute",
-                    bottom: "3px",
-                    right: "3px",
-                    height: "20px",
-                    width: "20px",
-                    cursor: "pointer", // Add cursor pointer
-                  }}
-                  onClick={handleLikeClick} // Add click handler here
-                >
-                  <i
-                    className={`${
-                      productDetails.is_favourite
-                        ? "ri-heart-3-fill text-danger"
-                        : "ri-heart-3-line"
-                    } fs-6`}
-                  ></i>
-                </div>
-              </div>
-              <div
-                className="gradient_bg d-flex justify-content-center align-items-center"
-                style={{
-                  position: "absolute",
-                  top: "-1px",
-                  left: "0px",
-                  height: "17px",
-                  width: "70px",
-                  borderRadius: "7px 0px 7px 0px",
-                }}
-              >
-                <span className="text-white">
-                  <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                  <span className="font_size_10">
-                    {productDetails.offer || "No "}% Off
-                  </span>
-                </span>
+                        <div 
+                          onClick={nextSlide}
+                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                          style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            height: '30px',
+                            width: '30px',
+                            cursor: 'pointer',
+                            zIndex: 2
+                          }}
+                        >
+                          <i className="ri-arrow-right-s-line fs-4"></i>
+                        </div>
+
+                        {/* Pagination Dots */}
+                        <div style={{
+                          position: 'absolute',
+                          bottom: '10px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          display: 'flex',
+                          gap: '8px',
+                          zIndex: 2,
+                          padding: '3px 7px',
+                          borderRadius: '15px',
+                          background: 'rgba(255, 255, 255, 0.3)'
+                        }}>
+                          {productDetails.images.map((_, index) => (
+                            <div
+                              key={index}
+                              onClick={() => setCurrentSlide(index)}
+                              style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                cursor: 'pointer',
+                                backgroundColor: currentSlide === index ? 'var(--primary)' : '#ffffff',
+                                border: currentSlide === index ? 'none' : '1px solid rgba(255, 255, 255, 0.8)',
+                                transition: 'all 0.3s ease',
+                                opacity: currentSlide === index ? 1 : 0.8,
+                                transform: currentSlide === index ? 'scale(1.2)' : 'scale(1)'
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Veg/Non-veg indicator */}
+                    <div
+                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                          ? "border-success"
+                          : "border-danger"
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        left: "10px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                        zIndex: 2
+                      }}
+                    >
+                      <i
+                        className={`${
+                          productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                            ? "ri-checkbox-blank-circle-fill text-success"
+                            : "ri-checkbox-blank-circle-fill text-danger"
+                        } font_size_12`}
+                      ></i>
+                    </div>
+
+                    {/* Like button */}
+                    <div
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        right: "10px",
+                        height: "20px",
+                        width: "20px",
+                        zIndex: 2
+                      }}
+                    >
+                      <i
+                        className={`${
+                          isFavorite
+                            ? "ri-heart-3-fill text-danger"
+                            : "ri-heart-3-line"
+                        } fs-6`}
+                        onClick={handleLikeClick}
+                        style={{ cursor: 'pointer' }}
+                      ></i>
+                    </div>
+
+                    {/* Discount badge */}
+                    {productDetails?.offer !== 0 && (
+                      <div
+                        className="gradient_bg d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          top: "-1px",
+                          left: "0px",
+                          height: "17px",
+                          width: "70px",
+                          borderRadius: "0px 0px 7px 0px",
+                          zIndex: 2
+                        }}
+                      >
+                        <span className="text-white">
+                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                          <span className="font_size_10">
+                            {productDetails.offer}% Off
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <img
+                    src={images}
+                    alt={productDetails.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -547,7 +670,7 @@ const MenuDetails = () => {
                       </div>
                     )}
                   </div>
-                  <div className="col-4 text-end px-0 pt-1 ">
+                  <div className="col-4 text-end px-0 ">
                     <i className="ri-star-half-line font_size_10 ratingStar"></i>
                     <span className="font_size_10  fw-normal gray-text">
                       {productDetails.rating}
@@ -557,40 +680,43 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-12 pt-1 px-0">
+                  <div className="col-5 pt-1 px-0 ">
                     {!isFromDifferentRestaurant && (
                       <div className="dz-stepper style-3">
-                        <div className="d-flex align-items-center justify-content-start gap-2">
-                          {" "}
-                          {/* Changed to d-flex with gap */}
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{
-                              height: "30px",
-                              width: "30px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleQuantityChange(-1)}
-                          >
-                            <i className="ri-subtract-line fs-2"></i>
-                          </div>
-                          <span
-                            className="stepper px-3 rounded-1 bg-light text-center"
-                            style={{ minWidth: "40px" }}
-                          >
+                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
+                          <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "30px",
+                                width: "30px",
+                              }}
+                            >
+                              <i
+                                className="ri-subtract-line fs-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleQuantityChange(-1)}
+                              ></i>
+                            </div>
+                          </span>
+                          <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
                             {quantity}
                           </span>
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{
-                              height: "30px",
-                              width: "30px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleQuantityChange(1)}
-                          >
-                            <i className="ri-add-line fs-2"></i>
-                          </div>
+                          <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "30px",
+                                width: "30px",
+                              }}
+                            >
+                              <i
+                                className="ri-add-line fs-2"
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleQuantityChange(1)}
+                              ></i>
+                            </div>
+                          </span>
                         </div>
                       </div>
                     )}
@@ -649,19 +775,15 @@ const MenuDetails = () => {
                   {!customerId ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={() =>
-                        navigate("/Signinscreen", {
-                          state: {
-                            from: location.pathname,
-                            menuId: menuId,
-                          },
-                        })
-                      }
+                      onClick={() => navigate("/Signinscreen", { 
+                        state: { 
+                          from: location.pathname,
+                          menuId: menuId 
+                        } 
+                      })}
                     >
                       <i className="ri-login-box-line pe-1 text-white"></i>
-                      <div className="text-nowrap text-white">
-                        Login to Order
-                      </div>
+                      <div className="text-nowrap text-white">Login to Order</div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button
