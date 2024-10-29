@@ -864,13 +864,19 @@ const Checkout = () => {
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
-                <button
-                  className="btn p-0"
-                  onClick={() => setShowOngoingOrderPopup(false)}
-                >
-                  <i className="ri-close-line text-muted fs-3"></i>
-                </button>
+                <div className="row">
+                  <div className="col-11 pe-0 me-0">  
+                    <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
+                  </div>
+                  <div className="col-1 ps-0">
+                    <button
+                      className="btn p-0 "
+                      onClick={() => setShowOngoingOrderPopup(false)}
+                    >
+                      <i className="ri-close-line text-muted fs-3"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
               <p className="text-muted mb-4">
                 Please complete your ongoing order before placing a new one.
