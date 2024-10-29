@@ -693,12 +693,12 @@ const Checkout = () => {
   <div className="popup-overlay">
     <div className="popup-content rounded-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Ongoing Order Detected</h3>
+        <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
         <button 
           className="btn p-0"
           onClick={() => setShowOngoingOrderPopup(false)}
         >
-          <i className="ri-close-line text-dark fs-3"></i>
+          <i className="ri-close-line text-muted fs-3"></i>
         </button>
       </div>
       <p className="text-muted mb-4">
@@ -731,11 +731,11 @@ const Checkout = () => {
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h3 className="mb-0">Error</h3>
                 <button
-                  className="btn-close"
+                  className="btn-close text-muted"
                   onClick={() => setShowErrorPopup(false)}
                 ></button>
               </div>
-              <p>{errorMessage}</p>
+              <p className="text-muted">{errorMessage}</p>
               <button
                 className="btn btn-primary rounded-pill text-white w-100"
                 onClick={() => {
@@ -760,12 +760,12 @@ const Checkout = () => {
               {/* Header */}
               <div className="p-3 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold">Existing Order Found</h5>
+                  <h5 className="mb-0 fw-semibold text-muted">Existing Order Found</h5>
                   <button
-                    className="btn p-0 fs-3"
+                    className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowExistingOrderModal(false)}
                   >
-                    <i className="ri-close-line text-dark"></i>
+                    <i className="ri-close-line text-muted"></i>
                   </button>
                 </div>
               </div>
@@ -791,7 +791,7 @@ const Checkout = () => {
                     className="btn btn-outline-danger rounded-pill w-100 py-2 my-1"
                     onClick={handleCancelExistingOrder}
                   >
-                    <i className="ri-close-circle-line me-2"></i>
+                    <i className="ri-close-circle-line me-2 "></i>
                     Cancel Existing & Place New
                   </button>
                 </div>

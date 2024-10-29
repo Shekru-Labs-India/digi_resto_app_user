@@ -61,6 +61,15 @@ const TrackOrder = () => {
     return menuType?.toLowerCase() === "veg";
   };
 
+  const handleMenuItemClick = (menu) => {
+    navigate(`/ProductDetails/${menu.menu_id}`, {
+      state: {
+        menu_cat_id: menu.menu_cat_id,
+        restaurant_id: menu.restaurant_id,
+      },
+    });
+  };
+
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
@@ -133,49 +142,27 @@ const TrackOrder = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
-    if (!selectedMenu || !restaurantId) return;
+  const handleConfirmAddToCart = () => {
+    if (!selectedMenu) return;
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
+    const currentQuantity = quantities[selectedMenu.menu_id] || 1;
 
-    if (!currentCustomerId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please login to add items to order",
-        life: 3000,
-      });
-      navigate("/Signinscreen");
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-    if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
-      return;
-    }
-
-    // Create new menu item for pending basket
     const newMenuItem = {
       ...selectedMenu,
-      price: selectedPrice,
-      quantity: 1,
+      price: portionSize === "half" ? halfPrice : fullPrice,
+      quantity: currentQuantity,
       half_or_full: portionSize,
       notes: notes,
-      isPending: true, // Add this flag to identify pending items
+      isPending: true,
     };
 
-    // Add to pending items instead of direct order
     setPendingItems((prev) => [...prev, newMenuItem]);
+    
+    // Add the item to removed items set
+    setRemovedItems(prev => new Set([...prev, selectedMenu.menu_id]));
+    
+    // Update search results to remove the added item
+    setSearchedMenu(prev => prev.filter(item => item.menu_id !== selectedMenu.menu_id));
 
     setShowModal(false);
     setSelectedMenu(null);
@@ -190,10 +177,7 @@ const TrackOrder = () => {
   };
 
   const isItemAdded = (menuId) => {
-    return (
-      pendingItems.some((item) => item.menu_id === menuId) ||
-      (orderDetails?.menu_details || []).some((item) => item.menu_id === menuId)
-    );
+    return removedItems.has(menuId) || pendingItems.some(item => item.menu_id === menuId);
   };
 
   useEffect(() => {
@@ -211,48 +195,50 @@ const TrackOrder = () => {
     }
   }, [isDarkMode]);
 
-  const handleIncrement = (menuItem) => {
+  const handleIncrement = (menuId) => {
     setQuantities((prev) => {
-      const newQuantity = Math.min((prev[menuItem] || 1) + 1, 20);
+      const newQuantity = Math.min((prev[menuId] || 1) + 1, 20);
       if (newQuantity === 20) {
         toast.current.show({
           severity: "info",
           summary: "Maximum Quantity",
-          detail: `You've reached the maximum quantity for ${menuItem.menu}`,
-          life: 2000,
-        });
-      } else {
-        toast.current.show({
-          severity: "success",
-          summary: "Quantity Increased",
-          detail: `${menuItem.menu_name} quantity increased to ${newQuantity}`,
+          detail: "You've reached the maximum quantity",
           life: 2000,
         });
       }
-      return { ...prev, [menuItem]: newQuantity };
+      return { ...prev, [menuId]: newQuantity };
     });
+  
+    // Also update quantity in pendingItems if the item exists there
+    setPendingItems(prev => prev.map(item => {
+      if (item.menu_id === menuId) {
+        return { ...item, quantity: Math.min((quantities[menuId] || 1) + 1, 20) };
+      }
+      return item;
+    }));
   };
 
-  const handleDecrement = (menuItem) => {
+  const handleDecrement = (menuId) => {
     setQuantities((prev) => {
-      const newQuantity = Math.max((prev[menuItem] || 1) - 1, 1);
+      const newQuantity = Math.max((prev[menuId] || 1) - 1, 1);
       if (newQuantity === 1) {
         toast.current.show({
           severity: "info",
           summary: "Minimum Quantity",
-          detail: `You've reached the minimum quantity for ${menuItem.menu_name}`,
-          life: 2000,
-        });
-      } else {
-        toast.current.show({
-          severity: "success",
-          summary: "Quantity Decreased",
-          detail: `${menuItem.menu_name} quantity decreased to ${newQuantity}`,
+          detail: "You've reached the minimum quantity",
           life: 2000,
         });
       }
-      return { ...prev, [menuItem]: newQuantity };
+      return { ...prev, [menuId]: newQuantity };
     });
+  
+    // Also update quantity in pendingItems if the item exists there
+    setPendingItems(prev => prev.map(item => {
+      if (item.menu_id === menuId) {
+        return { ...item, quantity: Math.max((quantities[menuId] || 1) - 1, 1) };
+      }
+      return item;
+    }));
   };
 
   const calculatePrice = (menu) => {
@@ -285,10 +271,7 @@ const TrackOrder = () => {
     return savedPendingItems ? JSON.parse(savedPendingItems) : [];
   });
 
-  const [removedItems, setRemovedItems] = useState(() => {
-    const saved = localStorage.getItem(`removedItems_${order_number}`);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [removedItems, setRemovedItems] = useState(new Set());
 
   const searchInputRef = useRef(null);
   const location = useLocation();
@@ -477,9 +460,18 @@ const TrackOrder = () => {
   };
 
   const handleRemovePendingItem = (menuId) => {
-    setPendingItems((prevItems) =>
-      prevItems.filter((item) => item.menu_id !== menuId)
-    );
+    setPendingItems(prev => prev.filter(item => item.menu_id !== menuId));
+    setRemovedItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(menuId);
+      return newSet;
+    });
+    
+    // If the item exists in the original search results, add it back
+    const removedItem = searchedMenu.find(item => item.menu_id === menuId);
+    if (removedItem) {
+      setSearchedMenu(prev => [...prev, removedItem]);
+    }
   };
 
   const handleClearAll = () => {
@@ -1509,215 +1501,205 @@ const TrackOrder = () => {
                       Clear All
                     </div>
                   </div>
-                  {searchedMenu.map((menu) => (
-                    <div key={menu.menu_id} className="col-12">
-                      <div className="card mb-3 rounded-3">
-                        <div className="card-body py-0">
-                          <div className="row">
-                            <div className="col-3 px-0 position-relative">
-                              <img
-                                src={menu.image || images}
-                                alt={menu.menu_name}
-                                className="img-fluid rounded-start-3 rounded-end-0"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                  aspectRatio: "1/1",
-                                }}
-                                onError={(e) => {
-                                  e.target.src = images;
-                                }}
-                              />
+                  {searchedMenu
+                    .filter(menu => !removedItems.has(menu.menu_id))
+                    .map((menu) => (
+                      <div key={menu.menu_id} className="col-12">
+                        <div
+                          className="card mb-3 rounded-3"
+                          onClick={() => handleMenuItemClick(menu)}
+                        >
+                          <div className="card-body py-0">
+                            <div className="row">
+                              <div className="col-3 px-0 position-relative">
+                                <img
+                                  src={menu.image || images}
+                                  alt={menu.menu_name}
+                                  className="img-fluid rounded-start-3 rounded-end-0"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    aspectRatio: "1/1",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.src = images;
+                                  }}
+                                />
 
-                              <div
-                                className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                                  isVegMenu(menu?.menu_veg_nonveg)
-                                    ? "border-success"
-                                    : "border-danger"
-                                }`}
-                                style={{
-                                  position: "absolute",
-                                  bottom: "3px",
-                                  left: "3px",
-                                  height: "20px",
-                                  width: "20px",
-                                  borderWidth: "2px",
-                                  borderRadius: "3px",
-                                }}
-                              >
-                                <i
-                                  className={`${
-                                    isVegMenu(menu?.menu_veg_nonveg)
-                                      ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-checkbox-blank-circle-fill text-danger"
-                                  } font_size_12`}
-                                ></i>
-                              </div>
-
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                style={{
-                                  position: "absolute",
-                                  bottom: "3px",
-                                  right: "3px",
-                                  height: "20px",
-                                  width: "20px",
-                                }}
-                                onClick={(e) => handleLikeClick(menu, e)}
-                              >
-                                <i
-                                  className={`${
-                                    favoriteMenus[menu.menu_id] ||
-                                    menu.is_favourite
-                                      ? "ri-heart-3-fill text-danger"
-                                      : "ri-heart-3-line"
-                                  } fs-6`}
-                                ></i>
-                              </div>
-
-                              {menu.offer && (
                                 <div
-                                  className="gradient_bg d-flex justify-content-center align-items-center"
+                                  className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                                    isVegMenu(menu?.menu_veg_nonveg)
+                                      ? "border-success"
+                                      : "border-danger"
+                                  }`}
                                   style={{
                                     position: "absolute",
-                                    top: "-1px",
-                                    left: "0px",
-                                    height: "17px",
-                                    width: "70px",
-                                    borderRadius: "7px 0px 7px 0px",
+                                    bottom: "3px",
+                                    left: "3px",
+                                    height: "20px",
+                                    width: "20px",
+                                    borderWidth: "2px",
+                                    borderRadius: "3px",
                                   }}
                                 >
-                                  <span className="text-white">
-                                    <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                    <span className="font_size_10">
-                                      {menu.offer || "No"}% Off
-                                    </span>
-                                  </span>
+                                  <i
+                                    className={`${
+                                      isVegMenu(menu?.menu_veg_nonveg)
+                                        ? "ri-checkbox-blank-circle-fill text-success"
+                                        : "ri-checkbox-blank-circle-fill text-danger"
+                                    } font_size_12`}
+                                  ></i>
                                 </div>
-                              )}
-                            </div>
 
-                            <div className="col-9 pt-1 pb-0 pe-0 ps-2">
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="font_size_14 fw-medium">
-                                  {menu.menu_name}
+                                <div
+                                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                  style={{
+                                    position: "absolute",
+                                    bottom: "3px",
+                                    right: "3px",
+                                    height: "20px",
+                                    width: "20px",
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleLikeClick(menu, e);
+                                  }}
+                                >
+                                  <i
+                                    className={`${
+                                      favoriteMenus[menu.menu_id] ||
+                                      menu.is_favourite
+                                        ? "ri-heart-3-fill text-danger"
+                                        : "ri-heart-3-line"
+                                    } fs-6`}
+                                  ></i>
                                 </div>
-                                <div className="col-3">
-                                  <span
-                                    className={`btn btn-success px-2 py-1 ${
-                                      isItemAdded(menu.menu_id)
-                                        ? "btn-secondary gray-text"
-                                        : "btn-success text-white addOrder-btn"
-                                    }`}
-                                    onClick={() =>
-                                      !isItemAdded(menu.menu_id) &&
-                                      handleAddToCartClick(menu)
-                                    }
+
+                                {menu.offer && (
+                                  <div
+                                    className="gradient_bg d-flex justify-content-center align-items-center"
                                     style={{
-                                      cursor: isItemAdded(menu.menu_id)
-                                        ? "default"
-                                        : "pointer",
+                                      position: "absolute",
+                                      top: "-1px",
+                                      left: "0px",
+                                      height: "17px",
+                                      width: "70px",
+                                      borderRadius: "7px 0px 7px 0px",
                                     }}
                                   >
-                                    {isItemAdded(menu.menu_id)
-                                      ? "Added"
-                                      : "Add"}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="row">
-                                <div className="col-7 mt-1 pe-0">
-                                  <span
-                                    onClick={() =>
-                                      handleMenuClick(menu.menu_id)
-                                    }
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <div className="mt-0">
-                                      <span
-                                        onClick={() =>
-                                          handleCategoryClick(
-                                            menu.menu_cat_id,
-                                            menu.category_name
-                                          )
-                                        }
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        <span className="text-success font_size_12">
-                                          <i className="ri-restaurant-line mt-0 me-2"></i>
-                                          {menu.category_name}
-                                        </span>
+                                    <span className="text-white">
+                                      <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                                      <span className="font_size_10">
+                                        {menu.offer || "No"}% Off
                                       </span>
-                                    </div>
-                                  </span>
-                                </div>
-                                <div className="col-4 text-center me-0 ms-2 p-0 mt-1">
-                                  <span
-                                    onClick={() =>
-                                      handleMenuClick(menu.menu_id)
-                                    }
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <span className="font_size_10 gray-text">
-                                      <i className="ri-star-half-line pe-1 ratingStar font_size_10"></i>
-                                      {parseFloat(menu.rating).toFixed(1)}
                                     </span>
-                                  </span>
-                                </div>
+                                  </div>
+                                )}
                               </div>
-                              <div className="row mt-2">
-                                <div className="col-8 px-0">
-                                  <span
-                                    className="mb-0 mt-1 text-start"
-                                    onClick={() =>
-                                      handleMenuClick(menu.menu_id)
-                                    }
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <span className="ms-3 me-1 text-info font_size_14 fw-semibold">
-                                      ₹{calculatePrice(menu)}
+
+                              <div className="col-9 pt-1 pb-0 pe-0 ps-2">
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div className="font_size_14 fw-medium">
+                                    {menu.menu_name}
+                                  </div>
+                                  <div className="col-3">
+                                    <span
+                                      className={`btn btn-success px-2 py-1 ${
+                                        isItemAdded(menu.menu_id)
+                                          ? "btn-secondary gray-text"
+                                          : "btn-success text-white addOrder-btn"
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        !isItemAdded(menu.menu_id) &&
+                                          handleAddToCartClick(menu);
+                                      }}
+                                      style={{
+                                        cursor: isItemAdded(menu.menu_id)
+                                          ? "default"
+                                          : "pointer",
+                                      }}
+                                    >
+                                      {isItemAdded(menu.menu_id)
+                                        ? "Added"
+                                        : "Add"}
                                     </span>
-                                    <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                      ₹
-                                      {(
-                                        parseFloat(
-                                          menu.oldPrice || menu.price
-                                        ) * (quantities[menu.menu_id] || 1)
-                                      ).toFixed(2)}
-                                    </span>
-                                  </span>
-                                  <span
-                                    className="mb-0 mt-1 ms-3 offerSearch"
-                                    onClick={() =>
-                                      handleMenuClick(menu.menu_id)
-                                    }
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <span className="px-0 text-start font_size_12 text-success">
-                                      {menu.offer || "No"}% Off
-                                    </span>
-                                  </span>
+                                  </div>
                                 </div>
-                                <div className="col-4 increment-decrement">
-                                  <div className="d-flex justify-content-end align-items-center">
-                                    <i
-                                      className="ri-subtract-line mx-2 fs-2"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() =>
-                                        handleDecrement(menu.menu_id)
-                                      }
-                                    ></i>
-                                    <span className="">
-                                      {quantities[menu.menu_id] || 1}
+                                <div className="row">
+                                  <div className="col-7 mt-1 pe-0">
+                                    <span>
+                                      <div className="mt-0">
+                                        <span
+                                          onClick={() =>
+                                            handleCategoryClick(
+                                              menu.menu_cat_id,
+                                              menu.category_name
+                                            )
+                                          }
+                                          style={{ cursor: "pointer" }}
+                                        >
+                                          <span className="text-success font_size_12">
+                                            <i className="ri-restaurant-line mt-0 me-2"></i>
+                                            {menu.category_name}
+                                          </span>
+                                        </span>
+                                      </div>
                                     </span>
-                                    <i
-                                      className="ri-add-line mx-2 fs-2"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() =>
-                                        handleIncrement(menu.menu_id)
-                                      }
-                                    ></i>
+                                  </div>
+                                  <div className="col-4 text-center me-0 ms-2 p-0 mt-1">
+                                    <span>
+                                      <span className="font_size_10 gray-text">
+                                        <i className="ri-star-half-line pe-1 ratingStar font_size_10"></i>
+                                        {parseFloat(menu.rating).toFixed(1)}
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="row mt-2">
+                                  <div className="col-8 px-0">
+                                    <span className="mb-0 mt-1 text-start">
+                                      <span className="ms-3 me-1 text-info font_size_14 fw-semibold">
+                                        ₹{calculatePrice(menu)}
+                                      </span>
+                                      <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                        ₹
+                                        {(
+                                          parseFloat(
+                                            menu.oldPrice || menu.price
+                                          ) * (quantities[menu.menu_id] || 1)
+                                        ).toFixed(2)}
+                                      </span>
+                                    </span>
+                                    <span className="mb-0 mt-1 ms-3 offerSearch">
+                                      <span className="px-0 text-start font_size_12 text-success">
+                                        {menu.offer || "No"}% Off
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div className="col-4 increment-decrement">
+                                    <div className="d-flex justify-content-end align-items-center">
+                                      <i
+                                        className="ri-subtract-line mx-2 fs-2"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDecrement(menu.menu_id);
+                                        }}
+                                      ></i>
+                                      <span className="">
+                                        {quantities[menu.menu_id] || 1}
+                                      </span>
+                                      <i
+                                        className="ri-add-line mx-2 fs-2"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleIncrement(menu.menu_id);
+                                        }}
+                                      ></i>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -1725,8 +1707,7 @@ const TrackOrder = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
 
@@ -1737,7 +1718,11 @@ const TrackOrder = () => {
                   </div>
                   {pendingItems.map((menu) => (
                     <div key={menu.menu_id} className="col-12 mt-2">
-                      <div className="card my-2 rounded-3">
+                      <div
+                        className="card my-2 rounded-3"
+                        onClick={() => handleMenuItemClick(menu)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <div className="card-body py-0">
                           <div className="row">
                             <div className="col-3 px-0">
@@ -1782,12 +1767,15 @@ const TrackOrder = () => {
                                   className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                                   style={{
                                     position: "absolute",
-                                    bottom: "3px",
-                                    right: "-75px",
+                                    bottom: "-2px",
+                                    right: "-62px",
                                     height: "20px",
                                     width: "20px",
                                   }}
-                                  onClick={(e) => handleLikeClick(menu, e)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleLikeClick(menu, e);
+                                  }}
                                 >
                                   <i
                                     className={`${
@@ -1799,24 +1787,26 @@ const TrackOrder = () => {
                                   ></i>
                                 </div>
                               </div>
-                              <div
-                                className="gradient_bg d-flex justify-content-center align-items-center"
-                                style={{
-                                  position: "absolute",
-                                  top: "-1px",
-                                  left: "0px",
-                                  height: "17px",
-                                  width: "70px",
-                                  borderRadius: "7px 0px 7px 0px",
-                                }}
-                              >
-                                <span className="text-white">
-                                  <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                  <span className="font_size_10">
-                                    {menu.offer || "No "}% Off
+                              {menu.offer && (
+                                <div
+                                  className="gradient_bg d-flex justify-content-center align-items-center"
+                                  style={{
+                                    position: "absolute",
+                                    top: "-1px",
+                                    left: "0px",
+                                    height: "17px",
+                                    width: "70px",
+                                    borderRadius: "7px 0px 7px 0px",
+                                  }}
+                                >
+                                  <span className="text-white">
+                                    <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                                    <span className="font_size_10">
+                                      {menu.offer || "No "}% Off
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
+                                </div>
+                              )}
                             </div>
 
                             <div className="col-8 ps-2 pt-1 pe-0">
@@ -1911,7 +1901,10 @@ const TrackOrder = () => {
                 </span>
                 {menu_details.map((menu) => (
                   <div key={menu.menu_id} className="col-12">
-                    <div className="card mb-3 rounded-3">
+                    <div
+                      className="card mb-3 rounded-3"
+                      onClick={() => handleMenuItemClick(menu)}
+                    >
                       <div className="card-body py-0">
                         <div className="row">
                           <div className="col-3 px-0 position-relative">
@@ -2201,7 +2194,9 @@ const TrackOrder = () => {
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title text-center">{selectedMenu.menu_name}</h5>
+                  <h5 className="modal-title text-center">
+                    {selectedMenu.menu_name}
+                  </h5>
                   <button
                     type="button"
                     className="btn-close"
