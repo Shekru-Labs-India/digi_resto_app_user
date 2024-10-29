@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import HotelList from "./HotelList";
 import OverlayIcon from "../assets/google lens.svg";
-import logo from "../assets/logos/mmua_transparent.png";
+import logo from "../assets/logos/menumitra_logo_128.png";
 import CompanyVersion from "../constants/CompanyVersion";
 
 const QRScanner = () => {

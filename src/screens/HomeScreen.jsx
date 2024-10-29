@@ -6,7 +6,7 @@ import Bottom from "../component/bottom";
 import OfferBanner from "../component/OfferBanner";
 import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import logo from "../assets/logos/mmua_transparent.png";
+import logo from "../assets/logos/menumitra_logo_128.png";
 import NearbyArea from "../component/NearbyArea";
 
 const HomeScreen = () => {

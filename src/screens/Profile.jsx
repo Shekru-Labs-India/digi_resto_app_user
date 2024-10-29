@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
-import logo from "../assets/logos/mmua_transparent.png";
+import logo from "../assets/logos/menumitra_logo_128.png";
 import "../assets/css/custom.css";
 import "../assets/css/style.css";
 import Sidebar, { SidebarToggler } from "../component/Sidebar";
