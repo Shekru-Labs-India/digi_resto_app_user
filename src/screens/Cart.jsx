@@ -594,7 +594,7 @@ const Cart = () => {
                           <span className="ps-2 font_size_14 gray-text">
                             Discount{" "}
                             <span className="gray-text small-number">
-                              (-{cartDetails?.discount_percent || 0}%)
+                              ({cartDetails?.discount_percent || 0}%)
                             </span>
                           </span>
                           <span className="pe-2 font_size_14 gray-text">
