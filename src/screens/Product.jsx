@@ -522,6 +522,7 @@ const Product = () => {
                   <span className="small-number gray-text">
                     ({category.menu_count})
                   </span>
+                  
                 </div>
               ))}
             </div>
@@ -627,10 +628,15 @@ const Product = () => {
                     </div>
 
                     <div className="dz-content pb-1">
-                      <div
-                        className="detail-content"
-                        style={{ position: "relative" }}
-                      >
+                      <div className="detail-content" style={{ position: "relative" }}>
+                        {menuItem.is_special && (
+                          <div className="row">
+                            <div className="col-12 text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                              Special
+                              <hr className="mt-2 mb-0" />
+                            </div>
+                          </div>
+                        )}
                         <div className="row">
                           <div className="col-6">
                             <div className="fw-medium text-success font_size_10">

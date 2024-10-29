@@ -628,6 +628,14 @@ const ProductCard = ({ isVegOnly }) => {
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
                       <div className="font_size_12 ">
+                        {menu.is_special && (
+                          <div className="row ">
+                            <div className="col-12 text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                              Special
+                              <hr className="mt-2 mb-0" />
+                            </div>
+                          </div>
+                        )}
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="ri-restaurant-line pe-1"></i>
