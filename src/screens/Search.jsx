@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
-import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -24,7 +23,6 @@ const Search = () => {
   const [showHistory, setShowHistory] = useState(false); // Track if history should be shown
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const toast = useRef(null);
   const { restaurantName } = useRestaurantId();
   const { restaurantId } = useRestaurantId();
   const [customerId, setCustomerId] = useState(null);
@@ -205,23 +203,15 @@ const Search = () => {
     }
 
     if (isMenuItemInCart(menu.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Item Already in Cart",
-        detail: "This item is already in your cart.",
-        life: 3000,
-      });
+      window.showToast("info", "This item is already in your cart");
       return;
     }
-  
-   
-  
+
     setSelectedMenu(menu);
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
-  
-  
+
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
@@ -238,49 +228,33 @@ const Search = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
   };
-  
-  
+
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-  
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-  
+
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available");
       return;
     }
-  
+
     try {
       await addToCart(
         {
@@ -292,32 +266,18 @@ const Search = () => {
         },
         restaurantId
       );
-  
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.menu_name,
-        life: 3000,
-      });
-  
+
+      window.showToast("success", `${selectedMenu.menu_name} added to cart`);
+
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
       setSelectedMenu(null);
-  
-      // Update cart restaurant ID
-      
-  
-      // Dispatch cart update event
+
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to add item to cart. Please try again");
     }
   };
 
@@ -333,89 +293,73 @@ const Search = () => {
       navigate("/Signinscreen");
       return;
     }
-  
+
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
-  if (!menuItem) return;
+    if (!menuItem) return;
 
-  const isFavorite = menuItem.is_favourite;
+    const isFavorite = menuItem.is_favourite;
 
-  try {
-    const response = await fetch(
-      `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId,
-          customer_id: userData.customer_id,
-          customer_type: userData.customer_type
-        }),
+    try {
+      const response = await fetch(
+        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setSearchedMenu((prevMenu) =>
+          prevMenu.map((item) =>
+            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+          )
+        );
+
+        window.dispatchEvent(
+          new CustomEvent("favoriteStatusChanged", {
+            detail: { menuId, isFavorite: !isFavorite },
+          })
+        );
+
+        window.showToast(
+          "success", 
+          isFavorite ? "Removed from favorites" : "Added to favorites"
+        );
       }
-    );
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      window.showToast("error", "Failed to update favorite status");
+    }
+  };
 
-    const data = await response.json();
-    if (response.ok && data.st === 1) {
-      // Update local state using searchedMenu instead of menuItems
+  // Add this useEffect to handle favorite updates from other components
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
       setSearchedMenu((prevMenu) =>
         prevMenu.map((item) =>
-          item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+          item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
         )
       );
+    };
 
-      // Dispatch global event
-      window.dispatchEvent(
-        new CustomEvent("favoriteStatusChanged", {
-          detail: { menuId, isFavorite: !isFavorite },
-        })
-      );
-
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: isFavorite ? "Removed from favorites" : "Added to favorites",
-        life: 3000,
-      });
-    }
-  } catch (error) {
-    console.error("Error updating favorite status:", error);
-    toast.current.show({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to update favorite status",
-      life: 3000,
-    });
-  }
-};
-
-// Add this useEffect to handle favorite updates from other components
-useEffect(() => {
-  const handleFavoriteUpdate = (event) => {
-    const { menuId, isFavorite } = event.detail;
-    setSearchedMenu((prevMenu) =>
-      prevMenu.map((item) =>
-        item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
-      )
-    );
-  };
-
-  window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
-  return () => {
-    window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
-  };
-}, []);
+    window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+    return () => {
+      window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+    };
+  }, []);
 
   const handleRemoveItem = (menuId) => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
-    toast.current.show({
-      severity: "warn",
-      summary: "Item Removed",
-      detail: `${menuItem.menu_name} has been removed from the search list.`,
-      life: 2000,
-    });
+    window.showToast("warn", `${menuItem.menu_name} has been removed from the search list`);
   };
 
   const handleClearAll = () => {
@@ -508,7 +452,6 @@ useEffect(() => {
           </div>
         </div>
 
-        <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">

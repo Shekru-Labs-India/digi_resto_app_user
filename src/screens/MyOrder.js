@@ -8,7 +8,6 @@ import "../assets/css/Tab.css";
 import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
-import { Toast } from "primereact/toast";
 
 const MyOrder = () => {
   const location = useLocation();
@@ -17,7 +16,6 @@ const MyOrder = () => {
   });
   
 
-  const toast = useRef(null);
   const { restaurantName, restaurantId } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("ongoing");
@@ -241,7 +239,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const { restaurantId } = useRestaurantId();
   const [timeLeft, setTimeLeft] = useState(90);
 
-  const toast = useRef(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -280,18 +277,12 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
   const handleCompleteOrder = async (orderId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             order_id: orderId,
@@ -338,28 +329,14 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
           };
         });
 
-        // Show success toast and navigate after delay
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order has been completed successfully!",
-          life: 3000,
-        });
-
-        // Add delay before navigation
-
+        window.showToast("success", "Order has been completed successfully!");
         setActiveTab("completed");
       } else {
         throw new Error(data.msg || "Failed to complete order");
       }
     } catch (error) {
       console.error("Error completing order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to complete order. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to complete order");
     }
   };
 
@@ -369,9 +346,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         "https://menumitra.com/user_api/change_status_to_ongoing",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             order_id: orderId,
             restaurant_id: restaurantId,
@@ -381,32 +356,18 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
       const data = await response.json();
       if (data.st === 1) {
-        // Remove order from local storage
         localStorage.removeItem(`timer_${orderId}`);
-
-        // Remove from completedTimers set
         setCompletedTimers((prev) => {
           const newSet = new Set(prev);
           newSet.delete(orderId);
           return newSet;
         });
 
-        // Show success toast
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order moved to ongoing orders",
-          life: 3000,
-        });
+        window.showToast("success", "Order moved to ongoing orders");
       }
     } catch (error) {
       console.error("Error changing order status:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to update order status",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to update order status");
     }
   };
 
@@ -430,68 +391,47 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
   const handleCancelOrder = async () => {
     if (!cancelReason.trim()) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please provide a reason for cancellation",
-        life: 3000,
-      });
+      window.showToast("error", "Please provide a reason for cancellation");
       return;
     }
 
     try {
       if (!selectedOrderId || !restaurantId) {
-        console.error("Missing required data:", {
-          selectedOrderId,
-          restaurantId,
-        });
+        console.error("Missing required data:", { selectedOrderId, restaurantId });
         throw new Error("Missing required data for cancellation");
       }
 
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const payload = {
-        order_id: selectedOrderId.toString(),
-        restaurant_id: restaurantId.toString(),
-        note: cancelReason.trim(),
-      };
-
       const response = await fetch(
-        "https://menumitra.com/user_api/cancle_order", // Fixed typo in URL
+        "https://menumitra.com/user_api/cancle_order",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            order_id: selectedOrderId.toString(),
+            restaurant_id: restaurantId.toString(),
+            note: cancelReason.trim(),
+          }),
         }
       );
 
       const data = await response.json();
-      console.log("Cancel order response:", data);
-
       if (data.st === 1) {
-        // Close modal first
         setShowCancelModal(false);
         setCancelReason("");
         setSelectedOrderId(null);
 
-        // Show success message
-        toast.current.show({
-          severity: "success",
-          summary: "Order Canceled",
-          detail: "Your order has been successfully canceled.",
-          life: 3000,
-        });
+        window.showToast("success", "Your order has been successfully canceled.");
 
-        // Fetch updated order list for canceled tab
-        const response = await fetch(
+        // Fetch updated order list
+        const updatedResponse = await fetch(
           "https://menumitra.com/user_api/get_order_list",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               restaurant_id: restaurantId,
               order_status: "canceled",
@@ -501,11 +441,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
           }
         );
 
-        if (response.ok) {
-          const result = await response.json();
+        if (updatedResponse.ok) {
+          const result = await updatedResponse.json();
           if (result.st === 1) {
             setOrders(result.lists || {});
-            // Switch to canceled tab after updating orders
             setActiveTab("canceled");
           }
         }
@@ -514,12 +453,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       }
     } catch (error) {
       console.error("Error canceling order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to cancel order. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to cancel order. Please try again.");
     }
   };
 
@@ -540,8 +474,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     return (
       <>
-        <Toast ref={toast} position="bottom-center" className="custom-toast" />
-
         {Object.entries(orders).map(([date, dateOrders]) => (
           <div className="tab mt-0" key={`${date}-${type}`}>
             <input
@@ -720,7 +652,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
   return (
     <>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="row g-1">
         {orders && Object.keys(orders).length > 0 && (
           <div className="d-flex justify-content-end my-2 me-3">

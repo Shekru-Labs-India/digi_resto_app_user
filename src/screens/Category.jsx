@@ -22,6 +22,7 @@ const Category = () => {
     const fetchCategories = async () => {
       if (!restaurantId) {
         setLoading(false);
+        window.showToast("error", "Restaurant information is missing");
         return;
       }
 
@@ -45,13 +46,16 @@ const Category = () => {
           if (data && data.st === 1 && data.menu_list) {
             setCategories(data.menu_list);
           } else {
+            window.showToast("error", "Failed to load categories");
             console.error("Invalid data format:", data);
           }
         } else {
+          window.showToast("error", "Failed to fetch categories");
           console.error("Network response was not ok.");
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
+        window.showToast("error", "Error loading categories. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -68,12 +72,18 @@ const Category = () => {
   };
 
   const handleCategoryClick = (category) => {
-    navigate(`/Menu`, {
-      state: { 
-        selectedCategory: category.menu_cat_id,
-        categoryName: category.category_name
-      }
-    });
+    try {
+      navigate(`/Menu`, {
+        state: { 
+          selectedCategory: category.menu_cat_id,
+          categoryName: category.category_name
+        }
+      });
+      window.showToast("info", `Viewing ${category.category_name} menu items`);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      window.showToast("error", "Failed to load category menu");
+    }
   };
 
   return (
@@ -140,6 +150,7 @@ const Category = () => {
               {!userData.restaurantId && (
                 <p>Please log in or scan a QR code to view categories.</p>
               )}
+              {window.showToast("warning", "Please log in or scan a QR code to view categories")}
             </div>
           )}
         </main>

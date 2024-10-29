@@ -1,15 +1,7 @@
-
-
-import React, { useState, useRef ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logoname from "../constants/Logoname";
-import CompanyVersion from "../constants/CompanyVersion";
 import pic4 from "../assets/background.jpg";
-import { Toast } from "primereact/toast"; // Import Toast from primereact
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 
 const Verifyotp = () => {
@@ -18,81 +10,36 @@ const Verifyotp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const restaurantCode = localStorage.getItem("restaurantCode");
-  const restaurantId = localStorage.getItem("restaurantId");
   const mobile = localStorage.getItem("mobile");
   const otpStored = localStorage.getItem("otp");
-  const toast = useRef(null); // Create a ref for the toast
-
-  const handleOtpChange = (e, index) => {
-    const value = e.target.value;
-    if (/^\d$/.test(value)) {
-      // Ensure only a single digit is entered
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-
-     
-
-      // Move focus to the next input if a digit is entered
-      if (index < otp.length - 1) {
-        const nextInput = document.getElementById(`digit-${index + 2}`);
-        if (nextInput) {
-          nextInput.focus();
-        }
-      }
-    }
-  };
 
   useEffect(() => {
-    // Focus on the first input field when component mounts
     const firstInput = document.getElementById('digit-1');
     if (firstInput) {
       firstInput.focus();
     }
   }, []);
 
-  const isEditable = (index) => {
-    // Check if all subsequent boxes are empty
-    return otp.slice(index + 1).every((digit) => digit === "");
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace") {
-      const newOtp = [...otp];
-      if (otp[index]) {
-        // Clear the current digit
-        newOtp[index] = "";
-        setOtp(newOtp);
-      } else if (index > 0) {
-        // Move focus to the previous input if the current input is empty
-        document.getElementById(`digit-${index}`).focus();
-      }
-    }
-  };
-
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
     if (!enteredOtp.trim()) {
       setError("OTP is required");
+      window.showToast("error", "OTP is required");
       return;
     }
   
     setLoading(true);
   
     try {
-      const url = "https://menumitra.com/user_api/account_verify_otp";
-      const requestOptions = {
+      const response = await fetch("https://menumitra.com/user_api/account_verify_otp", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mobile: mobile,
           otp: otpStored,
         }),
-      };
+      });
   
-      const response = await fetch(url, requestOptions);
       const data = await response.json();
   
       if (!response.ok) {
@@ -103,22 +50,10 @@ const Verifyotp = () => {
         console.log("OTP verification success:", data);
   
         const { customer_id, name, mobile } = data.customer_details;
-  
-        // Store only customer_id, name, and mobile in localStorage
-        const userData = {
-          customer_id,
-          name,
-          mobile
-        };
+        const userData = { customer_id, name, mobile };
         localStorage.setItem("userData", JSON.stringify(userData));
   
-        // Show success toast message
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "OTP verified successfully!",
-          life: 2000,
-        });
+        window.showToast("success", "OTP verified successfully!");
   
         setTimeout(() => {
           navigate(`/${restaurantCode}/${localStorage.getItem("tableNumber") || "1"}`);
@@ -128,34 +63,51 @@ const Verifyotp = () => {
         localStorage.removeItem("mobile");
       } else {
         setError("Incorrect OTP. Please try again.");
-        // Show error toast message
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Incorrect OTP. Please try again.",
-          life: 2000,
-        });
+        window.showToast("error", "Incorrect OTP. Please try again.");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
       setError("Verification failed. Please try again.");
-      // Show error toast message
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Verification failed. Please try again.",
-        life: 2000,
-      });
+      window.showToast("error", "Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const isOtpEntered = otp.every((digit) => digit.trim().length > 0);
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
+    if (/^\d$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      if (index < otp.length - 1) {
+        const nextInput = document.getElementById(`digit-${index + 2}`);
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }
+    }
+  };
+
+  const isEditable = (index) => {
+    return otp.slice(index + 1).every((digit) => digit === "");
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      const newOtp = [...otp];
+      if (otp[index]) {
+        newOtp[index] = "";
+        setOtp(newOtp);
+      } else if (index > 0) {
+        document.getElementById(`digit-${index}`).focus();
+      }
+    }
+  };
 
   return (
     <div className="page-wrapper full-height">
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">

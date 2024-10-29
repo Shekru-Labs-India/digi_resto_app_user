@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import LoaderGif from "./LoaderGIF";
-import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
@@ -54,7 +50,6 @@ const Wishlist = () => {
   const [menuList, setMenuList] = useState({});
 
   const navigate = useNavigate();
-  const toast = useRef(null);
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
 
   const [showModal, setShowModal] = useState(false);
@@ -214,9 +209,7 @@ const Wishlist = () => {
         "https://menumitra.com/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
@@ -230,21 +223,11 @@ const Wishlist = () => {
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
@@ -258,13 +241,7 @@ const Wishlist = () => {
     }
 
     if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
-      toast.current.show({
-        severity: "error",
-        summary: "Different Restaurant",
-        detail:
-          "This item is from a different restaurant. Clear your cart first.",
-        life: 3000,
-      });
+      window.showToast("error", "This item is from a different restaurant. Clear your cart first.");
       return;
     }
 
@@ -279,12 +256,7 @@ const Wishlist = () => {
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available.");
       return;
     }
 
@@ -300,31 +272,20 @@ const Wishlist = () => {
         restaurantId
       );
 
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.menu_name,
-        life: 3000,
-      });
+      window.showToast("success", `${selectedMenu.menu_name} added to cart`);
 
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
       setSelectedMenu(null);
 
-      // Update cart restaurant ID
       updateCartRestaurantId();
 
       // Dispatch cart update event
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
 
@@ -339,14 +300,11 @@ const Wishlist = () => {
     0
   );
 
-  const handleRemoveItemClick = async (
-    restaurantName,
-    menuId,
-    restaurantId
-  ) => {
+  const handleRemoveItemClick = async (restaurantName, menuId, restaurantId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !menuId || !restaurantId) {
       console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
+      window.showToast("error", "Missing required information");
       return;
     }
 
@@ -355,9 +313,7 @@ const Wishlist = () => {
         "https://menumitra.com/user_api/remove_favourite_menu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
@@ -371,44 +327,25 @@ const Wishlist = () => {
       if (response.ok && data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
-          updatedMenuList[restaurantName] = updatedMenuList[
-            restaurantName
-          ].filter((item) => item.menu_id !== menuId);
+          updatedMenuList[restaurantName] = updatedMenuList[restaurantName]
+            .filter((item) => item.menu_id !== menuId);
 
-          // Check if this was the last item in the restaurant
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
           }
 
-          // Update hasFavorites based on the new menuList
           setHasFavorites(Object.keys(updatedMenuList).length > 0);
-
           return updatedMenuList;
         });
 
-        toast.current.show({
-          severity: "success",
-          summary: "Item Removed",
-          detail: "Item has been removed from favorites",
-          life: 2000,
-        });
+        window.showToast("success", "Item has been removed from favorites");
       } else {
         console.error("Failed to remove item:", data.msg || "Unknown error");
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to remove item from favorites",
-          life: 2000,
-        });
+        window.showToast("error", "Failed to remove item from favorites");
       }
     } catch (error) {
       console.error("Error removing favorite item:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "An error occurred while removing the item",
-        life: 2000,
-      });
+      window.showToast("error", "An error occurred while removing the item");
     }
   };
 
@@ -432,15 +369,6 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
-
-      <Header
-        title="Favourite"
-        count={Object.keys(wishlistItems).reduce(
-          (total, key) => total + wishlistItems[key].length,
-          0
-        )}
-      />
       <main className="page-content space-top mb-5 pb-3">
         <div className="container py-0">
           <HotelNameAndTable

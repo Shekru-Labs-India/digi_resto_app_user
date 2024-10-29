@@ -7,13 +7,11 @@ import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Slider from "@mui/material/Slider"; // Import the Slider component
 import Bottom from "../component/bottom";
-import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
+
+import "../assets/css/toast.css";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -52,7 +50,6 @@ const Product = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
-  const toast = useRef(null);
   const { table_number } = useParams();
   const location = useLocation();
 
@@ -239,20 +236,17 @@ const Product = () => {
             )
           );
           setFavorites(updatedMenuList.filter((item) => item.is_favourite));
-          toast.current.show({
-            severity: isFavorite ? "info" : "success",
-            summary: isFavorite
-              ? "Removed from Favourites"
-              : "Added to Favourites",
-            detail: isFavorite
+          window.showToast(
+            isFavorite ? "info" : "success",
+            isFavorite
               ? "Item has been removed from your favourites."
-              : "Item has been added to your favourites.",
-            life: 2000,
-          });
+              : "Item has been added to your favourites."
+          );
         }
       }
     } catch (error) {
       console.error("Error updating favourite status:", error);
+      window.showToast("error", "Failed to update favourite status");
     }
   };
 
@@ -335,12 +329,7 @@ const Product = () => {
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
@@ -354,12 +343,7 @@ const Product = () => {
     }
 
     if (!restaurantId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information is missing",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information is missing");
       return;
     }
 
@@ -375,22 +359,12 @@ const Product = () => {
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available");
       return;
     }
 
     if (!restaurantId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information is missing",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information is missing");
       return;
     }
 
@@ -406,32 +380,24 @@ const Product = () => {
         notes,
         half_or_full: portionSize,
         price: selectedPrice,
-        restaurant_id: restaurantId // Add restaurant_id to the item
-      }, restaurantId); // Pass restaurantId directly
+        restaurant_id: restaurantId
+      }, restaurantId);
 
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.name,
-        life: 3000,
-      });
+      window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
       
-      // Dispatch cart updated event
       window.dispatchEvent(new Event('cartUpdated'));
 
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+      window.showToast(
+        "error", 
+        error.message || "Failed to add item to cart. Please try again."
+      );
     }
   };
 
@@ -440,8 +406,6 @@ const Product = () => {
       setShowModal(false);
     }
   };
-
- 
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -470,7 +434,6 @@ const Product = () => {
 
   return (
     <div>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <Header title="Menu" count={menuList.length} />
 
       <main className={`page-content space-top`}>

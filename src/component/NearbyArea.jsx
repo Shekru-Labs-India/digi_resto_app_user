@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css";
-import { Toast } from "primereact/toast";
-import { useCart } from "../context/CartContext";
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
+import { useCart } from "../context/CartContext";
 
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -16,7 +15,6 @@ const NearbyArea = () => {
   const { restaurantId } = useRestaurantId();
   const { cartItems, addToCart,isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
-  const toast = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [notes, setNotes] = useState('');
   const [portionSize, setPortionSize] = useState('full');
@@ -79,9 +77,7 @@ const NearbyArea = () => {
         "https://menumitra.com/user_api/get_special_menu_list",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             customer_id: customerId || null,
             restaurant_id: restaurantId,
@@ -108,10 +104,12 @@ const NearbyArea = () => {
       } else {
         console.error("Invalid data format:", data);
         setMenuItems([]);
+        window.showToast("error", "Failed to load menu items");
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
       setMenuItems([]);
+      window.showToast("error", "Failed to load menu items");
     } finally {
       setIsLoading(false);
     }
@@ -130,12 +128,7 @@ const NearbyArea = () => {
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available.");
       return;
     }
 
@@ -149,33 +142,18 @@ const NearbyArea = () => {
         restaurant_id: restaurantId
       }, restaurantId);
 
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.name,
-        life: 3000,
-      });
+      window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
       setNotes('');
       setPortionSize('full');
       setSelectedMenu(null);
       
-      // Remove fetchCartItems call
-      // const updatedCartItems = await fetchCartItems();
-      // localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      
-      // Just dispatch the event
       window.dispatchEvent(new Event('cartUpdated'));
 
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
 
@@ -239,9 +217,7 @@ const NearbyArea = () => {
         `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
@@ -265,21 +241,11 @@ const NearbyArea = () => {
           })
         );
 
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: isFavorite ? "Removed from favorites" : "Added to favorites",
-          life: 3000,
-        });
+        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to update favorite status",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to update favorite status");
     }
   };
 
@@ -327,21 +293,11 @@ const NearbyArea = () => {
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
@@ -356,12 +312,7 @@ const NearbyArea = () => {
     }
 
     if (isMenuItemInCart(menuItem.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Item Already in Cart",
-        detail: "This item is already in your cart.",
-        life: 3000,
-      });
+      window.showToast("info", "This item is already in your cart.");
       return;
     }
 
@@ -372,7 +323,6 @@ const NearbyArea = () => {
 
   return (
     <div className="dz-box style-2 nearby-area">
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="title-bar1 align-items-start mb-0 ">
         <div className="left">
           {menuItems.length > 0 && (

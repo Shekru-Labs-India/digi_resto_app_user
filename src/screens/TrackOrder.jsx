@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
@@ -54,7 +54,6 @@ const TrackOrder = () => {
     userData?.customer_type || localStorage.getItem("customer_type");
 
   const [orderStatus, setOrderStatus] = useState(null);
-  const toast = useRef(null);
 
   // Add helper function at the top of component
   const isVegMenu = (menuType) => {
@@ -105,33 +104,18 @@ const TrackOrder = () => {
 
   const handleAddToCartClick = (menu) => {
     if (!restaurantId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information not found",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information not found");
       return;
     }
 
     if (orderStatus === "completed" || orderStatus === "cancelled") {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Cannot modify completed or cancelled orders",
-        life: 3000,
-      });
+      window.showToast("error", "Cannot modify completed or cancelled orders");
       return;
     }
 
     // Check if item is already added
     if (isItemAdded(menu.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Info",
-        detail: "This item is already in your order",
-        life: 2000,
-      });
+      window.showToast("info", "This item is already in your order");
       return;
     }
 
@@ -168,12 +152,7 @@ const TrackOrder = () => {
     setSelectedMenu(null);
     setNotes("");
 
-    toast.current.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Item added to basket",
-      life: 2000,
-    });
+    window.showToast("success", "Item added to basket");
   };
 
   const isItemAdded = (menuId) => {
@@ -432,12 +411,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order updated successfully",
-          life: 3000,
-        });
+        window.showToast("success", "Order updated successfully");
 
         // Refresh order details
         fetchOrderDetails(order_number);
@@ -450,12 +424,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error updating order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to update order",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to update order");
     }
   };
 
@@ -578,51 +547,28 @@ const TrackOrder = () => {
   const handleAddToOrder = async (menuItem) => {
     if (!restaurantId) {
       console.error("Restaurant ID not found");
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information not found",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information not found");
       return;
     }
 
-    // Check if item is already added
     if (isItemAdded(menuItem.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Info",
-        detail: "This item is already in your order",
-        life: 2000,
-      });
+      window.showToast("info", "This item is already in your order");
       return;
     }
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
 
       if (!currentCustomerId) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Please login to add items to order",
-          life: 3000,
-        });
+        window.showToast("error", "Please login to add items to order");
         return;
       }
 
       const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
       if (!selectedPrice) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Price information is not available",
-          life: 3000,
-        });
+        window.showToast("error", "Price information is not available");
         return;
       }
 
@@ -680,25 +626,14 @@ const TrackOrder = () => {
             fetchOrderDetails(order_number);
           }
 
-          toast.current.show({
-            severity: "success",
-            summary: "Added to Order",
-            detail: `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`,
-            life: 2000,
-          });
+          window.showToast("success", `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`);
         } else {
           throw new Error(data.msg || "Failed to add item to order");
         }
       }
     } catch (error) {
       console.error("Error adding item to order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          error.message || "Failed to add item to order. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to add item to order. Please try again.");
 
       // Rollback the pending items change on error
       setPendingItems((prevItems) =>
@@ -822,21 +757,11 @@ const TrackOrder = () => {
           })
         );
 
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: isFavorite ? "Removed from favorites" : "Added to favorites",
-          life: 3000,
-        });
+        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to update favorite status",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to update favorite status");
     }
   };
 
@@ -868,24 +793,14 @@ const TrackOrder = () => {
           );
         } else {
           console.error("Invalid data format:", data);
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Failed to fetch order details. Please try again.",
-            life: 3000,
-          });
+          window.showToast("error", "Failed to fetch order details. Please try again.");
         }
       } else {
         throw new Error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch order details. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch order details. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -920,18 +835,14 @@ const TrackOrder = () => {
     e.stopPropagation();
 
     if (orderStatus !== "placed" || !isWithinPlacedWindow) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          "Items can only be removed within 90 seconds of placing the order",
-        life: 3000,
-      });
+      window.showToast(
+        "error", 
+        "Items can only be removed within 90 seconds of placing the order"
+      );
       return;
     }
 
     try {
-      // Update order details locally
       setOrderDetails((prev) => ({
         ...prev,
         menu_details: prev.menu_details.filter(
@@ -939,20 +850,10 @@ const TrackOrder = () => {
         ),
       }));
 
-      toast.current.show({
-        severity: "success",
-        summary: "Item Removed",
-        detail: `${menu.menu_name} removed from order`,
-        life: 2000,
-      });
+      window.showToast("success", `${menu.menu_name} removed from order`);
     } catch (error) {
       console.error("Error removing item:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to remove item. Please try again.",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to remove item. Please try again.");
     }
   };
 
@@ -966,12 +867,7 @@ const TrackOrder = () => {
       userData?.customer_type || localStorage.getItem("customer_type");
 
     if (!currentCustomerId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please login to update order",
-        life: 3000,
-      });
+      window.showToast("error", "Please login to update order");
       navigate("/Signinscreen");
       return;
     }
@@ -1022,12 +918,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order updated successfully",
-          life: 3000,
-        });
+        window.showToast("success", "Order updated successfully");
 
         setPendingItems([]);
         setRemovedItems([]);
@@ -1038,12 +929,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error updating placed order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to update order",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to update order");
     }
   };
 
@@ -1057,12 +943,7 @@ const TrackOrder = () => {
       userData?.customer_type || localStorage.getItem("customer_type");
 
     if (!currentCustomerId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please login to add items",
-        life: 3000,
-      });
+      window.showToast("error", "Please login to add items");
       navigate("/Signinscreen");
       return;
     }
@@ -1096,12 +977,7 @@ const TrackOrder = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Items added to order successfully",
-          life: 3000,
-        });
+        window.showToast("success", "Items added to order successfully");
 
         setPendingItems([]);
         fetchOrderDetails(order_number);
@@ -1110,12 +986,7 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error adding to ongoing order:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to add items to order",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to add items to order");
     }
   };
 
@@ -1128,12 +999,7 @@ const TrackOrder = () => {
 
       if (!currentCustomerId) {
         console.error("Customer ID not found");
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Customer information not found",
-          life: 3000,
-        });
+        window.showToast("error", "Customer information not found");
         return;
       }
 
@@ -1169,21 +1035,11 @@ const TrackOrder = () => {
         }
       } else {
         console.error("Network response was not ok.");
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to fetch order status",
-          life: 3000,
-        });
+        window.showToast("error", "Failed to fetch order status");
       }
     } catch (error) {
       console.error("Error fetching order status:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to check order status",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to check order status");
     }
   };
 
@@ -1341,7 +1197,6 @@ const TrackOrder = () => {
 
   return (
     <>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="page-wrapper full-height">
         <Header title="Order Details" />
 

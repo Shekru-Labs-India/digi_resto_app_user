@@ -1,12 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logoname from "../constants/Logoname";
-import CompanyVersion from "../constants/CompanyVersion";
 import authenticationPic1 from "../assets/background.jpg";
-import { Toast } from "primereact/toast"; // Import Toast from primereact
-import "primereact/resources/themes/saga-blue/theme.css"; // Theme
-import "primereact/resources/primereact.min.css"; // Core CSS
-import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 
 const Signinscreen = () => {
@@ -19,7 +14,6 @@ const Signinscreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [accountCreated, setAccountCreated] = useState(false);
-  const toastBottomCenter = useRef(null); // Create a ref for the toast
 
   useEffect(() => {
     if (location.state && location.state.accountCreated) {
@@ -33,21 +27,14 @@ const Signinscreen = () => {
     setError(null);
 
     try {
-      const url = "https://menumitra.com/user_api/guest_login";
-      const requestOptions = {
+      const response = await fetch("https://menumitra.com/user_api/guest_login", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+        headers: { "Content-Type": "application/json" },
+      });
 
-      const response = await fetch(url, requestOptions);
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
-        console.log("Guest login success:", data);
-
-        // Store guest details in userData format
         const userData = {
           customer_id: data.customer_details.customer_id,
           customer_type: data.customer_details.customer_type,
@@ -55,34 +42,15 @@ const Signinscreen = () => {
           isGuest: true
         };
 
-        // Store userData in localStorage
         localStorage.setItem("userData", JSON.stringify(userData));
-        
-        toastBottomCenter.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Guest login successful!",
-          life: 2000,
-        });
-
-        // Navigate to the appropriate screen after guest login
+        window.showToast("success", "Guest login successful!");
         navigate("/Home");
       } else {
-        toastBottomCenter.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Guest login failed. Please try again.",
-          life: 2000,
-        });
+        window.showToast("error", data.msg || "Guest login failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during guest login:", error);
-      toastBottomCenter.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Guest login failed. Please try again.",
-        life: 2000,
-      });
+      window.showToast("error", "Guest login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -91,40 +59,30 @@ const Signinscreen = () => {
   const handleSignIn = async () => {
     if (!isMobileValid) {
       setError("Mobile number must be 10 digits");
+      window.showToast("error", "Please enter a valid 10-digit mobile number");
       return;
     }
     setLoading(true);
     setError(null);
 
     try {
-      const url = "https://menumitra.com/user_api/account_login";
-      const requestOptions = {
+      const response = await fetch("https://menumitra.com/user_api/account_login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile }),
-      };
+      });
 
-      const response = await fetch(url, requestOptions);
       const data = await response.json();
 
       if (response.ok) {
         if (data.st === 1) {
-          console.log("Sign-in success response:", data);
-
           const otp = data.msg.match(/\d+/)[0];
           localStorage.setItem("mobile", mobile);
           localStorage.setItem("otp", otp);
           localStorage.setItem("customer_id", data.customer_id);
 
           setOtpSent(true);
-          toastBottomCenter.current.show({
-            severity: "success",
-            summary: "Success",
-            detail: "OTP has been sent successfully!",
-            life: 2000,
-          });
+          window.showToast("success", "OTP has been sent successfully!");
 
           navigate("/Verifyotp");
           setMobile("");
@@ -132,21 +90,10 @@ const Signinscreen = () => {
           localStorage.setItem("customer_type", "registered");
           localStorage.setItem("isGuest", "false");
         } else {
-          toastBottomCenter.current.show({
-            severity: "info",
-            summary: "Info",
-            detail: data.msg || "Sign in failed. Please try again.",
-            life: 2000,
-          });
+          window.showToast("info", data.msg || "Sign in failed. Please try again.");
         }
       } else {
-        // Use the API response message instead of the default error
-        toastBottomCenter.current.show({
-          severity: "warn",
-          summary: "Warning",
-          detail: data.msg || `HTTP error! Status: ${response.status}`,
-          life: 2000,
-        });
+        window.showToast("warn", data.msg || `HTTP error! Status: ${response.status}`);
 
         if (data.st === 2) {
           setTimeout(() => {
@@ -156,12 +103,7 @@ const Signinscreen = () => {
       }
     } catch (error) {
       console.error("Error signing in:", error);
-      toastBottomCenter.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Sign in failed. Please try again.",
-        life: 2000,
-      });
+      window.showToast("error", "Sign in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -185,11 +127,6 @@ const Signinscreen = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <Toast
-        ref={toastBottomCenter}
-        position="bottom-center"
-        className="custom-toast"
-      />
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
@@ -240,12 +177,6 @@ const Signinscreen = () => {
                 {loading ? (
                   <div id="preloader">
                     <div className="loader">
-                      {/* <div
-                          className="spinner-border text-primary"
-                          role="status"
-                        >
-                          <span className="visually-hidden">Loading...</span>
-                        </div> */}
                       <LoaderGif />
                     </div>
                   </div>

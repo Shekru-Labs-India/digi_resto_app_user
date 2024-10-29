@@ -1,20 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useCart } from "../context/CartContext";
 import Bottom from "../component/bottom";
-import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import LoaderGif from "./LoaderGIF";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 const MenuDetails = () => {
-  const toast = useRef(null);
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -238,12 +233,10 @@ const MenuDetails = () => {
         "https://menumitra.com/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId, // Use currentRestaurantId
-            menu_id: menuId,
+            restaurant_id: currentRestaurantId,
+            menu_id: menuId
           }),
         }
       );
@@ -254,21 +247,11 @@ const MenuDetails = () => {
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
@@ -305,34 +288,21 @@ const MenuDetails = () => {
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available");
       return;
     }
 
     try {
-      await addToCart(
-        {
-          ...productDetails,
-          quantity,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          restaurant_id: restaurantId,
-        },
-        restaurantId
-      );
-
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: "Item has been added to your cart.",
-        life: 2000,
-      });
+      await addToCart({ 
+        ...productDetails, 
+        quantity, 
+        notes, 
+        half_or_full: portionSize,
+        price: selectedPrice,
+        restaurant_id: restaurantId
+      }, restaurantId);
+      
+      window.showToast("success", "Item has been added to your cart");
 
       setShowModal(false);
       setTimeout(() => {
@@ -340,12 +310,7 @@ const MenuDetails = () => {
       }, 2000);
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to add item to cart.",
-        life: 2000,
-      });
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
@@ -359,25 +324,11 @@ const MenuDetails = () => {
     }
 
     try {
-      await removeFromCart(
-        productDetails.menu_id,
-        currentCustomerId,
-        currentRestaurantId
-      );
-      toast.current.show({
-        severity: "info",
-        summary: "Removed from Cart",
-        detail: "Item has been removed from your cart.",
-        life: 2000,
-      });
+      await removeFromCart(productDetails.menu_id, currentCustomerId, currentRestaurantId);
+      window.showToast("info", "Item has been removed from your cart");
     } catch (error) {
       console.error("Error removing item from cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to remove item from cart.",
-        life: 2000,
-      });
+      window.showToast("error", "Failed to remove item from cart");
     }
   };
 
@@ -405,9 +356,7 @@ const MenuDetails = () => {
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           restaurant_id: restaurantIdToUse,
           menu_id: menuId,
@@ -424,25 +373,23 @@ const MenuDetails = () => {
             ...prevDetails,
             is_favourite: updatedFavoriteStatus,
           }));
-          toast.current.show({
-            severity: updatedFavoriteStatus ? "success" : "info",
-            summary: updatedFavoriteStatus
-              ? "Added to Favorites"
-              : "Removed from Favorites",
-            detail: updatedFavoriteStatus
-              ? "Item has been added to your favorites."
-              : "Item has been removed from your favorites.",
-            life: 2000,
-          });
+          
+          window.showToast(
+            updatedFavoriteStatus ? "success" : "info",
+            updatedFavoriteStatus
+              ? "Item has been added to your favorites"
+              : "Item has been removed from your favorites"
+          );
+          
           window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
           console.error("Failed to update favorite status:", data.msg);
+          window.showToast("error", "Failed to update favorite status");
         }
-      } else {
-        console.error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
+      window.showToast("error", "Failed to update favorite status");
     }
   };
 
@@ -451,19 +398,9 @@ const MenuDetails = () => {
     if (newQuantity >= 1 && newQuantity <= 20) {
       setQuantity(newQuantity);
       setTotalAmount(productDetails.discountedPrice * newQuantity);
-      toast.current.show({
-        severity: "info",
-        summary: "Quantity Updated",
-        detail: `Quantity set to ${newQuantity}.`,
-        life: 2000,
-      });
+      window.showToast("info", `Quantity set to ${newQuantity}`);
     } else if (newQuantity > 20) {
-      toast.current.show({
-        severity: "warn",
-        summary: "Limit Reached",
-        detail: "You cannot add more than 20 items.",
-        life: 2000,
-      });
+      window.showToast("warn", "You cannot add more than 20 items");
     }
   };
 
@@ -506,7 +443,6 @@ const MenuDetails = () => {
   return (
     <>
       <div className="page-wrapper">
-        <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <Header
           className="fs-6 fw-medium"
           title={toTitleCase(productDetails.name)}
