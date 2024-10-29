@@ -247,10 +247,17 @@ const Cart = () => {
     }
   };
 
-  const incrementQuantity = (item) => handleQuantityUpdate(item, item.quantity + 1);
+  const incrementQuantity = (item) => {
+    const newQuantity = item.quantity + 1;
+    handleQuantityUpdate(item, newQuantity);
+    updateCartQuantity(item.menu_id, newQuantity); // Call updateCartQuantity
+  };
+  
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
-      handleQuantityUpdate(item, item.quantity - 1);
+      const newQuantity = item.quantity - 1;
+      handleQuantityUpdate(item, newQuantity);
+      updateCartQuantity(item.menu_id, newQuantity); // Call updateCartQuantity
     }
   };
 
