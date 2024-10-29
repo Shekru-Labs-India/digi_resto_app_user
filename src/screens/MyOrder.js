@@ -535,69 +535,73 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     setCheckedItems(newCheckedItems);
   };
 
-  const renderOrders = () => {
-    if (!orders || Object.keys(orders).length === 0) {
-      return (
-        <div className="text-center py-4">
-          <p>No orders available</p>
-        </div>
-      );
-    }
-
+  
+const renderOrders = () => {
+  if (!orders || Object.keys(orders).length === 0) {
     return (
-      <>
-        {Object.entries(orders).map(([date, dateOrders]) =>
-          dateOrders && dateOrders.length > 0 ? (
-            <div className="tab mt-0" key={`${date}-${type}`}>
-              <input
-                type="checkbox"
-                id={`chck${date}-${type}`}
-                checked={checkedItems[`${date}-${type}`] || false}
-                onChange={() => toggleChecked(`${date}-${type}`)}
-              />
-              <label className="tab-label" htmlFor={`chck${date}-${type}`}>
-                <span>{date}</span>
-                <span className="d-flex align-items-center">
-                  <span className="gray-text pe-2 small-number">
-                    {dateOrders.length}
-                  </span>
-                  <span className="icon-circle">
-                    <i
-                      className={`ri-arrow-down-s-line arrow-icon ${
-                        checkedItems[`${date}-${type}`]
-                          ? "rotated"
-                          : "rotated-1"
-                      }`}
-                    ></i>
-                  </span>
+      <div className="text-center py-4">
+        <p>No orders available</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {Object.entries(orders).map(([date, dateOrders]) => {
+        // Filter out completed timers from dateOrders
+        const activeOrders = dateOrders.filter(
+          (order) => !completedTimers.has(order.order_id)
+        );
+
+        // Only render if there are active orders
+        return activeOrders.length > 0 ? (
+          <div className="tab mt-0" key={`${date}-${type}`}>
+            <input
+              type="checkbox"
+              id={`chck${date}-${type}`}
+              checked={checkedItems[`${date}-${type}`] || false}
+              onChange={() => toggleChecked(`${date}-${type}`)}
+            />
+            <label className="tab-label" htmlFor={`chck${date}-${type}`}>
+              <span>{date}</span>
+              <span className="d-flex align-items-center">
+                <span className="gray-text pe-2 small-number">
+                  {activeOrders.length}
                 </span>
-              </label>
-              <div className="tab-content">
-                <>
-                  {dateOrders
-                    .filter((order) => !completedTimers.has(order.order_id))
-                    .map((order) => (
-                      <div
-                        className="custom-card my-2 rounded-3 shadow-sm"
-                        key={order.order_number}
-                      >
-                        <div
-                          className="card-body py-2"
-                          onClick={() => handleOrderClick(order.order_number)}
-                        >
-                          <div className="row align-items-center">
-                            <div className="col-4">
-                              <span className="fw-semibold fs-6">
-                                <i className="ri-hashtag pe-2"></i>
-                                {order.order_number}
-                              </span>
-                            </div>
-                            <div className="col-8 text-end">
-                              <span className="gray-text font_size_12">
-                                {order.date_time}
-                              </span>
-                            </div>
-                          </div>
+                <span className="icon-circle">
+                  <i
+                    className={`ri-arrow-down-s-line arrow-icon ${
+                      checkedItems[`${date}-${type}`] ? "rotated" : "rotated-1"
+                    }`}
+                  ></i>
+                </span>
+              </span>
+            </label>
+            <div className="tab-content">
+              <>
+                {activeOrders.map((order) => (
+                  <div
+                    className="custom-card my-2 rounded-3 shadow-sm"
+                    key={order.order_number}
+                  >
+                    <div
+                      className="card-body py-2"
+                      onClick={() => handleOrderClick(order.order_number)}
+                    >
+                      {/* Card body content remains the same */}
+                      <div className="row align-items-center">
+                        <div className="col-4">
+                          <span className="fw-semibold fs-6">
+                            <i className="ri-hashtag pe-2"></i>
+                            {order.order_number}
+                          </span>
+                        </div>
+                        <div className="col-8 text-end">
+                          <span className="gray-text font_size_12">
+                            {order.date_time}
+                          </span>
+                        </div>
+                      </div>
                           <div className="row">
                             <div className="col-8 text-start">
                               <div className="restaurant">
@@ -640,50 +644,44 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         </div>
 
                         <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-                          {activeTab === "placed" && (
-                            <div className="d-flex flex-column gap-2">
-                              {/* Dynamic time remaining text - only show if timer hasn't expired */}
-                              {!completedTimers.has(order.order_id) && (
-                                <TimeRemaining
-                                  orderId={order.order_id}
-                                  completedTimers={completedTimers} // Pass completedTimers as prop
-                                />
-                              )}
-
-                              {/* Countdown and Cancel button row */}
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div className="text-center">
-                                  <CircularCountdown
-                                    orderId={order.order_id}
-                                    onComplete={() => {
-                                      handleOrderStatusChange(order.order_id);
-                                      setCompletedTimers(
-                                        (prev) =>
-                                          new Set([...prev, order.order_id])
-                                      );
-                                    }}
-                                    setActiveTab={setActiveTab}
-                                  />
-                                </div>
-
-                                {/* Only show cancel button if timer hasn't expired */}
-                                {!completedTimers.has(order.order_id) &&
-                                  localStorage.getItem(
-                                    `timer_${order.order_id}`
-                                  ) && (
-                                    <button
-                                      className="btn btn-sm btn-danger rounded-pill px-4"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCancelClick(order.order_id);
-                                      }}
-                                    >
-                                      Cancel Order
-                                    </button>
-                                  )}
-                              </div>
-                            </div>
+                      {activeTab === "placed" && (
+                        <div className="d-flex flex-column gap-2">
+                          {!completedTimers.has(order.order_id) && (
+                            <TimeRemaining
+                              orderId={order.order_id}
+                              completedTimers={completedTimers}
+                            />
                           )}
+
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="text-center">
+                              <CircularCountdown
+                                orderId={order.order_id}
+                                onComplete={() => {
+                                  handleOrderStatusChange(order.order_id);
+                                  setCompletedTimers(
+                                    (prev) => new Set([...prev, order.order_id])
+                                  );
+                                }}
+                                setActiveTab={setActiveTab}
+                              />
+                            </div>
+
+                            {!completedTimers.has(order.order_id) &&
+                              localStorage.getItem(`timer_${order.order_id}`) && (
+                                <button
+                                  className="btn btn-sm btn-danger rounded-pill px-4"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCancelClick(order.order_id);
+                                  }}
+                                >
+                                  Cancel Order
+                                </button>
+                              )}
+                          </div>
+                        </div>
+                      )}
 
                           {activeTab === "ongoing" && (
                             <div className="d-flex justify-content-between align-items-center">
@@ -746,16 +744,16 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             </div>
                           )}
                         </div>
-                      </div>
-                    ))}
-                </>
-              </div>
+                  </div>
+                ))}
+              </>
             </div>
-          ) : null
-        )}
-      </>
-    );
-  };
+          </div>
+        ) : null;
+      })}
+    </>
+  );
+};
 
   return (
     <>
@@ -897,7 +895,7 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
   const timerKey = `timer_${orderId}`;
-
+  
   useEffect(() => {
     // Initialize timer if it doesn't exist
     const startTime = localStorage.getItem(timerKey);
@@ -927,7 +925,6 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
 
       if (remaining <= 0) {
         clearInterval(timerRef.current);
-        localStorage.removeItem(timerKey);
         handleTimerComplete();
         return;
       }
@@ -944,23 +941,18 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
     };
   }, [orderId, onComplete]);
 
-  // New function to handle timer completion
   const handleTimerComplete = () => {
     setTimeLeft(0);
     setIsCompleted(true);
+    localStorage.removeItem(timerKey);
     onComplete();
-    window.showToast( "Your order is now in ongoing orders!", {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    window.showToast("success", "Your order has moved to ongoing orders!");
+    
+    // Add a small delay before navigation to ensure toast is visible
+    setTimeout(() => {
+      setActiveTab("ongoing");
+    }, 1000); // 1 second delay to show toast before navigation
   };
-
-  // Only show ongoing button if timer has actually completed
   if (isCompleted && timeLeft === 0) {
     return (
       <button
