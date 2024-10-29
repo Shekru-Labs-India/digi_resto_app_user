@@ -9,6 +9,23 @@ import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 
+const calculateOrderCount = (orders) => {
+  if (!orders) return 0;
+  
+  return Object.values(orders).reduce((acc, curr) => {
+    if (!curr) return acc;
+    if (Array.isArray(curr)) {
+      return acc + curr.length;
+    }
+    if (typeof curr === 'object') {
+      return acc + Object.values(curr).reduce((sum, val) => {
+        return sum + (Array.isArray(val) ? val.length : 0);
+      }, 0);
+    }
+    return acc;
+  }, 0);
+};
+
 const MyOrder = () => {
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -136,10 +153,7 @@ const MyOrder = () => {
     <div className="page-wrapper">
       <Header
         title="My Order"
-        count={Object.values(orders).reduce(
-          (acc, curr) => acc + Object.values(curr).flat().length,
-          0
-        )}
+        count={calculateOrderCount(orders)}
       />
 
       <main className="page-content space-top mb-5 pb-3">
