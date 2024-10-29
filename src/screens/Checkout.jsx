@@ -695,7 +695,7 @@ const Checkout = () => {
 
         {showOngoingOrderPopup && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
+            <div className={`popup-content rounded-4 ${isDarkMode ? 'bg-dark' : 'bg-white'}`}>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
                 <button
@@ -711,7 +711,7 @@ const Checkout = () => {
               <div className="d-flex flex-column gap-2">
                 <button
                   className="btn btn-success rounded-pill w-100 py-2"
-                  onClick={handleCompleteOrder} // Removed the orderId parameter
+                  onClick={handleCompleteOrder}
                 >
                   <i className="ri-checkbox-circle-line me-2"></i>
                   Complete Order

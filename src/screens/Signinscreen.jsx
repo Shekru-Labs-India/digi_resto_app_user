@@ -153,7 +153,7 @@ const Signinscreen = () => {
                   <label className="my-2" htmlFor="mobile">
                     <span className="required-star">*</span> Mobile
                   </label>
-                  <div className="input-group text-muted">
+                  <div className=" border border-1 rounded-3 input-group text-muted">
                     <span className="input-group-text py-0">
                       <i className="ri-smartphone-line fs-3 text-muted"></i>
                     </span>
@@ -167,6 +167,7 @@ const Signinscreen = () => {
                       value={mobile}
                       onChange={handleMobileChange}
                       disabled={otpSent}
+                      autoFocus
                     />
                   </div>
                   {mobileError && (
