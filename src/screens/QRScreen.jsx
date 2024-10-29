@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
-import { Toast } from "primereact/toast"; // Import Toast from PrimeReact
 import HotelList from "./HotelList";
-import OverlayIcon from "../assets/google lens.svg"; // Import the SVG
+import OverlayIcon from "../assets/google lens.svg";
 import logo from "../assets/logos/mmua_transparent.png";
 import CompanyVersion from "../constants/CompanyVersion";
 
@@ -11,7 +10,6 @@ const QRScanner = () => {
   const [showCamera, setShowCamera] = useState(false);
   const videoRef = useRef(null);
   const codeReaderRef = useRef(null);
-  const toast = useRef(null); // Create a ref for the toast
 
   const startCamera = () => {
     const codeReader = new BrowserMultiFormatReader();
@@ -26,8 +24,9 @@ const QRScanner = () => {
               const tracks = videoRef.current.srcObject.getTracks();
               tracks.forEach((track) => track.stop());
             }
-            // Show toast message
-            toast.current.show({ severity: 'success', summary: 'QR Code Scanned', detail: 'Redirecting...', life: 2000 });
+            // Show toast message using window.showToast
+            window.showToast("success", "QR Code scanned successfully. Redirecting...");
+            
             // Redirect after 2 seconds
             setTimeout(() => {
               window.location.href = result.text;
@@ -39,10 +38,8 @@ const QRScanner = () => {
           }
         })
         .catch((err) => {
-          console.error(
-            "Error occurred while trying to read from video device:",
-            err
-          );
+          console.error("Error occurred while trying to read from video device:", err);
+          window.showToast("error", "Failed to access camera. Please try again.");
         });
     }
   };
@@ -54,6 +51,7 @@ const QRScanner = () => {
       stream.getTracks().forEach((track) => track.stop());
     } catch (error) {
       console.error("Camera permission denied:", error);
+      window.showToast("error", "Camera access denied. Please allow camera access to scan QR codes.");
     }
   };
 
@@ -65,19 +63,20 @@ const QRScanner = () => {
 
   return (
     <div className="container-fluid bg-light d-flex flex-column align-items-center">
-      <Toast ref={toast} position="bottom-center" className="custom-toast"/> {/* Add Toast component */}
       <div className="d-flex align-items-center mt-4 mb-3">
         <img src={logo} alt="logo" className="me-2" width="30" height="30" />
         <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
       </div>
-      {!showCamera && ( // Conditionally render the button
+      
+      {!showCamera && (
         <button
           className="btn btn-primary my-3 rounded-pill"
           onClick={handleScanButtonClick}
         >
-          <i class="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
+          <i className="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
         </button>
       )}
+      
       {showCamera && (
         <div
           className="position-relative w-75 mb-4 rounded-5"
@@ -97,15 +96,14 @@ const QRScanner = () => {
               top: "50%",
               left: "50%",
               transform: "translate(16%, -46%)",
-              filter:
-                "invert(35%) sepia(100%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(90%)",
+              filter: "invert(35%) sepia(100%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(90%)",
             }}
           />
         </div>
       )}
+      
       <div className="container px-0">
         <HotelList />
-       
       </div>
     </div>
   );

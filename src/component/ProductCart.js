@@ -7,7 +7,6 @@ import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
 import Signinscreen from "./../screens/Signinscreen";
 import LoaderGif from "../screens/LoaderGIF";
-import { Toast } from "primereact/toast";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 
@@ -34,7 +33,6 @@ const ProductCard = ({ isVegOnly }) => {
   const [isLoading, setIsLoading] = useState(false);
   const hasFetchedData = useRef(false);
   const swiperRef = useRef(null);
-  const toast = useRef(null);
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
@@ -222,20 +220,19 @@ const ProductCard = ({ isVegOnly }) => {
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
-    const apiUrl = isFavorite
-      ? "https://menumitra.com/user_api/remove_favourite_menu"
-      : "https://menumitra.com/user_api/save_favourite_menu";
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId,
-          customer_id: userData.customer_id,
-        }),
-      });
+      const response = await fetch(
+        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: userData.customer_id,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -255,31 +252,24 @@ const ProductCard = ({ isVegOnly }) => {
             )
           );
 
-          // Dispatch a custom event to notify other components of the favorite update
           window.dispatchEvent(
             new CustomEvent("favoriteUpdated", {
               detail: { menuId, isFavorite: updatedFavoriteStatus },
             })
           );
 
-          toast.current.show({
-            severity: updatedFavoriteStatus ? "success" : "error",
-            summary: updatedFavoriteStatus
-              ? "Added to Favorites"
-              : "Removed from Favorites",
-            detail: updatedFavoriteStatus
-              ? "Item has been added to your favorites."
-              : "Item has been removed from your favorites.",
-            life: 2000,
-          });
+          window.showToast(
+            "success",
+            updatedFavoriteStatus ? "Item has been added to your favorites." : "Item has been removed from your favorites."
+          );
         } else {
           console.error("Failed to update favorite status:", data.msg);
+          window.showToast("error", "Failed to update favorite status");
         }
-      } else {
-        console.error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
+      window.showToast("error", "Failed to update favorite status");
     }
   };
 
@@ -312,9 +302,7 @@ const ProductCard = ({ isVegOnly }) => {
         "https://menumitra.com/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
@@ -328,21 +316,11 @@ const ProductCard = ({ isVegOnly }) => {
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.error("API Error:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Failed to fetch price information",
-          life: 3000,
-        });
+        window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
@@ -359,12 +337,7 @@ const ProductCard = ({ isVegOnly }) => {
     }
 
     if (isMenuItemInCart(menu.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Item Already in Cart",
-        detail: "This item is already in your cart.",
-        life: 3000,
-      });
+      window.showToast("info", "This item is already in your cart.");
       return;
     }
 
@@ -383,28 +356,17 @@ const ProductCard = ({ isVegOnly }) => {
       return;
     }
 
-    const currentRestaurantId =
-      restaurantId || localStorage.getItem("restaurantId");
+    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
     if (!currentRestaurantId) {
       console.error("Restaurant ID not found");
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information is missing.",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information is missing.");
       return;
     }
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Price information is not available.",
-        life: 2000,
-      });
+      window.showToast("error", "Price information is not available.");
       return;
     }
 
@@ -416,17 +378,12 @@ const ProductCard = ({ isVegOnly }) => {
           notes,
           half_or_full: portionSize,
           price: selectedPrice,
-          restaurant_id: currentRestaurantId, // Add restaurant_id to the item
+          restaurant_id: currentRestaurantId,
         },
         currentRestaurantId
       );
 
-      toast.current.show({
-        severity: "success",
-        summary: "Added to Cart",
-        detail: selectedMenu.name,
-        life: 3000,
-      });
+      window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
       setNotes("");
@@ -434,20 +391,10 @@ const ProductCard = ({ isVegOnly }) => {
       setSelectedMenu(null);
     } catch (error) {
       if (error.message === "Item is already in the cart") {
-        toast.current.show({
-          severity: "info",
-          summary: "Item Already in Cart",
-          detail: "This item is already in your cart.",
-          life: 3000,
-        });
+        window.showToast("info", "This item is already in your cart.");
       } else {
         console.error("Error adding item to cart:", error);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to add item to cart. Please try again.",
-          life: 3000,
-        });
+        window.showToast("error", "Failed to add item to cart. Please try again.");
       }
     }
   };
@@ -471,7 +418,6 @@ const ProductCard = ({ isVegOnly }) => {
 
   return (
     <div>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">

@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
-import { Toast } from "primereact/toast";
 import Bottom from "../component/bottom";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -21,7 +20,6 @@ const Cart = () => {
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
-  const toast = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
@@ -160,21 +158,11 @@ const Cart = () => {
     const currentCustomerId = getCustomerId();
     try {
       await removeFromCart(item.menu_id, currentCustomerId, restaurantId);
-      toast.current.show({
-        severity: "success",
-        summary: "Item Removed",
-        detail: `${item.menu_name} has been removed from your cart.`,
-        life: 2000,
-      });
+      window.showToast("success", `${item.menu_name} has been removed from your cart.`);
       fetchCartDetails();
     } catch (error) {
       console.error("Error removing item from cart:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to remove item from cart.",
-        life: 2000,
-      });
+      window.showToast("error", "Failed to remove item from cart.");
     }
   };
 
@@ -187,9 +175,7 @@ const Cart = () => {
         "https://menumitra.com/user_api/update_cart_menu_quantity",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
             customer_id: customerId,
@@ -201,30 +187,15 @@ const Cart = () => {
       );
       const data = await response.json();
       if (data.st === 1) {
-        fetchCartDetails(); // Refresh cart details after update
-        toast.current.show({
-          severity: "success",
-          summary: "Quantity Updated",
-          detail: `Item quantity has been updated.`,
-          life: 2000,
-        });
+        fetchCartDetails();
+        window.showToast("success", "Item quantity has been updated.");
       } else {
         console.error("Failed to update cart quantity:", data.msg);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to update item quantity.",
-          life: 2000,
-        });
+        window.showToast("error", "Failed to update item quantity.");
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "An error occurred while updating item quantity.",
-        life: 2000,
-      });
+      window.showToast("error", "An error occurred while updating item quantity.");
     }
   };
 
@@ -251,6 +222,70 @@ const Cart = () => {
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
       handleQuantityUpdate(item, item.quantity - 1);
+    }
+  };
+
+  const handleLikeClick = async (menuId) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
+      navigate("/Signinscreen");
+      return;
+    }
+
+    const currentRestaurantId = getStoredRestaurantId();
+    if (!currentRestaurantId) {
+      window.showToast("error", "Restaurant information is missing");
+      return;
+    }
+
+    const menuItem = cartDetails.order_items.find((item) => item.menu_id === menuId);
+    if (!menuItem) {
+      console.error("Menu item not found:", menuId);
+      return;
+    }
+
+    const isFavorite = menuItem.is_favourite;
+
+    try {
+      const response = await fetch(
+        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: currentRestaurantId,
+            menu_id: menuId,
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setCartDetails((prevCart) => ({
+          ...prevCart,
+          order_items: prevCart.order_items.map((item) =>
+            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+          )
+        }));
+
+        window.dispatchEvent(
+          new CustomEvent("favoriteUpdated", {
+            detail: { menuId, isFavorite: !isFavorite },
+          })
+        );
+
+        window.showToast(
+          "success",
+          isFavorite ? "Removed from favorites" : "Added to favorites"
+        );
+      } else {
+        throw new Error(data.msg || 'Failed to update favorite status');
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      window.showToast("error", error.message || "Failed to update favorite status");
     }
   };
 
@@ -283,88 +318,8 @@ const Cart = () => {
     </main>
   );
 
-    const handleLikeClick = async (menuId) => {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      if (!userData?.customer_id) {
-        navigate("/Signinscreen");
-        return;
-      }
-
-      // Get current restaurant ID
-      const currentRestaurantId = getStoredRestaurantId();
-      if (!currentRestaurantId) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Restaurant information is missing",
-          life: 3000,
-        });
-        return;
-      }
-
-      const menuItem = cartDetails.order_items.find((item) => item.menu_id === menuId);
-      if (!menuItem) {
-        console.error("Menu item not found:", menuId);
-        return;
-      }
-
-      const isFavorite = menuItem.is_favourite;
-
-      try {
-        const response = await fetch(
-          `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              restaurant_id: currentRestaurantId, // Use the current restaurant ID
-              menu_id: menuId,
-              customer_id: userData.customer_id,
-              customer_type: userData.customer_type
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (response.ok && data.st === 1) {
-          setCartDetails((prevCart) => ({
-            ...prevCart,
-            order_items: prevCart.order_items.map((item) =>
-              item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
-            )
-          }));
-
-          window.dispatchEvent(
-            new CustomEvent("favoriteUpdated", {
-              detail: { menuId, isFavorite: !isFavorite },
-            })
-          );
-
-          toast.current.show({
-            severity: "success",
-            summary: "Success",
-            detail: isFavorite ? "Removed from favorites" : "Added to favorites",
-            life: 3000,
-          });
-        } else {
-          throw new Error(data.msg || 'Failed to update favorite status');
-        }
-      } catch (error) {
-        console.error("Error updating favorite status:", error);
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message || "Failed to update favorite status",
-          life: 3000,
-        });
-      }
-    };
-
   return (
     <div className="page-wrapper full-height" style={{ overflowY: "auto" }}>
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
       <Header title="Cart" count={cartDetails.order_items.length} />
 
       {!userData || cartDetails.order_items.length === 0 ? (

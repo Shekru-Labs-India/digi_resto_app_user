@@ -3,9 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import pic2 from "../assets/background.jpg";
 import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
-import { Toast } from "primereact/toast"; // Import Toast from primereact
-import "primereact/resources/themes/saga-blue/theme.css"; // Theme
-import "primereact/resources/primereact.min.css"; // Core CSS
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 
@@ -15,13 +12,12 @@ const Signupscreen = () => {
   const [nameError, setNameError] = useState("");
   const [mobile, setMobile] = useState("");
   const [mobileError, setMobileError] = useState("");
-  const [agreed, setAgreed] = useState(false); // Checkbox state
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
-  const [checkboxError, setCheckboxError] = useState(""); // Checkbox error state
-  const [showPopup, setShowPopup] = useState(false); // Popup visibility state
-  const checkboxRef = useRef(null); // Reference to the checkbox
-  const toast = useRef(null); // Create a ref for the toast
+  const [loading, setLoading] = useState(false);
+  const [checkboxError, setCheckboxError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const checkboxRef = useRef(null);
   const nameInputRef = useRef(null);
   const mobileInputRef = useRef(null);
 
@@ -29,9 +25,8 @@ const Signupscreen = () => {
     e.preventDefault();
     if (!isFormFilled()) {
       setError("Please fill all the fields correctly.");
-      setCheckboxError(""); // Clear checkbox error if form is not filled
+      setCheckboxError("");
       
-      // Focus on empty fields and add red border
       if (name.trim() === "") {
         nameInputRef.current.focus();
         nameInputRef.current.classList.add("is-invalid");
@@ -41,115 +36,72 @@ const Signupscreen = () => {
         mobileInputRef.current.classList.add("is-invalid");
       }
       
+      window.showToast("error", "Please fill all fields correctly");
       return;
     }
+
     if (!agreed) {
       setCheckboxError("Please select the privacy!");
-      setError(""); // Clear general error if checkbox is not checked
+      setError("");
       if (checkboxRef.current) {
         checkboxRef.current.classList.add("shake");
         setTimeout(() => {
           checkboxRef.current.classList.remove("shake");
         }, 500);
       }
+      window.showToast("error", "Please accept the privacy policy and terms");
       return;
     }
-    setLoading(true); // Set loading to true before API call
+
+    setLoading(true);
 
     try {
-      const url = "https://menumitra.com/user_api/account_signup";
-      const requestOptions = {
+      const response = await fetch("https://menumitra.com/user_api/account_signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          mobile: mobile,
-        }),
-      };
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, mobile }),
+      });
 
-      const response = await fetch(url, requestOptions);
       const data = await response.json();
 
       if (!response.ok) {
-        // Show the API response message if available
         const errorMessage = data.msg || `HTTP error! Status: ${response.status}`;
         throw new Error(errorMessage);
       }
 
       if (data.st === 1) {
-        const customerId = generateCustomerId(); // Generate a unique customerId
-        const userData = { name, mobile, customerId };
+        const customerId = generateCustomerId();
+        localStorage.setItem("mobile", mobile);
+        localStorage.setItem("otp", data.otp);
+        localStorage.setItem("customer_id", customerId);
+        localStorage.setItem("customer_type", "registered");
+        localStorage.setItem("isGuest", "false");
 
-        // Store user data in local storage
-        localStorage.setItem("userData", JSON.stringify(userData));
+        window.showToast("success", "Account created successfully!");
+        setShowPopup(true);
         
-        // Show success toast
-        if (toast.current) {
-          toast.current.show({
-            severity: "success",
-            summary: "Success",
-            detail: "Account created successfully!",
-            life: 2000,
-          });
-        }
-
-        // Clear form fields upon successful signup attempt
-        setName("");
-        setMobile("");
-
-        // Hide popup and navigate to sign-in screen after 3 seconds
         setTimeout(() => {
           setShowPopup(false);
-          navigate("/Signinscreen");
-        }, 3000);
-      } else if (data.st === 2) {
-        const errorMessage = data.msg || "Mobile Number already exists. Use another number.";
-        setError(errorMessage);
-        // Show error toast with the response message
-        if (toast.current) {
-          toast.current.show({
-            severity: "warn",
-            summary: "Warning",
-            detail: errorMessage, // Use the response message from the API
-            life: 2000,
-          });
-        }
+          navigate("/Verifyotp", { state: { accountCreated: true } });
+        }, 2000);
       } else {
-        // Handle other specific error codes from the API
-        
-        if (toast.current) {
-          toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "An error occurred. Please try again.",
-            life: 2000,
-          });
-        }
+        window.showToast("error", data.msg || "Failed to create account");
       }
     } catch (error) {
-      console.error("Error signing up:", error);
-
-      if (toast.current) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message, // Use the error message
-          life: 2000,
-        });
-      }
+      console.error("Error during signup:", error);
+      window.showToast("error", error.message || "Failed to create account");
+      setError(error.message);
     } finally {
-      setLoading(false); // Set loading to false after API call
+      setLoading(false);
     }
   };
 
   const generateCustomerId = () => {
-    return Math.floor(Math.random() * 1000000); // Generate a random 6-digit number
+    return Math.floor(Math.random() * 1000000);
   };
 
   const handleNameChange = (e) => {
-    const value = e.target.value.replace(/[^A-Za-z ]/gi, ""); // Allow only letters and spaces
+    const value = e.target.value.replace(/[^A-Za-z ]/gi, "");
     setName(value);
     if (value.trim() === "") {
       setNameError("Name is required");
@@ -161,7 +113,7 @@ const Signupscreen = () => {
   };
 
   const handleMobileChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "").slice(0, 10); // Allow only digits and limit to 10
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setMobile(value);
     if (value.trim() === "") {
       setMobileError("Mobile is required");
@@ -186,8 +138,6 @@ const Signupscreen = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <Toast ref={toast} position="bottom-center" />{" "}
-      {/* Ensure Toast is positioned at the bottom-center */}
       <main className="page-content">
         <div className="container pt-0 overflow-hidden">
           <div className="dz-authentication-area dz-flex-box">
@@ -261,7 +211,7 @@ const Signupscreen = () => {
                     id="Checked-1"
                     onChange={(e) => {
                       setAgreed(e.target.checked);
-                      setCheckboxError(""); // Clear checkbox error when checked
+                      setCheckboxError("");
                     }}
                   />
                   <label className="form-check-label " htmlFor="Checked-1">

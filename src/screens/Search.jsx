@@ -1,30 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
-import { Toast } from "primereact/toast";
-import "primereact/resources/themes/saga-blue/theme.css"; // Choose a theme
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
-  }); // State for theme
+  });
   const isLoggedIn = !!localStorage.getItem("userData");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [searchedMenu, setSearchedMenu] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
-  const [showHistory, setShowHistory] = useState(false); // Track if history should be shown
+  const [showHistory, setShowHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const toast = useRef(null);
   const { restaurantName } = useRestaurantId();
   const { restaurantId } = useRestaurantId();
   const [customerId, setCustomerId] = useState(null);
@@ -71,7 +65,7 @@ const Search = () => {
   const handleSearch = (event) => {
     const term = event.target.value;
     setSearchTerm(term);
-    setShowHistory(term.length > 0); // Show history only when there's input
+    setShowHistory(term.length > 0);
   };
 
   const toTitleCase = (str) => {
@@ -131,7 +125,6 @@ const Search = () => {
               oldPrice: Math.floor(menu.price * 1.1),
             }));
             setSearchedMenu(formattedMenu);
-            // Update search history
             const updatedHistory = [
               debouncedSearchTerm,
               ...searchHistory.filter((term) => term !== debouncedSearchTerm),
@@ -194,7 +187,6 @@ const Search = () => {
 
   const handleAddToCartClick = async (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // Get restaurant ID from userData
     const storedRestaurantId = userData?.restaurantId;
     
     if (!userData?.customer_id) {
@@ -203,24 +195,14 @@ const Search = () => {
     }
 
     if (!storedRestaurantId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information is missing",
-        life: 3000,
-      });
+      window.showToast("error", "Restaurant information is missing");
       return;
     }
 
     // Check if item is already in cart
     const cartItems = await fetchCartItems();
     if (cartItems.some(item => item.menu_id === menu.menu_id)) {
-      toast.current.show({
-        severity: "info",
-        summary: "Item Already in Cart",
-        detail: "This item is already in your cart.",
-        life: 3000,
-      });
+      window.showToast("info", "This item is already in your cart");
       return;
     }
 
@@ -230,9 +212,7 @@ const Search = () => {
         "https://menumitra.com/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: storedRestaurantId,
             menu_id: menu.menu_id,
@@ -256,104 +236,74 @@ const Search = () => {
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to fetch price information",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
     }
-};
+  };
 
-const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     const storedRestaurantId = userData?.restaurantId;
 
     if (!userData?.customer_id) {
-        navigate("/Signinscreen");
-        return;
+      navigate("/Signinscreen");
+      return;
     }
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
     
     if (!selectedPrice) {
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Price information is not available.",
-            life: 2000,
-        });
-        return;
+      window.showToast("error", "Price information is not available");
+      return;
     }
 
     if (!storedRestaurantId) {
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Restaurant information is missing.",
-            life: 2000,
-        });
-        return;
+      window.showToast("error", "Restaurant information is missing");
+      return;
     }
 
     try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/add_to_cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customer_id: userData.customer_id,
-              customer_type: userData.customer_type,
-              restaurant_id: storedRestaurantId,
-              menu_id: selectedMenu.menu_id,
-              quantity: 1,
-              half_or_full: portionSize,
-              notes: notes,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (data.st === 1) {
-            // Update local cart items state
-            const updatedCartItems = await fetchCartItems();
-            setCartItems(updatedCartItems);
-            localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-            
-            // Dispatch cart update event
-            window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-
-            toast.current.show({
-                severity: "success",
-                summary: "Added to Cart",
-                detail: `${selectedMenu.menu_name} added successfully`,
-                life: 3000,
-            });
-
-            setShowModal(false);
-            setNotes("");
-            setPortionSize("full");
-            setSelectedMenu(null);
-        } else {
-            throw new Error(data.msg || "Failed to add item to cart");
+      const response = await fetch(
+        "https://menumitra.com/user_api/add_to_cart",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer_id: userData.customer_id,
+            customer_type: userData.customer_type,
+            restaurant_id: storedRestaurantId,
+            menu_id: selectedMenu.menu_id,
+            quantity: 1,
+            half_or_full: portionSize,
+            notes: notes,
+          }),
         }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+        const updatedCartItems = await fetchCartItems();
+        setCartItems(updatedCartItems);
+        localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
+
+        window.showToast("success", `${selectedMenu.menu_name} added successfully`);
+
+        setShowModal(false);
+        setNotes("");
+        setPortionSize("full");
+        setSelectedMenu(null);
+      } else {
+        throw new Error(data.msg || "Failed to add item to cart");
+      }
     } catch (error) {
-        console.error("Error adding item to cart:", error);
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: error.message || "Failed to add item to cart. Please try again.",
-            life: 3000,
-        });
+      console.error("Error adding item to cart:", error);
+      window.showToast("error", error.message || "Failed to add item to cart. Please try again.");
     }
-};
+  };
 
   const handleModalClick = (e) => {
     if (e.target.classList.contains("modal")) {
@@ -371,22 +321,19 @@ const handleConfirmAddToCart = async () => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
-    const apiUrl = isFavorite
-      ? "https://menumitra.com/user_api/remove_favourite_menu"
-      : "https://menumitra.com/user_api/save_favourite_menu";
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId,
-          customer_id: customerId,
-        }),
-      });
+      const response = await fetch(
+        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: customerId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -397,36 +344,25 @@ const handleConfirmAddToCart = async () => {
               : item
           );
           setSearchedMenu(updatedMenu);
-          toast.current.show({
-            severity: isFavorite ? "info" : "success",
-            summary: isFavorite
-              ? "Removed from Favourites"
-              : "Added to Favourites",
-            detail: `${menuItem.menu_name} has been ${
-              isFavorite ? "removed from" : "added to"
-            } your favourites.`,
-            life: 2000,
-          });
+          
+          window.showToast(
+            isFavorite ? "info" : "success",
+            `${menuItem.menu_name} has been ${isFavorite ? "removed from" : "added to"} your favourites`
+          );
         } else {
-          console.error("Failed to update favourite status:", data.msg);
+          throw new Error(data.msg || "Failed to update favourite status");
         }
-      } else {
-        console.error("Network response was not ok");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
+      window.showToast("error", "Failed to update favourite status");
     }
   };
 
   const handleRemoveItem = (menuId) => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
-    toast.current.show({
-      severity: "warn",
-      summary: "Item Removed",
-      detail: `${menuItem.menu_name} has been removed from the search list.`,
-      life: 2000,
-    });
+    window.showToast("warn", `${menuItem.menu_name} has been removed from the search list`);
   };
 
   const handleClearAll = () => {
@@ -450,17 +386,17 @@ const handleConfirmAddToCart = async () => {
   const handleHistoryClick = (term) => {
     setSearchTerm(term);
     setDebouncedSearchTerm(term);
-    setShowHistory(false); // Hide history when a term is clicked
+    setShowHistory(false);
   };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+    setSidebarOpen(!sidebarOpen);
   };
 
   const getFirstName = (name) => {
-    if (!name) return "User"; // Return "User" if name is undefined or null
+    if (!name) return "User";
     const words = name.split(" ");
-    return words[0]; // Return the first word
+    return words[0];
   };
 
   const toggleTheme = () => {
@@ -470,13 +406,12 @@ const handleConfirmAddToCart = async () => {
   };
 
   useEffect(() => {
-    // Apply the theme class based on the current state
     if (isDarkMode) {
       document.body.classList.add("theme-dark");
     } else {
       document.body.classList.remove("theme-dark");
     }
-  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
+  }, [isDarkMode]);
 
   const userData = JSON.parse(localStorage.getItem("userData"));
 
@@ -486,10 +421,8 @@ const handleConfirmAddToCart = async () => {
 
   return (
     <div className="page-wrapper">
-      {/* Header */}
       <Header title="Search" />
 
-      {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
         <div className="container py-0">
           <div className="d-flex justify-content-between align-items-center  my-2">
@@ -510,7 +443,6 @@ const handleConfirmAddToCart = async () => {
           </div>
         </div>
 
-        <Toast ref={toast} position="bottom-center" className="custom-toast" />
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">
@@ -525,19 +457,6 @@ const handleConfirmAddToCart = async () => {
               value={searchTerm}
             />
           </div>
-          {/* {searchHistory.length > 0 && (
-            <div className="search-history">
-              <h6 className="gray-text">Search History</h6>
-              <ul>
-                {searchHistory.map((term, index) => (
-                  <li className="h6" key={index} onClick={() => handleHistoryClick(term)}>
-                    {term}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )} */}
-
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
@@ -569,7 +488,6 @@ const handleConfirmAddToCart = async () => {
                           e.target.src = images;
                         }}
                       />
-                      {/* Veg/Non-veg indicator */}
                       <div
                         className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           isVegMenu(menu?.menu_veg_nonveg)
@@ -595,7 +513,6 @@ const handleConfirmAddToCart = async () => {
                         ></i>
                       </div>
 
-                      {/* Heart icon */}
                       <div
                         className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                         style={{
@@ -620,7 +537,6 @@ const handleConfirmAddToCart = async () => {
                         ></i>
                       </div>
 
-                      {/* Offer badge */}
                       {menu.offer > 0 && (
                         <div
                           className="gradient_bg d-flex justify-content-center align-items-center"
@@ -645,7 +561,6 @@ const handleConfirmAddToCart = async () => {
 
                     <div className="col-8 pb-0 pe-0 ps-2">
                       <div className="row">
-                        {/* Menu Name and Rating on First Line */}
                         <div className="col-12 mt-1">
                           <div className="d-flex justify-content-between align-items-center">
                             <div className="font_size_14 fw-medium">
@@ -660,13 +575,11 @@ const handleConfirmAddToCart = async () => {
                           </div>
                         </div>
 
-                        {/* Category and Spicy Index on Second Line */}
                         <div className="row pe-0">
                           <div className="col-6 mt-1">
                             <span className="text-success font_size_12">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
                               {menu.category_name}
-                              {/* Spicy Index */}
                             </span>
                           </div>
                           <div className="col-6 pe-0 text-end">
@@ -690,7 +603,6 @@ const handleConfirmAddToCart = async () => {
                           </div>
                         </div>
 
-                        {/* Price and Cart Section */}
                         <div className="row mt-2 pe-0">
                           <div className="col-10 px-0">
                             <span className="mb-0 mt-1 text-start fw-medium">
