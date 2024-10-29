@@ -513,6 +513,7 @@ const MenuDetails = () => {
                         height: "100%",
                         objectFit: "cover",
                         transition: "opacity 0.3s ease",
+                        aspectRatio: "16/9",
                       }}
                     />
 
