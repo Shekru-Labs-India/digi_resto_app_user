@@ -228,36 +228,22 @@ const Cart = () => {
     }
   };
 
-  const handleQuantityUpdate = async (item, newQuantity) => {
-    try {
-      // Update UI optimistically
-      setCartDetails(prev => ({
-        ...prev,
-        order_items: prev.order_items.map(i => 
-          i.menu_id === item.menu_id ? { ...i, quantity: newQuantity } : i
-        )
-      }));
-
-      // Dispatch cart update event
-      window.dispatchEvent(new Event('cartUpdated'));
-    } catch (error) {
-      console.error("Error updating quantity:", error);
-      // Revert on error
-      fetchCartDetails();
+  const incrementQuantity = (item) => {
+    if (item.quantity < 20) {
+      updateCartQuantity(item.menu_id, item.quantity + 1);
+    } else {
+      toast.current.show({
+        severity: "warn",
+        summary: "Limit Reached",
+        detail: "You cannot add more than 20 items of this product.",
+        life: 2000,
+      });
     }
   };
 
-  const incrementQuantity = (item) => {
-    const newQuantity = item.quantity + 1;
-    handleQuantityUpdate(item, newQuantity);
-    updateCartQuantity(item.menu_id, newQuantity); // Call updateCartQuantity
-  };
-  
   const decrementQuantity = (item) => {
     if (item.quantity > 1) {
-      const newQuantity = item.quantity - 1;
-      handleQuantityUpdate(item, newQuantity);
-      updateCartQuantity(item.menu_id, newQuantity); // Call updateCartQuantity
+      updateCartQuantity(item.menu_id, item.quantity - 1);
     }
   };
 

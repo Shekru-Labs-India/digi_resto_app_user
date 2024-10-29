@@ -213,7 +213,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-            order_status: "ongoing", // Check for ongoing orders
+            order_status: "ongoing",
             customer_id: currentCustomerId,
             customer_type: currentCustomerType,
           }),
@@ -223,13 +223,15 @@ const Checkout = () => {
       const data = await response.json();
       console.log("Ongoing order check response:", data);
   
-      if (data.st === 1 && data.lists && Object.keys(data.lists).length > 0) {
-        // Get the first ongoing order
-        const dates = Object.keys(data.lists);
+      if (data.st === 1 && data.lists?.ongoing) {
+        // Get the first date key from ongoing orders
+        const dates = Object.keys(data.lists.ongoing);
         if (dates.length > 0) {
-          const ongoingOrders = data.lists[dates[0]];
+          // Get the orders for the first date
+          const ongoingOrders = data.lists.ongoing[dates[0]];
           if (ongoingOrders && ongoingOrders.length > 0) {
             const ongoingOrder = ongoingOrders[0];
+            console.log("Found ongoing order:", ongoingOrder);
             setOngoingOrderId(ongoingOrder.order_id);
             setShowOngoingOrderPopup(true);
             return true;
@@ -239,6 +241,12 @@ const Checkout = () => {
       return false;
     } catch (error) {
       console.error("Error checking ongoing order:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to check ongoing orders",
+        life: 3000,
+      });
       return false;
     }
   };
@@ -397,66 +405,56 @@ const Checkout = () => {
   const handleAddToExistingOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      console.log("Existing Order ID:", existingOrderId); // Debug log
-
-      // Format cart items
-      const orderItems = cartItems.map((item) => ({
-        menu_id: item.menu_id.toString(),
-        quantity: item.quantity.toString(),
-        half_or_full: item.half_or_full || "full",
-        comment: item.notes || "",
-      }));
-
-      const requestBody = {
-        order_id: existingOrderId.toString(),
-        customer_id: userData?.customer_id.toString(),
-        customer_type: userData?.customer_type,
-        restaurant_id: restaurantId.toString(),
-        table_number: userData?.tableNumber || "1",
-        order_items: orderItems,
-      };
-
-      console.log("Request Body:", requestBody); // Debug log
-
+      // Get order list to find the order number
       const response = await fetch(
-        "https://menumitra.com/user_api/add_to_existing_order",
+        "https://menumitra.com/user_api/get_order_list",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_status: "placed",
+            customer_id: userData?.customer_id,
+            customer_type: userData?.customer_type,
+          }),
         }
       );
 
       const data = await response.json();
-      console.log("Add to Existing Order Response:", data); // Debug log
-
-      if (data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Items added to existing order successfully",
-          life: 3000,
-        });
-
-        clearCart();
-        localStorage.removeItem("cartItems");
-
-        navigate("/MyOrder", { state: { activeTab: "placed" } });
-      } else {
-        throw new Error(data.msg || "Failed to add items to order");
+      if (data.st === 1 && data.lists?.placed) {
+        // Get the latest placed order
+        const dates = Object.keys(data.lists.placed);
+        if (dates.length > 0) {
+          const placedOrders = data.lists.placed[dates[0]];
+          const targetOrder = placedOrders.find(order => order.order_id === existingOrderId);
+          
+          if (targetOrder) {
+            // Navigate using the found order_number
+            navigate(`/TrackOrder/${targetOrder.order_number}`, {
+              state: { 
+                orderStatus: "placed",
+                order_id: existingOrderId
+              }
+            });
+            
+            clearCart();
+            localStorage.removeItem("cartItems");
+            setShowExistingOrderModal(false);
+            return;
+          }
+        }
       }
+      throw new Error("Could not find order details");
     } catch (error) {
-      console.error("Error adding items to existing order:", error);
+      console.error("Error navigating:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.message || "Failed to add items to order",
+        detail: "Failed to navigate to order details",
         life: 3000,
       });
-    } finally {
-      setShowExistingOrderModal(false);
     }
   };
 
@@ -510,8 +508,15 @@ const Checkout = () => {
     const orderItems = cartItems.map((item) => ({
       menu_id: item.menu_id,
       quantity: item.quantity,
+      price: item.price,
+      menu_name: item.menu_name,
+      image: item.image,
+      category_name: item.category_name,
+      spicy_index: item.spicy_index,
+      rating: item.rating,
+      offer: item.offer
     }));
-
+  
     const currentTime = new Date();
     const formattedTime = currentTime.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -520,7 +525,7 @@ const Checkout = () => {
       hour12: true,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
-
+  
     const orderData = {
       customer_id: currentCustomerId,
       customer_type: currentCustomerType,
@@ -531,7 +536,7 @@ const Checkout = () => {
       table_number: checkoutData.tableNumber || "1",
       order_time: formattedTime,
     };
-
+  
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/create_order",
@@ -543,10 +548,25 @@ const Checkout = () => {
           body: JSON.stringify(orderData),
         }
       );
-
+  
       const responseData = await response.json();
-
+  
       if (response.ok && responseData.st === 1) {
+        // Store order items in localStorage
+        const orderItemsForStorage = {
+          items: orderItems,
+          created_at: new Date().toISOString(),
+          order_id: responseData.order_id,
+          order_number: responseData.order_number,
+          total_total: checkoutData.total,
+          grand_total: checkoutData.grandTotal
+        };
+  
+        localStorage.setItem(
+          `orderItems_${responseData.order_number}`,
+          JSON.stringify(orderItemsForStorage)
+        );
+  
         setShowPopup(true);
         clearCart();
       } else if (responseData.st === 2) {

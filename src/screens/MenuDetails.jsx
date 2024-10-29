@@ -21,16 +21,16 @@ const MenuDetails = () => {
   const [showQuantityError, setShowQuantityError] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
-  const { cartItems,  } = useCart();
+  const { cartItems } = useCart();
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
-  
+
   // At the top with other state declarations
   const [customerId, setCustomerId] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -38,13 +38,13 @@ const MenuDetails = () => {
   });
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
- 
+
   const location = useLocation();
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [notes, setNotes] = useState("");
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -53,8 +53,6 @@ const MenuDetails = () => {
   });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
-
-
 
   useEffect(() => {
     // Get user data
@@ -68,12 +66,13 @@ const MenuDetails = () => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const urlParams = new URLSearchParams(window.location.search);
     const urlRestaurantId = urlParams.get("restaurantId");
-    const finalRestaurantId = storedRestaurantId || urlRestaurantId || restaurantId;
-    
+    const finalRestaurantId =
+      storedRestaurantId || urlRestaurantId || restaurantId;
+
     setCurrentRestaurantId(finalRestaurantId);
     setSourceRestaurantId(finalRestaurantId);
   }, [restaurantId]);
- 
+
   const toTitleCase = (str) => {
     if (!str) return "";
     return str.replace(
@@ -82,7 +81,8 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(false);
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
+    useState(false);
 
   const orderedItems = location.state?.orderedItems || [];
 
@@ -101,7 +101,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId, // Use currentRestaurantId
+            restaurant_id: currentRestaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             customer_id: customerId || null,
@@ -111,7 +111,7 @@ const MenuDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         if (data.st === 1 && data.details) {
           const {
             menu_name,
@@ -123,7 +123,7 @@ const MenuDetails = () => {
             images,
             offer,
             rating,
-            is_favorite,
+            is_favourite, // Note: API returns is_favourite
             restaurant_id: fetchedRestaurantId,
           } = data.details;
 
@@ -150,17 +150,20 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
-            is_favorite,
+            is_favourite, // Update this to match API response
             restaurant_id: fetchedRestaurantId,
           });
 
-          setIsFavorite(data.details.is_favourite);
+          // Update the favorite state
+          setIsFavorite(!!is_favourite); // Convert to boolean
+
           setTotalAmount(discountedPrice * quantity);
-          
-          // Compare with the context's restaurant ID
+
           const contextRestaurantId = restaurantId;
-          const isDifferent = fetchedRestaurantId && contextRestaurantId && 
-                            fetchedRestaurantId !== contextRestaurantId;
+          const isDifferent =
+            fetchedRestaurantId &&
+            contextRestaurantId &&
+            fetchedRestaurantId !== contextRestaurantId;
           setIsFromDifferentRestaurant(isDifferent);
         }
       }
@@ -172,7 +175,8 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (currentRestaurantId) { // Remove customerId dependency
+    if (currentRestaurantId) {
+      // Remove customerId dependency
       fetchProductDetails();
     }
   }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
@@ -189,7 +193,7 @@ const MenuDetails = () => {
           },
           body: JSON.stringify({
             restaurant_id: currentRestaurantId, // Use currentRestaurantId
-            menu_id: menuId
+            menu_id: menuId,
           }),
         }
       );
@@ -225,11 +229,11 @@ const MenuDetails = () => {
     const currentCustomerId = userData?.customer_id;
 
     if (!currentCustomerId) {
-      navigate("/Signinscreen", { 
-        state: { 
+      navigate("/Signinscreen", {
+        state: {
           from: location.pathname,
-          menuId: menuId 
-        } 
+          menuId: menuId,
+        },
       });
       return;
     }
@@ -248,8 +252,8 @@ const MenuDetails = () => {
       return;
     }
 
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       toast.current.show({
         severity: "error",
@@ -261,15 +265,18 @@ const MenuDetails = () => {
     }
 
     try {
-      await addToCart({ 
-        ...productDetails, 
-        quantity, 
-        notes, 
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
-      
+      await addToCart(
+        {
+          ...productDetails,
+          quantity,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
+
       toast.current.show({
         severity: "success",
         summary: "Added to Cart",
@@ -302,7 +309,11 @@ const MenuDetails = () => {
     }
 
     try {
-      await removeFromCart(productDetails.menu_id, currentCustomerId, currentRestaurantId);
+      await removeFromCart(
+        productDetails.menu_id,
+        currentCustomerId,
+        currentRestaurantId
+      );
       toast.current.show({
         severity: "info",
         summary: "Removed from Cart",
@@ -319,12 +330,6 @@ const MenuDetails = () => {
       });
     }
   };
-
-
-
-  
-
-  
 
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
@@ -344,7 +349,8 @@ const MenuDetails = () => {
       ? "https://menumitra.com/user_api/remove_favourite_menu"
       : "https://menumitra.com/user_api/save_favourite_menu";
 
-    const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
+    const restaurantIdToUse =
+      currentRestaurantId || productDetails?.restaurant_id;
 
     try {
       const response = await fetch(apiUrl, {
@@ -413,7 +419,7 @@ const MenuDetails = () => {
 
   const handleModalClick = (e) => {
     // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -447,9 +453,6 @@ const MenuDetails = () => {
     );
   }
 
-
-
-
   return (
     <>
       <div className="page-wrapper">
@@ -470,7 +473,7 @@ const MenuDetails = () => {
           </div>
           <div className="container py-0">
             <div className="swiper product-detail-swiper">
-              <div className="product-detail-image img">
+              <div className="product-detail-image border border-gray-300 img">
                 <img
                   className="product-detail-image rounded-3"
                   src={productDetails.images || images}
@@ -484,12 +487,12 @@ const MenuDetails = () => {
                     e.target.src = images;
                   }}
                 />
-                
+
                 {/* Updated veg/non-veg indicator with proper check */}
                 <div
                   className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                    isVegMenu(productDetails?.menu_veg_nonveg) 
-                      ? "border-success" 
+                    isVegMenu(productDetails?.menu_veg_nonveg)
+                      ? "border-success"
                       : "border-danger"
                   }`}
                   style={{
@@ -520,7 +523,7 @@ const MenuDetails = () => {
                     right: "3px",
                     height: "20px",
                     width: "20px",
-                    cursor: "pointer" // Add cursor pointer
+                    cursor: "pointer", // Add cursor pointer
                   }}
                   onClick={handleLikeClick} // Add click handler here
                 >
@@ -608,7 +611,7 @@ const MenuDetails = () => {
                       </div>
                     )}
                   </div>
-                  <div className="col-4 text-end px-0 ">
+                  <div className="col-4 text-end px-0 pt-1 ">
                     <i className="ri-star-half-line font_size_10 ratingStar"></i>
                     <span className="font_size_10  fw-normal gray-text">
                       {productDetails.rating}
@@ -618,43 +621,40 @@ const MenuDetails = () => {
               </div>
               <div className="container ps-2 pt-1">
                 <div className="row">
-                  <div className="col-5 pt-1 px-0 ">
+                  <div className="col-12 pt-1 px-0">
                     {!isFromDifferentRestaurant && (
                       <div className="dz-stepper style-3">
-                        <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
-                          <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "30px",
-                                width: "30px",
-                              }}
-                            >
-                              <i
-                                className="ri-subtract-line fs-2"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleQuantityChange(-1)}
-                              ></i>
-                            </div>
-                          </span>
-                          <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
+                        <div className="d-flex align-items-center justify-content-start gap-2">
+                          {" "}
+                          {/* Changed to d-flex with gap */}
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{
+                              height: "30px",
+                              width: "30px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleQuantityChange(-1)}
+                          >
+                            <i className="ri-subtract-line fs-2"></i>
+                          </div>
+                          <span
+                            className="stepper px-3 rounded-1 bg-light text-center"
+                            style={{ minWidth: "40px" }}
+                          >
                             {quantity}
                           </span>
-                          <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "30px",
-                                width: "30px",
-                              }}
-                            >
-                              <i
-                                className="ri-add-line fs-2"
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleQuantityChange(1)}
-                              ></i>
-                            </div>
-                          </span>
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{
+                              height: "30px",
+                              width: "30px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleQuantityChange(1)}
+                          >
+                            <i className="ri-add-line fs-2"></i>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -713,15 +713,19 @@ const MenuDetails = () => {
                   {!customerId ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={() => navigate("/Signinscreen", { 
-                        state: { 
-                          from: location.pathname,
-                          menuId: menuId 
-                        } 
-                      })}
+                      onClick={() =>
+                        navigate("/Signinscreen", {
+                          state: {
+                            from: location.pathname,
+                            menuId: menuId,
+                          },
+                        })
+                      }
                     >
                       <i className="ri-login-box-line pe-1 text-white"></i>
-                      <div className="text-nowrap text-white">Login to Order</div>
+                      <div className="text-nowrap text-white">
+                        Login to Order
+                      </div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button

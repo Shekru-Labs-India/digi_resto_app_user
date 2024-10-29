@@ -35,8 +35,8 @@ const Search = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const { addToCart} = useCart();
-  const [cartItems, setCartItems] = useState([]);
+  const { addToCart, isMenuItemInCart } =
+    useCart();
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -45,18 +45,9 @@ const Search = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const loadCartItems = async () => {
-      try {
-        const items = await fetchCartItems();
-        setCartItems(items);
-      } catch (error) {
-        console.error("Error loading cart items:", error);
-      }
-    };
-    
-    loadCartItems();
-  }, []);
+  const [userData, setUserData] = useState(() =>
+    JSON.parse(localStorage.getItem("userData"))
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -157,12 +148,10 @@ const Search = () => {
     fetchSearchedMenu();
   }, [debouncedSearchTerm, restaurantId]);
 
-  
-
   const fetchCartItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) return [];
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
@@ -172,49 +161,50 @@ const Search = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            cart_id: localStorage.getItem("cartId"),
+            cart_id: localStorage.getItem("cartId") || "",
             customer_id: userData.customer_id,
-            
             restaurant_id: restaurantId,
           }),
         }
       );
-  
+
       const data = await response.json();
-      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
+      if (response.ok && data.st === 1) {
+        if (data.cart_id) {
+          localStorage.setItem("cartId", data.cart_id);
+        }
+        return data.order_items || [];
+      }
+      return [];
     } catch (error) {
       console.error("Error fetching cart items:", error);
       return [];
     }
   };
 
-  const isMenuItemInCart = (menuId) => {
-    return cartItems.some(item => item.menu_id === menuId);
+  const handleCardClick = (menuId) => {
+    navigate(`/ProductDetails/${menuId}`); // Navigate to product details page
   };
 
-  const handleAddToCartClick = async (menu) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    // Get restaurant ID from userData
-    const storedRestaurantId = userData?.restaurantId;
-    
-    if (!userData?.customer_id) {
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      if (restaurantId) {
+        fetchCartItems();
+      }
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, [fetchCartItems, restaurantId]);
+
+  const handleAddToCartClick = (menu) => {
+    if (!customerId || !restaurantId) {
+      console.error("Customer ID or Restaurant ID is missing.");
       navigate("/Signinscreen");
       return;
     }
 
-    if (!storedRestaurantId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Restaurant information is missing",
-        life: 3000,
-      });
-      return;
-    }
-
-    // Check if item is already in cart
-    const cartItems = await fetchCartItems();
-    if (cartItems.some(item => item.menu_id === menu.menu_id)) {
+    if (isMenuItemInCart(menu.menu_id)) {
       toast.current.show({
         severity: "info",
         summary: "Item Already in Cart",
@@ -223,9 +213,18 @@ const Search = () => {
       });
       return;
     }
-
+  
+   
+  
+    setSelectedMenu(menu);
+    fetchHalfFullPrices(menu.menu_id);
+    setShowModal(true);
+  };
+  
+  
+  const fetchHalfFullPrices = async (menuId) => {
+    setIsPriceFetching(true);
     try {
-      setIsPriceFetching(true);
       const response = await fetch(
         "https://menumitra.com/user_api/get_full_half_price_of_menu",
         {
@@ -234,126 +233,93 @@ const Search = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: storedRestaurantId,
-            menu_id: menu.menu_id,
+            restaurant_id: restaurantId,
+            menu_id: menuId,
           }),
         }
       );
-
+  
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
-        setSelectedMenu({
-          ...menu,
-          restaurant_id: parseInt(storedRestaurantId, 10)
-        });
-        setPortionSize("full");
-        setNotes("");
-        setShowModal(true);
       } else {
-        throw new Error(data.msg || "Failed to fetch price information");
+        console.error("API Error:", data.msg);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: data.msg || "Failed to fetch price information",
+          life: 3000,
+        });
       }
     } catch (error) {
       console.error("Error fetching half/full prices:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.message || "Failed to fetch price information",
+        detail: "Failed to fetch price information",
         life: 3000,
       });
     } finally {
       setIsPriceFetching(false);
     }
-};
-
-const handleConfirmAddToCart = async () => {
+  };
+  
+  
+  const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const storedRestaurantId = userData?.restaurantId;
-
-    if (!userData?.customer_id) {
-        navigate("/Signinscreen");
-        return;
-    }
-
+  
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-    
+  
     if (!selectedPrice) {
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Price information is not available.",
-            life: 2000,
-        });
-        return;
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Price information is not available.",
+        life: 2000,
+      });
+      return;
     }
-
-    if (!storedRestaurantId) {
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: "Restaurant information is missing.",
-            life: 2000,
-        });
-        return;
-    }
-
+  
     try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/add_to_cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customer_id: userData.customer_id,
-              customer_type: userData.customer_type,
-              restaurant_id: storedRestaurantId,
-              menu_id: selectedMenu.menu_id,
-              quantity: 1,
-              half_or_full: portionSize,
-              notes: notes,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (data.st === 1) {
-            // Update local cart items state
-            const updatedCartItems = await fetchCartItems();
-            setCartItems(updatedCartItems);
-            localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-            
-            // Dispatch cart update event
-            window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-
-            toast.current.show({
-                severity: "success",
-                summary: "Added to Cart",
-                detail: `${selectedMenu.menu_name} added successfully`,
-                life: 3000,
-            });
-
-            setShowModal(false);
-            setNotes("");
-            setPortionSize("full");
-            setSelectedMenu(null);
-        } else {
-            throw new Error(data.msg || "Failed to add item to cart");
-        }
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+        },
+        restaurantId
+      );
+  
+      toast.current.show({
+        severity: "success",
+        summary: "Added to Cart",
+        detail: selectedMenu.menu_name,
+        life: 3000,
+      });
+  
+      setShowModal(false);
+      setNotes("");
+      setPortionSize("full");
+      setSelectedMenu(null);
+  
+      // Update cart restaurant ID
+      
+  
+      // Dispatch cart update event
+      window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
-        console.error("Error adding item to cart:", error);
-        toast.current.show({
-            severity: "error",
-            summary: "Error",
-            detail: error.message || "Failed to add item to cart. Please try again.",
-            life: 3000,
-        });
+      console.error("Error adding item to cart:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add item to cart. Please try again.",
+        life: 3000,
+      });
     }
-};
+  };
 
   const handleModalClick = (e) => {
     if (e.target.classList.contains("modal")) {
@@ -362,21 +328,21 @@ const handleConfirmAddToCart = async () => {
   };
 
   const handleLikeClick = async (menuId) => {
-    if (!customerId || !restaurantId) {
-      console.error("Missing required data");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
       navigate("/Signinscreen");
       return;
     }
-
+  
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
-    const isFavorite = menuItem.is_favourite;
+  if (!menuItem) return;
 
-    const apiUrl = isFavorite
-      ? "https://menumitra.com/user_api/remove_favourite_menu"
-      : "https://menumitra.com/user_api/save_favourite_menu";
+  const isFavorite = menuItem.is_favourite;
 
-    try {
-      const response = await fetch(apiUrl, {
+  try {
+    const response = await fetch(
+      `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -384,39 +350,62 @@ const handleConfirmAddToCart = async () => {
         body: JSON.stringify({
           restaurant_id: restaurantId,
           menu_id: menuId,
-          customer_id: customerId,
+          customer_id: userData.customer_id,
+          customer_type: userData.customer_type
         }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1) {
-          const updatedMenu = searchedMenu.map((item) =>
-            item.menu_id === menuId
-              ? { ...item, is_favourite: !isFavorite }
-              : item
-          );
-          setSearchedMenu(updatedMenu);
-          toast.current.show({
-            severity: isFavorite ? "info" : "success",
-            summary: isFavorite
-              ? "Removed from Favourites"
-              : "Added to Favourites",
-            detail: `${menuItem.menu_name} has been ${
-              isFavorite ? "removed from" : "added to"
-            } your favourites.`,
-            life: 2000,
-          });
-        } else {
-          console.error("Failed to update favourite status:", data.msg);
-        }
-      } else {
-        console.error("Network response was not ok");
       }
-    } catch (error) {
-      console.error("Error updating favorite status:", error);
+    );
+
+    const data = await response.json();
+    if (response.ok && data.st === 1) {
+      // Update local state using searchedMenu instead of menuItems
+      setSearchedMenu((prevMenu) =>
+        prevMenu.map((item) =>
+          item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+        )
+      );
+
+      // Dispatch global event
+      window.dispatchEvent(
+        new CustomEvent("favoriteStatusChanged", {
+          detail: { menuId, isFavorite: !isFavorite },
+        })
+      );
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: isFavorite ? "Removed from favorites" : "Added to favorites",
+        life: 3000,
+      });
     }
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+    toast.current.show({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to update favorite status",
+      life: 3000,
+    });
+  }
+};
+
+// Add this useEffect to handle favorite updates from other components
+useEffect(() => {
+  const handleFavoriteUpdate = (event) => {
+    const { menuId, isFavorite } = event.detail;
+    setSearchedMenu((prevMenu) =>
+      prevMenu.map((item) =>
+        item.menu_id === menuId ? { ...item, is_favourite: isFavorite } : item
+      )
+    );
   };
+
+  window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+  return () => {
+    window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+  };
+}, []);
 
   const handleRemoveItem = (menuId) => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
@@ -478,11 +467,20 @@ const handleConfirmAddToCart = async () => {
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
-
   const isVegMenu = (menu_veg_nonveg) => {
     return menu_veg_nonveg.toLowerCase() === "veg";
   };
+
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      if (restaurantId) {
+        fetchCartItems();
+      }
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, [fetchCartItems, restaurantId]);
 
   return (
     <div className="page-wrapper">
@@ -550,195 +548,184 @@ const handleConfirmAddToCart = async () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div key={menu.menu_id} className="col-12">
-              <div className="card mb-3 rounded-3">
-                <div className="card-body py-0">
+        <div key={menu.menu_id} className="col-12">
+          <div
+            className="card mb-3 rounded-3"
+            onClick={() => handleMenuClick(menu.menu_id)} // Handle card click
+            style={{ cursor: "pointer" }} // Ensure cursor is set to pointer
+          >
+            <div className="card-body py-0">
+              <div className="row">
+                <div className="col-3 px-0 position-relative">
+                  <img
+                    src={menu.image || images}
+                    alt={menu.menu_name}
+                    className="img-fluid rounded-start-3 rounded-end-0"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      aspectRatio: "1/1",
+                    }}
+                    onError={(e) => {
+                      e.target.src = images;
+                    }}
+                  />
+                  {/* Veg/Non-veg indicator */}
+                  <div
+                    className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      isVegMenu(menu?.menu_veg_nonveg)
+                        ? "border-success"
+                        : "border-danger"
+                    }`}
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      left: "3px",
+                      height: "20px",
+                      width: "20px",
+                      borderWidth: "2px",
+                      borderRadius: "3px",
+                    }}
+                  >
+                    <i
+                      className={`${
+                        isVegMenu(menu?.menu_veg_nonveg)
+                          ? "ri-checkbox-blank-circle-fill text-success"
+                          : "ri-checkbox-blank-circle-fill text-danger"
+                      } font_size_12`}
+                    ></i>
+                  </div>
+
+                  {/* Heart icon */}
+                  <div
+                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      right: "3px",
+                      height: "20px",
+                      width: "20px",
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation(); // Prevent card click
+                      handleLikeClick(menu.menu_id);
+                    }}
+                  >
+                    <i
+                      className={`${
+                        menu.is_favourite
+                          ? "ri-heart-3-fill text-danger"
+                          : "ri-heart-3-line"
+                      } fs-6`}
+                    ></i>
+                  </div>
+
+                  {/* Offer badge */}
+                  {menu.offer > 0 && (
+                    <div
+                      className="gradient_bg d-flex justify-content-center align-items-center"
+                      style={{
+                        position: "absolute",
+                        top: "0px",
+                        left: "0px",
+                        height: "17px",
+                        width: "70px",
+                        borderRadius: "7px 0px 7px 0px",
+                      }}
+                    >
+                      <span className="text-white">
+                        <i className="ri-discount-percent-line me-1 font_size_14"></i>
+                        <span className="font_size_10">{menu.offer}% Off</span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="col-8 pb-0 pe-0 ps-2">
                   <div className="row">
-                    <div className="col-3 px-0 position-relative">
-                      <img
-                        src={menu.image || images}
-                        alt={menu.menu_name}
-                        className="img-fluid rounded-start-3 rounded-end-0"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          aspectRatio: "1/1",
-                        }}
-                        onError={(e) => {
-                          e.target.src = images;
-                        }}
-                      />
-                      {/* Veg/Non-veg indicator */}
-                      <div
-                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          isVegMenu(menu?.menu_veg_nonveg)
-                            ? "border-success"
-                            : "border-danger"
-                        }`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          left: "3px",
-                          height: "20px",
-                          width: "20px",
-                          borderWidth: "2px",
-                          borderRadius: "3px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            isVegMenu(menu?.menu_veg_nonveg)
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
-                          } font_size_12`}
-                        ></i>
-                      </div>
-
-                      {/* Heart icon */}
-                      <div
-                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "3px",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
-                          } fs-6`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
-                          }}
-                        ></i>
-                      </div>
-
-                      {/* Offer badge */}
-                      {menu.offer > 0 && (
-                        <div
-                          className="gradient_bg d-flex justify-content-center align-items-center"
-                          style={{
-                            position: "absolute",
-                            top: "0px",
-                            left: "0px",
-                            height: "17px",
-                            width: "70px",
-                            borderRadius: "7px 0px 7px 0px",
-                          }}
-                        >
-                          <span className="text-white">
-                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                            <span className="font_size_10">
-                              {menu.offer}% Off
-                            </span>
+                    {/* Menu Name and Rating on First Line */}
+                    <div className="col-12 mt-1">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="font_size_14 fw-medium">
+                          {menu.menu_name}
+                        </div>
+                        <div className="text-end">
+                          <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                          <span className="font_size_10 fw-normal gray-text">
+                            {parseFloat(menu.rating).toFixed(1)}
                           </span>
                         </div>
-                      )}
+                      </div>
                     </div>
 
-                    <div className="col-8 pb-0 pe-0 ps-2">
-                      <div className="row">
-                        {/* Menu Name and Rating on First Line */}
-                        <div className="col-12 mt-1">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <div className="font_size_14 fw-medium">
-                              {menu.menu_name}
-                            </div>
-                            <div className="text-end">
-                              <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                              <span className="font_size_10 fw-normal gray-text">
-                                {parseFloat(menu.rating).toFixed(1)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Category and Spicy Index on Second Line */}
-                        <div className="row pe-0">
-                          <div className="col-6 mt-1">
-                            <span className="text-success font_size_12">
-                              <i className="ri-restaurant-line mt-0 me-2"></i>
-                              {menu.category_name}
-                              {/* Spicy Index */}
-                            </span>
-                          </div>
-                          <div className="col-6 pe-0 text-end">
-                            {menu.spicy_index && (
-                              <span className="ms-2 spicy-index">
-                                {Array.from({ length: 5 }).map((_, index) =>
-                                  index < menu.spicy_index ? (
-                                    <i
-                                      key={index}
-                                      className="ri-fire-fill text-danger font_size_14 firefill offer-code"
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      key={index}
-                                      className="ri-fire-line gray-text font_size_14"
-                                    ></i>
-                                  )
-                                )}
-                              </span>
+                    {/* Category and Spicy Index on Second Line */}
+                    <div className="row pe-0">
+                      <div className="col-6 mt-1">
+                        <span className="text-success font_size_12">
+                          <i className="ri-restaurant-line mt-0 me-2"></i>
+                          {menu.category_name}
+                          {/* Spicy Index */}
+                        </span>
+                      </div>
+                      <div className="col-6 pe-0 text-end">
+                        {menu.spicy_index && (
+                          <span className="ms-2 spicy-index">
+                            {Array.from({ length: 5 }).map((_, index) =>
+                              index < menu.spicy_index ? (
+                                <i
+                                  key={index}
+                                  className="ri-fire-fill text-danger font_size_14 firefill offer-code"
+                                ></i>
+                              ) : (
+                                <i
+                                  key={index}
+                                  className="ri-fire-line gray-text font_size_14"
+                                ></i>
+                              )
                             )}
-                          </div>
-                        </div>
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                        {/* Price and Cart Section */}
-                        <div className="row mt-2 pe-0">
-                          <div className="col-10 px-0">
-                            <span className="mb-0 mt-1 text-start fw-medium">
-                              <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
-                            </span>
-                          </div>
-                          <div className="col-2 px-0 d-flex justify-content-end">
-                            {userData ? (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                              >
-                                <i className="ri-shopping-cart-2-line fs-6"></i>
-                              </div>
-                            )}
-                          </div>
+                    {/* Price and Cart Section */}
+                    <div className="row mt-2 pe-0">
+                      <div className="col-10 px-0">
+                        <span className="mb-0 mt-1 text-start fw-medium">
+                          <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
+                            ₹{menu.price}
+                          </span>
+                          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                            ₹{menu.oldPrice || menu.price}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="col-2 px-0 d-flex justify-content-end">
+                        <div
+                          className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                          style={{
+                            border: "1px solid gray",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "25px",
+                            height: "25px",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation(); // Prevent card click
+                            handleAddToCartClick(menu);
+                          }}
+                        >
+                          <i
+                            className={`ri-shopping-cart-${
+                              isMenuItemInCart(menu.menu_id) ? "fill" : "line"
+                            } fs-6`}
+                          ></i>
                         </div>
                       </div>
                     </div>
@@ -746,7 +733,9 @@ const handleConfirmAddToCart = async () => {
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+      ))}
         </div>
       </main>
 
