@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
@@ -142,12 +142,14 @@ const TrackOrder = () => {
     };
 
     setPendingItems((prev) => [...prev, newMenuItem]);
-    
+
     // Add the item to removed items set
-    setRemovedItems(prev => new Set([...prev, selectedMenu.menu_id]));
-    
+    setRemovedItems((prev) => new Set([...prev, selectedMenu.menu_id]));
+
     // Update search results to remove the added item
-    setSearchedMenu(prev => prev.filter(item => item.menu_id !== selectedMenu.menu_id));
+    setSearchedMenu((prev) =>
+      prev.filter((item) => item.menu_id !== selectedMenu.menu_id)
+    );
 
     setShowModal(false);
     setSelectedMenu(null);
@@ -157,7 +159,10 @@ const TrackOrder = () => {
   };
 
   const isItemAdded = (menuId) => {
-    return removedItems.has(menuId) || pendingItems.some(item => item.menu_id === menuId);
+    return (
+      removedItems.has(menuId) ||
+      pendingItems.some((item) => item.menu_id === menuId)
+    );
   };
 
   useEffect(() => {
@@ -188,14 +193,19 @@ const TrackOrder = () => {
       }
       return { ...prev, [menuId]: newQuantity };
     });
-  
+
     // Also update quantity in pendingItems if the item exists there
-    setPendingItems(prev => prev.map(item => {
-      if (item.menu_id === menuId) {
-        return { ...item, quantity: Math.min((quantities[menuId] || 1) + 1, 20) };
-      }
-      return item;
-    }));
+    setPendingItems((prev) =>
+      prev.map((item) => {
+        if (item.menu_id === menuId) {
+          return {
+            ...item,
+            quantity: Math.min((quantities[menuId] || 1) + 1, 20),
+          };
+        }
+        return item;
+      })
+    );
   };
 
   const handleDecrement = (menuId) => {
@@ -211,14 +221,19 @@ const TrackOrder = () => {
       }
       return { ...prev, [menuId]: newQuantity };
     });
-  
+
     // Also update quantity in pendingItems if the item exists there
-    setPendingItems(prev => prev.map(item => {
-      if (item.menu_id === menuId) {
-        return { ...item, quantity: Math.max((quantities[menuId] || 1) - 1, 1) };
-      }
-      return item;
-    }));
+    setPendingItems((prev) =>
+      prev.map((item) => {
+        if (item.menu_id === menuId) {
+          return {
+            ...item,
+            quantity: Math.max((quantities[menuId] || 1) - 1, 1),
+          };
+        }
+        return item;
+      })
+    );
   };
 
   const calculatePrice = (menu) => {
@@ -430,17 +445,17 @@ const TrackOrder = () => {
   };
 
   const handleRemovePendingItem = (menuId) => {
-    setPendingItems(prev => prev.filter(item => item.menu_id !== menuId));
-    setRemovedItems(prev => {
+    setPendingItems((prev) => prev.filter((item) => item.menu_id !== menuId));
+    setRemovedItems((prev) => {
       const newSet = new Set(prev);
       newSet.delete(menuId);
       return newSet;
     });
-    
+
     // If the item exists in the original search results, add it back
-    const removedItem = searchedMenu.find(item => item.menu_id === menuId);
+    const removedItem = searchedMenu.find((item) => item.menu_id === menuId);
     if (removedItem) {
-      setSearchedMenu(prev => [...prev, removedItem]);
+      setSearchedMenu((prev) => [...prev, removedItem]);
     }
   };
 
@@ -559,8 +574,10 @@ const TrackOrder = () => {
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
 
       if (!currentCustomerId) {
         window.showToast("error", "Please login to add items to order");
@@ -627,14 +644,20 @@ const TrackOrder = () => {
             fetchOrderDetails(order_number);
           }
 
-          window.showToast("success", `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`);
+          window.showToast(
+            "success",
+            `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`
+          );
         } else {
           throw new Error(data.msg || "Failed to add item to order");
         }
       }
     } catch (error) {
       console.error("Error adding item to order:", error);
-      window.showToast("error", "Failed to add item to order. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to add item to order. Please try again."
+      );
 
       // Rollback the pending items change on error
       setPendingItems((prevItems) =>
@@ -697,21 +720,21 @@ const TrackOrder = () => {
       navigate("/Signinscreen");
     }, 1500);
   };
-  
+
   const handleLikeClick = async (menu, e) => {
     e.preventDefault();
     e.stopPropagation();
-  
+
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
-  
+
     const currentRestaurantId =
       menu.restaurant_id || localStorage.getItem("restaurantId");
     const isFavorite = favoriteMenus[menu.menu_id] || false;
-  
+
     try {
       const response = await fetch(
         `https://menumitra.com/user_api/${
@@ -730,17 +753,17 @@ const TrackOrder = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         const newFavoriteStatus = !isFavorite;
-  
+
         // Update local favorite status
         setFavoriteMenus((prev) => ({
           ...prev,
           [menu.menu_id]: newFavoriteStatus,
         }));
-  
+
         // Update order details
         setOrderDetails((prevDetails) => {
           if (!prevDetails?.order_items) return prevDetails;
@@ -753,7 +776,7 @@ const TrackOrder = () => {
             ),
           };
         });
-  
+
         // Dispatch global event with consistent name
         window.dispatchEvent(
           new CustomEvent("favoriteUpdated", {
@@ -764,9 +787,9 @@ const TrackOrder = () => {
             },
           })
         );
-  
+
         window.showToast(
-          "success", 
+          "success",
           isFavorite ? "Removed from favorites" : "Added to favorites"
         );
       }
@@ -793,33 +816,78 @@ const TrackOrder = () => {
           }),
         }
       );
-  
+
       if (response.ok) {
         const data = await response.json();
-  
+
         if (data.st === 1 && data.lists) {
           setOrderDetails(data.lists);
-          const orderStatus = data.lists.order_details.order_status.toLowerCase();
-          setIsCompleted(orderStatus === "completed");
-          
-          // Add this line to handle canceled status
-          if (orderStatus === "cancle" || orderStatus === "canceled") {
-            navigate("/MyOrder", { state: { activeTab: "canceled" } });
+          // Directly use the order status from API response
+          const status = data.lists.order_details.order_status.toLowerCase();
+
+          // Map the status correctly
+          if (status === "cancle" || status === "canceled") {
+            setOrderStatus("canceled");
+          } else {
+            setOrderStatus(status); // For other statuses
           }
+
+          setIsCompleted(status === "completed");
         } else {
           console.error("Invalid data format:", data);
-          window.showToast("error", "Failed to fetch order details. Please try again.");
+          window.showToast(
+            "error",
+            "Failed to fetch order details. Please try again."
+          );
         }
       } else {
         throw new Error("Network response was not ok.");
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
-      window.showToast("error", "Failed to fetch order details. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to fetch order details. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  // Add this helper function to format the status display
+  const getDisplayStatus = (status) => {
+    switch (status?.toLowerCase()) {
+      case "canceled":
+      case "cancle":
+        return "Cancelled Order";
+      case "ongoing":
+        return "Ongoing Order";
+      case "placed":
+        return "Placed Order";
+      case "completed":
+        return "Completed Order";
+      default:
+        return status;
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case "canceled":
+      case "cancle":
+        return "ri-close-circle-line text-danger";
+      case "ongoing":
+        return "ri-timer-flash-line text-warning";
+      case "placed":
+        return "ri-file-list-3-line text-primary";
+      case "completed":
+        return "ri-checkbox-circle-line text-success";
+      default:
+        return "ri-question-line";
+    }
+  };
+
+  // Update the status display JSX
 
   useEffect(() => {
     // Simulate fetching order details
@@ -851,7 +919,7 @@ const TrackOrder = () => {
 
     if (orderStatus !== "placed" || !isWithinPlacedWindow) {
       window.showToast(
-        "error", 
+        "error",
         "Items can only be removed within 90 seconds of placing the order"
       );
       return;
@@ -1001,7 +1069,10 @@ const TrackOrder = () => {
       }
     } catch (error) {
       console.error("Error adding to ongoing order:", error);
-      window.showToast("error", error.message || "Failed to add items to order");
+      window.showToast(
+        "error",
+        error.message || "Failed to add items to order"
+      );
     }
   };
 
@@ -1216,33 +1287,18 @@ const TrackOrder = () => {
         <Header title="Order Details" />
 
         <div className="container mt-5 pb-0">
-          <div className="d-flex justify-content-between align-items-center ">
-            <span className="title pb-3">
-              {isCompleted ? (
-                <>
-                  <i className="ri-checkbox-circle-line pe-2"></i>
-                  <span>Completed Order</span>
-                </>
-              ) : order_details.order_status === "placed" ? (
-                <>
-                  <i className="ri-file-list-3-line pe-2"></i>
-                  <span>Placed Order</span>
-                </>
-              ) : order_details.order_status === "canceled" ? (
-                <>
-                  <i className="ri-close-circle-line pe-2"></i>
-                  <span>Canceled Order</span>
-                </>
-              ) : (
-                <>
-                  <i className="ri-timer-line pe-2"></i>
-                  <span>Ongoing Order</span>
-                </>
-              )}
-            </span>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+  {orderStatus && (
+    <div className="order-status d-flex align-items-center">
+      <span className="d-flex align-items-center">
+        <i className={`${getStatusIcon(orderStatus)} me-2 fs-5`}></i>
+        <span className="font_size_14">{getDisplayStatus(orderStatus)}</span>
+      </span>
+    </div>
+  )}
 
-            <span className="gray-text date_margin">{order_details.date}</span>
-          </div>
+  <span className="gray-text font_size_14">{order_details.date}</span>
+</div>
 
           <div className="card rounded-3">
             <div className="card-body p-2">
@@ -1372,7 +1428,7 @@ const TrackOrder = () => {
                     </div>
                   </div>
                   {searchedMenu
-                    .filter(menu => !removedItems.has(menu.menu_id))
+                    .filter((menu) => !removedItems.has(menu.menu_id))
                     .map((menu) => (
                       <div key={menu.menu_id} className="col-12">
                         <div
@@ -1948,13 +2004,13 @@ const TrackOrder = () => {
 
                 {/* Add Order More button outside the card, but only for placed and ongoing orders */}
                 {(orderStatus === "placed" || orderStatus === "ongoing") &&
-                  !isCompleted && (
+                  !isCompleted &&
+                  orderStatus !== "canceled" && ( // Add this condition
                     <div className="col-12 mt-3 mb-4">
                       <div className="d-flex justify-content-center">
                         <button
                           className="btn btn-outline-primary rounded-pill px-3"
                           onClick={() => {
-                            // Navigate to Menu page with the existing order ID
                             navigate("/Menu", {
                               state: {
                                 existingOrderId:

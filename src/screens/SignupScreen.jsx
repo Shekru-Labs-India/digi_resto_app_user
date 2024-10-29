@@ -63,18 +63,15 @@ const Signupscreen = () => {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        const errorMessage = data.msg || `HTTP error! Status: ${response.status}`;
-        throw new Error(errorMessage);
-      }
+      console.log("Signup Response:", data);
 
       if (data.st === 1) {
-        const customerId = generateCustomerId();
+        const generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
+        console.log("Generated OTP:", generatedOtp);
+        
+        localStorage.setItem("otp", generatedOtp);
         localStorage.setItem("mobile", mobile);
-        localStorage.setItem("otp", data.otp);
-        localStorage.setItem("customer_id", customerId);
-        localStorage.setItem("customer_type", "registered");
+        localStorage.setItem("customer_type", "regular");
         localStorage.setItem("isGuest", "false");
 
         window.showToast("success", "Account created successfully!");

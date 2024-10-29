@@ -136,10 +136,14 @@ const MyOrder = () => {
     <div className="page-wrapper">
       <Header
         title="My Order"
-        count={Object.values(orders).reduce(
-          (acc, curr) => acc + Object.values(curr).flat().length,
-          0
-        )}
+        count={
+          orders 
+            ? Object.values(orders).reduce(
+                (acc, curr) => acc + (curr ? Object.values(curr).flat().length : 0),
+                0
+              )
+            : 0
+        }
       />
 
       <main className="page-content space-top mb-5 pb-3">
@@ -279,6 +283,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       [date]: !prev[date],
     }));
   };
+  
 
   const handleOrderClick = (orderNumber) => {
     navigate(`/TrackOrder/${orderNumber}`);
@@ -488,185 +493,193 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   };
 
   const renderOrders = () => {
-    if (!orders) return <p>No orders available</p>;
+    if (!orders || Object.keys(orders).length === 0) {
+      return (
+        <div className="text-center py-4">
+          <p>No orders available</p>
+        </div>
+      );
+    }
 
     return (
       <>
         {Object.entries(orders).map(([date, dateOrders]) => (
-          <div className="tab mt-0" key={`${date}-${type}`}>
-            <input
-              type="checkbox"
-              id={`chck${date}-${type}`}
-              checked={checkedItems[`${date}-${type}`] || false}
-              onChange={() => toggleChecked(`${date}-${type}`)}
-            />
-            <label className="tab-label" htmlFor={`chck${date}-${type}`}>
-              <span>{date}</span>
-              <span className="d-flex align-items-center">
-                <span className="gray-text pe-2 small-number">
-                  {dateOrders.length}
+          dateOrders && dateOrders.length > 0 ? (
+            <div className="tab mt-0" key={`${date}-${type}`}>
+              <input
+                type="checkbox"
+                id={`chck${date}-${type}`}
+                checked={checkedItems[`${date}-${type}`] || false}
+                onChange={() => toggleChecked(`${date}-${type}`)}
+              />
+              <label className="tab-label" htmlFor={`chck${date}-${type}`}>
+                <span>{date}</span>
+                <span className="d-flex align-items-center">
+                  <span className="gray-text pe-2 small-number">
+                    {dateOrders.length}
+                  </span>
+                  <span className="icon-circle">
+                    <i
+                      className={`ri-arrow-down-s-line arrow-icon ${
+                        checkedItems[`${date}-${type}`] ? "rotated" : "rotated-1"
+                      }`}
+                    ></i>
+                  </span>
                 </span>
-                <span className="icon-circle">
-                  <i
-                    className={`ri-arrow-down-s-line arrow-icon ${
-                      checkedItems[`${date}-${type}`] ? "rotated" : "rotated-1"
-                    }`}
-                  ></i>
-                </span>
-              </span>
-            </label>
-            <div className="tab-content">
-              <>
-                {dateOrders
-                  .filter((order) => !completedTimers.has(order.order_id))
-                  .map((order) => (
-                    <div
-                      className="custom-card my-2 rounded-3 shadow-sm"
-                      key={order.order_number}
-                    >
+              </label>
+              <div className="tab-content">
+                <>
+                  {dateOrders
+                    .filter((order) => !completedTimers.has(order.order_id))
+                    .map((order) => (
                       <div
-                        className="card-body py-2"
-                        onClick={() => handleOrderClick(order.order_number)}
+                        className="custom-card my-2 rounded-3 shadow-sm"
+                        key={order.order_number}
                       >
-                        <div className="row align-items-center">
-                          <div className="col-4">
-                            <span className="fw-semibold fs-6">
-                              <i className="ri-hashtag pe-2"></i>
-                              {order.order_number}
-                            </span>
-                          </div>
-                          <div className="col-8 text-end">
-                            <span className="gray-text font_size_12">
-                              {order.date_time}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-8 text-start">
-                            <div className="restaurant">
-                              <i className="ri-store-2-line pe-2"></i>
-                              <span className="fw-medium font_size_14">
-                                {order.restaurant_name.toUpperCase()}
+                        <div
+                          className="card-body py-2"
+                          onClick={() => handleOrderClick(order.order_number)}
+                        >
+                          <div className="row align-items-center">
+                            <div className="col-4">
+                              <span className="fw-semibold fs-6">
+                                <i className="ri-hashtag pe-2"></i>
+                                {order.order_number}
+                              </span>
+                            </div>
+                            <div className="col-8 text-end">
+                              <span className="gray-text font_size_12">
+                                {order.date_time}
                               </span>
                             </div>
                           </div>
-                          <div className="col-4 text-end">
-                            <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
-                            <span className="font_size_12 gray-text">
-                              {order.table_number}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <div className="menu-info">
-                              <i className="ri-bowl-line pe-2 gray-text"></i>
-                              <span className="gray-text font_size_14">
-                                {order.menu_count === 0
-                                  ? "No orders"
-                                  : `${order.menu_count} Menu`}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="col-6 text-end">
-                            <span className="text-info font_size_14 fw-semibold">
-                              ₹{order.grand_total}
-                            </span>
-                            <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                              ₹
-                              {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-                        {activeTab === "placed" && (
-                          <div className="d-flex flex-column gap-2">
-                            {/* Dynamic time remaining text - only show if timer hasn't expired */}
-                            {!completedTimers.has(order.order_id) && (
-                              <TimeRemaining orderId={order.order_id} />
-                            )}
-
-                            {/* Countdown and Cancel button row */}
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div className="text-center">
-                                <CircularCountdown
-                                  orderId={order.order_id}
-                                  onComplete={() => {
-                                    handleOrderStatusChange(order.order_id);
-                                    setCompletedTimers(
-                                      (prev) =>
-                                        new Set([...prev, order.order_id])
-                                    );
-                                  }}
-                                  setActiveTab={setActiveTab}
-                                />
+                          <div className="row">
+                            <div className="col-8 text-start">
+                              <div className="restaurant">
+                                <i className="ri-store-2-line pe-2"></i>
+                                <span className="fw-medium font_size_14">
+                                  {order.restaurant_name.toUpperCase()}
+                                </span>
                               </div>
-
-                              {/* Only show cancel button if timer hasn't expired */}
-                              {!completedTimers.has(order.order_id) &&
-                                timeLeft > 0 && (
-                                  <button
-                                    className="btn btn-sm btn-danger rounded-pill px-4"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleCancelClick(order.order_id);
-                                    }}
-                                  >
-                                    Cancel Order
-                                  </button>
-                                )}
+                            </div>
+                            <div className="col-4 text-end">
+                              <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
+                              <span className="font_size_12 gray-text">
+                                {order.table_number}
+                              </span>
                             </div>
                           </div>
-                        )}
-
-                        {activeTab === "ongoing" && (
-                          <div className="d-flex justify-content-between align-items-center">
-                            <button
-                              className="btn btn-sm btn-outline-primary rounded-pill px-4"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleOrderMore(order.order_id);
-                              }}
-                            >
-                              Order More
-                            </button>
-                            <button
-                              className="btn btn-sm btn-success rounded-pill px-4"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCompleteOrder(order.order_id);
-                              }}
-                            >
-                              Complete Order
-                            </button>
+                          <div className="row">
+                            <div className="col-6">
+                              <div className="menu-info">
+                                <i className="ri-bowl-line pe-2 gray-text"></i>
+                                <span className="gray-text font_size_14">
+                                  {order.menu_count === 0
+                                    ? "No orders"
+                                    : `${order.menu_count} Menu`}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="col-6 text-end">
+                              <span className="text-info font_size_14 fw-semibold">
+                                ₹{order.grand_total}
+                              </span>
+                              <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                                ₹
+                                {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                              </span>
+                            </div>
                           </div>
-                        )}
+                        </div>
 
-                        {activeTab === "completed" && (
-                          <div className="text-center">
-                            <span className="text-success">
-                              <i className="ri-check-line me-1"></i>
-                              Order completed
-                            </span>
-                          </div>
-                        )}
+                        <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                          {activeTab === "placed" && (
+                            <div className="d-flex flex-column gap-2">
+                              {/* Dynamic time remaining text - only show if timer hasn't expired */}
+                              {!completedTimers.has(order.order_id) && (
+                                <TimeRemaining orderId={order.order_id} />
+                              )}
 
-                        {activeTab === "canceled" && (
-                          <div className="text-center">
-                            <span className="text-danger">
-                              <i className="ri-close-circle-line me-1"></i>
-                              Order canceled
-                            </span>
-                          </div>
-                        )}
+                              {/* Countdown and Cancel button row */}
+                              <div className="d-flex justify-content-between align-items-center">
+                                <div className="text-center">
+                                  <CircularCountdown
+                                    orderId={order.order_id}
+                                    onComplete={() => {
+                                      handleOrderStatusChange(order.order_id);
+                                      setCompletedTimers(
+                                        (prev) =>
+                                          new Set([...prev, order.order_id])
+                                      );
+                                    }}
+                                    setActiveTab={setActiveTab}
+                                  />
+                                </div>
+
+                                {/* Only show cancel button if timer hasn't expired */}
+                                {!completedTimers.has(order.order_id) &&
+                                  timeLeft > 0 && (
+                                    <button
+                                      className="btn btn-sm btn-danger rounded-pill px-4"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCancelClick(order.order_id);
+                                      }}
+                                    >
+                                      Cancel Order
+                                    </button>
+                                  )}
+                              </div>
+                            </div>
+                          )}
+
+                          {activeTab === "ongoing" && (
+                            <div className="d-flex justify-content-between align-items-center">
+                              <button
+                                className="btn btn-sm btn-outline-primary rounded-pill px-4"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOrderMore(order.order_id);
+                                }}
+                              >
+                                Order More
+                              </button>
+                              <button
+                                className="btn btn-sm btn-success rounded-pill px-4"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCompleteOrder(order.order_id);
+                                }}
+                              >
+                                Complete Order
+                              </button>
+                            </div>
+                          )}
+
+                          {activeTab === "completed" && (
+                            <div className="text-center">
+                              <span className="text-success">
+                                <i className="ri-check-line me-1"></i>
+                                Order completed
+                              </span>
+                            </div>
+                          )}
+
+                          {activeTab === "canceled" && (
+                            <div className="text-center">
+                              <span className="text-danger">
+                                <i className="ri-close-circle-line me-1"></i>
+                                Order canceled
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </>
+                    ))}
+                </>
+              </div>
             </div>
-          </div>
+          ) : null
         ))}
       </>
     );
