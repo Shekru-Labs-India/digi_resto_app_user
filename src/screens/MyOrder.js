@@ -540,7 +540,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     return (
       <>
-        {Object.entries(orders).map(([date, dateOrders]) => (
+        {Object.entries(orders).map(([date, dateOrders]) =>
           dateOrders && dateOrders.length > 0 ? (
             <div className="tab mt-0" key={`${date}-${type}`}>
               <input
@@ -558,7 +558,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   <span className="icon-circle">
                     <i
                       className={`ri-arrow-down-s-line arrow-icon ${
-                        checkedItems[`${date}-${type}`] ? "rotated" : "rotated-1"
+                        checkedItems[`${date}-${type}`]
+                          ? "rotated"
+                          : "rotated-1"
                       }`}
                     ></i>
                   </span>
@@ -623,7 +625,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                               </span>
                               <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                                 ₹
-                                {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                                {(parseFloat(order.grand_total) * 1.1).toFixed(
+                                  2
+                                )}
                               </span>
                             </div>
                           </div>
@@ -694,11 +698,31 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           )}
 
                           {activeTab === "completed" && (
-                            <div className="text-center">
-                              <span className="text-success">
-                                <i className="ri-check-line me-1"></i>
-                                Order completed
-                              </span>
+                            <div className="container py-0">
+                              <div className="row">
+                                <div className="col-11">
+                                  <div className="text-center">
+                                    <span className="text-success">
+                                      <i className="ri-check-line me-1"></i>
+                                      Order completed
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="col-1 pe-0 text-end">
+                                  {order.invoice_url ? (
+                                    <a 
+                                      href={order.invoice_url}
+                                      download={`invoice_${order.order_number}.pdf`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="cursor-pointer text-decoration-none"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <i className="ri-download-2-line"></i>
+                                    </a>
+                                  ) : null}
+                                </div>
+                              </div>
                             </div>
                           )}
 
@@ -717,7 +741,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
               </div>
             </div>
           ) : null
-        ))}
+        )}
       </>
     );
   };
