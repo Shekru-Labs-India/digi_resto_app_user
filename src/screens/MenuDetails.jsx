@@ -556,6 +556,7 @@ const MenuDetails = () => {
 
                         {/* Pagination Dots */}
                         <div
+                        className=""
                           style={{
                             position: "absolute",
                             bottom: "10px",
@@ -566,26 +567,27 @@ const MenuDetails = () => {
                             zIndex: 2,
                             padding: "3px 7px",
                             borderRadius: "15px",
-                            background: "rgba(255, 255, 255, 0.3)",
+                            // background: "rgba(255, 255, 255, 0.3)",
                           }}
                         >
                           {productDetails.images.map((_, index) => (
                             <div
+                            className=""
                               key={index}
                               onClick={() => setCurrentSlide(index)}
                               style={{
-                                width: "8px",
-                                height: "8px",
+                                width: "7px",
+                                height: "7px",
                                 borderRadius: "50%",
                                 cursor: "pointer",
                                 backgroundColor:
                                   currentSlide === index
                                     ? "var(--primary)"
-                                    : "#ffffff",
-                                border:
-                                  currentSlide === index
-                                    ? "none"
-                                    : "1px solid rgba(255, 255, 255, 0.8)",
+                                    : "rgba(128, 128, 128, .6)",
+                                // border:
+                                //   currentSlide === index
+                                //     ? "none"
+                                //     : "1px solid rgba(255, 255, 255, 0.8)",
                                 transition: "all 0.3s ease",
                                 opacity: currentSlide === index ? 1 : 0.8,
                                 transform:
