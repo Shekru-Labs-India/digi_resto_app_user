@@ -38,7 +38,7 @@ const Checkout = () => {
   const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
   const [ongoingOrderId, setOngoingOrderId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorPopup, setShowErrorPopup] = useState(false); 
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -201,9 +201,11 @@ const Checkout = () => {
   const checkForOngoingOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-  
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
+
       const response = await fetch(
         "https://menumitra.com/user_api/get_order_list",
         {
@@ -219,10 +221,10 @@ const Checkout = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
       console.log("Ongoing order check response:", data);
-  
+
       if (data.st === 1 && data.lists?.ongoing) {
         // Get the first date key from ongoing orders
         const dates = Object.keys(data.lists.ongoing);
@@ -261,10 +263,10 @@ const Checkout = () => {
       });
       return;
     }
-  
+
     try {
       console.log("Completing order with ID:", ongoingOrderId);
-      
+
       const response = await fetch(
         "https://menumitra.com/user_api/complete_order",
         {
@@ -274,14 +276,14 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-            order_id: ongoingOrderId.toString()
+            order_id: ongoingOrderId.toString(),
           }),
         }
       );
-  
+
       const data = await response.json();
       console.log("Complete order API Response:", data);
-  
+
       if (response.ok && data.st === 1) {
         toast.current.show({
           severity: "success",
@@ -289,7 +291,7 @@ const Checkout = () => {
           detail: "Order has been completed successfully!",
           life: 3000,
         });
-  
+
         setShowOngoingOrderPopup(false);
         clearCart();
         navigate("/MyOrder", { state: { activeTab: "completed" } });
@@ -306,7 +308,7 @@ const Checkout = () => {
       });
     }
   };
-  
+
   // Add this to your useEffect or where appropriate
   useEffect(() => {
     const checkOrder = async () => {
@@ -317,10 +319,11 @@ const Checkout = () => {
     checkOrder();
   }, [isLoggedIn, restaurantId]);
 
+  const [showEmptyCheckoutModal, setShowEmptyCheckoutModal] = useState(false);
+
   const handleSubmitOrder = async () => {
     if (!checkoutData) {
-      setErrorMessage("No checkout data found. Please try again.");
-      setShowErrorPopup(true);
+      setShowEmptyCheckoutModal(true);
       return;
     }
 
@@ -428,17 +431,19 @@ const Checkout = () => {
         const dates = Object.keys(data.lists.placed);
         if (dates.length > 0) {
           const placedOrders = data.lists.placed[dates[0]];
-          const targetOrder = placedOrders.find(order => order.order_id === existingOrderId);
-          
+          const targetOrder = placedOrders.find(
+            (order) => order.order_id === existingOrderId
+          );
+
           if (targetOrder) {
             // Navigate using the found order_number
             navigate(`/TrackOrder/${targetOrder.order_number}`, {
-              state: { 
+              state: {
                 orderStatus: "placed",
-                order_id: existingOrderId
-              }
+                order_id: existingOrderId,
+              },
             });
-            
+
             clearCart();
             localStorage.removeItem("cartItems");
             setShowExistingOrderModal(false);
@@ -514,9 +519,9 @@ const Checkout = () => {
       category_name: item.category_name,
       spicy_index: item.spicy_index,
       rating: item.rating,
-      offer: item.offer
+      offer: item.offer,
     }));
-  
+
     const currentTime = new Date();
     const formattedTime = currentTime.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -525,7 +530,7 @@ const Checkout = () => {
       hour12: true,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
-  
+
     const orderData = {
       customer_id: currentCustomerId,
       customer_type: currentCustomerType,
@@ -536,7 +541,7 @@ const Checkout = () => {
       table_number: checkoutData.tableNumber || "1",
       order_time: formattedTime,
     };
-  
+
     try {
       const response = await fetch(
         "https://menumitra.com/user_api/create_order",
@@ -548,9 +553,9 @@ const Checkout = () => {
           body: JSON.stringify(orderData),
         }
       );
-  
+
       const responseData = await response.json();
-  
+
       if (response.ok && responseData.st === 1) {
         // Store order items in localStorage
         const orderItemsForStorage = {
@@ -559,14 +564,14 @@ const Checkout = () => {
           order_id: responseData.order_id,
           order_number: responseData.order_number,
           total_total: checkoutData.total,
-          grand_total: checkoutData.grandTotal
+          grand_total: checkoutData.grandTotal,
         };
-  
+
         localStorage.setItem(
           `orderItems_${responseData.order_number}`,
           JSON.stringify(orderItemsForStorage)
         );
-  
+
         setShowPopup(true);
         clearCart();
       } else if (responseData.st === 2) {
@@ -688,65 +693,82 @@ const Checkout = () => {
           />
         </div>
 
-
-       {showOngoingOrderPopup && (
-  <div className="popup-overlay">
-    <div className="popup-content rounded-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
-        <button 
-          className="btn p-0"
-          onClick={() => setShowOngoingOrderPopup(false)}
-        >
-          <i className="ri-close-line text-muted fs-3"></i>
-        </button>
-      </div>
-      <p className="text-muted mb-4">
-        Please complete your ongoing order before placing a new one.
-      </p>
-      <div className="d-flex flex-column gap-2">
-        <button
-          className="btn btn-success rounded-pill w-100 py-2"
-          onClick={handleCompleteOrder} // Removed the orderId parameter
-        >
-          <i className="ri-checkbox-circle-line me-2"></i>
-          Complete Order
-        </button>
-        
-        <button
-          className="btn btn-outline-primary rounded-pill w-100 py-2"
-          onClick={handleCompleteAndProceed}
-        >
-          <i className="ri-eye-line me-2"></i>
-          View Order Details
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-        {showErrorPopup && (
+        {showOngoingOrderPopup && (
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0">Error</h3>
+                <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
                 <button
-                  className="btn-close text-muted"
-                  onClick={() => setShowErrorPopup(false)}
-                ></button>
+                  className="btn p-0"
+                  onClick={() => setShowOngoingOrderPopup(false)}
+                >
+                  <i className="ri-close-line text-muted fs-3"></i>
+                </button>
               </div>
-              <p className="text-muted">{errorMessage}</p>
-              <button
-                className="btn btn-primary rounded-pill text-white w-100"
-                onClick={() => {
-                  setShowErrorPopup(false);
-                  if (!checkoutData) {
-                    navigate("/Cart");
-                  }
-                }}
-              >
-                Close
-              </button>
+              <p className="text-muted mb-4">
+                Please complete your ongoing order before placing a new one.
+              </p>
+              <div className="d-flex flex-column gap-2">
+                <button
+                  className="btn btn-success rounded-pill w-100 py-2"
+                  onClick={handleCompleteOrder} // Removed the orderId parameter
+                >
+                  <i className="ri-checkbox-circle-line me-2"></i>
+                  Complete Order
+                </button>
+
+                <button
+                  className="btn btn-outline-primary rounded-pill w-100 py-2"
+                  onClick={handleCompleteAndProceed}
+                >
+                  <i className="ri-eye-line me-2"></i>
+                  View Order Details
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showEmptyCheckoutModal && (
+          <div
+            className="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100"
+            style={{
+              zIndex: 1050,
+              background: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <div
+              className="modal-dialog"
+              style={{ maxWidth: "90%", width: "350px" }}
+            >
+              <div className="modal-content rounded-4 p-2">
+                <div className="modal-body text-center px-2">
+                  <div className="mb-3">
+                    <i
+                      className="ri-restaurant-2-line text-primary"
+                      style={{ fontSize: "3.5rem" }}
+                    ></i>
+                  </div>
+                  <h5 className="mb-3 fw-semibold">No Items in Cart!</h5>
+                  <p className="text-muted mb-4">
+                    Add some delicious dishes to your cart and place your order.
+                  </p>
+                  <button
+                    className="btn btn-primary rounded-pill px-4 py-2"
+                    onClick={() => {
+                      setShowEmptyCheckoutModal(false);
+                      const restaurantCode =
+                        localStorage.getItem("restaurantCode");
+                      const tableNumber =
+                        localStorage.getItem("tableNumber") || "";
+                      navigate(`/${restaurantCode}/${tableNumber}`);
+                    }}
+                  >
+                    <i className="ri-restaurant-line me-2"></i>
+                    Browse Menu
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -760,7 +782,9 @@ const Checkout = () => {
               {/* Header */}
               <div className="p-3 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">Existing Order Found</h5>
+                  <h5 className="mb-0 fw-semibold text-muted">
+                    Existing Order Found
+                  </h5>
                   <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowExistingOrderModal(false)}
