@@ -189,11 +189,19 @@ const Product = () => {
     setCartItemsCount(cartItems.length);
   }, []);
 
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
+
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
-    if (!userData || !userData.customer_id) {
-      navigate("/Signinscreen");
-      return;
+    const userData = JSON.parse(localStorage.getItem("userData"));
+  if (!userData?.customer_id || userData.customer_type === 'guest') {
+    handleUnauthorizedFavorite(navigate);
+    return;
     }
 
     if (!restaurantId) return;
@@ -337,8 +345,14 @@ const Product = () => {
 
   // Add item to cart
   const handleAddToCartClick = (menu) => {
-    if (!userData || !userData.customer_id) {
-      navigate("/Signinscreen");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+
+    // Check if user is logged in or is a guest
+    if (!userData?.customer_id ) {
+      window.showToast("info", "Please login to add items to cart");
+      setTimeout(() => {
+        navigate("/Signinscreen");
+      }, 1500);
       return;
     }
 
@@ -505,6 +519,12 @@ const Product = () => {
                       textDecoration: "none",
                       color: "inherit",
                       display: "block",
+                    }}
+                    onClick={(e) => {
+                      // If clicking the cart icon, prevent navigation
+                      if (e.defaultPrevented) {
+                        e.preventDefault();
+                      }
                     }}
                   >
                     <div className="dz-media">
@@ -691,6 +711,7 @@ const Product = () => {
                             </div>
                           ) : (
                             <div
+                              className="border border-1 rounded-circle bg-white opacity-75"
                               style={{
                                 border: "1px solid gray",
                                 borderRadius: "50%",
@@ -699,6 +720,14 @@ const Product = () => {
                                 justifyContent: "center",
                                 width: "25px",
                                 height: "25px",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.showToast("info", "Please login to add items to cart");
+                                setTimeout(() => {
+                                  navigate("/Signinscreen");
+                                }, 1500);
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>

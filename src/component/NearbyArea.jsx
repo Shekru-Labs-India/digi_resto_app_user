@@ -29,6 +29,9 @@ const NearbyArea = () => {
     if (userData) {
       setCustomerId(userData.customer_id);
     }
+
+   
+
     
     // Only fetch if we have a restaurantId
     if (restaurantId) {
@@ -201,11 +204,18 @@ const NearbyArea = () => {
     );
   };
 
+
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      navigate("/Signinscreen");
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      handleUnauthorizedFavorite(navigate);
       return;
     }
 
@@ -468,7 +478,29 @@ const NearbyArea = () => {
                         </div>
                         <div className="d-flex justify-content-end col-6">
                           {customerId ? (
-                            <div
+                            <Link
+                              to="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menuItem);
+                              }}
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i className={`ri-shopping-cart-${isMenuItemInCart(menuItem.menu_id) ? "fill" : "line"} fs-6`}></i>
+                            </Link>
+                          ) : (
+                            <Link
+                              to="/Signinscreen"
                               className="border border-1 rounded-circle bg-white opacity-75 me-1"
                               style={{
                                 border: "1px solid gray",
@@ -482,31 +514,11 @@ const NearbyArea = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleAddToCartClick(menuItem);
-                              }}
-                            >
-                              <i
-                                className={`ri-shopping-cart-${
-                                  isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill"
-                                    : "line"
-                                } fs-6 `}
-                              ></i>
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "25px",
-                                height: "25px",
+                                navigate("/Signinscreen");
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
-                            </div>
+                            </Link>
                           )}
                         </div>
                       </div>

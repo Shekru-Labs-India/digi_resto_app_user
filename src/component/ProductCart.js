@@ -207,15 +207,22 @@ const ProductCard = ({ isVegOnly }) => {
     }
   }, [menuCategories]);
 
+  const handleUnauthorizedFavorite = (navigate) => {
+  window.showToast("info", "Please login to use favorites functionality");
+  setTimeout(() => {
+    navigate("/Signinscreen");
+  }, 1500);
+};
+
   const handleLikeClick = async (e, menuId) => {
     e.preventDefault();
     e.stopPropagation();
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData || !userData.customer_id || !restaurantId) {
-      navigate("/Signinscreen");
-      return;
-    }
+  if (!userData?.customer_id || userData.customer_type === 'guest') {
+    handleUnauthorizedFavorite(navigate);
+    return;
+  }
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -635,7 +642,29 @@ const ProductCard = ({ isVegOnly }) => {
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
                           {customerId ? (
-                            <div
+                            <Link
+                              to="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCartClick(menu);
+                              }}
+                              className="border border-1 rounded-circle bg-white opacity-75"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+                            </Link>
+                          ) : (
+                            <Link
+                              to="/Signinscreen"
                               className="border border-1 rounded-circle bg-white opacity-75"
                               style={{
                                 border: "1px solid gray",
@@ -649,31 +678,11 @@ const ProductCard = ({ isVegOnly }) => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleAddToCartClick(menu);
-                              }}
-                            >
-                              <i
-                                className={`ri-shopping-cart-${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "fill"
-                                    : "line"
-                                } fs-6 `}
-                              ></i>
-                            </div>
-                          ) : (
-                            <div
-                              style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "25px",
-                                height: "25px",
+                                navigate("/Signinscreen");
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
-                            </div>
+                            </Link>
                           )}
                         </div>
                       </div>

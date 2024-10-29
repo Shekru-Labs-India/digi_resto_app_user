@@ -332,19 +332,23 @@ const MenuDetails = () => {
     }
   };
 
+
+  const handleUnauthorizedFavorite = (navigate) => {
+    window.showToast("info", "Please login to use favorites functionality");
+    setTimeout(() => {
+      navigate("/Signinscreen");
+    }, 1500);
+  };
+
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
-    if (!customerId) {
-      navigate("/Signinscreen", { state: { from: location.pathname } });
-      return;
-    }
-
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData || !userData.customer_id) {
-      console.error("Missing required data");
-      navigate("/Signinscreen", { state: { from: location.pathname } });
-      return;
-    }
+  if (!userData?.customer_id || userData.customer_type === 'guest') {
+    handleUnauthorizedFavorite(navigate);
+    return;
+  }
+
+    
 
     const apiUrl = isFavorite
       ? "https://menumitra.com/user_api/remove_favourite_menu"

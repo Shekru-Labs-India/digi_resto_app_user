@@ -14,7 +14,6 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  
 
   const { restaurantName, restaurantId } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,19 +52,19 @@ const MyOrder = () => {
       try {
         setLoading(true);
         console.log("Fetching orders...");
-
+  
         const userData = JSON.parse(localStorage.getItem("userData"));
         const currentCustomerId =
           userData?.customer_id || localStorage.getItem("customer_id");
         const currentCustomerType =
           userData?.customer_type || localStorage.getItem("customer_type");
-
+  
         if (!currentCustomerId || !restaurantId) {
           console.log("Missing customerId or restaurantId");
           setLoading(false);
           return;
         }
-
+  
         const response = await fetch(
           "https://menumitra.com/user_api/get_order_list",
           {
@@ -75,7 +74,7 @@ const MyOrder = () => {
             },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              order_status: activeTab,
+              order_status: activeTab === "canceled" ? "cancle" : activeTab, // Update this line
               customer_id: currentCustomerId,
               customer_type: currentCustomerType,
             }),
@@ -86,8 +85,16 @@ const MyOrder = () => {
           const data = await response.json();
           console.log("API response data:", data);
           if (data.st === 1 && data.lists) {
-            setOrders(data.lists);
-            console.log("Fetched Orders:", data.lists);
+            // Handle the response data mapping
+            const mappedData = {};
+            if (activeTab === "canceled" && data.lists.cancle) {
+              // Map 'cancle' to 'canceled' in the response
+              mappedData.canceled = data.lists.cancle;
+            } else {
+              mappedData[activeTab] = data.lists[activeTab];
+            }
+            setOrders(mappedData);
+            console.log("Fetched Orders:", mappedData);
           } else {
             console.error("Invalid data format:", data);
             setOrders({});
@@ -104,12 +111,14 @@ const MyOrder = () => {
         console.log("Loading state set to false");
       }
     };
-
+  
     if (customerId && restaurantId) {
       fetchOrders();
     }
   }, [activeTab, customerId, restaurantId]);
 
+
+  
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("theme-dark");
@@ -397,7 +406,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     try {
       if (!selectedOrderId || !restaurantId) {
-        console.error("Missing required data:", { selectedOrderId, restaurantId });
+        console.error("Missing required data:", {
+          selectedOrderId,
+          restaurantId,
+        });
         throw new Error("Missing required data for cancellation");
       }
 
@@ -424,7 +436,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         setCancelReason("");
         setSelectedOrderId(null);
 
-        window.showToast("success", "Your order has been successfully canceled.");
+        window.showToast(
+          "success",
+          "Your order has been successfully canceled."
+        );
 
         // Fetch updated order list
         const updatedResponse = await fetch(
@@ -453,7 +468,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       }
     } catch (error) {
       console.error("Error canceling order:", error);
-      window.showToast("error", error.message || "Failed to cancel order. Please try again.");
+      window.showToast(
+        "error",
+        error.message || "Failed to cancel order. Please try again."
+      );
     }
   };
 
@@ -563,41 +581,45 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       </div>
 
                       <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-                      {activeTab === "placed" && (
-  <div className="d-flex flex-column gap-2">
-    {/* Dynamic time remaining text - only show if timer hasn't expired */}
-    {!completedTimers.has(order.order_id) && (
-      <TimeRemaining orderId={order.order_id} />
-    )}
+                        {activeTab === "placed" && (
+                          <div className="d-flex flex-column gap-2">
+                            {/* Dynamic time remaining text - only show if timer hasn't expired */}
+                            {!completedTimers.has(order.order_id) && (
+                              <TimeRemaining orderId={order.order_id} />
+                            )}
 
-    {/* Countdown and Cancel button row */}
-    <div className="d-flex justify-content-between align-items-center">
-      <div className="text-center">
-        <CircularCountdown
-          orderId={order.order_id}
-          onComplete={() => {
-            handleOrderStatusChange(order.order_id);
-            setCompletedTimers(prev => new Set([...prev, order.order_id]));
-          }}
-          setActiveTab={setActiveTab}
-        />
-      </div>
+                            {/* Countdown and Cancel button row */}
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div className="text-center">
+                                <CircularCountdown
+                                  orderId={order.order_id}
+                                  onComplete={() => {
+                                    handleOrderStatusChange(order.order_id);
+                                    setCompletedTimers(
+                                      (prev) =>
+                                        new Set([...prev, order.order_id])
+                                    );
+                                  }}
+                                  setActiveTab={setActiveTab}
+                                />
+                              </div>
 
-      {/* Only show cancel button if timer hasn't expired */}
-      {!completedTimers.has(order.order_id) && timeLeft > 0 && (
-        <button
-          className="btn btn-sm btn-danger rounded-pill px-4"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCancelClick(order.order_id);
-          }}
-        >
-          Cancel Order
-        </button>
-      )}
-    </div>
-  </div>
-)}
+                              {/* Only show cancel button if timer hasn't expired */}
+                              {!completedTimers.has(order.order_id) &&
+                                timeLeft > 0 && (
+                                  <button
+                                    className="btn btn-sm btn-danger rounded-pill px-4"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCancelClick(order.order_id);
+                                    }}
+                                  >
+                                    Cancel Order
+                                  </button>
+                                )}
+                            </div>
+                          </div>
+                        )}
 
                         {activeTab === "ongoing" && (
                           <div className="d-flex justify-content-between align-items-center">
@@ -760,7 +782,7 @@ const TimeRemaining = ({ orderId }) => {
       const now = new Date().getTime();
       const elapsed = now - start;
       const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
-      
+
       if (remaining === 0) {
         setIsExpired(true);
         clearInterval(timer);
@@ -778,7 +800,8 @@ const TimeRemaining = ({ orderId }) => {
   if (isExpired || timeLeft === 0) return null;
   return (
     <div className="text-muted font_size_14 text-center mb-2">
-      You can cancel the order within <span className="fw-semibold">{timeLeft}</span> seconds
+      You can cancel the order within{" "}
+      <span className="fw-semibold">{timeLeft}</span> seconds
     </div>
   );
 };
