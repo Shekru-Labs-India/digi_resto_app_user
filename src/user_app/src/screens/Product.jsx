@@ -673,14 +673,14 @@ const Product = () => {
                         <div className="col-9 d-flex align-items-end mb-1">
                           <div className="footer-wrapper">
                             <div className="price-wrapper d-flex align-items-baseline">
-                              <p className="mb-1 fs-5 fw-semibold text-info">
-                                <span className="ms- me-2 text-info">
-                                  ₹{menuItem.price}
-                                </span>
-                              </p>
-                              <span className="gray-text text-decoration-line-through fs-6 fw-normal">
-                                ₹{menuItem.oldPrice || menuItem.price}
+                              <span className="font_size_14 me-2 text-info fw-semibold">
+                                ₹{menuItem.price}
                               </span>
+                              {menuItem.oldPrice !== 0 && menuItem.oldPrice !== null && (
+                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                  ₹{menuItem.oldPrice}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
