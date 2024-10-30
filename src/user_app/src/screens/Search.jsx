@@ -194,9 +194,10 @@ const Search = () => {
   }, [fetchCartItems, restaurantId]);
 
   const handleAddToCartClick = (menu) => {
-    if (!customerId || !restaurantId) {
-      console.error("Customer ID or Restaurant ID is missing.");
-      navigate("/user_app/Signinscreen"); // Updated path
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      window.showToast("info", "Please login to add items to cart");
+      navigate("/user_app/Signinscreen");
       return;
     }
 
@@ -244,6 +245,13 @@ const Search = () => {
   };
 
   const handleConfirmAddToCart = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      window.showToast("info", "Please login to add items to cart");
+      navigate("/user_app/Signinscreen");
+      return;
+    }
+
     if (!selectedMenu) return;
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
@@ -296,7 +304,8 @@ const Search = () => {
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === 'guest') {
-      handleUnauthorizedFavorite(navigate);
+      window.showToast("info", "Please login to add items to favorites");
+      navigate("/user_app/Signinscreen");
       return;
     }
 
@@ -376,15 +385,11 @@ const Search = () => {
   };
 
   const handleMenuClick = (menuId) => {
-    const menuItems = JSON.parse(localStorage.getItem("menuItems")) || [];
-    const selectedMenuItem = menuItems.find((item) => item.menu_id === menuId);
-
-    if (selectedMenuItem) {
-      navigate(`/user_app/ProductDetails/${menuId}`, { // Updated path
-        state: { ...selectedMenuItem }
+    const menu = searchedMenu.find(item => item.menu_id === menuId);
+    if (menu) {
+      navigate(`/user_app/ProductDetails/${menuId}`, {
+        state: { ...menu }
       });
-    } else {
-      console.error("Menu item not found in local storage");
     }
   };
 
@@ -433,24 +438,6 @@ const Search = () => {
     window.addEventListener("cartUpdated", handleCartUpdate);
     return () => window.removeEventListener("cartUpdated", handleCartUpdate);
   }, [fetchCartItems, restaurantId]);
-
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      window.showToast("error", "Please login to search menu items");
-      navigate("/user_app/Signinscreen"); // Updated path
-      return;
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (userData?.customer_type === 'guest') {
-      window.showToast("info", "Please login to access full features");
-      navigate("/user_app/Signinscreen"); // Updated path
-      return;
-    }
-  }, [navigate]);
 
   const handleError = () => {
     window.showToast("error", "Failed to load search results");
@@ -525,8 +512,8 @@ const Search = () => {
         <div key={menu.menu_id} className="col-12">
           <div
             className="card mb-3 rounded-3"
-            onClick={() => handleMenuClick(menu.menu_id)} // Handle card click
-            style={{ cursor: "pointer" }} // Ensure cursor is set to pointer
+            onClick={() => handleMenuClick(menu.menu_id)}
+            style={{ cursor: "pointer" }}
           >
             <div className="card-body py-0">
               <div className="row">
