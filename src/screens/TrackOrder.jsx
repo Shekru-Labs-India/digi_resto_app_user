@@ -1265,7 +1265,7 @@ const TrackOrder = () => {
 
   return (
     <>
-      <div className="page-wrapper full-height">
+      <div className="page-wrapper full-height pb-5">
         <Header title="Order Details" />
 
         <div className="container mt-5 pb-0">
@@ -2054,7 +2054,7 @@ const TrackOrder = () => {
 
         {customerId && orderDetails && (
           <div className="container mb-4 pt-0 z-3">
-            <div className="card mt-2 p-0 mb-5 ">
+            <div className="card mt-2 p-0 mb-3 ">
               <div className="card-body mx-auto rounded-3 p-0">
                 <div className="row p-1">
                   <div className="col-12">
@@ -2133,21 +2133,18 @@ const TrackOrder = () => {
                   download={`invoice_${orderDetails.order_details.order_number}.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="cursor-pointer text-decoration-none"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-dark">
-                    Download Invoice
-                  </span>
-                    <i className="ri-download-2-line ps-2 fs-4"></i>
+                  <button className="btn btn-success rounded-pill text-white px-5">
+                    Invoice &nbsp;
+                    <i className="ri-download-2-line"></i>
+                  </button>
                 </a>
               ) : (
-                <>
-                  <span className="text-dark">
-                    Download Invoice
-                    <i className="ri-download-2-line ps-2 fs-4"></i>
-                  </span>
-                </>
+                <button className="btn btn-success rounded-pill text-white px-5">
+                  Invoice &nbsp;
+                  <i className="ri-download-2-line"></i>
+                </button>
               )}
             </div>
           </div>

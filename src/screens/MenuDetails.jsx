@@ -831,7 +831,7 @@ const MenuDetails = () => {
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 
-                <div className="col-5 ps-1 pe-0">
+                <div className="col-4 ps-1 pe-0">
                   <div className="d-flex align-items-center justify-content-between mb-5">
                     <div className="d-flex flex-column">
                       <span className="mb-2     ps-0 menu_details-total-amount">
@@ -848,7 +848,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-7 px-0 text-center menu_details-add-to-cart">
+                <div className="col-8 px-0 text-center menu_details-add-to-cart">
                   {!customerId ? (
                     <button
                       className="btn btn-success rounded-pill"
