@@ -612,7 +612,7 @@ const renderOrders = () => {
                               </div>
                             </div>
                             <div className="col-4 text-end">
-                              <i className="ri-user-location-line ps-2 pe-1 font_size_12 gray-text"></i>
+                              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
                               <span className="font_size_12 gray-text">
                                 {order.table_number}
                               </span>

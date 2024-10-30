@@ -491,6 +491,7 @@ const MenuDetails = () => {
             >
               {/* Main Image Container */}
               <div
+                className="border border-1 "
                 style={{
                   position: "relative",
                   width: "100%",
@@ -556,7 +557,7 @@ const MenuDetails = () => {
 
                         {/* Pagination Dots */}
                         <div
-                        className=""
+                          className=""
                           style={{
                             position: "absolute",
                             bottom: "10px",
@@ -572,7 +573,7 @@ const MenuDetails = () => {
                         >
                           {productDetails.images.map((_, index) => (
                             <div
-                            className=""
+                              className=""
                               key={index}
                               onClick={() => setCurrentSlide(index)}
                               style={{
@@ -752,12 +753,12 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="container ps-2 pt-1">
+              {/* <div className="container ps-2 pt-1">
                 <div className="row">
                   <div className="col-12 pt-1 px-0 ">
                     {!isFromDifferentRestaurant && (
                       <div className="dz-stepper style-3">
-                        <div className="row ms-1">
+                        
                           <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
                             <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
                               <div
@@ -793,12 +794,12 @@ const MenuDetails = () => {
                               </div>
                             </span>
                           </div>
-                        </div>
+                       
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
