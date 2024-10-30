@@ -491,6 +491,7 @@ const MenuDetails = () => {
             >
               {/* Main Image Container */}
               <div
+                className="border border-1 "
                 style={{
                   position: "relative",
                   width: "100%",
@@ -556,7 +557,7 @@ const MenuDetails = () => {
 
                         {/* Pagination Dots */}
                         <div
-                        className=""
+                          className=""
                           style={{
                             position: "absolute",
                             bottom: "10px",
@@ -572,7 +573,7 @@ const MenuDetails = () => {
                         >
                           {productDetails.images.map((_, index) => (
                             <div
-                            className=""
+                              className=""
                               key={index}
                               onClick={() => setCurrentSlide(index)}
                               style={{

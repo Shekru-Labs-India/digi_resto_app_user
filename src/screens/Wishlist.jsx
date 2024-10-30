@@ -371,7 +371,7 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <main className="page-content space-top mb-5 pb-5">
         <div className="container ">
-        <Header title="Wishlist" count={wishlistCount} />
+        <Header title="Favourite" count={wishlistCount} />
 
           <HotelNameAndTable
             restaurantName={restaurantName}
@@ -462,7 +462,6 @@ const Wishlist = () => {
                                         style={{
                                           width: "100%",
                                           height: "100%",
-                                          // objectFit: "fill",
                                           aspectRatio: "1/1",
                                         }}
                                         onError={(e) => {
@@ -473,9 +472,31 @@ const Wishlist = () => {
                                         }}
                                       />
                                       <div
-                                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                                          menu.menu_veg_nonveg.toLowerCase() ===
-                                          "veg"
+                                        className={`border border-1 rounded-circle ${isDarkMode ? 'bg-dark' : 'bg-white'} opacity-75 d-flex justify-content-center align-items-center`}
+                                        style={{
+                                          position: "absolute",
+                                          bottom: "3px",
+                                          right: "76%",
+                                          height: "20px",
+                                          width: "20px",
+                                        }}
+                                      >
+                                        <i
+                                          className={`ri-heart-3-fill text-danger fs-6`}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleRemoveItemClick(
+                                              restaurantName,
+                                              menu.menu_id,
+                                              menu.restaurant_id
+                                            );
+                                          }}
+                                        ></i>
+                                      </div>
+                                      <div
+                                        className={`border ${isDarkMode ? 'bg-dark' : 'bg-white'} opacity-75 d-flex justify-content-center align-items-center ${
+                                          menu.menu_veg_nonveg.toLowerCase() === "veg"
                                             ? "border-success"
                                             : "border-danger"
                                         }`}

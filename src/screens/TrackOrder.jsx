@@ -1316,7 +1316,7 @@ const TrackOrder = () => {
                   </div>
                 </div>
                 <div className="col-4 text-end">
-                  <i className="ri-user-location-line ps-0 pe-1 font_size_12 gray-text"></i>
+                  <i className="ri-map-pin-user-fill ps-0 pe-1 font_size_12 gray-text"></i>
                   <span className="fs-6 gray-text font_size_12">
                     {order_details.table_number}
                   </span>
@@ -2138,6 +2138,30 @@ const TrackOrder = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="d-flex justify-content-center">
+              {orderDetails.invoice_url ? (
+                <a
+                  href={orderDetails.invoice_url}
+                  download={`invoice_${orderDetails.order_details.order_number}.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer text-decoration-none"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="text-dark">
+                    Download Invoice
+                  </span>
+                    <i className="ri-download-2-line ps-2 fs-4"></i>
+                </a>
+              ) : (
+                <>
+                  <span className="text-dark">
+                    Download Invoice
+                    <i className="ri-download-2-line ps-2 fs-4"></i>
+                  </span>
+                </>
+              )}
             </div>
           </div>
         )}
