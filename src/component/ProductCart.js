@@ -46,6 +46,11 @@ const ProductCard = ({ isVegOnly }) => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
 
+  // Add this state for tracking restaurant data
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
+    return restaurantId || localStorage.getItem("restaurantId");
+  });
+
   // Update the filtering logic
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -106,86 +111,92 @@ const ProductCard = ({ isVegOnly }) => {
     }
   }, []);
 
-  const fetchMenuData = useCallback(
-    async (categoryId) => {
-      const storedUserData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = storedUserData
-        ? storedUserData.customer_id
-        : null;
-      const currentRestaurantId =
-        restaurantId || localStorage.getItem("restaurantId");
+  // Add this at the top with other state declarations
+  const isInitialMount = useRef(true);
 
-      if (!currentRestaurantId) {
-        console.log("Missing restaurantId:", { currentRestaurantId });
-        return;
-      }
-      setIsLoading(true);
-      try {
-        console.log("Fetching menu data...");
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_all_menu_list_by_category",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              customer_id: currentCustomerId,
-              restaurant_id: currentRestaurantId,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        console.log("API response:", data);
-
-        if (response.ok && data.st === 1) {
-          const formattedMenuList = data.data.menus.map((menu) => ({
-            ...menu,
-            image: menu.image || images,
-            category: toTitleCase(menu.category_name),
-            name: toTitleCase(menu.menu_name),
-            oldPrice: menu.offer ? menu.price : null,
-            price: menu.offer
-              ? Math.floor(menu.price * (1 - menu.offer / 100))
-              : menu.price,
-            is_favourite: menu.is_favourite === 1,
-          }));
-
-          setMenuList(formattedMenuList);
-
-          const formattedCategories = data.data.category.map((category) => ({
-            ...category,
-            name: toTitleCase(category.category_name),
-          }));
-          setMenuCategories(formattedCategories);
-
-          applyFilters(formattedMenuList, categoryId, isVegOnly);
+  // Remove dependencies from `fetchMenuData` useCallback
+  const fetchMenuData = useCallback(async (categoryId) => {
+    // Prevent duplicate calls on initial render and subsequent updates
+    if (hasFetchedData.current) return;
+    
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const storedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+    
+    if (!storedRestaurantId) {
+      console.log("Missing restaurantId:", { storedRestaurantId });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      console.log("Fetching menu data...");
+      const response = await fetch(
+        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer_id: storedUserData?.customer_id || null,
+            restaurant_id: storedRestaurantId,
+          }),
         }
-      } catch (error) {
-        console.error("Error fetching menu data:", error);
-      } finally {
-        setIsLoading(false);
+      );
+
+      const data = await response.json();
+      console.log("API response:", data);
+
+      if (response.ok && data.st === 1) {
+        const formattedMenuList = data.data.menus.map((menu) => ({
+          ...menu,
+          image: menu.image || images,
+          category: toTitleCase(menu.category_name),
+          name: toTitleCase(menu.menu_name),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer
+            ? Math.floor(menu.price * (1 - menu.offer / 100))
+            : menu.price,
+          is_favourite: menu.is_favourite === 1,
+        }));
+
+        setMenuList(formattedMenuList);
+        setMenuCategories(data.data.category.map((category) => ({
+          ...category,
+          name: toTitleCase(category.category_name),
+        })));
+
+        applyFilters(formattedMenuList, categoryId, isVegOnly);
+        hasFetchedData.current = true;
       }
-    },
-    [applyFilters, isVegOnly, restaurantId]
-  );
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
+  // Single useEffect for initialization
   useEffect(() => {
-    fetchMenuData();
-  }, [fetchMenuData]);
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        const storedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+        if (storedRestaurantId) {
+            fetchMenuData();
+        }
+    }
+}, [fetchMenuData]);
 
+  // Separate useEffect for handling favorites updates
   useEffect(() => {
     const handleFavoritesUpdated = () => {
-      fetchMenuData(selectedCategoryId);
+        hasFetchedData.current = false;
+        fetchMenuData();
     };
 
     window.addEventListener("favoritesUpdated", handleFavoritesUpdated);
-    window.addEventListener("focus", handleFavoritesUpdated);
-
     return () => {
-      window.removeEventListener("favoritesUpdated", handleFavoritesUpdated);
-      window.removeEventListener("focus", handleFavoritesUpdated);
+        window.removeEventListener("favoritesUpdated", handleFavoritesUpdated);
     };
-  }, [fetchMenuData, selectedCategoryId]);
+}, [fetchMenuData]);
 
   const debouncedFetchMenuData = useCallback(
     debounce((categoryId) => {
@@ -569,12 +580,12 @@ const ProductCard = ({ isVegOnly }) => {
                           borderRadius: "0px 0px 7px 0px",
                         }}
                       >
-                        <span className="text-white">
-                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                          <span className="font_size_10">
+                        
+                          <span className="font_size_10 text-white">
+                          <i className="ri-percent-line me-1 font_size_14"></i>
                             {menu.offer}% Off
                           </span>
-                        </span>
+                        
                       </div>
                     )}
                   </div>

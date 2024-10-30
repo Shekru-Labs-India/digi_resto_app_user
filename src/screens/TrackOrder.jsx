@@ -933,10 +933,8 @@ const TrackOrder = () => {
     if (!pendingItems.length) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
+    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
 
     if (!currentCustomerId) {
       window.showToast("error", "Please login to update order");
@@ -954,12 +952,7 @@ const TrackOrder = () => {
         order_items: [
           // Include existing items that weren't removed
           ...menu_details
-            .filter(
-              (item) =>
-                !removedItems.some(
-                  (removedItem) => removedItem.menu_id === item.menu_id
-                )
-            )
+            .filter(item => !removedItems.has(item.menu_id)) // Changed from .some() to .has()
             .map((item) => ({
               menu_id: item.menu_id.toString(),
               quantity: item.quantity.toString(),
@@ -1545,11 +1538,9 @@ const TrackOrder = () => {
                                         borderRadius: "7px 0px 7px 0px",
                                       }}
                                     >
-                                      <span className="text-white">
-                                        <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                        <span className="font_size_10">
-                                          {menu.offer || "No"}% Off
-                                        </span>
+                                      <span className="font_size_10 text-white">
+                                        <i className="ri-percent-line me-1 font_size_14"></i>
+                                        {menu.offer || "No"}% Off
                                       </span>
                                     </div>
                                   )}
@@ -1756,11 +1747,9 @@ const TrackOrder = () => {
                                     borderRadius: "7px 0px 7px 0px",
                                   }}
                                 >
-                                  <span className="text-white">
-                                    <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                    <span className="font_size_10">
-                                      {menu.offer || "No "}% Off
-                                    </span>
+                                  <span className="font_size_10 text-white">
+                                    <i className="ri-percent-line me-1 font_size_14"></i>
+                                    {menu.offer || "No "}% Off
                                   </span>
                                 </div>
                               )}
@@ -1941,11 +1930,9 @@ const TrackOrder = () => {
                                   borderRadius: "7px 0px 7px 0px",
                                 }}
                               >
-                                <span className="text-white">
-                                  <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                                  <span className="font_size_10">
-                                    {menu.offer || "No"}% Off
-                                  </span>
+                                <span className="font_size_10 text-white">
+                                  <i className="ri-percent-line me-1 font_size_14"></i>
+                                  {menu.offer || "No"}% Off
                                 </span>
                               </div>
                             )}

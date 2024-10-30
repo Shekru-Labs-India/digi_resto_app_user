@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
@@ -22,6 +22,7 @@ const NearbyArea = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const hasFetchedData = useRef(false);
 
   // 1. Single useEffect for initialization and data fetching
   useEffect(() => {
@@ -74,6 +75,8 @@ const NearbyArea = () => {
 
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
+    if (hasFetchedData.current) return;
+    
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -104,6 +107,7 @@ const NearbyArea = () => {
         }));
 
         setMenuItems(formattedMenuItems);
+        hasFetchedData.current = true;
       } else {
         console.error("Invalid data format:", data);
         setMenuItems([]);
@@ -429,12 +433,12 @@ const NearbyArea = () => {
                             borderRadius: "0px 0px 7px 0px",
                           }}
                         >
-                          <span className="text-white">
-                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                            <span className="font_size_10">
+
+                            <span className="font_size_10 text-white">
+                            <i className="ri-percent-line me-1 font_size_14"></i>
                               {menuItem.offer}% Off
                             </span>
-                          </span>
+                          
                         </div>
                       )}
                     </div>

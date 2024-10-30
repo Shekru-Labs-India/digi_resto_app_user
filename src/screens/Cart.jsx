@@ -158,6 +158,26 @@ const Cart = () => {
     const currentCustomerId = getCustomerId();
     try {
       await removeFromCart(item.menu_id, currentCustomerId, restaurantId);
+      
+      // Update localStorage and dispatch events
+      const updatedCartItems = cartDetails.order_items.filter(
+        cartItem => cartItem.menu_id !== item.menu_id
+      );
+      
+      // Update localStorage
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      
+      // Dispatch removal event
+      window.dispatchEvent(new CustomEvent("cartItemRemoved", {
+        detail: { menuId: item.menu_id }
+      }));
+      
+      // Update cart details
+      setCartDetails(prev => ({
+        ...prev,
+        order_items: updatedCartItems
+      }));
+
       window.showToast("success", `${item.menu_name} has been removed from your cart.`);
       fetchCartDetails();
     } catch (error) {
@@ -394,12 +414,12 @@ const Cart = () => {
                             borderRadius: "7px 0px 7px 0px",
                           }}
                         >
-                          <span className="text-white">
-                            <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                            <span className="font_size_10">
+                          
+                            <span className="font_size_10 text-white">
+                            <i className="ri-percent-line me-1 font_size_14"></i>
                               {item.offer}% Off
                             </span>
-                          </span>
+                          
                         </div>
                       )}
                       <div

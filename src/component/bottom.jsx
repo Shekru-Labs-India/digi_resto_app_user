@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 
@@ -7,60 +7,48 @@ const Bottom = () => {
   const { restaurantCode } = useRestaurantId();
   const [cartItemCount, setCartItemCount] = useState(0);
   const [userData] = useState(JSON.parse(localStorage.getItem("userData")) || {});
+  const hasFetchedCart = useRef(false);
 
+  // Update cart count whenever cart changes
   useEffect(() => {
-    // Create a reference to track if the API call has been made
-    let isFirstCall = true;
-    
-    const updateCartItemCount = async () => {
-      // Only proceed if this is the first call
-      if (!isFirstCall) return;
-      isFirstCall = false;
+    // Initial cart count
+    const updateCartCount = () => {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      setCartItemCount(cartItems.length);
+    };
 
-      const customerId = userData?.customer_id;
-      const cartId = localStorage.getItem("cartId");
-      const restaurantId = localStorage.getItem("restaurantId");
-
-      if (!customerId || !cartId || !restaurantId) {
-        setCartItemCount(0);
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              cart_id: cartId,
-              customer_id: customerId,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        if (data.st === 1 && data.order_items) {
-          setCartItemCount(data.order_items.length);
-        } else {
-          setCartItemCount(0);
-        }
-      } catch (error) {
-        console.error("Error fetching cart count:", error);
-        setCartItemCount(0);
+    // Listen for cart updates (add, remove, update)
+    const handleCartUpdate = (event) => {
+      if (event.detail) {
+        setCartItemCount(event.detail.length);
+      } else {
+        updateCartCount();
       }
     };
 
-    updateCartItemCount();
+    // Listen for cart item removal
+    const handleCartRemove = () => {
+      updateCartCount();
+    };
 
-    // Cleanup function
+    // Initial count
+    updateCartCount();
+
+    // Add event listeners
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("cartItemRemoved", handleCartRemove);
+    window.addEventListener("cartItemAdded", handleCartUpdate);
+
     return () => {
-      isFirstCall = false;
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+      window.removeEventListener("cartItemRemoved", handleCartRemove);
+      window.removeEventListener("cartItemAdded", handleCartUpdate);
     };
-  }, [userData]); // Only depend on userData
+  }, []);
+
+  const getActiveClass = (path) => {
+    return location.pathname === path ? "active" : "";
+  };
 
   return (
     <div className="menubar-area footer-fixed">

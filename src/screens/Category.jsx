@@ -103,44 +103,41 @@ const Category = () => {
               restaurantName={restaurantName}
               tableNumber={tableNumber}
             />
+            
+            <div className="page-header">
+              <h5 className="header-title text-muted">What's on your mind?</h5>
+            </div>
           </div>
           
           {categories.length > 0 ? (
-            <div className="container pt-0">
-              <div className="row g-3">
+            <div className="container">
+              <div className="category-grid">
                 {categories.map((category, index) => (
-                  <div className="col-6" key={index}>
-                    <div className="dz-category-items border border-success overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
-                      <Link
-                        to={`/Menu/${category.menu_cat_id}`}
-                        className="d-block"
-                        onClick={() => handleCategoryClick(category)}
-                      >
-                        <div className="d-flex justify-content-center bg-white">
-                          <span className="py-2 rounded-bottom-3 text-center m-0 font_size-14 text-success">
-                            {toTitleCase(category.category_name)}
-                            <span className="small-number gray-text">
-                              <span className=""> ({category.menu_count})</span>
-                            </span>
-                          </span>
-                        </div>
-                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
-                          <img
-                            style={{
-                              width: "100%",
-                              height: "180px",
-                              objectFit: "cover",
-                            }}
-                            src={category.image || defaultImg}
-                            alt={category.category_name}
-                            onError={(e) => {
-                              e.target.src = south;
-                            }}
-                          />
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
+                 <Link
+                 key={index}
+                 to={`/Menu/${category.menu_cat_id}`}
+                 className="category-card"
+                 onClick={() => handleCategoryClick(category)}
+               >
+                 <div className="category-image-container">
+                   <img
+                     className="category-image"
+                     src={category.image || defaultImg}
+                     alt={category.category_name}
+                     onError={(e) => {
+                       e.target.src = defaultImg;
+                     }}
+                   />
+                 </div>
+                 <div className="category-text-container">
+                   <div className="category-name">
+                     {toTitleCase(category.category_name)}
+                   </div>
+                   <div className="category-count">
+                     ({category.menu_count})
+                   </div>
+                 </div>
+               </Link>
                 ))}
               </div>
             </div>

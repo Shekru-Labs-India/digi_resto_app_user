@@ -515,12 +515,12 @@ const OfferBanner = () => {
                               borderRadius: "0px 0px 7px 0px",
                             }}
                           >
-                            <span className="text-white">
-                              <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                              <span className="font_size_10">
+
+                              <span className="font_size_10 text-white">
+                              <i className="ri-percent-line me-1 font_size_14"></i>
                                 {menu.offer}% Off
                               </span>
-                            </span>
+                          
                           </div>
                         )}
                       </div>

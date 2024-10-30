@@ -11582,9 +11582,10 @@ hr.dotted {
     z-index: 99999;
     visibility: hidden; }
     .dark-overlay.active {
-      visibility: visible;
-      background: rgba(18, 11, 1, 0.5);
-      backdrop-filter: blur(15px); }
+      -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  background: #08200052;
+  visibility: visible; }
   
   .footer {
     height: auto;
@@ -30809,9 +30810,11 @@ hr.dotted {
     z-index: 99999;
     visibility: hidden; }
     .dark-overlay.active {
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      background: #08200052;
       visibility: visible;
-      background: rgba(18, 11, 1, 0.5);
-      backdrop-filter: blur(15px); }
+    }
   
   .footer {
     height: auto;

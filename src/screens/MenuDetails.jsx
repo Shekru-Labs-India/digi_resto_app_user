@@ -666,12 +666,12 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        <span className="text-white">
-                          <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                          <span className="font_size_10">
+                        
+                          <span className="font_size_10 text-white">
+                          <i className="ri-percent-line me-1 font_size_14"></i>
                             {productDetails.offer}% Off
                           </span>
-                        </span>
+                      
                       </div>
                     )}
                   </>

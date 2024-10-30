@@ -463,7 +463,7 @@ const Search = () => {
         <div className="container pt-0">
           <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">
-              <i className="ri-search-line fs-3 gray-text"></i>
+              <i className="ri-search-line fs-3 text-primary"></i>
             </span>
             <input
               type="search"
@@ -586,9 +586,9 @@ const Search = () => {
                         borderRadius: "7px 0px 7px 0px",
                       }}
                     >
-                      <span className="text-white">
-                        <i className="ri-discount-percent-line me-1 font_size_14"></i>
-                        <span className="font_size_10">{menu.offer}% Off</span>
+                      <span className="font_size_10 text-white">
+                        <i className="ri-percent-line me-1 font_size_14"></i>
+                        {menu.offer}% Off
                       </span>
                     </div>
                   )}
