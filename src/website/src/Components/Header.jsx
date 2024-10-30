@@ -64,7 +64,7 @@ const Header = () => {
 
           {/* Menu For Desktop Device */}
           <div className="main-nav">
-            <nav className="navbar navbar-expand-lg fixed-top bg-transparent">
+            <nav className="navbar navbar-expand-lg fixed-top bg-transparent d-none d-lg-block">
               <div className="container">
                 <Link className="navbar-brand" to="/">
                   <img src={logo} alt="Rimu Logo" width="60" height="60" />
