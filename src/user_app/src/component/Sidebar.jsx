@@ -67,6 +67,40 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
   }, [isDarkMode]);
 
+  const navLinks = [
+    {
+      path: "/user_app/Menu",
+      icon: "ri-bowl-line",
+      text: "Menu",
+      hasVegToggle: true
+    },
+    {
+      path: "/user_app/Category",
+      icon: "ri-list-check-2",
+      text: "Category"
+    },
+    {
+      path: "/user_app/Wishlist",
+      icon: "ri-heart-3-line",
+      text: "Favourite"
+    },
+    {
+      path: "/user_app/MyOrder",
+      icon: "ri-drinks-2-line",
+      text: "My Orders"
+    },
+    {
+      path: "/user_app/Cart",
+      icon: "ri-shopping-cart-line",
+      text: "Cart"
+    },
+    {
+      path: "/user_app/Profile",
+      icon: userData && userData.customer_id ? "ri-user-3-fill" : "ri-user-3-line",
+      text: "Profile"
+    }
+  ];
+
   return (
     <>
       <div className={`sidebar ${isOpen ? "show" : ""}`}>
@@ -104,86 +138,44 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </div>
         </div>
         <ul className="nav navbar-nav pe-0">
-          <li>
-            <Link
-              className="nav-link active d-flex align-items-center justify-content-between"
-              to="/Menu"
-            >
-              <div className="d-flex align-items-center">
-                <span className="dz-icon icon-sm">
-                  <i className="ri-bowl-line fs-3"></i>
-                </span>
-                <span className="">Menu</span>
-              </div>
-              <div className="veg-toggle ">
-                <div
-                  className={`toggle-switch  ${isVegOnly ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent navigation
-                    toggleVegNonVeg();
-                  }}
-                >
-                  <div className="toggle-label">
-                    <span className={`non-veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
-                      Non-Veg
-                    </span>
-                    <span className={`veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
-                      Veg
-                    </span>
-                  </div>
-                  <div className="toggle-button"></div>
+          {navLinks.map((link, index) => (
+            <li key={index}>
+              <Link
+                className="nav-link active d-flex align-items-center justify-content-between"
+                to={link.path}
+              >
+                <div className="d-flex align-items-center">
+                  <span className="dz-icon icon-sm">
+                    <i className={`${link.icon} fs-3`}></i>
+                  </span>
+                  <span className="">{link.text}</span>
                 </div>
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Category">
-              <span className="dz-icon icon-sm">
-                <i className="ri-list-check-2 fs-3"></i>
-              </span>
-              <span className="   ">Category</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Wishlist">
-              <span className="dz-icon icon-sm">
-                <i className="ri-heart-3-line fs-3"></i>
-              </span>
-              <span className="   ">Favourite</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/MyOrder">
-              <span className="dz-icon icon-sm">
-                <i className="ri-drinks-2-line fs-3"></i>
-              </span>
-              <span className="   ">My Orders</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Cart">
-              <span className="dz-icon icon-sm">
-                <i className="ri-shopping-cart-line fs-3"></i>
-              </span>
-              <span className="   ">Cart</span>
-            </Link>
-          </li>
-          <li>
-            <Link className="nav-link active" to="/Profile">
-              <span className="dz-icon icon-sm">
-                <i
-                  className={
-                    userData && userData.customer_id
-                      ? "ri-user-3-fill fs-3"
-                      : "ri-user-3-line fs-3"
-                  }
-                ></i>
-              </span>
-              <span className="   ">Profile</span>
-            </Link>
-          </li>
+                {link.hasVegToggle && (
+                  <div className="veg-toggle">
+                    <div
+                      className={`toggle-switch ${isVegOnly ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleVegNonVeg();
+                      }}
+                    >
+                      <div className="toggle-label">
+                        <span className={`non-veg ${!isVegOnly ? "active" : ""}`}>
+                          <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
+                          Non-Veg
+                        </span>
+                        <span className={`veg ${isVegOnly ? "active" : ""}`}>
+                          <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
+                          Veg
+                        </span>
+                      </div>
+                      <div className="toggle-button"></div>
+                    </div>
+                  </div>
+                )}
+              </Link>
+            </li>
+          ))}
         </ul>
         <div className="sidebar-bottom">
           <div className="sidebar-logo text-center">
