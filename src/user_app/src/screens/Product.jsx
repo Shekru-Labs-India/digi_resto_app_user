@@ -463,7 +463,7 @@ const Product = () => {
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
               <div
-                className={`category-btn border border-2 rounded-5 swiper-slide     ${
+                className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
                   selectedCategory === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
@@ -480,7 +480,7 @@ const Product = () => {
               {categories.map((category) => (
                 <div
                   key={category.menu_cat_id}
-                  className={`category-btn border border-2 rounded-5 swiper-slide     ${
+                  className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
                     selectedCategory === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}

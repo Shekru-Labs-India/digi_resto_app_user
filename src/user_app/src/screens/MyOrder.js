@@ -601,48 +601,45 @@ const renderOrders = () => {
                           </span>
                         </div>
                       </div>
-                          <div className="row">
-                            <div className="col-8 text-start">
-                              <div className="restaurant">
-                                <i className="ri-store-2-line pe-2"></i>
-                                <span className="fw-medium font_size_14">
-                                  {order.restaurant_name.toUpperCase()}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="col-4 text-end">
-                              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
-                              <span className="font_size_12 gray-text">
-                                {order.table_number}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-6">
-                              <div className="menu-info">
-                                <i className="ri-bowl-line pe-2 gray-text"></i>
-                                <span className="gray-text font_size_14">
-                                  {order.menu_count === 0
-                                    ? "No orders"
-                                    : `${order.menu_count} Menu`}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="col-6 text-end">
-                              <span className="text-info font_size_14 fw-semibold">
-                                ₹{order.grand_total}
-                              </span>
-                              <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                                ₹
-                                {(parseFloat(order.grand_total) * 1.1).toFixed(
-                                  2
-                                )}
-                              </span>
-                            </div>
+                      <div className="row">
+                        <div className="col-8 text-start">
+                          <div className="restaurant">
+                            <i className="ri-store-2-line pe-2"></i>
+                            <span className="fw-medium font_size_14">
+                              {order.restaurant_name.toUpperCase()}
+                            </span>
                           </div>
                         </div>
+                        <div className="col-4 text-end">
+                          <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
+                          <span className="font_size_12 gray-text">
+                            {order.table_number}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="menu-info">
+                            <i className="ri-bowl-line pe-2 gray-text"></i>
+                            <span className="gray-text font_size_14">
+                              {order.menu_count === 0
+                                ? "No orders"
+                                : `${order.menu_count} Menu`}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-6 text-end">
+                          <span className="text-info font_size_14 fw-semibold">
+                            ₹{order.grand_total}
+                          </span>
+                          <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                            ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                        <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
                       {activeTab === "placed" && (
                         <div className="d-flex flex-column gap-2">
                           {!completedTimers.has(order.order_id) && (
@@ -667,7 +664,9 @@ const renderOrders = () => {
                             </div>
 
                             {!completedTimers.has(order.order_id) &&
-                              localStorage.getItem(`timer_${order.order_id}`) && (
+                              localStorage.getItem(
+                                `timer_${order.order_id}`
+                              ) && (
                                 <button
                                   className="btn btn-sm btn-danger rounded-pill px-4"
                                   onClick={(e) => {
@@ -682,67 +681,67 @@ const renderOrders = () => {
                         </div>
                       )}
 
-                          {activeTab === "ongoing" && (
-                            <div className="d-flex justify-content-between align-items-center">
-                              <button
-                                className="btn btn-sm btn-outline-primary rounded-pill px-4"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOrderMore(order.order_id);
-                                }}
-                              >
-                                Order More
-                              </button>
-                              <button
-                                className="btn btn-sm btn-success rounded-pill px-4"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCompleteOrder(order.order_id);
-                                }}
-                              >
-                                Complete Order
-                              </button>
-                            </div>
-                          )}
+                      {activeTab === "ongoing" && (
+                        <div className="d-flex justify-content-between align-items-center">
+                          <button
+                            className="btn btn-sm btn-outline-primary rounded-pill px-4"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOrderMore(order.order_id);
+                            }}
+                          >
+                            Order More
+                          </button>
+                          <button
+                            className="btn btn-sm btn-success rounded-pill px-4"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCompleteOrder(order.order_id);
+                            }}
+                          >
+                            Complete Order
+                          </button>
+                        </div>
+                      )}
 
-                          {activeTab === "completed" && (
-                            <div className="container py-0">
-                              <div className="row">
-                                <div className="col-11">
-                                  <div className="text-center">
-                                    <span className="text-success">
-                                      <i className="ri-check-line me-1"></i>
-                                      Order completed
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="col-1 pe-0 text-end">
-                                  {order.invoice_url ? (
-                                    <a 
-                                      href={order.invoice_url}
-                                      download={`invoice_${order.order_number}.pdf`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="cursor-pointer text-decoration-none"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <i className="ri-download-2-line"></i>
-                                    </a>
-                                  ) : null}
-                                </div>
+                      {activeTab === "completed" && (
+                        <div className="container py-0">
+                          <div className="row">
+                            <div className="col-11">
+                              <div className="text-center">
+                                <span className="text-success">
+                                  <i className="ri-check-line me-1"></i>
+                                  Order completed
+                                </span>
                               </div>
                             </div>
-                          )}
-
-                          {activeTab === "canceled" && (
-                            <div className="text-center">
-                              <span className="text-danger">
-                                <i className="ri-close-circle-line me-1"></i>
-                                Order canceled
-                              </span>
+                            <div className="col-1 pe-0 text-end">
+                              {order.invoice_url ? (
+                                <a
+                                  href={order.invoice_url}
+                                  download={`invoice_${order.order_number}.pdf`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="cursor-pointer text-decoration-none"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <i className="ri-download-2-line"></i>
+                                </a>
+                              ) : null}
                             </div>
-                          )}
+                          </div>
                         </div>
+                      )}
+
+                      {activeTab === "canceled" && (
+                        <div className="text-center">
+                          <span className="text-danger">
+                            <i className="ri-close-circle-line me-1"></i>
+                            Order canceled
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </>
@@ -757,7 +756,6 @@ const renderOrders = () => {
   return (
     <>
       <div className="row g-1">
-        
         {!orders || Object.keys(orders).length === 0 ? (
           <div
             className="d-flex justify-content-center align-items-center flex-column"
@@ -766,14 +764,26 @@ const renderOrders = () => {
             <p className="fw-semibold gray-text">
               You haven't placed any {type} orders yet.
             </p>
-            <Link to="/Menu" className="mt-2 fw-semibold">
+            <Link to="/user_app/Menu" className="mt-2 fw-semibold">
               Explore our menus
             </Link>
           </div>
         ) : (
-          renderOrders()
+          <>
+            {renderOrders()}
+            {/* Order More button after orders */}
+            <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
+              <Link
+                to="/user_app/Menu"
+                className="btn btn-outline-primary rounded-pill px-3"
+              >
+                Order More
+              </Link>
+            </div>
+          </>
         )}
 
+        {/* Cancel Modal */}
         {showCancelModal && (
           <div
             className="modal fade show d-block"
@@ -824,8 +834,8 @@ const renderOrders = () => {
             </div>
           </div>
         )}
-        <Bottom />
       </div>
+      <Bottom />
     </>
   );
 };
