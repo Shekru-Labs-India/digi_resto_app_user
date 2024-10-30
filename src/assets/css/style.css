@@ -35506,8 +35506,8 @@ hr.dotted {
         padding: 0 5px;
         font-size: 14px;
         font-weight: 500; }
-    /* .dz-stepper.style-3 {
-      width: 100%; } */
+    .dz-stepper.style-3 {
+      width: 100%; }
       .dz-stepper.style-3 .bootstrap-touchspin {
         display: flex;
         align-items: center;

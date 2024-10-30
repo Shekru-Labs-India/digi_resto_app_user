@@ -494,17 +494,17 @@ const Cart = () => {
                           </p>
                         </div>
 
-                        <div className="col-4 ps-0">
-                          <div className="d-flex justify-content-end align-items-center mt-1">
+                        <div className="col-4 ps-2">
+                          <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                               style={{
-                                height: "30px",
-                                width: "30px",
+                                height: "25px",
+                                width: "25px",
                               }}
                             >
                               <i
-                                className="ri-subtract-line fs-2 mx-2"
+                                className="ri-subtract-line fs-6"
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.preventDefault();
@@ -519,12 +519,12 @@ const Cart = () => {
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                               style={{
-                                height: "30px",
-                                width: "30px",
+                                height: "25px",
+                                width: "25px",
                               }}
                             >
                               <i
-                                className="ri-add-line mx-2 fs-2"
+                                className="ri-add-line  fs-6"
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.preventDefault();

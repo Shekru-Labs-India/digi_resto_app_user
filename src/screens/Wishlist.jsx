@@ -371,7 +371,7 @@ const Wishlist = () => {
     <div className="page-wrapper full-height">
       <main className="page-content space-top mb-5 pb-5">
         <div className="container ">
-        <Header title="Favourite" count={wishlistCount} />
+          <Header title="Favourite" count={wishlistCount} />
 
           <HotelNameAndTable
             restaurantName={restaurantName}
@@ -440,18 +440,19 @@ const Wishlist = () => {
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
                             <div className="custom-card rounded-3 ">
-                            <Link
-  to={`/ProductDetails/${menu.menu_id}`}
-  state={{
-    restaurant_id: menu.restaurant_id,
-    menu_cat_id: menu.menu_cat_id,
-    fromWishlist: true,
-    fromDifferentRestaurant: menu.restaurant_id !== restaurantId,
-    previousRestaurantId: restaurantId
-  }}
-  className="text-decoration-none text-reset"
-  onClick={() => handleMenuClick(menu)}
->
+                              <Link
+                                to={`/ProductDetails/${menu.menu_id}`}
+                                state={{
+                                  restaurant_id: menu.restaurant_id,
+                                  menu_cat_id: menu.menu_cat_id,
+                                  fromWishlist: true,
+                                  fromDifferentRestaurant:
+                                    menu.restaurant_id !== restaurantId,
+                                  previousRestaurantId: restaurantId,
+                                }}
+                                className="text-decoration-none text-reset"
+                                onClick={() => handleMenuClick(menu)}
+                              >
                                 <div className="card-body py-0">
                                   <div className="row">
                                     <div className="col-3 px-0">
@@ -472,7 +473,9 @@ const Wishlist = () => {
                                         }}
                                       />
                                       <div
-                                        className={`border border-1 rounded-circle ${isDarkMode ? 'bg-dark' : 'bg-white'} opacity-75 d-flex justify-content-center align-items-center`}
+                                        className={`border border-1 rounded-circle ${
+                                          isDarkMode ? "bg-dark" : "bg-white"
+                                        } opacity-75 d-flex justify-content-center align-items-center`}
                                         style={{
                                           position: "absolute",
                                           bottom: "3px",
@@ -495,8 +498,11 @@ const Wishlist = () => {
                                         ></i>
                                       </div>
                                       <div
-                                        className={`border ${isDarkMode ? 'bg-dark' : 'bg-white'} opacity-75 d-flex justify-content-center align-items-center ${
-                                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                                        className={`border ${
+                                          isDarkMode ? "bg-dark" : "bg-white"
+                                        } opacity-75 d-flex justify-content-center align-items-center ${
+                                          menu.menu_veg_nonveg.toLowerCase() ===
+                                          "veg"
                                             ? "border-success"
                                             : "border-danger"
                                         }`}
@@ -560,7 +566,7 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i class="ri-delete-bin-line me-1 font_size_14 gray-text"></i>
+                                            <i class="ri-close-fill me-1 font_size_14 gray-text"></i>
                                           </div>
                                         </div>
                                       </div>
