@@ -1,5 +1,6 @@
-import { Routes, Route } from "react-router-dom";
-
+import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Header from "./Components/Header";
 import Home from "./Components/Home";
 import About from "./Components/About";
 import Contact from "./Components/Contact";
@@ -7,17 +8,31 @@ import Features from "./Components/Features";
 import Pricing from "./Components/Pricing";
 import Client from "./Components/Client";
 
-function App() {
+function App({ currentPath }) {
+  const location = useLocation();
+  
+  // Function to render the correct component based on path
+  const renderComponent = () => {
+    switch(currentPath || location.pathname) {
+      case '/features':
+        return <Features />;
+      case '/client':
+        return <Client />;
+      case '/pricing':
+        return <Pricing />;
+      case '/about':
+        return <About />;
+      case '/contact':
+        return <Contact />;
+      default:
+        return <Home />;
+    }
+  };
+
   return (
     <div className="website-wrapper">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/client" element={<Client />} />
-      </Routes>
+      <Header />
+      {renderComponent()}
     </div>
   );
 }

@@ -1,65 +1,70 @@
-import React, { useEffect } from 'react'
-import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
-import UserApp from './user_app/src/App'
-import Website from './website/src/App'
-// Import website components
-import Client from './website/src/Components/Client'
-import Features from './website/src/Components/Features'
-import Pricing from './website/src/Components/Pricing'
-import Home from './website/src/Components/Home'
+import React, { useEffect } from 'react';
+import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import UserApp from './user_app/src/App';
+import Website from './website/src/App';
 
 const AppContent = () => {
   const location = useLocation();
   
+  // Get the base URL for GitHub Pages
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? '/digi_resto_app_user'
+    : '';
+  
   useEffect(() => {
-    // Remove existing resources when route changes
+    // Remove existing resources
     const existingResources = document.querySelectorAll('[data-dynamic="true"]');
     existingResources.forEach(resource => resource.remove());
 
-    if (location.pathname.includes('/user_app')) {
-      // Load CSS files first
+    // Check if the current path is a user_app route
+    const isUserAppRoute = location.pathname.includes('/user_app');
+
+    if (isUserAppRoute) {
+      // User App Resources
       loadCSS([
-        '/user_app/src/assets/css/style.css',
-        '/user_app/src/assets/css/custom.css',
-        '/user_app/src/assets/css/toast.css'  // Add toast CSS
+        `${baseUrl}/user_app/src/assets/css/style.css`,
+        `${baseUrl}/user_app/src/assets/css/custom.css`,
+        `${baseUrl}/user_app/src/assets/css/toast.css`
       ]);
 
-      // Load JS files
       loadJSSequentially([
-        '/user_app/src/assets/js/jquery.js',
-        '/user_app/src/assets/js/toast.js',  // Add toast.js before custom.js
-        // '/user_app/src/assets/js/custom.js'
+        `${baseUrl}/user_app/src/assets/js/jquery.js`,
+        `${baseUrl}/user_app/src/assets/js/toast.js`,
       ]).then(() => {
-        // Initialize toast function
-        window.showToast = function(message, type = 'info') {
-          const toast = document.createElement('div');
-          toast.className = `toast toast-${type} show`;
-          toast.textContent = message;
-          
-          document.body.appendChild(toast);
-          
-          setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 500);
-          }, 3000);
-        };
+        // Toast initialization code...
       });
     } else {
-      // Website styles
+      // Website Resources
       loadCSS([
-        '/assets/website/css/bootstrap.min.css',
-        '/assets/website/css/style.css'
+        `${baseUrl}/website/assets/css/bootstrap.min.css`,
+        `${baseUrl}/website/assets/css/animate.min.css`,
+        `${baseUrl}/website/assets/css/style.css`,
+        `${baseUrl}/website/assets/css/responsive.css`,
+        // Add other website CSS files here
+      ]);
+
+      loadJSSequentially([
+        `${baseUrl}/website/assets/js/jquery.min.js`,
+        `${baseUrl}/website/assets/js/bootstrap.bundle.min.js`,
+        `${baseUrl}/website/assets/js/main.js`,
+        // Add other website JS files here
       ]);
     }
-  }, [location]);
+  }, [location, baseUrl]);
 
   return (
     <Routes>
-      <Route path="user_app/*" element={<UserApp />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/client" element={<Client />} />
-      <Route path="/features" element={<Features />} />
-      <Route path="/pricing" element={<Pricing />} />
+      {/* Website Routes - Pass the path as a prop */}
+      <Route path="/" element={<Website />}>
+        <Route index element={<Website currentPath="/" />} />
+        <Route path="features" element={<Website currentPath="/features" />} />
+        <Route path="client" element={<Website currentPath="/client" />} />
+        <Route path="pricing" element={<Website currentPath="/pricing" />} />
+      </Route>
+      
+      {/* User App Routes */}
+      <Route path="/user_app/*" element={<UserApp />} />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -67,6 +72,7 @@ const AppContent = () => {
 
 const loadCSS = (files) => {
   files.forEach(file => {
+    if (!file) return;
     const existingLink = document.querySelector(`link[href="${file}"]`);
     if (existingLink) return;
 
@@ -80,6 +86,7 @@ const loadCSS = (files) => {
 
 const loadJSSequentially = async (files) => {
   for (const file of files) {
+    if (!file) continue;
     const existingScript = document.querySelector(`script[src="${file}"]`);
     if (existingScript) continue;
 

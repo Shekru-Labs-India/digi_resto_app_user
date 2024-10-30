@@ -1,7 +1,7 @@
 {
   "name": "menumitra",
   "version": "0.1.0",
-  "homepage": "https://Shekru-Labs-India.github.io/digi_resto_app_user",
+  "homepage": "https://shekru-labs-india.github.io/digi_resto_app_user",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.3",
