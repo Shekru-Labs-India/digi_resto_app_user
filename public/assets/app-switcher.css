@@ -1,0 +1,6 @@
+/* Hide all CSS when it's not the active app */
+body[data-app-type="user-app"] link[href*="website"],
+body[data-app-type="website"] link[href*="user_app"] {
+  disabled: true;
+  display: none;
+} 
