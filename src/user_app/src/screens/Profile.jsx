@@ -267,7 +267,10 @@ const Profile = () => {
                       {isLoggedIn ? (
                         <>
                           <i className="ri-user-3-fill me-2 fs-3"></i>
+                         <span className="font_size_14">
+
                           Hello, {toTitleCase(getFirstName(userData.name))}
+                         </span>
                         </>
                       ) : (
                         <Link
@@ -324,7 +327,7 @@ const Profile = () => {
               {isLoggedIn && (
                 <div className="container p-0">
                   <div className="title-bar">
-                    <span className="mb-0      ">Account Settings</span>
+                    <span className="mb-0">Account</span>
                   </div>
                   <Link to="/user_app/EditProfile" className="item-content item-link">
                     <div className="row align-items-center ms-0">
