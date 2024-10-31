@@ -540,6 +540,9 @@ const renderOrders = () => {
     return (
       <div className="text-center py-4">
         <p>No orders available</p>
+        <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-3">
+          Order More
+        </Link>
       </div>
     );
   }
@@ -749,6 +752,12 @@ const renderOrders = () => {
           </div>
         ) : null;
       })}
+      
+      <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
+        <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3">
+          Order More
+        </Link>
+      </div>
     </>
   );
 };
@@ -757,30 +766,16 @@ const renderOrders = () => {
     <>
       <div className="row g-1">
         {!orders || Object.keys(orders).length === 0 ? (
-          <div
-            className="d-flex justify-content-center align-items-center flex-column"
-            style={{ height: "80vh" }}
-          >
+          <div className="d-flex justify-content-center align-items-center flex-column" style={{ height: "80vh" }}>
             <p className="fw-semibold gray-text">
               You haven't placed any {type} orders yet.
             </p>
-            <Link to="/user_app/Menu" className="mt-2 fw-semibold">
-              Explore our menus
+            <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-2">
+              Order More
             </Link>
           </div>
         ) : (
-          <>
-            {renderOrders()}
-            {/* Order More button after orders */}
-            <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
-              <Link
-                to="/user_app/Menu"
-                className="btn btn-outline-primary rounded-pill px-3"
-              >
-                Order More
-              </Link>
-            </div>
-          </>
+          renderOrders()
         )}
 
         {/* Cancel Modal */}
