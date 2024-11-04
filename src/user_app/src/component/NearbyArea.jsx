@@ -128,7 +128,7 @@ const NearbyArea = () => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
       return;
     }
 
@@ -212,7 +212,7 @@ const NearbyArea = () => {
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
     setTimeout(() => {
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
     }, 1500);
   };
   // Update handleLikeClick function
@@ -321,7 +321,7 @@ const NearbyArea = () => {
   const handleAddToCartClick = async (menuItem) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !restaurantId) {
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
       return;
     }
 
@@ -504,7 +504,7 @@ const NearbyArea = () => {
                             </Link>
                           ) : (
                             <Link
-                              to="/Signinscreen"
+                              to="/user_app/Signinscreen"
                               className="border border-1 rounded-circle bg-white opacity-75 me-1"
                               style={{
                                 border: "1px solid gray",
@@ -518,7 +518,7 @@ const NearbyArea = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                navigate("/Signinscreen");
+                                navigate("/user_app/Signinscreen");
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
