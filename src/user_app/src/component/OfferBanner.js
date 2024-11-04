@@ -217,7 +217,7 @@ const OfferBanner = () => {
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
     setTimeout(() => {
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
     }, 1500);
   };
 
@@ -323,7 +323,7 @@ const OfferBanner = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !restaurantId) {
       console.error("Missing required data");
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
       return;
     }
 
@@ -347,7 +347,7 @@ const OfferBanner = () => {
   
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      navigate("/Signinscreen");
+      navigate("/user_app/Signinscreen");
       return;
     }
   
@@ -580,7 +580,7 @@ const OfferBanner = () => {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   if (!userData) {
-                                    navigate("/Signinscreen");
+                                    navigate("/user_app/Signinscreen");
                                   } else {
                                     handleAddToCartClick(menu);
                                   }
@@ -613,7 +613,7 @@ const OfferBanner = () => {
                                 }}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  navigate("/Signinscreen");
+                                  navigate("/user_app/Signinscreen");
                                 }}
                               >
                                 <i className="ri-shopping-cart-2-line fs-6"></i>

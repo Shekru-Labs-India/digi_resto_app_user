@@ -67,9 +67,10 @@ window.showToast = function(type, message) {
 const AppContent = () => {
   const location = useLocation();
   
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? '/digi_resto_app_user'
-    : '';
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "/digi_resto_app_user"
+      : "/digi_resto_app_user";
   
   useEffect(() => {
     // First, remove all dynamic resources
