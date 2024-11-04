@@ -108,16 +108,27 @@ const OfferBanner = () => {
         return;
       }
 
+      // Get user data from localStorage
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      
       console.log("Fetching data...");
       const url = "https://menumitra.com/user_api/get_banner_and_offer_menu_list";
+      const requestBody = {
+        restaurant_id: restaurantId,
+      };
+
+      // Add customer_id and customer_type if user is logged in
+      if (userData?.customer_id) {
+        requestBody.customer_id = userData.customer_id;
+        requestBody.customer_type = userData.customer_type;
+      }
+
       const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-        }),
+        body: JSON.stringify(requestBody)
       };
 
       const response = await fetch(url, requestOptions);
