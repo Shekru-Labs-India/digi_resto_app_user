@@ -68,16 +68,16 @@ const QRScanner = () => {
         <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
       </div>
       
-      {!showCamera && (
+      {/* {!showCamera && (
         <button
           className="btn btn-primary my-3 rounded-pill"
           onClick={handleScanButtonClick}
         >
           <i className="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
         </button>
-      )}
+      )} */}
       
-      {showCamera && (
+      {/* {showCamera && (
         <div
           className="position-relative w-75 mb-4 rounded-5"
           style={{ maxWidth: "300px", aspectRatio: "1 / 1" }}
@@ -100,7 +100,7 @@ const QRScanner = () => {
             }}
           />
         </div>
-      )}
+      )} */}
       
       <div className="container px-0">
         <HotelList />
