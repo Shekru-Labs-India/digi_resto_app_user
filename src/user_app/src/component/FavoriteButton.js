@@ -13,8 +13,8 @@
 //     }
 
 //     const apiUrl = isFavorite
-//       ? "https://menumitra.com/user_api/delete_favourite_menu"
-//       : "https://menumitra.com/user_api/save_favourite_menu";
+//       ? "https://men4u.xyz/user_api/delete_favourite_menu"
+//       : "https://men4u.xyz/user_api/save_favourite_menu";
 
 //     try {
 //       const response = await fetch(apiUrl, {

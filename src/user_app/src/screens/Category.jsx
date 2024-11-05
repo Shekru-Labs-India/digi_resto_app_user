@@ -30,7 +30,7 @@ const Category = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://menumitra.com/user_api/get_category_list_with_image",
+          "https://men4u.xyz/user_api/get_category_list_with_image",
           {
             method: "POST",
             headers: {

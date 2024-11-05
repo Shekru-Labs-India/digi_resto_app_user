@@ -11,7 +11,7 @@ const OrderList = ({ restaurantId, customerId, orderStatus }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://menumitra.com/user_api/get_order_list",
+          "https://men4u.xyz/user_api/get_order_list",
           {
             method: "POST",
             headers: {

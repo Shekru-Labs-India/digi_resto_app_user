@@ -29,7 +29,7 @@ const PopularProducts = () => {
                     })
                 };
 
-                const response = await fetch('https://menumitra.com/user_api/get_category_list', requestOptions);
+                const response = await fetch('https://men4u.xyz/user_api/get_category_list', requestOptions);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

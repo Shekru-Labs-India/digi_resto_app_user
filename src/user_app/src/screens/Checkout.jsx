@@ -111,7 +111,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail",
+        "https://men4u.xyz/user_api/get_cart_detail",
         {
           method: "POST",
           headers: {
@@ -207,7 +207,7 @@ const Checkout = () => {
         userData?.customer_type || localStorage.getItem("customer_type");
 
       const response = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {
@@ -268,7 +268,7 @@ const Checkout = () => {
       console.log("Completing order with ID:", ongoingOrderId);
 
       const response = await fetch(
-        "https://menumitra.com/user_api/complete_order",
+        "https://men4u.xyz/user_api/complete_order",
         {
           method: "POST",
           headers: {
@@ -336,7 +336,7 @@ const Checkout = () => {
 
       // First check for ongoing orders
       const ongoingResponse = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {
@@ -364,7 +364,7 @@ const Checkout = () => {
 
       // If no ongoing orders, proceed with checking placed orders
       const placedResponse = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {
@@ -410,7 +410,7 @@ const Checkout = () => {
       const userData = JSON.parse(localStorage.getItem("userData"));
       // Get order list to find the order number
       const response = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {
@@ -469,7 +469,7 @@ const Checkout = () => {
       console.log("Cancelling order:", existingOrderId); // Debug log
 
       const response = await fetch(
-        "https://menumitra.com/user_api/cancle_order",
+        "https://men4u.xyz/user_api/cancle_order",
         {
           method: "POST",
           headers: {
@@ -544,7 +544,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/create_order",
+        "https://men4u.xyz/user_api/create_order",
         {
           method: "POST",
           headers: {
@@ -598,7 +598,7 @@ const Checkout = () => {
 
       // Fetch the ongoing order details
       const response = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {

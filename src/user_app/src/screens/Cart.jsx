@@ -42,7 +42,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -190,7 +190,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/update_cart_menu_quantity",
+        "https://men4u.xyz/user_api/update_cart_menu_quantity",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -262,7 +262,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

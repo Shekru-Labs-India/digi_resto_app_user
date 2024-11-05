@@ -11,7 +11,7 @@ const AllOrderList = () => {
 
 
   useEffect(() => {
-    fetch("https://menumitra.com/user_api/get_all_orders_of_restaurant", {
+    fetch("https://men4u.xyz/user_api/get_all_orders_of_restaurant", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

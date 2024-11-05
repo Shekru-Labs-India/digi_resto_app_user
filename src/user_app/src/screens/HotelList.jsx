@@ -9,7 +9,7 @@ const HotelList = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch('https://menumitra.com/user_api/get_all_restaurants');
+        const response = await fetch('https://men4u.xyz/user_api/get_all_restaurants');
         const data = await response.json();
         if (data.st === 1) {
           setHotels(data.restaurants);

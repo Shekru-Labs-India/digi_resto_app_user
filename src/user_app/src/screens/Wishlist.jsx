@@ -114,7 +114,7 @@ const Wishlist = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_favourite_list",
+        "https://men4u.xyz/user_api/get_favourite_list",
         {
           method: "POST",
           headers: {
@@ -203,7 +203,7 @@ const Wishlist = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -306,7 +306,7 @@ const Wishlist = () => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/remove_favourite_menu",
+        "https://men4u.xyz/user_api/remove_favourite_menu",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -7,7 +7,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const fetchFavorites = useCallback(async (customerId, restaurantId) => {
     try {
-      const response = await fetch('https://menumitra.com/user_api/get_all_menu_list_by_category', {
+      const response = await fetch('https://men4u.xyz/user_api/get_all_menu_list_by_category', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const addFavorite = async (item, customerId, restaurantId) => {
     try {
-      const response = await fetch('https://menumitra.com/user_api/save_favourite_menu', {
+      const response = await fetch('https://men4u.xyz/user_api/save_favourite_menu', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const removeFavorite = async (itemId, customerId, restaurantId) => {
     try {
-      const response = await fetch('https://menumitra.com/user_api/remove_favourite_menu', {
+      const response = await fetch('https://men4u.xyz/user_api/remove_favourite_menu', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

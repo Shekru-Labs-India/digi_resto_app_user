@@ -36,7 +36,7 @@ const EditProfile = () => {
 
     try {
       setLoading(true);
-      const url = "https://menumitra.com/user_api/account_profile_update";
+      const url = "https://men4u.xyz/user_api/account_profile_update";
       const requestOptions = {
         method: "POST",
         headers: {

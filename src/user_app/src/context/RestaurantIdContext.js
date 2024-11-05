@@ -34,7 +34,7 @@ export const RestaurantIdProvider = ({ children }) => {
 
       try {
         const response = await fetch(
-          "https://menumitra.com/user_api/get_restaurant_details_by_code",
+          "https://men4u.xyz/user_api/get_restaurant_details_by_code",
           {
             method: "POST",
             headers: {

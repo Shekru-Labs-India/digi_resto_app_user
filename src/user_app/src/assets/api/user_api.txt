@@ -1,5 +1,5 @@
 a	API URL	Backend Status	Backend Testing Status	Frontend Status	Frontend Testing Status	Request Data	Positive Responce	Negative Responce																			
-scan_qr_code	https://menumitra.com/user_api/scan_qr_code		done			"{
+scan_qr_code	https://men4u.xyz/user_api/scan_qr_code		done			"{
     ""restaurant_code"":237868
 }"	"{
     ""st"": 1,
@@ -26,7 +26,7 @@ scan_qr_code	https://menumitra.com/user_api/scan_qr_code		done			"{
 st':2,'msg': 'please check data'
 
 }"																			
-get_menu_by_cat	https://menumitra.com/user_api/get_menu_by_cat	D	done			"{
+get_menu_by_cat	https://men4u.xyz/user_api/get_menu_by_cat	D	done			"{
     ""restaurant_id"":2,
     ""cat_id"":14
 
@@ -38,7 +38,7 @@ get_menu_by_cat	https://menumitra.com/user_api/get_menu_by_cat	D	done			"{
             ""menu_id"": 13,
             ""name"": ""Varanbhat"",
             ""veg_nonveg"": ""Veg"",
-            ""image"": ""https://menumitra.com/media/Images/menu3_KpeFM4g.jpeg"",
+            ""image"": ""https://men4u.xyz/media/Images/menu3_KpeFM4g.jpeg"",
             ""spicy_index"": ""Medium"",
             ""price"": 150.0,
             ""category"": ""Veg"",
@@ -52,7 +52,7 @@ get_menu_by_cat	https://menumitra.com/user_api/get_menu_by_cat	D	done			"{
     ""msg"": ""please check data""
 }"																			
 																											
-get_category_list	https://menumitra.com/user_api/get_category_list	WD	done			"{
+get_category_list	https://men4u.xyz/user_api/get_category_list	WD	done			"{
     ""restaurant_id"":3
 
 }"	"{
@@ -98,7 +98,7 @@ get_category_list	https://menumitra.com/user_api/get_category_list	WD	done			"{
     ""st"": 2,
     ""msg"": ""please check data""
 }"																			
-get_banner_list	https://menumitra.com/user_api/get_banner_list	D					"st": 1,																				
+get_banner_list	https://men4u.xyz/user_api/get_banner_list	D					"st": 1,																				
 							"msg": "success",																				
 							"lists": [																				
 							{																				
@@ -120,7 +120,7 @@ get_banner_list	https://menumitra.com/user_api/get_banner_list	D					"st": 1,
 																											
 																											
 																											
-get_menu_details	https://menumitra.com/user_api/get_menu_details	D	done			{	{	"{
+get_menu_details	https://men4u.xyz/user_api/get_menu_details	D	done			{	{	"{
     ""st"": 2,
     ""msg"": ""please check data""
 }"																			
@@ -140,7 +140,7 @@ get_menu_details	https://menumitra.com/user_api/get_menu_details	D	done			{	{	"{
 							}																				
 																											
 																											
-search_menu	https://menumitra.com/user_api/search_menu	D	done			"{
+search_menu	https://men4u.xyz/user_api/search_menu	D	done			"{
      
 ""restaurant_id"":2,
 ""keyword"":""panipuri""
@@ -178,7 +178,7 @@ search_menu	https://menumitra.com/user_api/search_menu	D	done			"{
 																											
 																											
 																											
-account_signup	https://menumitra.com/user_api/account_signup	D	done			{	{																				
+account_signup	https://men4u.xyz/user_api/account_signup	D	done			{	{																				
 																											
 						"name":"rahul",	"st": 1,	"{
     ""st"": 2,
@@ -193,12 +193,12 @@ account_signup	https://menumitra.com/user_api/account_signup	D	done			{	{
     ""st"": 2,
     ""msg"": ""please check data""
 }"																			
-account_verify_otp	https://menumitra.com/user_api/account_verify_otp	D	      done			{	"st": 1,																				
+account_verify_otp	https://men4u.xyz/user_api/account_verify_otp	D	      done			{	"st": 1,																				
 						"mobile":8965432111,	"msg": "success otp correct"																				
 						"otp":1234	}																				
 						}																					
 																											
-account_login	https://menumitra.com/user_api/account_login	D	       done			"{
+account_login	https://men4u.xyz/user_api/account_login	D	       done			"{
 ""mobile"":8965432111
 }"	"{
     ""st"": 1,
@@ -217,7 +217,7 @@ account_login	https://menumitra.com/user_api/account_login	D	       done			"{
 																											
 																											
 																											
-account_profile_update	https://menumitra.com/user_api/account_profile_update	D	     done			{	{	"{
+account_profile_update	https://men4u.xyz/user_api/account_profile_update	D	     done			{	{	"{
     ""st"": 2,
     ""msg"": ""please check data""
 }"																			
@@ -228,7 +228,7 @@ account_profile_update	https://menumitra.com/user_api/account_profile_update	D	 
 						}																					
 																											
 																											
-save_favourite_menu	https://menumitra.com/user_api/save_favourite_menu	D	      done			"{
+save_favourite_menu	https://men4u.xyz/user_api/save_favourite_menu	D	      done			"{
     ""restaurant_id"":2,
     ""menu_id"":3,
     ""customer_id"":3
@@ -244,7 +244,7 @@ save_favourite_menu	https://menumitra.com/user_api/save_favourite_menu	D	      d
 																											
 																											
 																											
-get_order_list	https://menumitra.com/user_api/get_order_list	D	   done			"{
+get_order_list	https://men4u.xyz/user_api/get_order_list	D	   done			"{
     ""restaurant_id"":2,
     ""order_status"":""Completed"",
     ""customer_id"":3
@@ -264,7 +264,7 @@ get_order_list	https://menumitra.com/user_api/get_order_list	D	   done			"{
 							}																				
 																											
 																											
-get_order_details	https://menumitra.com/user_api/get_order_details	D	    done			"{
+get_order_details	https://men4u.xyz/user_api/get_order_details	D	    done			"{
     ""order_number"":323344
 }"	{	"{
     ""st"": 2,
@@ -298,7 +298,7 @@ get_order_details	https://menumitra.com/user_api/get_order_details	D	    done			
 																											
 																											
 																											
-get_favourite_list	https://menumitra.com/user_api/get_favourite_list	D	done			"{
+get_favourite_list	https://men4u.xyz/user_api/get_favourite_list	D	done			"{
     ""customer_id"":3
    
 }"	"{
@@ -336,7 +336,7 @@ get_favourite_list	https://menumitra.com/user_api/get_favourite_list	D	done			"{
 }"""																			
 																											
 																											
-delete_favourite_menu	https://menumitra.com/user_api/delete_favourite_menu		done			"{
+delete_favourite_menu	https://men4u.xyz/user_api/delete_favourite_menu		done			"{
    
      
 ""restaurant_id"":2,
@@ -355,7 +355,7 @@ delete_favourite_menu	https://menumitra.com/user_api/delete_favourite_menu		done
 }"""																			
 																											
 																											
-create_review	https://menumitra.com/user_api/create_review		done			"{
+create_review	https://men4u.xyz/user_api/create_review		done			"{
     ""restaurant_id"":2,
     ""order_id"":1,
     ""customer_id"":3,
@@ -374,7 +374,7 @@ create_review	https://menumitra.com/user_api/create_review		done			"{
 }"""																			
 																											
 																											
-get_product_list_with_offer	https://menumitra.com/user_api/get_product_list_with_offer		done			"{
+get_product_list_with_offer	https://men4u.xyz/user_api/get_product_list_with_offer		done			"{
    
      
 ""restaurant_id"":2
@@ -412,7 +412,7 @@ get_product_list_with_offer	https://menumitra.com/user_api/get_product_list_with
     """"msg"""": """"please check data""""
 }"""																			
 																											
-create_order	https://menumitra.com/user_api/create_order		done			"{
+create_order	https://men4u.xyz/user_api/create_order		done			"{
    
      
     ""customer_id"":3,         
@@ -436,7 +436,7 @@ create_order	https://menumitra.com/user_api/create_order		done			"{
 }"																			
 																											
 																											
-get_product_list	https://menumitra.com/user_api/get_product_list		done			"{
+get_product_list	https://men4u.xyz/user_api/get_product_list		done			"{
 ""restaurant_id"":13,
 ""cat_id"":14
 }"	"{
@@ -500,7 +500,7 @@ get_product_list	https://menumitra.com/user_api/get_product_list		done			"{
 }"""																			
 																											
 																											
-get_special_menu_list	https://menumitra.com/user_api/get_special_menu_list		done			"{
+get_special_menu_list	https://men4u.xyz/user_api/get_special_menu_list		done			"{
 ""restaurant_id"":13
 }"	"{
     ""st"": 1,
@@ -551,7 +551,7 @@ get_special_menu_list	https://menumitra.com/user_api/get_special_menu_list		done
    ""msg"": ""please check data""
 }"																			
 																											
-get_restaurant_details_by_code	https://menumitra.com/user_api/get_restaurant_details_by_code		done			" {
+get_restaurant_details_by_code	https://men4u.xyz/user_api/get_restaurant_details_by_code		done			" {
 ""restaurant_code"":611447
    }"	"{
     ""st"": 1,

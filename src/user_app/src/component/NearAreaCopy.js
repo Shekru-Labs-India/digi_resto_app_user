@@ -59,7 +59,7 @@ const NearbyArea = () => {
   const fetchAllMenuListByCategory = async () => {
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_all_menu_list_by_category",
+        "https://men4u.xyz/user_api/get_all_menu_list_by_category",
         {
           method: "POST",
           headers: {
@@ -88,7 +88,7 @@ const NearbyArea = () => {
     const fetchMenuData = async () => {
       try {
         const response = await fetch(
-          "https://menumitra.com/user_api/get_special_menu_list",
+          "https://men4u.xyz/user_api/get_special_menu_list",
           {
             method: "POST",
             headers: {
@@ -144,8 +144,8 @@ const NearbyArea = () => {
       const isFavorite = menuItem.is_favourite;
 
       const apiUrl = isFavorite
-        ? "https://menumitra.com/user_api/remove_favourite_menu"
-        : "https://menumitra.com/user_api/save_favourite_menu";
+        ? "https://men4u.xyz/user_api/remove_favourite_menu"
+        : "https://men4u.xyz/user_api/save_favourite_menu";
 
       const response = await fetch(apiUrl, {
         method: "POST",

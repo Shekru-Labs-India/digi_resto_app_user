@@ -32,7 +32,7 @@ export const CartProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_cart_detail_add_to_cart",
+        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
         {
           method: "POST",
           headers: {
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }) => {
   
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/add_to_cart",
+        "https://men4u.xyz/user_api/add_to_cart",
         {
           method: "POST",
           headers: {
@@ -138,7 +138,7 @@ export const CartProvider = ({ children }) => {
   
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/remove_from_cart",
+        "https://men4u.xyz/user_api/remove_from_cart",
         {
           method: "POST",
           headers: {

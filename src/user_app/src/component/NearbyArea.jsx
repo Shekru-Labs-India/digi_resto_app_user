@@ -80,7 +80,7 @@ const NearbyArea = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_special_menu_list",
+        "https://men4u.xyz/user_api/get_special_menu_list",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -228,7 +228,7 @@ const NearbyArea = () => {
 
     try {
       const response = await fetch(
-        `https://menumitra.com/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -290,7 +290,7 @@ const NearbyArea = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://menumitra.com/user_api/get_full_half_price_of_menu", {
+      const response = await fetch("https://men4u.xyz/user_api/get_full_half_price_of_menu", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

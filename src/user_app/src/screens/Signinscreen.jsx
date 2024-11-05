@@ -27,7 +27,7 @@ const Signinscreen = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://menumitra.com/user_api/guest_login", {
+      const response = await fetch("https://men4u.xyz/user_api/guest_login", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -70,7 +70,7 @@ const Signinscreen = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://menumitra.com/user_api/account_login", {
+      const response = await fetch("https://men4u.xyz/user_api/account_login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile }),

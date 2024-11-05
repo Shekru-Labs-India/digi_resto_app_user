@@ -14,12 +14,12 @@ export const MenuDataProvider = ({ children }) => {
 
             try {
                 const [bannerResponse, featuredResponse] = await Promise.all([
-                    fetch('https://menumitra.com/user_api/get_banner_and_offer_menu_list', {
+                    fetch('https://men4u.xyz/user_api/get_banner_and_offer_menu_list', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ restaurant_id: restaurantId }),
                     }),
-                    fetch('https://menumitra.com/user_api/get_all_menu_list_by_category', {
+                    fetch('https://men4u.xyz/user_api/get_all_menu_list_by_category', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ restaurant_id: restaurantId }),

@@ -38,7 +38,7 @@ const Verifyotp = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://menumitra.com/user_api/account_verify_otp", {
+      const response = await fetch("https://men4u.xyz/user_api/account_verify_otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

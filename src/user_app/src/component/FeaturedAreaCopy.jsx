@@ -24,7 +24,7 @@ const FeaturedArea = () => {
           throw new Error("Restaurant ID is not available");
         }
         const response = await fetch(
-          "https://menumitra.com/user_api/get_banner_and_offer_menu_list", // Updated URL
+          "https://men4u.xyz/user_api/get_banner_and_offer_menu_list", // Updated URL
           {
             method: "POST",
             headers: {

@@ -67,7 +67,7 @@ const MyOrder = () => {
         }
 
         const response = await fetch(
-          "https://menumitra.com/user_api/get_order_list",
+          "https://men4u.xyz/user_api/get_order_list",
           {
             method: "POST",
             headers: {
@@ -335,7 +335,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/complete_order",
+        "https://men4u.xyz/user_api/complete_order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -399,7 +399,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const handleOrderStatusChange = async (orderId) => {
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/change_status_to_ongoing",
+        "https://men4u.xyz/user_api/change_status_to_ongoing",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -462,7 +462,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
       const userData = JSON.parse(localStorage.getItem("userData"));
       const response = await fetch(
-        "https://menumitra.com/user_api/cancle_order",
+        "https://men4u.xyz/user_api/cancle_order",
         {
           method: "POST",
           headers: {
@@ -490,7 +490,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
         // Fetch updated order list
         const updatedResponse = await fetch(
-          "https://menumitra.com/user_api/get_order_list",
+          "https://men4u.xyz/user_api/get_order_list",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

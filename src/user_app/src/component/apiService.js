@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://menumitra.com/user_api';
+const API_BASE_URL = 'https://men4u.xyz/user_api';
 
 export const fetchMenuData = async (customerId, restaurantId) => {
   try {

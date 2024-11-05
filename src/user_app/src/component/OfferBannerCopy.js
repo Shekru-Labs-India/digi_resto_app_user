@@ -13,7 +13,7 @@ const OfferBanner = () => {
         const fetchData = async (retryCount = 0) => {
             try {
                 console.log('Fetching data...');
-                const url = 'https://menumitra.com/user_api/get_banner_and_offer_menu_list'; // Updated URL
+                const url = 'https://men4u.xyz/user_api/get_banner_and_offer_menu_list'; // Updated URL
                 const requestOptions = {
                     method: 'POST',
                     headers: {

@@ -70,7 +70,7 @@ const TrackOrder = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://menumitra.com/user_api/get_full_half_price_of_menu",
+        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
         {
           method: "POST",
           headers: {
@@ -399,7 +399,7 @@ const TrackOrder = () => {
       );
 
       const response = await fetch(
-        "https://menumitra.com/user_api/update_placed_order",
+        "https://men4u.xyz/user_api/update_placed_order",
         {
           method: "POST",
           headers: {
@@ -508,7 +508,7 @@ const TrackOrder = () => {
         };
 
         const response = await fetch(
-          "https://menumitra.com/user_api/search_menu",
+          "https://men4u.xyz/user_api/search_menu",
           {
             method: "POST",
             headers: {
@@ -602,7 +602,7 @@ const TrackOrder = () => {
       // If there's an existing order, add to it
       if (orderDetails?.order_details?.order_id) {
         const response = await fetch(
-          "https://menumitra.com/user_api/add_to_existing_order",
+          "https://men4u.xyz/user_api/add_to_existing_order",
           {
             method: "POST",
             headers: {
@@ -727,7 +727,7 @@ const TrackOrder = () => {
 
     try {
       const response = await fetch(
-        `https://menumitra.com/user_api/${
+        `https://men4u.xyz/user_api/${
           isFavorite ? "remove" : "save"
         }_favourite_menu`,
         {
@@ -793,7 +793,7 @@ const TrackOrder = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://menumitra.com/user_api/get_order_details",
+        "https://men4u.xyz/user_api/get_order_details",
         {
           method: "POST",
           headers: {
@@ -960,7 +960,7 @@ const TrackOrder = () => {
       };
 
       const response = await fetch(
-        "https://menumitra.com/user_api/update_placed_order",
+        "https://men4u.xyz/user_api/update_placed_order",
         {
           method: "POST",
           headers: {
@@ -1019,7 +1019,7 @@ const TrackOrder = () => {
       };
 
       const response = await fetch(
-        "https://menumitra.com/user_api/add_to_existing_order",
+        "https://men4u.xyz/user_api/add_to_existing_order",
         {
           method: "POST",
           headers: {
@@ -1067,7 +1067,7 @@ const TrackOrder = () => {
       }
 
       const response = await fetch(
-        "https://menumitra.com/user_api/get_order_list",
+        "https://men4u.xyz/user_api/get_order_list",
         {
           method: "POST",
           headers: {

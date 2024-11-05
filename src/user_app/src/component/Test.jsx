@@ -26,7 +26,7 @@ const Test = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://menumitra.com/user_api/get_order_details",
+          "https://men4u.xyz/user_api/get_order_details",
           {
             method: "POST",
             headers: {
