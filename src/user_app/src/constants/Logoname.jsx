@@ -3,7 +3,7 @@ import React from 'react'
 import updateLogo from "../assets/logos/menumitra_logo_128.png";
 const Logoname = () => {
   return (
-    <div className="logotitle" style={{ textAlign: "center" }}>
+    <div className="logotitle mt-3" style={{ textAlign: "center" }}>
       <h4 className="title">
         {" "}
         <img

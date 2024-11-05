@@ -68,7 +68,7 @@ const AppContent = () => {
   const location = useLocation();
   
   const baseUrl =
-    process.env.NODE_ENV === "production"
+    process.env.NODE_ENV === "development"
       ? "/digi_resto_app_user"
       : "/digi_resto_app_user";
   
@@ -105,7 +105,7 @@ const AppContent = () => {
     } else {
       // Website Resources
       const websiteCSS = [
-        'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css',
+        // 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css',
         'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css',
         'https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css',
         '/website/src/assets/css/style.css',

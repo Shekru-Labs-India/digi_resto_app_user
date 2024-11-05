@@ -25,6 +25,7 @@ import AllOrderList from "./component/AllOrderList";
 import { ThemeProvider } from "./context/ThemeContext";
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
+import { PopupProvider } from './context/PopupContext';
 
 function App() {
   const { restaurantCode } = useParams();
@@ -35,40 +36,42 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <RestaurantIdProvider
-        restaurantCode={restaurantCode}
-        restaurantId={restaurantId}
-      >
-        <CartProvider>
-          <div className="user-app-root">
-            <Routes>
-              <Route path="Index" element={<QRScreen />} />
-              <Route path=":restaurantCode/:table_number" element={<HomeScreen />} />
-              <Route path=":restaurantCode" element={<ValidateAndNavigate />} />
-              <Route path="AllOrderList" element={<AllOrderList />} />
+    <PopupProvider>
+      <ThemeProvider>
+        <RestaurantIdProvider
+          restaurantCode={restaurantCode}
+          restaurantId={restaurantId}
+        >
+          <CartProvider>
+            <div className="user-app-root">
+              <Routes>
+                <Route path="Index" element={<QRScreen />} />
+                <Route path=":restaurantCode/:table_number" element={<HomeScreen />} />
+                <Route path=":restaurantCode" element={<ValidateAndNavigate />} />
+                <Route path="AllOrderList" element={<AllOrderList />} />
 
-              <Route path="Signinscreen" element={<Signinscreen />} />
-              <Route path="Signupscreen" element={<Signupscreen />} />
-              <Route path="Verifyotp" element={<Verifyotp />} />
-              <Route path="Wishlist" element={<Wishlist />} />
-              <Route path="Cart" element={<Cart />} />
-              <Route path="Checkout" element={<Checkout />} />
-              <Route path="Category" element={<Category />} />
-              <Route path="Profile" element={<Profile />} />
-              <Route path="EditProfile" element={<EditProfile />} />
-              <Route path="MyOrder" element={<MyOrder />} />
-              <Route path="Menu/:categoryId?" element={<Product />} />
-              <Route path="Search" element={<Search />} />
-              <Route path="ProductDetails/:menuId" element={<MenuDetails />} />
-              <Route path="TrackOrder/:order_number" element={<TrackOrder />} />
-              <Route path="" element={<Navigate to="Index" replace />} />
-              <Route path="*" element={<Navigate to="Index" replace />} />
-            </Routes>
-          </div>
-        </CartProvider>
-      </RestaurantIdProvider>
-    </ThemeProvider>
+                <Route path="Signinscreen" element={<Signinscreen />} />
+                <Route path="Signupscreen" element={<Signupscreen />} />
+                <Route path="Verifyotp" element={<Verifyotp />} />
+                <Route path="Wishlist" element={<Wishlist />} />
+                <Route path="Cart" element={<Cart />} />
+                <Route path="Checkout" element={<Checkout />} />
+                <Route path="Category" element={<Category />} />
+                <Route path="Profile" element={<Profile />} />
+                <Route path="EditProfile" element={<EditProfile />} />
+                <Route path="MyOrder" element={<MyOrder />} />
+                <Route path="Menu/:categoryId?" element={<Product />} />
+                <Route path="Search" element={<Search />} />
+                <Route path="ProductDetails/:menuId" element={<MenuDetails />} />
+                <Route path="TrackOrder/:order_number" element={<TrackOrder />} />
+                <Route path="" element={<Navigate to="Index" replace />} />
+                <Route path="*" element={<Navigate to="Index" replace />} />
+              </Routes>
+            </div>
+          </CartProvider>
+        </RestaurantIdProvider>
+      </ThemeProvider>
+    </PopupProvider>
   );
 }
 

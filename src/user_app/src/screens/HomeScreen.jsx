@@ -86,7 +86,9 @@ const HomeScreen = () => {
     <div>
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
-          <div className="header-content d-flex justify-content-between">
+          <div className="header-content d-flex justify-content-between"
+            style={{ zIndex: 1040, position: 'relative' }}
+          >
             <div className="">
               <img
                 src={logo}
