@@ -13,7 +13,7 @@
     "web-vitals": "^2.1.4"
   },
 
-  "homepage": "https://Harshal-Tasgaonkar.github.io/menumitra",
+  "homepage": "/",
 
   "scripts": {
     "start": "react-scripts start",
