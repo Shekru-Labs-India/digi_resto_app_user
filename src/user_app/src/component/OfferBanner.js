@@ -576,7 +576,7 @@ const OfferBanner = () => {
                           <div className="d-flex justify-content-end col-6">
                             {userData ? (
                               <Link
-                                to={userData ? "#" : "/Signinscreen"}
+                                to={userData ? "#" : "/user_app/Signinscreen"}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   if (!userData) {
@@ -600,7 +600,7 @@ const OfferBanner = () => {
                               </Link>
                             ) : (
                               <Link
-                                to="/Signinscreen"
+                                to="/user_app/Signinscreen"
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
                                   border: "1px solid gray",

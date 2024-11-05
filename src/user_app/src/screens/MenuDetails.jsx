@@ -258,7 +258,7 @@ const MenuDetails = () => {
     const currentCustomerId = userData?.customer_id;
 
     if (!currentCustomerId) {
-      navigate("/Signinscreen", { 
+      navigate("/user_app/Signinscreen", { 
         state: { 
           from: location.pathname,
           menuId: menuId 
@@ -853,7 +853,7 @@ const MenuDetails = () => {
                     <button
                       className="btn btn-success rounded-pill"
                       onClick={() =>
-                        navigate("/Signinscreen", {
+                        navigate("/user_app/Signinscreen", {
                           state: {
                             from: location.pathname,
                             menuId: menuId,
