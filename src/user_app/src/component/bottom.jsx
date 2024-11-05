@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import LoaderGif from "../screens/LoaderGIF";
@@ -20,6 +20,13 @@ const Bottom = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [view, setView] = useState('login'); // 'login', 'verify', 'signup'
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  const [checkboxError, setCheckboxError] = useState('');
+  const checkboxRef = useRef(null);
 
   const isHomePath = (pathname) => {
     const homePathPattern = new RegExp(
@@ -89,7 +96,6 @@ const Bottom = () => {
   const handleSignIn = async () => {
     if (!isMobileValid) {
       setError("Mobile number must be 10 digits");
-      window.showToast("error", "Please enter a valid 10-digit mobile number");
       return;
     }
     setLoading(true);
@@ -112,28 +118,22 @@ const Bottom = () => {
           localStorage.setItem("customer_id", data.customer_id);
 
           setOtpSent(true);
-          window.showToast("success", "OTP has been sent successfully!");
-          hideLoginPopup();
-          navigate("/user_app/Verifyotp");
-          setMobile("");
+          setView('verify');
           
           localStorage.setItem("customer_type", "registered");
           localStorage.setItem("isGuest", "false");
         } else {
-          window.showToast("info", data.msg || "Sign in failed. Please try again.");
+          setError(data.msg || "Sign in failed. Please try again.");
         }
       } else {
-        window.showToast("warn", data.msg || `HTTP error! Status: ${response.status}`);
+        setError(data.msg || `HTTP error! Status: ${response.status}`);
         if (data.st === 2) {
-          hideLoginPopup();
-          setTimeout(() => {
-            navigate("/user_app/Signupscreen");
-          }, 3000);
+          setView('signup');
         }
       }
     } catch (error) {
       console.error("Error signing in:", error);
-      window.showToast("error", "Sign in failed. Please try again.");
+      setError("Sign in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -160,21 +160,340 @@ const Bottom = () => {
         };
 
         localStorage.setItem("userData", JSON.stringify(userData));
-        window.showToast("success", "Guest login successful!");
         hideLoginPopup();
         
         const restaurantCode = localStorage.getItem("restaurantCode");
         const tableNumber = localStorage.getItem("tableNumber") || "1";
         
         navigate(`/user_app/${restaurantCode}/${tableNumber}`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
-        window.showToast("error", data.msg || "Guest login failed. Please try again.");
+        setError(data.msg || "Guest login failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during guest login:", error);
-      window.showToast("error", "Guest login failed. Please try again.");
+      setError("Guest login failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
+    if (/^\d$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      if (index < otp.length - 1) {
+        const nextInput = document.getElementById(`digit-${index + 2}`);
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }
+    }
+  };
+
+  const handleVerify = async () => {
+    const enteredOtp = otp.join("");
+    if (!enteredOtp.trim()) {
+      setError("OTP is required");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("https://men4u.xyz/user_api/account_verify_otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile: mobile,
+          otp: enteredOtp
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        const userData = {
+          customer_id: data.customer_details.customer_id,
+          name: data.customer_details.name,
+          mobile: data.customer_details.mobile,
+          customer_type: data.customer_details.customer_type
+        };
+        
+        localStorage.setItem("userData", JSON.stringify(userData));
+        hideLoginPopup();
+        
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber") || "1";
+        
+        navigate(`/user_app/${restaurantCode}/${tableNumber}`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } else {
+        setError("Incorrect OTP. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      setError("Verification failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    
+    if (!agreed) {
+      setCheckboxError("Please accept the terms and conditions");
+      if (checkboxRef.current) {
+        checkboxRef.current.classList.add('shake');
+        setTimeout(() => {
+          checkboxRef.current.classList.remove('shake');
+        }, 500);
+      }
+      return;
+    }
+
+    if (!name.trim() || !mobile.trim()) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("https://men4u.xyz/user_api/account_signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, mobile }),
+      });
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        const generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
+        localStorage.setItem("otp", generatedOtp);
+        localStorage.setItem("mobile", mobile);
+        localStorage.setItem("customer_type", "regular");
+        localStorage.setItem("isGuest", "false");
+
+        setView('verify');
+      } else {
+        setError(data.msg || "Failed to create account");
+        setView('login');
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setError(error.message || "Failed to create account");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckboxChange = (e) => {
+    setAgreed(e.target.checked);
+    if (e.target.checked) {
+      setCheckboxError('');
+      if (checkboxRef.current) {
+        checkboxRef.current.classList.remove('shake');
+      }
+    }
+  };
+
+  const renderContent = () => {
+    switch(view) {
+      case 'verify':
+        return (
+          <div className="account-section mt-1 px-2 py-1">
+            <div className="section-head text-center mb-4">
+              <h4>Verify OTP</h4>
+              <span>Enter OTP sent to {mobile}</span>
+            </div>
+            <div
+              id="otp" 
+              className="digit-group d-flex justify-content-center gap-2 mb-4 mx-auto"
+              style={{width: "200px"}}
+            >
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  className="form-control text-center d-flex align-items-center"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleOtpChange(e, index)}
+                  id={`digit-${index + 1}`}
+                  autoFocus={index === 0}
+                  style={{width: "40px", height: "40px"}}
+                />
+              ))}
+            </div>
+            {error && <div className="text-danger mb-3">{error}</div>}
+            {loading ? (
+              <div className="text-center">{/* <LoaderGif /> */}</div>
+            ) : (
+              <div className="d-grid gap-2">
+                <button
+                  className="btn btn-success rounded-pill"
+                  onClick={handleVerify}
+                  disabled={otp.some((digit) => !digit)}
+                >
+                  Verify OTP
+                </button>
+                <button
+                  className="btn btn-link"
+                  onClick={() => setView("login")}
+                >
+                  Back to Login
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'signup':
+        return (
+          <div className="account-section mt-1 px-2 py-1">
+            <div className="section-head">
+       
+              <h4 className="title m-0">Create Account</h4>
+            </div>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="required-star">*</span>Name
+                </label>
+                <input
+                  type="text"
+                  className={`form-control ${nameError ? 'is-invalid' : ''}`}
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                {nameError && <div className="invalid-feedback">{nameError}</div>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="required-star">*</span>Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  className={`form-control ${mobileError ? 'is-invalid' : ''}`}
+                  placeholder="Enter mobile number"
+                  value={mobile}
+                  onChange={handleMobileChange}
+                  maxLength="10"
+                />
+                {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+              </div>
+
+              <div className="form-group">
+                <div className="form-check" ref={checkboxRef}>
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={agreed}
+                    onChange={handleCheckboxChange}
+                    id="termsCheckbox"
+                  />
+                  <label className="form-check-label" htmlFor="termsCheckbox">
+                    I agree to the Terms and Conditions
+                  </label>
+                </div>
+                {checkboxError && (
+                  <div className="text-danger small mt-1">{checkboxError}</div>
+                )}
+              </div>
+
+              {error && <div className="alert alert-danger">{error}</div>}
+
+              {loading ? (
+                <div className="text-center">
+                  {/* <LoaderGif /> */}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-success rounded-pill w-100"
+                  onClick={handleSignUp}
+                  disabled={!name || !isMobileValid || !agreed}
+                >
+                  Create Account
+                </button>
+              )}
+            </form>
+            <div className="text-center mt-3">
+              <button
+                onClick={() => setView('login')}
+                className="btn btn-link"
+              >
+                Back to Login
+              </button>
+            </div>
+          </div>
+        );
+
+      default: // login view
+        return (
+          <div className="account-section mt-1 px-2 py-1">
+            <div className="section-head">
+            </div>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="required-star">*</span>Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  className={`form-control my-3 w-75 text-center d-flex mx-auto ${mobileError ? 'is-invalid' : ''}`}
+                  placeholder="Enter mobile number"
+                  value={mobile}
+                  onChange={handleMobileChange}
+                  maxLength="10"
+                />
+                {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+              </div>
+              {error && <div className="alert alert-danger">{error}</div>}
+              {loading ? (
+                <div className="text-center">
+                  {/* <LoaderGif /> */}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-success rounded-pill w-75 mx-auto"
+                  onClick={handleSignIn}
+                  disabled={!isMobileValid}
+                >
+                  Send OTP
+                </button>
+              )}
+            </form>
+            <div className="text-center mt-2">
+              Not a member?{" "}
+              <button
+                onClick={() => setView('signup')}
+                className="text-underline btn btn-link p-0"
+              >
+                Create an account
+              </button>
+              <div className="d-flex justify-content-center">
+                <button
+                  className="btn btn-outline-primary rounded-pill btn-sm mt-4"
+                  onClick={handleGuestLogin}
+                >
+                  Continue as Guest
+                </button>
+              </div>
+            </div>
+          </div>
+        );
     }
   };
 
@@ -254,149 +573,10 @@ const Bottom = () => {
               <main className="page-content">
                 <div className="container pt-0 overflow-hidden">
                   <div className="dz-authentication-area dz-flex-box">
-                    <div className="dz-media">
-                      {/* <img
-                        src={authenticationPic1}
-                        alt=""
-                        style={{ height: "250px" }}
-                      /> */}
-                    </div>
-                    <div className="account-section">
-                      <div className="section-head">
-                        <Logoname />
-                        <div className="d-flex justify-content-center">
-                          <span className="    ">
-                            Welcome Back You've{" "}
-                            <span className="    mt-1 "> Been Missed!</span>
-                          </span>
-                        </div>
-                      </div>
-
-                      <form onSubmit={(e) => e.preventDefault()}>
-                        <div className="mb-2">
-                          <label className="my-2" htmlFor="mobile">
-                            <span className="required-star">*</span> Mobile
-                          </label>
-                          <div className=" border border-1 rounded-3 input-group text-muted">
-                            <span className="input-group-text py-0">
-                              <i className="ri-smartphone-line fs-3 text-muted"></i>
-                            </span>
-                            <input
-                              type="tel"
-                              id="mobile"
-                              className={`form-control     ps-2 ${
-                                mobileError ? "is-invalid" : ""
-                              }`}
-                              placeholder="Enter Mobile Number"
-                              value={mobile}
-                              onChange={handleMobileChange}
-                              disabled={otpSent}
-                              autoFocus
-                            />
-                          </div>
-                          {mobileError && (
-                            <div className="invalid-feedback">
-                              {mobileError}
-                            </div>
-                          )}
-                        </div>
-                        {error && <p className="text-danger">{error}</p>}
-                        {loading ? (
-                          <div id="preloader">
-                            <div className="loader">
-                              <LoaderGif />
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              className="btn btn-success rounded-pill text-white mt-4"
-                              onClick={handleSignIn}
-                              disabled={!isMobileValid}
-                            >
-                              Send OTP
-                            </button>
-                          </>
-                        )}
-                      </form>
-                    </div>
-                    <div className="text-center mt-auto  ">
-                      Not a member?{" "}
-                      <Link
-                        to="/user_app/Signupscreen"
-                        className="text-underline    "
-                      >
-                        Create an account
-                      </Link>
-                      <div className="d-flex justify-content-center">
-                        <button
-                          className="btn btn-outline-primary rounded-pill btn-sm mt-4"
-                          onClick={handleGuestLogin}
-                        >
-                          Continue as Guest
-                        </button>
-                      </div>
-                    </div>
+                    {renderContent()}
                   </div>
                 </div>
               </main>
-
-              <div className="text-center mt-3 pt-5">
-                <div className="my-4">
-                  <div class="text-center d-flex justify-content-center">
-                    <a
-                      href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-facebook-circle-fill ri-xl "></i>
-                    </a>
-                    <a
-                      href="https://www.instagram.com/autoprofito/?next=%2F"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-instagram-line ri-xl "></i>
-                    </a>
-                    <a
-                      href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-youtube-line ri-xl "></i>
-                    </a>
-                    <a
-                      href="https://www.linkedin.com/company/104616702/admin/dashboard/"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-linkedin-fill ri-xl "></i>
-                    </a>
-                    <a
-                      href="https://www.threads.net/@autoprofito"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-twitter-x-line ri-xl "></i>
-                    </a>
-                    <a
-                      href="https://t.me/Autoprofito"
-                      class="footer-link mx-3"
-                      target="_blank"
-                    >
-                      <i class="ri-telegram-line ri-xl "></i>
-                    </a>
-                  </div>
-                </div>
-                <p className="text-center text-md-center mt-5">
-                  <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
-                  <a href="https://www.shekruweb.com" target="_blank">
-                    Shekru Labs India Pvt. Ltd.
-                  </a>
-                  <div className="">v1.1</div>
-                </p>
-              </div>
             </div>
           </div>
         </div>
