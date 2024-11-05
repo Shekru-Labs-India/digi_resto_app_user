@@ -322,14 +322,19 @@ const Bottom = () => {
               {otp.map((digit, index) => (
                 <input
                   key={index}
-                  type="text"
+                  type="number"
                   className="form-control text-center d-flex align-items-center"
                   maxLength="1"
                   value={digit}
                   onChange={(e) => handleOtpChange(e, index)}
                   id={`digit-${index + 1}`}
                   autoFocus={index === 0}
-                  style={{width: "40px", height: "40px"}}
+                  style={{
+                    width: "50px", 
+                    height: "50px",
+                    WebkitAppearance: "none",
+                    MozAppearance: "textfield"
+                  }}
                 />
               ))}
             </div>
@@ -451,7 +456,7 @@ const Bottom = () => {
                 </label>
                 <input
                   type="tel"
-                  className={`form-control my-3 w-75 text-center d-flex mx-auto ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control my-3  text-center d-flex mx-auto ${mobileError ? 'is-invalid' : ''}`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
@@ -467,7 +472,7 @@ const Bottom = () => {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-success rounded-pill w-75 mx-auto"
+                  className="btn btn-success rounded-pill w-100 mx-auto"
                   onClick={handleSignIn}
                   disabled={!isMobileValid}
                 >
