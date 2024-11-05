@@ -10,6 +10,7 @@ import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { Toast } from "../assets/js/toast";
+import { usePopup } from '../context/PopupContext';
 
 
 // Convert strings to Title Case
@@ -48,6 +49,8 @@ const ProductCard = ({ isVegOnly }) => {
   const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
     return restaurantId || localStorage.getItem("restaurantId");
   });
+
+  const { showLoginPopup } = usePopup();
 
   // Update the filtering logic
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
@@ -216,12 +219,9 @@ const ProductCard = ({ isVegOnly }) => {
     }
   }, [menuCategories]);
 
-  const handleUnauthorizedFavorite = (navigate) => {
-  window.showToast("info", "Please login to use favorites functionality");
-  setTimeout(() => {
-    navigate("/user_app/Signinscreen");
-  }, 1500);
-};
+  const handleUnauthorizedFavorite = () => {
+    showLoginPopup();
+  };
 
   const handleLikeClick = async (e, menuId) => {
     e.preventDefault();
@@ -347,8 +347,7 @@ const ProductCard = ({ isVegOnly }) => {
     const { restaurantId } = getRestaurantData();
 
     if (!customerId || !restaurantId) {
-      console.error("Missing required data");
-      navigate("/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -367,8 +366,7 @@ const ProductCard = ({ isVegOnly }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      console.error("Customer ID not found");
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -673,7 +671,7 @@ const ProductCard = ({ isVegOnly }) => {
                             </Link>
                           ) : (
                             <Link
-                              to="/user_app/Signinscreen"
+                              to="#"
                               className="border border-1 rounded-circle bg-white opacity-75"
                               style={{
                                 border: "1px solid gray",
@@ -687,7 +685,7 @@ const ProductCard = ({ isVegOnly }) => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                navigate("/user_app/Signinscreen");
+                                showLoginPopup();
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
