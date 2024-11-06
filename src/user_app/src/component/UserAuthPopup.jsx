@@ -19,6 +19,9 @@ const UserAuthPopup = () => {
   const [checkboxError, setCheckboxError] = useState('');
   const checkboxRef = useRef(null);
   const [originalPath, setOriginalPath] = useState(window.location.pathname);
+  const mobileInputRef = useRef(null);
+  const nameInputRef = useRef(null);
+  const otpInputRefs = useRef([]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -34,6 +37,20 @@ const UserAuthPopup = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [hideLoginPopup]);
+
+  useEffect(() => {
+    switch(view) {
+      case 'login':
+        mobileInputRef.current?.focus();
+        break;
+      case 'signup':
+        nameInputRef.current?.focus();
+        break;
+      case 'verify':
+        otpInputRefs.current[0]?.focus();
+        break;
+    }
+  }, [view]);
 
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 10);
@@ -147,11 +164,17 @@ const UserAuthPopup = () => {
       setOtp(newOtp);
 
       if (index < otp.length - 1) {
-        const nextInput = document.getElementById(`digit-${index + 2}`);
-        if (nextInput) {
-          nextInput.focus();
-        }
+        otpInputRefs.current[index + 1]?.focus();
       }
+    }
+  };
+
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const newOtp = [...otp];
+      newOtp[index - 1] = '';
+      setOtp(newOtp);
+      otpInputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -302,11 +325,13 @@ const UserAuthPopup = () => {
                 {otp.map((digit, index) => (
                   <input
                     key={index}
+                    ref={el => otpInputRefs.current[index] = el}
                     type="number"
                     className="form-control text-center d-flex align-items-center"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
                     id={`digit-${index + 1}`}
                     autoFocus={index === 0}
                     style={{
@@ -371,11 +396,13 @@ const UserAuthPopup = () => {
                   <span className="required-star">*</span>Name
                 </label>
                 <input
+                  ref={nameInputRef}
                   type="text"
                   className={`form-control ${nameError ? 'is-invalid' : ''}`}
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  autoFocus
                 />
                 {nameError && <div className="invalid-feedback">{nameError}</div>}
               </div>
@@ -385,12 +412,14 @@ const UserAuthPopup = () => {
                   <span className="required-star">*</span>Mobile Number
                 </label>
                 <input
+                  ref={mobileInputRef}
                   type="tel"
                   className={`form-control ${mobileError ? 'is-invalid' : ''}`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
                   maxLength="10"
+                  autoFocus
                 />
                 {mobileError && <div className="invalid-feedback">{mobileError}</div>}
               </div>
@@ -403,6 +432,7 @@ const UserAuthPopup = () => {
                     checked={agreed}
                     onChange={handleCheckboxChange}
                     id="termsCheckbox"
+                    autoFocus
                   />
                   <label className="form-check-label text-start" htmlFor="termsCheckbox">
                     I agree to the Terms and Conditions
@@ -467,6 +497,7 @@ const UserAuthPopup = () => {
                   <span className="required-star">*</span>Mobile Number
                 </label>
                 <input
+                  ref={mobileInputRef}
                   type="tel"
                   className={`form-control my-3 text-center d-flex mx-auto border border- ${
                     mobileError ? "is-invalid" : ""
@@ -475,6 +506,7 @@ const UserAuthPopup = () => {
                   value={mobile}
                   onChange={handleMobileChange}
                   maxLength="10"
+                  autoFocus
                 />
                 {mobileError && (
                   <div className="invalid-feedback">{mobileError}</div>
