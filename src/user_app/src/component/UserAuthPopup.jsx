@@ -18,6 +18,7 @@ const UserAuthPopup = () => {
   const [agreed, setAgreed] = useState(false);
   const [checkboxError, setCheckboxError] = useState('');
   const checkboxRef = useRef(null);
+  const [originalPath, setOriginalPath] = useState(window.location.pathname);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -117,14 +118,16 @@ const UserAuthPopup = () => {
 
         localStorage.setItem("userData", JSON.stringify(userData));
         hideLoginPopup();
+
+        const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
         
-        const restaurantCode = localStorage.getItem("restaurantCode");
-        const tableNumber = localStorage.getItem("tableNumber") || "1";
+        if (isDefaultRoute) {
+          const restaurantCode = localStorage.getItem("restaurantCode");
+          const tableNumber = localStorage.getItem("tableNumber") || "1";
+          navigate(`/user/${restaurantCode}/${tableNumber}`);
+        }
         
-        navigate(`/user_app/${restaurantCode}/${tableNumber}`);
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        window.location.reload();
       } else {
         setError(data.msg || "Guest login failed. Please try again.");
       }
@@ -183,14 +186,16 @@ const UserAuthPopup = () => {
         
         localStorage.setItem("userData", JSON.stringify(userData));
         hideLoginPopup();
+
+        const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
         
-        const restaurantCode = localStorage.getItem("restaurantCode");
-        const tableNumber = localStorage.getItem("tableNumber") || "1";
+        if (isDefaultRoute) {
+          const restaurantCode = localStorage.getItem("restaurantCode");
+          const tableNumber = localStorage.getItem("tableNumber") || "1";
+          navigate(`/user/${restaurantCode}/${tableNumber}`);
+        }
         
-        navigate(`/user_app/${restaurantCode}/${tableNumber}`);
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        window.location.reload();
       } else {
         setError("Incorrect OTP. Please try again.");
       }
@@ -298,7 +303,7 @@ const UserAuthPopup = () => {
                   <input
                     key={index}
                     type="number"
-                    className="form-control text-center d-flex align-items-center border border-1"
+                    className="form-control text-center d-flex align-items-center"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}
@@ -367,7 +372,7 @@ const UserAuthPopup = () => {
                 </label>
                 <input
                   type="text"
-                  className={`form-control border border-1 ${nameError ? 'is-invalid' : ''}`}
+                  className={`form-control ${nameError ? 'is-invalid' : ''}`}
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -381,7 +386,7 @@ const UserAuthPopup = () => {
                 </label>
                 <input
                   type="tel"
-                  className={`form-control border border-1 ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control ${mobileError ? 'is-invalid' : ''}`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}

@@ -7,6 +7,7 @@ import "swiper/swiper-bundle.css";
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
+import { usePopup } from '../context/PopupContext';
 
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -23,6 +24,7 @@ const NearbyArea = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const hasFetchedData = useRef(false);
+  const { showLoginPopup } = usePopup();
 
   // 1. Single useEffect for initialization and data fetching
   useEffect(() => {
@@ -209,11 +211,8 @@ const NearbyArea = () => {
   };
 
 
-  const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+  const handleUnauthorizedFavorite = () => {
+    showLoginPopup();
   };
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
@@ -321,7 +320,7 @@ const NearbyArea = () => {
   const handleAddToCartClick = async (menuItem) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !restaurantId) {
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -350,7 +349,7 @@ const NearbyArea = () => {
             {menuItems.map((menuItem) => (
               <div key={menuItem.menu_id} className="swiper-slide">
                 <Link
-                  to={`/ProductDetails/${menuItem.menu_id}`}
+                  to={`/user_app/ProductDetails/${menuItem.menu_id}`}
                   state={{ menu_cat_id: menuItem.menu_cat_id }}
                   className="card-link"
                   style={{
@@ -504,7 +503,7 @@ const NearbyArea = () => {
                             </Link>
                           ) : (
                             <Link
-                              to="/user_app/Signinscreen"
+                              to="#"
                               className="border border-1 rounded-circle bg-white opacity-75 me-1"
                               style={{
                                 border: "1px solid gray",
@@ -518,7 +517,7 @@ const NearbyArea = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                navigate("/user_app/Signinscreen");
+                                showLoginPopup();
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>

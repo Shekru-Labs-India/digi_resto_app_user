@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import LoaderGif from "./LoaderGIF";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
+import { usePopup } from '../context/PopupContext';
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
@@ -56,6 +57,8 @@ const MenuDetails = () => {
     return userData?.customer_type || null;
   });
   
+  const { showLoginPopup } = usePopup();
+
   useEffect(() => {
     // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -258,12 +261,7 @@ const MenuDetails = () => {
     const currentCustomerId = userData?.customer_id;
 
     if (!currentCustomerId) {
-      navigate("/user_app/Signinscreen", { 
-        state: { 
-          from: location.pathname,
-          menuId: menuId 
-        } 
-      });
+      showLoginPopup();
       return;
     }
 
@@ -315,7 +313,7 @@ const MenuDetails = () => {
     const currentCustomerId = userData?.customer_id;
 
     if (!currentCustomerId) {
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -329,11 +327,8 @@ const MenuDetails = () => {
   };
 
 
-  const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+  const handleUnauthorizedFavorite = () => {
+    showLoginPopup();
   };
 
   // Function to handle favorite status toggle
@@ -852,14 +847,7 @@ const MenuDetails = () => {
                   {!customerId ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={() =>
-                        navigate("/user_app/Signinscreen", {
-                          state: {
-                            from: location.pathname,
-                            menuId: menuId,
-                          },
-                        })
-                      }
+                      onClick={showLoginPopup}
                     >
                       <i className="ri-login-box-line pe-1 text-white"></i>
                       <div className="text-nowrap text-white">
