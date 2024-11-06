@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePopup } from '../context/PopupContext';
+import logo from "../assets/logos/menumitra_logo_128.png";
 
 const UserAuthPopup = () => {
   const navigate = useNavigate();
@@ -265,71 +266,108 @@ const UserAuthPopup = () => {
       case 'verify':
         return (
           <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head text-center mb-4">
-              <h4>Verify OTP</h4>
-              <span>Enter OTP sent to {mobile}</span>
-            </div>
-            <div
-              id="otp" 
-              className="digit-group d-flex justify-content-center gap-2 mb-4 mx-auto"
-              style={{width: "200px"}}
-            >
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="number"
-                  className="form-control text-center d-flex align-items-center"
-                  maxLength="1"
-                  value={digit}
-                  onChange={(e) => handleOtpChange(e, index)}
-                  id={`digit-${index + 1}`}
-                  autoFocus={index === 0}
-                  style={{
-                    width: "50px", 
-                    height: "50px",
-                    WebkitAppearance: "none",
-                    MozAppearance: "textfield"
-                  }}
-                />
-              ))}
-            </div>
-            {error && <div className="text-danger mb-3">{error}</div>}
-            {loading ? (
-              <div className="text-center">{/* <LoaderGif /> */}</div>
-            ) : (
-              <div className="d-grid gap-2">
-                <button
-                  className="btn btn-success rounded-pill"
-                  onClick={handleVerify}
-                  disabled={otp.some((digit) => !digit)}
-                >
-                  Verify OTP
-                </button>
-                <button
-                  className="btn btn-link"
-                  onClick={() => setView("login")}
-                >
-                  Back to Login
-                </button>
+            <div className="section-head"></div>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div
+                className="header-content d-flex justify-content-center"
+                style={{ zIndex: 1040, position: "relative" }}
+              >
+                <div className="mb-3">
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="me-2"
+                    width="30"
+                    height="30"
+                  />
+                  <span className="text-dark mb-0 mt-1 fw-bolder">
+                    MenuMitra
+                  </span>
+                </div>
               </div>
-            )}
+              <div className="text-center mb-4">
+                <h4>Verify OTP</h4>
+                <span>Enter OTP sent to {mobile}</span>
+              </div>
+              <div
+                id="otp" 
+                className="digit-group d-flex justify-content-center gap-2 mb-4 mx-auto"
+                style={{width: "200px"}}
+              >
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="number"
+                    className="form-control text-center d-flex align-items-center border border-1"
+                    maxLength="1"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e, index)}
+                    id={`digit-${index + 1}`}
+                    autoFocus={index === 0}
+                    style={{
+                      width: "50px", 
+                      height: "50px",
+                      WebkitAppearance: "none",
+                      MozAppearance: "textfield"
+                    }}
+                  />
+                ))}
+              </div>
+              {error && <div className="text-danger mb-3">{error}</div>}
+              {loading ? (
+                <div className="text-center">{/* <LoaderGif /> */}</div>
+              ) : (
+                <div className="d-grid gap-2">
+                  <button
+                    className="btn btn-success rounded-pill w-100 mx-auto"
+                    onClick={handleVerify}
+                    disabled={otp.some((digit) => !digit)}
+                  >
+                    Verify OTP
+                  </button>
+                </div>
+              )}
+            </form>
+            <div className="text-center mt-3">
+              <button
+                onClick={() => setView("login")}
+                className="btn btn-link"
+              >
+                Back to Login
+              </button>
+            </div>
           </div>
         );
 
       case 'signup':
         return (
           <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head">
-              <h4 className="title m-0">Create Account</h4>
-            </div>
+            <div className="section-head"></div>
             <form onSubmit={(e) => e.preventDefault()}>
-              <div className="form-group">
-                <label className="form-label">
+              <div
+                className="header-content d-flex justify-content-center"
+                style={{ zIndex: 1040, position: "relative" }}
+              >
+                <div className="mb-3">
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="me-2"
+                    width="30"
+                    height="30"
+                  />
+                  <span className="text-dark mb-0 mt-1 fw-bolder">
+                    MenuMitra
+                  </span>
+                </div>
+              </div>
+              <div className="form-group mb-3">
+                <label className="form-label d-flex justify-content-start">
                   <span className="required-star">*</span>Name
                 </label>
                 <input
                   type="text"
-                  className={`form-control ${nameError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-1 ${nameError ? 'is-invalid' : ''}`}
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -337,13 +375,13 @@ const UserAuthPopup = () => {
                 {nameError && <div className="invalid-feedback">{nameError}</div>}
               </div>
 
-              <div className="form-group">
-                <label className="form-label">
+              <div className="form-group mb-3">
+                <label className="form-label d-flex justify-content-start">
                   <span className="required-star">*</span>Mobile Number
                 </label>
                 <input
                   type="tel"
-                  className={`form-control ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-1 ${mobileError ? 'is-invalid' : ''}`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
@@ -352,7 +390,7 @@ const UserAuthPopup = () => {
                 {mobileError && <div className="invalid-feedback">{mobileError}</div>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group mb-3">
                 <div className="form-check" ref={checkboxRef}>
                   <input
                     type="checkbox"
@@ -361,7 +399,7 @@ const UserAuthPopup = () => {
                     onChange={handleCheckboxChange}
                     id="termsCheckbox"
                   />
-                  <label className="form-check-label" htmlFor="termsCheckbox">
+                  <label className="form-check-label text-start" htmlFor="termsCheckbox">
                     I agree to the Terms and Conditions
                   </label>
                 </div>
@@ -373,13 +411,11 @@ const UserAuthPopup = () => {
               {error && <div className="alert alert-danger">{error}</div>}
 
               {loading ? (
-                <div className="text-center">
-                  {/* <LoaderGif /> */}
-                </div>
+                <div className="text-center">{/* <LoaderGif /> */}</div>
               ) : (
                 <button
                   type="button"
-                  className="btn btn-success rounded-pill w-100"
+                  className="btn btn-success rounded-pill w-100 mx-auto"
                   onClick={handleSignUp}
                   disabled={!name || !isMobileValid || !agreed}
                 >
@@ -401,28 +437,47 @@ const UserAuthPopup = () => {
       default: // login view
         return (
           <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head">
-            </div>
+            <div className="section-head"></div>
             <form onSubmit={(e) => e.preventDefault()}>
+              <div
+                className="header-content d-flex justify-content-center"
+                style={{ zIndex: 1040, position: "relative" }}
+              >
+                <div className="mb-3">
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="me-2"
+                    width="30"
+                    height="30"
+                  />
+                  <span className="text-dark mb-0 mt-1 fw-bolder">
+                    MenuMitra
+                  </span>
+                </div>
+              
+              </div>
               <div className="form-group">
-                <label className="form-label">
+                <label className="form-label d-flex justify-content-center">
                   <span className="required-star">*</span>Mobile Number
                 </label>
                 <input
                   type="tel"
-                  className={`form-control my-3 text-center d-flex mx-auto ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control my-3 text-center d-flex mx-auto border border- ${
+                    mobileError ? "is-invalid" : ""
+                  }`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
                   maxLength="10"
                 />
-                {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+                {mobileError && (
+                  <div className="invalid-feedback">{mobileError}</div>
+                )}
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
               {loading ? (
-                <div className="text-center">
-                  {/* <LoaderGif /> */}
-                </div>
+                <div className="text-center">{/* <LoaderGif /> */}</div>
               ) : (
                 <button
                   type="button"
@@ -434,14 +489,15 @@ const UserAuthPopup = () => {
                 </button>
               )}
             </form>
-            <div className="text-center mt-2">
+            <div className="text-center  mt-3">
               Not a member?{" "}
-              <button
-                onClick={() => setView('signup')}
-                className="text-underline btn btn-link p-0"
+              <a
+                className="text-underline text-primary"
+                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                onClick={() => setView("signup")}
               >
                 Create an account
-              </button>
+              </a>
               <div className="d-flex justify-content-center">
                 <button
                   className="btn btn-outline-primary rounded-pill btn-sm mt-4"
@@ -464,7 +520,7 @@ const UserAuthPopup = () => {
         }`}
       >
         <div className="container">
-          <div className="offcanvas-body">
+          <div className="offcanvas-body pt-0">
             <div className="page-wrapper full-height">
               <main className="page-content">
                 <div className="container pt-0 overflow-hidden">
