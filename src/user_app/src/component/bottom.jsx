@@ -57,11 +57,11 @@ const Bottom = () => {
         >
           <div className="position-relative">
             <i className="ri-shopping-cart-line"></i>
-            {cartItemCount > 0 && (
+            {/* {cartItemCount > 0 && (
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {cartItemCount}
               </span>
-            )}
+            )} */}
           </div>
           <span className="name">Cart</span>
         </Link>
