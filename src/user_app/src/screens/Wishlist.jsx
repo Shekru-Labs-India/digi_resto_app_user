@@ -8,6 +8,7 @@ import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
+import { usePopup } from '../context/PopupContext';
 
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 
@@ -61,6 +62,8 @@ const Wishlist = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     return cartItems.length > 0 ? cartItems[0].restaurant_id : null;
   });
+
+  const { showLoginPopup } = usePopup();
 
   // Single useEffect for initial data fetch
   useEffect(() => {
@@ -231,22 +234,30 @@ const Wishlist = () => {
   };
 
   const handleAddToCartClick = (menu) => {
-    if (!customerId || !restaurantId) {
-      navigate("/user_app/Signinscreen");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      showLoginPopup();
       return;
     }
 
     if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
-      window.showToast("error", "This item is from a different restaurant. Clear your cart first.");
+      window.showToast("warning", "Please complete or clear your existing cart first");
       return;
     }
 
     setSelectedMenu(menu);
+    setPortionSize('full');
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      showLoginPopup();
+      return;
+    }
+
     if (!selectedMenu) return;
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
@@ -688,15 +699,15 @@ const Wishlist = () => {
             <div className="m-b20 dz-flex-box text-center">
               <div className="dz-cart-about">
                 <div className="">
-                  <Link
+                  <button
                     className="btn btn-outline-primary rounded-pill"
-                    to="/user_app/Signinscreen"
+                    onClick={showLoginPopup}
                   >
                     <i className="ri-lock-2-line me-2 fs-3"></i> Login
-                  </Link>
+                  </button>
                 </div>
                 <span className="mt-4">
-                  Access fresh flavors with a quick login.
+                  Access fresh flavors with a quick login.
                 </span>
               </div>
             </div>

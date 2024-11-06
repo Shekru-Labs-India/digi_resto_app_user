@@ -124,7 +124,7 @@ const UserAuthPopup = () => {
         if (isDefaultRoute) {
           const restaurantCode = localStorage.getItem("restaurantCode");
           const tableNumber = localStorage.getItem("tableNumber") || "1";
-          navigate(`/user/${restaurantCode}/${tableNumber}`);
+          navigate(`/user_app/${restaurantCode}/${tableNumber}`);
         }
         
         window.location.reload();
@@ -192,7 +192,7 @@ const UserAuthPopup = () => {
         if (isDefaultRoute) {
           const restaurantCode = localStorage.getItem("restaurantCode");
           const tableNumber = localStorage.getItem("tableNumber") || "1";
-          navigate(`/user/${restaurantCode}/${tableNumber}`);
+          navigate(`/user_app/${restaurantCode}/${tableNumber}`);
         }
         
         window.location.reload();

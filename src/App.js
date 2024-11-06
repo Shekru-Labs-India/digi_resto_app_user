@@ -97,8 +97,8 @@ const AppContent = () => {
       ];
 
       const userAppJS = [
-        '/user_app/src/assets/js/jquery.js',
-        '/user_app/src/assets/js/toast.js'
+        // '/user_app/src/assets/js/jquery.js',
+        // '/user_app/src/assets/js/toast.js'
       ];
 
       loadResources(userAppCSS, userAppJS, 'user-app');
