@@ -9,6 +9,7 @@ import LoaderGif from "../screens/LoaderGIF";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
+import { usePopup } from '../context/PopupContext';
 
 const pulse = keyframes`
   0% {
@@ -50,6 +51,7 @@ const OfferBanner = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const { showLoginPopup } = usePopup();
 
   useEffect(() => {
     updateCartRestaurantId();
@@ -214,17 +216,15 @@ const OfferBanner = () => {
     }
   }, [menuLists]);
 
-  const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+  const handleUnauthorizedFavorite = () => {
+   
+    showLoginPopup();
   };
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
   if (!userData?.customer_id || userData.customer_type === 'guest') {
-    handleUnauthorizedFavorite(navigate);
+    handleUnauthorizedFavorite();
     return;
   }
 
@@ -347,7 +347,7 @@ const OfferBanner = () => {
   
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
   
@@ -378,8 +378,6 @@ const OfferBanner = () => {
       // Update cart items
       const updatedCartItems = await fetchCartItems();
       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-  
-      // Dispatch cart update event
       window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
   
     } catch (error) {
@@ -427,6 +425,16 @@ const OfferBanner = () => {
       setCustomerType(userData.customer_type);
     }
   }, []);
+
+  const handleCartIconClick = (e, menu) => {
+    e.preventDefault();
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData) {
+      showLoginPopup();
+    } else {
+      handleAddToCartClick(menu);
+    }
+  };
 
   return (
     <div className="dz-box style-3">
@@ -576,15 +584,8 @@ const OfferBanner = () => {
                           <div className="d-flex justify-content-end col-6">
                             {userData ? (
                               <Link
-                                to={userData ? "#" : "/user_app/Signinscreen"}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  if (!userData) {
-                                    navigate("/user_app/Signinscreen");
-                                  } else {
-                                    handleAddToCartClick(menu);
-                                  }
-                                }}
+                                to="#"
+                                onClick={(e) => handleCartIconClick(e, menu)}
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
                                   border: "1px solid gray",
@@ -600,7 +601,7 @@ const OfferBanner = () => {
                               </Link>
                             ) : (
                               <Link
-                                to="/user_app/Signinscreen"
+                                to="#"
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
                                   border: "1px solid gray",
@@ -613,7 +614,7 @@ const OfferBanner = () => {
                                 }}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  navigate("/user_app/Signinscreen");
+                                  showLoginPopup();
                                 }}
                               >
                                 <i className="ri-shopping-cart-2-line fs-6"></i>
