@@ -6,6 +6,7 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
+import { usePopup } from '../context/PopupContext';
 
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -33,6 +34,7 @@ const Search = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } =
     useCart();
+  const { showLoginPopup } = usePopup();
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -196,8 +198,7 @@ const Search = () => {
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === 'guest') {
-      window.showToast("info", "Please login to add items to cart");
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -247,8 +248,7 @@ const Search = () => {
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === 'guest') {
-      window.showToast("info", "Please login to add items to cart");
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 
@@ -293,19 +293,15 @@ const Search = () => {
     }
   };
 
-  const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen"); // Updated path
-    }, 1500);
+  const handleUnauthorizedFavorite = () => {
+    showLoginPopup();
   };
 
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === 'guest') {
-      window.showToast("info", "Please login to add items to favorites");
-      navigate("/user_app/Signinscreen");
+      showLoginPopup();
       return;
     }
 

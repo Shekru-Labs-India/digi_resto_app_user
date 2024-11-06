@@ -1,28 +1,28 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Bottom from "../component/bottom";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import "../assets/css/custom.css";
 import "../assets/css/style.css";
 import Sidebar, { SidebarToggler } from "../component/Sidebar";
+import { usePopup } from '../context/PopupContext';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { showLoginPopup } = usePopup();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem("isDarkMode") === "true");
 
   const handleLogout = () => {
-    const { restaurantId, tableNumber, restaurantCode } = JSON.parse(
-      localStorage.getItem("userData") || "{}"
-    );
+    const restaurantCode = localStorage.getItem("restaurantCode");
+    const tableNumber = localStorage.getItem("tableNumber");
+    
     localStorage.removeItem("customer_id");
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
-    localStorage.setItem("RestaurantId", restaurantId);
-    localStorage.setItem("TableNumber", tableNumber);
-    localStorage.setItem("RestaurantCode", restaurantCode);
-    navigate("/user_app/Signinscreen");
+    
+    showLoginPopup();
   };
 
   const toTitleCase = (str) => {
@@ -97,14 +97,12 @@ const Profile = () => {
                 {userData?.name ? (
                   `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 ) : (
-                  <>
-                    <Link
-                      className="btn btn-outline-primary rounded-pill"
-                      to="/user_app/Signinscreen"
-                    >
-                      <i className="ri-lock-2-line me-2 fs-3"></i> Login
-                    </Link>
-                  </>
+                  <button
+                    className="btn btn-outline-primary rounded-pill"
+                    onClick={showLoginPopup}
+                  >
+                    <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                  </button>
                 )}
               </span>
               <div className="mail ms-3 gray-text  ">{userData?.mobile}</div>
@@ -273,12 +271,12 @@ const Profile = () => {
                          </span>
                         </>
                       ) : (
-                        <Link
-                          className="btn btn-outline-primary rounded-pill "
-                          to="/user_app/Signinscreen"
+                        <button
+                          className="btn btn-outline-primary rounded-pill"
+                          onClick={showLoginPopup}
                         >
                           <i className="ri-lock-2-line me-2 fs-3"></i> Login
-                        </Link>
+                        </button>
                       )}
                     </div>
                   </h4>

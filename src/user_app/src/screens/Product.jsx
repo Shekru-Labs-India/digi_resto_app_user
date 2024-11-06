@@ -5,6 +5,7 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import { usePopup } from '../context/PopupContext';
 
 import Bottom from "../component/bottom";
 import Header from "../components/Header";
@@ -60,6 +61,8 @@ const Product = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
+
+  const { showLoginPopup } = usePopup();
 
   // Define applySort function
   const applySort = () => {
@@ -199,9 +202,9 @@ const Product = () => {
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-  if (!userData?.customer_id || userData.customer_type === 'guest') {
-    handleUnauthorizedFavorite(navigate);
-    return;
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      showLoginPopup();
+      return;
     }
 
     if (!restaurantId) return;
@@ -346,13 +349,8 @@ const Product = () => {
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-
-    // Check if user is logged in or is a guest
-    if (!userData?.customer_id ) {
-      window.showToast("info", "Please login to add items to cart");
-      setTimeout(() => {
-        navigate("/user_app/Signinscreen");
-      }, 1500);
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      showLoginPopup();
       return;
     }
 
@@ -368,6 +366,12 @@ const Product = () => {
   };
 
   const handleConfirmAddToCart = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === 'guest') {
+      showLoginPopup();
+      return;
+    }
+
     if (!selectedMenu) return;
 
     const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
@@ -727,10 +731,7 @@ const Product = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                window.showToast("info", "Please login to add items to cart");
-                                setTimeout(() => {
-                                  navigate("/user_app/Signinscreen");
-                                }, 1500);
+                                showLoginPopup();
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
