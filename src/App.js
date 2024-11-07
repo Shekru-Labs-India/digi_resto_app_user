@@ -76,7 +76,7 @@ const AppContent = () => {
     // Remove all existing app-specific stylesheets
     document.querySelectorAll('link[data-app-style]').forEach(link => link.remove());
     
-    // Add appropriate stylesheets based on current App
+    // Add appropriate stylesheets based on current App ....test
     if (isUserApp) {
       loadStyles([
         '/assets/user_app/css/style.css',
