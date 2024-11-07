@@ -172,7 +172,7 @@ const OfferBanner = () => {
       if (isMounted) {
         fetchData();
       }
-    }, 1000);
+    });
 
   return () => {
     isMounted = false;
@@ -438,14 +438,14 @@ const OfferBanner = () => {
 
   return (
     <div className="dz-box style-3">
-      {loading ? (
+      {/* {loading ? (
         <div id="preloader">
           <div className="loader">
             <LoaderGif />
           </div>
         </div>
       ) : (
-        <>
+        <> */}
           <div className="swiper featured-swiper mt-0">
             <div className="m-0">
               <HotelNameAndTable
@@ -474,6 +474,7 @@ const OfferBanner = () => {
                           onError={(e) => {
                             e.target.src = images; // Set local image source on error
                           }}
+                          loading="lazy"
                         />
                         <div
                           className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
@@ -629,8 +630,8 @@ const OfferBanner = () => {
               ))}
             </div>
           </div>
-        </>
-      )}
+        {/* </>
+      )} */}
 
       {showModal && (
         <div
