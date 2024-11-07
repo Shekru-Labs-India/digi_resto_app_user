@@ -372,6 +372,7 @@ const NearbyArea = () => {
                           e.target.src = images;
                         }}
                         alt={menuItem.name}
+                        loading="lazy" 
                       />
                       <div
                         className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${

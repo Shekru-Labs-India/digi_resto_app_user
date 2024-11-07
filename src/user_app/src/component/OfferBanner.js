@@ -471,6 +471,7 @@ const OfferBanner = () => {
                           }}
                           src={menu.image || images} // Use default image if menu.image is null
                           alt={menu.name}
+                          loading="lazy" 
                           onError={(e) => {
                             e.target.src = images; // Set local image source on error
                           }}
