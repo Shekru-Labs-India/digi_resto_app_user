@@ -10,6 +10,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
 import { usePopup } from '../context/PopupContext';
+import config from "./config";
 
 const pulse = keyframes`
   0% {
@@ -114,7 +115,7 @@ const OfferBanner = () => {
       const userData = JSON.parse(localStorage.getItem("userData"));
       
       console.log("Fetching data...");
-      const url = "https://men4u.xyz/user_api/get_banner_and_offer_menu_list";
+      const url = `${config.apiDomain}user_api/get_banner_and_offer_menu_list`;
       const requestBody = {
         restaurant_id: restaurantId,
       };

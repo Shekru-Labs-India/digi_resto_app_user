@@ -577,12 +577,10 @@ const ProductCard = ({ isVegOnly }) => {
                           borderRadius: "0px 0px 7px 0px",
                         }}
                       >
-                        
-                          <span className="font_size_10 text-white">
+                        <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 font_size_14"></i>
-                            {menu.offer}% Off
-                          </span>
-                        
+                          {menu.offer}% Off
+                        </span>
                       </div>
                     )}
                   </div>
@@ -650,8 +648,7 @@ const ProductCard = ({ isVegOnly }) => {
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
                           {customerId ? (
-                            <Link
-                              to="#"
+                            <div
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -666,13 +663,13 @@ const ProductCard = ({ isVegOnly }) => {
                                 justifyContent: "center",
                                 width: "25px",
                                 height: "25px",
+                                cursor: "pointer"
                               }}
                             >
                               <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
-                            </Link>
+                            </div>
                           ) : (
-                            <Link
-                              to="#"
+                            <div
                               className="border border-1 rounded-circle bg-white opacity-75"
                               style={{
                                 border: "1px solid gray",
@@ -682,6 +679,7 @@ const ProductCard = ({ isVegOnly }) => {
                                 justifyContent: "center",
                                 width: "25px",
                                 height: "25px",
+                                cursor: "pointer"
                               }}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -690,7 +688,7 @@ const ProductCard = ({ isVegOnly }) => {
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
-                            </Link>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -805,7 +803,7 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i class="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>
