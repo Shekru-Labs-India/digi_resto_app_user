@@ -305,7 +305,7 @@ const HomeScreen = () => {
               <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
             </div>
 
-            <p className="text-center text-md-center mt-2 gray-text">
+            <div className="text-center text-md-center mt-2 gray-text">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
                 className="gray-text"
@@ -315,7 +315,7 @@ const HomeScreen = () => {
                 Shekru Labs India Pvt. Ltd.
               </a>
               <div className="">v1.1</div>
-            </p>
+            </div>
           </div>
         </div>
 
