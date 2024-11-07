@@ -221,42 +221,42 @@ const Signinscreen = () => {
         <div className="my-4">
           <div class="text-center d-flex justify-content-center">
             <a
-              href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
+              href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
               class="footer-link mx-3"
               target="_blank"
             >
               <i class="ri-facebook-circle-fill ri-xl "></i>
             </a>
             <a
-              href="https://www.instagram.com/autoprofito/?next=%2F"
+              href="https://www.instagram.com/menumitra/"
               class="footer-link mx-3"
               target="_blank"
             >
               <i class="ri-instagram-line ri-xl "></i>
             </a>
             <a
-              href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
+              href="https://www.youtube.com/@menumitra"
               class="footer-link mx-3"
               target="_blank"
             >
               <i class="ri-youtube-line ri-xl "></i>
             </a>
             <a
-              href="https://www.linkedin.com/company/104616702/admin/dashboard/"
+              href="https://www.linkedin.com/company/102429337/admin/dashboard/"
               class="footer-link mx-3"
               target="_blank"
             >
               <i class="ri-linkedin-fill ri-xl "></i>
             </a>
             <a
-              href="https://www.threads.net/@autoprofito"
+              href="https://www.threads.net/@menumitra"
               class="footer-link mx-3"
               target="_blank"
             >
               <i class="ri-twitter-x-line ri-xl "></i>
             </a>
             <a
-              href="https://t.me/Autoprofito"
+              href="https://t.me/MenuMitra"
               class="footer-link mx-3"
               target="_blank"
             >

@@ -93,7 +93,7 @@ const HotelList = () => {
             <div className="my-4">
               <div className="text-center d-flex justify-content-center pt-5">
                 <a
-                  href="https://www.facebook.com/share/ra9cKRDkDpy2W94j/?mibextid=qi2Omg"
+                  href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -101,7 +101,7 @@ const HotelList = () => {
                   <i className="ri-facebook-circle-fill ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.instagram.com/autoprofito/?next=%2F"
+                  href="https://www.instagram.com/menumitra/"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -109,7 +109,7 @@ const HotelList = () => {
                   <i className="ri-instagram-line ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.youtube.com/channel/UCgfTIIUL16SyHAQzQNmM52A"
+                  href="https://www.youtube.com/@menumitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -117,7 +117,7 @@ const HotelList = () => {
                   <i className="ri-youtube-line ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.linkedin.com/company/104616702/admin/dashboard/"
+                  href="https://www.linkedin.com/company/102429337/admin/dashboard/"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -125,7 +125,7 @@ const HotelList = () => {
                   <i className="ri-linkedin-fill ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.threads.net/@autoprofito"
+                  href="https://www.threads.net/@menumitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -133,7 +133,7 @@ const HotelList = () => {
                   <i className="ri-twitter-x-line ri-xl"></i>
                 </a>
                 <a
-                  href="https://t.me/Autoprofito"
+                  href="https://t.me/MenuMitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
