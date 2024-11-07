@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Components/Home";
 import About from "./Components/About";
@@ -11,7 +11,6 @@ import Client from "./Components/Client";
 function App({ currentPath }) {
   const location = useLocation();
   
-  // Function to render the correct component based on path
   const renderComponent = () => {
     switch(currentPath || location.pathname) {
       case '/features':

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useParams } from "react-router-dom";
 
-// Component imports
+// Component imports (keeping only what's used in the Routes)
 import QRScreen from "./screens/QRScreen";
 import HomeScreen from "./screens/HomeScreen";
 import Signinscreen from "./screens/Signinscreen";
@@ -21,7 +21,7 @@ import MenuDetails from "./screens/MenuDetails";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 import AllOrderList from "./component/AllOrderList";
 
-
+// Context imports
 import { ThemeProvider } from "./context/ThemeContext";
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
@@ -49,7 +49,6 @@ function App() {
                 <Route path=":restaurantCode/:table_number" element={<HomeScreen />} />
                 <Route path=":restaurantCode" element={<ValidateAndNavigate />} />
                 <Route path="AllOrderList" element={<AllOrderList />} />
-
                 <Route path="Signinscreen" element={<Signinscreen />} />
                 <Route path="Signupscreen" element={<Signupscreen />} />
                 <Route path="Verifyotp" element={<Verifyotp />} />

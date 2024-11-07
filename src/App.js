@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import UserApp from './user_app/src/App';
 import Website from './website/src/App';
 
-// Define hideToast first since showToast uses it
+// Toast functionality (keeping this in main App.js since it's used globally)
 window.hideToast = function() {
   const toast = document.getElementById("toast");
   if (toast) {
@@ -65,109 +65,30 @@ window.showToast = function(type, message) {
 };
 
 const AppContent = () => {
-  const location = useLocation();
-  
-  const baseUrl =
-    process.env.NODE_ENV === "development"
-      ? "/digi_resto_app_user"
-      : "/digi_resto_app_user";
-  
   useEffect(() => {
-    // First, remove all dynamic resources
-    const removeAllDynamicResources = () => {
-      // Remove all dynamic CSS
-      document.querySelectorAll('link[data-dynamic="true"]').forEach(el => el.remove());
-      // Remove all dynamic scripts
-      document.querySelectorAll('script[data-dynamic="true"]').forEach(el => el.remove());
-      // Remove any leftover styles
-      const existingStyles = document.getElementById('dynamic-styles');
-      if (existingStyles) existingStyles.remove();
-    };
-
-    removeAllDynamicResources();
-
-    const isUserAppRoute = location.pathname.includes('/user_app');
-
-    if (isUserAppRoute) {
-      // User App Resources
-      const userAppCSS = [
-        '/user_app/src/assets/css/style.css',
-        '/user_app/src/assets/css/custom.css',
-        '/user_app/src/assets/css/toast.css'
-      ];
-
-      const userAppJS = [
-        // '/user_app/src/assets/js/jquery.js',
-        // '/user_app/src/assets/js/toast.js'
-      ];
-
-      loadResources(userAppCSS, userAppJS, 'user-app');
+    // Set app type and handle styles based on current route
+    const path = window.location.pathname;
+    const isUserApp = path.startsWith('/user_app');
+    
+    // Set data attribute for CSS switching
+    document.body.dataset.appType = isUserApp ? 'user-app' : 'website';
+    
+    // Remove all existing app-specific stylesheets
+    document.querySelectorAll('link[data-app-style]').forEach(link => link.remove());
+    
+    // Add appropriate stylesheets based on current app
+    if (isUserApp) {
+      loadStyles([
+        '/assets/user_app/css/style.css',
+        '/assets/user_app/css/custom.css'
+      ], 'user-app');
     } else {
-      // Website Resources
-      const websiteCSS = [
-        // 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css',
-        'https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css',
-        '/website/src/assets/css/style.css',
-        '/website/src/assets/css/responsive.css'
-      ];
-
-      const websiteJS = [
-        'https://code.jquery.com/jquery-3.6.0.min.js',
-        'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js',
-        '/website/src/assets/js/main.js'
-      ];
-
-      loadResources(websiteCSS, websiteJS, 'website');
+      loadStyles([
+        '/assets/website/css/style.css',
+        '/assets/website/css/responsive.css'
+      ], 'website');
     }
-
-    return () => removeAllDynamicResources();
-  }, [location.pathname]);
-
-  const loadResources = async (cssFiles, jsFiles, appType) => {
-    // Add a style tag to prevent FOUC (Flash of Unstyled Content)
-    const styleTag = document.createElement('style');
-    styleTag.id = 'dynamic-styles';
-    styleTag.textContent = 'body { visibility: hidden; }';
-    document.head.appendChild(styleTag);
-
-    // Load CSS
-    const cssPromises = cssFiles.map(file => {
-      return new Promise((resolve, reject) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = file.startsWith('http') ? file : `${baseUrl}${file}`;
-        link.setAttribute('data-dynamic', 'true');
-        link.setAttribute('data-app-type', appType);
-        link.onload = resolve;
-        link.onerror = reject;
-        document.head.appendChild(link);
-      });
-    });
-
-    // Load JS
-    const jsPromises = jsFiles.map(file => {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = file.startsWith('http') ? file : `${baseUrl}${file}`;
-        script.setAttribute('data-dynamic', 'true');
-        script.setAttribute('data-app-type', appType);
-        script.onload = resolve;
-        script.onerror = reject;
-        document.body.appendChild(script);
-      });
-    });
-
-    try {
-      // Wait for all resources to load
-      await Promise.all([...cssPromises, ...jsPromises]);
-      // Remove the temporary style tag to show the page
-      styleTag.remove();
-    } catch (error) {
-      console.error('Error loading resources:', error);
-      styleTag.remove(); // Remove the style tag even if there's an error
-    }
-  };
+  }, [window.location.pathname]);
 
   return (
     <Routes>
@@ -181,6 +102,17 @@ const AppContent = () => {
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
+};
+
+// Helper function to load styles
+const loadStyles = (styleUrls, appType) => {
+  styleUrls.forEach(url => {
+    const link = document.createElement('link');
+    link.href = url;
+    link.rel = 'stylesheet';
+    link.setAttribute('data-app-style', appType);
+    document.head.appendChild(link);
+  });
 };
 
 function App() {
