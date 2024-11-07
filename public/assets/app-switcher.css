@@ -1,6 +1,14 @@
-/* Hide all CSS when it's not the active app */
-body[data-app-type="user-app"] link[href*="website"],
-body[data-app-type="website"] link[href*="user_app"] {
-  disabled: true;
-  display: none;
-} 
+/* Hide webpack injected styles */
+style[data-href*="webpack"] {
+  display: none !important;
+}
+
+/* Hide user app elements when website is active */
+body[data-app-type="website"] .user-app-root {
+  display: none !important;
+}
+
+/* Hide website elements when user app is active */
+body[data-app-type="user-app"] .website-wrapper {
+  display: none !important;
+}

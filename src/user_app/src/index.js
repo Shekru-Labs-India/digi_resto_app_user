@@ -1,15 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// Import user app specific styles
-import './assets/css/style.css';
-import './assets/css/bootstrap.min.css';
-// ... other style imports
-
-ReactDOM.render(
+// Only keep third-party CSS if absolutely necessary
+import 'remixicon/fonts/remixicon.css';
+import "./assets/css/custom.css";
+import "./assets/css/style.css";
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

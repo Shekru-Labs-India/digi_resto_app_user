@@ -662,12 +662,10 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        
-                          <span className="font_size_10 text-white">
+                        <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 font_size_14"></i>
-                            {productDetails.offer}% Off
-                          </span>
-                      
+                          {productDetails.offer}% Off
+                        </span>
                       </div>
                     )}
                   </>
@@ -876,7 +874,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleRemoveFromCart}
                     >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <i className="ri-close-fill pe-1 text-white"></i>
                       <div className="font-poppins text-nowrap text-white">
                         Remove from Cart
                       </div>

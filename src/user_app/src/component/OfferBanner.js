@@ -475,6 +475,7 @@ const OfferBanner = () => {
                           onError={(e) => {
                             e.target.src = images; // Set local image source on error
                           }}
+                         
                         />
                         <div
                           className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${

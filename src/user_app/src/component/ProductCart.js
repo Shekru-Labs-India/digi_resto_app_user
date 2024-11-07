@@ -519,7 +519,8 @@ const ProductCard = ({ isVegOnly }) => {
                       onError={(e) => {
                         e.target.src = images;
                       }}
-                      loading="lazy" 
+                    loading="lazy"
+
                     />
                     <div
                       className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
