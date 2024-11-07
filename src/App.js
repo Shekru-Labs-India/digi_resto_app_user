@@ -84,8 +84,8 @@ const AppContent = () => {
       ], 'user-app');
     } else {
       loadStyles([
-        '/assets/website/css/style.css',
-        '/assets/website/css/responsive.css'
+        '/assets/website/Css/stylewebsite.css',
+        '/assets/website/Css/responsive.css'
       ], 'website');
     }
   }, [window.location.pathname]);
@@ -104,7 +104,6 @@ const AppContent = () => {
   );
 };
 
-// Helper function to load styles
 const loadStyles = (styleUrls, appType) => {
   styleUrls.forEach(url => {
     const link = document.createElement('link');
