@@ -516,9 +516,10 @@ const Checkout = () => {
         table_number: userData?.tableNumber || "1"
       };
 
-      const apiEndpoint = existingOrderDetails.status === 'placed'
-        ? "https://men4u.xyz/user_api/update_placed_order"
-        : "https://men4u.xyz/user_api/add_to_existing_order";
+      const apiEndpoint =
+        existingOrderDetails.status === "placed"
+          ? "https://men4u.xyz/user_api/add_to_existing_order"
+          : "https://men4u.xyz/user_api/add_to_existing_order";
 
       const response = await fetch(apiEndpoint, {
         method: "POST",
