@@ -111,52 +111,33 @@ const OfferBanner = () => {
         return;
       }
 
-      // Get user data from localStorage
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      
-      console.log("Fetching data...");
-      const url = `${config.apiDomain}user_api/get_banner_and_offer_menu_list`;
-      const requestBody = {
-        restaurant_id: restaurantId,
-      };
-
-      // Add customer_id and customer_type if user is logged in
-      if (userData?.customer_id) {
-        requestBody.customer_id = userData.customer_id;
-        requestBody.customer_type = userData.customer_type;
-      }
-
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody)
-      };
-
-      const response = await fetch(url, requestOptions);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      const response = await fetch(
+        "https://men4u.xyz/user_api/get_all_menu_list_by_category",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer_id: customerId || null,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
 
       const data = await response.json();
 
-      if (data.st === 1 && data.data.offer_menu_list) {
-        const formattedMenuLists = data.data.offer_menu_list.map((menu) => ({
+      if (response.ok && data.st === 1) {
+        const formattedMenuList = data.data.menus.map((menu) => ({
           ...menu,
+          image: menu.image || images,
           name: toTitleCase(menu.menu_name),
-          menu_cat_name: toTitleCase(menu.category_name),
           oldPrice: menu.offer ? menu.price : null,
-          price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price
+          price: menu.offer
+            ? Math.floor(menu.price * (1 - menu.offer / 100))
+            : menu.price,
+          is_favourite: menu.is_favourite === 1,
         }));
 
-        // Merge local menu items and API data
-        const localMenuItems = getLocalMenuItems();
-        const mergedMenuItems = [...localMenuItems, ...formattedMenuLists];
-
-        setMenuLists(mergedMenuItems);
-        saveLocalMenuItems(mergedMenuItems);
+        setMenuLists(formattedMenuList);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -166,20 +147,50 @@ const OfferBanner = () => {
   };
 
   useEffect(() => {
-    let isMounted = true;
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (userData) {
+      setUserData(userData);
+      setCustomerId(userData.customer_id);
+      setCustomerType(userData.customer_type);
+    }
+    
+    if (restaurantId) {
+      fetchData();
+    }
+  }, [restaurantId]);
 
-    // Add a 1-second timeout before calling fetchData
-    const timeoutId = setTimeout(() => {
-      if (isMounted) {
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      if (restaurantId) {
         fetchData();
       }
-    });
+    }, 30000); // Poll every 30 seconds
 
-  return () => {
-    isMounted = false;
-    clearTimeout(timeoutId); // Clear the timeout if the component unmounts
-  };
-}, [restaurantId]);
+    return () => clearInterval(pollInterval);
+  }, [restaurantId, customerId]);
+
+  useEffect(() => {
+    const handleFavoriteUpdate = (event) => {
+      const { menuId, isFavorite } = event.detail;
+      setMenuLists((prevMenus) =>
+        prevMenus.map((menu) =>
+          menu.menu_id === menuId ? { ...menu, is_favourite: isFavorite } : menu
+        )
+      );
+    };
+
+    const handleCartUpdate = () => {
+      setMenuLists((prevMenus) => [...prevMenus]); // Force re-render
+    };
+
+    window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+    window.addEventListener("cartStatusChanged", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
+      window.removeEventListener("cartStatusChanged", handleCartUpdate);
+    };
+  }, []);
 
   // useEffect(() => {
   //   if (banners.length > 0) {

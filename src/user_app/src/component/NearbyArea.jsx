@@ -77,7 +77,6 @@ const NearbyArea = () => {
 
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
-    if (hasFetchedData.current) return;
     
     setIsLoading(true);
     try {
@@ -109,20 +108,20 @@ const NearbyArea = () => {
         }));
 
         setMenuItems(formattedMenuItems);
-        hasFetchedData.current = true;
-      } else {
-        console.error("Invalid data format:", data);
-        setMenuItems([]);
-        window.showToast("error", "Failed to load menu items");
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
       setMenuItems([]);
-      window.showToast("error", "Failed to load menu items");
     } finally {
       setIsLoading(false);
     }
   }, [restaurantId, customerId]);
+
+  // Add polling effect
+  useEffect(() => {
+    const pollInterval = setInterval(fetchMenuData, 30000); // Poll every 30 seconds
+    return () => clearInterval(pollInterval);
+  }, [fetchMenuData]);
 
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {
