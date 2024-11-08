@@ -58,6 +58,37 @@ const Checkout = () => {
 
   const [existingOrderDetails, setExistingOrderDetails] = useState({ type: '', number: '' });
 
+  // Add these helper functions at the top of the component
+  const saveOrderToLocalStorage = (order, status, restaurantId) => {
+    const storageKey = `${status}_orders_${restaurantId}`;
+    let existingOrders = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    // Find if order already exists
+    const existingOrderIndex = existingOrders.findIndex(o => o.order_id === order.order_id);
+    
+    if (existingOrderIndex >= 0) {
+      // Update existing order's menu items
+      existingOrders[existingOrderIndex] = {
+        ...existingOrders[existingOrderIndex],
+        menu_items: [...(existingOrders[existingOrderIndex].menu_items || []), ...(order.menu_items || [])],
+        menu_count: (existingOrders[existingOrderIndex].menu_count || 0) + (order.menu_items?.length || 0)
+      };
+    } else {
+      // Add new order
+      existingOrders.push({
+        ...order,
+        menu_items: order.menu_items || []
+      });
+    }
+    
+    localStorage.setItem(storageKey, JSON.stringify(existingOrders));
+  };
+
+  const getOrdersFromLocalStorage = (status, restaurantId) => {
+    const storageKey = `${status}_orders_${restaurantId}`;
+    return JSON.parse(localStorage.getItem(storageKey) || '[]');
+  };
+
   // Use the hook here
 
   const handleNotesFocus = () => {
@@ -207,12 +238,23 @@ const Checkout = () => {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
       const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      
+      // Store current cart items as pending items first
+      const currentCartItems = cartItems.map(item => ({
+        menu_id: item.menu_id.toString(),
+        quantity: item.quantity.toString(),
+        half_or_full: "full",
+        comment: "",
+        menu_name: item.menu_name,
+        menu_price: item.price || item.menu_price,
+        menu_image: item.menu_image,
+        menu_type: item.menu_type,
+        is_new: true
+      }));
 
       const response = await fetch("https://men4u.xyz/user_api/get_order_list", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           restaurant_id: restaurantId,
           order_status: "ongoing",
@@ -222,52 +264,62 @@ const Checkout = () => {
       });
 
       const data = await response.json();
-      console.log("Order check response:", data);
+      
+      if (data.st === 1) {
+        // Check for placed orders first
+        if (data.lists?.placed) {
+          const dates = Object.keys(data.lists.placed).sort((a, b) => new Date(b) - new Date(a));
+          if (dates.length > 0) {
+            const placedOrders = data.lists.placed[dates[0]];
+            if (placedOrders && placedOrders.length > 0) {
+              const latestOrder = placedOrders[0];
+              
+              // Store cart items as pending items for this order
+              const pendingItemsKey = `pendingItems_${latestOrder.order_id}`;
+              const existingPendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
+              const updatedPendingItems = [...existingPendingItems, ...currentCartItems];
+              localStorage.setItem(pendingItemsKey, JSON.stringify(updatedPendingItems));
+              
+              setExistingOrderDetails({
+                type: 'Placed',
+                number: latestOrder.order_number,
+                id: latestOrder.order_id,
+                status: 'placed',
+                menu_items: latestOrder.menu_details || []
+              });
+              setShowExistingOrderModal(true);
+              return true;
+            }
+          }
+        }
 
-      // First check for placed orders
-      if (data.st === 1 && data.lists?.placed) {
-        const dates = Object.keys(data.lists.placed).sort((a, b) => new Date(b) - new Date(a));
-        if (dates.length > 0) {
-          const placedOrders = data.lists.placed[dates[0]];
-          if (placedOrders && placedOrders.length > 0) {
-            const latestOrder = placedOrders.sort((a, b) => 
-              new Date(b.date_time) - new Date(a.date_time)
-            )[0];
-            
-            setExistingOrderDetails({
-              type: 'Placed',
-              number: latestOrder.order_number,
-              id: latestOrder.order_id,
-              status: 'placed'
-            });
-            setShowExistingOrderModal(true);
-            return true;
+        // Then check for ongoing orders
+        if (data.lists?.ongoing) {
+          const dates = Object.keys(data.lists.ongoing).sort((a, b) => new Date(b) - new Date(a));
+          if (dates.length > 0) {
+            const ongoingOrders = data.lists.ongoing[dates[0]];
+            if (ongoingOrders && ongoingOrders.length > 0) {
+              const latestOrder = ongoingOrders[0];
+              
+              // Store cart items as pending items for this order
+              const pendingItemsKey = `pendingItems_${latestOrder.order_id}`;
+              const existingPendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
+              const updatedPendingItems = [...existingPendingItems, ...currentCartItems];
+              localStorage.setItem(pendingItemsKey, JSON.stringify(updatedPendingItems));
+              
+              setExistingOrderDetails({
+                type: 'Ongoing',
+                number: latestOrder.order_number,
+                id: latestOrder.order_id,
+                status: 'ongoing',
+                menu_items: latestOrder.menu_details || []
+              });
+              setShowExistingOrderModal(true);
+              return true;
+            }
           }
         }
       }
-
-      // Then check for ongoing orders
-      if (data.st === 1 && data.lists?.ongoing) {
-        const dates = Object.keys(data.lists.ongoing).sort((a, b) => new Date(b) - new Date(a));
-        if (dates.length > 0) {
-          const ongoingOrders = data.lists.ongoing[dates[0]];
-          if (ongoingOrders && ongoingOrders.length > 0) {
-            const latestOrder = ongoingOrders.sort((a, b) => 
-              new Date(b.date_time) - new Date(a.date_time)
-            )[0];
-            
-            setExistingOrderDetails({
-              type: 'Ongoing',
-              number: latestOrder.order_number,
-              id: latestOrder.order_id,
-              status: 'ongoing'
-            });
-            setShowExistingOrderModal(true);
-            return true;
-          }
-        }
-      }
-
       return false;
     } catch (error) {
       console.error("Error checking orders:", error);
@@ -445,19 +497,22 @@ const Checkout = () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       
-      const orderItems = cartItems.map(item => ({
-        menu_id: item.menu_id.toString(),
-        quantity: item.quantity.toString(),
-        half_or_full: "full",
-        comment: ""
-      }));
+      // Get all pending items for this order
+      const pendingItemsKey = `pendingItems_${existingOrderDetails.id}`;
+      const pendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
 
+      // Prepare API request with all pending items
       const requestBody = {
         restaurant_id: restaurantId,
         order_id: existingOrderDetails.id,
         customer_id: userData?.customer_id || localStorage.getItem("customer_id"),
         customer_type: userData?.customer_type || localStorage.getItem("customer_type"),
-        order_items: orderItems,
+        order_items: pendingItems.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          half_or_full: item.half_or_full,
+          comment: item.comment
+        })),
         table_number: userData?.tableNumber || "1"
       };
 
@@ -465,24 +520,15 @@ const Checkout = () => {
         ? "https://men4u.xyz/user_api/update_placed_order"
         : "https://men4u.xyz/user_api/add_to_existing_order";
 
-      console.log('Request body:', requestBody);
-      console.log('Using API endpoint:', apiEndpoint);
-      console.log('Order status:', existingOrderDetails.status);
-      console.log('Order ID:', existingOrderDetails.id);
-
       const response = await fetch(apiEndpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
-      console.log('API Response:', data);
 
       if (data.st === 1) {
-        // Clear cart data
         clearCartData();
         
         toast.current.show({
@@ -498,6 +544,7 @@ const Checkout = () => {
           state: {
             orderStatus: existingOrderDetails.status,
             order_id: existingOrderDetails.id,
+            pendingItems: pendingItems
           },
         });
       } else {
