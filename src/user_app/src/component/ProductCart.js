@@ -30,7 +30,6 @@ const ProductCard = ({ isVegOnly }) => {
   const { restaurantId } = useRestaurantId();
 
   const [isLoading, setIsLoading] = useState(false);
-  const hasFetchedData = useRef(false);
   const swiperRef = useRef(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,8 +41,6 @@ const ProductCard = ({ isVegOnly }) => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const { cartItems, addToCart, removeFromCart, isMenuItemInCart } = useCart();
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
 
   // Add this state for tracking restaurant data
   const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
@@ -52,10 +49,20 @@ const ProductCard = ({ isVegOnly }) => {
 
   const { showLoginPopup } = usePopup();
 
-  // Update the filtering logic
+  // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
+    
+    // Set total count before applying any filters
+    setTotalMenuCount(menus.length);
 
+    // Calculate category counts from full menu list before filtering
+    const fullMenuCountByCategory = menus.reduce((acc, menu) => {
+      acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Apply filters for display
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
@@ -69,68 +76,30 @@ const ProductCard = ({ isVegOnly }) => {
     }
 
     setFilteredMenuList(filteredMenus);
-    setTotalMenuCount(filteredMenus.length);
 
-    // Update category counts
-    const menuCountByCategory = filteredMenus.reduce((acc, menu) => {
-      acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
-      return acc;
-    }, {});
-
+    // Update categories with counts from full menu list
     setMenuCategories((prevCategories) =>
       prevCategories.map((category) => ({
         ...category,
-        menu_count: menuCountByCategory[category.menu_cat_id] || 0,
+        menu_count: fullMenuCountByCategory[category.menu_cat_id] || 0,
       }))
     );
   }, []);
 
-  useEffect(() => {
-    if (menuList.length > 0) {
-      applyFilters(menuList, selectedCategoryId, isVegOnly);
-    }
-  }, [applyFilters, isVegOnly, menuList, selectedCategoryId]);
-
+  // Optimized category selection handler
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
     applyFilters(menuList, categoryId, isVegOnly);
   };
 
-  useEffect(() => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData && storedUserData.customer_id) {
-      setCustomerId(storedUserData.customer_id);
-    }
-  }, []);
-
-  useEffect(() => {
-    const storedCustomerId = localStorage.getItem("customer_id");
-    const storedCustomerType = localStorage.getItem("customer_type");
-    if (storedCustomerId && storedCustomerType) {
-      setCustomerId(storedCustomerId);
-      setCustomerType(storedCustomerType);
-    }
-  }, []);
-
-  // Add this at the top with other state declarations
-  const isInitialMount = useRef(true);
-
-  // Remove dependencies from `fetchMenuData` useCallback
-  const fetchMenuData = useCallback(async (categoryId) => {
-    // Prevent duplicate calls on initial render and subsequent updates
-    if (hasFetchedData.current) return;
-    
+  // Fetch menu data with optimized updates
+  const fetchMenuData = useCallback(async () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     const storedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
     
-    if (!storedRestaurantId) {
-      console.log("Missing restaurantId:", { storedRestaurantId });
-      return;
-    }
+    if (!storedRestaurantId) return;
     
-    setIsLoading(true);
     try {
-      console.log("Fetching menu data...");
       const response = await fetch(
         "https://men4u.xyz/user_api/get_all_menu_list_by_category",
         {
@@ -144,7 +113,6 @@ const ProductCard = ({ isVegOnly }) => {
       );
 
       const data = await response.json();
-      console.log("API response:", data);
 
       if (response.ok && data.st === 1) {
         const formattedMenuList = data.data.menus.map((menu) => ({
@@ -165,39 +133,39 @@ const ProductCard = ({ isVegOnly }) => {
           name: toTitleCase(category.category_name),
         })));
 
-        applyFilters(formattedMenuList, categoryId, isVegOnly);
-        hasFetchedData.current = true;
+        // Apply existing filters to new data
+        applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
-  // Single useEffect for initialization
+  // Initial data fetch
   useEffect(() => {
-    if (isInitialMount.current) {
-        isInitialMount.current = false;
-        const storedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
-        if (storedRestaurantId) {
-            fetchMenuData();
-        }
+    if (restaurantId) {
+      fetchMenuData();
     }
-}, [fetchMenuData]);
+  }, [restaurantId, fetchMenuData]);
 
-  // Separate useEffect for handling favorites updates
+  // Polling for updates without affecting UI
   useEffect(() => {
-    const handleFavoritesUpdated = () => {
-        hasFetchedData.current = false;
-        fetchMenuData();
-    };
+    const pollInterval = setInterval(fetchMenuData, 30000);
+    return () => clearInterval(pollInterval);
+  }, [fetchMenuData]);
 
+  // Update favorites handler to refetch data
+  const handleFavoritesUpdated = useCallback(() => {
+    fetchMenuData(selectedCategoryId);
+  }, [fetchMenuData, selectedCategoryId]);
+
+  // Update favorites useEffect
+  useEffect(() => {
     window.addEventListener("favoritesUpdated", handleFavoritesUpdated);
     return () => {
-        window.removeEventListener("favoritesUpdated", handleFavoritesUpdated);
+      window.removeEventListener("favoritesUpdated", handleFavoritesUpdated);
     };
-}, [fetchMenuData]);
+  }, [handleFavoritesUpdated]);
 
   const debouncedFetchMenuData = useCallback(
     debounce((categoryId) => {
@@ -228,10 +196,10 @@ const ProductCard = ({ isVegOnly }) => {
     e.stopPropagation();
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-  if (!userData?.customer_id || userData.customer_type === 'guest') {
-    handleUnauthorizedFavorite(navigate);
-    return;
-  }
+    if (!userData?.customer_id) {
+      showLoginPopup();
+      return;
+    }
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -342,11 +310,10 @@ const ProductCard = ({ isVegOnly }) => {
     }
   };
 
+  // Updated handleAddToCartClick
   const handleAddToCartClick = (menu) => {
-    const { customerId, customerType } = getUserData();
-    const { restaurantId } = getRestaurantData();
-
-    if (!customerId || !restaurantId) {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id) {
       showLoginPopup();
       return;
     }
@@ -360,6 +327,37 @@ const ProductCard = ({ isVegOnly }) => {
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
+
+  // Updated renderCartIcon
+  const renderCartIcon = useCallback((menu) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return (
+      <div
+        className="border border-1 rounded-circle bg-white opacity-75"
+        style={{
+          border: "1px solid gray",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "25px",
+          height: "25px",
+          cursor: "pointer"
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (userData?.customer_id) {
+            handleAddToCartClick(menu);
+          } else {
+            showLoginPopup();
+          }
+        }}
+      >
+        <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+      </div>
+    );
+  }, [handleAddToCartClick, isMenuItemInCart]);
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
@@ -648,49 +646,7 @@ const ProductCard = ({ isVegOnly }) => {
                           </div>
                         </div>
                         <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
-                          {customerId ? (
-                            <div
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menu);
-                              }}
-                              className="border border-1 rounded-circle bg-white opacity-75"
-                              style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "25px",
-                                height: "25px",
-                                cursor: "pointer"
-                              }}
-                            >
-                              <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
-                            </div>
-                          ) : (
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75"
-                              style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "25px",
-                                height: "25px",
-                                cursor: "pointer"
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                showLoginPopup();
-                              }}
-                            >
-                              <i className="ri-shopping-cart-2-line fs-6"></i>
-                            </div>
-                          )}
+                          {renderCartIcon(menu)}
                         </div>
                       </div>
                     )}
