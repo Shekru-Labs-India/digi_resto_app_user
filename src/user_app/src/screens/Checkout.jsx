@@ -501,7 +501,7 @@ const Checkout = () => {
       const pendingItemsKey = `pendingItems_${existingOrderDetails.id}`;
       const pendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
 
-      // Prepare API request with all pending items
+      // Prepare API request with all pending itemss
       const requestBody = {
         restaurant_id: restaurantId,
         order_id: existingOrderDetails.id,
