@@ -54,6 +54,10 @@ const Checkout = () => {
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [existingOrderId, setExistingOrderId] = useState(null);
 
+  const [orderDetails, setOrderDetails] = useState({ type: '', number: '' });
+
+  const [existingOrderDetails, setExistingOrderDetails] = useState({ type: '', number: '' });
+
   // Use the hook here
 
   const handleNotesFocus = () => {
@@ -201,52 +205,76 @@ const Checkout = () => {
   const checkForOngoingOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
 
-      const response = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_status: "ongoing",
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-          }),
-        }
-      );
+      const response = await fetch("https://men4u.xyz/user_api/get_order_list", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          order_status: "ongoing",
+          customer_id: currentCustomerId,
+          customer_type: currentCustomerType,
+        }),
+      });
 
       const data = await response.json();
-      console.log("Ongoing order check response:", data);
+      console.log("Order check response:", data);
 
-      if (data.st === 1 && data.lists?.ongoing) {
-        // Get the first date key from ongoing orders
-        const dates = Object.keys(data.lists.ongoing);
+      // First check for placed orders
+      if (data.st === 1 && data.lists?.placed) {
+        const dates = Object.keys(data.lists.placed).sort((a, b) => new Date(b) - new Date(a));
         if (dates.length > 0) {
-          // Get the orders for the first date
-          const ongoingOrders = data.lists.ongoing[dates[0]];
-          if (ongoingOrders && ongoingOrders.length > 0) {
-            const ongoingOrder = ongoingOrders[0];
-            console.log("Found ongoing order:", ongoingOrder);
-            setOngoingOrderId(ongoingOrder.order_id);
-            setShowOngoingOrderPopup(true);
+          const placedOrders = data.lists.placed[dates[0]];
+          if (placedOrders && placedOrders.length > 0) {
+            const latestOrder = placedOrders.sort((a, b) => 
+              new Date(b.date_time) - new Date(a.date_time)
+            )[0];
+            
+            setExistingOrderDetails({
+              type: 'Placed',
+              number: latestOrder.order_number,
+              id: latestOrder.order_id,
+              status: 'placed'
+            });
+            setShowExistingOrderModal(true);
             return true;
           }
         }
       }
+
+      // Then check for ongoing orders
+      if (data.st === 1 && data.lists?.ongoing) {
+        const dates = Object.keys(data.lists.ongoing).sort((a, b) => new Date(b) - new Date(a));
+        if (dates.length > 0) {
+          const ongoingOrders = data.lists.ongoing[dates[0]];
+          if (ongoingOrders && ongoingOrders.length > 0) {
+            const latestOrder = ongoingOrders.sort((a, b) => 
+              new Date(b.date_time) - new Date(a.date_time)
+            )[0];
+            
+            setExistingOrderDetails({
+              type: 'Ongoing',
+              number: latestOrder.order_number,
+              id: latestOrder.order_id,
+              status: 'ongoing'
+            });
+            setShowExistingOrderModal(true);
+            return true;
+          }
+        }
+      }
+
       return false;
     } catch (error) {
-      console.error("Error checking ongoing order:", error);
+      console.error("Error checking orders:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to check ongoing orders",
+        detail: "Failed to check existing orders",
         life: 3000,
       });
       return false;
@@ -294,7 +322,7 @@ const Checkout = () => {
 
         setShowOngoingOrderPopup(false);
         clearCart();
-        navigate("/MyOrder", { state: { activeTab: "completed" } });
+        navigate("/user_app/MyOrder", { state: { activeTab: "completed" } });
       } else {
         throw new Error(data.msg || "Failed to complete order");
       }
@@ -320,6 +348,14 @@ const Checkout = () => {
   }, [isLoggedIn, restaurantId]);
 
   const [showEmptyCheckoutModal, setShowEmptyCheckoutModal] = useState(false);
+
+  // Add this helper function to handle cart clearing
+  const clearCartData = () => {
+    clearCart(); // Clear cart context
+    localStorage.removeItem("cartItems"); // Clear cart items from localStorage
+    localStorage.removeItem("cartId"); // Clear cart ID from localStorage
+    setCartItems([]); // Clear cart items state if you're using it
+  };
 
   const handleSubmitOrder = async () => {
     if (!checkoutData) {
@@ -408,56 +444,71 @@ const Checkout = () => {
   const handleAddToExistingOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      // Get order list to find the order number
-      const response = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_status: "placed",
-            customer_id: userData?.customer_id,
-            customer_type: userData?.customer_type,
-          }),
-        }
-      );
+      
+      const orderItems = cartItems.map(item => ({
+        menu_id: item.menu_id.toString(),
+        quantity: item.quantity.toString(),
+        half_or_full: "full",
+        comment: ""
+      }));
+
+      const requestBody = {
+        restaurant_id: restaurantId,
+        order_id: existingOrderDetails.id,
+        customer_id: userData?.customer_id || localStorage.getItem("customer_id"),
+        customer_type: userData?.customer_type || localStorage.getItem("customer_type"),
+        order_items: orderItems,
+        table_number: userData?.tableNumber || "1"
+      };
+
+      const apiEndpoint = existingOrderDetails.status === 'placed'
+        ? "https://men4u.xyz/user_api/update_placed_order"
+        : "https://men4u.xyz/user_api/add_to_existing_order";
+
+      console.log('Request body:', requestBody);
+      console.log('Using API endpoint:', apiEndpoint);
+      console.log('Order status:', existingOrderDetails.status);
+      console.log('Order ID:', existingOrderDetails.id);
+
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody)
+      });
 
       const data = await response.json();
-      if (data.st === 1 && data.lists?.placed) {
-        // Get the latest placed order
-        const dates = Object.keys(data.lists.placed);
-        if (dates.length > 0) {
-          const placedOrders = data.lists.placed[dates[0]];
-          const targetOrder = placedOrders.find(
-            (order) => order.order_id === existingOrderId
-          );
+      console.log('API Response:', data);
 
-          if (targetOrder) {
-            // Navigate using the found order_number
-            navigate(`/user_app/TrackOrder/${targetOrder.order_number}`, {
-              state: {
-                orderStatus: "placed",
-                order_id: existingOrderId,
-              },
-            });
-
-            clearCart();
-            localStorage.removeItem("cartItems");
-            setShowExistingOrderModal(false);
-            return;
-          }
-        }
+      if (data.st === 1) {
+        // Clear cart data
+        clearCartData();
+        
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: `Items added to ${existingOrderDetails.type.toLowerCase()} order successfully`,
+          life: 3000,
+        });
+        
+        setShowExistingOrderModal(false);
+        
+        navigate(`/user_app/TrackOrder/${existingOrderDetails.number}`, {
+          state: {
+            orderStatus: existingOrderDetails.status,
+            order_id: existingOrderDetails.id,
+          },
+        });
+      } else {
+        throw new Error(data.msg || "Failed to add items to order");
       }
-      throw new Error("Could not find order details");
     } catch (error) {
-      console.error("Error navigating:", error);
+      console.error("Error adding to existing order:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to navigate to order details",
+        detail: error.message || "Failed to add items to order",
         life: 3000,
       });
     }
@@ -694,9 +745,13 @@ const Checkout = () => {
 
         {showOngoingOrderPopup && (
           <div className="popup-overlay">
-            <div className={`popup-content rounded-4 ${isDarkMode ? 'bg-dark' : 'bg-white'}`}>
+            <div
+              className={`popup-content rounded-4 ${
+                isDarkMode ? "bg-dark" : "bg-white"
+              }`}
+            >
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0 text-muted">Ongoing Order Detected</h3>
+                <h3 className="mb-0 text-muted">Existing Order Found</h3>
                 <button
                   className="btn p-0"
                   onClick={() => setShowOngoingOrderPopup(false)}
@@ -705,7 +760,8 @@ const Checkout = () => {
                 </button>
               </div>
               <p className="text-muted mb-4">
-                Please complete your ongoing order before placing a new one.
+                You have an existing {orderDetails.type} order (#
+                {orderDetails.number}) in progress. What would you like to do?
               </p>
               <div className="d-flex flex-column gap-2">
                 <button
@@ -803,11 +859,7 @@ const Checkout = () => {
 
         {showExistingOrderModal && (
           <div className="popup-overlay">
-            <div
-              className="popup-content rounded-4 p-0"
-              style={{ maxWidth: "90%", width: "400px" }}
-            >
-              {/* Header */}
+            <div className={`popup-content rounded-4 ${isDarkMode ? 'bg-dark' : 'bg-white'}`}>
               <div className="p-3 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
                   <h5 className="mb-0 fw-semibold text-muted">
@@ -821,15 +873,12 @@ const Checkout = () => {
                   </button>
                 </div>
               </div>
-
-              {/* Body */}
+              
               <div className="p-3">
                 <p className="text-center mb-4 text-muted">
-                  You have an existing order in progress. What would you like to
-                  do?
+                  You have an existing {existingOrderDetails.type} order (#{existingOrderDetails.number}) in progress. What would you like to do?
                 </p>
 
-                {/* Buttons */}
                 <div className="d-flex flex-column gap-2">
                   <button
                     className="btn btn-success rounded-pill w-100 py-2 my-1"
@@ -841,10 +890,10 @@ const Checkout = () => {
 
                   <button
                     className="btn btn-outline-danger rounded-pill w-100 py-2 my-1"
-                    onClick={handleCancelExistingOrder}
+                    onClick={() => setShowExistingOrderModal(false)}
                   >
-                    <i className="ri-close-circle-line me-2 "></i>
-                    Cancel Existing & Place New
+                    <i className="ri-close-circle-line me-2"></i>
+                    Cancel
                   </button>
                 </div>
               </div>
