@@ -55,14 +55,23 @@ const Cart = () => {
       );
 
       const data = await response.json();
-      if (data.st === 1 && data.order_items?.length > 0) {
-        setCartDetails({
-          ...data,
-          order_items: data.order_items.map(item => ({
-            ...item,
-            oldPrice: Math.floor(item.price * 1.1),
-          }))
-        });
+      if (data.st === 1) {
+        // Store cart_id in localStorage if it exists in the response
+        if (data.cart_id) {
+          localStorage.setItem("cartId", data.cart_id);
+        }
+        
+        if (data.order_items?.length > 0) {
+          setCartDetails({
+            ...data,
+            order_items: data.order_items.map(item => ({
+              ...item,
+              oldPrice: Math.floor(item.price * 1.1),
+            }))
+          });
+        } else {
+          setCartDetails({ order_items: [] });
+        }
       } else {
         setCartDetails({ order_items: [] });
       }

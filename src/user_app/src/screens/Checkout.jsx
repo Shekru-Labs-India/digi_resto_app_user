@@ -417,10 +417,9 @@ const Checkout = () => {
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
 
       // First check for ongoing orders
       const ongoingResponse = await fetch(
@@ -495,37 +494,31 @@ const Checkout = () => {
 
   const handleAddToExistingOrder = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      
-      // Get all pending items for this order
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
       const pendingItemsKey = `pendingItems_${existingOrderDetails.id}`;
       const pendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
 
-      // Prepare API request with all pending itemss
       const requestBody = {
-        restaurant_id: restaurantId,
         order_id: existingOrderDetails.id,
         customer_id: userData?.customer_id || localStorage.getItem("customer_id"),
-        customer_type: userData?.customer_type || localStorage.getItem("customer_type"),
+        restaurant_id: restaurantId,
+        cart_id: cartId, // Add cart_id to request
         order_items: pendingItems.map(item => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
-          half_or_full: item.half_or_full,
-          comment: item.comment
-        })),
-        table_number: userData?.tableNumber || "1"
+          half_or_full: item.half_or_full || "full",
+          comment: item.comment || ""
+        }))
       };
 
-      const apiEndpoint =
-        existingOrderDetails.status === "placed"
-          ? "https://men4u.xyz/user_api/add_to_existing_order"
-          : "https://men4u.xyz/user_api/add_to_existing_order";
-
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody)
-      });
+      const response = await fetch(
+        "https://men4u.xyz/user_api/add_to_existing_order",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody)
+        }
+      );
 
       const data = await response.json();
 
@@ -605,43 +598,42 @@ const Checkout = () => {
     }
   };
 
-  const proceedWithOrderSubmission = async (
-    currentCustomerId,
-    currentCustomerType
-  ) => {
-    const orderItems = cartItems.map((item) => ({
-      menu_id: item.menu_id,
-      quantity: item.quantity,
-      price: item.price,
-      menu_name: item.menu_name,
-      image: item.image,
-      category_name: item.category_name,
-      spicy_index: item.spicy_index,
-      rating: item.rating,
-      offer: item.offer,
-    }));
-
-    const currentTime = new Date();
-    const formattedTime = currentTime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-
-    const orderData = {
-      customer_id: currentCustomerId,
-      customer_type: currentCustomerType,
-      restaurant_id: restaurantId,
-      cart_id: checkoutData.cartId,
-      note: notes,
-      order_items: orderItems,
-      table_number: checkoutData.tableNumber || "1",
-      order_time: formattedTime,
-    };
-
+  const proceedWithOrderSubmission = async (currentCustomerId, currentCustomerType) => {
     try {
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
+      
+      const orderItems = cartItems.map((item) => ({
+        menu_id: item.menu_id,
+        quantity: item.quantity,
+        price: item.price,
+        menu_name: item.menu_name,
+        image: item.image,
+        category_name: item.category_name,
+        spicy_index: item.spicy_index,
+        rating: item.rating,
+        offer: item.offer,
+      }));
+
+      const currentTime = new Date();
+      const formattedTime = currentTime.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+
+      const orderData = {
+        customer_id: currentCustomerId,
+        customer_type: currentCustomerType,
+        restaurant_id: restaurantId,
+        cart_id: cartId, // Add cart_id to request
+        note: notes,
+        order_items: orderItems,
+        table_number: checkoutData.tableNumber || "1",
+        order_time: formattedTime,
+      };
+
       const response = await fetch(
         "https://men4u.xyz/user_api/create_order",
         {

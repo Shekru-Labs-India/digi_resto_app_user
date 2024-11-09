@@ -568,6 +568,7 @@ const TrackOrder = () => {
         userData?.customer_id || localStorage.getItem("customer_id");
       const currentCustomerType =
         userData?.customer_type || localStorage.getItem("customer_type");
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
 
       if (!currentCustomerId) {
         window.showToast("error", "Please login to add items to order");
@@ -613,6 +614,7 @@ const TrackOrder = () => {
               customer_id: currentCustomerId,
               customer_type: currentCustomerType,
               restaurant_id: restaurantId,
+              cart_id: cartId, // Add cart_id to request
               order_items: [
                 {
                   menu_id: menuItem.menu_id,
@@ -920,44 +922,34 @@ const TrackOrder = () => {
   };
 
   const handlePlacedOrderUpdate = async () => {
-    if (!pendingItems.length) return;
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-
-    if (!currentCustomerId) {
-      window.showToast("error", "Please login to update order");
-      navigate("/user_app/Signinscreen");
-      return;
-    }
-
     try {
-      const requestBody = {
-        order_id: orderDetails.order_details.order_id,
-        customer_id: parseInt(currentCustomerId),
-        customer_type: currentCustomerType,
-        restaurant_id: restaurantId,
-        table_number: orderDetails.order_details.table_number,
-        order_items: [
-          // Include existing items that weren't removed
-          ...menu_details
-            .filter(item => !removedItems.has(item.menu_id)) // Changed from .some() to .has()
-            .map((item) => ({
-              menu_id: item.menu_id.toString(),
-              quantity: item.quantity.toString(),
-              half_or_full: item.half_or_full || "full",
-              comment: item.notes || "",
-            })),
-          // Include new pending items
-          ...pendingItems.map((item) => ({
-            menu_id: item.menu_id.toString(),
-            quantity: item.quantity.toString(),
-            half_or_full: item.half_or_full || "full",
-            comment: item.notes || "",
-          })),
-        ],
-      };
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
+
+      const updatedOrderItems = [
+        ...menu_details.map((item) => ({
+          menu_id: item.menu_id.toString(),
+          quantity: item.quantity.toString(),
+          half_or_full: item.half_or_full || "full",
+          comment: item.notes || "",
+        })),
+        ...pendingItems.map((item) => ({
+          menu_id: item.menu_id.toString(),
+          quantity: item.quantity.toString(),
+          half_or_full: item.half_or_full || "full",
+          comment: item.notes || "",
+        })),
+      ];
+
+      // Filter out removed items
+      const filteredItems = updatedOrderItems.filter(
+        (item) =>
+          !removedItems.some(
+            (removedItem) => removedItem.menu_id.toString() === item.menu_id
+          )
+      );
 
       const response = await fetch(
         "https://men4u.xyz/user_api/update_placed_order",
@@ -966,7 +958,15 @@ const TrackOrder = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({
+            order_id: orderDetails.order_details.order_id,
+            table_number: orderDetails.order_details.table_number,
+            restaurant_id: restaurantId,
+            cart_id: cartId, // Add cart_id to request
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+            order_items: filteredItems,
+          }),
         }
       );
 
@@ -974,16 +974,16 @@ const TrackOrder = () => {
 
       if (data.st === 1) {
         window.showToast("success", "Order updated successfully");
-
+        // Refresh order details
+        fetchOrderDetails(order_number);
+        // Clear pending and removed items
         setPendingItems([]);
         setRemovedItems([]);
-        localStorage.removeItem(`removedOrderItems_${order_number}`);
-        fetchOrderDetails(order_number);
       } else {
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
-      console.error("Error updating placed order:", error);
+      console.error("Error updating order:", error);
       window.showToast("error", error.message || "Failed to update order");
     }
   };
@@ -991,41 +991,46 @@ const TrackOrder = () => {
   const handleOngoingOrderUpdate = async () => {
     if (!pendingItems.length) return;
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
-
-    if (!currentCustomerId) {
-      window.showToast("error", "Please login to add items");
-      navigate("/user_app/Signinscreen");
-      return;
-    }
-
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
+      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
+
+      if (!cartId) {
+        throw new Error("Cart ID not found");
+      }
+
+      if (!currentCustomerId) {
+        window.showToast("error", "Please login to update order");
+        navigate("/user_app/Signinscreen");
+        return;
+      }
+
       const requestBody = {
         order_id: orderDetails.order_details.order_id,
-        customer_id: parseInt(currentCustomerId),
+        customer_id: currentCustomerId,
         customer_type: currentCustomerType,
         restaurant_id: restaurantId,
-        table_number: orderDetails.order_details.table_number,
+        cart_id: cartId, // Add cart_id to request
         order_items: pendingItems.map((item) => ({
           menu_id: item.menu_id.toString(),
           quantity: item.quantity.toString(),
           half_or_full: item.half_or_full || "full",
-          comment: item.notes || "",
-        })),
+          comment: item.notes || ""
+        }))
       };
+
+      console.log("Request Body:", requestBody); // Debug log
 
       const response = await fetch(
         "https://men4u.xyz/user_api/add_to_existing_order",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(requestBody)
         }
       );
 
@@ -1033,9 +1038,10 @@ const TrackOrder = () => {
 
       if (data.st === 1) {
         window.showToast("success", "Items added to order successfully");
-
-        setPendingItems([]);
+        // Refresh order details
         fetchOrderDetails(order_number);
+        // Clear pending items
+        setPendingItems([]);
       } else {
         throw new Error(data.msg || "Failed to add items to order");
       }
