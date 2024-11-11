@@ -314,6 +314,7 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
+                <Link to="/">
                   <img
                     src={logo}
                     alt="logo"
@@ -321,6 +322,7 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
+                  </Link>
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
@@ -392,6 +394,7 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
+                <Link to="/">
                   <img
                     src={logo}
                     alt="logo"
@@ -399,6 +402,7 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
+                  </Link>
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
@@ -492,6 +496,7 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
+                <Link to="/">
                   <img
                     src={logo}
                     alt="logo"
@@ -499,6 +504,7 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
+                  </Link>
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>

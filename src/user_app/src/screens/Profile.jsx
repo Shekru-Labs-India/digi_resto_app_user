@@ -233,6 +233,7 @@ const Profile = () => {
               </a>
             </div>
             <div className="sidebar-logo text-center mt-5">
+            <Link to="/">
               <img
                 src={logo}
                 alt="logo"
@@ -240,6 +241,7 @@ const Profile = () => {
                 width="30"
                 height="30"
               />
+              </Link>
               <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
             </div>
 
@@ -417,6 +419,7 @@ const Profile = () => {
             </a>
           </div>
           <div className="sidebar-logo text-center mt-5">
+          <Link to="/">
             <img
               src={logo}
               alt="logo"
@@ -424,6 +427,7 @@ const Profile = () => {
               width="30"
               height="30"
             />
+            </Link>
             <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
           </div>
 
