@@ -123,6 +123,7 @@ const HomeScreen = () => {
         <div className={`sidebar ${sidebarOpen ? "sidebar show" : ""}`}>
           <div className="author-box">
             <div className=" ">
+              <Link to="/user_app/Profile">
               <span className="ms-3 pt-4    ">
                 {userData?.name ? (
                   `Hello, ${toTitleCase(getFirstName(userData.name))}`
@@ -140,6 +141,7 @@ const HomeScreen = () => {
                   </>
                 )}
               </span>
+              </Link>
               <div className="font_size_12 ms-3 gray-text  ">{userData?.mobile}</div>
               <div className="dz-mode mt-3 me-4">
                 <div className="theme-btn" onClick={toggleTheme}>
@@ -173,7 +175,7 @@ const HomeScreen = () => {
                   <div
                     className={`toggle-switch ${isVegOnly ? "active" : ""}`}
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent navigation
+                      e.preventDefault(); 
                       toggleVegNonVeg();
                     }}
                   >

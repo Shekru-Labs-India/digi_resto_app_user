@@ -270,11 +270,13 @@ const Profile = () => {
                     <div className="text-end">
                       {isLoggedIn ? (
                         <>
+                        <Link to="/user_app/Profile">
                           <i className="ri-user-3-fill me-2 font_size_14 "></i>
                          <span className="font_size_14">
 
                           Hello, {toTitleCase(getFirstName(userData.name))}
                          </span>
+                         </Link>
                         </>
                       ) : (
                         <button

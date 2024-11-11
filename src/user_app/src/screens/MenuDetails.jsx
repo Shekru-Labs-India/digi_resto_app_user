@@ -854,11 +854,11 @@ const MenuDetails = () => {
                 <div className="col-8 px-0 text-center menu_details-add-to-cart">
                   {!customerId ? (
                     <button
-                      className="btn btn-success rounded-pill"
+                      className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}
                     >
-                      <i className="ri-login-box-line pe-1 text-white"></i>
-                      <div className="text-nowrap text-white">
+                      <i className="ri-login-box-line pe-1 "></i>
+                      <div className="text-nowrap ">
                         Login to Order
                       </div>
                     </button>

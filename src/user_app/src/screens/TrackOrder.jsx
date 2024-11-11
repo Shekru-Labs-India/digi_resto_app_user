@@ -1435,19 +1435,25 @@ const TrackOrder = () => {
 
           {customerId ? (
             <section className="container mt-1 py-1">
-              {/* Searched menu items */}
+              
               {!isCompleted &&
                 orderStatus !== "canceled" &&
                 orderStatus !== "cancelled" &&
                 orderStatus !== "cancle" && (
+                 
+                  
+                    
                   <div className="row g-3 mb-4">
+                    {searchedMenu.length > 0 && (
                     <div className="d-flex justify-content-between align-items-center mt-3">
                       <div className="  mb-0 gray-text">Search Results</div>
                       <div className="  gray-text" onClick={handleClearAll}>
                         Clear All
                       </div>
                     </div>
-                    {searchedMenu
+                    )}
+                   
+             {searchedMenu
                       .filter((menu) => !removedItems.has(menu.menu_id))
                       .map((menu) => (
                         <div key={menu.menu_id} className="col-12">
@@ -1549,7 +1555,7 @@ const TrackOrder = () => {
                                     </div>
                                     <div className="col-3">
                                       <span
-                                        className={`btn btn-success px-2 py-1 ${
+                                        className={`btn btn-success  px-2 py-1 ${
                                           isItemAdded(menu.menu_id)
                                             ? "btn-secondary gray-text"
                                             : "btn-success text-white addOrder-btn"
@@ -1622,7 +1628,7 @@ const TrackOrder = () => {
                                         </span>
                                       </span>
                                     </div>
-                                    <div className="col-4 increment-decrement">
+                                    {/* <div className="col-4 increment-decrement">
                                       <div className="d-flex justify-content-end align-items-center">
                                         <i
                                           className="ri-subtract-line mx-2 fs-2"
@@ -1644,12 +1650,53 @@ const TrackOrder = () => {
                                           }}
                                         ></i>
                                       </div>
-                                    </div>
+                                    </div> */}
+                                      <div className="col-4 ">
+                          <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "25px",
+                                width: "25px",
+                              }}
+                            >
+                              <i
+                                className="ri-subtract-line fs-6"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDecrement(menu.menu_id);
+                                }}
+                              ></i>
+                            </div>
+                            <span className="text-light  px-2">
+                            {quantities[menu.menu_id] || 1}
+
+                            </span>
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "25px",
+                                width: "25px",
+                              }}
+                            >
+                              <i
+                                className="ri-add-line  fs-6"
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleIncrement(menu.menu_id);
+                                }}
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                          <hr></hr>
                         </div>
                       ))}
                   </div>
@@ -2123,7 +2170,7 @@ const TrackOrder = () => {
               </div>
             </div>
             <div className="d-flex justify-content-center">
-              {orderDetails.invoice_url ? (
+              {  orderDetails.invoice_url ? (
                 <a
                   href={orderDetails.invoice_url}
                   download={`invoice_${orderDetails.order_details.order_number}.pdf`}

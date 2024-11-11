@@ -924,16 +924,16 @@ const Checkout = () => {
                     className="btn btn-success rounded-pill w-100 py-2 my-1"
                     onClick={handleAddToExistingOrder}
                   >
-                    <i className="ri-add-line me-2"></i>
-                    Add to Existing Order
+                    <i className="ri-add-line me-1 text-nowrap"></i>
+                   <span className="text-nowrap">Add to Existing Order</span>  
                   </button>
 
                   <button
                     className="btn btn-outline-danger rounded-pill w-100 py-2 my-1"
                     onClick={() => setShowExistingOrderModal(false)}
                   >
-                    <i className="ri-close-circle-line me-2"></i>
-                    Cancel
+                  <i className="ri-close-circle-line text-nowrap me-1 "></i>
+                    <span className="text-nowrap">Cancel Existing Order</span>
                   </button>
                 </div>
               </div>
