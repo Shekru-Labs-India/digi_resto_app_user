@@ -4,7 +4,7 @@ import HotelList from "./HotelList";
 import OverlayIcon from "../assets/google lens.svg";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import CompanyVersion from "../constants/CompanyVersion";
-
+import { Link } from "react-router-dom";
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
