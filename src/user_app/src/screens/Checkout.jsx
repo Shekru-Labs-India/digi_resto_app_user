@@ -1110,10 +1110,10 @@ const Checkout = () => {
             </div>
             <div className="d-flex align-items-center justify-content-center mt-3">
               <Link
-                to="/Menu"
+                to="/user_app/Menu"
                 className="btn btn-outline-primary  rounded-pill  px-3"
               >
-                Order More
+               <i class="ri-add-circle-line me-1 fs-4"></i> Order More 
               </Link>
             </div>
           </div>

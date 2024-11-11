@@ -541,7 +541,7 @@ const renderOrders = () => {
       <div className="text-center py-4">
         <p>No orders available</p>
         <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-3">
-          Order More
+        <i class="ri-add-circle-line me-1 fs-4"></i> Order More 
         </Link>
       </div>
     );
@@ -693,7 +693,7 @@ const renderOrders = () => {
                               handleOrderMore(order.order_id);
                             }}
                           >
-                            Order More
+                         <i class="ri-add-circle-line me-1 fs-4"></i>   Order More 
                           </button>
                           <button
                             className="btn btn-sm btn-success rounded-pill px-4"
@@ -755,7 +755,7 @@ const renderOrders = () => {
       
       <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
         <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3">
-          Order More
+        <i class="ri-add-circle-line me-1 fs-4"></i>  Order More 
         </Link>
       </div>
     </>
@@ -771,7 +771,7 @@ const renderOrders = () => {
               You haven't placed any {type} orders yet.
             </p>
             <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-2">
-              Order More
+            <i class="ri-add-circle-line me-1 fs-4"></i>  Order More 
             </Link>
           </div>
         ) : (

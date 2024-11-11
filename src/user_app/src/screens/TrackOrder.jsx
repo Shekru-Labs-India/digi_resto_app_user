@@ -2035,8 +2035,8 @@ const TrackOrder = () => {
                             });
                           }}
                         >
-                          <i className="ri-add-line me-2"></i>
-                          Order More Items
+                        <i class="ri-add-circle-line me-1 fs-4"></i>
+                          Order More Items 
                         </button>
                       </div>
                     </div>

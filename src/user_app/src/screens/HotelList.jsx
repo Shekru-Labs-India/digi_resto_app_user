@@ -66,7 +66,7 @@ const HotelList = () => {
                             <i className="ri-map-pin-line gray-text"></i>
                           </div>
                           <div className="col-10 d-flex align-items-center">
-                            <span className="gray-text font_size_14">
+                            <span className="gray-text font_size_12">
                               {hotel.address
                                 .split(' ')
                                 .map(

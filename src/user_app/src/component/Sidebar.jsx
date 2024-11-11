@@ -120,7 +120,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 ? `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 : "Hello, User"}
             </span>
-            <div className="mail ms-3 gray-text  ">{userData?.mobile}</div>
+            <div className="font_size_12 ms-3 gray-text  ">{userData?.mobile}</div>
             <div className="dz-mode mt-3 me-4">
               <div className="theme-btn" onClick={toggleTheme}>
                 <i

@@ -99,13 +99,16 @@ const Profile = () => {
                 ) : (
                   <button
                     className="btn btn-outline-primary rounded-pill"
-                    onClick={showLoginPopup}
+                    onClick={() => {
+                      showLoginPopup(); // Opens the login popup
+                      toggleSidebar();  // Closes the sidebar
+                    }}
                   >
                     <i className="ri-lock-2-line me-2 fs-3"></i> Login
                   </button>
                 )}
               </span>
-              <div className="mail ms-3 gray-text  ">{userData?.mobile}</div>
+              <div className="font_size_12 ms-3 gray-text  ">{userData?.mobile}</div>
               <div className="dz-mode mt-3 me-4">
                 <div className="theme-btn" onClick={toggleTheme}>
                   <i
@@ -264,7 +267,7 @@ const Profile = () => {
                     <div className="text-end">
                       {isLoggedIn ? (
                         <>
-                          <i className="ri-user-3-fill me-2 fs-3"></i>
+                          <i className="ri-user-3-fill me-2 font_size_14 "></i>
                          <span className="font_size_14">
 
                           Hello, {toTitleCase(getFirstName(userData.name))}
@@ -325,7 +328,7 @@ const Profile = () => {
               {isLoggedIn && (
                 <div className="container p-0">
                   <div className="title-bar">
-                    <span className="mb-0">Account</span>
+                    <span className="mb-0 fw-bold">Account</span>
                   </div>
                   <Link to="/user_app/EditProfile" className="item-content item-link">
                     <div className="row align-items-center ms-0">
@@ -356,6 +359,12 @@ const Profile = () => {
           </div>
         )}
 
+<div className="d-flex justify-content-center align-items-center mt-2">
+           <Link to="/user_app/index">
+              <i className="ri-store-2-line text-muted fs-4"></i>
+              <span className="ms-2 text-muted ">All Hotels</span>
+              </Link>
+          </div>
         <div className="mt-5">
           <div className="text-center pt-3">
             <a

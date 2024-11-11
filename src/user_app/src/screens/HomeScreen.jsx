@@ -8,9 +8,10 @@ import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import NearbyArea from "../component/NearbyArea";
-
+import { usePopup } from '../context/PopupContext';
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
+  const { showLoginPopup } = usePopup();
   const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
     useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -127,14 +128,17 @@ const HomeScreen = () => {
                   <>
                     <Link
                       className="btn btn-outline-primary rounded-pill"
-                      to="/user_app/Signinscreen"
+                      onClick={() => {
+                        showLoginPopup(); // Opens the login popup
+                        toggleSidebar();  // Closes the sidebar
+                      }}
                     >
                       <i className="ri-lock-2-line me-2 fs-3"></i> Login
                     </Link>
                   </>
                 )}
               </span>
-              <div className="mail ms-3 gray-text  ">{userData?.mobile}</div>
+              <div className="font_size_12 ms-3 gray-text  ">{userData?.mobile}</div>
               <div className="dz-mode mt-3 me-4">
                 <div className="theme-btn" onClick={toggleTheme}>
                   <i

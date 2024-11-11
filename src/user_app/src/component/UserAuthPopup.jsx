@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate,Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { usePopup } from '../context/PopupContext';
 import logo from "../assets/logos/menumitra_logo_128.png";
-import config from "./config"
+import config from './config'
 const UserAuthPopup = () => {
   const navigate = useNavigate();
   const { showPWAPopup, hideLoginPopup } = usePopup();
@@ -23,8 +23,6 @@ const UserAuthPopup = () => {
   const nameInputRef = useRef(null);
   const otpInputRefs = useRef([]);
 
-  
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       const card = document.querySelector('.offcanvas-body');
@@ -43,7 +41,7 @@ const UserAuthPopup = () => {
   useEffect(() => {
     switch(view) {
       case 'login':
-        mobileInputRef.current?.focus();
+        mobileInputRef.current?.focus();  // Focus on mobile input when in login view
         break;
       case 'signup':
         nameInputRef.current?.focus();
@@ -55,8 +53,15 @@ const UserAuthPopup = () => {
   }, [view]);
 
   const handleMobileChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    let value = e.target.value.replace(/\D/g, "").slice(0, 10); // Remove non-digits and limit length to 10
+  
+    // Check if the first digit is 6, 7, 8, or 9
+    if (value.length > 0 && !['6', '7', '8', '9'].includes(value[0])) {
+      return; // Prevent input if it doesn't start with 6, 7, 8, or 9
+    }
+  
     setMobile(value);
+  
     if (value.length < 10) {
       setMobileError("Mobile number must be 10 digits");
       setIsMobileValid(false);
@@ -65,6 +70,7 @@ const UserAuthPopup = () => {
       setIsMobileValid(checkMobileValidity(value));
     }
   };
+  
 
   const checkMobileValidity = (value) => {
     return /^\d{10}$/.test(value);
@@ -77,25 +83,29 @@ const UserAuthPopup = () => {
     }
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch(`${config.apiDomain}/user_api/account_login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         if (data.st === 1) {
-          const otp = data.msg.match(/\d+/)[0];
           localStorage.setItem("mobile", mobile);
-          localStorage.setItem("otp", otp);
           localStorage.setItem("customer_id", data.customer_id);
-
-          setView('verify');
+          setView("verify");
           
+          // Try to extract OTP if present in the message
+          const otpMatch = data.msg.match(/\d+/);
+          if (otpMatch) {
+            const otp = otpMatch[0];
+            localStorage.setItem("otp", otp);
+          }
+  
           localStorage.setItem("customer_type", "registered");
           localStorage.setItem("isGuest", "false");
         } else {
@@ -104,7 +114,7 @@ const UserAuthPopup = () => {
       } else {
         setError(data.msg || `HTTP error! Status: ${response.status}`);
         if (data.st === 2) {
-          setView('signup');
+          setView("signup");
         }
       }
     } catch (error) {
@@ -114,13 +124,14 @@ const UserAuthPopup = () => {
       setLoading(false);
     }
   };
+  
 
   const handleGuestLogin = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/guest_login`, {
+      const response = await fetch(`${config.apiDomain}/user_api/guest_login`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -190,7 +201,7 @@ const UserAuthPopup = () => {
     setLoading(true);
 
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/account_verify_otp`, {
+      const response = await fetch(`${config.apiDomain}/user_api/account_verify_otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -253,7 +264,7 @@ const UserAuthPopup = () => {
 
     setLoading(true);
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/account_signup`, {
+      const response = await fetch(`${config.apiDomain}/user_api/account_signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, mobile }),
@@ -303,7 +314,6 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                  <Link to="/">
                   <img
                     src={logo}
                     alt="logo"
@@ -311,7 +321,6 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
-                  </Link>
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
@@ -362,13 +371,13 @@ const UserAuthPopup = () => {
                 </div>
               )}
             </form>
-            <div className="text-center mt-3">
-              <button
-                onClick={() => setView("login")}
-                className="btn btn-link"
+            <div className="text-start mt-3">
+            <div
+                onClick={() => setView('login')}
+                className=" text-muted "
               >
                 Back to Login
-              </button>
+              </div>
             </div>
           </div>
         );
@@ -391,7 +400,7 @@ const UserAuthPopup = () => {
                     height="30"
                   />
                   <span className="text-dark mb-0 mt-1 fw-bolder">
-                    MenuMitraaa
+                    MenuMitra
                   </span>
                 </div>
               </div>
@@ -462,13 +471,13 @@ const UserAuthPopup = () => {
                 </button>
               )}
             </form>
-            <div className="text-center mt-3">
-              <button
+            <div className="text-start mt-3">
+              <div
                 onClick={() => setView('login')}
-                className="btn btn-link"
+                className=" text-muted "
               >
                 Back to Login
-              </button>
+              </div>
             </div>
           </div>
         );
@@ -503,7 +512,7 @@ const UserAuthPopup = () => {
                 <input
                   ref={mobileInputRef}
                   type="tel"
-                  className={`form-control my-3 text-center d-flex mx-auto border border-black ${
+                  className={`form-control my-3 text-center d-flex mx-auto border border- ${
                     mobileError ? "is-invalid" : ""
                   }`}
                   placeholder="Enter mobile number"
@@ -530,8 +539,7 @@ const UserAuthPopup = () => {
                 </button>
               )}
             </form>
-            <div className="text-center  mt-3 ">
-              <div className='my-6'>
+            <div className="text-center  mt-3">
               Not a member?{" "}
               <a
                 className="text-underline text-primary"
@@ -540,7 +548,6 @@ const UserAuthPopup = () => {
               >
                 Create an account
               </a>
-              </div>
               <div className="d-flex justify-content-center">
                 <button
                   className="btn btn-outline-primary rounded-pill btn-sm mt-4"

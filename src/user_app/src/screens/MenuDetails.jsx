@@ -164,6 +164,7 @@ const MenuDetails = () => {
             images,
             offer,
             rating,
+            is_special,
             is_favorite,
             restaurant_id: fetchedRestaurantId,
           } = data.details;
@@ -198,6 +199,7 @@ const MenuDetails = () => {
             menu_id: menuId,
             offer,
             rating,
+            is_special,
             is_favorite,
             restaurant_id: fetchedRestaurantId,
           });
@@ -695,6 +697,14 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
+            {productDetails.is_special && (
+                         
+                            <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                              Special
+                              <hr className="mt-2 mb-0" />
+                            
+                          </div>
+                        )}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -804,7 +814,7 @@ const MenuDetails = () => {
                   </div>
                   <hr />
                   <div>
-                    <span className="  text-wrap m-0">
+                    <span className=" text-capitalize text-wrap m-0">
                       {productDetails.description}
                     </span>
                   </div>
