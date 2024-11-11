@@ -91,6 +91,7 @@ const HomeScreen = () => {
             style={{ zIndex: 1040, position: 'relative' }}
           >
             <div className="">
+              <Link to="/">
               <img
                 src={logo}
                 alt="logo"
@@ -99,6 +100,7 @@ const HomeScreen = () => {
                 height="30"
               />
               <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+              </Link>
             </div>
             <div className="right-content gap-1">
               <div

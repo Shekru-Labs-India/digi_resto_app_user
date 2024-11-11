@@ -322,10 +322,11 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
-                  </Link>
+                 
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
+                  </Link>
                 </div>
               </div>
               <div className="text-center mb-4">
@@ -376,7 +377,7 @@ const UserAuthPopup = () => {
             <div className="text-start mt-3">
             <div
                 onClick={() => setView('login')}
-                className=" text-muted "
+                className=" gray-text "
               >
                 Back to Login
               </div>
@@ -402,10 +403,11 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
-                  </Link>
+                 
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
+                  </Link>
                 </div>
               </div>
               <div className="form-group mb-3">
@@ -415,7 +417,7 @@ const UserAuthPopup = () => {
                 <input
                   ref={nameInputRef}
                   type="text"
-                  className={`form-control ${nameError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-black ${nameError ? 'is-invalid' : ''}`}
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -431,7 +433,7 @@ const UserAuthPopup = () => {
                 <input
                   ref={mobileInputRef}
                   type="tel"
-                  className={`form-control ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-black ${mobileError ? 'is-invalid' : ''}`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
@@ -478,7 +480,7 @@ const UserAuthPopup = () => {
             <div className="text-start mt-3">
               <div
                 onClick={() => setView('login')}
-                className=" text-muted "
+                className=" gray-text "
               >
                 Back to Login
               </div>
@@ -504,21 +506,22 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
-                  </Link>
+                 
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
+                  </Link>
                 </div>
               
               </div>
-              <div className="form-group">
-                <label className="form-label d-flex justify-content-center">
+              <div className="form-group mb-3">
+                <label className="form-label d-flex justify-content-start">
                   <span className="required-star">*</span>Mobile Number
                 </label>
                 <input
                   ref={mobileInputRef}
                   type="tel"
-                  className={`form-control my-3 text-center d-flex mx-auto border border- ${
+                  className={`form-control  text-center d-flex mx-auto border border-black ${
                     mobileError ? "is-invalid" : ""
                   }`}
                   placeholder="Enter mobile number"

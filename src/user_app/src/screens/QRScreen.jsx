@@ -63,11 +63,11 @@ const QRScanner = () => {
 
   return (
     <div className="container-fluid bg-light d-flex flex-column align-items-center">
-      <div className="d-flex align-items-center mt-4 mb-3">
-      <Link to="/">   <img src={logo} alt="logo" className="me-2" width="30" height="30" /></Link>
+       <Link to="/"> <div className="d-flex align-items-center mt-4 mb-3">
+       <img src={logo} alt="logo" className="me-2" width="30" height="30" />
         <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
       </div>
-      
+      </Link>
       {/* {!showCamera && (
         <button
           className="btn btn-primary my-3 rounded-pill"

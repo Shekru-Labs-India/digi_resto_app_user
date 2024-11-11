@@ -1,11 +1,12 @@
 import React from 'react'
-
+import { Link } from 'react-router-dom';
 import updateLogo from "../assets/logos/menumitra_logo_128.png";
 const Logoname = () => {
   return (
     <div className="logotitle mt-3" style={{ textAlign: "center" }}>
       <h4 className="title">
         {" "}
+        <Link to="/">
         <img
           src={updateLogo}
           alt="wave"
@@ -13,6 +14,7 @@ const Logoname = () => {
           className="logo-image"
         />{" "}
         <br></br> <h5 className="title">MenuMitra</h5>
+        </Link>
       </h4>
     </div>
   );

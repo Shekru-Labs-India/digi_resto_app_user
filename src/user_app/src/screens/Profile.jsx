@@ -241,8 +241,9 @@ const Profile = () => {
                 width="30"
                 height="30"
               />
-              </Link>
+              
               <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+              </Link>
             </div>
 
             <p className="text-center text-md-center mt-2 gray-text">
@@ -427,8 +428,9 @@ const Profile = () => {
               width="30"
               height="30"
             />
-            </Link>
+            
             <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+            </Link>
           </div>
 
           <p className="text-center text-md-center mt-2 gray-text">

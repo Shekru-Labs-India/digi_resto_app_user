@@ -187,8 +187,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               width="30"
               height="30"
             />
-            </Link>
+            
             <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+            </Link>
           </div>
           <div className="text-center mt-2">
             <div className="gray-text  ">Powered by </div>
