@@ -7,7 +7,7 @@ import south from "../assets/MenuDefault.png";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import HotelNameAndTable from '../components/HotelNameAndTable';
-
+import config from "../component/config"
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const Category = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_category_list_with_image",
+           `${config.apiDomain}/user_api/get_category_list_with_image`,
           {
             method: "POST",
             headers: {

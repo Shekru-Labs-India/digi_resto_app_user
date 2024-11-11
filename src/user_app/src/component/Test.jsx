@@ -5,7 +5,7 @@ import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif";
 import "../assets/css/custom.css";
-
+import config from "./config"
 const Test = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ const Test = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_order_details",
+           `${config.apiDomain}/user_api/get_order_details`,
           {
             method: "POST",
             headers: {
@@ -194,16 +194,16 @@ const Test = () => {
                                 {[...Array(5)].map((_, i) => {
                                   const spicyIndex = parseInt(menu.spicy_index);
  
-                                  let iconClass = 'ri-fire-line gray-text';
+                                  // let iconClass = 'ri-fire-line gray-text';
                                   
 
-                                  if (i < spicyIndex) {
-                                    iconClass = 'ri-fire-fill text-danger';
+                                  // if (i < spicyIndex) {
+                                  //   iconClass = 'ri-fire-fill text-danger';
                                     
-                                  } else if (i === spicyIndex && spicyIndex % 1 !== 0) {
-                                    iconClass = 'ri-fire-fill text-danger';
+                                  // } else if (i === spicyIndex && spicyIndex % 1 !== 0) {
+                                  //   iconClass = 'ri-fire-fill text-danger';
                                     
-=======
+// =======
                                   let iconClass = 'ri-fire-line';
                                   let iconColor = '#a5a5a5';
 
@@ -213,7 +213,7 @@ const Test = () => {
                                   } else if (i === spicyIndex && spicyIndex % 1 !== 0) {
                                     iconClass = 'ri-fire-fill';
                                     iconColor = '#eb8e57';
->>>>>>> e155df6124f5bb539500098a6cd2d5115fbff4f7
+// >>>>>>> e155df6124f5bb539500098a6cd2d5115fbff4f7
                                     return (
                                       <i
                                         key={i}

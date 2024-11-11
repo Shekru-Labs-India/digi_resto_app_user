@@ -11,7 +11,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
 import { getUserData } from "../utils/userUtils";
-
+import config from "../component/config"
 const Cart = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const { cartItems, updateCart, removeFromCart } = useCart();
@@ -42,7 +42,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
+         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -199,7 +199,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/update_cart_menu_quantity",
+         `${config.apiDomain}/user_api/update_cart_menu_quantity`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -271,7 +271,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

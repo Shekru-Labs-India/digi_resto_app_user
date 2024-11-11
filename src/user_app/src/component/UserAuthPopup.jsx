@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 import { usePopup } from '../context/PopupContext';
 import logo from "../assets/logos/menumitra_logo_128.png";
-
+import config from "./config"
 const UserAuthPopup = () => {
   const navigate = useNavigate();
   const { showPWAPopup, hideLoginPopup } = usePopup();
@@ -77,7 +77,7 @@ const UserAuthPopup = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_login", {
+      const response = await fetch(`${config.apiDomain}/user_api/account_login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile }),
@@ -118,7 +118,7 @@ const UserAuthPopup = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/guest_login", {
+      const response = await fetch( `${config.apiDomain}/user_api/guest_login`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -188,7 +188,7 @@ const UserAuthPopup = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_verify_otp", {
+      const response = await fetch( `${config.apiDomain}/user_api/account_verify_otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -251,7 +251,7 @@ const UserAuthPopup = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_signup", {
+      const response = await fetch( `${config.apiDomain}/user_api/account_signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, mobile }),

@@ -10,7 +10,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
-
+import config from "../component/config"
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_cart_detail",
+         `${config.apiDomain}/user_api/get_cart_detail`,
         {
           method: "POST",
           headers: {
@@ -252,7 +252,7 @@ const Checkout = () => {
         is_new: true
       }));
 
-      const response = await fetch("https://men4u.xyz/user_api/get_order_list", {
+      const response = await fetch( `${config.apiDomain}/user_api/get_order_list`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -348,7 +348,7 @@ const Checkout = () => {
       console.log("Completing order with ID:", ongoingOrderId);
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/complete_order",
+         `${config.apiDomain}/user_api/complete_order`,
         {
           method: "POST",
           headers: {
@@ -423,7 +423,7 @@ const Checkout = () => {
 
       // First check for ongoing orders
       const ongoingResponse = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
+         `${config.apiDomain}/user_api/get_order_list`,
         {
           method: "POST",
           headers: {
@@ -451,7 +451,7 @@ const Checkout = () => {
 
       // If no ongoing orders, proceed with checking placed orders
       const placedResponse = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
+         `${config.apiDomain}/user_api/get_order_list`,
         {
           method: "POST",
           headers: {
@@ -512,7 +512,7 @@ const Checkout = () => {
       };
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/add_to_existing_order",
+         `${config.apiDomain}/user_api/add_to_existing_order`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -561,7 +561,7 @@ const Checkout = () => {
       console.log("Cancelling order:", existingOrderId); // Debug log
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/cancle_order",
+         `${config.apiDomain}/user_api/cancle_order`,
         {
           method: "POST",
           headers: {
@@ -635,7 +635,7 @@ const Checkout = () => {
       };
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/create_order",
+         `${config.apiDomain}/user_api/create_order`,
         {
           method: "POST",
           headers: {
@@ -689,7 +689,7 @@ const Checkout = () => {
 
       // Fetch the ongoing order details
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
+         `${config.apiDomain}/user_api/get_order_list`,
         {
           method: "POST",
           headers: {

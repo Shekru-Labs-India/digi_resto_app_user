@@ -3,7 +3,7 @@ import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
-
+import config from "./config"
 const OfferAndFeatured = () => {
   const [banners, setBanners] = useState([]);
   const [menuLists, setMenuLists] = useState([]);
@@ -28,7 +28,7 @@ const OfferAndFeatured = () => {
 
         // Fetch banners and offer menu
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_banner_and_offer_menu_list",
+           `${config.apiDomain}/user_api/get_banner_and_offer_menu_list`,
           {
             method: "POST",
             headers: {

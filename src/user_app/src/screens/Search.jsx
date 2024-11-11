@@ -7,7 +7,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import { usePopup } from '../context/PopupContext';
-
+import config from "../component/config"
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -100,7 +100,7 @@ const Search = () => {
         };
 
         const response = await fetch(
-          "https://men4u.xyz/user_api/search_menu",
+           `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
@@ -152,7 +152,7 @@ const Search = () => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
+         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -216,7 +216,7 @@ const Search = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
+         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
@@ -312,7 +312,7 @@ const Search = () => {
 
     try {
       const response = await fetch(
-        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

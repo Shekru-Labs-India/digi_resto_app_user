@@ -11,7 +11,7 @@ import Bottom from "../component/bottom";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
-
+import config from "../component/config"
 import "../assets/css/toast.css";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -97,7 +97,7 @@ const Product = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_all_menu_list_by_category",
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: {
@@ -213,8 +213,8 @@ const Product = () => {
     const isFavorite = menuItem.is_favourite;
 
     const apiUrl = isFavorite
-      ? "https://men4u.xyz/user_api/remove_favourite_menu"
-      : "https://men4u.xyz/user_api/save_favourite_menu";
+      ?  `${config.apiDomain}/user_api/remove_favourite_menu`
+      :  `${config.apiDomain}/user_api/save_favourite_menu`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -318,7 +318,7 @@ const Product = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
+         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {

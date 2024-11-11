@@ -8,7 +8,7 @@ import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
 import { usePopup } from '../context/PopupContext';
-
+import config from "./config"
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,7 +81,7 @@ const NearbyArea = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_special_menu_list",
+         `${config.apiDomain}/user_api/get_special_menu_list`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -226,7 +226,7 @@ const NearbyArea = () => {
 
     try {
       const response = await fetch(
-        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -288,7 +288,7 @@ const NearbyArea = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://men4u.xyz/user_api/get_full_half_price_of_menu", {
+      const response = await fetch( `${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

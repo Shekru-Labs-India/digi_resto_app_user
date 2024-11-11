@@ -112,7 +112,7 @@ const OfferBanner = () => {
       }
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_all_menu_list_by_category",
+         `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -245,7 +245,7 @@ const OfferBanner = () => {
 
     try {
       const response = await fetch(
-        `https://men4u.xyz/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -306,7 +306,7 @@ const OfferBanner = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch("https://men4u.xyz/user_api/get_full_half_price_of_menu", {
+      const response = await fetch( `${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -406,7 +406,7 @@ const OfferBanner = () => {
   
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
+         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {

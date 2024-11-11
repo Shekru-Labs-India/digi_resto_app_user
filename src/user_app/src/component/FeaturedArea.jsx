@@ -3,7 +3,7 @@ import Swiper from "swiper";
 import images from "../assets/MenuDefault.png";
 import { Link } from "react-router-dom";
 import { useRestaurantId } from '../context/RestaurantIdContext';
-
+import config from "./config"
 const FeaturedArea = () => {
   const [menuLists, setMenuLists] = useState([]);
   const { restaurantId } = useRestaurantId();
@@ -24,7 +24,7 @@ const FeaturedArea = () => {
           throw new Error("Restaurant ID is not available");
         }
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_banner_and_offer_menu_list", // Updated URL
+           `${config.apiDomain}/user_api/get_banner_and_offer_menu_list`, // Updated URL
           {
             method: "POST",
             headers: {

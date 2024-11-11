@@ -9,7 +9,7 @@ import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 
-
+import config from "../component/config"
 const MyOrder = () => {
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -67,7 +67,7 @@ const MyOrder = () => {
         }
 
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_order_list",
+           `${config.apiDomain}/user_api/get_order_list`,
           {
             method: "POST",
             headers: {
@@ -335,7 +335,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/complete_order",
+         `${config.apiDomain}/user_api/complete_order`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -399,7 +399,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const handleOrderStatusChange = async (orderId) => {
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/change_status_to_ongoing",
+         `${config.apiDomain}/user_api/change_status_to_ongoing`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -462,7 +462,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
       const userData = JSON.parse(localStorage.getItem("userData"));
       const response = await fetch(
-        "https://men4u.xyz/user_api/cancle_order",
+         `${config.apiDomain}/user_api/cancle_order`,
         {
           method: "POST",
           headers: {
@@ -490,7 +490,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
         // Fetch updated order list
         const updatedResponse = await fetch(
-          "https://men4u.xyz/user_api/get_order_list",
+           `${config.apiDomain}/user_api/get_order_list`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

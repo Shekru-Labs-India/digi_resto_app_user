@@ -5,7 +5,7 @@ import Logoname from "../constants/Logoname";
 import CompanyVersion from "../constants/CompanyVersion";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
-
+import config from "../component/config"
 const Signupscreen = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -56,7 +56,7 @@ const Signupscreen = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_signup", {
+      const response = await fetch( `${config.apiDomain}/user_api/account_signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, mobile }),

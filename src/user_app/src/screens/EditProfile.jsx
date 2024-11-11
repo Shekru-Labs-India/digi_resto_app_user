@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
-
+import  config from "../component/config"
 const EditProfile = () => {
   const [userData, setUserData] = useState({});
   const [newName, setNewName] = useState("");
@@ -36,7 +36,7 @@ const EditProfile = () => {
 
     try {
       setLoading(true);
-      const url = "https://men4u.xyz/user_api/account_profile_update";
+      const url =  `${config.apiDomain}/user_api/account_profile_update`;
       const requestOptions = {
         method: "POST",
         headers: {

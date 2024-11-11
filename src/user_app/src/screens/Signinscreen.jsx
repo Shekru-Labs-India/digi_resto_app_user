@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import authenticationPic1 from "../assets/background.jpg";
 import LoaderGif from "./LoaderGIF";
-
+import config from "../component/config"
 const Signinscreen = () => {
   const [mobile, setMobile] = useState("");
   const [isMobileValid, setIsMobileValid] = useState(false);
@@ -27,7 +27,7 @@ const Signinscreen = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/guest_login", {
+      const response = await fetch( `${config.apiDomain}/user_api/guest_login`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -70,7 +70,7 @@ const Signinscreen = () => {
     setError(null);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_login", {
+      const response = await fetch( `${config.apiDomain}/user_api/account_login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile }),

@@ -9,7 +9,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import LoaderGif from "./LoaderGIF";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { usePopup } from '../context/PopupContext';
-
+import config from "../component/config"
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -135,7 +135,7 @@ const MenuDetails = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_menu_details",
+        `${config.apiDomain}/user_api/get_menu_details`,
         {
           method: "POST",
           headers: {
@@ -229,7 +229,7 @@ const MenuDetails = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
+         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -342,8 +342,8 @@ const MenuDetails = () => {
     
 
     const apiUrl = isFavorite
-      ? "https://men4u.xyz/user_api/remove_favourite_menu"
-      : "https://men4u.xyz/user_api/save_favourite_menu";
+      ?  `${config.apiDomain}/user_api/remove_favourite_menu`
+      : `${config.apiDomain}/user_api/save_favourite_menu`;
 
     const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
 

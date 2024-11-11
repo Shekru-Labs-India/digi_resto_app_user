@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CompanyVersion from "../constants/CompanyVersion";
-
+import config from "./config"
 
 const AllOrderList = () => {
   const [data, setData] = useState(null);
@@ -11,7 +11,7 @@ const AllOrderList = () => {
 
 
   useEffect(() => {
-    fetch("https://men4u.xyz/user_api/get_all_orders_of_restaurant", {
+    fetch( `${config.apiDomain}/user_api/get_all_orders_of_restaurant`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

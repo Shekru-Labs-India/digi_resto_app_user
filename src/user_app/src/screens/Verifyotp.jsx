@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logoname from "../constants/Logoname";
 import pic4 from "../assets/background.jpg";
 import LoaderGif from "./LoaderGIF";
-
+import config from "../component/config"
 const Verifyotp = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [error, setError] = useState(null);
@@ -38,7 +38,7 @@ const Verifyotp = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://men4u.xyz/user_api/account_verify_otp", {
+      const response = await fetch( `${config.apiDomain}/user_api/account_verify_otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

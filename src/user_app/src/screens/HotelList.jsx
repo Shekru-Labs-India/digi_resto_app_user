@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import CompanyVersion from '../constants/CompanyVersion';
 // import '../assets/styles.css'
 // import '../assets/custom.css'
-
+import config from "../component/config"
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch('https://men4u.xyz/user_api/get_all_restaurants');
+        const response = await fetch( `${config.apiDomain}/user_api/get_all_restaurants`);
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {

@@ -10,7 +10,7 @@ import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
-
+import config from "../component/config"
 const TrackOrder = () => {
   // Define displayCartItems
   const [orderDetails, setOrderDetails] = useState(null);
@@ -70,7 +70,7 @@ const TrackOrder = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_full_half_price_of_menu",
+         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
@@ -399,7 +399,7 @@ const TrackOrder = () => {
       );
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/update_placed_order",
+         `${config.apiDomain}/user_api/update_placed_order`,
         {
           method: "POST",
           headers: {
@@ -508,7 +508,7 @@ const TrackOrder = () => {
         };
 
         const response = await fetch(
-          "https://men4u.xyz/user_api/search_menu",
+           `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
@@ -603,7 +603,7 @@ const TrackOrder = () => {
       // If there's an existing order, add to it
       if (orderDetails?.order_details?.order_id) {
         const response = await fetch(
-          "https://men4u.xyz/user_api/add_to_existing_order",
+           `${config.apiDomain}/user_api/add_to_existing_order`,
           {
             method: "POST",
             headers: {
@@ -729,7 +729,7 @@ const TrackOrder = () => {
 
     try {
       const response = await fetch(
-        `https://men4u.xyz/user_api/${
+         `${config.apiDomain}/user_api/${
           isFavorite ? "remove" : "save"
         }_favourite_menu`,
         {
@@ -795,7 +795,7 @@ const TrackOrder = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_order_details",
+         `${config.apiDomain}/user_api/get_order_details`,
         {
           method: "POST",
           headers: {
@@ -952,7 +952,7 @@ const TrackOrder = () => {
       );
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/update_placed_order",
+         `${config.apiDomain}/user_api/update_placed_order`,
         {
           method: "POST",
           headers: {
@@ -1024,7 +1024,7 @@ const TrackOrder = () => {
       console.log("Request Body:", requestBody); // Debug log
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/add_to_existing_order",
+         `${config.apiDomain}/user_api/add_to_existing_order`,
         {
           method: "POST",
           headers: {
@@ -1073,7 +1073,7 @@ const TrackOrder = () => {
       }
 
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_order_list",
+         `${config.apiDomain}/user_api/get_order_list`,
         {
           method: "POST",
           headers: {

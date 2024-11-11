@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import config from "./config"
 const OrderList = ({ restaurantId, customerId, orderStatus }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const OrderList = ({ restaurantId, customerId, orderStatus }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_order_list",
+           `${config.apiDomain}/user_api/get_order_list`,
           {
             method: "POST",
             headers: {
