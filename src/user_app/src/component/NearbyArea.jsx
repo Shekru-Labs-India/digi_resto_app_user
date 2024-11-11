@@ -444,7 +444,7 @@ const NearbyArea = () => {
                       )}
                     </div>
                     <div className="dz-content d-block">
-                      <div className="category-text">
+                      {/* <div className="category-text">
                         <div className="row mt-1">
                           <div className="col-8 text-success font_size_10">
                             <i className="ri-restaurant-line pe-1"></i>
@@ -457,7 +457,17 @@ const NearbyArea = () => {
                             </span>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
+                      <div className="d-flex justify-content-between align-items-center mt-1">
+    <div className="text-success font_size_10 d-flex align-items-center">
+      <i className="ri-restaurant-line pe-1"></i>
+      {menuItem.category_name}
+    </div>
+    <div className="text-end font_size_10 fw-normal gray-text me-1">
+      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      {menuItem.rating}
+    </div>
+  </div>
                       <span className="font_size_14 fw-medium text-wrap">
                         {menuItem.name}
                       </span>
@@ -501,7 +511,7 @@ const NearbyArea = () => {
                                 height: "25px",
                               }}
                             >
-                              <i className={`ri-shopping-cart-${isMenuItemInCart(menuItem.menu_id) ? "fill" : "line"} fs-6`}></i>
+                              <i className={`ri-shopping-cart-${isMenuItemInCart(menuItem.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
                             </Link>
                           ) : (
                             <Link

@@ -558,11 +558,11 @@ const OfferBanner = () => {
                         )}
                       </div>
                       <div className="dz-content d-block">
-                        <div className="category-text">
+                        {/* <div className="category-text">
                           <div className="row mt-1">
                             <div className="col-8 text-success font_size_10">
                               <i className="ri-restaurant-line pe-1"></i>
-                              {menu.menu_cat_name}
+                              {menu.category_name}
                             </div>
                             <div className="col-4 ps-0 text-end">
                               <span className="font_size_10 fw-normal gray-text me-2">
@@ -571,7 +571,20 @@ const OfferBanner = () => {
                               </span>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
+                        <div className="category-text">
+  <div className="d-flex justify-content-between align-items-center mt-1">
+    <div className="text-success font_size_10 d-flex align-items-center">
+      <i className="ri-restaurant-line pe-1"></i>
+      {menu.category_name}
+    </div>
+    <div className="text-end font_size_10 fw-normal gray-text me-1">
+      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      {menu.rating}
+    </div>
+  </div>
+</div>
+
                         <span className="font_size_14 fw-medium text-wrap">
                           {menu.name}
                         </span>
@@ -611,7 +624,7 @@ const OfferBanner = () => {
                                   height: "25px",
                                 }}
                               >
-                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
                               </Link>
                             ) : (
                               <Link

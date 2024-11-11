@@ -680,7 +680,7 @@ const Search = () => {
                         >
                           <i
                             className={`ri-shopping-cart-${
-                              isMenuItemInCart(menu.menu_id) ? "fill" : "line"
+                              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
                             } fs-6`}
                           ></i>
                         </div>

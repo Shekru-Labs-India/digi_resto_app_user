@@ -647,7 +647,7 @@ const Wishlist = () => {
                                                     : isMenuItemInCart(
                                                         menu.menu_id
                                                       )
-                                                    ? "fill"
+                                                    ? "fill text-black"
                                                     : "line"
                                                 } fs-6`}
                                                 title={

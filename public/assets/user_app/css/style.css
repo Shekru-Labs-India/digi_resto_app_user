@@ -17823,13 +17823,13 @@ hr.dotted {
     margin: 0 -15px;
     padding: 0 15px; }
     .featured-swiper .swiper-slide {
-      width: 275px; }
+      width: 100%; }
   
   .featured-swiper2 {
     margin: 0 -15px;
     padding: 0 15px; }
     .featured-swiper2 .swiper-slide {
-      width: 250px; }
+      width: 100%; }
   
   .chat-list > ul li {
     position: relative;

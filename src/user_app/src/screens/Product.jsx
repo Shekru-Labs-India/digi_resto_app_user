@@ -627,23 +627,21 @@ const Product = () => {
                             </div>
                           </div>
                         )}
-                        <div className="row">
-                          <div className="col-6">
-                            <div className="fw-medium text-success font_size_10">
-                              <i className="ri-restaurant-line pe-1"></i>
-                              {categories.find(
-                                (category) =>
-                                  category.menu_cat_id === menuItem.menu_cat_id
-                              )?.name || menuItem.category}
-                            </div>
-                          </div>
-                          <div className="col-6 text-end">
-                            <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                            <span className="font_size_10 fw-normal gray-text">
-                              {menuItem.rating}
-                            </span>
-                          </div>
-                        </div>
+                      <div className="d-flex justify-content-between align-items-center">
+  <div className="fw-medium text-success font_size_10 d-flex align-items-center">
+    <i className="ri-restaurant-line pe-1"></i>
+    {categories.find(
+      (category) => category.menu_cat_id === menuItem.menu_cat_id
+    )?.name || menuItem.category}
+  </div>
+  <div className="text-end">
+    <i className="ri-star-half-line font_size_10 ratingStar"></i>
+    <span className="font_size_10 fw-normal gray-text ms-1">
+      {menuItem.rating}
+    </span>
+  </div>
+</div>
+
                       </div>
 
                       {menuItem.name && (
@@ -711,7 +709,7 @@ const Product = () => {
                               <i
                                 className={`ri-shopping-cart-${
                                   isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill"
+                                    ? "fill text-black"
                                     : "line"
                                 } fs-6 `}
                               ></i>

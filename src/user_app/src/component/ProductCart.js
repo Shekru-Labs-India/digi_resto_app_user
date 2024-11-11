@@ -354,7 +354,7 @@ const ProductCard = ({ isVegOnly }) => {
           }
         }}
       >
-        <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill" : "line"} fs-6`}></i>
+        <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
       </div>
     );
   }, [handleAddToCartClick, isMenuItemInCart]);
@@ -603,7 +603,7 @@ const ProductCard = ({ isVegOnly }) => {
                           </div>
                           <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
                             <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                            <span className="font_size_10 fw-normal gray-text mt-1">
+                            <span className="font_size_10 fw-normal gray-text ">
                               {menu.rating}
                             </span>
                           </div>
