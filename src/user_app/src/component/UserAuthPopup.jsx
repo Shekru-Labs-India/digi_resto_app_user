@@ -23,6 +23,8 @@ const UserAuthPopup = () => {
   const nameInputRef = useRef(null);
   const otpInputRefs = useRef([]);
 
+  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       const card = document.querySelector('.offcanvas-body');
@@ -501,7 +503,7 @@ const UserAuthPopup = () => {
                 <input
                   ref={mobileInputRef}
                   type="tel"
-                  className={`form-control my-3 text-center d-flex mx-auto border border- ${
+                  className={`form-control my-3 text-center d-flex mx-auto border border-black ${
                     mobileError ? "is-invalid" : ""
                   }`}
                   placeholder="Enter mobile number"
@@ -528,7 +530,8 @@ const UserAuthPopup = () => {
                 </button>
               )}
             </form>
-            <div className="text-center  mt-3">
+            <div className="text-center  mt-3 ">
+              <div className='my-6'>
               Not a member?{" "}
               <a
                 className="text-underline text-primary"
@@ -537,6 +540,7 @@ const UserAuthPopup = () => {
               >
                 Create an account
               </a>
+              </div>
               <div className="d-flex justify-content-center">
                 <button
                   className="btn btn-outline-primary rounded-pill btn-sm mt-4"
