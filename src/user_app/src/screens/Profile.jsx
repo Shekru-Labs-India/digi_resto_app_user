@@ -364,8 +364,8 @@ const Profile = () => {
 
 <div className="d-flex justify-content-center align-items-center mt-2">
            <Link to="/user_app/index">
-              <i className="ri-store-2-line text-muted fs-4"></i>
-              <span className="ms-2 text-muted ">All Hotels</span>
+              <i className="ri-store-2-line gray-text fs-4"></i>
+              <span className="ms-2 gray-text ">All Hotels</span>
               </Link>
           </div>
         <div className="mt-5">

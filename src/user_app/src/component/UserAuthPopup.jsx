@@ -374,7 +374,7 @@ const UserAuthPopup = () => {
                 </div>
               )}
             </form>
-            <div className="text-start mt-3">
+            <div className="text-center mt-3">
             <div
                 onClick={() => setView('login')}
                 className=" gray-text "
@@ -477,7 +477,7 @@ const UserAuthPopup = () => {
                 </button>
               )}
             </form>
-            <div className="text-start mt-3">
+            <div className="text-center mt-3">
               <div
                 onClick={() => setView('login')}
                 className=" gray-text "
@@ -559,10 +559,10 @@ const UserAuthPopup = () => {
               </a>
               <div className="d-flex justify-content-center">
                 <button
-                  className="btn btn-outline-primary rounded-pill btn-sm mt-4"
+                  className="btn btn-outline-primary rounded-pill btn-sm mt-4 text-lowercase"
                   onClick={handleGuestLogin}
                 >
-                  Continue as Guest
+                  continue as guest
                 </button>
               </div>
             </div>
