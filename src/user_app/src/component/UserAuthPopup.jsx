@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { usePopup } from '../context/PopupContext';
 import logo from "../assets/logos/menumitra_logo_128.png";
 
@@ -301,6 +301,7 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
+                  <Link to="/">
                   <img
                     src={logo}
                     alt="logo"
@@ -308,6 +309,7 @@ const UserAuthPopup = () => {
                     width="30"
                     height="30"
                   />
+                  </Link>
                   <span className="text-dark mb-0 mt-1 fw-bolder">
                     MenuMitra
                   </span>
@@ -387,7 +389,7 @@ const UserAuthPopup = () => {
                     height="30"
                   />
                   <span className="text-dark mb-0 mt-1 fw-bolder">
-                    MenuMitra
+                    MenuMitraaa
                   </span>
                 </div>
               </div>

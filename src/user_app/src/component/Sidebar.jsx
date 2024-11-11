@@ -179,6 +179,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </ul>
         <div className="sidebar-bottom">
           <div className="sidebar-logo text-center">
+          <Link to="/">
             <img
               src={logo}
               alt="logo"
@@ -186,6 +187,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               width="30"
               height="30"
             />
+            </Link>
             <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
           </div>
           <div className="text-center mt-2">
