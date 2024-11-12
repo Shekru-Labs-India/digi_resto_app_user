@@ -132,8 +132,8 @@ const HomeScreen = () => {
                     <Link
                       className="btn btn-outline-primary rounded-pill"
                       onClick={() => {
-                        showLoginPopup(); // Opens the login popup
-                        toggleSidebar();  // Closes the sidebar
+                        showLoginPopup(); 
+                        toggleSidebar(); 
                       }}
                     >
                       <i className="ri-lock-2-line me-2 fs-3"></i> Login

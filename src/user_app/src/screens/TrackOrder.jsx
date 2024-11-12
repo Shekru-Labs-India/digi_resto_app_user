@@ -2169,27 +2169,30 @@ const TrackOrder = () => {
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-center">
-              {  orderDetails.invoice_url ? (
-                <a
-                  href={orderDetails.invoice_url}
-                  download={`invoice_${orderDetails.order_details.order_number}.pdf`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                >
+            {/* Only show invoice button if order status is completed */}
+            {orderStatus === "completed" && (
+              <div className="d-flex justify-content-center">
+                {orderDetails.invoice_url ? (
+                  <a
+                    href={orderDetails.invoice_url}
+                    download={`invoice_${orderDetails.order_details.order_number}.pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button className="btn btn-success rounded-pill text-white px-5">
+                      Invoice &nbsp;
+                      <i className="ri-download-2-line"></i>
+                    </button>
+                  </a>
+                ) : (
                   <button className="btn btn-success rounded-pill text-white px-5">
                     Invoice &nbsp;
                     <i className="ri-download-2-line"></i>
                   </button>
-                </a>
-              ) : (
-                <button className="btn btn-success rounded-pill text-white px-5">
-                  Invoice &nbsp;
-                  <i className="ri-download-2-line"></i>
-                </button>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

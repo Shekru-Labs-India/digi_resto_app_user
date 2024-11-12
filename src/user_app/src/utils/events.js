@@ -1,3 +1,3 @@
-export const dispatchMenuUpdateEvent = () => {
-  window.dispatchEvent(new Event("menuUpdate"));
-};
+// export const dispatchMenuUpdateEvent = () => {
+//   window.dispatchEvent(new Event("menuUpdate"));
+// };
