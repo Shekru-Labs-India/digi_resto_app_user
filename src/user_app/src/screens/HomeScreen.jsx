@@ -171,29 +171,90 @@ const HomeScreen = () => {
                   </span>
                   <span className="">Menu</span>
                 </div>
-                <div className="veg-toggle ">
-                  <div
-                    className={`toggle-switch ${isVegOnly ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.preventDefault(); 
-                      toggleVegNonVeg();
-                    }}
-                  >
-                    <div className="toggle-label">
-                      <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
+               
+              <div className="">
+      <div
+        className={`  border ${isVegOnly ? "border-success" : "border-danger"} p-1`}
+        onClick={(e) => {
+          e.preventDefault();
+          toggleVegNonVeg();
+        }}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '24px', // Adjust height
+          width: '24px',  // Adjust width
+        }}
+      >
+        {isVegOnly ? (
+          <i
+            className="ri-checkbox-blank-circle-fill text-success"
+            style={{ fontSize: '16px' }} // Adjust icon size
+          ></i>
+        ) : (
+          <i
+            className="ri-checkbox-blank-circle-fill text-danger"
+            style={{ fontSize: '16px' }} // Adjust icon size
+          ></i>
+        )}
+      </div>
+    </div>
+
+{/* <div className="dz-mode ">
+                <div
+                  className={`theme-btn ${isVegOnly ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleVegNonVeg();
+                  }}
+                >
+                  
+                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
                       <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
-                        
-                        Non-Veg
-                      </span>
-                      <span className={`veg ${!isVegOnly ? "active" : ""}`}>
+                    
+                    </span>
+                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
                       <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
-                       
-                        Veg
-                      </span>
-                    </div>
-                    <div className="toggle-button"></div>
-                  </div>
+                  
+                    </span>
+                  
+                  
                 </div>
+              </div> */}
+
+
+{/* <div className="dz-mode">
+  <div
+    className={`theme-btn ${isVegOnly ? "active" : ""}`}
+    onClick={(e) => {
+      e.preventDefault();
+      toggleVegNonVeg();
+    }}
+  >
+    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
+      <i
+        className="ri-checkbox-blank-circle-fill text-danger me-1"
+        style={{
+          border: '1px solid red', // Set border color for Non-Veg icon
+          fontSize: '16px',
+          padding: '4px', // Adjust padding if needed
+        }}
+      ></i>
+    </span>
+    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
+      <i
+        className="ri-checkbox-blank-circle-fill text-success me-1"
+        style={{
+          border: '2px solid green', // Set border color for Veg icon
+          
+          padding: '2px', // Adjust padding if needed
+        }}
+      ></i>
+    </span>
+  </div>
+</div> */}
+    
               </Link>
             </li>
             <li>

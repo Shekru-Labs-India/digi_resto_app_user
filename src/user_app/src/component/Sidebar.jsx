@@ -148,7 +148,7 @@ export const SidebarToggler = () => {
                 </span>
                 <span className="">Menu</span>
               </div>
-              <div className="veg-toggle ">
+              {/* <div className="veg-toggle ">
                 <div
                   className={`toggle-switch ${isVegOnly ? "active" : ""}`}
                   onClick={(e) => {
@@ -168,7 +168,35 @@ export const SidebarToggler = () => {
                   </div>
                   <div className="toggle-button"></div>
                 </div>
-              </div>
+              </div> */}
+                   <div className="">
+      <div
+        className={`  border ${isVegOnly ? "border-success" : "border-danger"} p-1`}
+        onClick={(e) => {
+          e.preventDefault();
+          toggleVegNonVeg();
+        }}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '24px', // Adjust height
+          width: '24px',  // Adjust width
+        }}
+      >
+        {isVegOnly ? (
+          <i
+            className="ri-checkbox-blank-circle-fill text-success"
+            style={{ fontSize: '16px' }} // Adjust icon size
+          ></i>
+        ) : (
+          <i
+            className="ri-checkbox-blank-circle-fill text-danger"
+            style={{ fontSize: '16px' }} // Adjust icon size
+          ></i>
+        )}
+      </div>
+    </div>
             </Link>
           </li>
           <li>

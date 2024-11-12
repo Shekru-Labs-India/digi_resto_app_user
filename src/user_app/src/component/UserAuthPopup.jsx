@@ -171,16 +171,23 @@ const UserAuthPopup = () => {
 
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-    if (/^\d$/.test(value)) {
+  
+    // Allow only numeric input, including empty strings to clear digits
+    if (/^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
-      if (index < otp.length - 1) {
+  
+      if (value && index < otp.length - 1) {
+        // Move to the next input only if there is a value
         otpInputRefs.current[index + 1]?.focus();
+      } else if (!value && index > 0) {
+        // If the current input is cleared, move focus back
+        otpInputRefs.current[index - 1]?.focus();
       }
     }
   };
+  
 
   const handleOtpKeyDown = (e, index) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {

@@ -853,49 +853,57 @@ const Checkout = () => {
           </div>
         )}
 
-        {showEmptyCheckoutModal && (
-          <div
-            className="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100"
-            style={{
-              zIndex: 1050,
-              background: "rgba(0, 0, 0, 0.5)",
+{showEmptyCheckoutModal && (
+  <div
+    className="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100"
+    style={{
+      zIndex: 1050,
+      background: "rgba(0, 0, 0, 0.5)",
+    }}
+    onClick={() => setShowEmptyCheckoutModal(false)} // Close modal on outside click
+  >
+    <div
+      className="modal-dialog"
+      style={{ maxWidth: "90%", width: "350px" }}
+      onClick={(e) => e.stopPropagation()} // Prevent click event from closing modal
+    >
+      <div className="modal-content rounded-4 p-2">
+        <div className="modal-body text-center px-2">
+          <div className="d-flex justify-content-end">
+            <i
+              className="ri-close-line text-muted"
+              style={{ fontSize: "1.5rem", cursor: "pointer" }}
+              onClick={() => setShowEmptyCheckoutModal(false)} // Close modal on close icon click
+            ></i>
+          </div>
+          <div className="mb-3">
+            <i
+              className="ri-restaurant-2-line text-primary"
+              style={{ fontSize: "3.5rem" }}
+            ></i>
+          </div>
+          <h5 className="mb-3 fw-semibold">No Items in Cart!</h5>
+          <p className="text-muted mb-4">
+            Add some delicious dishes to your cart and place your order.
+          </p>
+          <button
+            className="btn btn-outline-primary rounded-pill px-4 py-2"
+            onClick={() => {
+              setShowEmptyCheckoutModal(false);
+              const restaurantCode = localStorage.getItem("restaurantCode");
+              const tableNumber = localStorage.getItem("tableNumber") || "";
+              navigate(`/user_app/${restaurantCode}/${tableNumber}`);
             }}
           >
-            <div
-              className="modal-dialog"
-              style={{ maxWidth: "90%", width: "350px" }}
-            >
-              <div className="modal-content rounded-4 p-2">
-                <div className="modal-body text-center px-2">
-                  <div className="mb-3">
-                    <i
-                      className="ri-restaurant-2-line text-primary"
-                      style={{ fontSize: "3.5rem" }}
-                    ></i>
-                  </div>
-                  <h5 className="mb-3 fw-semibold">No Items in Cart!</h5>
-                  <p className="text-muted mb-4">
-                    Add some delicious dishes to your cart and place your order.
-                  </p>
-                  <button
-                    className="btn btn-primary rounded-pill px-4 py-2"
-                    onClick={() => {
-                      setShowEmptyCheckoutModal(false);
-                      const restaurantCode =
-                        localStorage.getItem("restaurantCode");
-                      const tableNumber =
-                        localStorage.getItem("tableNumber") || "";
-                      navigate(`/user_app/${restaurantCode}/${tableNumber}`);
-                    }}
-                  >
-                    <i className="ri-restaurant-line me-2"></i>
-                    Browse Menu
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+            <i className="ri-restaurant-line me-2"></i>
+            Browse Menu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {showExistingOrderModal && (
           <div className="popup-overlay">

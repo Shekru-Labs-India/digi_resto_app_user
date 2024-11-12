@@ -542,6 +542,8 @@ const Product = () => {
                           aspectRatio: "1/1",
                           objectFit: "cover",
                           height: "100%",
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
                         }}
                         onError={(e) => {
                           e.target.src = images;

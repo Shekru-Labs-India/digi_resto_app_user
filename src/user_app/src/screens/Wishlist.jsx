@@ -471,6 +471,8 @@ const Wishlist = () => {
                                           width: "100%",
                                           height: "100%",
                                           aspectRatio: "1/1",
+                                          border: "1px solid #ccc",
+                          borderRadius: "8px",
                                         }}
                                         onError={(e) => {
                                           e.target.src = images;

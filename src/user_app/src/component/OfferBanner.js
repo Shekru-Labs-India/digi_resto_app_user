@@ -469,7 +469,7 @@ const OfferBanner = () => {
               {menuLists.map((menu) => (
                 <div key={menu.menu_id} className="swiper-slide">
                   <Link
-                    to={`/ProductDetails/${menu.menu_id}`}
+                    to={`/user_app/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
                   >
                     <div className="cart-list  style-2-custom">
@@ -480,6 +480,8 @@ const OfferBanner = () => {
                             height: "100%",
                             objectFit: "fill",
                             aspectRatio: "1/1",
+                            border: "1px solid #ccc",
+                          borderRadius: "8px",
                           }}
                           src={menu.image || images} // Use default image if menu.image is null
                           alt={menu.name}

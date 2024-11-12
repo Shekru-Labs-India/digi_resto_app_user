@@ -512,6 +512,8 @@ const MenuDetails = () => {
                         objectFit: "cover",
                         transition: "opacity 0.3s ease",
                         aspectRatio: "16/9",
+                        border: "1px solid #ccc",
+                          borderRadius: "8px",
                       }}
                     />
 
@@ -672,6 +674,7 @@ const MenuDetails = () => {
                     )}
                   </>
                 ) : (
+                  <>
                   <img
                     src={images}
                     alt={productDetails.name}
@@ -679,8 +682,82 @@ const MenuDetails = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      border: "1px solid #ccc",
+                          borderRadius: "8px",
                     }}
                   />
+                  <div
+                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                          ? "border-success"
+                          : "border-danger"
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        left: "10px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                        zIndex: 2,
+                      }}
+                    >
+                      <i
+                        className={`${
+                          productDetails.menu_veg_nonveg?.toLowerCase() ===
+                          "veg"
+                            ? "ri-checkbox-blank-circle-fill text-success"
+                            : "ri-checkbox-blank-circle-fill text-danger"
+                        } font_size_12`}
+                      ></i>
+                    </div>
+
+                    {/* Like button */}
+                    <div
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        right: "10px",
+                        height: "20px",
+                        width: "20px",
+                        zIndex: 2,
+                      }}
+                    >
+                      <i
+                        className={`${
+                          isFavorite
+                            ? "ri-heart-3-fill text-danger"
+                            : "ri-heart-3-line"
+                        } fs-6`}
+                        onClick={handleLikeClick}
+                        style={{ cursor: "pointer" }}
+                      ></i>
+                    </div>
+
+                    {/* Discount badge */}
+                    {productDetails?.offer !== 0 && (
+                      <div
+                        className="gradient_bg d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          top: "-1px",
+                          left: "0px",
+                          height: "17px",
+                          width: "70px",
+                          borderRadius: "0px 0px 7px 0px",
+                          zIndex: 2,
+                        }}
+                      >
+                        <span className="font_size_10 text-white">
+                          <i className="ri-percent-line me-1 font_size_14"></i>
+                          {productDetails.offer}% Off
+                        </span>
+                      </div>
+                    )}
+
+                 </>
                 )}
               </div>
             </div>

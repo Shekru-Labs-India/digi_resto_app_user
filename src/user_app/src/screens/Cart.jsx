@@ -378,6 +378,8 @@ const Cart = () => {
                           height: "100%",
                           objectFit: "fill",
                           aspectRatio: "1/1",
+                          border: "1px solid #ccc",
+                          borderRadius: "8px",
                         }}
                         onError={(e) => {
                           e.target.src = images;

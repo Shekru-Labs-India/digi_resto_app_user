@@ -1473,6 +1473,8 @@ const TrackOrder = () => {
                                       height: "100%",
                                       objectFit: "cover",
                                       aspectRatio: "1/1",
+                                      border: "1px solid #ccc",
+                          borderRadius: "8px",
                                     }}
                                     onError={(e) => {
                                       e.target.src = images;
@@ -1726,6 +1728,8 @@ const TrackOrder = () => {
                                   height: "100%",
                                   objectFit: "cover",
                                   aspectRatio: "1/1",
+                                  border: "1px solid #ccc",
+                          borderRadius: "8px",
                                 }}
                                 onError={(e) => {
                                   e.target.src = images;
@@ -1906,6 +1910,8 @@ const TrackOrder = () => {
                                 height: "100%",
                                 objectFit: "cover",
                                 aspectRatio: "1/1",
+                                border: "1px solid #ccc",
+                          borderRadius: "8px",
                               }}
                               onError={(e) => {
                                 e.target.src = images;
