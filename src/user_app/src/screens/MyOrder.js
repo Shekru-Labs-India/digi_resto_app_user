@@ -52,7 +52,7 @@ const MyOrder = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        console.log("Fetching orders...");
+        
 
         const userData = JSON.parse(localStorage.getItem("userData"));
         const currentCustomerId =
@@ -61,7 +61,7 @@ const MyOrder = () => {
           userData?.customer_type || localStorage.getItem("customer_type");
 
         if (!currentCustomerId || !restaurantId) {
-          console.log("Missing customerId or restaurantId");
+          
           setLoading(false);
           return;
         }
@@ -81,10 +81,10 @@ const MyOrder = () => {
             }),
           }
         );
-        console.log("API response status:", response.status);
+        
         if (response.ok) {
           const data = await response.json();
-          console.log("API response data:", data);
+       
           if (data.st === 1 && data.lists) {
             // Handle the response data mapping
             const mappedData = {};
@@ -95,21 +95,21 @@ const MyOrder = () => {
               mappedData[activeTab] = data.lists[activeTab];
             }
             setOrders(mappedData);
-            console.log("Fetched Orders:", mappedData);
+            
           } else {
-            console.error("Invalid data format:", data);
+            
             setOrders({});
           }
         } else {
-          console.error("Network response was not ok.");
+          
           setOrders({});
         }
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        
         setOrders({});
       } finally {
         setLoading(false);
-        console.log("Loading state set to false");
+       
       }
     };
 
@@ -158,7 +158,7 @@ const MyOrder = () => {
         return acc;
       }, 0);
     } catch (error) {
-      console.error("Error calculating order count:", error);
+    
       return 0;
     }
   };
@@ -288,9 +288,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   useEffect(() => {
-    console.log("Orders received:", orders);
-    console.log("Type:", type);
-
+  
     if (orders && Object.keys(orders).length > 0) {
       // Get the first date (top-most order group)
       const firstDate = Object.keys(orders)[0];
@@ -391,7 +389,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         throw new Error(data.msg || "Failed to complete order");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+      
       window.showToast("error", error.message || "Failed to complete order");
     }
   };
@@ -422,7 +420,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         window.showToast("success", "Order moved to ongoing orders");
       }
     } catch (error) {
-      console.error("Error changing order status:", error);
+      
       window.showToast("error", "Failed to update order status");
     }
   };
@@ -453,10 +451,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     try {
       if (!selectedOrderId || !restaurantId) {
-        console.error("Missing required data:", {
-          selectedOrderId,
-          restaurantId,
-        });
+      
         throw new Error("Missing required data for cancellation");
       }
 
@@ -514,7 +509,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         throw new Error(data.msg || "Failed to cancel order");
       }
     } catch (error) {
-      console.error("Error canceling order:", error);
+     
       window.showToast(
         "error",
         error.message || "Failed to cancel order. Please try again."
@@ -541,7 +536,7 @@ const renderOrders = () => {
       <div className="text-center py-4">
         <p>No orders available</p>
         <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-3">
-        <i class="ri-add-circle-line me-1 fs-4"></i> Order More 
+        <i className="ri-add-circle-line me-1 fs-4"></i> Order More 
         </Link>
       </div>
     );
@@ -693,7 +688,7 @@ const renderOrders = () => {
                               handleOrderMore(order.order_id);
                             }}
                           >
-                         <i class="ri-add-circle-line me-1 fs-4"></i>   Order More 
+                         <i className="ri-add-circle-line me-1 fs-4"></i>   Order More 
                           </button>
                           <button
                             className="btn btn-sm btn-success rounded-pill px-4"
@@ -755,7 +750,7 @@ const renderOrders = () => {
       
       <div className="d-flex align-items-center justify-content-center mt-4 mb-4">
         <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3">
-        <i class="ri-add-circle-line me-1 fs-4"></i>  Order More 
+        <i className="ri-add-circle-line me-1 fs-4"></i>  Order More 
         </Link>
       </div>
     </>
@@ -771,7 +766,7 @@ const renderOrders = () => {
               You haven't placed any {type} orders yet.
             </p>
             <Link to="/user_app/Menu" className="btn btn-outline-primary rounded-pill px-3 mt-2">
-            <i class="ri-add-circle-line me-1 fs-4"></i>  Order More 
+            <i className="ri-add-circle-line me-1 fs-4"></i>  Order More 
             </Link>
           </div>
         ) : (

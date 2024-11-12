@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-
+import config from "../component/config"
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
@@ -32,7 +32,7 @@ export const CartProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
+        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }) => {
   
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/add_to_cart",
+        `${config.apiDomain}/user_api/add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -138,7 +138,7 @@ export const CartProvider = ({ children }) => {
   
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/remove_from_cart",
+        `${config.apiDomain}/user_api/remove_from_cart`,
         {
           method: "POST",
           headers: {

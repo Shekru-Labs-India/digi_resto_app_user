@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
-
+import config from "../component/config"
 const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({ children }) => {
@@ -7,7 +7,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const fetchFavorites = useCallback(async (customerId, restaurantId) => {
     try {
-      const response = await fetch('https://men4u.xyz/user_api/get_all_menu_list_by_category', {
+      const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const addFavorite = async (item, customerId, restaurantId) => {
     try {
-      const response = await fetch('https://men4u.xyz/user_api/save_favourite_menu', {
+      const response = await fetch(`${config.apiDomain}/user_api/save_favourite_menu`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export const FavoritesProvider = ({ children }) => {
 
   const removeFavorite = async (itemId, customerId, restaurantId) => {
     try {
-      const response = await fetch('https://men4u.xyz/user_api/remove_favourite_menu', {
+      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -107,7 +107,7 @@ const OfferBanner = () => {
   const fetchData = async () => {
     try {
       if (!restaurantId) {
-        console.error("Restaurant ID not found");
+        
         return;
       }
 
@@ -140,7 +140,7 @@ const OfferBanner = () => {
         setMenuLists(formattedMenuList);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.clear();
     } finally {
       setLoading(false);
     }
@@ -275,7 +275,7 @@ const OfferBanner = () => {
         window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status. Please try again.");
     }
   };
@@ -320,11 +320,11 @@ const OfferBanner = () => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+        console.clear();
         window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -334,7 +334,7 @@ const OfferBanner = () => {
   const handleAddToCartClick = async (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !restaurantId) {
-      console.error("Missing required data");
+      
       navigate("/user_app/Signinscreen");
       return;
     }
@@ -393,7 +393,7 @@ const OfferBanner = () => {
       window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
   
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+      console.clear();
       window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
@@ -424,7 +424,7 @@ const OfferBanner = () => {
       const data = await response.json();
       return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
     } catch (error) {
-      console.error("Error fetching cart items:", error);
+      console.clear();
       return [];
     }
   };
@@ -471,6 +471,7 @@ const OfferBanner = () => {
                   <Link
                     to={`/user_app/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
+                    
                   >
                     <div className="cart-list  style-2-custom">
                       <div className="dz-media media-100 rounded-start-3 rounded-end-0">
@@ -612,8 +613,8 @@ const OfferBanner = () => {
                           </div>
                           <div className="d-flex justify-content-end col-6">
                             {userData ? (
-                              <Link
-                                to="#"
+                              <div
+                                
                                 onClick={(e) => handleCartIconClick(e, menu)}
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
@@ -627,10 +628,9 @@ const OfferBanner = () => {
                                 }}
                               >
                                 <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
-                              </Link>
+                              </div>
                             ) : (
-                              <Link
-                                to="#"
+                              <div
                                 className="border border-1 rounded-circle bg-white opacity-75 me-1"
                                 style={{
                                   border: "1px solid gray",
@@ -647,7 +647,7 @@ const OfferBanner = () => {
                                 }}
                               >
                                 <i className="ri-shopping-cart-2-line fs-6"></i>
-                              </Link>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -757,7 +757,7 @@ const OfferBanner = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

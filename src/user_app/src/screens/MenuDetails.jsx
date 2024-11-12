@@ -884,7 +884,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <i classNam="ri-restaurant-2-line me-2"></i>
+                    <i className="ri-restaurant-2-line me-2"></i>
                     <span className="  text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>

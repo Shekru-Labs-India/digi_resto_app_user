@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRestaurantId } from './RestaurantIdContext';
-
+import config from "../component/config"
 const MenuDataContext = createContext();
 
 export const MenuDataProvider = ({ children }) => {
@@ -14,12 +14,12 @@ export const MenuDataProvider = ({ children }) => {
 
             try {
                 const [bannerResponse, featuredResponse] = await Promise.all([
-                    fetch('https://men4u.xyz/user_api/get_banner_and_offer_menu_list', {
+                    fetch(`${config.apiDomain}/user_api/get_banner_and_offer_menu_list`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ restaurant_id: restaurantId }),
                     }),
-                    fetch('https://men4u.xyz/user_api/get_all_menu_list_by_category', {
+                    fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ restaurant_id: restaurantId }),

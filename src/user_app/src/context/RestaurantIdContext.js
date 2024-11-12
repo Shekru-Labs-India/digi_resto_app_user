@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import config from "../component/config"
 const RestaurantIdContext = createContext();
 
 export const useRestaurantId = () => {
@@ -34,7 +34,7 @@ export const RestaurantIdProvider = ({ children }) => {
 
       try {
         const response = await fetch(
-          "https://men4u.xyz/user_api/get_restaurant_details_by_code",
+          `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
           {
             method: "POST",
             headers: {

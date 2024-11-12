@@ -26,7 +26,7 @@ const AllOrderList = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("error fetching data", error);
+        console.clear()
         setError("Failed to fetch orders. Please try again later.");
         setLoading(false);
       });

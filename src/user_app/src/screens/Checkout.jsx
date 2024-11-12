@@ -46,7 +46,7 @@ const Checkout = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  console.log("Restaurant ID:", restaurantId);
+ 
   // const { isDarkMode } = useContext(ThemeContext);
 
   const [isNotesFocused, setIsNotesFocused] = useState(false);
@@ -98,8 +98,7 @@ const Checkout = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
-  console.log("Customer ID:", customerId);
-  console.log("Table Number:", tableNumber); // Log the table number
+  
   const [restaurantCode, setRestaurantCode] = useState(
     () => localStorage.getItem("restaurantCode") || ""
   );
@@ -109,7 +108,7 @@ const Checkout = () => {
   };
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
-    console.log("Cart ID:", cartId);
+    
     return cartId ? parseInt(cartId, 10) : null;
   };
 
@@ -131,16 +130,10 @@ const Checkout = () => {
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
 
-    console.log("Fetching cart details with:", {
-      cartId,
-      currentCustomerId,
-      restaurantId,
-    });
+   
 
     if (!cartId || !currentCustomerId || !restaurantId) {
-      console.log(
-        "Missing cart, customer, or restaurant data. Navigating to home."
-      );
+     
       return;
     }
 
@@ -161,7 +154,7 @@ const Checkout = () => {
       );
 
       const data = await response.json();
-      console.log("API Data:", data);
+     
 
       if (response.ok) {
         const updatedOrderItems = data.order_items.map((item) => ({
@@ -182,11 +175,11 @@ const Checkout = () => {
         );
         setOrderCount(uniqueMenuIds.size);
       } else {
-        console.error("Failed to fetch cart details:", data.msg);
+      
         navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
       }
     } catch (error) {
-      console.error("Error fetching cart details:", error);
+     
       navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
     }
   };
@@ -322,7 +315,6 @@ const Checkout = () => {
       }
       return false;
     } catch (error) {
-      console.error("Error checking orders:", error);
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -345,7 +337,7 @@ const Checkout = () => {
     }
 
     try {
-      console.log("Completing order with ID:", ongoingOrderId);
+    
 
       const response = await fetch(
          `${config.apiDomain}/user_api/complete_order`,
@@ -362,7 +354,7 @@ const Checkout = () => {
       );
 
       const data = await response.json();
-      console.log("Complete order API Response:", data);
+    
 
       if (response.ok && data.st === 1) {
         toast.current.show({
@@ -379,7 +371,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to complete order");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+     
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -484,7 +476,7 @@ const Checkout = () => {
       // If no ongoing or placed orders, proceed with new order
       await proceedWithOrderSubmission(currentCustomerId, currentCustomerType);
     } catch (error) {
-      console.error("Error during order submission:", error);
+    
       setErrorMessage(
         "An error occurred while processing your order. Please try again."
       );
@@ -545,7 +537,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to add items to order");
       }
     } catch (error) {
-      console.error("Error adding to existing order:", error);
+      
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -558,7 +550,7 @@ const Checkout = () => {
   // Update the handleCancelExistingOrder function
   const handleCancelExistingOrder = async () => {
     try {
-      console.log("Cancelling order:", existingOrderId); // Debug log
+ 
 
       const response = await fetch(
          `${config.apiDomain}/user_api/cancle_order`,
@@ -576,7 +568,7 @@ const Checkout = () => {
       );
 
       const data = await response.json();
-      console.log("Cancel Order Response:", data); // Debug log
+     
 
       if (data.st === 1) {
         // After canceling, proceed with new order
@@ -586,7 +578,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to cancel order");
       }
     } catch (error) {
-      console.error("Error canceling order:", error);
+     
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -672,7 +664,7 @@ const Checkout = () => {
         throw new Error(responseData.msg || "Failed to submit order");
       }
     } catch (error) {
-      console.error("Error submitting order:", error);
+      
       setErrorMessage(`Failed to submit order: ${error.message}`);
       setShowErrorPopup(true);
     }
@@ -723,7 +715,7 @@ const Checkout = () => {
         throw new Error("No ongoing order found");
       }
     } catch (error) {
-      console.error("Error handling ongoing order:", error);
+      
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -989,11 +981,12 @@ const Checkout = () => {
 
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (
-                cartItems.map((item, index) => (
+               cartItems.map((item, index) => (
                   <>
                     <Link
                       to={`/user_app/ProductDetails/${item.menu_id}`}
                       state={{ menu_cat_id: item.menu_cat_id }}
+                     
                     >
                       <div className="card rounded-3 my-1">
                         <div className="card-body py-2 rounded-3 px-0">
@@ -1084,7 +1077,7 @@ const Checkout = () => {
                     <span className="ps-2 font_size_14 gray-text">
                       Discount{" "}
                       <span className="gray-text small-number">
-                        (-{discountPercent}%)
+                        ({discountPercent}%)
                       </span>
                     </span>
                     <span className="pe-2 font_size_14 gray-text">
@@ -1121,7 +1114,7 @@ const Checkout = () => {
                 to="/user_app/Menu"
                 className="btn btn-outline-primary  rounded-pill  px-3"
               >
-               <i class="ri-add-circle-line me-1 fs-4"></i> Order More 
+               <i className="ri-add-circle-line me-1 fs-4"></i> Order More 
               </Link>
             </div>
           </div>

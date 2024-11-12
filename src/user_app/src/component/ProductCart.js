@@ -137,7 +137,7 @@ const ProductCard = ({ isVegOnly }) => {
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
       }
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      console.clear();
     }
   }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
@@ -247,12 +247,12 @@ const ProductCard = ({ isVegOnly }) => {
             updatedFavoriteStatus ? "Item has been added to your favorites." : "Item has been removed from your favorites."
           );
         } else {
-          console.error("Failed to update favorite status:", data.msg);
+          console.clear();
           window.showToast("error", "Failed to update favorite status");
         }
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -299,11 +299,11 @@ const ProductCard = ({ isVegOnly }) => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+        console.clear();
         window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -370,7 +370,7 @@ const ProductCard = ({ isVegOnly }) => {
 
     const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
     if (!currentRestaurantId) {
-      console.error("Restaurant ID not found");
+      console.clear();
       window.showToast("error", "Restaurant information is missing.");
       return;
     }
@@ -405,7 +405,7 @@ const ProductCard = ({ isVegOnly }) => {
       if (error.message === "Item is already in the cart") {
         window.showToast("info", "This item is already in your cart.");
       } else {
-        console.error("Error adding item to cart:", error);
+        console.clear();
         window.showToast("error", "Failed to add item to cart. Please try again.");
       }
     }

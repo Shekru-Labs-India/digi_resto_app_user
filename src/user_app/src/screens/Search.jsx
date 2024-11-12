@@ -517,7 +517,7 @@ const Search = () => {
                   <img
                     src={menu.image || images}
                     alt={menu.menu_name}
-                    className="img-fluid rounded-start-3 rounded-end-0"
+                    className="img-fluid rounded-start-3 "
                     style={{
                       width: "100%",
                       height: "100%",

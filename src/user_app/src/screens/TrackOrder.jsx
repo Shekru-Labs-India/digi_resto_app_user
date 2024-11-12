@@ -88,11 +88,11 @@ const TrackOrder = () => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+        
         // Show error toast
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+     
       // Show error toast
     } finally {
       setIsPriceFetching(false);
@@ -429,7 +429,7 @@ const TrackOrder = () => {
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
-      console.error("Error updating order:", error);
+      
       window.showToast("error", error.message || "Failed to update order");
     }
   };
@@ -474,7 +474,7 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) {
-        console.error("Restaurant ID not found in userData");
+        
         return;
       }
 
@@ -496,7 +496,7 @@ const TrackOrder = () => {
           userData?.customer_type || localStorage.getItem("customer_type");
 
         if (!currentCustomerId) {
-          console.error("Customer ID not found");
+     
           return;
         }
 
@@ -529,13 +529,13 @@ const TrackOrder = () => {
             }));
             setSearchedMenu(formattedMenu);
           } else {
-            console.error("Invalid data format:", data);
+            
           }
         } else {
-          console.error("Response not OK:", response);
+         
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        
       }
 
       setIsLoading(false);
@@ -552,7 +552,7 @@ const TrackOrder = () => {
 
   const handleAddToOrder = async (menuItem) => {
     if (!restaurantId) {
-      console.error("Restaurant ID not found");
+      
       window.showToast("error", "Restaurant information not found");
       return;
     }
@@ -645,7 +645,7 @@ const TrackOrder = () => {
         }
       }
     } catch (error) {
-      console.error("Error adding item to order:", error);
+      
       window.showToast(
         "error",
         "Failed to add item to order. Please try again."
@@ -786,7 +786,7 @@ const TrackOrder = () => {
         );
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+     
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -829,7 +829,7 @@ const TrackOrder = () => {
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      
     } finally {
       setLoading(false);
     }
@@ -916,7 +916,7 @@ const TrackOrder = () => {
 
       window.showToast("success", `${menu.menu_name} removed from order`);
     } catch (error) {
-      console.error("Error removing item:", error);
+     
       window.showToast("error", "Failed to remove item. Please try again.");
     }
   };
@@ -983,7 +983,7 @@ const TrackOrder = () => {
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
-      console.error("Error updating order:", error);
+     
       window.showToast("error", error.message || "Failed to update order");
     }
   };
@@ -1021,7 +1021,7 @@ const TrackOrder = () => {
         }))
       };
 
-      console.log("Request Body:", requestBody); // Debug log
+      
 
       const response = await fetch(
          `${config.apiDomain}/user_api/add_to_existing_order`,
@@ -1046,7 +1046,7 @@ const TrackOrder = () => {
         throw new Error(data.msg || "Failed to add items to order");
       }
     } catch (error) {
-      console.error("Error adding to ongoing order:", error);
+      
       window.showToast(
         "error",
         error.message || "Failed to add items to order"
@@ -1062,13 +1062,13 @@ const TrackOrder = () => {
         userData?.customer_id || localStorage.getItem("customer_id");
 
       if (!currentCustomerId) {
-        console.error("Customer ID not found");
+        
         window.showToast("error", "Customer information not found");
         return;
       }
 
       if (!restaurantId) {
-        console.error("Restaurant ID not found");
+        
         return;
       }
 
@@ -1098,11 +1098,11 @@ const TrackOrder = () => {
           setIsCompleted(isCompleted);
         }
       } else {
-        console.error("Network response was not ok.");
+       
         window.showToast("error", "Failed to fetch order status");
       }
     } catch (error) {
-      console.error("Error fetching order status:", error);
+      
       window.showToast("error", "Failed to check order status");
     }
   };
@@ -1467,7 +1467,7 @@ const TrackOrder = () => {
                                   <img
                                     src={menu.image || images}
                                     alt={menu.menu_name}
-                                    className="img-fluid rounded-start-3 rounded-end-0"
+                                    className="img-fluid rounded-start-3 "
                                     style={{
                                       width: "100%",
                                       height: "100%",
@@ -1722,7 +1722,8 @@ const TrackOrder = () => {
                               <img
                                 src={menu.image || images}
                                 alt={menu.menu_name}
-                                className="img-fluid rounded-start-3 rounded-end-0"
+                                // className="img-fluid rounded-start-3 rounded-end-0"
+                                className="img-fluid rounded-start-3 "
                                 style={{
                                   width: "100%",
                                   height: "100%",
@@ -1904,7 +1905,7 @@ const TrackOrder = () => {
                             <img
                               src={menu.image || images}
                               alt={menu.menu_name}
-                              className="img-fluid rounded-start-3 rounded-end-0"
+                              className="img-fluid rounded-start-3 "
                               style={{
                                 width: "100%",
                                 height: "100%",
@@ -2088,7 +2089,7 @@ const TrackOrder = () => {
                             });
                           }}
                         >
-                        <i class="ri-add-circle-line me-1 fs-4"></i>
+                        <i className="ri-add-circle-line me-1 fs-4"></i>
                           Order More Items 
                         </button>
                       </div>

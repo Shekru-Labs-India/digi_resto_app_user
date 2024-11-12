@@ -573,7 +573,7 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i class="ri-close-fill me-1 font_size_14 gray-text"></i>
+                                            <i className="ri-close-fill me-1 font_size_14 gray-text"></i>
                                           </div>
                                         </div>
                                       </div>
@@ -818,7 +818,7 @@ const Wishlist = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

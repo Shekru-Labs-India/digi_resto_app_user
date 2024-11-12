@@ -110,7 +110,7 @@ const NearbyArea = () => {
         setMenuItems(formattedMenuItems);
       }
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      console.clear();
       setMenuItems([]);
     } finally {
       setIsLoading(false);
@@ -160,7 +160,7 @@ const NearbyArea = () => {
       window.dispatchEvent(new Event('cartUpdated'));
 
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+      console.clear();
       window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
@@ -256,7 +256,7 @@ const NearbyArea = () => {
         window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -304,11 +304,11 @@ const NearbyArea = () => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+        console.clear();
         window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -495,8 +495,8 @@ const NearbyArea = () => {
                         </div>
                         <div className="d-flex justify-content-end col-6">
                           {customerId ? (
-                            <Link
-                              to="#"
+                            <div
+                              
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -514,10 +514,10 @@ const NearbyArea = () => {
                               }}
                             >
                               <i className={`ri-shopping-cart-${isMenuItemInCart(menuItem.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
-                            </Link>
+                            </div>
                           ) : (
-                            <Link
-                              to="#"
+                            <div
+                              
                               className="border border-1 rounded-circle bg-white opacity-75 me-1"
                               style={{
                                 border: "1px solid gray",
@@ -535,7 +535,7 @@ const NearbyArea = () => {
                               }}
                             >
                               <i className="ri-shopping-cart-2-line fs-6"></i>
-                            </Link>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -644,7 +644,7 @@ const NearbyArea = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>
