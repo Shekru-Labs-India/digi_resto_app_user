@@ -78,7 +78,6 @@ const Search = () => {
   useEffect(() => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) {
-        console.error("Restaurant ID not found in userData");
         return;
       }
 
@@ -131,13 +130,13 @@ const Search = () => {
               JSON.stringify(updatedHistory)
             );
           } else {
-            console.error("Invalid data format:", data);
+           
           }
         } else {
-          console.error("Response not OK:", response);
+         
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+       
       }
 
       setIsLoading(false);
@@ -175,7 +174,7 @@ const Search = () => {
       }
       return [];
     } catch (error) {
-      console.error("Error fetching cart items:", error);
+     
       return [];
     }
   };
@@ -234,11 +233,11 @@ const Search = () => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+     
         window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+    
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -282,7 +281,7 @@ const Search = () => {
 
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+    
       window.showToast("error", "Failed to add item to cart. Please try again");
     }
   };
@@ -345,7 +344,7 @@ const Search = () => {
         );
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -475,7 +474,7 @@ const Search = () => {
               type="search"
               className="form-control  ps-2     "
               placeholder="Search Best items for You"
-              cd
+              
               onChange={handleSearch}
               value={searchTerm}
             />

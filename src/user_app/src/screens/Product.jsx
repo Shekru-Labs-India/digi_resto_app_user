@@ -161,7 +161,7 @@ const Product = () => {
         throw new Error("API request unsuccessful");
       }
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      
     } finally {
       setIsLoading(false);
     }
@@ -256,7 +256,7 @@ const Product = () => {
         }
       }
     } catch (error) {
-      console.error("Error updating favourite status:", error);
+     
       window.showToast("error", "Failed to update favourite status");
     }
   };
@@ -311,7 +311,7 @@ const Product = () => {
 
   const fetchHalfFullPrices = async (menuId) => {
     if (!restaurantId) {
-      console.error("Restaurant ID is missing");
+     
       return;
     }
 
@@ -339,7 +339,7 @@ const Product = () => {
         throw new Error(data.msg || "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+      
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -411,7 +411,7 @@ const Product = () => {
       window.dispatchEvent(new Event('cartUpdated'));
 
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+      
       window.showToast(
         "error", 
         error.message || "Failed to add item to cart. Please try again."

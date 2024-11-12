@@ -109,7 +109,7 @@ const Wishlist = () => {
   const fetchFavoriteItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      console.error("Customer ID is missing.");
+     
       setIsLoading(false);
       return;
     }
@@ -136,19 +136,19 @@ const Wishlist = () => {
           setMenuList(data.lists);
           setHasFavorites(Object.keys(data.lists).length > 0);
         } else {
-          console.error("Invalid data format:", data);
+        
           setWishlistItems({});
           setMenuList({});
           setHasFavorites(false);
         }
       } else {
-        console.error("Network response was not ok:", response.statusText);
+        
         setWishlistItems({});
         setMenuList({});
         setHasFavorites(false);
       }
     } catch (error) {
-      console.error("Error fetching favourite items:", error);
+     
       setWishlistItems({});
       setMenuList({});
       setHasFavorites(false);
@@ -222,11 +222,11 @@ const Wishlist = () => {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
       } else {
-        console.error("API Error:", data.msg);
+      
         window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
+      
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -291,7 +291,7 @@ const Wishlist = () => {
       // Dispatch cart update event
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+   
       window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
@@ -310,7 +310,7 @@ const Wishlist = () => {
   const handleRemoveItemClick = async (restaurantName, menuId, restaurantId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !menuId || !restaurantId) {
-      console.error("Customer ID, Menu ID, or Restaurant ID is missing.");
+      
       window.showToast("error", "Missing required information");
       return;
     }
@@ -347,11 +347,11 @@ const Wishlist = () => {
 
         window.showToast("success", "Item has been removed from favorites");
       } else {
-        console.error("Failed to remove item:", data.msg || "Unknown error");
+    
         window.showToast("error", "Failed to remove item from favorites");
       }
     } catch (error) {
-      console.error("Error removing favorite item:", error);
+     
       window.showToast("error", "An error occurred while removing the item");
     }
   };

@@ -19,10 +19,10 @@ const HotelList = () => {
           });
           setHotels(formattedHotels);
         } else {
-          console.error('Failed to fetch hotels:', data.msg);
+       
         }
       } catch (error) {
-        console.error('Error fetching hotels:', error);
+       
       }
     };
 
@@ -142,7 +142,7 @@ const HotelList = () => {
                 </a>
               </div>
             </div>
-            <p className="text-center text-md-center mt-5 gray-text">
+            <div className="text-center text-md-center mt-5 gray-text">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
                 className="gray-text"
@@ -153,7 +153,7 @@ const HotelList = () => {
                 Shekru Labs India Pvt. Ltd.
               </a>
               <div className="">v1.1</div>
-            </p>
+            </div>
           </div>
         </div>
       </main>
