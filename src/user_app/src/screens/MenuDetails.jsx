@@ -277,7 +277,7 @@ const MenuDetails = () => {
     const currentCustomerType = userData?.customer_type;
 
     if (!currentCustomerId || !restaurantId) {
-      navigate("/user_app/Signinscreen");
+  
       return;
     }
 
@@ -512,8 +512,7 @@ const MenuDetails = () => {
                         objectFit: "cover",
                         transition: "opacity 0.3s ease",
                         aspectRatio: "16/9",
-                        border: "1px solid #ccc",
-                          borderRadius: "8px",
+                       
                       }}
                     />
 
@@ -658,16 +657,16 @@ const MenuDetails = () => {
                         className="gradient_bg d-flex justify-content-center align-items-center"
                         style={{
                           position: "absolute",
-                          top: "-1px",
+                          top: "0px",
                           left: "0px",
-                          height: "17px",
-                          width: "70px",
+                          height: "15px",
+                          width: "60px",
                           borderRadius: "0px 0px 7px 0px",
                           zIndex: 2,
                         }}
                       >
                         <span className="font_size_10 text-white">
-                          <i className="ri-percent-line me-1 font_size_14"></i>
+                          <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
                         </span>
                       </div>
@@ -682,8 +681,7 @@ const MenuDetails = () => {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      border: "1px solid #ccc",
-                          borderRadius: "8px",
+                      
                     }}
                   />
                   <div
@@ -742,16 +740,16 @@ const MenuDetails = () => {
                         className="gradient_bg d-flex justify-content-center align-items-center"
                         style={{
                           position: "absolute",
-                          top: "-1px",
+                          top: "0px",
                           left: "0px",
-                          height: "17px",
-                          width: "70px",
+                          height: "15px",
+                          width: "60px",
                           borderRadius: "0px 0px 7px 0px",
                           zIndex: 2,
                         }}
                       >
                         <span className="font_size_10 text-white">
-                          <i className="ri-percent-line me-1 font_size_14"></i>
+                          <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
                         </span>
                       </div>

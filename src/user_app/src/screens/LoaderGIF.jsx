@@ -12,7 +12,7 @@ const LoaderGif = () => {
         alt="Cooking stew"
         className="img-fluid"
       />
-      <h5 className="text-white ">Loading please wait...</h5>
+      <h5 className=" ">Loading please wait...</h5>
     </div>
   );
 };

@@ -522,8 +522,7 @@ const Search = () => {
                       height: "100%",
                       objectFit: "cover",
                       aspectRatio: "1/1",
-                      border: "1px solid #ccc",
-                          borderRadius: "8px",
+                    
                     }}
                     onError={(e) => {
                       e.target.src = images;
@@ -588,13 +587,13 @@ const Search = () => {
                         position: "absolute",
                         top: "0px",
                         left: "0px",
-                        height: "17px",
-                        width: "70px",
+                        height: "15px",
+                        width: "60px",
                         borderRadius: "7px 0px 7px 0px",
                       }}
                     >
                       <span className="font_size_10 text-white">
-                        <i className="ri-percent-line me-1 font_size_14"></i>
+                        <i className="ri-percent-line me-1 "></i>
                         {menu.offer}% Off
                       </span>
                     </div>

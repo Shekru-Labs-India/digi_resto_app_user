@@ -4,9 +4,7 @@ import { Routes, Route, Navigate, useParams } from "react-router-dom";
 // Component imports (keeping only what's used in the Routes)
 import QRScreen from "./screens/QRScreen";
 import HomeScreen from "./screens/HomeScreen";
-import Signinscreen from "./screens/Signinscreen";
-import Signupscreen from "./screens/SignupScreen";
-import Verifyotp from "./screens/Verifyotp";
+
 import Profile from "./screens/Profile";
 import Wishlist from "./screens/Wishlist";
 import Category from "./screens/Category";
@@ -49,9 +47,7 @@ function App() {
                 <Route path=":restaurantCode/:table_number" element={<HomeScreen />} />
                 <Route path=":restaurantCode" element={<ValidateAndNavigate />} />
                 <Route path="AllOrderList" element={<AllOrderList />} />
-                <Route path="Signinscreen" element={<Signinscreen />} />
-                <Route path="Signupscreen" element={<Signupscreen />} />
-                <Route path="Verifyotp" element={<Verifyotp />} />
+               
                 <Route path="Wishlist" element={<Wishlist />} />
                 <Route path="Cart" element={<Cart />} />
                 <Route path="Checkout" element={<Checkout />} />

@@ -708,9 +708,7 @@ const TrackOrder = () => {
 
   const handleUnauthorizedFavorite = () => {
     window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+   
   };
 
   const handleLikeClick = async (menu, e) => {
@@ -1003,7 +1001,7 @@ const TrackOrder = () => {
 
       if (!currentCustomerId) {
         window.showToast("error", "Please login to update order");
-        navigate("/user_app/Signinscreen");
+       
         return;
       }
 
@@ -1473,8 +1471,7 @@ const TrackOrder = () => {
                                       height: "100%",
                                       objectFit: "cover",
                                       aspectRatio: "1/1",
-                                      border: "1px solid #ccc",
-                          borderRadius: "8px",
+                                 
                                     }}
                                     onError={(e) => {
                                       e.target.src = images;
@@ -1535,15 +1532,15 @@ const TrackOrder = () => {
                                       className="gradient_bg d-flex justify-content-center align-items-center"
                                       style={{
                                         position: "absolute",
-                                        top: "-1px",
+                                        top: "0px",
                                         left: "0px",
-                                        height: "17px",
-                                        width: "70px",
+                                        height: "15px",
+                                        width: "60px",
                                         borderRadius: "7px 0px 7px 0px",
                                       }}
                                     >
                                       <span className="font_size_10 text-white">
-                                        <i className="ri-percent-line me-1 font_size_14"></i>
+                                        <i className="ri-percent-line me-1 "></i>
                                         {menu.offer || "No"}% Off
                                       </span>
                                     </div>
@@ -1729,8 +1726,7 @@ const TrackOrder = () => {
                                   height: "100%",
                                   objectFit: "cover",
                                   aspectRatio: "1/1",
-                                  border: "1px solid #ccc",
-                          borderRadius: "8px",
+                                
                                 }}
                                 onError={(e) => {
                                   e.target.src = images;
@@ -1788,15 +1784,15 @@ const TrackOrder = () => {
                                   className="gradient_bg d-flex justify-content-center align-items-center"
                                   style={{
                                     position: "absolute",
-                                    top: "-1px",
+                                    top: "0px",
                                     left: "0px",
-                                    height: "17px",
-                                    width: "70px",
+                                    height: "15px",
+                                    width: "60px",
                                     borderRadius: "7px 0px 7px 0px",
                                   }}
                                 >
                                   <span className="font_size_10 text-white">
-                                    <i className="ri-percent-line me-1 font_size_14"></i>
+                                    <i className="ri-percent-line me-1 "></i>
                                     {menu.offer || "No "}% Off
                                   </span>
                                 </div>
@@ -1911,8 +1907,7 @@ const TrackOrder = () => {
                                 height: "100%",
                                 objectFit: "cover",
                                 aspectRatio: "1/1",
-                                border: "1px solid #ccc",
-                          borderRadius: "8px",
+                              
                               }}
                               onError={(e) => {
                                 e.target.src = images;
@@ -1973,15 +1968,15 @@ const TrackOrder = () => {
                                 className="gradient_bg d-flex justify-content-center align-items-center"
                                 style={{
                                   position: "absolute",
-                                  top: "-1px",
+                                  top: "0px",
                                   left: "0px",
-                                  height: "17px",
-                                  width: "70px",
+                                  height: "15px",
+                                  width: "60px",
                                   borderRadius: "7px 0px 7px 0px",
                                 }}
                               >
                                 <span className="font_size_10 text-white">
-                                  <i className="ri-percent-line me-1 font_size_14"></i>
+                                  <i className="ri-percent-line me-1 "></i>
                                   {menu.offer || "No"}% Off
                                 </span>
                               </div>

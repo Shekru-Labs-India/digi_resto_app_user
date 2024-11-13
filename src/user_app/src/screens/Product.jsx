@@ -194,9 +194,7 @@ const Product = () => {
 
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+  
   };
 
   // Handle favorites (like/unlike)
@@ -542,8 +540,7 @@ const Product = () => {
                           aspectRatio: "1/1",
                           objectFit: "cover",
                           height: "100%",
-                          border: "1px solid #ccc",
-                          borderRadius: "8px",
+                         
                         }}
                         onError={(e) => {
                           e.target.src = images;
@@ -602,16 +599,16 @@ const Product = () => {
                           className="gradient_bg d-flex justify-content-center align-items-center"
                           style={{
                             position: "absolute",
-                            top: "-1px",
+                            top: "0px",
                             left: "0px",
-                            height: "17px",
-                            width: "70px",
+                            height: "15px",
+                            width: "60px",
                             borderRadius: "0px 0px 7px 0px",
                           }}
                         >
                           
                             <span className="font_size_10 text-white">
-                            <i className="ri-percent-line me-1 font_size_14"></i>
+                            <i className="ri-percent-line me-1 "></i>
                               {menuItem.offer}% Off
                             </span>
                           

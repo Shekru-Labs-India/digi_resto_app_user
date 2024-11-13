@@ -17,11 +17,11 @@ const EditProfile = () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
     if (!storedUserData.customer_id) {
       window.showToast("error", "Please login to edit profile");
-      navigate("/user_app/Signinscreen");
+     
       return;
     }
     
-    console.log("Stored user data:", storedUserData);
+    
     setUserData(storedUserData);
     setNewName(storedUserData.name || "");
     setNewMobile(storedUserData.mobile || "");
@@ -77,7 +77,7 @@ const EditProfile = () => {
         window.showToast("error", "Profile update failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      
       setError("Profile update failed. Please try again.");
       window.showToast("error", "Profile update failed. Please try again.");
     } finally {
@@ -115,7 +115,7 @@ const EditProfile = () => {
 
   if (userData?.customer_type === 'guest') {
     window.showToast("info", "Please login to edit profile");
-    navigate("/user_app/Signinscreen");
+   
     return;
   }
 

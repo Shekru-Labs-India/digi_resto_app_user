@@ -71,7 +71,7 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (item, restaurantId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-      navigate("/user_app/Signinscreen");
+     
       throw new Error("User not logged in");
     }
   

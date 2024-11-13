@@ -5,7 +5,7 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
-import Signinscreen from "./../screens/Signinscreen";
+
 import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
@@ -513,8 +513,7 @@ const ProductCard = ({ isVegOnly }) => {
                         width: "100%",
                         objectFit: "fill",
                         aspectRatio: 1,
-                        border: "1px solid #ccc",
-                          borderRadius: "8px",
+                   
                       }}
                       onError={(e) => {
                         e.target.src = images;
@@ -571,15 +570,17 @@ const ProductCard = ({ isVegOnly }) => {
                         className="gradient_bg d-flex justify-content-center align-items-center"
                         style={{
                           position: "absolute",
-                          top: "-1px",
+                          top: "0px",
                           left: "0px",
-                          height: "17px",
-                          width: "70px",
-                          borderRadius: "0px 0px 7px 0px",
+                          height: "15px",
+                          width: "60px",
+                          borderRadius: "7px 0px 7px 0px",
+                          marginTop: "1px",
+                          marginLeft: "1px",
                         }}
                       >
                         <span className="font_size_10 text-white">
-                          <i className="ri-percent-line me-1 font_size_14"></i>
+                          <i className="ri-percent-line me-1 "></i>
                           {menu.offer}% Off
                         </span>
                       </div>

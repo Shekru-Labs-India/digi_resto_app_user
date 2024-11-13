@@ -127,18 +127,18 @@ input:checked ~ .tab-content {
         border-bottom: none;
       }
       
-      .nav-tabs .nav-link {
+      .nav-tabs .nav-link1 {
         border: none;
         background-color: transparent;
         position: relative;
         color: #6c757d; /* Default text color */
       }
       
-      .nav-tabs .nav-link.active {
+      .nav-tabs .nav-link1.active {
         color: var(--bs-nav-link-color); /* Active tab text color */
       }
       
-      .nav-tabs .nav-link::after {
+      .nav-tabs .nav-link1::after {
         content: '';
         display: block;
         width: 0;
@@ -150,7 +150,7 @@ input:checked ~ .tab-content {
         transition: width 0.3s ease, left 0.3s ease;
       }
       
-      .nav-tabs .nav-link.active::after {
+      .nav-tabs .nav-link1.active::after {
         width: 100%;
         left: 0;
       }

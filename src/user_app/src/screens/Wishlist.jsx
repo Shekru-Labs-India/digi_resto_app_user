@@ -471,8 +471,7 @@ const Wishlist = () => {
                                           width: "100%",
                                           height: "100%",
                                           aspectRatio: "1/1",
-                                          border: "1px solid #ccc",
-                          borderRadius: "8px",
+                                    
                                         }}
                                         onError={(e) => {
                                           e.target.src = images;
@@ -539,17 +538,17 @@ const Wishlist = () => {
                                           className="gradient_bg d-flex justify-content-center align-items-center"
                                           style={{
                                             position: "absolute",
-                                            top: "-1px",
+                                            top: "0px",
                                             left: "0px",
-                                            height: "17px",
-                                            width: "70px",
+                                            height: "15px",
+                                            width: "60px",
                                             borderRadius: "7px 0px 7px 0px",
                                             marginTop: "1px",
                                             marginLeft: "1px",
                                           }}
                                         >
                                           <span className="font_size_10 text-white">
-                                            <i className="ri-percent-line me-1 font_size_14"></i>
+                                            <i className="ri-percent-line me-1 "></i>
                                               {menu.offer}% Off
                                             </span>
                                         </div>

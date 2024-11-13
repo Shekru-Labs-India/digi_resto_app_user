@@ -4,7 +4,7 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import OrderGif from "../assets/gif/cooking.gif";
-import { ThemeContext } from "../context/ThemeContext.js"; // Adjust the import path as needed
+import { ThemeContext } from "../context/ThemeContext.js"; 
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
@@ -58,38 +58,7 @@ const Checkout = () => {
 
   const [existingOrderDetails, setExistingOrderDetails] = useState({ type: '', number: '' });
 
-  // Add these helper functions at the top of the component
-  const saveOrderToLocalStorage = (order, status, restaurantId) => {
-    const storageKey = `${status}_orders_${restaurantId}`;
-    let existingOrders = JSON.parse(localStorage.getItem(storageKey) || '[]');
-    
-    // Find if order already exists
-    const existingOrderIndex = existingOrders.findIndex(o => o.order_id === order.order_id);
-    
-    if (existingOrderIndex >= 0) {
-      // Update existing order's menu items
-      existingOrders[existingOrderIndex] = {
-        ...existingOrders[existingOrderIndex],
-        menu_items: [...(existingOrders[existingOrderIndex].menu_items || []), ...(order.menu_items || [])],
-        menu_count: (existingOrders[existingOrderIndex].menu_count || 0) + (order.menu_items?.length || 0)
-      };
-    } else {
-      // Add new order
-      existingOrders.push({
-        ...order,
-        menu_items: order.menu_items || []
-      });
-    }
-    
-    localStorage.setItem(storageKey, JSON.stringify(existingOrders));
-  };
 
-  const getOrdersFromLocalStorage = (status, restaurantId) => {
-    const storageKey = `${status}_orders_${restaurantId}`;
-    return JSON.parse(localStorage.getItem(storageKey) || '[]');
-  };
-
-  // Use the hook here
 
   const handleNotesFocus = () => {
     setIsNotesFocused(true);
@@ -547,48 +516,7 @@ const Checkout = () => {
     }
   };
 
-  // Update the handleCancelExistingOrder function
-  const handleCancelExistingOrder = async () => {
-    try {
- 
 
-      const response = await fetch(
-         `${config.apiDomain}/user_api/cancle_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: existingOrderId.toString(),
-            restaurant_id: restaurantId.toString(),
-            note: "Canceled to place new order",
-          }),
-        }
-      );
-
-      const data = await response.json();
-     
-
-      if (data.st === 1) {
-        // After canceling, proceed with new order
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        await proceedWithOrderSubmission(userData?.customer_id);
-      } else {
-        throw new Error(data.msg || "Failed to cancel order");
-      }
-    } catch (error) {
-     
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to cancel order",
-        life: 3000,
-      });
-    } finally {
-      setShowExistingOrderModal(false);
-    }
-  };
 
   const proceedWithOrderSubmission = async (currentCustomerId, currentCustomerType) => {
     try {
@@ -1101,7 +1029,7 @@ const Checkout = () => {
               <Link
                 to="#"
                 className="btn btn-success rounded-pill     text-white"
-                onClick={handleSubmitOrder}
+              
               >
                 Place Order
                 <span className="small-number gray-text ps-1">

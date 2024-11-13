@@ -23,7 +23,7 @@ const Category = () => {
       if (!restaurantId) {
         setLoading(false);
         window.showToast("error", "Restaurant information is missing");
-        navigate("/user_app/Signinscreen");
+        
         return;
       }
 

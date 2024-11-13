@@ -242,9 +242,7 @@ const Cart = () => {
 
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
-    setTimeout(() => {
-      navigate("/user_app/Signinscreen");
-    }, 1500);
+    
   };
 
   const handleLikeClick = async (menuId) => {
@@ -378,8 +376,7 @@ const Cart = () => {
                           height: "100%",
                           objectFit: "fill",
                           aspectRatio: "1/1",
-                          border: "1px solid #ccc",
-                          borderRadius: "8px",
+                          
                         }}
                         onError={(e) => {
                           e.target.src = images;
@@ -416,14 +413,14 @@ const Cart = () => {
                             position: "absolute",
                             top: "0px",
                             left: "1px",
-                            height: "17px",
-                            width: "70px",
+                            height: "15px",
+                            width: "60px",
                             borderRadius: "7px 0px 7px 0px",
                           }}
                         >
                           
                             <span className="font_size_10 text-white">
-                            <i className="ri-percent-line me-1 font_size_14"></i>
+                            <i className="ri-percent-line me-1 "></i>
                               {item.offer}% Off
                             </span>
                           
