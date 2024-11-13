@@ -1,132 +1,88 @@
 @font-face {
-  font-family: 'DM Sans';
-
-  src: url('https://cdn.jsdelivr.net/npm/dm-sans@1.1.0/dist/DMSans-Regular.woff2') format('woff2');
-
+  font-family: 'Poppins';
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
   font-weight: normal;
-
   font-style: normal;
-
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'DM Sans';
-
-  src: url('https://cdn.jsdelivr.net/npm/dm-sans@1.1.0/dist/DMSans-Bold.woff2') format('woff2');
-
-  font-weight: bold;
-
-  font-style: normal;
-
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'DM Sans';
-
-  src: url('https://cdn.jsdelivr.net/npm/dm-sans@1.1.0/dist/DMSans-Medium.woff2') format('woff2');
-
-  font-weight: 500;
-
-  font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
 
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
+@font-face {
+  font-family: 'Poppins';
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: 'Poppins';
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap');
   font-weight: 100;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
   font-weight: 200;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
   font-weight: 300;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
   font-weight: normal;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
   font-weight: 500;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
   font-weight: 600;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
   font-weight: bold;
-
   font-style: normal;
-
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Poppins';
-
-  src: url('https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLXzZCUvA.ttf') format('truetype');
-
+  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
   font-weight: 900;
-
   font-style: normal;
-
   font-display: swap;
 }
 

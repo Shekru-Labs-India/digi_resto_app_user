@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import logo from '../Assets/img/MenuMitra.png';
+// import logo from '../Assets/img/MenuMitra.png';
+import logo from "../Assets/img/mm-logo-bg-fill.png";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
@@ -71,7 +72,7 @@ const Header = () => {
                 </Link>
                 <div>
                   <Link to="/">
-                    <h4>Menumitra</h4>
+                    <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
                   </Link>
                 </div>
                 <div

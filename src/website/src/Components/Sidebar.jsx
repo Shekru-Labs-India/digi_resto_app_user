@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../Assets/img/MenuMitra.png';
+import logo from "../Assets/img/mm-logo-bg-fill.png";
 import jpg1 from '../Assets/img/instagram/1.jpg'
 import jpg2 from '../Assets/img/instagram/2.jpg'
 import jpg3 from '../Assets/img/instagram/3.jpg'
@@ -59,12 +59,12 @@ const Sidebar = () => {
                     <i className="fa fa-times" />
                   </span>
                 </button>
-                <h2 className="modal-title" id="myModalLabel2">
+                <h2 className="modal-title d-flex align-items-center" id="myModalLabel2">
                   <Link to="/">
                     <img src={logo} alt="Logo" width="50" height="50" />
                   </Link>
                   <Link className="ms-3" to="/">
-                    <h4>Menumitra</h4>
+                    <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
                   </Link>
                 </h2>
               </div>
@@ -73,7 +73,7 @@ const Sidebar = () => {
                   <h3 className="title">Additional Links</h3>
                   <ul>
                     <li>
-                      <Link href="/">Home</Link>
+                      <Link to="/">Home</Link>
                     </li>
                     <li>
                       <Link to="/features">Features</Link>

@@ -125,7 +125,7 @@ function HomePage() {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <section className="hero_billings mt-5">
         <div className="wrapper">
           <div className="hero__pos_contents_img">
