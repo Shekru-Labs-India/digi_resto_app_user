@@ -6,6 +6,7 @@ import App from './App';
 import 'animate.css/animate.min.css';
 import 'remixicon/fonts/remixicon.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'blaze-slider/dist/blaze.css';
 
 // Website-specific scripts
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
