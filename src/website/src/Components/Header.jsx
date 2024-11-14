@@ -72,7 +72,7 @@ const Header = () => {
                 </Link>
                 <div>
                   <Link to="/">
-                    <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
+                    <div className="fs-2 fw-semibold text-dark ">MenuMitra</div>
                   </Link>
                 </div>
                 <div
@@ -110,6 +110,14 @@ const Header = () => {
                         className={`nav-link dropdown-toggle ${location.pathname === '/pricing' ? 'active' : ''}`}
                       >
                         Pricing
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        to="/faqs"
+                        className={`nav-link dropdown-toggle ${location.pathname === '/faqs' ? 'active' : ''}`}
+                      >
+                        FAQs
                       </Link>
                     </li>
                     <li className="nav-item">

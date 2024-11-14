@@ -87,19 +87,16 @@ const HomeScreen = () => {
     <div>
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
-          <div className="header-content d-flex justify-content-between"
-            style={{ zIndex: 1040, position: 'relative' }}
+          <div
+            className="header-content d-flex justify-content-between"
+            style={{ zIndex: 1040, position: "relative" }}
           >
-            <div className="">
-              <Link to="/">
-              <img
-                src={logo}
-                alt="logo"
-                className="me-2"
-                width="30"
-                height="30"
-              />
-              <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+            <div className="d-flex align-items-center">
+              <Link to="/" className="d-flex align-items-center">
+                <img src={logo} alt="logo" width="30" height="30" />
+                <span className="text-dark mb-0 ms-2 fw-bolder font_size_18">
+                  MenuMitra
+                </span>
               </Link>
             </div>
             <div className="right-content gap-1">
@@ -124,25 +121,27 @@ const HomeScreen = () => {
           <div className="author-box">
             <div className=" ">
               <Link to="/user_app/Profile">
-              <span className="ms-3 pt-4    ">
-                {userData?.name ? (
-                  `Hello, ${toTitleCase(getFirstName(userData.name))}`
-                ) : (
-                  <>
-                    <Link
-                      className="btn btn-outline-primary rounded-pill"
-                      onClick={() => {
-                        showLoginPopup(); 
-                        toggleSidebar(); 
-                      }}
-                    >
-                      <i className="ri-lock-2-line me-2 fs-3"></i> Login
-                    </Link>
-                  </>
-                )}
-              </span>
+                <span className="ms-3 pt-4    ">
+                  {userData?.name ? (
+                    `Hello, ${toTitleCase(getFirstName(userData.name))}`
+                  ) : (
+                    <>
+                      <Link
+                        className="btn btn-outline-primary rounded-pill"
+                        onClick={() => {
+                          showLoginPopup();
+                          toggleSidebar();
+                        }}
+                      >
+                        <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                      </Link>
+                    </>
+                  )}
+                </span>
               </Link>
-              <div className="font_size_12 ms-3 gray-text  ">{userData?.mobile}</div>
+              <div className="font_size_12 ms-3 gray-text  ">
+                {userData?.mobile}
+              </div>
               <div className="dz-mode mt-3 me-4">
                 <div className="theme-btn" onClick={toggleTheme}>
                   <i
@@ -167,41 +166,43 @@ const HomeScreen = () => {
               >
                 <div className="d-flex align-items-center">
                   <span className="dz-icon icon-sm">
-                    <i className="ri-bowl-line fs-3"></i>
+                    <i className="ri-bowl-line fs-4"></i>
                   </span>
                   <span className="">Menu</span>
                 </div>
-               
-              <div className="">
-      <div
-        className={`  border ${isVegOnly ? "border-success" : "border-danger"} p-1`}
-        onClick={(e) => {
-          e.preventDefault();
-          toggleVegNonVeg();
-        }}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '24px', // Adjust height
-          width: '24px',  // Adjust width
-        }}
-      >
-        {isVegOnly ? (
-          <i
-            className="ri-checkbox-blank-circle-fill text-success"
-            style={{ fontSize: '16px' }} // Adjust icon size
-          ></i>
-        ) : (
-          <i
-            className="ri-checkbox-blank-circle-fill text-danger"
-            style={{ fontSize: '16px' }} // Adjust icon size
-          ></i>
-        )}
-      </div>
-    </div>
 
-{/* <div className="dz-mode ">
+                <div className="">
+                  <div
+                    className={`  border ${
+                      isVegOnly ? "border-success" : "border-danger"
+                    } p-1`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleVegNonVeg();
+                    }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "24px", // Adjust height
+                      width: "24px", // Adjust width
+                    }}
+                  >
+                    {isVegOnly ? (
+                      <i
+                        className="ri-checkbox-blank-circle-fill text-success"
+                        style={{ fontSize: "16px" }} // Adjust icon size
+                      ></i>
+                    ) : (
+                      <i
+                        className="ri-checkbox-blank-circle-fill text-danger"
+                        style={{ fontSize: "16px" }} // Adjust icon size
+                      ></i>
+                    )}
+                  </div>
+                </div>
+
+                {/* <div className="dz-mode ">
                 <div
                   className={`theme-btn ${isVegOnly ? "active" : ""}`}
                   onClick={(e) => {
@@ -223,8 +224,7 @@ const HomeScreen = () => {
                 </div>
               </div> */}
 
-
-{/* <div className="dz-mode">
+                {/* <div className="dz-mode">
   <div
     className={`theme-btn ${isVegOnly ? "active" : ""}`}
     onClick={(e) => {
@@ -254,13 +254,12 @@ const HomeScreen = () => {
     </span>
   </div>
 </div> */}
-    
               </Link>
             </li>
             <li>
               <Link className="nav-link active" to="/user_app/Category">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-list-check-2 fs-3"></i>
+                  <i className="ri-list-check-2 fs-4"></i>
                 </span>
                 <span className="   ">Category</span>
               </Link>
@@ -268,7 +267,7 @@ const HomeScreen = () => {
             <li>
               <Link className="nav-link active" to="/user_app/Wishlist">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-heart-3-line fs-3"></i>
+                  <i className="ri-heart-3-line fs-4"></i>
                 </span>
                 <span className="   ">Favourite</span>
               </Link>
@@ -276,7 +275,7 @@ const HomeScreen = () => {
             <li>
               <Link className="nav-link active" to="/user_app/MyOrder">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-drinks-2-line fs-3"></i>
+                  <i className="ri-drinks-2-line fs-4"></i>
                 </span>
                 <span className="   ">My Orders</span>
               </Link>
@@ -284,7 +283,7 @@ const HomeScreen = () => {
             <li>
               <Link className="nav-link active" to="/user_app/Cart">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-shopping-cart-line fs-3"></i>
+                  <i className="ri-shopping-cart-line fs-4"></i>
                 </span>
                 <span className="   ">Cart</span>
               </Link>
@@ -295,8 +294,8 @@ const HomeScreen = () => {
                   <i
                     className={
                       userData && userData.customer_id
-                        ? "ri-user-3-fill fs-3"
-                        : "ri-user-3-line fs-3"
+                        ? "ri-user-3-fill fs-4"
+                        : "ri-user-3-line fs-4"
                     }
                   ></i>
                 </span>
@@ -364,28 +363,34 @@ const HomeScreen = () => {
               </a>
             </div>
             <div className="sidebar-logo text-center mt-5">
-            <Link to="/">
-              <img
-                src={logo}
-                alt="logo"
-                className="me-2"
-                width="30"
-                height="30"
-              />
+              <Link
+                to="/"
+                className="d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src={logo}
+                  alt="logo"
+                  className="me-2"
+                  width="40"
+                  height="40"
+                />
+                <span className="text-dark mb-0 fw-bolder font_size_18">
+                  MenuMitra
+                </span>
               </Link>
-              <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
             </div>
 
-            <div className="text-center text-md-center mt-2 gray-text">
+            <div className="text-center text-md-center mt-2 gray-text mb-5">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
                 className="gray-text"
                 href="https://www.shekruweb.com"
                 target="_blank"
+                style={{ color: "#0d775e" }}
               >
                 Shekru Labs India Pvt. Ltd.
               </a>
-              <div className="">v1.1</div>
+              {/* <div className="">v1.1</div> */}
             </div>
           </div>
         </div>

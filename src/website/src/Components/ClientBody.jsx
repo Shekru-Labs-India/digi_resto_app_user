@@ -25,7 +25,7 @@ const ClientBody = () => {
   {/* End Page Title Area */}
 
   {/* Start Box Area */}
-  <section className="box-area pt-100 pb-70">
+  {/* <section className="box-area pt-100 pb-70">
     <div className="container">
       <div className="row">
         <div className="col-lg-4 col-md-6">
@@ -127,7 +127,7 @@ const ClientBody = () => {
       </div>
     </div>
     
-  </section>
+  </section> */}
   {/* End Service Area */}
   </>
 

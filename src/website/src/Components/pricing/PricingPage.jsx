@@ -7,42 +7,46 @@ function PricingPage() {
   useEffect(() => {
     // HubSpot Form Implementation
     const loadHubSpotForm = () => {
-      const script = document.createElement('script');
-      script.src = "https://js.hsforms.net/forms/embed/v2.js";
-      script.charset = "utf-8";
-      script.type = "text/javascript";
-      
-      script.onload = () => {
-        if (window.hbspt) {
-          window.hbspt.forms.create({
-            region: "na1",
-            portalId: "2270269",
-            formId: "10519404-1203-4494-9469-6e971d1cbcfa",
-            target: '#hubspot-form-placeholder',
-            css: '',
-            customStyles: {
-              formField: {
-                borderRadius: "8px",
-                borderColor: "#E5E7EB",
-                backgroundColor: "#FFFFFF",
-                labelColor: "#1A1A1A",
-                inputColor: "#1A1A1A",
-                fontSize: "16px",
-                fontFamily: "inherit"
-              },
-              submit: {
-                backgroundColor: "#C52031",
-                hoverBackgroundColor: "#A41B29",
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: "500"
-              }
-            }
-          });
+      if (window.hbspt) {
+        // If HubSpot is already loaded, create the form directly
+        createHubSpotForm();
+      } else {
+        // Load HubSpot script if not already loaded
+        const script = document.createElement('script');
+        script.src = "https://js.hsforms.net/forms/embed/v2.js";
+        script.charset = "utf-8";
+        script.type = "text/javascript";
+        script.onload = createHubSpotForm;
+        document.head.appendChild(script);
+      }
+    };
+
+    const createHubSpotForm = () => {
+      window.hbspt.forms.create({
+        region: "na1",
+        portalId: "2270269",
+        formId: "10519404-1203-4494-9469-6e971d1cbcfa",
+        target: '#hubspot-form-placeholder',
+        css: '',
+        customStyles: {
+          formField: {
+            borderRadius: "8px",
+            borderColor: "#E5E7EB",
+            backgroundColor: "#FFFFFF",
+            labelColor: "#1A1A1A",
+            inputColor: "#1A1A1A",
+            fontSize: "16px",
+            fontFamily: "inherit"
+          },
+          submit: {
+            backgroundColor: "#C52031",
+            hoverBackgroundColor: "#A41B29",
+            borderRadius: "8px",
+            fontSize: "16px",
+            fontWeight: "500"
+          }
         }
-      };
-      
-      document.head.appendChild(script);
+      });
     };
 
     // Create intersection observer for lazy loading
@@ -67,7 +71,7 @@ function PricingPage() {
   return (
     <div>
       <Header />
-      <main className='my-5'>
+      <main className="my-5">
         <div className="wrapper mt-5 pt-3">
           <div className="pricing_title_contents">
             <h2 className="pricing_title h2_pos">
@@ -83,12 +87,12 @@ function PricingPage() {
           <div className="wrapper">
             <div className="pricing_pos_core_wrapper pricing_pos_core_first_petpooja">
               <div className="pricing_pos_core_col">
-                <h2 className="pricing_pos_core_heading">Petpooja POS Core</h2>
+                <h2 className="pricing_pos_core_heading">MenuMitra Pro</h2>
                 <p className="pricing_pos_core_dec">
                   For any restaurant looking to automate their entire operation
                   with affordable and easy-to-use software
                 </p>
-                <h2 className="pricing_pos_core_number">₹10,000*</h2>
+                <h2 className="pricing_pos_core_number">₹9,999*</h2>
                 <p className="pricing_pos_core_gst">first year/per outlet</p>
                 <p className="pricing_pos_core_renewal">
                   +₹7,000* renewal from next year
@@ -442,7 +446,7 @@ function PricingPage() {
                   </div>
                   <p className="verified_counter_title">
                     <span>Bills processed</span> everyday hassle free with
-                    Petpooja POS
+                    MenuMitra POS
                   </p>
                 </div>
               </div>
@@ -510,14 +514,14 @@ function PricingPage() {
               </div>
               <div className="pricing_pos_core_col">
                 <h2 className="pricing_pos_core_heading">
-                  Petpooja Growth Plan
+                  MenuMitra Pro Max
                 </h2>
                 <p className="pricing_pos_core_dec">
-                  Power up your Petpooja Core with features that simplify your
+                  Power up your MenuMitra Core with features that simplify your
                   kitchen operations, customer management, and staff
                   responsibilities
                 </p>
-                <h3 className="pricing_pos_core_number">₹20,000*</h3>
+                <h3 className="pricing_pos_core_number">₹14,999*</h3>
                 <p className="pricing_pos_core_gst">per year / per outlet</p>
                 <a href="#free-demo-form" className="btn btn__primary">
                   Book a free demo
@@ -763,7 +767,7 @@ function PricingPage() {
                         <div className="exp_level_icons">
                           <i className="m-icon petpooja-pay-icon" />
                         </div>
-                        <p className="exploresubbox_paragh">Petpooja Pay</p>
+                        <p className="exploresubbox_paragh">MenuMitra Pay</p>
                       </a>
                     </div>
                   </div>
@@ -939,7 +943,7 @@ function PricingPage() {
                         <div className="exp_level_icons">
                           <i className="m-icon petpooja-pay-icon" />
                         </div>
-                        <p className="exploresubbox_paragh">Petpooja Pay</p>
+                        <p className="exploresubbox_paragh">MenuMitra Pay</p>
                       </a>
                     </div>
                   </div>
@@ -1115,7 +1119,7 @@ function PricingPage() {
                         <div className="exp_level_icons">
                           <i className="m-icon petpooja-pay-icon" />
                         </div>
-                        <p className="exploresubbox_paragh">Petpooja Pay</p>
+                        <p className="exploresubbox_paragh">MenuMitra Pay</p>
                       </a>
                     </div>
                   </div>
@@ -1206,7 +1210,7 @@ function PricingPage() {
             <div className="pricing_pos_core_wrapper">
               <div className="pricing_pos_core_col">
                 <h2 className="pricing_pos_core_heading">
-                  Petpooja Scale Plan
+                  MenuMitra Scale Plan
                 </h2>
                 <p className="pricing_pos_core_dec">
                   A power-packed kit to help you automate your daily operations,
@@ -1335,11 +1339,11 @@ function PricingPage() {
                   />
                 </picture>
                 <p className="trusted_restaurant_dec">
-                  Petpooja has been the POS solution for our 90+ outlets for
+                  MenuMitra has been the POS solution for our 90+ outlets for
                   over two years. And these numbers are proof of how content we
                   are with their services. Especially for a large chain like us,
-                  Petpooja is the one-point data bridge between all the outlets
-                  and the owner. Kudos to the team. Recommending Petpooja to
+                  MenuMitra is the one-point data bridge between all the outlets
+                  and the owner. Kudos to the team. Recommending MenuMitra to
                   everyone!’
                 </p>
                 <div className="trusted_restaurant_profile-wrapper">
@@ -1382,12 +1386,12 @@ function PricingPage() {
                   className="trusted_restaurant_img"
                 />
                 <p className="trusted_restaurant_dec">
-                  Petpooja has helped me to manage inventory levels and food
+                  MenuMitra has helped me to manage inventory levels and food
                   costs. I can track sales and expenses in real time, which
                   helps me make informed decisions about purchasing and pricing.
                   The system also provides detailed reports, which has helped me
                   reduce waste and optimize my inventory. Overall, I am
-                  extremely satisfied with Petpooja and highly recommend it to
+                  extremely satisfied with MenuMitra and highly recommend it to
                   anyone looking to streamline their operations and improve
                   their bottom line.
                 </p>
@@ -1518,7 +1522,7 @@ function PricingPage() {
                   <i className="m-icon chvron_right" />
                 </div>
                 <div className="accordion_content">
-                  Petpooja POS runs smoothly with multiple billing stations!
+                  MenuMitra POS runs smoothly with multiple billing stations!
                   Whether it is two billing stations of 10, you need just one
                   POS to manage them all without hassle.
                 </div>
@@ -1526,24 +1530,24 @@ function PricingPage() {
               <div className="accordion_body">
                 <div className="accordion_head">
                   <h4 className="accordion_title_pos">
-                    Which hardware will I be required to use Petpooja POS?
+                    Which hardware will I be required to use MenuMitra POS?
                   </h4>
                   <i className="m-icon chvron_right" />
                 </div>
                 <div className="accordion_content">
-                  Petpooja POS works smoothly with iOS, Windows, and Android
+                  MenuMitra POS works smoothly with iOS, Windows, and Android
                   laptops, computers, tablets and phones.
                 </div>
               </div>
               <div className="accordion_body">
                 <div className="accordion_head">
                   <h4 className="accordion_title_pos">
-                    Does Petpooja POS support an A4 printer?
+                    Does MenuMitra POS support an A4 printer?
                   </h4>
                   <i className="m-icon chvron_right" />
                 </div>
                 <div className="accordion_content">
-                  Yes! Petpooja POS supports your regular A4 printers and WiFi,
+                  Yes! MenuMitra POS supports your regular A4 printers and WiFi,
                   LAN, USB, Dot-matrix, Laser, Label, A4 size, A5 size,
                   Bluetooth, etc.!
                 </div>
@@ -1561,11 +1565,11 @@ function PricingPage() {
                   <ul className="accordion_content-item">
                     <li className="accordion_content-list">
                       The team will help migrate all the CRM data from your
-                      previous POS to Petpooja
+                      previous POS to MenuMitra
                     </li>
                     <li className="accordion_content-list">
                       The team will also help re-install the previous aggregator
-                      setup onto Petpooja POS
+                      setup onto MenuMitra POS
                     </li>
                   </ul>
                 </div>

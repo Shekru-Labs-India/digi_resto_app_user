@@ -144,6 +144,8 @@ const AppContent = () => {
         <Route path="features" element={<Website currentPath="/features" />} />
         <Route path="client" element={<Website currentPath="/client" />} />
         <Route path="pricing" element={<Website currentPath="/pricing" />} />
+        <Route path="faqs" element={<Website currentPath="/faqs" />} />
+
       </Route>
       <Route path="/user_app/*" element={<UserApp />} />
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -38554,7 +38554,7 @@ input:checked + .tab-label .icon-wrapper i {
 }
 
 input:checked ~ .tab-content {
-  max-height: 100vh;
+  max-height: 100%;
 }
 
 .custom-card {

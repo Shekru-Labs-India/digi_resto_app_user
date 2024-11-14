@@ -249,7 +249,10 @@ const Profile = () => {
             </a>
           </div>
           <div className="sidebar-logo text-center mt-5">
-            <Link to="/">
+            <Link
+              to="/"
+              className="d-flex align-items-center justify-content-center"
+            >
               <img
                 src={logo}
                 alt="logo"
@@ -257,8 +260,9 @@ const Profile = () => {
                 width="30"
                 height="30"
               />
-
-              <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
+              <span className="text-dark mb-0 fw-bolder font_size_18">
+                MenuMitra
+              </span>
             </Link>
           </div>
 
@@ -269,10 +273,11 @@ const Profile = () => {
               href="https://www.shekruweb.com"
               target="_blank"
               rel="noopener noreferrer"
+              style={{ color: "#0d775e" }}
             >
               Shekru Labs India Pvt. Ltd.
             </a>
-            <div className="">v1.1</div>
+            {/* <div className="">v1.1</div> */}
           </div>
         </div>
       </>

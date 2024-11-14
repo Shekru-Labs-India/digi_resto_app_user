@@ -8,12 +8,15 @@ import Features from "./Components/Features";
 import Pricing from "./Components/Pricing";
 import Client from "./Components/Client";
 import PricingPage from "./Components/pricing/PricingPage";
+import FAQs from "./Components/FAQs";
 
 function App({ currentPath }) {
   const location = useLocation();
   
   const renderComponent = () => {
     switch(currentPath || location.pathname) {
+      case '/faqs':
+        return <FAQs />;
       case '/features':
         return <Features />;
       case '/client':

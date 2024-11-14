@@ -905,7 +905,9 @@ const MenuDetails = () => {
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
           <div className="container pt-0">
-            <footer className="footer mb-2">
+            <footer className="footer mb-2 pt-0"
+            
+            >
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 

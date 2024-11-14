@@ -676,7 +676,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="happy_customer section_spacing_y">
+      {/* <section className="happy_customer section_spacing_y">
         <div className="wrapper">
           <div className="happy_customer_row">
             <div className="happy_customer_col">
@@ -789,7 +789,7 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       {/* <section className="scheduale">
         <div className="wrapper" id="free-demo-form">
           <div className="scheduale_row">
@@ -1005,7 +1005,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="blog section_spacing_y">
+      {/* <section className="blog section_spacing_y">
         <div className="wrapper">
           <div className="section_heading">
             <h2 className="titel_name">Grow Your Restaurant</h2>
@@ -1221,7 +1221,7 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       <section className="billing_faqs section_spacing_y">
         <div className="wrapper">
           <h2 className="faq_title">FAQs</h2>

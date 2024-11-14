@@ -80,15 +80,12 @@ export const SidebarToggler = () => {
 
   return (
     <>
-     <div className="right-content gap-1">
-              <div
-                className="menu-toggler toggler-icon"
-                onClick={toggleSidebar}
-              >
-                <i className="ri-menu-line fs-3"></i>
-              </div>
-            </div>
-         
+      <div className="right-content gap-1">
+        <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
+          <i className="ri-menu-line fs-3"></i>
+        </div>
+      </div>
+
       <div
         className={`dark-overlay ${sidebarOpen ? "dark-overlay active" : ""}`}
         onClick={toggleSidebar}
@@ -144,7 +141,7 @@ export const SidebarToggler = () => {
             >
               <div className="d-flex align-items-center">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-bowl-line fs-3"></i>
+                  <i className="ri-bowl-line fs-4"></i>
                 </span>
                 <span className="">Menu</span>
               </div>
@@ -169,40 +166,42 @@ export const SidebarToggler = () => {
                   <div className="toggle-button"></div>
                 </div>
               </div> */}
-                   <div className="">
-      <div
-        className={`  border ${isVegOnly ? "border-success" : "border-danger"} p-1`}
-        onClick={(e) => {
-          e.preventDefault();
-          toggleVegNonVeg();
-        }}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '24px', // Adjust height
-          width: '24px',  // Adjust width
-        }}
-      >
-        {isVegOnly ? (
-          <i
-            className="ri-checkbox-blank-circle-fill text-success"
-            style={{ fontSize: '16px' }} // Adjust icon size
-          ></i>
-        ) : (
-          <i
-            className="ri-checkbox-blank-circle-fill text-danger"
-            style={{ fontSize: '16px' }} // Adjust icon size
-          ></i>
-        )}
-      </div>
-    </div>
+              <div className="">
+                <div
+                  className={`  border ${
+                    isVegOnly ? "border-success" : "border-danger"
+                  } p-1`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleVegNonVeg();
+                  }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "24px", // Adjust height
+                    width: "24px", // Adjust width
+                  }}
+                >
+                  {isVegOnly ? (
+                    <i
+                      className="ri-checkbox-blank-circle-fill text-success"
+                      style={{ fontSize: "16px" }} // Adjust icon size
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-checkbox-blank-circle-fill text-danger"
+                      style={{ fontSize: "16px" }} // Adjust icon size
+                    ></i>
+                  )}
+                </div>
+              </div>
             </Link>
           </li>
           <li>
             <Link className="nav-link active" to="/user_app/Category">
               <span className="dz-icon icon-sm">
-                <i className="ri-list-check-2 fs-3"></i>
+                <i className="ri-list-check-2 fs-4"></i>
               </span>
               <span className="   ">Category</span>
             </Link>
@@ -210,7 +209,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="ri-heart-3-line fs-3"></i>
+                <i className="ri-heart-3-line fs-4"></i>
               </span>
               <span className="   ">Favourite</span>
             </Link>
@@ -218,7 +217,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/MyOrder">
               <span className="dz-icon icon-sm">
-                <i className="ri-drinks-2-line fs-3"></i>
+                <i className="ri-drinks-2-line fs-4"></i>
               </span>
               <span className="   ">My Orders</span>
             </Link>
@@ -226,7 +225,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/Cart">
               <span className="dz-icon icon-sm">
-                <i className="ri-shopping-cart-line fs-3"></i>
+                <i className="ri-shopping-cart-line fs-4"></i>
               </span>
               <span className="   ">Cart</span>
             </Link>
@@ -237,8 +236,8 @@ export const SidebarToggler = () => {
                 <i
                   className={
                     userData && userData.customer_id
-                      ? "ri-user-3-fill fs-3"
-                      : "ri-user-3-line fs-3"
+                      ? "ri-user-3-fill fs-4"
+                      : "ri-user-3-line fs-4"
                   }
                 ></i>
               </span>
@@ -306,28 +305,34 @@ export const SidebarToggler = () => {
             </a>
           </div>
           <div className="sidebar-logo text-center mt-5">
-            <Link to="/">
+            <Link
+              to="/"
+              className="d-flex align-items-center justify-content-center"
+            >
               <img
                 src={logo}
                 alt="logo"
                 className="me-2"
-                width="30"
-                height="30"
+                width="40"
+                height="40"
               />
+              <span className="text-dark mb-0 fw-bolder font_size_18">
+                MenuMitra
+              </span>
             </Link>
-            <span className="text-dark mb-0 mt-1 fw-bolder">MenuMitra</span>
           </div>
 
-          <div className="text-center text-md-center mt-2 gray-text">
+          <div className="text-center text-md-center mt-2 gray-text mb-5">
             <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
             <a
               className="gray-text"
               href="https://www.shekruweb.com"
               target="_blank"
+              style={{ color: "#0d775e" }}
             >
               Shekru Labs India Pvt. Ltd.
             </a>
-            <div className="">v1.1</div>
+            {/* <div className="">v1.1</div> */}
           </div>
         </div>
       </div>
