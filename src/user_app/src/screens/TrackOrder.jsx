@@ -1589,7 +1589,7 @@ const TrackOrder = () => {
                                             }
                                             style={{ cursor: "pointer" }}
                                           >
-                                            <span className="text-success font_size_12">
+                                            <span className="text-success font_size_10">
                                               <i className="ri-restaurant-line mt-0 me-2"></i>
                                               {menu.category_name}
                                             </span>
@@ -1621,11 +1621,7 @@ const TrackOrder = () => {
                                           ).toFixed(2)}
                                         </span>
                                       </span>
-                                      <span className="mb-0 mt-1 ms-3 offerSearch">
-                                        <span className="px-0 text-start font_size_12 text-success">
-                                          {menu.offer || "No"}% Off
-                                        </span>
-                                      </span>
+                                      
                                     </div>
                                     {/* <div className="col-4 increment-decrement">
                                       <div className="d-flex justify-content-end align-items-center">
@@ -1820,7 +1816,7 @@ const TrackOrder = () => {
                               </div>
                               <div className="row mt-2">
                                 <div className="col-8">
-                                  <span className="text-success font_size_12 fw-medium">
+                                  <span className="text-success font_size_10 fw-medium">
                                     <i className="ri-restaurant-line mt-0 me-2"></i>
                                     {menu.category_name}
                                   </span>
@@ -1834,10 +1830,10 @@ const TrackOrder = () => {
                               </div>
                               <div className="row mt-2">
                                 <div className="col-9">
-                                  <span className="  text-info">
+                                  <span className=" font_size_14 fw-semibold text-info">
                                     ₹{menu.price * menu.quantity}
                                   </span>
-                                  <span className="gray-text   old-price text-decoration-line-through ms-2">
+                                  <span className="gray-text  font_size_12 fw-normal text-decoration-line-through ms-2">
                                     ₹
                                     {(menu.oldPrice || menu.price) *
                                       menu.quantity}
@@ -2005,7 +2001,7 @@ const TrackOrder = () => {
                                     )}
                                 </div>
                                 {/* Category with Spicy Index */}
-                                <span className="text-success font_size_12 fw-medium">
+                                <span className="text-success font_size_10 fw-medium">
                                   <i className="ri-restaurant-line mt-0 me-2"></i>
                                   {menu.category_name}
                                 </span>
@@ -2016,12 +2012,12 @@ const TrackOrder = () => {
                                       index < menu.spicy_index ? (
                                         <i
                                           key={index}
-                                          className="ri-fire-fill text-danger font_size_14 firefill offer-code"
+                                          className="ri-fire-fill text-danger font_size_12 firefill offer-code"
                                         ></i>
                                       ) : (
                                         <i
                                           key={index}
-                                          className="ri-fire-line gray-text font_size_14"
+                                          className="ri-fire-line gray-text font_size_12"
                                         ></i>
                                       )
                                     )}

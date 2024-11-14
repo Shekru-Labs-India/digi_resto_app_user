@@ -578,7 +578,7 @@ const Wishlist = () => {
                                       </div>
                                       <div className="row mt-1">
                                         <div className="col-5 text-start">
-                                          <span className="ps-2 font_size_12 text-success">
+                                          <span className="ps-2 font_size_10 text-success">
                                             <i className="ri-restaurant-line mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
@@ -590,12 +590,12 @@ const Wishlist = () => {
                                                 (_, index) =>
                                                   index < menu.spicy_index ? (
                                                     <i
-                                                      className="ri-fire-fill font_size_14 text-danger"
+                                                      className="ri-fire-fill font_size_12 text-danger"
                                                       key={index}
                                                     ></i>
                                                   ) : (
                                                     <i
-                                                      className="ri-fire-line font_size_14 gray-text"
+                                                      className="ri-fire-line font_size_12 gray-text"
                                                       key={index}
                                                     ></i>
                                                   )

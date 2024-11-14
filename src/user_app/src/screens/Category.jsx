@@ -152,7 +152,7 @@ const Category = () => {
                    />
                  </div>
                  <div className="category-text-container">
-                   <div className="category-name">
+                   <div className=" font_size_10">
                      {toTitleCase(category.category_name)}
                    </div>
                    <div className="category-count">

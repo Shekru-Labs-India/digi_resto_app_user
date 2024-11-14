@@ -543,16 +543,16 @@ const Checkout = () => {
                           <div className="row" key={index}>
                             <div className="row">
                               <div className="col-7 pe-0 ">
-                                <span className="mb-0 fs-6 fw-medium ps-2">
+                                <span className="mb-0  fw-medium ps-2 font_size_14">
                                   {item.menu_name}
                                 </span>
                               </div>
                               <div className="col-4 p-0 text-end">
-                                <span className="ms-0 me-2 text-info fs-5 fw-semibold">
+                                <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
                                   ₹{item.price}
                                 </span>
 
-                                <span className="gray-text fs-6 fw-normal text-decoration-line-through">
+                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
                                   ₹ {item.oldPrice || item.price}
                                 </span>
                               </div>
@@ -563,14 +563,14 @@ const Checkout = () => {
                             <div className="row">
                               <div className="col-8">
                                 <div className="ps-2">
-                                  <span className="text-success font_size_12">
+                                  <span className="text-success font_size_10">
                                     <i className="ri-restaurant-line me-2"></i>
                                     {item.menu_cat_name}
                                   </span>
                                 </div>
                               </div>
                               <div className="col-4 text-end px-0">
-                                <span className="ps-2 text-success font_size_12">
+                                <span className="ps-2 text-success font_size_10">
                                   {item.offer || "No "}% Off
                                 </span>
                               </div>

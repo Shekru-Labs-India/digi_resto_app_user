@@ -625,12 +625,12 @@ const ProductCard = ({ isVegOnly }) => {
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="ri-fire-fill text-danger font_size_14"
+                                  className="ri-fire-fill text-danger font_size_12"
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ri-fire-line font_size_14 gray-text"
+                                  className="ri-fire-line font_size_12 gray-text"
                                   key={index}
                                 ></i>
                               )

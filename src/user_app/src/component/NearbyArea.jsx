@@ -202,9 +202,9 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill font_size_14 text-danger" key={index}></i>
+        <i className="ri-fire-fill font_size_12 text-danger" key={index}></i>
       ) : (
-        <i className="ri-fire-line font_size_14 gray-text" key={index}></i>
+        <i className="ri-fire-line font_size_12 gray-text" key={index}></i>
       )
     );
   };

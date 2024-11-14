@@ -620,7 +620,7 @@ const Search = () => {
                     {/* Category and Spicy Index on Second Line */}
                     <div className="row pe-0">
                       <div className="col-6 mt-1">
-                        <span className="text-success font_size_12">
+                        <span className="text-success font_size_10">
                           <i className="ri-restaurant-line mt-0 me-2"></i>
                           {menu.category_name}
                           {/* Spicy Index */}
@@ -633,12 +633,12 @@ const Search = () => {
                               index < menu.spicy_index ? (
                                 <i
                                   key={index}
-                                  className="ri-fire-fill text-danger font_size_14 firefill offer-code"
+                                  className="ri-fire-fill text-danger font_size_12 firefill offer-code"
                                 ></i>
                               ) : (
                                 <i
                                   key={index}
-                                  className="ri-fire-line gray-text font_size_14"
+                                  className="ri-fire-line gray-text font_size_12"
                                 ></i>
                               )
                             )}

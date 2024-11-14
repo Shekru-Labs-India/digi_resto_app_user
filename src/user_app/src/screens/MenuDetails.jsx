@@ -798,7 +798,7 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0 pt-2">
-                    <div className="ps-3 text-success font_size_12 ">
+                    <div className="ps-3 text-success font_size_10 ">
                       <i className="ri-restaurant-line  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
@@ -811,12 +811,12 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill text-danger font_size_14 firefill offer-code"
+                              className="ri-fire-fill text-danger font_size_12 firefill offer-code"
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line  gray-text font_size_14"
+                              className="ri-fire-line  gray-text font_size_12"
                             ></i>
                           )
                         )}

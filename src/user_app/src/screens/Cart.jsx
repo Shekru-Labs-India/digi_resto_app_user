@@ -492,8 +492,8 @@ const Cart = () => {
                                 key={index}
                                 className={`ri-fire-${
                                   index < (item.spicy_index || 0)
-                                    ? "fill font_size_14 text-danger"
-                                    : "line font_size_14 gray-text"
+                                    ? "fill font_size_12 text-danger"
+                                    : "line font_size_12 gray-text"
                                 }`}
                                 style={{
                                   color:
