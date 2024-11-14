@@ -1023,6 +1023,7 @@ const MyOrder = () => {
     placed: [],
     ongoing: [],
   });
+  const [completedTimers, setCompletedTimers] = useState(new Set());
   useEffect(() => {
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
@@ -1226,24 +1227,30 @@ const MyOrder = () => {
 
       <main className="page-content space-top mb-5 pb-3">
         <div className="container px-1">
-        {ongoingOrPlacedOrders.placed?.length > 0 && (
-    <div className="mb-4">
-      
-      {ongoingOrPlacedOrders.placed.map((order) => (
-        <OrderCard key={order.order_id} order={order} status="placed" />
-      ))}
-    </div>
-  )}
-
-  {/* Display "ongoing" orders */}
-  {ongoingOrPlacedOrders.ongoing?.length > 0 && (
-    <div className="mb-4">
+       
+{ongoingOrPlacedOrders.placed.map((order, index) => (
+  <OrderCard
+    key={`${order.order_id}-${index}`} // Combine order_id with index to make it unique
+    order={order}
+    status="placed"
+    setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
+    completedTimers={completedTimers}
+    setCompletedTimers={setCompletedTimers}
     
-      {ongoingOrPlacedOrders.ongoing.map((order) => (
-        <OrderCard key={order.order_id} order={order} status="ongoing" />
-      ))}
-    </div>
-  )}
+  />
+))}
+
+{ongoingOrPlacedOrders.ongoing.map((order, index) => (
+  <OrderCard
+    key={`${order.order_id}-${index}`} // Combine order_id with index to make it unique
+    order={order}
+    status="ongoing"
+    setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
+   
+  
+  />
+))}
+
           <div className="nav nav-tabs nav-fill" role="tablist">
             {[ "completed", "canceled"].map((tab) => (
               <div
@@ -1312,7 +1319,23 @@ const MyOrder = () => {
   );
 };
 
-const OrderCard = ({ order, status,  }) => {
+const OrderCard = ({
+  order,
+  status,
+  setOngoingOrPlacedOrders, // Make sure this is passed correctly
+  completedTimers = new Set(), // Default value to avoid errors
+  setCompletedTimers = () => {}, // Default empty function
+  setActiveTab = () => {}, // Default empty function
+}) => {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
   const handleCompleteOrder = async () => {
     try {
       const response = await fetch("https://men4u.xyz/user_api/complete_order", {
@@ -1325,14 +1348,33 @@ const OrderCard = ({ order, status,  }) => {
           restaurant_id: order.restaurant_id,
         }),
       });
-
+  
+      console.log("Response:", response); // Log the full response
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
       const data = await response.json();
-
+      console.log("Response Data:", data); // Log the parsed response data
+  
       if (data.st === 1) {
-        // Show success toast message
         window.showToast("success", data.msg);
+  
+        // Correctly update the state to remove the order from "ongoing"
+        setOngoingOrPlacedOrders((prevOrders) => {
+          // Remove the order from "ongoing"
+          const updatedOngoing = prevOrders.ongoing.filter(
+            (o) => o.order_id !== order.order_id
+          );
+  
+          // Return the updated state
+          return {
+            placed: prevOrders.placed, // Keep placed orders unchanged
+            ongoing: updatedOngoing,   // Update ongoing orders
+          };
+        });
       } else {
-        // Show error toast message
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
@@ -1341,9 +1383,60 @@ const OrderCard = ({ order, status,  }) => {
     }
   };
   
+  
+  const handleConfirmCancel = async () => {
+    try {
+      const response = await fetch("https://men4u.xyz/user_api/cancle_order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          restaurant_id: order.restaurant_id,
+          order_id: order.order_id,
+          note: cancelReason,
+        }),
+      });
+  
+      console.log("Response:", response); // Log the full response
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log("Response Data:", data); // Log the parsed response data
+  
+      if (data.st === 1) {
+        window.showToast("success", data.msg);
+        setShowCancelModal(false);
+  
+        // Update the state to remove the canceled order
+        setOngoingOrPlacedOrders((prevOrders) => ({
+          placed: prevOrders.placed.filter((o) => o.order_id !== order.order_id),
+          ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
+        }));
+      } else {
+        window.showToast("error", data.msg || "Failed to cancel the order.");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  };
+  
+  
+  const handleOrderClick = (orderNumber) => {
+    navigate(`/user_app/TrackOrder/${orderNumber}`);
+  };
+  
+  
+
+
+  
   return (
     <div className="custom-card my-2 rounded-3 shadow-sm">
-      <div className="card-body py-2">
+      <div className="card-body py-2"  onClick={() => handleOrderClick(order.order_number)}>
         <div className="row align-items-center">
           <div className="col-4">
             <span className="fw-semibold fs-6">
@@ -1392,46 +1485,39 @@ const OrderCard = ({ order, status,  }) => {
       <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
        
 
-{/* {status === "placed" && (
-                        <div className="d-flex flex-column gap-2">
-                          {!completedTimers.has(order.order_id) && (
-                            <TimeRemaining
-                              orderId={order.order_id}
-                              completedTimers={completedTimers}
-                            />
-                          )}
+      {status === "placed" && (
+          <div className="d-flex flex-column gap-2">
+            {!completedTimers.has(order.order_id) && (
+              <TimeRemaining orderId={order.order_id} completedTimers={completedTimers} />
+            )}
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="text-center">
+              <CircularCountdown
+  orderId={order.order_id}
+  onComplete={() => {
+    setCompletedTimers((prev) => new Set([...prev, order.order_id]));
+  }}
+  setOngoingOrPlacedOrders={setOngoingOrPlacedOrders} // Pass this as a prop
+  order={order} // Pass the order object
+/>
+              </div>
 
-                          <div className="d-flex justify-content-between align-items-center">
-                            <div className="text-center">
-                              <CircularCountdown
-                                orderId={order.order_id}
-                                onComplete={() => {
-                                  handleOrderStatusChange(order.order_id);
-                                  setCompletedTimers(
-                                    (prev) => new Set([...prev, order.order_id])
-                                  );
-                                }}
-                                setActiveTab={setActiveTab}
-                              />
-                            </div>
+              {!completedTimers.has(order.order_id) &&
+                localStorage.getItem(`timer_${order.order_id}`) && (
+                  <button
+                    className="btn btn-sm btn-danger rounded-pill px-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCancelClick();
+                    }}
+                  >
+                    Cancel Order
+                  </button>
+                )}
+            </div>
+          </div>
+        )}
 
-                            {!completedTimers.has(order.order_id) &&
-                              localStorage.getItem(
-                                `timer_${order.order_id}`
-                              ) && (
-                                <button
-                                  className="btn btn-sm btn-danger rounded-pill px-4"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCancelClick(order.order_id);
-                                  }}
-                                >
-                                  Cancel Order
-                                </button>
-                              )}
-                          </div>
-                        </div>
-                      )} */}
 
                       {status === "ongoing" && (
                         <div className="d-flex justify-content-end">
@@ -1446,6 +1532,57 @@ const OrderCard = ({ order, status,  }) => {
                         </div>
                       )}
       </div>
+      {showCancelModal && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Cancel Order</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowCancelModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label htmlFor="cancelReason" className="form-label">
+                    Please provide a reason for cancellation
+                  </label>
+                  <textarea
+                    id="cancelReason"
+                    className="form-control border border-primary"
+                    rows="3"
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Enter your reason here..."
+                  ></textarea>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleConfirmCancel}
+                >
+                  Confirm Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
@@ -1479,10 +1616,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     setExpandAll(false);
   }, [orders, type]);
   const [completedTimers, setCompletedTimers] = useState(new Set());
-  const [showViewOngoingButton, setShowViewOngoingButton] = useState(false);
-
-  const [completedOrders, setCompletedOrders] = useState(new Set());
-  const [showOngoingButton, setShowOngoingButton] = useState(false);
+ 
   
 
   const handleOrderMore = (orderId) => {
@@ -1504,109 +1638,15 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     navigate(`/user_app/TrackOrder/${orderNumber}`);
   };
 
-  const handleCompleteOrder = async (orderId) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    try {
-      const response = await fetch(
-         `${config.apiDomain}/user_api/complete_order`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_id: orderId,
-          }),
-        }
-      );
+ 
 
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        // Update the local state to reflect the change
-        setOrders((prevOrders) => {
-          const updatedOrders = { ...prevOrders };
-          const ongoingOrders = { ...updatedOrders.ongoing };
-          const completedOrders = { ...updatedOrders.completed };
-
-          // Find the order to move
-          for (const date in ongoingOrders) {
-            const orderIndex = ongoingOrders[date].findIndex(
-              (order) => order.order_id === orderId
-            );
-            if (orderIndex !== -1) {
-              const [movedOrder] = ongoingOrders[date].splice(orderIndex, 1);
-              movedOrder.status = "completed";
-
-              // Add to completed orders
-              if (!completedOrders[date]) {
-                completedOrders[date] = [];
-              }
-              completedOrders[date].push(movedOrder);
-
-              // Remove date key if no orders left
-              if (ongoingOrders[date].length === 0) {
-                delete ongoingOrders[date];
-              }
-
-              break;
-            }
-          }
-
-          return {
-            ...updatedOrders,
-            ongoing: ongoingOrders,
-            completed: completedOrders,
-          };
-        });
-
-        window.showToast("success", "Order has been completed successfully!");
-        setActiveTab("completed");
-      } else {
-        throw new Error(data.msg || "Failed to complete order");
-      }
-    } catch (error) {
-      
-      window.showToast("error", error.message || "Failed to complete order");
-    }
-  };
-
-  const handleOrderStatusChange = async (orderId) => {
-    try {
-      const response = await fetch(
-         `${config.apiDomain}/user_api/change_status_to_ongoing`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            order_id: orderId,
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.st === 1) {
-        localStorage.removeItem(`timer_${orderId}`);
-        setCompletedTimers((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(orderId);
-          return newSet;
-        });
-
-        window.showToast("success", "Order moved to ongoing orders");
-      }
-    } catch (error) {
-      
-      window.showToast("error", "Failed to update order status");
-    }
-  };
+ 
 
   // Add this new useEffect for periodic API check
   useEffect(() => {
     const intervalId = setInterval(() => {
       // Check all orders in completedTimers
-      completedTimers.forEach((orderId) => {
-        handleOrderStatusChange(orderId);
-      });
+     
     }, 30000); // 30 seconds
 
     return () => clearInterval(intervalId);
@@ -1618,79 +1658,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     setShowCancelModal(true);
   };
 
-  const handleCancelOrder = async () => {
-    if (!cancelReason.trim()) {
-      window.showToast("error", "Please provide a reason for cancellation");
-      return;
-    }
 
-    try {
-      if (!selectedOrderId || !restaurantId) {
-      
-        throw new Error("Missing required data for cancellation");
-      }
-
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const response = await fetch(
-         `${config.apiDomain}/user_api/cancle_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            order_id: selectedOrderId.toString(),
-            restaurant_id: restaurantId.toString(),
-            note: cancelReason.trim(),
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.st === 1) {
-        setShowCancelModal(false);
-        setCancelReason("");
-        setSelectedOrderId(null);
-
-        window.showToast(
-          "success",
-          "Your order has been successfully canceled."
-        );
-
-        // Fetch updated order list
-        const updatedResponse = await fetch(
-           `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              restaurant_id: restaurantId,
-              order_status: "canceled",
-              customer_id: userData?.customer_id,
-              customer_type: userData?.customer_type,
-            }),
-          }
-        );
-
-        if (updatedResponse.ok) {
-          const result = await updatedResponse.json();
-          if (result.st === 1) {
-            setOrders(result.lists || {});
-            setActiveTab("canceled");
-          }
-        }
-      } else {
-        throw new Error(data.msg || "Failed to cancel order");
-      }
-    } catch (error) {
-     
-      window.showToast(
-        "error",
-        error.message || "Failed to cancel order. Please try again."
-      );
-    }
-  };
 
   const toggleExpandAll = () => {
     const newExpandAll = !expandAll;
@@ -1882,57 +1850,8 @@ const renderOrders = () => {
     
   
 
-        {/* Cancel Modal */}
-        {showCancelModal && (
-          <div
-            className="modal fade show d-block"
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Cancel Order</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowCancelModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <div className="form-group">
-                    <label htmlFor="cancelReason" className="form-label">
-                      Please provide a reason for cancellation
-                    </label>
-                    <textarea
-                      id="cancelReason"
-                      className="form-control border border-primary"
-                      rows="3"
-                      value={cancelReason}
-                      onChange={(e) => setCancelReason(e.target.value)}
-                      placeholder="Enter your reason here..."
-                    ></textarea>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setShowCancelModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleCancelOrder}
-                  >
-                    Confirm Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      
+        
       </div>
       <Bottom />
     </>
@@ -1998,14 +1917,19 @@ const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   );
 };
 
-const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
+const CircularCountdown = ({
+  orderId,
+  onComplete,
+  setOngoingOrPlacedOrders,
+  order,
+  setActiveTab,
+}) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
   const timerKey = `timer_${orderId}`;
-  
+
   useEffect(() => {
-    // Initialize timer if it doesn't exist
     const startTime = localStorage.getItem(timerKey);
     if (!startTime) {
       localStorage.setItem(timerKey, new Date().getTime().toString());
@@ -2047,30 +1971,59 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
         clearInterval(timerRef.current);
       }
     };
-  }, [orderId, onComplete]);
+  }, [orderId]);
 
-  const handleTimerComplete = () => {
+  const handleTimerComplete = async () => {
     setTimeLeft(0);
     setIsCompleted(true);
     localStorage.removeItem(timerKey);
+
+    // Call the API to fetch updated orders
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
+
+      if (!currentCustomerId || !restaurantId) return;
+
+      const response = await fetch(
+        "https://men4u.xyz/user_api/get_ongoing_or_placed_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: currentCustomerId,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        const orders = data.data || [];
+        if (orders.length > 0) {
+          const status = orders[0]?.status;
+          const orderList =
+            status === "placed"
+              ? { placed: orders, ongoing: [] }
+              : { placed: [], ongoing: orders };
+          setOngoingOrPlacedOrders(orderList);
+        } else {
+          setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
+        }
+      } else {
+        setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
+      }
+    } catch (error) {
+      console.error("Error fetching orders after timer complete:", error);
+    }
+
+    // Call the onComplete function
     onComplete();
     window.showToast("success", "Your order has moved to ongoing orders!");
-    
-    // Add a small delay before navigation to ensure toast is visible
-    setTimeout(() => {
-      setActiveTab("ongoing");
-    }, 1000); // 1 second delay to show toast before navigation
   };
-  if (isCompleted && timeLeft === 0) {
-    return (
-      <button
-        className="btn btn-primary btn-sm rounded-pill px-3"
-        onClick={() => setActiveTab("ongoing")}
-      >
-        View in Ongoing Orders
-      </button>
-    );
-  }
 
   const percentage = (timeLeft / 90) * 100;
 
@@ -2099,5 +2052,9 @@ const CircularCountdown = ({ orderId, onComplete, setActiveTab }) => {
     </div>
   );
 };
+
+
+
+
 
 export default MyOrder;

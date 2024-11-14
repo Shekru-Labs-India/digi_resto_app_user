@@ -4,13 +4,13 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/custom.css";
 import OrderGif from "../assets/gif/cooking.gif";
-import { ThemeContext } from "../context/ThemeContext.js"; 
+import { ThemeContext } from "../context/ThemeContext.js";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
-import config from "../component/config"
+import config from "../component/config";
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,45 +39,37 @@ const Checkout = () => {
   const [ongoingOrderId, setOngoingOrderId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
+  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
+  const [cartId, setCartId] = useState(null);
+  const [existingOrderDetails, setExistingOrderDetails] = useState({
+    orderNumber: "",
+    orderStatus: "",
+  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
   }); // State for theme
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+ 
+
+
+  
 
  
-  // const { isDarkMode } = useContext(ThemeContext);
-
-  const [isNotesFocused, setIsNotesFocused] = useState(false);
-  const notesRef = useRef(null);
-  const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
-  const [existingOrderId, setExistingOrderId] = useState(null);
-
-  const [orderDetails, setOrderDetails] = useState({ type: '', number: '' });
-
-  const [existingOrderDetails, setExistingOrderDetails] = useState({ type: '', number: '' });
-
-
-
-  const handleNotesFocus = () => {
-    setIsNotesFocused(true);
-  };
 
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
-  
+
   const [restaurantCode, setRestaurantCode] = useState(
     () => localStorage.getItem("restaurantCode") || ""
   );
 
-  const handleNotesBlur = () => {
-    setIsNotesFocused(false);
-  };
+ 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
-    
+
     return cartId ? parseInt(cartId, 10) : null;
   };
 
@@ -99,16 +91,13 @@ const Checkout = () => {
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
 
-   
-
     if (!cartId || !currentCustomerId || !restaurantId) {
-     
       return;
     }
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_cart_detail`,
+        `${config.apiDomain}/user_api/get_cart_detail`,
         {
           method: "POST",
           headers: {
@@ -123,9 +112,9 @@ const Checkout = () => {
       );
 
       const data = await response.json();
-     
 
       if (response.ok) {
+        setCartId(data.cart_id);
         const updatedOrderItems = data.order_items.map((item) => ({
           ...item,
           oldPrice: Math.floor(item.price * 1.1),
@@ -144,11 +133,9 @@ const Checkout = () => {
         );
         setOrderCount(uniqueMenuIds.size);
       } else {
-      
         navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
       }
     } catch (error) {
-     
       navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
     }
   };
@@ -180,501 +167,15 @@ const Checkout = () => {
     fetchCartDetails();
   }, [restaurantId, customerId]);
 
-  const handleNotesChange = (e) => {
-    const value = e.target.value;
-    const regex = /^[a-zA-Z0-9\s.]*$/;
+  
 
-    if (value.length < 3 || value.length > 200) {
-      setValidationMessage("Notes must be between 3 and 200 characters.");
-    } else if (!regex.test(value)) {
-      setValidationMessage("Special characters are not allowed.");
-    } else {
-      setValidationMessage("");
-    }
+  
 
-    setNotes(value);
-  };
+ 
 
-  const checkForOngoingOrder = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-      
-      // Store current cart items as pending items first
-      const currentCartItems = cartItems.map(item => ({
-        menu_id: item.menu_id.toString(),
-        quantity: item.quantity.toString(),
-        half_or_full: "full",
-        comment: "",
-        menu_name: item.menu_name,
-        menu_price: item.price || item.menu_price,
-        menu_image: item.menu_image,
-        menu_type: item.menu_type,
-        is_new: true
-      }));
+  
 
-      const response = await fetch( `${config.apiDomain}/user_api/get_order_list`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          order_status: "ongoing",
-          customer_id: currentCustomerId,
-          customer_type: currentCustomerType,
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (data.st === 1) {
-        // Check for placed orders first
-        if (data.lists?.placed) {
-          const dates = Object.keys(data.lists.placed).sort((a, b) => new Date(b) - new Date(a));
-          if (dates.length > 0) {
-            const placedOrders = data.lists.placed[dates[0]];
-            if (placedOrders && placedOrders.length > 0) {
-              const latestOrder = placedOrders[0];
-              
-              // Store cart items as pending items for this order
-              const pendingItemsKey = `pendingItems_${latestOrder.order_id}`;
-              const existingPendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
-              const updatedPendingItems = [...existingPendingItems, ...currentCartItems];
-              localStorage.setItem(pendingItemsKey, JSON.stringify(updatedPendingItems));
-              
-              setExistingOrderDetails({
-                type: 'Placed',
-                number: latestOrder.order_number,
-                id: latestOrder.order_id,
-                status: 'placed',
-                menu_items: latestOrder.menu_details || []
-              });
-              setShowExistingOrderModal(true);
-              return true;
-            }
-          }
-        }
-
-        // Then check for ongoing orders
-        if (data.lists?.ongoing) {
-          const dates = Object.keys(data.lists.ongoing).sort((a, b) => new Date(b) - new Date(a));
-          if (dates.length > 0) {
-            const ongoingOrders = data.lists.ongoing[dates[0]];
-            if (ongoingOrders && ongoingOrders.length > 0) {
-              const latestOrder = ongoingOrders[0];
-              
-              // Store cart items as pending items for this order
-              const pendingItemsKey = `pendingItems_${latestOrder.order_id}`;
-              const existingPendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
-              const updatedPendingItems = [...existingPendingItems, ...currentCartItems];
-              localStorage.setItem(pendingItemsKey, JSON.stringify(updatedPendingItems));
-              
-              setExistingOrderDetails({
-                type: 'Ongoing',
-                number: latestOrder.order_number,
-                id: latestOrder.order_id,
-                status: 'ongoing',
-                menu_items: latestOrder.menu_details || []
-              });
-              setShowExistingOrderModal(true);
-              return true;
-            }
-          }
-        }
-      }
-      return false;
-    } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to check existing orders",
-        life: 3000,
-      });
-      return false;
-    }
-  };
-
-  const handleCompleteOrder = async () => {
-    if (!ongoingOrderId) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Order ID not found",
-        life: 3000,
-      });
-      return;
-    }
-
-    try {
-    
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/complete_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_id: ongoingOrderId.toString(),
-          }),
-        }
-      );
-
-      const data = await response.json();
-    
-
-      if (response.ok && data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Order has been completed successfully!",
-          life: 3000,
-        });
-
-        setShowOngoingOrderPopup(false);
-        clearCart();
-        navigate("/user_app/MyOrder", { state: { activeTab: "completed" } });
-      } else {
-        throw new Error(data.msg || "Failed to complete order");
-      }
-    } catch (error) {
-     
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to complete order. Please try again.",
-        life: 3000,
-      });
-    }
-  };
-
-  // Add this to your useEffect or where appropriate
-  useEffect(() => {
-    const checkOrder = async () => {
-      if (isLoggedIn && restaurantId) {
-        await checkForOngoingOrder();
-      }
-    };
-    checkOrder();
-  }, [isLoggedIn, restaurantId]);
-
-  const [showEmptyCheckoutModal, setShowEmptyCheckoutModal] = useState(false);
-
-  // Add this helper function to handle cart clearing
-  const clearCartData = () => {
-    clearCart(); // Clear cart context
-    localStorage.removeItem("cartItems"); // Clear cart items from localStorage
-    localStorage.removeItem("cartId"); // Clear cart ID from localStorage
-    setCartItems([]); // Clear cart items state if you're using it
-  };
-
-  const handleSubmitOrder = async () => {
-    if (!checkoutData) {
-      setShowEmptyCheckoutModal(true);
-      return;
-    }
-
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
-
-      // First check for ongoing orders
-      const ongoingResponse = await fetch(
-         `${config.apiDomain}/user_api/get_order_list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-            order_status: "ongoing",
-          }),
-        }
-      );
-
-      const ongoingData = await ongoingResponse.json();
-
-      if (
-        ongoingData.st === 1 &&
-        ongoingData.lists?.ongoing &&
-        Object.keys(ongoingData.lists.ongoing).length > 0
-      ) {
-        setShowOngoingOrderPopup(true);
-        return;
-      }
-
-      // If no ongoing orders, proceed with checking placed orders
-      const placedResponse = await fetch(
-         `${config.apiDomain}/user_api/get_order_list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-            order_status: "placed",
-          }),
-        }
-      );
-
-      const placedData = await placedResponse.json();
-
-      if (
-        placedData.st === 1 &&
-        placedData.lists?.placed &&
-        Object.keys(placedData.lists.placed).length > 0
-      ) {
-        // Handle placed orders...
-        const firstOrderKey = Object.keys(placedData.lists.placed)[0];
-        const firstOrder = placedData.lists.placed[firstOrderKey][0];
-        setExistingOrderId(firstOrder.order_id);
-        setShowExistingOrderModal(true);
-        return;
-      }
-
-      // If no ongoing or placed orders, proceed with new order
-      await proceedWithOrderSubmission(currentCustomerId, currentCustomerType);
-    } catch (error) {
-    
-      setErrorMessage(
-        "An error occurred while processing your order. Please try again."
-      );
-      setShowErrorPopup(true);
-    }
-  };
-
-  const handleAddToExistingOrder = async () => {
-    try {
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
-      const pendingItemsKey = `pendingItems_${existingOrderDetails.id}`;
-      const pendingItems = JSON.parse(localStorage.getItem(pendingItemsKey) || '[]');
-
-      const requestBody = {
-        order_id: existingOrderDetails.id,
-        customer_id: userData?.customer_id || localStorage.getItem("customer_id"),
-        restaurant_id: restaurantId,
-        cart_id: cartId, // Add cart_id to request
-        order_items: pendingItems.map(item => ({
-          menu_id: item.menu_id,
-          quantity: item.quantity,
-          half_or_full: item.half_or_full || "full",
-          comment: item.comment || ""
-        }))
-      };
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/add_to_existing_order`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody)
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        clearCartData();
-        
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: `Items added to ${existingOrderDetails.type.toLowerCase()} order successfully`,
-          life: 3000,
-        });
-        
-        setShowExistingOrderModal(false);
-        
-        navigate(`/user_app/TrackOrder/${existingOrderDetails.number}`, {
-          state: {
-            orderStatus: existingOrderDetails.status,
-            order_id: existingOrderDetails.id,
-            pendingItems: pendingItems
-          },
-        });
-      } else {
-        throw new Error(data.msg || "Failed to add items to order");
-      }
-    } catch (error) {
-      
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to add items to order",
-        life: 3000,
-      });
-    }
-  };
-
-
-
-  const proceedWithOrderSubmission = async (currentCustomerId, currentCustomerType) => {
-    try {
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
-      
-      const orderItems = cartItems.map((item) => ({
-        menu_id: item.menu_id,
-        quantity: item.quantity,
-        price: item.price,
-        menu_name: item.menu_name,
-        image: item.image,
-        category_name: item.category_name,
-        spicy_index: item.spicy_index,
-        rating: item.rating,
-        offer: item.offer,
-      }));
-
-      const currentTime = new Date();
-      const formattedTime = currentTime.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-
-      const orderData = {
-        customer_id: currentCustomerId,
-        customer_type: currentCustomerType,
-        restaurant_id: restaurantId,
-        cart_id: cartId, // Add cart_id to request
-        note: notes,
-        order_items: orderItems,
-        table_number: checkoutData.tableNumber || "1",
-        order_time: formattedTime,
-      };
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/create_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
-
-      const responseData = await response.json();
-
-      if (response.ok && responseData.st === 1) {
-        // Store order items in localStorage
-        const orderItemsForStorage = {
-          items: orderItems,
-          created_at: new Date().toISOString(),
-          order_id: responseData.order_id,
-          order_number: responseData.order_number,
-          total_total: checkoutData.total,
-          grand_total: checkoutData.grandTotal,
-        };
-
-        localStorage.setItem(
-          `orderItems_${responseData.order_number}`,
-          JSON.stringify(orderItemsForStorage)
-        );
-
-        setShowPopup(true);
-        clearCart();
-      } else if (responseData.st === 2) {
-        setErrorMessage(responseData.msg);
-        setShowErrorPopup(true);
-      } else {
-        throw new Error(responseData.msg || "Failed to submit order");
-      }
-    } catch (error) {
-      
-      setErrorMessage(`Failed to submit order: ${error.message}`);
-      setShowErrorPopup(true);
-    }
-  };
-
-  // Add this function to handle order completion
-  const handleCompleteAndProceed = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
-
-      // Fetch the ongoing order details
-      const response = await fetch(
-         `${config.apiDomain}/user_api/get_order_list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-            order_status: "ongoing",
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1 && data.lists?.ongoing) {
-        const ongoingOrders = data.lists.ongoing;
-        if (Object.keys(ongoingOrders).length > 0) {
-          const firstOrderKey = Object.keys(ongoingOrders)[0];
-          const ongoingOrder = ongoingOrders[firstOrderKey][0];
-
-          navigate(`/user_app/TrackOrder/${ongoingOrder.order_number}`, {
-            state: {
-              order_status: "ongoing",
-              order_id: ongoingOrder.order_id,
-            },
-          });
-        }
-      } else {
-        throw new Error("No ongoing order found");
-      }
-    } catch (error) {
-      
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process ongoing order. Please try again.",
-        life: 3000,
-      });
-    } finally {
-      setShowOngoingOrderPopup(false);
-    }
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-    navigate("/user_app/MyOrder", { state: { activeTab: "placed" } });
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
-  };
-
-  const getFirstName = (name) => {
-    if (!name) return "User"; // Return "User" if name is undefined or null
-    const words = name.split(" ");
-    return words[0]; // Return the first word
-  };
-
-  const toggleTheme = () => {
-    const newIsDarkMode = !isDarkMode;
-    setIsDarkMode(newIsDarkMode);
-    localStorage.setItem("isDarkMode", newIsDarkMode);
-  };
+ 
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -683,13 +184,227 @@ const Checkout = () => {
     } else {
       document.body.classList.remove("theme-dark");
     }
-  }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
+  }, [isDarkMode]); 
 
-  const toTitleCase = (text) => {
-    if (!text) return "";
-    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+
+
+  const handlePlaceOrder = async () => {
+    try {
+      const response = await fetch(
+        "https://men4u.xyz/user_api/check_order_exist",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        if (data.st === 1) {
+          if (data.order_number === null && data.order_status === null) {
+            // Show the modal for creating a new order
+            setShowNewOrderModal(true);
+          } else if (data.order_status === "ongoing" || data.order_status === "placed") {
+            // Store the order details, including order_id
+            setExistingOrderDetails({
+              orderNumber: data.order_number,
+              orderStatus: data.order_status,
+              orderId: data.order_id,
+            });
+            setShowExistingOrderModal(true);
+          }
+        } else if (data.st === 2) {
+          // Display toast for st = 2 with the backend message
+          window.showToast({
+            severity: "error",
+            summary: "Notice",
+            detail: data.msg,
+            life: 3000,
+          });
+        } else {
+          throw new Error("Failed to check order status");
+        }
+      } else {
+        throw new Error("Failed to check order status");
+      }
+    } catch (error) {
+      window.showToast({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to check order status. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+  
+  
+  
+
+  const handleCreateOrder = async () => {
+    if (!cartId || !customerId || !restaurantId) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Missing required data to create an order",
+        life: 3000,
+      });
+      return;
+    }
+  
+    try {
+      const response = await fetch("https://men4u.xyz/user_api/create_order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cart_id: cartId,
+          customer_id: customerId,          
+          restaurant_id: restaurantId,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.st === 1) {
+       
+        clearCartData();
+        setShowNewOrderModal(false);
+        navigate(`/user_app/TrackOrder/${data.order_number}`);
+        
+      } else {
+        throw new Error(data.msg || "Failed to create order");
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to create order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+  
+  const clearCartData = () => {
+    clearCart(); // Clear cart context
+    localStorage.removeItem("cartItems"); // Clear cart items from localStorage
+    localStorage.removeItem("cartId"); // Clear cart ID from localStorage
+    setCartItems([]); // Clear cart items state if you're using it
   };
 
+
+  const handleOrderAction = async (orderStatus) => {
+    if (!cartId || !customerId || !restaurantId || !existingOrderDetails.orderNumber) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Missing required data to proceed",
+        life: 3000,
+      });
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        "https://men4u.xyz/user_api/complete_or_cancle_existing_order_create_new_order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            order_number: existingOrderDetails.orderNumber,
+            order_status: orderStatus, // Pass the order status dynamically
+          }),
+        }
+      );
+  
+      const data = await response.json();
+  
+      if (response.ok && data.st === 1) {
+        // Show success popup
+        setShowPopup(true);
+        setShowExistingOrderModal(false);
+        clearCartData();
+      } else {
+        throw new Error(data.msg || "Failed to update order");
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to update order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+  
+
+  const handleAddToExistingOrder = async () => {
+    try {
+      // Construct the order items array
+      const orderItems = cartItems.map((item) => ({
+        menu_id: item.menu_id,
+        quantity: item.quantity,
+        half_or_full: item.half_or_full || "full",
+      }));
+  
+      // Make the API call
+      const response = await fetch("https://men4u.xyz/user_api/add_to_existing_order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
+          customer_id: customerId,
+          restaurant_id: restaurantId,
+          cart_id: cartId,
+          order_items: orderItems,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.st === 1) {
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Items added to the existing order successfully!",
+          life: 3000,
+        });
+        setShowPopup(true);
+      
+        clearCartData();
+        setShowExistingOrderModal(false); // Close the modal
+      } else {
+        throw new Error(data.msg || "Failed to add items to the existing order");
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to add items to the existing order. Please try again.",
+        life: 3000,
+      });
+    }
+  };
+  
+  
+  const closePopup = () => {
+    setShowPopup(false);
+    navigate(`/user_app/TrackOrder/${existingOrderDetails.orderNumber}`);
+  };
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -703,120 +418,50 @@ const Checkout = () => {
           />
         </div>
 
-        {showOngoingOrderPopup && (
-          <div className="popup-overlay">
-            <div
-              className={`popup-content rounded-4 ${
-                isDarkMode ? "bg-dark" : "bg-white"
-              }`}
-            >
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0 text-muted">Existing Order Found</h3>
-                <button
-                  className="btn p-0"
-                  onClick={() => setShowOngoingOrderPopup(false)}
-                >
-                  <i className="ri-close-line text-muted fs-3"></i>
-                </button>
-              </div>
-              <p className="text-muted mb-4">
-                You have an existing {orderDetails.type} order (#
-                {orderDetails.number}) in progress. What would you like to do?
-              </p>
-              <div className="d-flex flex-column gap-2">
-                <button
-                  className="btn btn-success rounded-pill w-100 py-2"
-                  onClick={handleCompleteOrder}
-                >
-                  <i className="ri-checkbox-circle-line me-2"></i>
-                  Complete Order
-                </button>
-
-                <button
-                  className="btn btn-outline-primary rounded-pill w-100 py-2"
-                  onClick={handleCompleteAndProceed}
-                >
-                  <i className="ri-eye-line me-2"></i>
-                  View Order Details
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showPopup && (
-          <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0">Success</h3>
-                <button
-                  className="btn-close"
-                  onClick={() => setShowPopup(false)}
-                ></button>
-              </div>
-              <div className="circle">
-                <img src={OrderGif} alt="Order Success" className="popup-gif" />
-              </div>
-              <span className="text-dark my-3 d-block text-center">
-                Order placed successfully
-              </span>
-              <p className="text-muted text-center mb-4">
-                You have successfully made payment and placed your order.
-              </p>
-              <button
-                className="btn btn-success rounded-pill text-white w-100"
-                onClick={closePopup}
-              >
-                View Order
-              </button>
-            </div>
-          </div>
-        )}
-
-{showEmptyCheckoutModal && (
-  <div
-    className="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100"
-    style={{
-      zIndex: 1050,
-      background: "rgba(0, 0, 0, 0.5)",
-    }}
-    onClick={() => setShowEmptyCheckoutModal(false)} // Close modal on outside click
-  >
-    <div
-      className="modal-dialog"
-      style={{ maxWidth: "90%", width: "350px" }}
-      onClick={(e) => e.stopPropagation()} // Prevent click event from closing modal
-    >
-      <div className="modal-content rounded-4 p-2">
-        <div className="modal-body text-center px-2">
-          <div className="d-flex justify-content-end">
-            <i
-              className="ri-close-line text-muted"
-              style={{ fontSize: "1.5rem", cursor: "pointer" }}
-              onClick={() => setShowEmptyCheckoutModal(false)} // Close modal on close icon click
-            ></i>
-          </div>
-          <div className="mb-3">
-            <i
-              className="ri-restaurant-2-line text-primary"
-              style={{ fontSize: "3.5rem" }}
-            ></i>
-          </div>
-          <h5 className="mb-3 fw-semibold">No Items in Cart!</h5>
-          <p className="text-muted mb-4">
-            Add some delicious dishes to your cart and place your order.
-          </p>
+        {showExistingOrderModal && (
+  <div className="popup-overlay">
+    <div className="popup-content rounded-4">
+      <div className="p-3 border-bottom">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="mb-0 fw-semibold text-muted">Existing Order Found</h5>
           <button
-            className="btn btn-outline-primary rounded-pill px-4 py-2"
-            onClick={() => {
-              setShowEmptyCheckoutModal(false);
-              const restaurantCode = localStorage.getItem("restaurantCode");
-              const tableNumber = localStorage.getItem("tableNumber") || "";
-              navigate(`/user_app/${restaurantCode}/${tableNumber}`);
-            }}
+            className="btn p-0 fs-3 text-muted"
+            onClick={() => setShowExistingOrderModal(false)}
           >
-            <i className="ri-restaurant-line me-2"></i>
-            Browse Menu
+            <i className="ri-close-line text-muted"></i>
+          </button>
+        </div>
+      </div>
+
+      <div className="p-3">
+        <p className="text-center mb-4 text-muted">
+          You have an ongoing order (#{existingOrderDetails.orderNumber}). Would you like to add to this order or create a new one?
+        </p>
+
+        <div className="d-flex flex-column gap-2">
+          <button
+            className="btn btn-danger rounded-pill w-100 py-2"
+            onClick={() => handleOrderAction("canceled")}
+          >
+            Cancel Existing & Create New Order
+          </button>
+          <button
+            className="btn btn-success rounded-pill w-100 py-2"
+            onClick={() => handleOrderAction("completed")}
+          >
+            Complete Existing & Create New Order
+          </button>
+          <button
+            className="btn btn-info rounded-pill w-100 py-2"
+            onClick={handleAddToExistingOrder}
+          >
+            Add to Existing Order
+          </button>
+          <button
+            className="btn btn-outline-secondary rounded-pill w-100 py-2"
+            onClick={() => setShowExistingOrderModal(false)}
+          >
+            Close
           </button>
         </div>
       </div>
@@ -824,97 +469,74 @@ const Checkout = () => {
   </div>
 )}
 
+{showPopup && (
+  <div className="popup-overlay">
+    <div className="popup-content rounded-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3 className="mb-0">Success</h3>
+        <button className="btn-close" onClick={() => setShowPopup(false)}></button>
+      </div>
+      <div className="circle">
+        <img src={OrderGif} alt="Order Success" className="popup-gif" />
+      </div>
+      <span className="text-dark my-3 d-block text-center">
+        Order placed successfully
+      </span>
+      <p className="text-muted text-center mb-4">
+        You have successfully made payment and placed your order.
+      </p>
+      <button
+        className="btn btn-success rounded-pill text-white w-100"
+        onClick={closePopup}
+      >
+        View Order
+      </button>
+    </div>
+  </div>
+)}
 
-        {showExistingOrderModal && (
-          <div className="popup-overlay">
-            <div className={`popup-content rounded-4 ${isDarkMode ? 'bg-dark' : 'bg-white'}`}>
-              <div className="p-3 border-bottom">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">
-                    Existing Order Found
-                  </h5>
-                  <button
-                    className="btn p-0 fs-3 text-muted"
-                    onClick={() => setShowExistingOrderModal(false)}
-                  >
-                    <i className="ri-close-line text-muted"></i>
-                  </button>
-                </div>
-              </div>
-              
-              <div className="p-3">
-                <p className="text-center mb-4 text-muted">
-                  You have an existing {existingOrderDetails.type} order (#{existingOrderDetails.number}) in progress. What would you like to do?
-                </p>
 
-                <div className="d-flex flex-column gap-2">
-                  <button
-                    className="btn btn-success rounded-pill w-100 py-2 my-1"
-                    onClick={handleAddToExistingOrder}
-                  >
-                    <i className="ri-add-line me-1 text-nowrap"></i>
-                   <span className="text-nowrap">Add to Existing Order</span>  
-                  </button>
+       {/* New Order Modal */}
+{showNewOrderModal && (
+  <div className="popup-overlay">
+    <div className="popup-content rounded-4">
+      <div className="p-3 border-bottom">
+        <div className="d-flex justify-content-between align-items-center">
+          <h5 className="mb-0 fw-semibold text-muted">Create New Order</h5>
+          <button
+            className="btn p-0 fs-3 text-muted"
+            onClick={() => setShowNewOrderModal(false)}
+          >
+            <i className="ri-close-line text-muted"></i>
+          </button>
+        </div>
+      </div>
 
-                  <button
-                    className="btn btn-outline-danger rounded-pill w-100 py-2 my-1"
-                    onClick={() => setShowExistingOrderModal(false)}
-                  >
-                  <i className="ri-close-circle-line text-nowrap me-1 "></i>
-                    <span className="text-nowrap">Cancel Existing Order</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      <div className="p-3">
+        <p className="text-center mb-4 text-muted">
+          No ongoing order found. Would you like to create a new order?
+        </p>
+
+        <button
+          className="btn btn-success rounded-pill w-100 py-2"
+          onClick={handleCreateOrder}
+        >
+          Create Order
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
         <div className="m-3">
           <div className="dz-flex-box">
-            <ul className="dz-list-group">
-              <div className="mb-2">
-                <label className="    pb-2 ps-2" htmlFor="notes">
-                  Additional Notes:
-                </label>
-                <textarea
-                  className={`form-control dz-textarea rounded-3 pb-0 ${
-                    isNotesFocused ? "border-primary" : "border-light"
-                  }`}
-                  name="notes"
-                  id="notes"
-                  rows="4"
-                  placeholder="Write Here"
-                  value={notes}
-                  onChange={handleNotesChange}
-                  onFocus={handleNotesFocus}
-                  onBlur={handleNotesBlur}
-                  ref={notesRef}
-                  style={{ height: "60px" }}
-                ></textarea>
-                {/* {validationMessage && (
-                  <div className="text-danger mb-3 ms-1 mt-2">
-                    {validationMessage}
-                  </div>
-                )} */}
-              </div>
-              <ul className="hints ">
-                <li className="  gray-text">
-                  &bull; Make mutton thali a bit less spicy
-                </li>
-                <li className="gray-text">
-                  &bull; Make my panipuri more spicy
-                </li>
-              </ul>
-            </ul>
-
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (
-               cartItems.map((item, index) => (
+                cartItems.map((item, index) => (
                   <>
                     <Link
                       to={`/user_app/ProductDetails/${item.menu_id}`}
                       state={{ menu_cat_id: item.menu_cat_id }}
-                     
                     >
                       <div className="card rounded-3 my-1">
                         <div className="card-body py-2 rounded-3 px-0">
@@ -1026,23 +648,22 @@ const Checkout = () => {
               </div>
             </div>
             <div className="text-center">
-              <Link
-                to="#"
-                className="btn btn-success rounded-pill     text-white"
-              
-              >
-                Place Order
-                <span className="small-number gray-text ps-1">
-                  ({orderCount} Items)
-                </span>
-              </Link>
-            </div>
+          <button
+            onClick={handlePlaceOrder}
+            className="btn btn-success rounded-pill text-white"
+          >
+            Place Order
+            <span className="small-number gray-text ps-1">
+              ({cartItems.length} Items)
+            </span>
+          </button>
+        </div>
             <div className="d-flex align-items-center justify-content-center mt-3">
               <Link
                 to="/user_app/Menu"
                 className="btn btn-outline-primary  rounded-pill  px-3"
               >
-               <i className="ri-add-circle-line me-1 fs-4"></i> Order More 
+                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
               </Link>
             </div>
           </div>

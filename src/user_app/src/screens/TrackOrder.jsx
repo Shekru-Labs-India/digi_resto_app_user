@@ -1859,7 +1859,7 @@ const TrackOrder = () => {
               )}
 
               {/* Submit Order button */}
-              {!isCompleted && pendingItems.length > 0 && (
+              {/* {!isCompleted && pendingItems.length > 0 && (
                 <div className="d-flex justify-content-center my-3">
                   {orderStatus === "placed" ? (
                     <button
@@ -1877,7 +1877,7 @@ const TrackOrder = () => {
                     </button>
                   ) : null}
                 </div>
-              )}
+              )} */}
 
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
