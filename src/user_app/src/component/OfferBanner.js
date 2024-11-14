@@ -458,109 +458,104 @@ const OfferBanner = () => {
         </div>
       ) : (
         <> */}
-          <div className="swiper featured-swiper mt-0">
-            <div className="m-0">
-              <HotelNameAndTable
-                restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || "1"}
-              />
-            </div>
-            <div className="swiper-wrapper">
-              {menuLists.map((menu) => (
-                <div key={menu.menu_id} className="swiper-slide">
-                  <Link
-                    to={`/user_app/ProductDetails/${menu.menu_id}`}
-                    state={{ menu_cat_id: menu.menu_cat_id }}
-                    
-                  >
-                    <div className="cart-list  style-2-custom">
-                      <div className="dz-media media-100 rounded-start-3 rounded-end-0">
-                        <img
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "fill",
-                            aspectRatio: "1/1",
-                          
-                          }}
-                          src={menu.image || images} // Use default image if menu.image is null
-                          alt={menu.name}
-                          loading="lazy" 
-                          onError={(e) => {
-                            e.target.src = images; // Set local image source on error
-                          }}
-                         
-                        />
-                        <div
-                          className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "border-success"
-                              : "border-danger"
-                          }`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            left: "3px",
-                            height: "20px",
-                            width: "20px",
-                            borderWidth: "2px",
-                            borderRadius: "3px",
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.menu_veg_nonveg.toLowerCase() === "veg"
-                                ? "ri-checkbox-blank-circle-fill text-success"
-                                : "ri-checkbox-blank-circle-fill text-danger"
-                            } font_size_12`}
-                          ></i>
-                        </div>
-                        <div
-                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            right: "3px",
-                            height: "20px",
-                            width: "20px",
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.is_favourite
-                                ? "ri-heart-3-fill text-danger"
-                                : "ri-heart-3-line"
-                            } fs-6`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleLikeClick(menu.menu_id);
-                            }}
-                          ></i>
-                        </div>
-                        {menu.offer !== 0 && (
-                          <div
-                            className="gradient_bg d-flex justify-content-center align-items-center"
-                            style={{
-                              position: "absolute",
-                              top: "0px",
-                              left: "0px",
-                              height: "15px",
-                              width: "60px",
-                              borderRadius: "0px 0px 7px 0px",
-                            }}
-                          >
-
-                              <span className="font_size_10 text-white">
-                              <i className="ri-percent-line me-1 "></i>
-                                {menu.offer}% Off
-                              </span>
-                          
-                          </div>
-                        )}
+      <div className="swiper featured-swiper mt-0">
+        <div className="m-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
+        </div>
+        <div className="swiper-wrapper">
+          {menuLists.map((menu) => (
+            <div key={menu.menu_id} className="swiper-slide">
+              <Link
+                to={`/user_app/ProductDetails/${menu.menu_id}`}
+                state={{ menu_cat_id: menu.menu_cat_id }}
+              >
+                <div className="cart-list bg-white p-0 rounded-4">
+                  <div className="dz-media media-100">
+                    <img
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "fill",
+                        aspectRatio: "1/1",
+                      }}
+                      src={menu.image || images} // Use default image if menu.image is null
+                      alt={menu.name}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = images; // Set local image source on error
+                      }}
+                    />
+                    <div
+                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          ? "border-success"
+                          : "border-danger"
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
+                      <i
+                        className={`${
+                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                            ? "ri-checkbox-blank-circle-fill text-success"
+                            : "ri-checkbox-blank-circle-fill text-danger"
+                        } font_size_12`}
+                      ></i>
+                    </div>
+                    <div
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        right: "3px",
+                        height: "20px",
+                        width: "20px",
+                      }}
+                    >
+                      <i
+                        className={`${
+                          menu.is_favourite
+                            ? "ri-heart-3-fill text-danger"
+                            : "ri-heart-3-line"
+                        } fs-6`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleLikeClick(menu.menu_id);
+                        }}
+                      ></i>
+                    </div>
+                    {menu.offer !== 0 && (
+                      <div
+                        className="gradient_bg d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                          height: "15px",
+                          width: "60px",
+                          borderRadius: "0px 0px 7px 0px",
+                        }}
+                      >
+                        <span className="font_size_10 text-white">
+                          <i className="ri-percent-line me-1 "></i>
+                          {menu.offer}% Off
+                        </span>
                       </div>
-                      <div className="dz-content d-block">
-                        {/* <div className="category-text">
+                    )}
+                  </div>
+                  <div className="dz-content d-block">
+                    {/* <div className="category-text">
                           <div className="row mt-1">
                             <div className="col-8 text-success font_size_10">
                               <i className="ri-restaurant-line pe-1"></i>
@@ -574,90 +569,95 @@ const OfferBanner = () => {
                             </div>
                           </div>
                         </div> */}
-                        <div className="category-text">
-  <div className="d-flex justify-content-between align-items-center mt-1">
-    <div className="text-success font_size_10 d-flex align-items-center">
-      <i className="ri-restaurant-line pe-1"></i>
-      {menu.category_name}
-    </div>
-    <div className="text-end font_size_10 fw-normal gray-text me-1">
-      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      {menu.rating}
-    </div>
-  </div>
-</div>
-
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {menu.name}
-                        </span>
-                        <div className="mt-2">
-                          <div className="row">
-                            <div className="col-6">
-                              <div className="">
-                                {renderSpiceIcons(menu.spicy_index)}
-                              </div>
-                            </div>
-                          </div>
+                    <div className="category-text">
+                      <div className="d-flex justify-content-between align-items-center mt-1">
+                        <div className="text-success font_size_10 d-flex align-items-center">
+                          <i className="ri-restaurant-line pe-1"></i>
+                          {menu.category_name}
                         </div>
-                        <div className="row ">
-                          <div className="col-6 pe-0 mt-1 mb-1">
-                            <span className="me-2 text-info font_size_14 fw-semibold">
-                              ₹{menu.price}
-                            </span>
-                            {menu.oldPrice && (
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice}
-                              </span>
-                            )}
-                          </div>
-                          <div className="d-flex justify-content-end col-6">
-                            {userData ? (
-                              <div
-                                
-                                onClick={(e) => handleCartIconClick(e, menu)}
-                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                              >
-                                <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
-                              </div>
-                            ) : (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  showLoginPopup();
-                                }}
-                              >
-                                <i className="ri-shopping-cart-2-line fs-6"></i>
-                              </div>
-                            )}
+                        <div className="text-end font_size_10 fw-normal gray-text me-1">
+                          <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                          {menu.rating}
+                        </div>
+                      </div>
+                    </div>
+
+                    <span className="font_size_14 fw-medium text-wrap">
+                      {menu.name}
+                    </span>
+                    <div className="mt-2">
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="">
+                            {renderSpiceIcons(menu.spicy_index)}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </Link>
+                    <div className="row ">
+                      <div className="col-6 pe-0 mt-1 mb-1">
+                        <span className="me-2 text-info font_size_14 fw-semibold">
+                          ₹{menu.price}
+                        </span>
+                        {menu.oldPrice && (
+                          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                            ₹{menu.oldPrice}
+                          </span>
+                        )}
+                      </div>
+                      <div className="d-flex justify-content-end col-6">
+                        {userData ? (
+                          <div
+                            onClick={(e) => handleCartIconClick(e, menu)}
+                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                            style={{
+                              border: "1px solid gray",
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: "25px",
+                              height: "25px",
+                            }}
+                          >
+                            <i
+                              className={`ri-shopping-cart-${
+                                isMenuItemInCart(menu.menu_id)
+                                  ? "fill text-black"
+                                  : "line"
+                              } fs-6`}
+                            ></i>
+                          </div>
+                        ) : (
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                            style={{
+                              border: "1px solid gray",
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: "25px",
+                              height: "25px",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              showLoginPopup();
+                            }}
+                          >
+                            <i className="ri-shopping-cart-2-line fs-6"></i>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </Link>
             </div>
-          </div>
-        {/* </>
+          ))}
+        </div>
+      </div>
+      {/* </>
       )} */}
 
       {showModal && (

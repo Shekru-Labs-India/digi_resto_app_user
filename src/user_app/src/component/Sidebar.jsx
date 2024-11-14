@@ -309,31 +309,28 @@ export const SidebarToggler = () => {
               to="/"
               className="d-flex align-items-center justify-content-center"
             >
-              <img
-                src={logo}
-                alt="logo"
-                className="me-2"
-                width="40"
-                height="40"
-              />
-              <span className="text-dark mb-0 fw-bolder font_size_18">
+              <img src={logo} alt="logo" width="40" height="40" />
+              <span className="text-dark mb-0 fw-semibold font_size_18">
                 MenuMitra
               </span>
             </Link>
           </div>
 
-          <div className="text-center text-md-center mt-2 gray-text mb-5">
-            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+          <div className="text-center text-md-center mt-2 gray-text font_size_12">
+            <i className="ri-flashlight-fill "></i> Powered by <br />
+          </div>
+          <div className="text-center mb-5">
             <a
               className="gray-text"
               href="https://www.shekruweb.com"
               target="_blank"
+              rel="noopener noreferrer"
               style={{ color: "#0d775e" }}
             >
               Shekru Labs India Pvt. Ltd.
             </a>
-            {/* <div className="">v1.1</div> */}
           </div>
+          {/* <div className="">v1.1</div> */}
         </div>
       </div>
     </>

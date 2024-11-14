@@ -335,11 +335,11 @@ button{
 }
 
 
-.style-2-custom{
+/* .style-2-custom{
 background-color: var(--bg-white);
       border-radius: var(--bs-border-radius-lg);
       padding: 0px;
-}
+} */
 
 
 @keyframes shake {

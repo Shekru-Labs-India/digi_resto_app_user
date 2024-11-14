@@ -370,7 +370,7 @@ const Cart = () => {
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
-                        className="img-fluid rounded-start-3 "
+                        className="img-fluid rounded-4 "
                         style={{
                           width: "100%",
                           height: "100%",
@@ -415,7 +415,7 @@ const Cart = () => {
                             left: "1px",
                             height: "15px",
                             width: "60px",
-                            borderRadius: "7px 0px 7px 0px",
+                            borderRadius: "17px 0px 7px 0px",
                           }}
                         >
                           

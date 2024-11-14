@@ -603,7 +603,7 @@ const Product = () => {
                             left: "0px",
                             height: "15px",
                             width: "60px",
-                            borderRadius: "0px 0px 7px 0px",
+                            borderRadius: "17px 0px 7px 0px",
                           }}
                         >
                           

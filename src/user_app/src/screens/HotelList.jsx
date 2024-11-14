@@ -68,13 +68,13 @@ const HotelList = () => {
                           <div className="col-10 d-flex align-items-center">
                             <span className="gray-text font_size_12">
                               {hotel.address
-                                .split(' ')
+                                .split(" ")
                                 .map(
                                   (word) =>
                                     word.charAt(0).toUpperCase() +
                                     word.slice(1).toLowerCase()
                                 )
-                                .join(' ')}
+                                .join(" ")}
                             </span>
                           </div>
                         </div>
@@ -149,10 +149,11 @@ const HotelList = () => {
                 href="https://www.shekruweb.com"
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ color: "#0d775e" }}
               >
                 Shekru Labs India Pvt. Ltd.
               </a>
-              <div className="">v1.1</div>
+              {/* <div className="">v1.1</div> */}
             </div>
           </div>
         </div>

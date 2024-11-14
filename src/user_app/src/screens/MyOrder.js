@@ -1506,7 +1506,7 @@ const OrderCard = ({
               {!completedTimers.has(order.order_id) &&
                 localStorage.getItem(`timer_${order.order_id}`) && (
                   <button
-                    className="btn btn-sm btn-danger rounded-pill px-4"
+                    className="btn btn-sm btn-outline-danger rounded-pill px-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCancelClick();
