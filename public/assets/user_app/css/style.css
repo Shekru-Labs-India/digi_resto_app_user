@@ -30859,7 +30859,7 @@ hr.dotted {
         position: relative;
         color: var(--title);
         text-align: center;
-        font-size: 18px; }
+         }
         .menubar-area .toolbar-inner .nav-link svg,
         .menubar-area .toolbar-inner .menu-toggler svg {
           width: 24px;
@@ -30895,12 +30895,12 @@ hr.dotted {
           font-weight: 500;
           font-size: 12px; }
     .menubar-area .menubar-nav .nav-link {
-      padding: 12px 18px;
-      color: rgba(0, 0, 0, 0.7);
+      padding: 8px 12px;
+     
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px; }
+      gap: 5px; }
       .menubar-area .menubar-nav .nav-link .name {
         font-weight: 400;
         display: none;

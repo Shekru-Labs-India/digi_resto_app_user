@@ -446,7 +446,7 @@ const Wishlist = () => {
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
-                            <div className="custom-card rounded-3 ">
+                            <div className="custom-card rounded-4 ">
                               <Link
                                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                                 state={{
@@ -757,7 +757,7 @@ const Wishlist = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control fs-6 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}

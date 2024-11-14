@@ -538,8 +538,8 @@ const Checkout = () => {
                       to={`/user_app/ProductDetails/${item.menu_id}`}
                       state={{ menu_cat_id: item.menu_cat_id }}
                     >
-                      <div className="card rounded-3 my-1">
-                        <div className="card-body py-2 rounded-3 px-0">
+                      <div className="card rounded-4 my-1">
+                        <div className="card-body py-2 rounded-4 px-0">
                           <div className="row" key={index}>
                             <div className="row">
                               <div className="col-7 pe-0 ">
@@ -585,7 +585,7 @@ const Checkout = () => {
                 <div className="   ">No items in the cart.</div>
               )}
             </div>
-            <div className="card mx-auto rounded-3 mt-2">
+            <div className="card mx-auto rounded-4 mt-2">
               <div className="row px-2 py-1">
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1">

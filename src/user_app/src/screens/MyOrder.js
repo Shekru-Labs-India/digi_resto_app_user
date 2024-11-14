@@ -1435,7 +1435,7 @@ const OrderCard = ({
 
   
   return (
-    <div className="custom-card my-2 rounded-3 shadow-sm">
+    <div className="custom-card my-2 rounded-4 shadow-sm">
       <div className="card-body py-2"  onClick={() => handleOrderClick(order.order_number)}>
         <div className="row align-items-center">
           <div className="col-4">
@@ -1721,7 +1721,7 @@ const renderOrders = () => {
               <>
                 {activeOrders.map((order) => (
                   <div
-                    className="custom-card my-2 rounded-3 shadow-sm"
+                    className="custom-card my-2 rounded-4 shadow-sm"
                     key={order.order_number}
                   >
                     <div

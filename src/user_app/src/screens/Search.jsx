@@ -466,7 +466,7 @@ const Search = () => {
         </div>
 
         <div className="container pt-0">
-          <div className="input-group w-100 my-2 border border-muted rounded-3">
+          <div className="input-group w-100 my-2 border border-muted rounded-4">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 text-primary"></i>
             </span>
@@ -506,7 +506,7 @@ const Search = () => {
           {searchedMenu.map((menu) => (
         <div key={menu.menu_id} className="col-12">
           <div
-            className="card mb-3 rounded-3"
+            className="card mb-3 rounded-4"
             onClick={() => handleMenuClick(menu.menu_id)}
             style={{ cursor: "pointer" }}
           >
@@ -737,7 +737,7 @@ const Search = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control fs-6 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}

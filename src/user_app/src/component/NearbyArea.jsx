@@ -358,7 +358,7 @@ const NearbyArea = () => {
                   }}
                 >
                   <div className="cart-list style-2-custom">
-                    <div className="dz-media media-100 rounded-start-3 rounded-end-0">
+                    <div className="dz-media media-100 rounded-4">
                       <img
                         src={menuItem.image || images}
                         style={{

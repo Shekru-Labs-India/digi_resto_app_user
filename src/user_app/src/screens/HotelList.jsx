@@ -35,7 +35,7 @@ const HotelList = () => {
         <div className="container py-1 px-0">
           <div className="d-flex justify-content-center"></div>
           {hotels.map((hotel) => (
-            <div className="card rounded-3" key={hotel.restaurant_id}>
+            <div className="card rounded-4" key={hotel.restaurant_id}>
               {hotel.code ? (
                 <Link to={`/user_app/${hotel.code}`}>
                   <div className="card-body py-0">

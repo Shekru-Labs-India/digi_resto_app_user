@@ -50,7 +50,7 @@ const AllOrderList = () => {
           {data && data.st === 1 && data.lists && data.lists.ongoing && (
             <div className="container">
               {data.lists.ongoing.map((order) => (
-                <div className="card rounded-3" key={order.order_number}>
+                <div className="card rounded-4" key={order.order_number}>
                   <div className="card-body py-0">
                     <div className="row text-start">
                       <div className="col-12">

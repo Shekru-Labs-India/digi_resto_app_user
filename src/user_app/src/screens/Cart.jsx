@@ -364,7 +364,7 @@ const Cart = () => {
                 }}
                 className="text-decoration-none text-reset"
               >
-                <div className="card mb-3 rounded-3">
+                <div className="card mb-3 rounded-4">
                   <div className="row my-auto ps-3">
                     <div className="col-3 px-0 position-relative">
                       <img
@@ -573,7 +573,7 @@ const Cart = () => {
             >
               <div className="container">
                 <div className="">
-                  <div className="card mx-auto rounded-3">
+                  <div className="card mx-auto rounded-4">
                     <div className="row px-1 py-1">
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1">

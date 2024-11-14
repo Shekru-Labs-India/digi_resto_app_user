@@ -512,7 +512,7 @@ const Product = () => {
           <div className="row g-3 grid-style-1 pb-5">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
-                <div className="card-item style-6 rounded-3">
+                <div className="card-item style-6 rounded-4">
                   <Link
                     to={`/user_app/ProductDetails/${menuItem.menu_id}`}
                     state={{
@@ -786,7 +786,7 @@ const Product = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control fs-6 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}

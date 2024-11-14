@@ -1278,7 +1278,7 @@ const TrackOrder = () => {
             <span className="gray-text font_size_14">{order_details.date}</span>
           </div>
 
-          <div className="card rounded-3">
+          <div className="card rounded-4">
             <div className="card-body p-2">
               <div className="row align-items-center mb-0">
                 <div className="col-4">
@@ -1344,7 +1344,7 @@ const TrackOrder = () => {
             {!loading && orderStatus && (
               <>
                 {orderStatus === "completed" ? (
-                  <div className="card-body text-center bg-success rounded-3 text-white">
+                  <div className="card-body text-center bg-success rounded-4 text-white">
                     <span className="fs-6 fw-medium h-100">
                       Your delicious order has been served
                     </span>
@@ -1352,14 +1352,14 @@ const TrackOrder = () => {
                 ) : ["canceled", "cancelled", "cancle"].includes(
                     orderStatus
                   ) ? (
-                  <div className="card-body text-center bg-danger rounded-3 text-white">
+                  <div className="card-body text-center bg-danger rounded-4 text-white">
                     <span className="fs-6 fw-medium h-100">
                       This order has been cancelled
                     </span>
                   </div>
                 ) : orderStatus === "placed" ? (
                   <div className="card-body p-0">
-                    <div className="card rounded-3">
+                    <div className="card rounded-4">
                       <div className="row py-2 my-0 ps-2 pe-0 h-100">
                         <div className="col-3 d-flex align-items-center justify-content-center pe-2">
                           <OrderGif />
@@ -1379,7 +1379,7 @@ const TrackOrder = () => {
                   </div>
                 ) : orderStatus === "ongoing" ? (
                   <div className="card-body p-0">
-                    <div className="card rounded-3">
+                    <div className="card rounded-4">
                       <div className="row py-2 my-0 ps-2 pe-0 h-100">
                         <div className="col-3 d-flex align-items-center justify-content-center pe-2">
                           <OrderGif />
@@ -1414,7 +1414,7 @@ const TrackOrder = () => {
               orderStatus !== "cancelled" &&
               orderStatus !== "cancle" && (
                 <div className="container py-0">
-                  <div className="input-group w-100 my-2 border border-muted rounded-3">
+                  <div className="input-group w-100 my-2 border border-muted rounded-4">
                     <span className="input-group-text py-0">
                       <i className="ri-search-line fs-3 gray-text"></i>
                     </span>
@@ -1456,7 +1456,7 @@ const TrackOrder = () => {
                       .map((menu) => (
                         <div key={menu.menu_id} className="col-12">
                           <div
-                            className="card mb-3 rounded-3"
+                            className="card mb-3 rounded-4"
                             onClick={() => handleMenuItemClick(menu)}
                           >
                             <div className="card-body py-0">
@@ -1709,7 +1709,7 @@ const TrackOrder = () => {
                   {pendingItems.map((menu) => (
                     <div key={menu.menu_id} className="col-12 mt-2">
                       <div
-                        className="card my-2 rounded-3"
+                        className="card my-2 rounded-4"
                         onClick={() => handleMenuItemClick(menu)}
                         style={{ cursor: "pointer" }}
                       >
@@ -1892,7 +1892,7 @@ const TrackOrder = () => {
                 {menu_details.map((menu) => (
                   <div key={menu.menu_id} className="col-12">
                     <div
-                      className="card mb-3 rounded-3"
+                      className="card mb-3 rounded-4"
                       onClick={() => handleMenuItemClick(menu)}
                     >
                       <div className="card-body py-0">
@@ -2100,7 +2100,7 @@ const TrackOrder = () => {
         {customerId && orderDetails && (
           <div className="container mb-4 pt-0 z-3">
             <div className="card mt-2 p-0 mb-3 ">
-              <div className="card-body mx-auto rounded-3 p-0">
+              <div className="card-body mx-auto rounded-4 p-0">
                 <div className="row p-1">
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1">

@@ -1017,7 +1017,7 @@ const MenuDetails = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control fs-6 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}

@@ -492,7 +492,7 @@ const ProductCard = ({ isVegOnly }) => {
         {filteredMenuList.length > 0 ? (
           filteredMenuList.map((menu) => (
             <div key={menu.menu_id} className="col-6">
-              <div className="card-item style-6 style-6-1 rounded-3">
+              <div className="card-item style-6 style-6-1 rounded-4">
                 <Link
                   to={`/user_app/ProductDetails/${menu.menu_id}`}
                   state={{ menu_cat_id: menu.menu_cat_id }}
@@ -703,7 +703,7 @@ const ProductCard = ({ isVegOnly }) => {
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control fs-6 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}
