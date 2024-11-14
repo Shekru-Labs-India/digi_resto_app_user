@@ -44,10 +44,10 @@ const Header = () => {
               </Link>
               <Link
                 to="/"
-                className="text-dark ms-5"
+                className="text-dark ms-2"
                 style={{ fontWeight: "bold" }}
               >
-                Menumitra
+                MenuMitra
               </Link>
             </div>
             <button

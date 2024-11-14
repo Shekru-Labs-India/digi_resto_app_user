@@ -84,6 +84,9 @@ const Sidebar = () => {
                     <li>
                       <Link to="/pricing">Pricing</Link>
                     </li>
+                    <li>
+                      <Link to="/user_app">User App</Link>
+                    </li>
                   </ul>
                 </div>
                 <div className="sidebar-modal-widget">
