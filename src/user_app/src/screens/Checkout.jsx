@@ -32,16 +32,14 @@ const Checkout = () => {
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
   const [gstPercent, setGstPercent] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
-  const [notes, setNotes] = useState("");
-  const [validationMessage, setValidationMessage] = useState("");
+ 
+ 
   const [orderCount, setOrderCount] = useState(0);
-  const [showOngoingOrderPopup, setShowOngoingOrderPopup] = useState(false);
-  const [ongoingOrderId, setOngoingOrderId] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
+ 
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [cartId, setCartId] = useState(null);
+  const [newOrderNumber, setNewOrderNumber] = useState(null);
   const [existingOrderDetails, setExistingOrderDetails] = useState({
     orderNumber: "",
     orderStatus: "",
@@ -51,13 +49,6 @@ const Checkout = () => {
     return localStorage.getItem("isDarkMode") === "true";
   }); // State for theme
 
- 
-
-
-  
-
- 
-
   const userData = JSON.parse(localStorage.getItem("userData"));
 
   const tableNumber = userData ? userData.tableNumber : null; // Retrieve table_number
@@ -66,7 +57,6 @@ const Checkout = () => {
     () => localStorage.getItem("restaurantCode") || ""
   );
 
- 
   const getCartId = () => {
     const cartId = localStorage.getItem("cartId");
 
@@ -167,16 +157,6 @@ const Checkout = () => {
     fetchCartDetails();
   }, [restaurantId, customerId]);
 
-  
-
-  
-
- 
-
-  
-
- 
-
   useEffect(() => {
     // Apply the theme class based on the current state
     if (isDarkMode) {
@@ -184,14 +164,12 @@ const Checkout = () => {
     } else {
       document.body.classList.remove("theme-dark");
     }
-  }, [isDarkMode]); 
-
-
+  }, [isDarkMode]);
 
   const handlePlaceOrder = async () => {
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/check_order_exist",
+        `${config.apiDomain}/user_api/check_order_exist`,
         {
           method: "POST",
           headers: {
@@ -203,15 +181,18 @@ const Checkout = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         if (data.st === 1) {
           if (data.order_number === null && data.order_status === null) {
             // Show the modal for creating a new order
             setShowNewOrderModal(true);
-          } else if (data.order_status === "ongoing" || data.order_status === "placed") {
+          } else if (
+            data.order_status === "ongoing" ||
+            data.order_status === "placed"
+          ) {
             // Store the order details, including order_id
             setExistingOrderDetails({
               orderNumber: data.order_number,
@@ -243,9 +224,6 @@ const Checkout = () => {
       });
     }
   };
-  
-  
-  
 
   const handleCreateOrder = async () => {
     if (!cartId || !customerId || !restaurantId) {
@@ -257,28 +235,26 @@ const Checkout = () => {
       });
       return;
     }
-  
+
     try {
-      const response = await fetch("https://men4u.xyz/user_api/create_order", {
+      const response = await fetch(`${config.apiDomain}/user_api/create_order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           cart_id: cartId,
-          customer_id: customerId,          
+          customer_id: customerId,
           restaurant_id: restaurantId,
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok && data.st === 1) {
-       
         clearCartData();
         setShowNewOrderModal(false);
         navigate(`/user_app/TrackOrder/${data.order_number}`);
-        
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
@@ -291,7 +267,7 @@ const Checkout = () => {
       });
     }
   };
-  
+
   const clearCartData = () => {
     clearCart(); // Clear cart context
     localStorage.removeItem("cartItems"); // Clear cart items from localStorage
@@ -299,9 +275,13 @@ const Checkout = () => {
     setCartItems([]); // Clear cart items state if you're using it
   };
 
-
   const handleOrderAction = async (orderStatus) => {
-    if (!cartId || !customerId || !restaurantId || !existingOrderDetails.orderNumber) {
+    if (
+      !cartId ||
+      !customerId ||
+      !restaurantId ||
+      !existingOrderDetails.orderNumber
+    ) {
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -310,10 +290,10 @@ const Checkout = () => {
       });
       return;
     }
-  
+
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/complete_or_cancle_existing_order_create_new_order",
+        `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
           method: "POST",
           headers: {
@@ -328,14 +308,20 @@ const Checkout = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (response.ok && data.st === 1) {
+        // Store the new order number from the API response
+        const newOrderNumber = data.data.new_order_number;
+
         // Show success popup
         setShowPopup(true);
         setShowExistingOrderModal(false);
         clearCartData();
+
+        // Store the new order number in state or localStorage for navigation
+        setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
       } else {
         throw new Error(data.msg || "Failed to update order");
       }
@@ -348,7 +334,6 @@ const Checkout = () => {
       });
     }
   };
-  
 
   const handleAddToExistingOrder = async () => {
     try {
@@ -358,24 +343,27 @@ const Checkout = () => {
         quantity: item.quantity,
         half_or_full: item.half_or_full || "full",
       }));
-  
+
       // Make the API call
-      const response = await fetch("https://men4u.xyz/user_api/add_to_existing_order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
-          customer_id: customerId,
-          restaurant_id: restaurantId,
-          cart_id: cartId,
-          order_items: orderItems,
-        }),
-      });
-  
+      const response = await fetch(
+        `${config.apiDomain}/user_api/add_to_existing_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            cart_id: cartId,
+            order_items: orderItems,
+          }),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (response.ok && data.st === 1) {
         toast.current.show({
           severity: "success",
@@ -384,26 +372,34 @@ const Checkout = () => {
           life: 3000,
         });
         setShowPopup(true);
-      
+
         clearCartData();
         setShowExistingOrderModal(false); // Close the modal
       } else {
-        throw new Error(data.msg || "Failed to add items to the existing order");
+        throw new Error(
+          data.msg || "Failed to add items to the existing order"
+        );
       }
     } catch (error) {
       toast.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.message || "Failed to add items to the existing order. Please try again.",
+        detail:
+          error.message ||
+          "Failed to add items to the existing order. Please try again.",
         life: 3000,
       });
     }
   };
-  
-  
+
   const closePopup = () => {
     setShowPopup(false);
-    navigate(`/user_app/TrackOrder/${existingOrderDetails.orderNumber}`);
+
+    const orderNumber = newOrderNumber
+      ? newOrderNumber
+      : existingOrderDetails.orderNumber;
+
+    navigate(`/user_app/TrackOrder/${orderNumber}`);
   };
   return (
     <div className="page-wrapper full-height">
@@ -419,114 +415,120 @@ const Checkout = () => {
         </div>
 
         {showExistingOrderModal && (
-  <div className="popup-overlay">
-    <div className="popup-content rounded-4">
-      <div className="p-3 border-bottom">
-        <div className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0 fw-semibold text-muted">Existing Order Found</h5>
-          <button
-            className="btn p-0 fs-3 text-muted"
-            onClick={() => setShowExistingOrderModal(false)}
-          >
-            <i className="ri-close-line text-muted"></i>
-          </button>
-        </div>
-      </div>
+          <div className="popup-overlay">
+            <div className="popup-content rounded-4">
+              <div className="p-3 border-bottom">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0 fw-semibold text-muted">
+                    Existing Order Found
+                  </h5>
+                  <button
+                    className="btn p-0 fs-3 text-muted"
+                    onClick={() => setShowExistingOrderModal(false)}
+                  >
+                    <i className="ri-close-line text-muted"></i>
+                  </button>
+                </div>
+              </div>
 
-      <div className="p-3">
-        <p className="text-center mb-4 text-muted">
-          You have an ongoing order (#{existingOrderDetails.orderNumber}). Would you like to add to this order or create a new one?
-        </p>
+              <div className="p-3">
+                <p className="text-center mb-4 text-muted">
+                  You have an ongoing order (#{existingOrderDetails.orderNumber}
+                  ). Would you like to add to this order or create a new one?
+                </p>
 
-        <div className="d-flex flex-column gap-2">
-          <button
-            className="btn btn-danger rounded-pill w-100 py-2"
-            onClick={() => handleOrderAction("canceled")}
-          >
-            Cancel Existing & Create New Order
-          </button>
-          <button
-            className="btn btn-success rounded-pill w-100 py-2"
-            onClick={() => handleOrderAction("completed")}
-          >
-            Complete Existing & Create New Order
-          </button>
-          <button
-            className="btn btn-info rounded-pill w-100 py-2"
-            onClick={handleAddToExistingOrder}
-          >
-            Add to Existing Order
-          </button>
-          <button
-            className="btn btn-outline-secondary rounded-pill w-100 py-2"
-            onClick={() => setShowExistingOrderModal(false)}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+                <div className="d-flex flex-column gap-2">
+                  <button
+                    className="btn btn-danger rounded-pill w-100 py-2"
+                    onClick={() => handleOrderAction("cancel")}
+                  >
+                    Cancel Existing & Create New Order
+                  </button>
+                  <button
+                    className="btn btn-success rounded-pill w-100 py-2"
+                    onClick={() => handleOrderAction("completed")}
+                  >
+                    Complete Existing & Create New Order
+                  </button>
+                  <button
+                    className="btn btn-info rounded-pill w-100 py-2"
+                    onClick={handleAddToExistingOrder}
+                  >
+                    Add to Existing Order
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary rounded-pill w-100 py-2"
+                    onClick={() => setShowExistingOrderModal(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-{showPopup && (
-  <div className="popup-overlay">
-    <div className="popup-content rounded-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Success</h3>
-        <button className="btn-close" onClick={() => setShowPopup(false)}></button>
-      </div>
-      <div className="circle">
-        <img src={OrderGif} alt="Order Success" className="popup-gif" />
-      </div>
-      <span className="text-dark my-3 d-block text-center">
-        Order placed successfully
-      </span>
-      <p className="text-muted text-center mb-4">
-        You have successfully made payment and placed your order.
-      </p>
-      <button
-        className="btn btn-success rounded-pill text-white w-100"
-        onClick={closePopup}
-      >
-        View Order
-      </button>
-    </div>
-  </div>
-)}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-content rounded-4">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="mb-0">Success</h3>
+                <button
+                  className="btn-close"
+                  onClick={() => setShowPopup(false)}
+                ></button>
+              </div>
+              <div className="circle">
+                <img src={OrderGif} alt="Order Success" className="popup-gif" />
+              </div>
+              <span className="text-dark my-3 d-block text-center">
+                Order placed successfully
+              </span>
+              <p className="text-muted text-center mb-4">
+                You have successfully made payment and placed your order.
+              </p>
+              <button
+                className="btn btn-success rounded-pill text-white w-100"
+                onClick={closePopup}
+              >
+                View Order
+              </button>
+            </div>
+          </div>
+        )}
 
+        {showNewOrderModal && (
+          <div className="popup-overlay">
+            <div className="popup-content rounded-4">
+              <div className="p-3 border-bottom">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0 fw-semibold text-muted">
+                    Create New Order
+                  </h5>
+                  <button
+                    className="btn p-0 fs-3 text-muted"
+                    onClick={() => setShowNewOrderModal(false)}
+                  >
+                    <i className="ri-close-line text-muted"></i>
+                  </button>
+                </div>
+              </div>
 
-       {/* New Order Modal */}
-{showNewOrderModal && (
-  <div className="popup-overlay">
-    <div className="popup-content rounded-4">
-      <div className="p-3 border-bottom">
-        <div className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0 fw-semibold text-muted">Create New Order</h5>
-          <button
-            className="btn p-0 fs-3 text-muted"
-            onClick={() => setShowNewOrderModal(false)}
-          >
-            <i className="ri-close-line text-muted"></i>
-          </button>
-        </div>
-      </div>
+              <div className="p-3">
+                <p className="text-center mb-4 text-muted">
+                  No ongoing order found. Would you like to create a new order?
+                </p>
 
-      <div className="p-3">
-        <p className="text-center mb-4 text-muted">
-          No ongoing order found. Would you like to create a new order?
-        </p>
-
-        <button
-          className="btn btn-success rounded-pill w-100 py-2"
-          onClick={handleCreateOrder}
-        >
-          Create Order
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                <button
+                  className="btn btn-success rounded-pill w-100 py-2"
+                  onClick={handleCreateOrder}
+                >
+                  Create Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="m-3">
           <div className="dz-flex-box">
@@ -648,16 +650,16 @@ const Checkout = () => {
               </div>
             </div>
             <div className="text-center">
-          <button
-            onClick={handlePlaceOrder}
-            className="btn btn-success rounded-pill text-white"
-          >
-            Place Order
-            <span className="small-number gray-text ps-1">
-              ({cartItems.length} Items)
-            </span>
-          </button>
-        </div>
+              <button
+                onClick={handlePlaceOrder}
+                className="btn btn-success rounded-pill text-white"
+              >
+                Place Order
+                <span className="small-number gray-text ps-1">
+                  ({cartItems.length} Items)
+                </span>
+              </button>
+            </div>
             <div className="d-flex align-items-center justify-content-center mt-3">
               <Link
                 to="/user_app/Menu"

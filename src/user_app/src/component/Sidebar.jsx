@@ -143,7 +143,7 @@ export const SidebarToggler = () => {
                 <span className="dz-icon icon-sm">
                   <i className="ri-bowl-line fs-4"></i>
                 </span>
-                <span className="">Menu</span>
+                <span className="font_size_16 fw-medium">Menu</span>
               </div>
               {/* <div className="veg-toggle ">
                 <div
@@ -203,7 +203,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-list-check-2 fs-4"></i>
               </span>
-              <span className="   ">Category</span>
+              <span className="  font_size_16 fw-medium">Category</span>
             </Link>
           </li>
           <li>
@@ -211,7 +211,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-heart-3-line fs-4"></i>
               </span>
-              <span className="   ">Favourite</span>
+              <span className="  font_size_16  fw-medium">Favourite</span>
             </Link>
           </li>
           <li>
@@ -219,7 +219,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-drinks-2-line fs-4"></i>
               </span>
-              <span className="   ">My Orders</span>
+              <span className="  font_size_16 fw-medium ">My Orders</span>
             </Link>
           </li>
           <li>
@@ -227,7 +227,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="ri-shopping-cart-line fs-4"></i>
               </span>
-              <span className="   ">Cart</span>
+              <span className=" font_size_16  fw-medium">Cart</span>
             </Link>
           </li>
           <li>
@@ -241,7 +241,7 @@ export const SidebarToggler = () => {
                   }
                 ></i>
               </span>
-              <span className="   ">Profile</span>
+              <span className=" font_size_16 fw-medium  ">Profile</span>
             </Link>
           </li>
         </ul>
