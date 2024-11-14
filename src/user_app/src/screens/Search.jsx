@@ -455,7 +455,7 @@ const Search = () => {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <i className="ri-map-pin-user-fill me-2 gray-text"></i>
+              <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
                 {customerId && customerId.tableNumber
                   ? `Table ${customerId.tableNumber}`

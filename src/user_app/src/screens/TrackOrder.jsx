@@ -919,191 +919,60 @@ const TrackOrder = () => {
     }
   };
 
-  const handlePlacedOrderUpdate = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
+ 
 
-      const updatedOrderItems = [
-        ...menu_details.map((item) => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || "",
-        })),
-        ...pendingItems.map((item) => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || "",
-        })),
-      ];
+  // const fetchOrderStatus = async () => {
+  //   try {
+  //     // Get current customer ID from localStorage or userData
+  //     const userData = JSON.parse(localStorage.getItem("userData"));
+  //     const currentCustomerId =
+  //       userData?.customer_id || localStorage.getItem("customer_id");
 
-      // Filter out removed items
-      const filteredItems = updatedOrderItems.filter(
-        (item) =>
-          !removedItems.some(
-            (removedItem) => removedItem.menu_id.toString() === item.menu_id
-          )
-      );
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/update_placed_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: orderDetails.order_details.order_id,
-            table_number: orderDetails.order_details.table_number,
-            restaurant_id: restaurantId,
-            cart_id: cartId, // Add cart_id to request
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
-            order_items: filteredItems,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        window.showToast("success", "Order updated successfully");
-        // Refresh order details
-        fetchOrderDetails(order_number);
-        // Clear pending and removed items
-        setPendingItems([]);
-        setRemovedItems([]);
-      } else {
-        throw new Error(data.msg || "Failed to update order");
-      }
-    } catch (error) {
-     
-      window.showToast("error", error.message || "Failed to update order");
-    }
-  };
-
-  const handleOngoingOrderUpdate = async () => {
-    if (!pendingItems.length) return;
-
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType = userData?.customer_type || localStorage.getItem("customer_type");
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
-
-      if (!cartId) {
-        throw new Error("Cart ID not found");
-      }
-
-      if (!currentCustomerId) {
-        window.showToast("error", "Please login to update order");
-       
-        return;
-      }
-
-      const requestBody = {
-        order_id: orderDetails.order_details.order_id,
-        customer_id: currentCustomerId,
-        customer_type: currentCustomerType,
-        restaurant_id: restaurantId,
-        cart_id: cartId, // Add cart_id to request
-        order_items: pendingItems.map((item) => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || ""
-        }))
-      };
-
-      
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/add_to_existing_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestBody)
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        window.showToast("success", "Items added to order successfully");
-        // Refresh order details
-        fetchOrderDetails(order_number);
-        // Clear pending items
-        setPendingItems([]);
-      } else {
-        throw new Error(data.msg || "Failed to add items to order");
-      }
-    } catch (error) {
-      
-      window.showToast(
-        "error",
-        error.message || "Failed to add items to order"
-      );
-    }
-  };
-
-  const fetchOrderStatus = async () => {
-    try {
-      // Get current customer ID from localStorage or userData
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-
-      if (!currentCustomerId) {
+  //     if (!currentCustomerId) {
         
-        window.showToast("error", "Customer information not found");
-        return;
-      }
+  //       window.showToast("error", "Customer information not found");
+  //       return;
+  //     }
 
-      if (!restaurantId) {
+  //     if (!restaurantId) {
         
-        return;
-      }
+  //       return;
+  //     }
 
-      const response = await fetch(
-         `${config.apiDomain}/user_api/get_order_list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            order_status: "completed",
-            customer_id: currentCustomerId,
-            customer_type:
-              userData?.customer_type || localStorage.getItem("customer_type"),
-          }),
-        }
-      );
+  //     const response = await fetch(
+  //        `${config.apiDomain}/user_api/get_order_list`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           restaurant_id: restaurantId,
+  //           order_status: "completed",
+  //           customer_id: currentCustomerId,
+  //           customer_type:
+  //             userData?.customer_type || localStorage.getItem("customer_type"),
+  //         }),
+  //       }
+  //     );
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1 && Array.isArray(data.lists)) {
-          const isCompleted = data.lists.some(
-            (order) => order.order_number === order_number
-          );
-          setIsCompleted(isCompleted);
-        }
-      } else {
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       if (data.st === 1 && Array.isArray(data.lists)) {
+  //         const isCompleted = data.lists.some(
+  //           (order) => order.order_number === order_number
+  //         );
+  //         setIsCompleted(isCompleted);
+  //       }
+  //     } else {
        
-        window.showToast("error", "Failed to fetch order status");
-      }
-    } catch (error) {
+  //       window.showToast("error", "Failed to fetch order status");
+  //     }
+  //   } catch (error) {
       
-      window.showToast("error", "Failed to check order status");
-    }
-  };
+  //     window.showToast("error", "Failed to check order status");
+  //   }
+  // };
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
@@ -1173,7 +1042,7 @@ const TrackOrder = () => {
   useEffect(() => {
     if (order_number && restaurantId && customerId) {
       fetchOrderDetails(order_number);
-      fetchOrderStatus();
+      // fetchOrderStatus();
       // handleSubmitOrder();
     }
   }, [order_number, restaurantId, customerId]);

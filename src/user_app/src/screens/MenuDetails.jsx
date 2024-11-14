@@ -889,7 +889,7 @@ const MenuDetails = () => {
                   </div>
                   <hr />
                   <div>
-                    <span className=" text-capitalize text-wrap m-0">
+                    <span className=" text-capitalize text-wrap m-0 font_size_12">
                       {productDetails.description}
                     </span>
                   </div>
