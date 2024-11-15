@@ -488,7 +488,7 @@ const MenuDetails = () => {
             >
               {/* Main Image Container */}
               <div
-                className="border border-1 "
+                className="border border-1"
                 style={{
                   position: "relative",
                   width: "100%",
