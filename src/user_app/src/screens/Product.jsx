@@ -347,10 +347,10 @@ const Product = () => {
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
-      showLoginPopup();
-      return;
-    }
+    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    //   showLoginPopup();
+    //   return;
+    // }
 
     if (!restaurantId) {
       window.showToast("error", "Restaurant information is missing");
@@ -365,10 +365,10 @@ const Product = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
-      showLoginPopup();
-      return;
-    }
+    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    //   showLoginPopup();
+    //   return;
+    // }
 
     if (!selectedMenu) return;
 

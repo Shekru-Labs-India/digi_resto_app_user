@@ -106,18 +106,18 @@ const OfferBanner = () => {
 
   const fetchData = async () => {
     try {
-      if (!restaurantId) {
-        
-        return;
-      }
+      if (!restaurantId) return;
+
+      // Retrieve customer_id from state or localStorage
+      const currentCustomerId = customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
 
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: customerId || null,
+            customer_id: currentCustomerId,
             restaurant_id: restaurantId,
           }),
         }
@@ -146,28 +146,28 @@ const OfferBanner = () => {
     }
   };
 
+  // Load User Data and Fetch Menu Data on Initial Render
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
-      setUserData(userData);
       setCustomerId(userData.customer_id);
       setCustomerType(userData.customer_type);
     }
-    
+
     if (restaurantId) {
       fetchData();
     }
   }, [restaurantId]);
 
-  useEffect(() => {
-    const pollInterval = setInterval(() => {
-      if (restaurantId) {
-        fetchData();
-      }
-    }, 30000); // Poll every 30 seconds
+  // useEffect(() => {
+  //   const pollInterval = setInterval(() => {
+  //     if (restaurantId) {
+  //       fetchData();
+  //     }
+  //   }, 30000); // Poll every 30 seconds
 
-    return () => clearInterval(pollInterval);
-  }, [restaurantId, customerId]);
+  //   return () => clearInterval(pollInterval);
+  // }, [restaurantId, customerId]);
 
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
