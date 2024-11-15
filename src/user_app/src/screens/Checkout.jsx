@@ -244,7 +244,7 @@ const Checkout = () => {
       if (response.ok && data.st === 1) {
         clearCartData();
         setShowNewOrderModal(false);
-        navigate(`/user_app/TrackOrder/${data.order_number}`);
+        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }

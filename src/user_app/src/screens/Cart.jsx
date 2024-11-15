@@ -498,7 +498,7 @@ const Cart = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="row pb-2 pe-2">
+                      <div className="row pe-2">
                         <div className="col-8 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
                             <span className="ms-3 font_size_14 fw-semibold text-info">

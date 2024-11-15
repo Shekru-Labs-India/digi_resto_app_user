@@ -88,18 +88,18 @@ const Category = () => {
   };
 
   if (!userData.restaurantId) {
-    navigate("/user_app/Signinscreen", { 
-      state: { 
-        returnTo: "/user_app/Category" 
-      } 
-    });
+    // navigate("/user_app/Signinscreen", { 
+    //   state: { 
+    //     returnTo: "/user_app/Category" 
+    //   } 
+    // });
   }
 
-  if (userData?.customer_type === 'guest') {
-    window.showToast("info", "Please login to view categories");
-    navigate("/user_app/Signinscreen");
-    return;
-  }
+  // if (userData?.customer_type === 'guest') {
+  //   window.showToast("info", "Please login to view categories");
+  //   navigate("/user_app/Category");
+  //   return;
+  // }
 
   if (!contextRestaurantId) {
     const restaurantCode = localStorage.getItem("restaurantCode");

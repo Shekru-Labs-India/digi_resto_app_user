@@ -334,7 +334,7 @@ const NearbyArea = () => {
   };
 
   return (
-    <div className="dz-box style-2 nearby-area">
+    <div className="dz-box style-2 nearby-area pb-0">
       <div className="title-bar1 align-items-start mb-0 ">
         <div className="left">
           {menuItems.length > 0 && (
