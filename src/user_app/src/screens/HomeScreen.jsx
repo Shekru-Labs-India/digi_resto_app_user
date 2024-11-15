@@ -93,8 +93,8 @@ const HomeScreen = () => {
           >
             <div className="d-flex align-items-center">
               <Link to="/" className="d-flex align-items-center">
-                <img src={logo} alt="logo" width="30" height="30" />
-                <span className="text-dark mb-0 ms-2 fw-bolder font_size_18">
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18">
                   MenuMitra
                 </span>
               </Link>
@@ -374,7 +374,7 @@ const HomeScreen = () => {
                   width="40"
                   height="40"
                 />
-                <span className="text-dark mb-0 fw-bolder font_size_18">
+                <span className="text-dark mb-0 fw-semibold font_size_18">
                   MenuMitra
                 </span>
               </Link>

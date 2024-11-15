@@ -446,7 +446,7 @@ const Wishlist = () => {
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
                           <div className="container py-1 px-0" key={index}>
-                            <div className="custom-card rounded-4 ">
+                            <div className="custom-card rounded-4">
                               <Link
                                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                                 state={{
@@ -466,7 +466,7 @@ const Wishlist = () => {
                                       <img
                                         src={menu.image || images}
                                         alt={menu.menu_name}
-                                        className="rounded-start-3 img-fluid"
+                                        className="rounded-4 img-fluid"
                                         style={{
                                           width: "100%",
                                           height: "100%",
@@ -542,7 +542,7 @@ const Wishlist = () => {
                                             left: "0px",
                                             height: "15px",
                                             width: "60px",
-                                            borderRadius: "7px 0px 7px 0px",
+                                            borderRadius: "17px 0px 7px 0px",
                                             marginTop: "1px",
                                             marginLeft: "1px",
                                           }}

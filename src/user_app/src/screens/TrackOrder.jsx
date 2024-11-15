@@ -1334,7 +1334,7 @@ const TrackOrder = () => {
                                   <img
                                     src={menu.image || images}
                                     alt={menu.menu_name}
-                                    className="img-fluid rounded-start-3 "
+                                    className="img-fluid rounded-start-4"
                                     style={{
                                       width: "100%",
                                       height: "100%",
@@ -1405,7 +1405,7 @@ const TrackOrder = () => {
                                         left: "0px",
                                         height: "15px",
                                         width: "60px",
-                                        borderRadius: "7px 0px 7px 0px",
+                                        borderRadius: "17px 0px 7px 0px",
                                       }}
                                     >
                                       <span className="font_size_10 text-white">
@@ -1584,8 +1584,8 @@ const TrackOrder = () => {
                               <img
                                 src={menu.image || images}
                                 alt={menu.menu_name}
-                                // className="img-fluid rounded-start-3 rounded-end-0"
-                                className="img-fluid rounded-start-3 "
+                                // className="img-fluid rounded-start-4rounded-end-0"
+                                className="img-fluid rounded-start-4"
                                 style={{
                                   width: "100%",
                                   height: "100%",
@@ -1653,7 +1653,7 @@ const TrackOrder = () => {
                                     left: "0px",
                                     height: "15px",
                                     width: "60px",
-                                    borderRadius: "7px 0px 7px 0px",
+                                    borderRadius: "17px 0px 7px 0px",
                                   }}
                                 >
                                   <span className="font_size_10 text-white">
@@ -1766,7 +1766,7 @@ const TrackOrder = () => {
                             <img
                               src={menu.image || images}
                               alt={menu.menu_name}
-                              className="img-fluid rounded-start-3 "
+                              className="img-fluid rounded-start-4"
                               style={{
                                 width: "100%",
                                 height: "100%",
@@ -1837,7 +1837,7 @@ const TrackOrder = () => {
                                   left: "0px",
                                   height: "15px",
                                   width: "60px",
-                                  borderRadius: "7px 0px 7px 0px",
+                                  borderRadius: "17px 0px 7px 0px",
                                 }}
                               >
                                 <span className="font_size_10 text-white">

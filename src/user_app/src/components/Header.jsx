@@ -28,16 +28,14 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
               )}
             </div>
             <div className="col text-center">
-            <span className="    me-3 title">
+              <span className="me-3 title font_size_16">
                 {title || getScreenName()}
                 {count !== undefined && count > 0 && (
                   <span className="gray-text small-number ms-1">({count})</span>
                 )}
               </span>
             </div>
-            <div className="col-auto">
-              {showSidebar && <SidebarToggler />}
-            </div>
+            <div className="col-auto">{showSidebar && <SidebarToggler />}</div>
           </div>
         </div>
       </div>

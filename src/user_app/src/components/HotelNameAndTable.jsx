@@ -5,15 +5,15 @@ const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
   return (
     <div className="container p-0">
       <div className="d-flex justify-content-between align-items-center  my-2">
-        <div className="d-flex align-items-center">
-          <i className="ri-store-2-line me-2 fs-6"></i>
-          <span className="font_size_14 fw-medium">
+        <div className="d-flex align-items-center font_size_14 ">
+          <i className="ri-store-2-line me-2 "></i>
+          <span className="fw-medium">
             {restaurantName.toUpperCase() || "Restaurant Name"}
           </span>
         </div>
-        <div className="d-flex align-items-center">
-          <i className="ri-map-pin-user-fill me-2 gray-text font_size_12"></i>
-          <span className="fw-medium gray-text font_size_12">
+        <div className="d-flex align-items-center font_size_12">
+          <i className="ri-map-pin-user-fill me-2 gray-text"></i>
+          <span className="fw-medium   gray-text">
             {tableNumber ? `Table ${tableNumber}` : ""}
           </span>
         </div>

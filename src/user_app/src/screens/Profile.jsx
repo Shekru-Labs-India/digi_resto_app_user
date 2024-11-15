@@ -121,7 +121,7 @@ const Profile = () => {
                       to="/user_app/Menu"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-bowl-line me-2 fs-2"></i>
+                      <i className="ri-bowl-line me-2 font_size_16"></i>
                       <span className=" ">Menu</span>
                     </Link>
                   </li>
@@ -130,7 +130,7 @@ const Profile = () => {
                       to="/user_app/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-drinks-2-line me-2 fs-2"></i>
+                      <i className="ri-drinks-2-line me-2 font_size_16"></i>
                       <span className=" ">My Order</span>
                     </Link>
                   </li>
@@ -139,7 +139,7 @@ const Profile = () => {
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-shopping-cart-line me-2 fs-2"></i>
+                      <i className="ri-shopping-cart-line me-2 font_size_16"></i>
                       <span className=" ">Cart</span>
                     </Link>
                   </li>
@@ -148,7 +148,7 @@ const Profile = () => {
                       to="/user_app/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-3-line me-2 fs-2"></i>
+                      <i className="ri-heart-3-line me-2 font_size_16"></i>
                       <span className=" ">Favourite</span>
                     </Link>
                   </li>
@@ -166,9 +166,9 @@ const Profile = () => {
                     <div className="row align-items-center ms-0">
                       <div className="col-auto px-0">
                         {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
-                        <i className="ri-user-3-line fs-3"></i>
+                        <i className="ri-user-3-line fs-3 font_size_14"></i>
                       </div>
-                      <div className="col text-start px-1    ">
+                      <div className="col text-start px-1 font_size_14">
                         Edit Profile
                       </div>
                       <div className="col-auto text-end ms-auto">
@@ -185,7 +185,7 @@ const Profile = () => {
         {isLoggedIn && (
           <div className="d-flex justify-content-center align-items-center">
             <div className="" onClick={handleLogout}>
-              <i className="ri-shut-down-line fs-3"></i>
+              <i className="ri-shut-down-line font_sie_14"></i>
               <span className="ms-2">Logout</span>
             </div>
           </div>
@@ -193,8 +193,8 @@ const Profile = () => {
 
         <div className="d-flex justify-content-center align-items-center mt-2">
           <Link to="/user_app/index">
-            <i className="ri-store-2-line gray-text fs-4"></i>
-            <span className="ms-2 gray-text ">All Hotels</span>
+            <i className="ri-store-2-line gray-text font_size_14"></i>
+            <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
         <div className="mt-5">
@@ -253,21 +253,17 @@ const Profile = () => {
               to="/"
               className="d-flex align-items-center justify-content-center"
             >
-              <img
-                src={logo}
-                alt="logo"
-                className="me-2"
-                width="30"
-                height="30"
-              />
-              <span className="text-dark mb-0 fw-bolder font_size_18">
+              <img src={logo} alt="logo" width="40" height="40" />
+              <span className="text-dark mb-0 fw-semibold font_size_18">
                 MenuMitra
               </span>
             </Link>
           </div>
 
-          <div className="text-center text-md-center mt-2 gray-text">
-            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+          <div className="text-center text-md-center mt-2 gray-text font_size_12">
+            <i className="ri-flashlight-fill "></i> Powered by <br />
+          </div>
+          <div className="text-center">
             <a
               className="gray-text"
               href="https://www.shekruweb.com"
@@ -277,8 +273,8 @@ const Profile = () => {
             >
               Shekru Labs India Pvt. Ltd.
             </a>
-            {/* <div className="">v1.1</div> */}
           </div>
+          {/* <div className="">v1.1</div> */}
         </div>
       </>
     );

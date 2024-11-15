@@ -15,8 +15,10 @@ const CompanyVersion = () => {
 
       <div className="text-center mb-3">
         <div className="gray-text    ">Powered by </div>
-        <div className="gray-text    ">Shekru Labs India Pvt. Ltd.</div>
-        <div className="gray-text    ">v1.1</div>
+        <div className="gray-text    " style={{ color: "#0d775e" }}>
+          Shekru Labs India Pvt. Ltd.
+        </div>
+        {/* <div className="gray-text    ">v1.1</div> */}
       </div>
     </div>
   );

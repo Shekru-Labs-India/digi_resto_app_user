@@ -63,10 +63,12 @@ const QRScanner = () => {
 
   return (
     <div className="container-fluid bg-light d-flex flex-column align-items-center">
-       <Link to="/"> <div className="d-flex align-items-center mt-4 mb-3">
-       <img src={logo} alt="logo" className="me-2" width="30" height="30" />
-        <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
-      </div>
+      <Link to="/">
+        {" "}
+        <div className="d-flex align-items-center mt-4 mb-3">
+          <img src={logo} alt="logo" width="40" height="40" />
+          <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
+        </div>
       </Link>
       {/* {!showCamera && (
         <button
@@ -76,7 +78,7 @@ const QRScanner = () => {
           <i className="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
         </button>
       )} */}
-      
+
       {/* {showCamera && (
         <div
           className="position-relative w-75 mb-4 rounded-5"
@@ -101,7 +103,7 @@ const QRScanner = () => {
           />
         </div>
       )} */}
-      
+
       <div className="container px-0">
         <HotelList />
       </div>

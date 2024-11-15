@@ -321,18 +321,12 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                <Link to="/">
-                  <img
-                    src={logo}
-                    alt="logo"
-                    className="me-2"
-                    width="30"
-                    height="30"
-                  />
-                 
-                  <span className="text-dark mb-0 mt-1 fw-bolder">
-                    MenuMitra
-                  </span>
+                  <Link to="/">
+                    <img src={logo} alt="logo" width="40" height="40" />
+
+                    <span className="text-dark mb-0 mt-1 fw-bolder">
+                      MenuMitra
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -341,14 +335,14 @@ const UserAuthPopup = () => {
                 <span>Enter OTP sent to {mobile}</span>
               </div>
               <div
-                id="otp" 
+                id="otp"
                 className="digit-group d-flex justify-content-center gap-2 mb-4 mx-auto"
-                style={{width: "200px"}}
+                style={{ width: "200px" }}
               >
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={el => otpInputRefs.current[index] = el}
+                    ref={(el) => (otpInputRefs.current[index] = el)}
                     type="number"
                     className="form-control text-center d-flex align-items-center"
                     maxLength="1"
@@ -358,10 +352,10 @@ const UserAuthPopup = () => {
                     id={`digit-${index + 1}`}
                     autoFocus={index === 0}
                     style={{
-                      width: "50px", 
+                      width: "50px",
                       height: "50px",
                       WebkitAppearance: "none",
-                      MozAppearance: "textfield"
+                      MozAppearance: "textfield",
                     }}
                   />
                 ))}
@@ -382,10 +376,7 @@ const UserAuthPopup = () => {
               )}
             </form>
             <div className="text-center mt-3">
-            <div
-                onClick={() => setView('login')}
-                className=" gray-text "
-              >
+              <div onClick={() => setView("login")} className=" gray-text ">
                 Back to Login
               </div>
             </div>
@@ -402,18 +393,12 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                <Link to="/">
-                  <img
-                    src={logo}
-                    alt="logo"
-                    className="me-2"
-                    width="30"
-                    height="30"
-                  />
-                 
-                  <span className="text-dark mb-0 mt-1 fw-bolder">
-                    MenuMitra
-                  </span>
+                  <Link to="/">
+                    <img src={logo} alt="logo" width="40" height="40" />
+
+                    <span className="text-dark mb-0 mt-1 fw-bolder">
+                      MenuMitra
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -424,13 +409,17 @@ const UserAuthPopup = () => {
                 <input
                   ref={nameInputRef}
                   type="text"
-                  className={`form-control border border-black ${nameError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-black ${
+                    nameError ? "is-invalid" : ""
+                  }`}
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoFocus
                 />
-                {nameError && <div className="invalid-feedback">{nameError}</div>}
+                {nameError && (
+                  <div className="invalid-feedback">{nameError}</div>
+                )}
               </div>
 
               <div className="form-group mb-3">
@@ -440,14 +429,18 @@ const UserAuthPopup = () => {
                 <input
                   ref={mobileInputRef}
                   type="tel"
-                  className={`form-control border border-black ${mobileError ? 'is-invalid' : ''}`}
+                  className={`form-control border border-black ${
+                    mobileError ? "is-invalid" : ""
+                  }`}
                   placeholder="Enter mobile number"
                   value={mobile}
                   onChange={handleMobileChange}
                   maxLength="10"
                   autoFocus
                 />
-                {mobileError && <div className="invalid-feedback">{mobileError}</div>}
+                {mobileError && (
+                  <div className="invalid-feedback">{mobileError}</div>
+                )}
               </div>
 
               <div className="form-group mb-3">
@@ -460,7 +453,10 @@ const UserAuthPopup = () => {
                     id="termsCheckbox"
                     autoFocus
                   />
-                  <label className="form-check-label text-start" htmlFor="termsCheckbox">
+                  <label
+                    className="form-check-label text-start"
+                    htmlFor="termsCheckbox"
+                  >
                     I agree to the Terms and Conditions
                   </label>
                 </div>
@@ -485,10 +481,7 @@ const UserAuthPopup = () => {
               )}
             </form>
             <div className="text-center mt-3">
-              <div
-                onClick={() => setView('login')}
-                className=" gray-text "
-              >
+              <div onClick={() => setView("login")} className=" gray-text ">
                 Back to Login
               </div>
             </div>
@@ -505,21 +498,13 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                <Link to="/">
-                  <img
-                    src={logo}
-                    alt="logo"
-                    className="me-2"
-                    width="30"
-                    height="30"
-                  />
-                 
-                  <span className="text-dark mb-0 mt-1 fw-bolder">
-                    MenuMitra
-                  </span>
+                  <Link to="/" className="d-flex align-items-center justify-content-center">
+                    <img src={logo} alt="logo" width="40" height="40" />
+                    <span className="text-dark mb-0 ms-2 fw-bolder">
+                      MenuMitra
+                    </span>
                   </Link>
                 </div>
-              
               </div>
               <div className="form-group mb-3">
                 <label className="form-label d-flex justify-content-start">
@@ -559,7 +544,7 @@ const UserAuthPopup = () => {
               Not a member?{" "}
               <a
                 className="text-underline text-primary"
-                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                style={{ textDecoration: "none", cursor: "pointer" }}
                 onClick={() => setView("signup")}
               >
                 Create an account

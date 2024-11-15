@@ -357,8 +357,8 @@ const NearbyArea = () => {
                     display: "block",
                   }}
                 >
-                  <div className="cart-list style-2-custom">
-                    <div className="dz-media media-100 rounded-4">
+                  <div className="cart-list bg-white p-0 rounded-4">
+                    <div className="dz-media media-100">
                       <img
                         src={menuItem.image || images}
                         style={{
@@ -366,15 +366,12 @@ const NearbyArea = () => {
                           height: "100%",
                           objectFit: "cover",
                           aspectRatio: 1,
-                         
                         }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
                         alt={menuItem.name}
-
-                        loading="lazy" 
-
+                        loading="lazy"
                       />
                       <div
                         className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
@@ -435,12 +432,10 @@ const NearbyArea = () => {
                             borderRadius: "0px 0px 7px 0px",
                           }}
                         >
-
-                            <span className="font_size_10 text-white">
+                          <span className="font_size_10 text-white">
                             <i className="ri-percent-line me-1 "></i>
-                              {menuItem.offer}% Off
-                            </span>
-                          
+                            {menuItem.offer}% Off
+                          </span>
                         </div>
                       )}
                     </div>
@@ -460,15 +455,15 @@ const NearbyArea = () => {
                         </div>
                       </div> */}
                       <div className="d-flex justify-content-between align-items-center mt-1">
-    <div className="text-success font_size_10 d-flex align-items-center">
-      <i className="ri-restaurant-line pe-1"></i>
-      {menuItem.category_name}
-    </div>
-    <div className="text-end font_size_10 fw-normal gray-text me-1">
-      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      {menuItem.rating}
-    </div>
-  </div>
+                        <div className="text-success font_size_10 d-flex align-items-center">
+                          <i className="ri-restaurant-line pe-1"></i>
+                          {menuItem.category_name}
+                        </div>
+                        <div className="text-end font_size_10 fw-normal gray-text me-1">
+                          <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                          {menuItem.rating}
+                        </div>
+                      </div>
                       <span className="font_size_14 fw-medium text-wrap">
                         {menuItem.name}
                       </span>
@@ -495,7 +490,6 @@ const NearbyArea = () => {
                         <div className="d-flex justify-content-end col-6">
                           {customerId ? (
                             <div
-                              
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -512,11 +506,16 @@ const NearbyArea = () => {
                                 height: "25px",
                               }}
                             >
-                              <i className={`ri-shopping-cart-${isMenuItemInCart(menuItem.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
+                              <i
+                                className={`ri-shopping-cart-${
+                                  isMenuItemInCart(menuItem.menu_id)
+                                    ? "fill text-black"
+                                    : "line"
+                                } fs-6`}
+                              ></i>
                             </div>
                           ) : (
                             <div
-                              
                               className="border border-1 rounded-circle bg-white opacity-75 me-1"
                               style={{
                                 border: "1px solid gray",
