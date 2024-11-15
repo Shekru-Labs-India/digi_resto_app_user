@@ -47,7 +47,7 @@ const HotelList = () => {
                           </div>
                           <div className="col-10 d-flex align-items-center">
                             <span className="font_size_14 fw-medium m-0">
-                              {hotel.restaurant_name.toUpperCase()}
+                              {hotel.restaurant_name.toUpperCase()} <div className="badge badge-info">Test Data</div>
                             </span>
                           </div>
                         </div>
