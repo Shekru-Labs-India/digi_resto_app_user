@@ -408,7 +408,7 @@ const Checkout = () => {
                 <div className="d-flex flex-column gap-2">
                   <button
                     className="btn btn-danger rounded-pill w-100 py-2"
-                    onClick={() => handleOrderAction("cancel")}
+                    onClick={() => handleOrderAction("cancle")}
                   >
                     Cancel Existing & Create New Order
                   </button>
