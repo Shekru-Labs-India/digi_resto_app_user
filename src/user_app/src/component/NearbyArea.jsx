@@ -26,7 +26,7 @@ const NearbyArea = () => {
   const hasFetchedData = useRef(false);
   const { showLoginPopup } = usePopup();
 
-  // 1. Single useEffect for initialization and data fetching
+  
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
@@ -40,7 +40,7 @@ const NearbyArea = () => {
     if (restaurantId) {
       fetchMenuData();
     }
-  }, [restaurantId]); // Only re-run if restaurantId changes
+  }, [restaurantId]); 
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -77,7 +77,8 @@ const NearbyArea = () => {
 
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
-    
+    const currentCustomerId = customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -86,7 +87,7 @@ const NearbyArea = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: customerId || null,
+            customer_id: currentCustomerId,
             restaurant_id: restaurantId,
           }),
         }
@@ -117,11 +118,7 @@ const NearbyArea = () => {
     }
   }, [restaurantId, customerId]);
 
-  // Add polling effect
-  useEffect(() => {
-    const pollInterval = setInterval(fetchMenuData, 30000); // Poll every 30 seconds
-    return () => clearInterval(pollInterval);
-  }, [fetchMenuData]);
+  
 
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {

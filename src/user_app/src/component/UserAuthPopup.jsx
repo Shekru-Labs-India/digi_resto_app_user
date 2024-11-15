@@ -22,7 +22,9 @@ const UserAuthPopup = () => {
   const mobileInputRef = useRef(null);
   const nameInputRef = useRef(null);
   const otpInputRefs = useRef([]);
-
+  const [customerId, setCustomerId] = useState(null);
+ 
+  const [customerType, setCustomerType] = useState("");
   useEffect(() => {
     const handleClickOutside = (event) => {
       const card = document.querySelector('.offcanvas-body');
@@ -145,8 +147,10 @@ const UserAuthPopup = () => {
           name: data.customer_details.name,
           isGuest: true
         };
-
+        
         localStorage.setItem("userData", JSON.stringify(userData));
+        setCustomerId(data.customer_details.customer_id);
+        setCustomerType(data.customer_details.customer_type);
         hideLoginPopup();
 
         const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
@@ -228,6 +232,8 @@ const UserAuthPopup = () => {
         };
         
         localStorage.setItem("userData", JSON.stringify(userData));
+        setCustomerId(data.customer_details.customer_id);
+        setCustomerType(data.customer_details.customer_type);
         hideLoginPopup();
 
         const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
