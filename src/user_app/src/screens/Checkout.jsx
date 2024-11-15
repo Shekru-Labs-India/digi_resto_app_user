@@ -386,11 +386,11 @@ const Checkout = () => {
         {showExistingOrderModal && (
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
-              <div className="p-3 border-bottom">
+              <div className="p-2 pb-2 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">
+                  <span className="mb-0 fs-5 fw-semibold text-muted text-start">
                     Existing Order Found
-                  </h5>
+                  </span>
                   <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowExistingOrderModal(false)}

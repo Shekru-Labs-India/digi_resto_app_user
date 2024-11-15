@@ -5,6 +5,7 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
+import AddToCartModal from "./AddToCartModal";
 
 import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
@@ -650,114 +651,20 @@ const ProductCard = ({ isVegOnly }) => {
       </div>
 
       {showModal && (
-        <div
-          className="modal fade show d-flex align-items-center justify-content-center"
-          style={{ display: "block" }}
-          onClick={handleModalClick}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div
-              className="modal-content"
-              style={{
-                width: "350px",
-                margin: "auto",
-              }}
-            >
-              <div className="modal-header d-flex justify-content-center">
-                <div className="modal-title font_size_16 fw-medium">
-                  Add to Cart
-                </div>
-                <span
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white fs-4"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
-                >
-                  <i className="ri-close-line "></i>
-                </span>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body py-3">
-                <div className="mb-3 mt-0">
-                  <label
-                    htmlFor="notes"
-                    className="form-label d-flex justify-content-center fs-5 fw-bold"
-                  >
-                    Special Instructions
-                  </label>
-                  <textarea
-                    className="form-control fs-6 border border-primary rounded-4"
-                    id="notes"
-                    rows="3"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Add any special instructions here..."
-                  ></textarea>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label d-flex justify-content-center">
-                    Select Portion Size
-                  </label>
-                  <div className="d-flex justify-content-center">
-                    {isPriceFetching ? (
-                      <p>Loading prices...</p>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          className={`btn rounded-pill me-2 font_size_14  ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn rounded-pill font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
-                        >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer justify-content-center">
-                <button
-                  type="button"
-                  className="btn btn-outline-primary  rounded-pill"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary rounded-pill"
-                  onClick={handleConfirmAddToCart}
-                  disabled={isPriceFetching || (!halfPrice && !fullPrice)}
-                >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddToCartModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          notes={notes}
+          setNotes={setNotes}
+          portionSize={portionSize}
+          setPortionSize={setPortionSize}
+          halfPrice={halfPrice}
+          fullPrice={fullPrice}
+          isPriceFetching={isPriceFetching}
+          handleConfirmAddToCart={handleConfirmAddToCart}
+          handleModalClick={handleModalClick}
+        />
       )}
-      {showModal && <div className="modal-backdrop fade show"></div>}
     </div>
   );
 };
