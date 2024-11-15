@@ -304,6 +304,7 @@ const Checkout = () => {
         setShowPopup(true);
         setShowExistingOrderModal(false);
         clearCartData();
+        setNewOrderNumber(newOrderNumber);
 
         // Store the new order number in state or localStorage for navigation
         setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
@@ -399,7 +400,7 @@ const Checkout = () => {
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="py-3">
                 <p className="text-center mb-4 text-muted">
                   You have an ongoing order (#{existingOrderDetails.orderNumber}
                   ). Would you like to add to this order or create a new one?
@@ -440,7 +441,7 @@ const Checkout = () => {
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0">Success</h3>
+                <span className="fs-6 fw-semibold">Success</span>
                 <button
                   className="btn-close"
                   onClick={() => setShowPopup(false)}
@@ -449,9 +450,10 @@ const Checkout = () => {
               <div className="circle">
                 <img src={OrderGif} alt="Order Success" className="popup-gif" />
               </div>
-              <span className="text-dark my-3 d-block text-center">
+              <span className="text-dark my-2 d-block text-center">
                 Order placed successfully
               </span>
+              <div className="fs-6 fw-semibold">#{newOrderNumber}</div>
               <p className="text-muted text-center mb-4">
                 You have successfully made payment and placed your order.
               </p>

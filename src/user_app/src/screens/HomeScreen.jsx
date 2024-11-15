@@ -9,6 +9,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import NearbyArea from "../component/NearbyArea";
 import { usePopup } from '../context/PopupContext';
+import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -186,17 +187,18 @@ const HomeScreen = () => {
                       alignItems: "center",
                       height: "24px", // Adjust height
                       width: "24px", // Adjust width
+                       backgroundColor: "#d4e3dd"
                     }}
                   >
                     {isVegOnly ? (
                       <i
                         className="ri-checkbox-blank-circle-fill text-success"
-                        style={{ fontSize: "16px" }} // Adjust icon size
+                        style={{ fontSize: "16px", }} // Adjust icon size
                       ></i>
                     ) : (
                       <i
                         className="ri-checkbox-blank-circle-fill text-danger"
-                        style={{ fontSize: "16px" }} // Adjust icon size
+                        style={{ fontSize: "16px",  }} // Adjust icon size
                       ></i>
                     )}
                   </div>
@@ -398,6 +400,7 @@ const HomeScreen = () => {
         <main className="page-content space-top mb-5 pb-3">
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
+            <OrdersPlacedOngoing />
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />

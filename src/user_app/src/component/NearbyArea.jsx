@@ -335,7 +335,7 @@ const NearbyArea = () => {
       <div className="title-bar1 align-items-start mb-0 ">
         <div className="left">
           {menuItems.length > 0 && (
-            <h4 className="font_size_14 fw-medium">Our Speciality</h4>
+            <span className="font_size_14 fw-medium">Our Speciality</span>
           )}
         </div>
       </div>

@@ -181,6 +181,7 @@ export const SidebarToggler = () => {
                     alignItems: "center",
                     height: "24px", // Adjust height
                     width: "24px", // Adjust width
+                    backgroundColor: "#d4e3dd"
                   }}
                 >
                   {isVegOnly ? (

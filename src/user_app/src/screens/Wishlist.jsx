@@ -135,6 +135,9 @@ const Wishlist = () => {
           setWishlistItems(data.lists);
           setMenuList(data.lists);
           setHasFavorites(Object.keys(data.lists).length > 0);
+
+            const firstRestaurantName = Object.keys(data.lists)[0];
+            setCheckedItems({ [firstRestaurantName]: true });
         } else {
         
           setWishlistItems({});

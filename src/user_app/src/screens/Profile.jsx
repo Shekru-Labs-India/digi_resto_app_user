@@ -91,13 +91,13 @@ const Profile = () => {
             <div className="profile-area">
               <div className="main-profile">
                 <div className="d-flex align-items-center">
-                  <h4 className="name mb-0">
+                  <div className="name mb-0">
                     <div className="text-end">
                       {isLoggedIn ? (
                         <>
                           <Link to="/user_app/Profile">
                             <i className="ri-user-3-fill me-2 font_size_14 "></i>
-                            <span className="font_size_14">
+                            <span className="font_size_14 fw-medium">
                               Hello, {toTitleCase(getFirstName(userData.name))}
                             </span>
                           </Link>
@@ -111,7 +111,7 @@ const Profile = () => {
                         </button>
                       )}
                     </div>
-                  </h4>
+                  </div>
                 </div>
               </div>
               <div className="content-box">
