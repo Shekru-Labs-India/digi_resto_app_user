@@ -610,7 +610,7 @@ const Checkout = () => {
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
                     <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
-                    <span className="pe-2 fs-5 fw-semibold">
+                    <span className="pe-2 fs-6 fw-semibold">
                       ₹{parseFloat(grandTotal).toFixed(2)}
                     </span>
                   </div>

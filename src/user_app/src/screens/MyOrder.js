@@ -1663,7 +1663,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     if (!orders || Object.keys(orders).length === 0) {
       return (
         <div className="text-center py-4">
-          <p>No orders available</p>
+          <p>No menus available</p>
           <Link
             to="/user_app/Menu"
             className="btn btn-outline-primary rounded-pill px-3 mt-3"
@@ -1753,7 +1753,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                               <i className="ri-bowl-line pe-2 gray-text"></i>
                               <span className="gray-text font_size_14">
                                 {order.menu_count === 0
-                                  ? "No orders"
+                                  ? "No Menus"
                                   : `${order.menu_count} Menu`}
                               </span>
                             </div>
