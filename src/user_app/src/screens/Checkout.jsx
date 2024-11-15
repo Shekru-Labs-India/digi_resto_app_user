@@ -12,6 +12,7 @@ import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
 import config from "../component/config";
 const Checkout = () => {
+  
   const location = useLocation();
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
@@ -202,13 +203,7 @@ const Checkout = () => {
             setShowExistingOrderModal(true);
           }
         } else if (data.st === 2) {
-          // Display toast for st = 2 with the backend message
-          window.showToast({
-            severity: "error",
-            summary: "Notice",
-            detail: data.msg,
-            life: 3000,
-          });
+          
         } else {
           throw new Error("Failed to check order status");
         }
@@ -216,12 +211,7 @@ const Checkout = () => {
         throw new Error("Failed to check order status");
       }
     } catch (error) {
-      window.showToast({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to check order status. Please try again.",
-        life: 3000,
-      });
+      
     }
   };
 
@@ -259,12 +249,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to create order");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to create order. Please try again.",
-        life: 3000,
-      });
+     
     }
   };
 
@@ -326,12 +311,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Failed to update order. Please try again.",
-        life: 3000,
-      });
+    
     }
   };
 
@@ -365,12 +345,7 @@ const Checkout = () => {
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Items added to the existing order successfully!",
-          life: 3000,
-        });
+        
         setShowPopup(true);
 
         clearCartData();
@@ -381,14 +356,7 @@ const Checkout = () => {
         );
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          error.message ||
-          "Failed to add items to the existing order. Please try again.",
-        life: 3000,
-      });
+     
     }
   };
 
