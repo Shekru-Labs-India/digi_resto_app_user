@@ -152,6 +152,24 @@ const Profile = () => {
                       <span className=" ">Favourite</span>
                     </Link>
                   </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/Search"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-search-line me-2 font_size_16"></i>
+                      <span className=" ">Search</span>
+                    </Link>
+                  </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/Category"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-list-check-2 me-2 font_size_16"></i>
+                      <span className=" ">Category</span>
+                    </Link>
+                  </li>
                 </ul>
               </div>
               {isLoggedIn && (
