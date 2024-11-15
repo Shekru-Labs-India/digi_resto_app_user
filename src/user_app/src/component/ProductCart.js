@@ -513,13 +513,11 @@ const ProductCard = ({ isVegOnly }) => {
                         width: "100%",
                         objectFit: "fill",
                         aspectRatio: 1,
-                   
                       }}
                       onError={(e) => {
                         e.target.src = images;
                       }}
-                    loading="lazy"
-
+                      loading="lazy"
                     />
                     <div
                       className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
@@ -566,19 +564,7 @@ const ProductCard = ({ isVegOnly }) => {
                     </div>
 
                     {menu.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          top: "0px",
-                          left: "0px",
-                          height: "15px",
-                          width: "60px",
-                          borderRadius: "7px 0px 7px 0px",
-                          marginTop: "1px",
-                          marginLeft: "1px",
-                        }}
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {menu.offer}% Off
