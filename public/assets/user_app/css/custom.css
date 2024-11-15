@@ -1037,4 +1037,12 @@ hr.dashed {
 }
 
 
+.gradient_bg_offer{
+  position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 15px;
+    width: 65px;
+    border-radius: 13px 0px;
+}
 

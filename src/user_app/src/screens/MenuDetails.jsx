@@ -493,7 +493,7 @@ const MenuDetails = () => {
                   position: "relative",
                   width: "100%",
                   height: "330px",
-                  borderRadius: "8px",
+                  borderRadius: "17px",
                   overflow: "hidden",
                   backgroundColor: "#f6f6f6",
                 }}
@@ -654,16 +654,7 @@ const MenuDetails = () => {
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
                       <div
-                        className="gradient_bg d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          top: "0px",
-                          left: "0px",
-                          height: "15px",
-                          width: "60px",
-                          borderRadius: "0px 0px 7px 0px",
-                          zIndex: 2,
-                        }}
+                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
                       >
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
@@ -737,16 +728,8 @@ const MenuDetails = () => {
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
                       <div
-                        className="gradient_bg d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          top: "0px",
-                          left: "0px",
-                          height: "15px",
-                          width: "60px",
-                          borderRadius: "0px 0px 7px 0px",
-                          zIndex: 2,
-                        }}
+                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
+
                       >
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>

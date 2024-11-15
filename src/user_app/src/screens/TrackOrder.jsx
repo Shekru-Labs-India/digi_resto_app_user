@@ -1398,15 +1398,7 @@ const TrackOrder = () => {
 
                                   {menu.offer && (
                                     <div
-                                      className="gradient_bg d-flex justify-content-center align-items-center"
-                                      style={{
-                                        position: "absolute",
-                                        top: "0px",
-                                        left: "0px",
-                                        height: "15px",
-                                        width: "60px",
-                                        borderRadius: "17px 0px 7px 0px",
-                                      }}
+                                      className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
                                     >
                                       <span className="font_size_10 text-white">
                                         <i className="ri-percent-line me-1 "></i>
@@ -1646,15 +1638,7 @@ const TrackOrder = () => {
                               </div>
                               {menu.offer && (
                                 <div
-                                  className="gradient_bg d-flex justify-content-center align-items-center"
-                                  style={{
-                                    position: "absolute",
-                                    top: "0px",
-                                    left: "0px",
-                                    height: "15px",
-                                    width: "60px",
-                                    borderRadius: "17px 0px 7px 0px",
-                                  }}
+                                  className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
                                 >
                                   <span className="font_size_10 text-white">
                                     <i className="ri-percent-line me-1 "></i>
@@ -1830,15 +1814,7 @@ const TrackOrder = () => {
                             {/* Offer badge */}
                             {menu.offer && (
                               <div
-                                className="gradient_bg d-flex justify-content-center align-items-center"
-                                style={{
-                                  position: "absolute",
-                                  top: "0px",
-                                  left: "0px",
-                                  height: "15px",
-                                  width: "60px",
-                                  borderRadius: "17px 0px 7px 0px",
-                                }}
+                                className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
                               >
                                 <span className="font_size_10 text-white">
                                   <i className="ri-percent-line me-1 "></i>
