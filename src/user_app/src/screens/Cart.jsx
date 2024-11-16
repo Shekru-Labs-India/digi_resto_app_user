@@ -382,7 +382,7 @@ const Cart = () => {
                         }}
                       />
                       <div
-                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           item.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
                             : "border-danger"

@@ -446,7 +446,7 @@ await fetchCartDetails();
               <span className="text-dark my-2 d-block text-center">
                 Order placed successfully
               </span>
-              <div className="fs-6 fw-semibold">#{newOrderNumber}</div>
+              <div className="fs-6 fw-semibold">#{newOrderNumber||existingOrderDetails.orderNumber}</div>
               <p className="text-muted text-center mb-4">
                 You have successfully made payment and placed your order.
               </p>

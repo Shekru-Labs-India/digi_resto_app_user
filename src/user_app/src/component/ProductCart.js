@@ -585,7 +585,7 @@ const ProductCard = ({ isVegOnly }) => {
                       loading="lazy"
                     />
                     <div
-                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         menu.menu_veg_nonveg.toLowerCase() === "veg"
                           ? "border-success"
                           : "border-danger"
@@ -759,7 +759,7 @@ const ProductCard = ({ isVegOnly }) => {
                   <textarea
                     className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
-                    rows="3"
+                    rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
@@ -807,10 +807,10 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary rounded-pill font_size_14"
+                  className="btn btn-outline-dark rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                 Close
                 </button>
                 <button
                   type="button"

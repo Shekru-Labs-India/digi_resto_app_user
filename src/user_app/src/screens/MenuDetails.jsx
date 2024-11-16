@@ -601,7 +601,7 @@ const MenuDetails = () => {
 
                     {/* Veg/Non-veg indicator */}
                     <div
-                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "border-success"
                           : "border-danger"
@@ -672,7 +672,7 @@ const MenuDetails = () => {
                       }}
                     />
                     <div
-                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "border-success"
                           : "border-danger"
@@ -748,8 +748,8 @@ const MenuDetails = () => {
           <div className="container py-0">
             <div className="dz-product-detail">
               {productDetails.is_special && (
-                <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                  Special
+                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                  <i className="ri-bard-line me-2"></i> Special
                   <hr className="mt-2 mb-0" />
                 </div>
               )}
