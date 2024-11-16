@@ -395,8 +395,8 @@ const NearbyArea = () => {
                         <i
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-triangle-fil text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              ? "ri-checkbox-blank-circle-fill text-success"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>

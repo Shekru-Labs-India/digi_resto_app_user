@@ -382,7 +382,7 @@ const HomeScreen = () => {
               </Link>
             </div>
 
-            <div className="text-center text-md-center mt-2 gray-text mb-5">
+            <div className="text-center text-md-center mt-2 gray-text mb-5 font_size_12">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
                 className="text-success font_size_12"

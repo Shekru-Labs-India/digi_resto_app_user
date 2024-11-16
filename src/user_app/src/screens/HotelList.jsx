@@ -142,7 +142,7 @@ const HotelList = () => {
                 </a>
               </div>
             </div>
-            <div className="text-center text-md-center mt-5 gray-text">
+            <div className="text-center text-md-center mt-5 gray-text font_size_12">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
                 className="text-success font_size_12"
