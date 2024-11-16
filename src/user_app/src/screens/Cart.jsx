@@ -458,21 +458,13 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-8 px-0">
+                        <div className="col-5 px-0">
                           <span className="ps-3 text-success mt-1 font_size_10">
                             <i className="ri-restaurant-line me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>
-                        <div className="col-4 ps-0 text-end">
-                          <span className="font_size_10 fw-normal gray-text me-2">
-                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                            {item.rating}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-12">
+                        <div className="col-3 px-0">
                           <div className="offer-code my-auto">
                             {Array.from({ length: 5 }).map((_, index) => (
                               <i
@@ -492,12 +484,24 @@ const Cart = () => {
                             ))}
                           </div>
                         </div>
+                        <div className="col-4 ps-0 text-end">
+                          <span className="font_size_10 fw-normal gray-text me-2">
+                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                            {item.rating}
+                          </span>
+                        </div>
                       </div>
+                      <div className="row"></div>
                       <div className="row pe-2">
                         <div className="col-8 mx-0 my-auto px-0">
                           <p className="mb-0 fw-medium">
                             <span className="ms-3 font_size_14 fw-semibold text-info">
-                              ₹{item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price}
+                              ₹
+                              {item.offer
+                                ? Math.floor(
+                                    item.price * (1 - item.offer / 100)
+                                  )
+                                : item.price}
                             </span>
                             {item.offer && (
                               <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
