@@ -141,24 +141,24 @@ const Cart = () => {
   }, []);
 
   const handleProceedToBuy = () => {
-    const checkoutData = {
-      cartItems: cartDetails.order_items,
-      totalBill: cartDetails.total_bill,
-      serviceCharges: cartDetails.service_charges_amount,
-      serviceChargesPercent: cartDetails.service_charges_percent,
-      gstAmount: cartDetails.gst_amount,
-      gstPercent: cartDetails.gst_percent,
-      discountAmount: cartDetails.discount_amount,
-      discountPercent: cartDetails.discount_percent,
-      grandTotal: cartDetails.grand_total,
-      customerId: userData.customer_id,
-      customerType: userData.customer_type,
-      restaurantId: restaurantId,
-      restaurantName: restaurantName,
-      cartId: getCartId(),
-    };
-
-    navigate("/user_app/Checkout", { state: { checkoutData } });
+    // const checkoutData = {
+    //   cartItems: cartDetails.order_items,
+    //   totalBill: cartDetails.total_bill,
+    //   serviceCharges: cartDetails.service_charges_amount,
+    //   serviceChargesPercent: cartDetails.service_charges_percent,
+    //   gstAmount: cartDetails.gst_amount,
+    //   gstPercent: cartDetails.gst_percent,
+    //   discountAmount: cartDetails.discount_amount,
+    //   discountPercent: cartDetails.discount_percent,
+    //   grandTotal: cartDetails.grand_total,
+    //   customerId: userData.customer_id,
+    //   customerType: userData.customer_type,
+    //   restaurantId: restaurantId,
+    //   restaurantName: restaurantName,
+    //   cartId: getCartId(),
+    // };
+    navigate("/user_app/Checkout");
+   // navigate("/user_app/Checkout", { state: { checkoutData } });
   };
 
   const handleRemoveFromCart = async (item) => {

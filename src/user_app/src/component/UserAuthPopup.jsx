@@ -185,22 +185,29 @@ const UserAuthPopup = () => {
       if (value && index < otp.length - 1) {
         // Move to the next input only if there is a value
         otpInputRefs.current[index + 1]?.focus();
-      } else if (!value && index > 0) {
-        // If the current input is cleared, move focus back
-        otpInputRefs.current[index - 1]?.focus();
       }
     }
   };
   
+  
 
   const handleOtpKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace") {
       const newOtp = [...otp];
-      newOtp[index - 1] = '';
-      setOtp(newOtp);
-      otpInputRefs.current[index - 1]?.focus();
+  
+      if (!otp[index] && index > 0) {
+        // If the current input is empty and the user presses Backspace, move focus back
+        newOtp[index - 1] = "";
+        setOtp(newOtp);
+        otpInputRefs.current[index - 1]?.focus();
+      } else {
+        // Clear the current input
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
     }
   };
+  
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
@@ -348,12 +355,16 @@ const UserAuthPopup = () => {
                   <input
                     key={index}
                     ref={(el) => (otpInputRefs.current[index] = el)}
-                    type="number"
+                    type="text" 
                     className="form-control text-center d-flex align-items-center border border-1"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                    onInput={(e) => {
+                      // Remove non-numeric characters and restrict to one digit
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 1);
+                    }}
                     id={`digit-${index + 1}`}
                     autoFocus={index === 0}
                     style={{
