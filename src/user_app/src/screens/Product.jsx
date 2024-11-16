@@ -587,7 +587,7 @@ const Product = () => {
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -721,7 +721,7 @@ const Product = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                              <i className="ri-shopping-cart-line fs-6"></i>
                             </div>
                           )}
                         </div>

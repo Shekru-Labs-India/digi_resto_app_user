@@ -474,7 +474,6 @@ const Wishlist = () => {
                                           width: "100%",
                                           height: "100%",
                                           aspectRatio: "1/1",
-                                    
                                         }}
                                         onError={(e) => {
                                           e.target.src = images;
@@ -532,18 +531,16 @@ const Wishlist = () => {
                                             menu.menu_veg_nonveg.toLowerCase() ===
                                             "veg"
                                               ? "ri-checkbox-blank-circle-fill text-success"
-                                              : "ri-checkbox-blank-circle-fill text-danger"
+                                              : "ri-triangle-fill text-danger"
                                           } font_size_12`}
                                         ></i>
                                       </div>
                                       {menu.offer && menu.offer !== "0" && (
-                                        <div
-                                          className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                                        >
+                                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                           <span className="font_size_10 text-white">
                                             <i className="ri-percent-line me-1 "></i>
-                                              {menu.offer}% Off
-                                            </span>
+                                            {menu.offer}% Off
+                                          </span>
                                         </div>
                                       )}
                                     </div>

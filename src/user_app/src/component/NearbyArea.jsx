@@ -395,7 +395,7 @@ const NearbyArea = () => {
                         <i
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
+                              ? "ri-triangle-fil text-success"
                               : "ri-checkbox-blank-circle-fill text-danger"
                           } font_size_12`}
                         ></i>
@@ -525,7 +525,7 @@ const NearbyArea = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                              <i className="ri-shopping-cart-line fs-6"></i>
                             </div>
                           )}
                         </div>

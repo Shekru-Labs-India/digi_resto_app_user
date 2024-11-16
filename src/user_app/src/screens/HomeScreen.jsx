@@ -197,7 +197,7 @@ const HomeScreen = () => {
                       ></i>
                     ) : (
                       <i
-                        className="ri-checkbox-blank-circle-fill text-danger"
+                        className="ri-triangle-fill text-danger"
                         style={{ fontSize: "16px" }} // Adjust icon size
                       ></i>
                     )}

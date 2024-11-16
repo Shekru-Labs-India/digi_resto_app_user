@@ -327,10 +327,9 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                  <Link to="/">
-                    <img src={logo} alt="logo" width="40" height="40" />
-
-                    <span className="text-dark mb-0 mt-1 fw-bolder">
+                  <Link to="/" className="d-flex align-items-center text-decoration-none">
+                    <img src={logo} alt="logo" width="40" height="40" className="me-2" />
+                    <span className="text-dark fw-bolder">
                       MenuMitra
                     </span>
                   </Link>
@@ -399,10 +398,9 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                  <Link to="/">
+                  <Link to="/" className="d-flex align-items-center text-decoration-none">
                     <img src={logo} alt="logo" width="40" height="40" />
-
-                    <span className="text-dark mb-0 mt-1 fw-bolder">
+                    <span className="text-dark mb-0 ms-2 fw-bolder">
                       MenuMitra
                     </span>
                   </Link>

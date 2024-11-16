@@ -1302,25 +1302,21 @@ const TrackOrder = () => {
 
           {customerId ? (
             <section className="container mt-1 py-1">
-              
               {!isCompleted &&
                 orderStatus !== "canceled" &&
                 orderStatus !== "cancelled" &&
                 orderStatus !== "cancle" && (
-                 
-                  
-                    
                   <div className="row g-3 mb-4">
                     {searchedMenu.length > 0 && (
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <div className="  mb-0 gray-text">Search Results</div>
-                      <div className="  gray-text" onClick={handleClearAll}>
-                        Clear All
+                      <div className="d-flex justify-content-between align-items-center mt-3">
+                        <div className="  mb-0 gray-text">Search Results</div>
+                        <div className="  gray-text" onClick={handleClearAll}>
+                          Clear All
+                        </div>
                       </div>
-                    </div>
                     )}
-                   
-             {searchedMenu
+
+                    {searchedMenu
                       .filter((menu) => !removedItems.has(menu.menu_id))
                       .map((menu) => (
                         <div key={menu.menu_id} className="col-12">
@@ -1340,7 +1336,6 @@ const TrackOrder = () => {
                                       height: "100%",
                                       objectFit: "cover",
                                       aspectRatio: "1/1",
-                                 
                                     }}
                                     onError={(e) => {
                                       e.target.src = images;
@@ -1367,7 +1362,7 @@ const TrackOrder = () => {
                                       className={`${
                                         isVegMenu(menu?.menu_veg_nonveg)
                                           ? "ri-checkbox-blank-circle-fill text-success"
-                                          : "ri-checkbox-blank-circle-fill text-danger"
+                                          : "ri-triangle-fill text-danger"
                                       } font_size_12`}
                                     ></i>
                                   </div>
@@ -1397,9 +1392,7 @@ const TrackOrder = () => {
                                   </div>
 
                                   {menu.offer && (
-                                    <div
-                                      className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                                    >
+                                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                       <span className="font_size_10 text-white">
                                         <i className="ri-percent-line me-1 "></i>
                                         {menu.offer || "No"}% Off
@@ -1482,7 +1475,6 @@ const TrackOrder = () => {
                                           ).toFixed(2)}
                                         </span>
                                       </span>
-                                      
                                     </div>
                                     {/* <div className="col-4 increment-decrement">
                                       <div className="d-flex justify-content-end align-items-center">
@@ -1507,46 +1499,45 @@ const TrackOrder = () => {
                                         ></i>
                                       </div>
                                     </div> */}
-                                      <div className="col-4 ">
-                          <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "25px",
-                                width: "25px",
-                              }}
-                            >
-                              <i
-                                className="ri-subtract-line fs-6"
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDecrement(menu.menu_id);
-                                }}
-                              ></i>
-                            </div>
-                            <span className="text-light  px-2">
-                            {quantities[menu.menu_id] || 1}
-
-                            </span>
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "25px",
-                                width: "25px",
-                              }}
-                            >
-                              <i
-                                className="ri-add-line  fs-6"
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleIncrement(menu.menu_id);
-                                }}
-                              ></i>
-                            </div>
-                          </div>
-                        </div>
+                                    <div className="col-4 ">
+                                      <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
+                                        <div
+                                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                          style={{
+                                            height: "25px",
+                                            width: "25px",
+                                          }}
+                                        >
+                                          <i
+                                            className="ri-subtract-line fs-6"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDecrement(menu.menu_id);
+                                            }}
+                                          ></i>
+                                        </div>
+                                        <span className="text-light  px-2">
+                                          {quantities[menu.menu_id] || 1}
+                                        </span>
+                                        <div
+                                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                                          style={{
+                                            height: "25px",
+                                            width: "25px",
+                                          }}
+                                        >
+                                          <i
+                                            className="ri-add-line  fs-6"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleIncrement(menu.menu_id);
+                                            }}
+                                          ></i>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -1583,7 +1574,6 @@ const TrackOrder = () => {
                                   height: "100%",
                                   objectFit: "cover",
                                   aspectRatio: "1/1",
-                                
                                 }}
                                 onError={(e) => {
                                   e.target.src = images;
@@ -1609,7 +1599,7 @@ const TrackOrder = () => {
                                   className={`${
                                     isVegMenu(menu?.menu_veg_nonveg)
                                       ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-checkbox-blank-circle-fill text-danger"
+                                      : "ri-triangle-fill text-danger"
                                   } font_size_12`}
                                 ></i>
                                 <div
@@ -1637,9 +1627,7 @@ const TrackOrder = () => {
                                 </div>
                               </div>
                               {menu.offer && (
-                                <div
-                                  className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                                >
+                                <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                   <span className="font_size_10 text-white">
                                     <i className="ri-percent-line me-1 "></i>
                                     {menu.offer || "No "}% Off
@@ -1756,7 +1744,6 @@ const TrackOrder = () => {
                                 height: "100%",
                                 objectFit: "cover",
                                 aspectRatio: "1/1",
-                              
                               }}
                               onError={(e) => {
                                 e.target.src = images;
@@ -1784,7 +1771,7 @@ const TrackOrder = () => {
                                 className={`${
                                   isVegMenu(menu?.menu_veg_nonveg)
                                     ? "ri-checkbox-blank-circle-fill text-success"
-                                    : "ri-checkbox-blank-circle-fill text-danger"
+                                    : "ri-triangle-fill text-danger"
                                 } font_size_12`}
                               ></i>
                             </div>
@@ -1813,9 +1800,7 @@ const TrackOrder = () => {
 
                             {/* Offer badge */}
                             {menu.offer && (
-                              <div
-                                className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                              >
+                              <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                 <span className="font_size_10 text-white">
                                   <i className="ri-percent-line me-1 "></i>
                                   {menu.offer || "No"}% Off
@@ -1925,8 +1910,8 @@ const TrackOrder = () => {
                             });
                           }}
                         >
-                        <i className="ri-add-circle-line me-1 fs-4"></i>
-                          Order More Items 
+                          <i className="ri-add-circle-line me-1 fs-4"></i>
+                          Order More Items
                         </button>
                       </div>
                     </div>

@@ -512,7 +512,6 @@ const MenuDetails = () => {
                         objectFit: "cover",
                         transition: "opacity 0.3s ease",
                         aspectRatio: "16/9",
-                       
                       }}
                     />
 
@@ -623,7 +622,7 @@ const MenuDetails = () => {
                           productDetails.menu_veg_nonveg?.toLowerCase() ===
                           "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -653,9 +652,7 @@ const MenuDetails = () => {
 
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
@@ -665,17 +662,16 @@ const MenuDetails = () => {
                   </>
                 ) : (
                   <>
-                  <img
-                    src={images}
-                    alt={productDetails.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      
-                    }}
-                  />
-                  <div
+                    <img
+                      src={images}
+                      alt={productDetails.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div
                       className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "border-success"
@@ -697,7 +693,7 @@ const MenuDetails = () => {
                           productDetails.menu_veg_nonveg?.toLowerCase() ===
                           "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -727,18 +723,14 @@ const MenuDetails = () => {
 
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
                         </span>
                       </div>
                     )}
-
-                 </>
+                  </>
                 )}
               </div>
             </div>
@@ -755,14 +747,12 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-            {productDetails.is_special && (
-                         
-                            <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                              Special
-                              <hr className="mt-2 mb-0" />
-                            
-                          </div>
-                        )}
+              {productDetails.is_special && (
+                <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                  Special
+                  <hr className="mt-2 mb-0" />
+                </div>
+              )}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -888,9 +878,7 @@ const MenuDetails = () => {
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
           <div className="container pt-0">
-            <footer className="footer mb-2 pt-0"
-            
-            >
+            <footer className="footer mb-2 pt-0">
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 
@@ -918,9 +906,7 @@ const MenuDetails = () => {
                       onClick={showLoginPopup}
                     >
                       <i className="ri-login-box-line pe-1 "></i>
-                      <div className="text-nowrap ">
-                        Login to Order
-                      </div>
+                      <div className="text-nowrap ">Login to Order</div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button

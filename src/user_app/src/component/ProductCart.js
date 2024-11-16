@@ -56,37 +56,43 @@ const ProductCard = ({ isVegOnly }) => {
     // Set total count before applying any filters
     setTotalMenuCount(menus.length);
 
-    // Calculate category counts from full menu list before filtering
-    const fullMenuCountByCategory = menus.reduce((acc, menu) => {
-      acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
-      return acc;
-    }, {});
+    // Count special items
+    const specialItemsCount = menus.filter(menu => menu.is_special === true).length;
 
-    // Apply filters for display
+    // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
       );
     }
 
-    // Handle special category separately
-    if (categoryId === 'special') {
-      filteredMenus = filteredMenus.filter(menu => menu.is_special);
-    } else if (categoryId !== null) {
-      filteredMenus = filteredMenus.filter(
-        (menu) => menu.menu_cat_id === categoryId
-      );
+    // Handle category filtering
+    if (categoryId === "special") {
+      filteredMenus = menus.filter(menu => menu.is_special === true);
+    } else if (categoryId) {
+      filteredMenus = filteredMenus.filter(menu => menu.menu_cat_id === categoryId);
     }
 
+    // If no items found after filtering, set empty array
     setFilteredMenuList(filteredMenus);
 
-    // Update categories with counts from full menu list
-    setMenuCategories((prevCategories) =>
-      prevCategories.map((category) => ({
-        ...category,
-        menu_count: fullMenuCountByCategory[category.menu_cat_id] || 0,
-      }))
-    );
+    // Update categories with counts
+    const categoryCounts = menus.reduce((acc, menu) => {
+      if (menu.menu_cat_id) {
+        acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    // Update special count in UI
+    if (specialItemsCount > 0) {
+      setMenuCategories(prevCategories => [
+        ...prevCategories.map(category => ({
+          ...category,
+          menu_count: categoryCounts[category.menu_cat_id] || 0
+        }))
+      ]);
+    }
   }, []);
 
   // Optimized category selection handler
@@ -201,11 +207,17 @@ const ProductCard = ({ isVegOnly }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      showLoginPopup();
-      return;
-    }
+    // const userData = JSON.parse(localStorage.getItem("userData"));
+    // if (!userData?.customer_id) {
+    //   showLoginPopup();
+    //   return;
+    // }
+
+       const userData = JSON.parse(localStorage.getItem("userData"));
+       if (!userData?.customer_id || userData.customer_type === "guest") {
+         handleUnauthorizedFavorite();
+         return;
+       }
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -480,57 +492,55 @@ const ProductCard = ({ isVegOnly }) => {
 
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            {totalMenuCount > 0 && menuCategories.length > 0 && (
-              <>
-                <div
-                  className={`category-btn bg-info border border-1 border-info text-white font_size_14 rounded-5 swiper-slide`}
-                  onClick={() => handleCategorySelect("special")}
-                >
-                  <i className="ri-bard-line me-2"></i>
-                  Special
-                </div>
+            {/* Special button - always first */}
+            <div className="swiper-slide">
+              <div
+                className={`category-btn font_size_14 rounded-5 ${
+                  selectedCategoryId === "special" ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect("special")}
+                style={{
+                  backgroundColor: "#0D9EDF", // Blue background
+                  color: "#ffffff", // White text
+                  border: "none"
+                }}
+              >
+                <i className="ri-bard-line me-2"></i>
+                Special ({menuList.filter(menu => menu.is_special).length})
+              </div>
+            </div>
 
-                <div
-                  className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide ${
-                    selectedCategoryId === null ? "active" : ""
-                  }`}
-                  onClick={() => handleCategorySelect(null)}
-                  style={{
-                    backgroundColor:
-                      selectedCategoryId === null ? "#0D775E" : "",
-                    color: selectedCategoryId === null ? "#ffffff" : "",
-                  }}
-                >
-                  All{" "}
-                  <span className="small-number gray-text">
-                    ({totalMenuCount})
-                  </span>
-                </div>
-              </>
-            )}
+            {/* All button */}
+            <div className="swiper-slide">
+              <div
+                className={`category-btn font_size_14 border border-2 rounded-5 ${
+                  selectedCategoryId === null ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect(null)}
+                style={{
+                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
+                  color: selectedCategoryId === null ? "#ffffff" : "",
+                }}
+              >
+                All ({totalMenuCount})
+              </div>
+            </div>
 
+            {/* Regular category buttons */}
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn font_size_14 border border-2 rounded-5     ${
+                  className={`category-btn font_size_14 border border-2 rounded-5 ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
                     backgroundColor:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#0D775E"
-                        : "",
-                    color:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
+                      selectedCategoryId === category.menu_cat_id ? "#0D775E" : "",
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "",
                   }}
                 >
-                  {category.name}{" "}
-                  <span className="small-number gray-text">
-                    ({category.menu_count})
-                  </span>
+                  {category.name} ({category.menu_count})
                 </div>
               </div>
             ))}
@@ -628,7 +638,7 @@ const ProductCard = ({ isVegOnly }) => {
                         {menu.is_special && (
                           <div className="row ">
                             <div className="col-12 text-info text-center font_size_12 fw-medium ">
-                              <i className="ri-bard-line me-2"></i>
+                               <i className="ri-bard-line me-2"></i>
                               Special
                               <hr className="mt-2 mb-0" />
                             </div>
