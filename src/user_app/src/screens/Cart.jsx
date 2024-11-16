@@ -495,13 +495,15 @@ const Cart = () => {
                       </div>
                       <div className="row pe-2">
                         <div className="col-8 mx-0 my-auto px-0">
-                          <p className="mb-0  fw-medium">
+                          <p className="mb-0 fw-medium">
                             <span className="ms-3 font_size_14 fw-semibold text-info">
-                              ₹{item.price}
+                              ₹{item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price}
                             </span>
-                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                              ₹{item.oldPrice || item.price}
-                            </span>
+                            {item.offer && (
+                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                ₹{item.price}
+                              </span>
+                            )}
                           </p>
                         </div>
 

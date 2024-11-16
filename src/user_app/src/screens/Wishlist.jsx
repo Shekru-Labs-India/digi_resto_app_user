@@ -604,12 +604,20 @@ const Wishlist = () => {
                                       <div className="row mt-1">
                                         <div className="col-6">
                                           <p className="ms-2 mb-0 fw-medium">
-                                            <span className="font_size_14 fw-semibold text-info">
-                                              ₹{menu.price}
-                                            </span>
-                                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                              ₹{menu.oldPrice || menu.price}
-                                            </span>
+                                            {menu.offer ? (
+                                              <>
+                                                <span className="font_size_14 fw-semibold text-info">
+                                                  ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
+                                                </span>
+                                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                                  ₹{menu.price}
+                                                </span>
+                                              </>
+                                            ) : (
+                                              <span className="font_size_14 fw-semibold text-info">
+                                                ₹{menu.price}
+                                              </span>
+                                            )}
                                           </p>
                                         </div>
 

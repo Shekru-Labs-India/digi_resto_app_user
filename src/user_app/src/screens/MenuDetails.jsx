@@ -142,7 +142,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId, // Use currentRestaurantId
+            restaurant_id: currentRestaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             customer_id: customerId || null,
@@ -177,13 +177,12 @@ const MenuDetails = () => {
 
           if (location.state?.fromDifferentRestaurant) {
             setIsFromDifferentRestaurant(true);
-            // Store the current restaurant's name and ID for the warning message
             localStorage.setItem("differentRestaurantName", data.details.restaurant_name || '');
           }
         
-
-          const discountedPrice = offer ? price - (price * offer) / 100 : price;
-          const oldPrice = offer ? Math.floor(price * 1.1) : null;
+          // Calculate discounted and old prices
+          const discountedPrice = offer ? Math.floor(price * (1 - offer / 100)) : price;
+          const oldPrice = offer ? price : null;
 
           setProductDetails({
             name: menu_name,
@@ -207,7 +206,6 @@ const MenuDetails = () => {
           setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
           
-          // Compare with the context's restaurant ID
           const contextRestaurantId = restaurantId;
           const isDifferent = fetchedRestaurantId && contextRestaurantId && 
                             fetchedRestaurantId !== contextRestaurantId;
@@ -890,11 +888,13 @@ const MenuDetails = () => {
                       </span>
                       <div className="d-flex align-items-baseline">
                         <div className="font_size_14 fw-semibold text-info">
-                          ₹{(productDetails.price * quantity).toFixed(0)}
+                          ₹{(productDetails.discountedPrice * quantity).toFixed(0)}
                         </div>
-                        <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
-                          ₹{(productDetails.oldPrice * quantity).toFixed(0)}
-                        </span>
+                        {productDetails.oldPrice && (
+                          <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
+                            ₹{(productDetails.oldPrice * quantity).toFixed(0)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
