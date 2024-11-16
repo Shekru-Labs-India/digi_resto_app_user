@@ -508,7 +508,7 @@ const OfferBanner = () => {
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -536,9 +536,7 @@ const OfferBanner = () => {
                       ></i>
                     </div>
                     {menu.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {menu.offer}% Off
@@ -637,7 +635,7 @@ const OfferBanner = () => {
                               showLoginPopup();
                             }}
                           >
-                            <i className="ri-shopping-cart-2-line fs-6"></i>
+                            <i className="ri-shopping-cart-line fs-6"></i>
                           </div>
                         )}
                       </div>

@@ -376,7 +376,6 @@ const Cart = () => {
                           height: "100%",
                           objectFit: "fill",
                           aspectRatio: "1/1",
-                          
                         }}
                         onError={(e) => {
                           e.target.src = images;
@@ -402,20 +401,16 @@ const Cart = () => {
                           className={`${
                             item.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
                       {item.offer !== 0 && (
-                        <div
-                          className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                        >
-                          
-                            <span className="font_size_10 text-white">
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                          <span className="font_size_10 text-white">
                             <i className="ri-percent-line me-1 "></i>
-                              {item.offer}% Off
-                            </span>
-                          
+                            {item.offer}% Off
+                          </span>
                         </div>
                       )}
                       <div
@@ -581,7 +576,7 @@ const Cart = () => {
                       </div>
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 font_size_14 pt-1 gray-text" >
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
                             Service Charges{" "}
                             <span className="gray-text small-number">
                               ({cartDetails.service_charges_percent}%)
@@ -653,7 +648,7 @@ const Cart = () => {
                   to="/user_app/Menu"
                   className="btn btn-outline-primary  rounded-pill  px-3"
                 >
-                <i className="ri-add-circle-line me-1 fs-4"></i>  Order More 
+                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
                 </Link>
               </div>
             </div>

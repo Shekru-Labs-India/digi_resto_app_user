@@ -512,7 +512,6 @@ const MenuDetails = () => {
                         objectFit: "cover",
                         transition: "opacity 0.3s ease",
                         aspectRatio: "16/9",
-                       
                       }}
                     />
 
@@ -623,7 +622,7 @@ const MenuDetails = () => {
                           productDetails.menu_veg_nonveg?.toLowerCase() ===
                           "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -653,9 +652,7 @@ const MenuDetails = () => {
 
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
@@ -665,17 +662,16 @@ const MenuDetails = () => {
                   </>
                 ) : (
                   <>
-                  <img
-                    src={images}
-                    alt={productDetails.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      
-                    }}
-                  />
-                  <div
+                    <img
+                      src={images}
+                      alt={productDetails.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div
                       className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "border-success"
@@ -697,7 +693,7 @@ const MenuDetails = () => {
                           productDetails.menu_veg_nonveg?.toLowerCase() ===
                           "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -727,18 +723,14 @@ const MenuDetails = () => {
 
                     {/* Discount badge */}
                     {productDetails?.offer !== 0 && (
-                      <div
-                        className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-
-                      >
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
                           <i className="ri-percent-line me-1 "></i>
                           {productDetails.offer}% Off
                         </span>
                       </div>
                     )}
-
-                 </>
+                  </>
                 )}
               </div>
             </div>
@@ -755,14 +747,12 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-            {productDetails.is_special && (
-                         
-                            <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                              Special
-                              <hr className="mt-2 mb-0" />
-                            
-                          </div>
-                        )}
+              {productDetails.is_special && (
+                <div className=" text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                  Special
+                  <hr className="mt-2 mb-0" />
+                </div>
+              )}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -888,9 +878,7 @@ const MenuDetails = () => {
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
           <div className="container pt-0">
-            <footer className="footer mb-2 pt-0"
-            
-            >
+            <footer className="footer mb-2 pt-0">
               <div className="row">
                 <hr className="dashed-line me-5 pe-5" />
 
@@ -918,9 +906,7 @@ const MenuDetails = () => {
                       onClick={showLoginPopup}
                     >
                       <i className="ri-login-box-line pe-1 "></i>
-                      <div className="text-nowrap ">
-                        Login to Order
-                      </div>
+                      <div className="text-nowrap ">Login to Order</div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button
@@ -980,48 +966,55 @@ const MenuDetails = () => {
                 margin: "auto",
               }}
             >
-              <div className="modal-header d-flex justify-content-center">
-                <div className="modal-title font_size_16 fw-medium">
-                  Add to Cart
+              <div className="modal-header ps-3 pe-2">
+                <div className="col-6 text-start">
+                  <div className="modal-title font_size_16 fw-medium">
+                    Add to Cart
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
-                >
-                  <i className="ri-close-line"></i>
-                </button>
+
+                <div className="col-6 text-end">
+                  <div className="d-flex justify-content-end">
+                    <span
+                      className="btn-close m-2 font_size_12"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="modal-body py-3">
+              <div className="modal-body py-2 px-3">
                 <div className="mb-3 mt-0">
                   <label
                     htmlFor="notes"
-                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                    className="form-label d-flex justify-content-start font_size_14 fw-normal"
                   >
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-4"
+                    className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label d-flex justify-content-center">
+                <hr />
+                <div className="mb-2">
+                  <label className="form-label d-flex justify-content-between">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-between">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
                         <button
                           type="button"
-                          className={`btn rounded-pill me-2 font_size_14  ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "half"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -1033,7 +1026,7 @@ const MenuDetails = () => {
                         </button>
                         <button
                           type="button"
-                          className={`btn rounded-pill font_size_14 ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -1048,22 +1041,21 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="modal-footer justify-content-center">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-secondary rounded-pill"
+                  className="btn btn-outline-secondary rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
                 </button>
-
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1"></i>
+                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

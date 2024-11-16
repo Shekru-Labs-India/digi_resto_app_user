@@ -187,18 +187,18 @@ const HomeScreen = () => {
                       alignItems: "center",
                       height: "24px", // Adjust height
                       width: "24px", // Adjust width
-                       backgroundColor: "#d4e3dd"
+                      backgroundColor: "#d4e3dd",
                     }}
                   >
                     {isVegOnly ? (
                       <i
                         className="ri-checkbox-blank-circle-fill text-success"
-                        style={{ fontSize: "16px", }} // Adjust icon size
+                        style={{ fontSize: "16px" }} // Adjust icon size
                       ></i>
                     ) : (
                       <i
-                        className="ri-checkbox-blank-circle-fill text-danger"
-                        style={{ fontSize: "16px",  }} // Adjust icon size
+                        className="ri-triangle-fill text-danger"
+                        style={{ fontSize: "16px" }} // Adjust icon size
                       ></i>
                     )}
                   </div>
@@ -277,7 +277,7 @@ const HomeScreen = () => {
             <li>
               <Link className="nav-link active" to="/user_app/MyOrder">
                 <span className="dz-icon icon-sm">
-                  <i className="ri-drinks-2-line fs-4"></i>
+                  <i className="ri-history-line fs-4"></i>
                 </span>
                 <span className=" font_size_16  fw-medium">My Orders</span>
               </Link>
@@ -382,17 +382,15 @@ const HomeScreen = () => {
               </Link>
             </div>
 
-            <div className="text-center text-md-center mt-2 gray-text mb-5">
+            <div className="text-center text-md-center mt-2 gray-text mb-5 font_size_12">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
-                className="gray-text"
+                className="text-success font_size_12"
                 href="https://www.shekruweb.com"
                 target="_blank"
-                style={{ color: "#0d775e" }}
               >
                 Shekru Labs India Pvt. Ltd.
               </a>
-              {/* <div className="">v1.1</div> */}
             </div>
           </div>
         </div>

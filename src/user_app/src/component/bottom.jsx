@@ -85,7 +85,7 @@ const Bottom = () => {
             location.pathname === "/user_app/MyOrder" ? "active" : ""
           }`}
         >
-          <i className="ri-drinks-2-line"></i>
+          <i className="ri-history-line"></i>
           <span className="name">My Order</span>
         </Link>
 
