@@ -88,18 +88,18 @@ const Category = () => {
   };
 
   if (!userData.restaurantId) {
-    navigate("/user_app/Signinscreen", { 
-      state: { 
-        returnTo: "/user_app/Category" 
-      } 
-    });
+    // navigate("/user_app/Signinscreen", { 
+    //   state: { 
+    //     returnTo: "/user_app/Category" 
+    //   } 
+    // });
   }
 
-  if (userData?.customer_type === 'guest') {
-    window.showToast("info", "Please login to view categories");
-    navigate("/user_app/Signinscreen");
-    return;
-  }
+  // if (userData?.customer_type === 'guest') {
+  //   window.showToast("info", "Please login to view categories");
+  //   navigate("/user_app/Category");
+  //   return;
+  // }
 
   if (!contextRestaurantId) {
     const restaurantCode = localStorage.getItem("restaurantCode");
@@ -125,41 +125,44 @@ const Category = () => {
               restaurantName={restaurantName}
               tableNumber={tableNumber}
             />
-            
-            <div className="page-header">
-              <h5 className="header-title text-muted">What's on your mind?</h5>
-            </div>
           </div>
           
           {categories.length > 0 ? (
-            <div className="container">
-              <div className="category-grid">
+            <div className="container pt-0">
+              <div className="row g-3">
                 {categories.map((category, index) => (
-                 <Link
-                 key={index}
-                 to={`/user_app/Menu/${category.menu_cat_id}`}
-                 className="category-card"
-                 onClick={() => handleCategoryClick(category)}
-               >
-                 <div className="category-image-container">
-                   <img
-                     className="category-image"
-                     src={category.image || defaultImg}
-                     alt={category.category_name}
-                     onError={(e) => {
-                       e.target.src = defaultImg;
-                     }}
-                   />
-                 </div>
-                 <div className="category-text-container">
-                   <div className=" font_size_10">
-                     {toTitleCase(category.category_name)}
-                   </div>
-                   <div className="category-count">
-                     ({category.menu_count})
-                   </div>
-                 </div>
-               </Link>
+                  <div className="col-6" key={index}>
+                    <div className="dz-category-items border overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
+                      <Link
+                        to={`/user_app/Menu/${category.menu_cat_id}`}
+                        className="d-block"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <div className="d-flex justify-content-center bg-white">
+                          <span className="py-2 rounded-bottom-3 text-center m-0 font_size-14 text-success">
+                            {toTitleCase(category.category_name)}
+                            <span className="small-number gray-text">
+                              <span className=""> ({category.menu_count})</span>
+                            </span>
+                          </span>
+                        </div>
+                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
+                          <img
+                            style={{
+                              width: "100%",
+                              height: "180px",
+                              objectFit: "cover",
+                            }}
+                            src={category.image || defaultImg}
+                            alt={category.category_name}
+                            onError={(e) => {
+                              e.target.src = defaultImg;
+                            }}
+                          />
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

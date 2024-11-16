@@ -91,13 +91,13 @@ const Profile = () => {
             <div className="profile-area">
               <div className="main-profile">
                 <div className="d-flex align-items-center">
-                  <h4 className="name mb-0">
+                  <div className="name mb-0">
                     <div className="text-end">
                       {isLoggedIn ? (
                         <>
                           <Link to="/user_app/Profile">
                             <i className="ri-user-3-fill me-2 font_size_14 "></i>
-                            <span className="font_size_14">
+                            <span className="font_size_14 fw-medium">
                               Hello, {toTitleCase(getFirstName(userData.name))}
                             </span>
                           </Link>
@@ -111,7 +111,7 @@ const Profile = () => {
                         </button>
                       )}
                     </div>
-                  </h4>
+                  </div>
                 </div>
               </div>
               <div className="content-box">
@@ -130,7 +130,7 @@ const Profile = () => {
                       to="/user_app/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-drinks-2-line me-2 font_size_16"></i>
+                      <i className="ri-history-line me-2 font_size_16"></i>
                       <span className=" ">My Order</span>
                     </Link>
                   </li>
@@ -150,6 +150,24 @@ const Profile = () => {
                     >
                       <i className="ri-heart-3-line me-2 font_size_16"></i>
                       <span className=" ">Favourite</span>
+                    </Link>
+                  </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/Search"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-search-line me-2 font_size_16"></i>
+                      <span className=" ">Search</span>
+                    </Link>
+                  </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/Category"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="ri-list-check-2 me-2 font_size_16"></i>
+                      <span className=" ">Category</span>
                     </Link>
                   </li>
                 </ul>
@@ -265,16 +283,13 @@ const Profile = () => {
           </div>
           <div className="text-center">
             <a
-              className="gray-text"
+              className="text-success font_size_12 "
               href="https://www.shekruweb.com"
               target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#0d775e" }}
             >
               Shekru Labs India Pvt. Ltd.
             </a>
           </div>
-          {/* <div className="">v1.1</div> */}
         </div>
       </>
     );

@@ -10,8 +10,8 @@ import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { Toast } from "../assets/js/toast";
-import { usePopup } from '../context/PopupContext';
-import config from "./config"
+import { usePopup } from "../context/PopupContext";
+import config from "./config";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -52,38 +52,47 @@ const ProductCard = ({ isVegOnly }) => {
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
-    
+
     // Set total count before applying any filters
     setTotalMenuCount(menus.length);
 
-    // Calculate category counts from full menu list before filtering
-    const fullMenuCountByCategory = menus.reduce((acc, menu) => {
-      acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
-      return acc;
-    }, {});
+    // Count special items
+    const specialItemsCount = menus.filter(menu => menu.is_special === true).length;
 
-    // Apply filters for display
+    // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
       );
     }
 
-    if (categoryId !== null) {
-      filteredMenus = filteredMenus.filter(
-        (menu) => menu.menu_cat_id === categoryId
-      );
+    // Handle category filtering
+    if (categoryId === "special") {
+      filteredMenus = menus.filter(menu => menu.is_special === true);
+    } else if (categoryId) {
+      filteredMenus = filteredMenus.filter(menu => menu.menu_cat_id === categoryId);
     }
 
+    // If no items found after filtering, set empty array
     setFilteredMenuList(filteredMenus);
 
-    // Update categories with counts from full menu list
-    setMenuCategories((prevCategories) =>
-      prevCategories.map((category) => ({
-        ...category,
-        menu_count: fullMenuCountByCategory[category.menu_cat_id] || 0,
-      }))
-    );
+    // Update categories with counts
+    const categoryCounts = menus.reduce((acc, menu) => {
+      if (menu.menu_cat_id) {
+        acc[menu.menu_cat_id] = (acc[menu.menu_cat_id] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    // Update special count in UI
+    if (specialItemsCount > 0) {
+      setMenuCategories(prevCategories => [
+        ...prevCategories.map(category => ({
+          ...category,
+          menu_count: categoryCounts[category.menu_cat_id] || 0
+        }))
+      ]);
+    }
   }, []);
 
   // Optimized category selection handler
@@ -95,13 +104,14 @@ const ProductCard = ({ isVegOnly }) => {
   // Fetch menu data with optimized updates
   const fetchMenuData = useCallback(async () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const storedRestaurantId = restaurantId || localStorage.getItem("restaurantId");
-    
+    const storedRestaurantId =
+      restaurantId || localStorage.getItem("restaurantId");
+
     if (!storedRestaurantId) return;
-    
+
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,10 +138,12 @@ const ProductCard = ({ isVegOnly }) => {
         }));
 
         setMenuList(formattedMenuList);
-        setMenuCategories(data.data.category.map((category) => ({
-          ...category,
-          name: toTitleCase(category.category_name),
-        })));
+        setMenuCategories(
+          data.data.category.map((category) => ({
+            ...category,
+            name: toTitleCase(category.category_name),
+          }))
+        );
 
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
@@ -195,18 +207,26 @@ const ProductCard = ({ isVegOnly }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      showLoginPopup();
-      return;
-    }
+    // const userData = JSON.parse(localStorage.getItem("userData"));
+    // if (!userData?.customer_id) {
+    //   showLoginPopup();
+    //   return;
+    // }
+
+       const userData = JSON.parse(localStorage.getItem("userData"));
+       if (!userData?.customer_id || userData.customer_type === "guest") {
+         handleUnauthorizedFavorite();
+         return;
+       }
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -244,7 +264,9 @@ const ProductCard = ({ isVegOnly }) => {
 
           window.showToast(
             "success",
-            updatedFavoriteStatus ? "Item has been added to your favorites." : "Item has been removed from your favorites."
+            updatedFavoriteStatus
+              ? "Item has been added to your favorites."
+              : "Item has been removed from your favorites."
           );
         } else {
           console.clear();
@@ -283,7 +305,7 @@ const ProductCard = ({ isVegOnly }) => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -300,7 +322,10 @@ const ProductCard = ({ isVegOnly }) => {
         setFullPrice(data.menu_detail.full_price);
       } else {
         console.clear();
-        window.showToast("error", data.msg || "Failed to fetch price information");
+        window.showToast(
+          "error",
+          data.msg || "Failed to fetch price information"
+        );
       }
     } catch (error) {
       console.clear();
@@ -329,35 +354,42 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   // Updated renderCartIcon
-  const renderCartIcon = useCallback((menu) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return (
-      <div
-        className="border border-1 rounded-circle bg-white opacity-75"
-        style={{
-          border: "1px solid gray",
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "25px",
-          height: "25px",
-          cursor: "pointer"
-        }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (userData?.customer_id) {
-            handleAddToCartClick(menu);
-          } else {
-            showLoginPopup();
-          }
-        }}
-      >
-        <i className={`ri-shopping-cart-${isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"} fs-6`}></i>
-      </div>
-    );
-  }, [handleAddToCartClick, isMenuItemInCart]);
+  const renderCartIcon = useCallback(
+    (menu) => {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      return (
+        <div
+          className="border border-1 rounded-circle bg-white opacity-75"
+          style={{
+            border: "1px solid gray",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "25px",
+            height: "25px",
+            cursor: "pointer",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (userData?.customer_id) {
+              handleAddToCartClick(menu);
+            } else {
+              showLoginPopup();
+            }
+          }}
+        >
+          <i
+            className={`ri-shopping-cart-${
+              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
+            } fs-6`}
+          ></i>
+        </div>
+      );
+    },
+    [handleAddToCartClick, isMenuItemInCart]
+  );
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
@@ -368,7 +400,8 @@ const ProductCard = ({ isVegOnly }) => {
       return;
     }
 
-    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+    const currentRestaurantId =
+      restaurantId || localStorage.getItem("restaurantId");
     if (!currentRestaurantId) {
       console.clear();
       window.showToast("error", "Restaurant information is missing.");
@@ -406,7 +439,10 @@ const ProductCard = ({ isVegOnly }) => {
         window.showToast("info", "This item is already in your cart.");
       } else {
         console.clear();
-        window.showToast("error", "Failed to add item to cart. Please try again.");
+        window.showToast(
+          "error",
+          "Failed to add item to cart. Please try again."
+        );
       }
     }
   };
@@ -434,16 +470,50 @@ const ProductCard = ({ isVegOnly }) => {
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
             <span className="font_size_14 fw-medium">Menu</span>
-            <Link to="/user_app/Category">
+            <Link to="/user_app/Menu">
+              <span>see all</span>
               <i className="ri-arrow-right-line"></i>
             </Link>
           </div>
         )}
+
+        {/* <div className="d-flex justify-content-center">
+          {totalMenuCount > 0 && menuCategories.length > 0 && (
+            <div
+              className={`btn mb-2 rounded-xl bg-info text-white py-1 px-3 font_size_14 ${
+                selectedCategoryId === "special" ? "active " : ""
+              }`}
+              onClick={() => handleCategorySelect("special")}
+            >
+              <i className="ri-bard-line me-2"></i> Special{" "}
+            </div>
+          )}
+        </div> */}
+
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            {totalMenuCount > 0 && menuCategories.length > 0 && (
+            {/* Special button - always first */}
+            <div className="swiper-slide">
               <div
-                className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
+                className={`category-btn font_size_14 rounded-5 ${
+                  selectedCategoryId === "special" ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect("special")}
+                style={{
+                  backgroundColor: "#0D9EDF", // Blue background
+                  color: "#ffffff", // White text
+                  border: "none",
+                }}
+              >
+                <i className="ri-bard-line me-2"></i>
+                Special ({menuList.filter((menu) => menu.is_special).length})
+              </div>
+            </div>
+
+            {/* All button */}
+            <div className="swiper-slide">
+              <div
+                className={`category-btn font_size_14 border border-2 rounded-5 ${
                   selectedCategoryId === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
@@ -452,17 +522,15 @@ const ProductCard = ({ isVegOnly }) => {
                   color: selectedCategoryId === null ? "#ffffff" : "",
                 }}
               >
-                All{" "}
-                <span className="small-number gray-text">
-                  ({totalMenuCount})
-                </span>
+                All ({totalMenuCount})
               </div>
-            )}
+            </div>
 
+            {/* Regular category buttons */}
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn font_size_14 border border-2 rounded-5     ${
+                  className={`category-btn font_size_14 border border-2 rounded-5 ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -477,10 +545,7 @@ const ProductCard = ({ isVegOnly }) => {
                         : "",
                   }}
                 >
-                  {category.name}{" "}
-                  <span className="small-number gray-text">
-                    ({category.menu_count})
-                  </span>
+                  {category.name} ({category.menu_count})
                 </div>
               </div>
             ))}
@@ -520,7 +585,7 @@ const ProductCard = ({ isVegOnly }) => {
                       loading="lazy"
                     />
                     <div
-                      className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         menu.menu_veg_nonveg.toLowerCase() === "veg"
                           ? "border-success"
                           : "border-danger"
@@ -539,7 +604,7 @@ const ProductCard = ({ isVegOnly }) => {
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -577,9 +642,10 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="font_size_12 ">
                         {menu.is_special && (
                           <div className="row ">
-                            <div className="col-12 text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
+                              <i className="ri-bard-line me-2"></i>
                               Special
-                              <hr className="mt-2 mb-0" />
+                            
                             </div>
                           </div>
                         )}
@@ -663,52 +729,55 @@ const ProductCard = ({ isVegOnly }) => {
                 margin: "auto",
               }}
             >
-              <div className="modal-header d-flex justify-content-center">
-                <div className="modal-title font_size_16 fw-medium">
-                  Add to Cart
+              <div className="modal-header ps-3 pe-2">
+                <div className="col-6 text-start">
+                  <div className="modal-title font_size_16 fw-medium">
+                    Add to Cart
+                  </div>
                 </div>
-                <span
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white fs-4"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
-                >
-                  <i className="ri-close-line "></i>
-                </span>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
+
+                <div className="col-6 text-end">
+                  <div className="d-flex justify-content-end">
+                    <span
+                      className="btn-close m-2 font_size_12"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="modal-body py-3">
+              <div className="modal-body py-2 px-3">
                 <div className="mb-3 mt-0">
                   <label
                     htmlFor="notes"
-                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                    className="form-label d-flex justify-content-start font_size_14 fw-normal"
                   >
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-4"
+                    className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
-                    rows="3"
+                    rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label d-flex justify-content-center">
+                <hr />
+                <div className="mb-2">
+                  <label className="form-label d-flex justify-content-between">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-between">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
                         <button
                           type="button"
-                          className={`btn rounded-pill me-2 font_size_14  ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "half"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -720,7 +789,7 @@ const ProductCard = ({ isVegOnly }) => {
                         </button>
                         <button
                           type="button"
-                          className={`btn rounded-pill font_size_14 ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -735,13 +804,13 @@ const ProductCard = ({ isVegOnly }) => {
                   </div>
                 </div>
               </div>
-              <div className="modal-footer justify-content-center">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-primary  rounded-pill"
+                  className="btn btn-outline-dark rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                 Close
                 </button>
                 <button
                   type="button"

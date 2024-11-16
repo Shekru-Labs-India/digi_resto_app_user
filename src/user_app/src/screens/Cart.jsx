@@ -141,24 +141,24 @@ const Cart = () => {
   }, []);
 
   const handleProceedToBuy = () => {
-    const checkoutData = {
-      cartItems: cartDetails.order_items,
-      totalBill: cartDetails.total_bill,
-      serviceCharges: cartDetails.service_charges_amount,
-      serviceChargesPercent: cartDetails.service_charges_percent,
-      gstAmount: cartDetails.gst_amount,
-      gstPercent: cartDetails.gst_percent,
-      discountAmount: cartDetails.discount_amount,
-      discountPercent: cartDetails.discount_percent,
-      grandTotal: cartDetails.grand_total,
-      customerId: userData.customer_id,
-      customerType: userData.customer_type,
-      restaurantId: restaurantId,
-      restaurantName: restaurantName,
-      cartId: getCartId(),
-    };
-
-    navigate("/user_app/Checkout", { state: { checkoutData } });
+    // const checkoutData = {
+    //   cartItems: cartDetails.order_items,
+    //   totalBill: cartDetails.total_bill,
+    //   serviceCharges: cartDetails.service_charges_amount,
+    //   serviceChargesPercent: cartDetails.service_charges_percent,
+    //   gstAmount: cartDetails.gst_amount,
+    //   gstPercent: cartDetails.gst_percent,
+    //   discountAmount: cartDetails.discount_amount,
+    //   discountPercent: cartDetails.discount_percent,
+    //   grandTotal: cartDetails.grand_total,
+    //   customerId: userData.customer_id,
+    //   customerType: userData.customer_type,
+    //   restaurantId: restaurantId,
+    //   restaurantName: restaurantName,
+    //   cartId: getCartId(),
+    // };
+    navigate("/user_app/Checkout");
+   // navigate("/user_app/Checkout", { state: { checkoutData } });
   };
 
   const handleRemoveFromCart = async (item) => {
@@ -376,14 +376,13 @@ const Cart = () => {
                           height: "100%",
                           objectFit: "fill",
                           aspectRatio: "1/1",
-                          
                         }}
                         onError={(e) => {
                           e.target.src = images;
                         }}
                       />
                       <div
-                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           item.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
                             : "border-danger"
@@ -402,20 +401,16 @@ const Cart = () => {
                           className={`${
                             item.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
                       {item.offer !== 0 && (
-                        <div
-                          className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                        >
-                          
-                            <span className="font_size_10 text-white">
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                          <span className="font_size_10 text-white">
                             <i className="ri-percent-line me-1 "></i>
-                              {item.offer}% Off
-                            </span>
-                          
+                            {item.offer}% Off
+                          </span>
                         </div>
                       )}
                       <div
@@ -498,7 +493,7 @@ const Cart = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="row pb-2 pe-2">
+                      <div className="row pe-2">
                         <div className="col-8 mx-0 my-auto px-0">
                           <p className="mb-0  fw-medium">
                             <span className="ms-3 font_size_14 fw-semibold text-info">
@@ -581,7 +576,7 @@ const Cart = () => {
                       </div>
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 font_size_14 pt-1 gray-text" >
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
                             Service Charges{" "}
                             <span className="gray-text small-number">
                               ({cartDetails.service_charges_percent}%)
@@ -653,7 +648,7 @@ const Cart = () => {
                   to="/user_app/Menu"
                   className="btn btn-outline-primary  rounded-pill  px-3"
                 >
-                <i className="ri-add-circle-line me-1 fs-4"></i>  Order More 
+                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
                 </Link>
               </div>
             </div>

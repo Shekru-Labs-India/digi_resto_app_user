@@ -5,13 +5,13 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import { usePopup } from '../context/PopupContext';
+import { usePopup } from "../context/PopupContext";
 
 import Bottom from "../component/bottom";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
-import config from "../component/config"
+import config from "../component/config";
 import "../assets/css/toast.css";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -56,8 +56,8 @@ const Product = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
-  const [portionSize, setPortionSize] = useState('full');
-  const [notes, setNotes] = useState('');
+  const [portionSize, setPortionSize] = useState("full");
+  const [notes, setNotes] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -116,7 +116,7 @@ const Product = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        // Formatting the menu list
+      // Formatting the menu list
         const formattedMenuList = data.data.menus.map((menuItem) => ({
           ...menuItem,
           name: toTitleCase(menuItem.menu_name || ""),
@@ -128,7 +128,7 @@ const Product = () => {
         setMenuList(formattedMenuList);
         localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
 
-        // Formatting the categories
+        // Format categories without adding Special category to slider
         const formattedCategories = data.data.category.map((category) => ({
           ...category,
           name: toTitleCase(category.category_name || ""),
@@ -136,32 +136,13 @@ const Product = () => {
 
         setCategories(formattedCategories);
 
-        // Initialize category counts correctly
-        const counts = { All: formattedMenuList.length };
-
-        formattedCategories.forEach((category) => {
-          counts[category.name] = 0;
-        });
-
-        formattedMenuList.forEach((item) => {
-          counts[item.category] = (counts[item.category] || 0) + 1;
-        });
-
-        setCategoryCounts(counts);
-
-        // Handle favorites
-        const favoriteItems = formattedMenuList.filter(
-          (item) => item.is_favourite
-        );
-        setFavorites(favoriteItems);
-
-        // Set the filtered menu list (initially show all)
+        // Handle special items in filtering logic
+        const specialItems = formattedMenuList.filter(item => item.is_special);
         setFilteredMenuList(formattedMenuList);
       } else {
         throw new Error("API request unsuccessful");
       }
     } catch (error) {
-      
     } finally {
       setIsLoading(false);
     }
@@ -194,13 +175,12 @@ const Product = () => {
 
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
-  
   };
 
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       showLoginPopup();
       return;
     }
@@ -211,8 +191,8 @@ const Product = () => {
     const isFavorite = menuItem.is_favourite;
 
     const apiUrl = isFavorite
-      ?  `${config.apiDomain}/user_api/remove_favourite_menu`
-      :  `${config.apiDomain}/user_api/save_favourite_menu`;
+      ? `${config.apiDomain}/user_api/remove_favourite_menu`
+      : `${config.apiDomain}/user_api/save_favourite_menu`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -254,7 +234,6 @@ const Product = () => {
         }
       }
     } catch (error) {
-     
       window.showToast("error", "Failed to update favourite status");
     }
   };
@@ -283,13 +262,19 @@ const Product = () => {
   }, [categories, selectedCategory]);
 
   useEffect(() => {
-    if (selectedCategory) {
-      const filtered = menuList.filter(
-        (item) => item.menu_cat_id === selectedCategory
-      );
-      setFilteredMenuList(filtered);
-    } else {
-      setFilteredMenuList(menuList);
+    if (menuList.length > 0) {
+      let filtered = [...menuList];
+      
+      // Filter by category if selected
+      if (selectedCategory) {
+        filtered = menuList.filter(item => item.menu_cat_id === selectedCategory);
+      }
+
+      // Always include special items at the top of the list
+      const specialItems = menuList.filter(item => item.is_special);
+      const nonSpecialItems = filtered.filter(item => !item.is_special);
+      
+      setFilteredMenuList([...specialItems, ...nonSpecialItems]);
     }
   }, [selectedCategory, menuList]);
 
@@ -309,14 +294,13 @@ const Product = () => {
 
   const fetchHalfFullPrices = async (menuId) => {
     if (!restaurantId) {
-     
       return;
     }
 
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
@@ -337,7 +321,6 @@ const Product = () => {
         throw new Error(data.msg || "Failed to fetch price information");
       }
     } catch (error) {
-      
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -347,10 +330,10 @@ const Product = () => {
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
-      showLoginPopup();
-      return;
-    }
+    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    //   showLoginPopup();
+    //   return;
+    // }
 
     if (!restaurantId) {
       window.showToast("error", "Restaurant information is missing");
@@ -358,22 +341,22 @@ const Product = () => {
     }
 
     setSelectedMenu(menu);
-    setPortionSize('full');
+    setPortionSize("full");
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
-      showLoginPopup();
-      return;
-    }
+    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    //   showLoginPopup();
+    //   return;
+    // }
 
     if (!selectedMenu) return;
 
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       window.showToast("error", "Price information is not available");
       return;
@@ -390,35 +373,36 @@ const Product = () => {
         localStorage.setItem("restaurantId", restaurantId);
       }
 
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
 
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
+      setNotes("");
+      setPortionSize("full");
       setSelectedMenu(null);
-      
-      window.dispatchEvent(new Event('cartUpdated'));
 
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      
       window.showToast(
-        "error", 
+        "error",
         error.message || "Failed to add item to cart. Please try again."
       );
     }
   };
 
   const handleModalClick = (e) => {
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -465,43 +449,58 @@ const Product = () => {
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
               <div
-                className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
-                  selectedCategory === null ? "active" : ""
-                }`}
-                onClick={() => handleCategorySelect(null)}
-                style={{
-                  backgroundColor: selectedCategory === null ? "#0D775E" : "",
-                  color: selectedCategory === null ? "#ffffff" : "",
-                }}
+                className={`category-btn bg-info border border-1 border-info text-white font_size_14 rounded-5 swiper-slide`}
+                onClick={() => handleCategorySelect("special")}
               >
-                All{" "}
-                <span className="small-number gray-text">
-                  ({menuList.length})
-                </span>
+                <i className="ri-bard-line me-2"></i>
+                Special
               </div>
+              {menuList.length > 0 && categories.length > 0 && (
+                <>
+                  <div
+                    className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide ${
+                      selectedCategory === null ? "active" : ""
+                    }`}
+                    onClick={() => handleCategorySelect(null)}
+                    style={{
+                      backgroundColor:
+                        selectedCategory === null ? "#0D775E" : "",
+                      color: selectedCategory === null ? "#ffffff" : "",
+                    }}
+                  >
+                    All{" "}
+                    <span className="small-number gray-text">
+                      ({menuList.length})
+                    </span>
+                  </div>
+                </>
+              )}
+
               {categories.map((category) => (
-                <div
-                  key={category.menu_cat_id}
-                  className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide     ${
-                    selectedCategory === category.menu_cat_id ? "active" : ""
-                  }`}
-                  onClick={() => handleCategorySelect(category.menu_cat_id)}
-                  style={{
-                    backgroundColor:
-                      selectedCategory === category.menu_cat_id
-                        ? "#0D775E"
-                        : "",
-                    color:
-                      selectedCategory === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
-                  }}
-                >
-                  {category.category_name}{" "}
-                  <span className="small-number gray-text">
-                    ({category.menu_count})
-                  </span>
-                  
+                <div key={category.menu_cat_id} className="swiper-slide">
+                  <div
+                    className={`category-btn font_size_14 border border-2 rounded-5 ${
+                      selectedCategory === category.menu_cat_id ? "active" : ""
+                    }`}
+                    onClick={() => handleCategorySelect(category.menu_cat_id)}
+                    style={{
+                      backgroundColor:
+                        selectedCategory === category.menu_cat_id
+                          ? "#0D775E"
+                          : "",
+                      color:
+                        selectedCategory === category.menu_cat_id
+                          ? "#ffffff"
+                          : "",
+                    }}
+                  >
+                    {category.menu_cat_id === "special"
+                      ? category.category_name
+                      : category.name || category.category_name}{" "}
+                    <span className="small-number gray-text">
+                      ({category.menu_count})
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -517,7 +516,7 @@ const Product = () => {
                     to={`/user_app/ProductDetails/${menuItem.menu_id}`}
                     state={{
                       menu_cat_id: menuItem.menu_cat_id,
-                      fromProduct: true
+                      fromProduct: true,
                     }}
                     className="card-link"
                     style={{
@@ -540,7 +539,6 @@ const Product = () => {
                           aspectRatio: "1/1",
                           objectFit: "cover",
                           height: "100%",
-                         
                         }}
                         onError={(e) => {
                           e.target.src = images;
@@ -554,7 +552,6 @@ const Product = () => {
                           right: "3px",
                           height: "20px",
                           width: "20px",
-                          
                         }}
                       >
                         <i
@@ -571,7 +568,7 @@ const Product = () => {
                         ></i>
                       </div>
                       <div
-                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
                             : "border-danger"
@@ -590,49 +587,48 @@ const Product = () => {
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
                       {menuItem.offer !== 0 && (
-                        <div
-                          className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                        >
-                          
-                            <span className="font_size_10 text-white">
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                          <span className="font_size_10 text-white">
                             <i className="ri-percent-line me-1 "></i>
-                              {menuItem.offer}% Off
-                            </span>
-                          
+                            {menuItem.offer}% Off
+                          </span>
                         </div>
                       )}
                     </div>
 
                     <div className="dz-content pb-1">
-                      <div className="detail-content" style={{ position: "relative" }}>
+                      <div
+                        className="detail-content"
+                        style={{ position: "relative" }}
+                      >
                         {menuItem.is_special && (
                           <div className="row">
-                            <div className="col-12 text-success text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2 ">
+                              <i className="ri-bard-line me-2"></i>
                               Special
-                              <hr className="mt-2 mb-0" />
                             </div>
                           </div>
                         )}
-                      <div className="d-flex justify-content-between align-items-center">
-  <div className="fw-medium text-success font_size_10 d-flex align-items-center">
-    <i className="ri-restaurant-line pe-1"></i>
-    {categories.find(
-      (category) => category.menu_cat_id === menuItem.menu_cat_id
-    )?.name || menuItem.category}
-  </div>
-  <div className="text-end">
-    <i className="ri-star-half-line font_size_10 ratingStar"></i>
-    <span className="font_size_10 fw-normal gray-text ms-1">
-      {menuItem.rating}
-    </span>
-  </div>
-</div>
-
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="fw-medium text-success font_size_10 d-flex align-items-center">
+                            <i className="ri-restaurant-line pe-1"></i>
+                            {categories.find(
+                              (category) =>
+                                category.menu_cat_id === menuItem.menu_cat_id
+                            )?.name || menuItem.category}
+                          </div>
+                          <div className="text-end">
+                            <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                            <span className="font_size_10 fw-normal gray-text ms-1">
+                              {menuItem.rating}
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
                       {menuItem.name && (
@@ -669,11 +665,12 @@ const Product = () => {
                               <span className="font_size_14 me-2 text-info fw-semibold">
                                 ₹{menuItem.price}
                               </span>
-                              {menuItem.oldPrice !== 0 && menuItem.oldPrice !== null && (
-                                <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                  ₹{menuItem.oldPrice}
-                                </span>
-                              )}
+                              {menuItem.oldPrice !== 0 &&
+                                menuItem.oldPrice !== null && (
+                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                    ₹{menuItem.oldPrice}
+                                  </span>
+                                )}
                             </div>
                           </div>
                         </div>
@@ -723,7 +720,7 @@ const Product = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                              <i className="ri-shopping-cart-line fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -751,53 +748,55 @@ const Product = () => {
                 margin: "auto",
               }}
             >
-              <div className="modal-header d-flex justify-content-center">
-                <div className="modal-title font_size_16 fw-medium">
-                  Add to Cart
+              <div className="modal-header ps-3 pe-2">
+                <div className="col-6 text-start">
+                  <div className="modal-title font_size_16 fw-medium">
+                    Add to Cart
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
-                >
-                  <i className="ri-close-line"></i>
-                </button>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
+
+                <div className="col-6 text-end">
+                  <div className="d-flex justify-content-end">
+                    <span
+                      className="btn-close m-2 font_size_12"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="modal-body py-3">
+              <div className="modal-body py-2 px-3">
                 <div className="mb-3 mt-0">
                   <label
                     htmlFor="notes"
-                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                    className="form-label d-flex justify-content-start font_size_14 fw-normal"
                   >
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-4"
+                    className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label d-flex justify-content-center">
+                <hr />
+                <div className="mb-2">
+                  <label className="form-label d-flex justify-content-between">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-between">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
                         <button
                           type="button"
-                          className={`btn rounded-pill me-2 font_size_14  ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "half"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -809,7 +808,7 @@ const Product = () => {
                         </button>
                         <button
                           type="button"
-                          className={`btn rounded-pill font_size_14 ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -824,10 +823,10 @@ const Product = () => {
                   </div>
                 </div>
               </div>
-              <div className="modal-footer justify-content-center">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-secondary rounded-pill"
+                  className="btn btn-outline-secondary rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
@@ -838,7 +837,7 @@ const Product = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i class="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

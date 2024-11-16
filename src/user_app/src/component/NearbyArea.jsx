@@ -26,7 +26,7 @@ const NearbyArea = () => {
   const hasFetchedData = useRef(false);
   const { showLoginPopup } = usePopup();
 
-  // 1. Single useEffect for initialization and data fetching
+  
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
@@ -40,7 +40,7 @@ const NearbyArea = () => {
     if (restaurantId) {
       fetchMenuData();
     }
-  }, [restaurantId]); // Only re-run if restaurantId changes
+  }, [restaurantId]); 
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -77,7 +77,8 @@ const NearbyArea = () => {
 
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
-    
+    const currentCustomerId = customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -86,7 +87,7 @@ const NearbyArea = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: customerId || null,
+            customer_id: currentCustomerId,
             restaurant_id: restaurantId,
           }),
         }
@@ -117,11 +118,7 @@ const NearbyArea = () => {
     }
   }, [restaurantId, customerId]);
 
-  // Add polling effect
-  useEffect(() => {
-    const pollInterval = setInterval(fetchMenuData, 30000); // Poll every 30 seconds
-    return () => clearInterval(pollInterval);
-  }, [fetchMenuData]);
+  
 
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {
@@ -334,11 +331,17 @@ const NearbyArea = () => {
   };
 
   return (
-    <div className="dz-box style-2 nearby-area">
-      <div className="title-bar1 align-items-start mb-0 ">
-        <div className="left">
+    <div className="dz-box style-2 nearby-area pb-0">
+      <div className=" align-items-start mb-0 ">
+        <div className="">
           {menuItems.length > 0 && (
-            <h4 className="font_size_14 fw-medium">Our Speciality</h4>
+            <div className="title-bar">
+              <span className="font_size_14 fw-medium">Our Speciality</span>
+              <Link to="/user_app/Menu">
+                <span>see all</span>
+                <i className="ri-arrow-right-line"></i>
+              </Link>
+            </div>
           )}
         </div>
       </div>
@@ -374,7 +377,7 @@ const NearbyArea = () => {
                         loading="lazy"
                       />
                       <div
-                        className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
                             : "border-danger"
@@ -393,7 +396,7 @@ const NearbyArea = () => {
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-checkbox-blank-circle-fill text-danger"
+                              : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -421,9 +424,7 @@ const NearbyArea = () => {
                         ></i>
                       </div>
                       {menuItem.offer !== 0 && (
-                        <div
-                          className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer"
-                        >
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
                             <i className="ri-percent-line me-1 "></i>
                             {menuItem.offer}% Off
@@ -524,7 +525,7 @@ const NearbyArea = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-2-line fs-6"></i>
+                              <i className="ri-shopping-cart-line fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -552,48 +553,55 @@ const NearbyArea = () => {
                 margin: "auto",
               }}
             >
-              <div className="modal-header d-flex justify-content-center">
-                <div className="modal-title font_size_16 fw-medium">
-                  Add to Cart
+              <div className="modal-header ps-3 pe-2">
+                <div className="col-6 text-start">
+                  <div className="modal-title font_size_16 fw-medium">
+                    Add to Cart
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  className="btn-close position-absolute top-0 end-0 m-2 bg-danger text-white"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
-                >
-                  <i className="ri-close-line"></i>
-                </button>
+
+                <div className="col-6 text-end">
+                  <div className="d-flex justify-content-end">
+                    <span
+                      className="btn-close m-2 font_size_12"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="modal-body py-3">
+              <div className="modal-body py-2 px-3">
                 <div className="mb-3 mt-0">
                   <label
                     htmlFor="notes"
-                    className="form-label d-flex justify-content-center fs-5 fw-bold"
+                    className="form-label d-flex justify-content-start font_size_14 fw-normal"
                   >
                     Special Instructions
                   </label>
                   <textarea
-                    className="form-control fs-6 border border-primary rounded-3"
+                    className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
                     rows="3"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label d-flex justify-content-center">
+                <hr />
+                <div className="mb-2">
+                  <label className="form-label d-flex justify-content-between">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-between">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
                         <button
                           type="button"
-                          className={`btn rounded-pill me-2 font_size_14  ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "half"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -605,7 +613,7 @@ const NearbyArea = () => {
                         </button>
                         <button
                           type="button"
-                          className={`btn rounded-pill font_size_14 ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
@@ -620,10 +628,10 @@ const NearbyArea = () => {
                   </div>
                 </div>
               </div>
-              <div className="modal-footer justify-content-center">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-primary  rounded-pill"
+                  className="btn btn-outline-secondary rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
@@ -634,7 +642,7 @@ const NearbyArea = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

@@ -181,6 +181,7 @@ export const SidebarToggler = () => {
                     alignItems: "center",
                     height: "24px", // Adjust height
                     width: "24px", // Adjust width
+                    backgroundColor: "#d4e3dd",
                   }}
                 >
                   {isVegOnly ? (
@@ -190,7 +191,7 @@ export const SidebarToggler = () => {
                     ></i>
                   ) : (
                     <i
-                      className="ri-checkbox-blank-circle-fill text-danger"
+                      className="ri-triangle-fill text-danger"
                       style={{ fontSize: "16px" }} // Adjust icon size
                     ></i>
                   )}
@@ -217,7 +218,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/MyOrder">
               <span className="dz-icon icon-sm">
-                <i className="ri-drinks-2-line fs-4"></i>
+                <i className="ri-history-line fs-4"></i>
               </span>
               <span className="  font_size_16 fw-medium ">My Orders</span>
             </Link>
@@ -321,16 +322,13 @@ export const SidebarToggler = () => {
           </div>
           <div className="text-center mb-5">
             <a
-              className="gray-text"
+              className="text-success font_size_12"
               href="https://www.shekruweb.com"
               target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#0d775e" }}
             >
               Shekru Labs India Pvt. Ltd.
             </a>
           </div>
-          {/* <div className="">v1.1</div> */}
         </div>
       </div>
     </>

@@ -11,9 +11,10 @@ import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
 import config from "../component/config";
+import axios from 'axios';
 const Checkout = () => {
   
-  const location = useLocation();
+  
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart } = useCart();
@@ -22,24 +23,27 @@ const Checkout = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
 
-  const [checkoutData, setCheckoutData] = useState(null);
+  const location = useLocation();
+  // const [cartItems, setCartItems] = useState([]);
+ 
+  const [showPopup, setShowPopup] = useState(false);
+ 
+ 
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [tax, setTax] = useState(0);
-  const [grandTotal, setGrandTotal] = useState(0);
-  const [showPopup, setShowPopup] = useState(false);
-  const [serviceCharges, setServiceCharges] = useState(0);
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
+  const [serviceCharges, setServiceCharges] = useState(0);
   const [gstPercent, setGstPercent] = useState(0);
+  const [tax, setTax] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
- 
- 
-  const [orderCount, setOrderCount] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [cartId, setCartId] = useState(null);
+
  
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-  const [cartId, setCartId] = useState(null);
+
   const [newOrderNumber, setNewOrderNumber] = useState(null);
   const [existingOrderDetails, setExistingOrderDetails] = useState({
     orderNumber: "",
@@ -76,86 +80,72 @@ const Checkout = () => {
     setCustomerType(currentCustomerType);
   }, []);
 
+
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+    const cartId = getCartId();
+  
+    if (!cartId || !currentCustomerId || !restaurantId) {
+      return;
+    }
+  
+    fetchCartDetails();
+    
+  }, [location]);
+  
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
-
+  
     if (!cartId || !currentCustomerId || !restaurantId) {
+      
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_cart_detail`,
+      const response = await axios.post(
+       `${config.apiDomain}/user_api/get_cart_detail`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: currentCustomerId,
-            restaurant_id: restaurantId,
-          }),
+          cart_id: cartId,
+          customer_id: currentCustomerId,
+          restaurant_id: restaurantId,
         }
       );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setCartId(data.cart_id);
-        const updatedOrderItems = data.order_items.map((item) => ({
-          ...item,
-          oldPrice: Math.floor(item.price * 1.1),
-        }));
-        setCartItems(updatedOrderItems);
-        setTotal(parseFloat(data.total_bill) || 0);
-        setDiscount(parseFloat(data.discount_amount) || 0);
-        setTax(parseFloat(data.gst_amount) || 0);
-        setGrandTotal(parseFloat(data.grand_total) || 0);
-        setServiceCharges(parseFloat(data.service_charges_amount) || 0);
-        setServiceChargesPercent(parseFloat(data.service_charges_percent) || 0);
-        setGstPercent(parseFloat(data.gst_percent) || 0);
-        setDiscountPercent(parseFloat(data.discount_percent) || 0);
-        const uniqueMenuIds = new Set(
-          data.order_items.map((item) => item.menu_id)
-        );
-        setOrderCount(uniqueMenuIds.size);
+  
+      if (response.data.st === 1) {
+        const data = response.data;
+        setCartItems(data.order_items);
+        setTotal(parseFloat(data.total_bill));
+        setServiceChargesPercent(parseFloat(data.service_charges_percent));
+        setServiceCharges(parseFloat(data.service_charges_amount));
+        setGstPercent(parseFloat(data.gst_percent));
+        setTax(parseFloat(data.gst_amount));
+        setDiscountPercent(parseFloat(data.discount_percent));
+        setDiscount(parseFloat(data.discount_amount));
+        setGrandTotal(parseFloat(data.grand_total));
+        setCartId(data.cart_id); // Store the cart ID for future use
       } else {
-        navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
+        console.error("Failed to fetch cart details:", response.data.msg);
+        
       }
     } catch (error) {
-      navigate(`/user_app/${restaurantCode}/${tableNumber || ""}`);
+      console.error("Error fetching cart details:", error);
     }
   };
+  
 
-  useEffect(() => {
-    const data = location.state?.checkoutData;
-    if (data) {
-      setCheckoutData(data);
-      setCartItems(data.cartItems);
-      setTotal(data.totalBill);
-      setDiscount(data.discountAmount);
-      setTax(data.gstAmount);
-      setGrandTotal(data.grandTotal);
-      setServiceCharges(data.serviceCharges);
-      setServiceChargesPercent(data.serviceChargesPercent);
-      setGstPercent(data.gstPercent);
-      setDiscountPercent(data.discountPercent);
-      setOrderCount(data.cartItems.length);
-    } else {
-      // Instead of navigating, set an error state
-    }
-  }, [location.state]);
-
+ 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
     if (storedRestaurantCode) {
       setRestaurantCode(storedRestaurantCode);
     }
-    fetchCartDetails();
+    // fetchCartDetails();
   }, [restaurantId, customerId]);
 
   useEffect(() => {
@@ -244,7 +234,8 @@ const Checkout = () => {
       if (response.ok && data.st === 1) {
         clearCartData();
         setShowNewOrderModal(false);
-        navigate(`/user_app/TrackOrder/${data.order_number}`);
+        await fetchCartDetails();
+        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
@@ -296,7 +287,7 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.st === 1) {
+      if ( data.st === 1) {
         // Store the new order number from the API response
         const newOrderNumber = data.data.new_order_number;
 
@@ -304,7 +295,8 @@ const Checkout = () => {
         setShowPopup(true);
         setShowExistingOrderModal(false);
         clearCartData();
-
+        setNewOrderNumber(newOrderNumber);
+await fetchCartDetails()
         // Store the new order number in state or localStorage for navigation
         setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
       } else {
@@ -347,7 +339,7 @@ const Checkout = () => {
       if (response.ok && data.st === 1) {
         
         setShowPopup(true);
-
+await fetchCartDetails();
         clearCartData();
         setShowExistingOrderModal(false); // Close the modal
       } else {
@@ -367,8 +359,11 @@ const Checkout = () => {
       ? newOrderNumber
       : existingOrderDetails.orderNumber;
 
-    navigate(`/user_app/TrackOrder/${orderNumber}`);
+    // navigate(`/user_app/TrackOrder/${orderNumber}`);
+    navigate(`/user_app/MyOrder/`);
   };
+
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -385,11 +380,11 @@ const Checkout = () => {
         {showExistingOrderModal && (
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
-              <div className="p-3 border-bottom">
+              <div className="p-2 pb-2 border-bottom">
                 <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">
+                  <span className="mb-0 fs-5 fw-semibold text-muted text-start">
                     Existing Order Found
-                  </h5>
+                  </span>
                   <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowExistingOrderModal(false)}
@@ -399,7 +394,7 @@ const Checkout = () => {
                 </div>
               </div>
 
-              <div className="p-3">
+              <div className="py-3">
                 <p className="text-center mb-4 text-muted">
                   You have an ongoing order (#{existingOrderDetails.orderNumber}
                   ). Would you like to add to this order or create a new one?
@@ -440,7 +435,7 @@ const Checkout = () => {
           <div className="popup-overlay">
             <div className="popup-content rounded-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3 className="mb-0">Success</h3>
+                <span className="fs-6 fw-semibold">Success</span>
                 <button
                   className="btn-close"
                   onClick={() => setShowPopup(false)}
@@ -449,9 +444,10 @@ const Checkout = () => {
               <div className="circle">
                 <img src={OrderGif} alt="Order Success" className="popup-gif" />
               </div>
-              <span className="text-dark my-3 d-block text-center">
+              <span className="text-dark my-2 d-block text-center">
                 Order placed successfully
               </span>
+              <div className="fs-6 fw-semibold">#{newOrderNumber||existingOrderDetails.orderNumber}</div>
               <p className="text-muted text-center mb-4">
                 You have successfully made payment and placed your order.
               </p>
@@ -498,146 +494,143 @@ const Checkout = () => {
           </div>
         )}
 
-        <div className="m-3">
-          <div className="dz-flex-box">
-            <div className="dz-flex-box mt-2">
-              {cartItems.length > 0 ? (
-                cartItems.map((item, index) => (
-                  <>
-                    <Link
-                      to={`/user_app/ProductDetails/${item.menu_id}`}
-                      state={{ menu_cat_id: item.menu_cat_id }}
-                    >
-                      <div className="card rounded-4 my-1">
-                        <div className="card-body py-2 rounded-4 px-0">
-                          <div className="row" key={index}>
-                            <div className="row">
-                              <div className="col-7 pe-0 ">
-                                <span className="mb-0  fw-medium ps-2 font_size_14">
-                                  {item.menu_name}
-                                </span>
-                              </div>
-                              <div className="col-4 p-0 text-end">
-                                <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.price}
-                                </span>
-
-                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹ {item.oldPrice || item.price}
-                                </span>
-                              </div>
-                              <div className="col-1     text-end px-0">
-                                <span>x {item.quantity}</span>
-                              </div>
-                            </div>
-                            <div className="row">
-                              <div className="col-8">
-                                <div className="ps-2">
-                                  <span className="text-success font_size_10">
-                                    <i className="ri-restaurant-line me-2"></i>
-                                    {item.menu_cat_name}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="col-4 text-end px-0">
-                                <span className="ps-2 text-success font_size_10">
-                                  {item.offer || "No "}% Off
-                                </span>
-                              </div>
-                            </div>
-                          </div>
+<div className="m-3">
+      <div className="dz-flex-box">
+        <div className="dz-flex-box mt-2">
+          {cartItems.length > 0 ? (
+            cartItems.map((item, index) => (
+              <Link
+                key={index}
+                to={`/user_app/ProductDetails/${item.menu_id}`}
+                state={{ menu_cat_id: item.menu_cat_id }}
+              >
+                <div className="card rounded-4 my-1">
+                  <div className="card-body py-2 rounded-4 px-0">
+                    <div className="row">
+                      <div className="row">
+                        <div className="col-7 pe-0 ">
+                          <span className="mb-0 fw-medium ps-2 font_size_14">
+                            {item.menu_name}
+                          </span>
+                        </div>
+                        <div className="col-4 p-0 text-end">
+                          <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
+                            ₹{item.price}
+                          </span>
+                          <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                            ₹ {item.oldPrice || item.price}
+                          </span>
+                        </div>
+                        <div className="col-1 text-end px-0">
+                          <span>x {item.quantity}</span>
                         </div>
                       </div>
-                    </Link>
-                  </>
-                ))
-              ) : (
-                <div className="   ">No items in the cart.</div>
-              )}
+                      <div className="row">
+                        <div className="col-8">
+                          <div className="ps-2">
+                            <span className="text-success font_size_10">
+                              <i className="ri-restaurant-line me-2"></i>
+                              {item.menu_cat_name}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-4 text-end px-0">
+                          <span className="ps-2 text-success font_size_10">
+                            {item.offer || "No"}% Off
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div>No items in the cart.</div>
+          )}
+        </div>
+        <div className="card mx-auto rounded-4 mt-2">
+          <div className="row px-2 py-1">
+            <div className="col-12 px-2">
+              <div className="d-flex justify-content-between align-items-center py-1">
+                <span className="ps-2 font_size_14 fw-semibold">Total</span>
+                <span className="pe-2 font_size_14 fw-semibold">
+                  ₹{total.toFixed(2)}
+                </span>
+              </div>
+              <hr className="me-0 p-0 m-0 text-primary" />
             </div>
-            <div className="card mx-auto rounded-4 mt-2">
-              <div className="row px-2 py-1">
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 font_size_14 fw-semibold">Total</span>
-                    <span className="pe-2 font_size_14 fw-semibold">
-                      ₹{parseFloat(total).toFixed(2)}
-                    </span>
-                  </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
-                </div>
-                <div className="col-12 pt-0 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 pt-1 gray-text">
-                      Service Charges{" "}
-                      <span className="gray-text small-number">
-                        ({serviceChargesPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      ₹{parseFloat(serviceCharges).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-                <div className="col-12 mb-0 py-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      GST{" "}
-                      <span className="gray-text small-number">
-                        ({gstPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text text-start">
-                      ₹{parseFloat(tax).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-                <div className="col-12 mb-0 pt-0 pb-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0 pb-2">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Discount{" "}
-                      <span className="gray-text small-number">
-                        ({discountPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      -₹{parseFloat(discount).toFixed(2)}
-                    </span>
-                  </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
-                </div>
-
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
-                    <span className="pe-2 fs-5 fw-semibold">
-                      ₹{parseFloat(grandTotal).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+            <div className="col-12 pt-0 px-2">
+              <div className="d-flex justify-content-between align-items-center py-0">
+                <span className="ps-2 font_size_14 gray-text">
+                  Service Charges{" "}
+                  <span className="gray-text small-number">
+                    ({serviceChargesPercent}%)
+                  </span>
+                </span>
+                <span className="pe-2 font_size_14 gray-text">
+                  ₹{serviceCharges.toFixed(2)}
+                </span>
               </div>
             </div>
-            <div className="text-center">
-              <button
-                onClick={handlePlaceOrder}
-                className="btn btn-success rounded-pill text-white"
-              >
-                Place Order
-                <span className="small-number gray-text ps-1">
-                  ({cartItems.length} Items)
+            <div className="col-12 mb-0 py-1 px-2">
+              <div className="d-flex justify-content-between align-items-center py-0">
+                <span className="ps-2 font_size_14 gray-text">
+                  GST{" "}
+                  <span className="gray-text small-number">
+                    ({gstPercent}%)
+                  </span>
                 </span>
-              </button>
+                <span className="pe-2 font_size_14 gray-text">
+                  ₹{tax.toFixed(2)}
+                </span>
+              </div>
             </div>
-            <div className="d-flex align-items-center justify-content-center mt-3">
-              <Link
-                to="/user_app/Menu"
-                className="btn btn-outline-primary  rounded-pill  px-3"
-              >
-                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-              </Link>
+            <div className="col-12 mb-0 pt-0 pb-1 px-2">
+              <div className="d-flex justify-content-between align-items-center py-0 pb-2">
+                <span className="ps-2 font_size_14 gray-text">
+                  Discount{" "}
+                  <span className="gray-text small-number">
+                    ({discountPercent}%)
+                  </span>
+                </span>
+                <span className="pe-2 font_size_14 gray-text">
+                  -₹{discount.toFixed(2)}
+                </span>
+              </div>
+              <hr className="me-0 p-0 m-0 text-primary" />
+            </div>
+            <div className="col-12 px-2">
+              <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                <span className="pe-2 fs-6 fw-semibold">
+                  ₹{grandTotal.toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
         </div>
+        <div className="text-center">
+          <button
+            onClick={handlePlaceOrder}
+            className="btn btn-success rounded-pill text-white"
+          >
+            Place Order
+            <span className="small-number gray-text ps-1">
+              ({cartItems.length} Items)
+            </span>
+          </button>
+        </div>
+        <div className="d-flex align-items-center justify-content-center mt-3">
+          <Link
+            to="/user_app/Menu"
+            className="btn btn-outline-primary rounded-pill px-3"
+          >
+            <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+          </Link>
+        </div>
+      </div>
+    </div>
 
         <div className="container py-0">
           <NearbyArea />

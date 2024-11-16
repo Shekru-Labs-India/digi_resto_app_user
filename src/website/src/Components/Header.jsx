@@ -83,7 +83,7 @@ const Header = () => {
                     <li className="nav-item">
                       <Link
                         to="/"
-                        className={`nav-link dropdown-toggle ${location.pathname === '/' ? 'active' : ''}`}
+                        className={`nav-link  ${location.pathname === '/' ? 'active' : ''}`}
                       >
                         Home
                       </Link>
@@ -91,23 +91,16 @@ const Header = () => {
                     <li className="nav-item">
                       <Link
                         to="/features"
-                        className={`nav-link dropdown-toggle ${location.pathname === '/features' ? 'active' : ''}`}
+                        className={`nav-link  ${location.pathname === '/features' ? 'active' : ''}`}
                       >
                         Features
                       </Link>
                     </li>
-                    <li className="nav-item">
-                      <Link 
-                        to="/client"
-                        className={`nav-link dropdown-toggle ${location.pathname === '/client' ? 'active' : ''}`}
-                      >
-                        Clients
-                      </Link>
-                    </li>
+                   
                     <li className="nav-item">
                       <Link
                         to="/pricing"
-                        className={`nav-link dropdown-toggle ${location.pathname === '/pricing' ? 'active' : ''}`}
+                        className={`nav-link  ${location.pathname === '/pricing' ? 'active' : ''}`}
                       >
                         Pricing
                       </Link>
@@ -115,7 +108,7 @@ const Header = () => {
                     <li className="nav-item">
                       <Link
                         to="/faqs"
-                        className={`nav-link dropdown-toggle ${location.pathname === '/faqs' ? 'active' : ''}`}
+                        className={`nav-link  ${location.pathname === '/faqs' ? 'active' : ''}`}
                       >
                         FAQs
                       </Link>
@@ -123,7 +116,7 @@ const Header = () => {
                     <li className="nav-item">
                       <Link
                         to="/user_app/Index"
-                        className="nav-link dropdown-toggle"
+                        className="nav-link "
                       >
                         User App
                       </Link>
@@ -157,11 +150,11 @@ const Header = () => {
                   Features
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link to="/client" className="nav-link">
                   Clients
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link to="/pricing" className="nav-link">
                   Pricing

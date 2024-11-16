@@ -89,75 +89,73 @@ const HotelList = () => {
               )}
             </div>
           ))}
-          <div className="">
-            <div className="my-4">
-              <div className="text-center d-flex justify-content-center pt-5">
-                <a
-                  href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-facebook-circle-fill ri-xl"></i>
-                </a>
-                <a
-                  href="https://www.instagram.com/menumitra/"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-instagram-line ri-xl"></i>
-                </a>
-                <a
-                  href="https://www.youtube.com/@menumitra"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-youtube-line ri-xl"></i>
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/102429337/admin/dashboard/"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-linkedin-fill ri-xl"></i>
-                </a>
-                <a
-                  href="https://www.threads.net/@menumitra"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-twitter-x-line ri-xl"></i>
-                </a>
-                <a
-                  href="https://t.me/MenuMitra"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-telegram-line ri-xl"></i>
-                </a>
-              </div>
-            </div>
-            <div className="text-center text-md-center mt-5 gray-text">
-              <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
-              <a
-                className="gray-text"
-                href="https://www.shekruweb.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#0d775e" }}
-              >
-                Shekru Labs India Pvt. Ltd.
-              </a>
-              {/* <div className="">v1.1</div> */}
-            </div>
-          </div>
         </div>
       </main>
+      <div className="align-bottom">
+        <div className="text-center text-md-center mt-2 gray-text font_size_12 fixed-bottom pb-5">
+          <div className="my-4">
+            <div className="text-center d-flex justify-content-center">
+              <a
+                href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-facebook-circle-fill ri-xl"></i>
+              </a>
+              <a
+                href="https://www.instagram.com/menumitra/"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-instagram-line ri-xl"></i>
+              </a>
+              <a
+                href="https://www.youtube.com/@menumitra"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-youtube-line ri-xl"></i>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/102429337/admin/dashboard/"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-linkedin-fill ri-xl"></i>
+              </a>
+              <a
+                href="https://www.threads.net/@menumitra"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-twitter-x-line ri-xl"></i>
+              </a>
+              <a
+                href="https://t.me/MenuMitra"
+                className="footer-link mx-3"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="ri-telegram-line ri-xl"></i>
+              </a>
+            </div>
+          </div>
+          <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+          <a
+            className="text-success font_size_12"
+            href="https://www.shekruweb.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Shekru Labs India Pvt. Ltd.
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
