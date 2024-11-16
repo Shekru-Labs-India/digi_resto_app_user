@@ -1,5 +1,6 @@
 import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
+import { Link } from 'react-router-dom';
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -305,6 +306,7 @@ const OrderCard = ({
 
   return (
     <div className="container pt-0 px-0">
+      <Link to={`/user_app/TrackOrder/${order.order_number}`}>
       <div className="custom-card my-2 rounded-4 shadow-sm">
         <div
           className="card-body py-2"
@@ -359,7 +361,7 @@ const OrderCard = ({
           </div>
         </div>
 
-        <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+        {/* <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
           {status === "placed" && (
             <div className="d-flex flex-column gap-2">
               {!completedTimers.has(order.order_id) && (
@@ -403,7 +405,7 @@ const OrderCard = ({
               </button>
             </div>
           )}
-        </div>
+        </div> */}
         {showCancelModal && (
           <div
             className="modal fade show d-block"
@@ -455,6 +457,7 @@ const OrderCard = ({
           </div>
         )}
       </div>
+      </Link>
     </div>
   );
 };
@@ -499,7 +502,9 @@ function OrdersPlacedOngoing() {
     <div>
       {orders.placed.length > 0 && (
         <div>
+          <i className="ri-file-list-3-line pe-2 font_size_14"></i>
           <span className="font_size_14 fw-medium">Placed Orders</span>
+
           {orders.placed.map((order, index) => (
             <OrderCard
               key={`placed-${order.order_id}-${index}`}
@@ -515,6 +520,7 @@ function OrdersPlacedOngoing() {
 
       {orders.ongoing.length > 0 && (
         <div>
+          <i className="ri-timer-flash-line pe-2 font_size_14 text-warning"></i>
           <span className="font_size_14 fw-medium">Ongoing Orders</span>
           {orders.ongoing.map((order, index) => (
             <OrderCard

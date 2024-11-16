@@ -145,15 +145,12 @@ const HotelList = () => {
             <div className="text-center text-md-center mt-5 gray-text">
               <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
               <a
-                className="gray-text"
+                className="text-success font_size_12"
                 href="https://www.shekruweb.com"
                 target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#0d775e" }}
               >
                 Shekru Labs India Pvt. Ltd.
               </a>
-              {/* <div className="">v1.1</div> */}
             </div>
           </div>
         </div>
