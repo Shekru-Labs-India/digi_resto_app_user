@@ -132,15 +132,15 @@ const OfferBanner = () => {
           ...menu,
           image: menu.image || images,
           name: toTitleCase(menu.menu_name),
-          oldPrice: menu.offer ? menu.price : null,
-          // price: menu.offer
-          //   ? Math.floor(menu.price * (1 - menu.offer / 100))
-          //   : menu.price,
+          strikePrice: menu.offer ? menu.price : null,
+          price: menu.offer
+            ? Math.floor(menu.price * (1 - menu.offer / 100))
+            : menu.price,
           is_favourite: menu.is_favourite === 1,
         }));
 
-        // setPrice(data.data.menus.price);
-        // setDiscountAmount(data.data.menus.offer);
+        setPrice(data.data.menus.price);
+        setDiscountAmount(data.data.menus.offer);
 
         
         
@@ -603,9 +603,9 @@ const OfferBanner = () => {
                         <span className="me-2 text-info font_size_14 fw-semibold">
                           ₹{menu.price}
                         </span>
-                        {menu.oldPrice && (
+                        {menu.strikePrice && (
                           <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                            ₹{menu.price}
+                            ₹{menu.strikePrice}
                           </span>
                         )}
                       </div>
