@@ -52,6 +52,8 @@ const OfferBanner = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const [price, setPrice] = useState([]);
+  const [discountAmount, setDiscountAmount] = useState([]);
   const { showLoginPopup } = usePopup();
 
   useEffect(() => {
@@ -131,11 +133,20 @@ const OfferBanner = () => {
           image: menu.image || images,
           name: toTitleCase(menu.menu_name),
           oldPrice: menu.offer ? menu.price : null,
-          price: menu.offer
-            ? Math.floor(menu.price * (1 - menu.offer / 100))
-            : menu.price,
+          // price: menu.offer
+          //   ? Math.floor(menu.price * (1 - menu.offer / 100))
+          //   : menu.price,
           is_favourite: menu.is_favourite === 1,
         }));
+
+        // setPrice(data.data.menus.price);
+        // setDiscountAmount(data.data.menus.offer);
+
+        
+        
+
+        
+
 
         setMenuLists(formattedMenuList);
       }
@@ -145,6 +156,9 @@ const OfferBanner = () => {
       setLoading(false);
     }
   };
+
+
+   
 
   // Load User Data and Fetch Menu Data on Initial Render
   useEffect(() => {
@@ -591,7 +605,7 @@ const OfferBanner = () => {
                         </span>
                         {menu.oldPrice && (
                           <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                            ₹{menu.oldPrice}
+                            ₹{menu.price}
                           </span>
                         )}
                       </div>
@@ -664,7 +678,7 @@ const OfferBanner = () => {
                 margin: "auto",
               }}
             >
-                <div className="modal-header ps-3 pe-2">
+              <div className="modal-header ps-3 pe-2">
                 <div className="col-6 text-start">
                   <div className="modal-title font_size_16 fw-medium">
                     Add to Cart
@@ -692,7 +706,7 @@ const OfferBanner = () => {
                     Special Instructions
                   </label>
                   <textarea
-                  className="form-control font_size_16 border border-primary rounded-4"
+                    className="form-control font_size_16 border border-primary rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
