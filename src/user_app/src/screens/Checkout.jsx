@@ -103,6 +103,7 @@ const Checkout = () => {
     const cartId = getCartId();
   
     if (!cartId || !currentCustomerId || !restaurantId) {
+      
       return;
     }
   
