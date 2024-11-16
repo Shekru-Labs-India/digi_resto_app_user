@@ -2004,7 +2004,7 @@ export const CircularCountdown = ({
 
     // Call the onComplete function
     onComplete();
-    window.showToast("success", "Your order has moved to ongoing orders!");
+    // window.showToast("success", "Your order has moved to ongoing orders!");
   };
 
   const percentage = (timeLeft / 90) * 100;
