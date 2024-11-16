@@ -9,6 +9,7 @@ import Pricing from "./Components/Pricing";
 import Client from "./Components/Client";
 import PricingPage from "./Components/pricing/PricingPage";
 import FAQs from "./Components/FAQs";
+import PrivacyPolicy from "./Components/PrivacyPolicy";
 
 function App({ currentPath }) {
   const location = useLocation();
@@ -17,6 +18,8 @@ function App({ currentPath }) {
     switch(currentPath || location.pathname) {
       case '/faqs':
         return <FAQs />;
+        case '/privacy_policy':
+          return <PrivacyPolicy />;
       case '/features':
         return <Features />;
       case '/client':

@@ -103,6 +103,7 @@ const Checkout = () => {
     const cartId = getCartId();
   
     if (!cartId || !currentCustomerId || !restaurantId) {
+      
       return;
     }
   
@@ -354,11 +355,9 @@ await fetchCartDetails();
   const closePopup = () => {
     setShowPopup(false);
 
-    const orderNumber = newOrderNumber
-      ? newOrderNumber
-      : existingOrderDetails.orderNumber;
+  
 
-    // navigate(`/user_app/TrackOrder/${orderNumber}`);
+    
     navigate(`/user_app/MyOrder/`);
   };
 
