@@ -596,25 +596,19 @@ const Search = () => {
                             <div className="font_size_14 fw-medium">
                               {menu.menu_name}
                             </div>
-                            <div className="text-end">
-                              <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                              <span className="font_size_10 fw-normal gray-text">
-                                {parseFloat(menu.rating).toFixed(1)}
-                              </span>
-                            </div>
                           </div>
                         </div>
 
                         {/* Category and Spicy Index on Second Line */}
                         <div className="row pe-0">
-                          <div className="col-6 mt-1">
+                          <div className="col-5 mt-1">
                             <span className="text-success font_size_10">
                               <i className="ri-restaurant-line mt-0 me-2"></i>
                               {menu.category_name}
                               {/* Spicy Index */}
                             </span>
                           </div>
-                          <div className="col-6 pe-0 text-end">
+                          <div className="col-4 px-0 text-end">
                             {menu.spicy_index && (
                               <span className="ms-2 spicy-index">
                                 {Array.from({ length: 5 }).map((_, index) =>
@@ -633,6 +627,15 @@ const Search = () => {
                               </span>
                             )}
                           </div>
+                          <div className="col-3 text-end pe-0">
+                            {" "}
+                            <div className="text-end">
+                              <i className="ri-star-half-line font_size_10 ratingStar"></i>
+                              <span className="font_size_10 fw-normal gray-text">
+                                {parseFloat(menu.rating).toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Price and Cart Section */}
@@ -642,7 +645,10 @@ const Search = () => {
                               {menu.offer ? (
                                 <>
                                   <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                    ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
+                                    ₹
+                                    {Math.floor(
+                                      menu.price * (1 - menu.offer / 100)
+                                    )}
                                   </span>
                                   <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
                                     ₹{menu.price}
