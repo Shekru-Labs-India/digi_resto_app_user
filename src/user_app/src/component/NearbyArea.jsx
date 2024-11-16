@@ -104,7 +104,10 @@ const NearbyArea = () => {
           ...menu,
           name: toTitleCase(menu.menu_name),
           category_name: toTitleCase(menu.category_name),
-          oldPrice: Math.floor(menu.price * 1.1),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer
+            ? Math.floor(menu.price * (1 - menu.offer / 100))
+            : menu.price,
           is_favourite: menu.is_favourite === 1,
         }));
 

@@ -119,7 +119,12 @@ const Checkout = () => {
   
       if (response.data.st === 1) {
         const data = response.data;
-        setCartItems(data.order_items);
+        const mappedItems = data.order_items.map(item => ({
+          ...item,
+          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
+        }));
+
+        setCartItems(mappedItems);
         setTotal(parseFloat(data.total_bill));
         setServiceChargesPercent(parseFloat(data.service_charges_percent));
         setServiceCharges(parseFloat(data.service_charges_amount));
@@ -128,7 +133,7 @@ const Checkout = () => {
         setDiscountPercent(parseFloat(data.discount_percent));
         setDiscount(parseFloat(data.discount_amount));
         setGrandTotal(parseFloat(data.grand_total));
-        setCartId(data.cart_id); // Store the cart ID for future use
+        setCartId(data.cart_id);
       } else {
         console.error("Failed to fetch cart details:", response.data.msg);
         
@@ -506,18 +511,26 @@ await fetchCartDetails();
                   <div className="card-body py-2 rounded-4 px-0">
                     <div className="row">
                       <div className="row">
-                        <div className="col-7 pe-0 ">
+                        <div className="col-7 pe-0">
                           <span className="mb-0 fw-medium ps-2 font_size_14">
                             {item.menu_name}
                           </span>
                         </div>
                         <div className="col-4 p-0 text-end">
-                          <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                            ₹{item.price}
-                          </span>
-                          <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                            ₹ {item.oldPrice || item.price}
-                          </span>
+                          {item.offer ? (
+                            <>
+                              <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
+                                ₹{item.discountedPrice}
+                              </span>
+                              <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                ₹{item.price}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
+                              ₹{item.price}
+                            </span>
+                          )}
                         </div>
                         <div className="col-1 text-end px-0">
                           <span>x {item.quantity}</span>
@@ -532,11 +545,13 @@ await fetchCartDetails();
                             </span>
                           </div>
                         </div>
-                        <div className="col-4 text-end px-0">
-                          <span className="ps-2 text-success font_size_10">
-                            {item.offer || "No"}% Off
-                          </span>
-                        </div>
+                        {item.offer > 0 && (
+                          <div className="col-4 text-end px-0">
+                            <span className="ps-2 text-success font_size_10">
+                              {item.offer}% Off
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

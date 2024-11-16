@@ -662,15 +662,20 @@ const Product = () => {
                         <div className="col-9 d-flex align-items-end mb-1">
                           <div className="footer-wrapper">
                             <div className="price-wrapper d-flex align-items-baseline">
-                              <span className="font_size_14 me-2 text-info fw-semibold">
-                                ₹{menuItem.price}
-                              </span>
-                              {menuItem.oldPrice !== 0 &&
-                                menuItem.oldPrice !== null && (
-                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                    ₹{menuItem.oldPrice}
+                              {menuItem.offer ? (
+                                <>
+                                  <span className="font_size_14 me-2 text-info fw-semibold">
+                                    ₹{Math.floor(menuItem.price * (1 - menuItem.offer / 100))}
                                   </span>
-                                )}
+                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                    ₹{menuItem.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="font_size_14 me-2 text-info fw-semibold">
+                                  ₹{menuItem.price}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>

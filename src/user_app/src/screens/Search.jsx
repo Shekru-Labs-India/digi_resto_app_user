@@ -639,12 +639,20 @@ const Search = () => {
                         <div className="row mt-2 pe-0">
                           <div className="col-10 px-0">
                             <span className="mb-0 mt-1 text-start fw-medium">
-                              <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                ₹{menu.price}
-                              </span>
-                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                ₹{menu.oldPrice || menu.price}
-                              </span>
+                              {menu.offer ? (
+                                <>
+                                  <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
+                                    ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
+                                  </span>
+                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                    ₹{menu.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
+                                  ₹{menu.price}
+                                </span>
+                              )}
                             </span>
                           </div>
                           <div className="col-2 px-0 d-flex justify-content-end">
