@@ -62,7 +62,7 @@ const QRScanner = () => {
   }, [showCamera]);
 
   return (
-    <div className="container-fluid bg-light d-flex flex-column align-items-center">
+    <div className="container-fluid bg-light d-flex flex-column align-items-center vh-100">
       <Link to="/">
         {" "}
         <div className="d-flex align-items-center mt-4 mb-3">

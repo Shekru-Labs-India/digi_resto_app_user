@@ -889,9 +889,9 @@ const MenuDetails = () => {
                         Total amount
                       </span>
                       <div className="d-flex align-items-baseline">
-                        <h4 className="font_size_14 fw-semibold text-info">
+                        <div className="font_size_14 fw-semibold text-info">
                           ₹{(productDetails.price * quantity).toFixed(0)}
-                        </h4>
+                        </div>
                         <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
                           ₹{(productDetails.oldPrice * quantity).toFixed(0)}
                         </span>

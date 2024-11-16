@@ -608,10 +608,9 @@ const Product = () => {
                       >
                         {menuItem.is_special && (
                           <div className="row">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium ">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2 ">
                               <i className="ri-bard-line me-2"></i>
                               Special
-                              <hr className="mt-2 mb-0" />
                             </div>
                           </div>
                         )}

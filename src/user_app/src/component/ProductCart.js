@@ -642,7 +642,7 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="font_size_12 ">
                         {menu.is_special && (
                           <div className="row ">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-1">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
                               <i className="ri-bard-line me-2"></i>
                               Special
                             
