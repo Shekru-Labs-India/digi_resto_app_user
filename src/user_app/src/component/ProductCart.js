@@ -502,11 +502,11 @@ const ProductCard = ({ isVegOnly }) => {
                 style={{
                   backgroundColor: "#0D9EDF", // Blue background
                   color: "#ffffff", // White text
-                  border: "none"
+                  border: "none",
                 }}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special ({menuList.filter(menu => menu.is_special).length})
+                Special ({menuList.filter((menu) => menu.is_special).length})
               </div>
             </div>
 
@@ -536,8 +536,13 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
                     backgroundColor:
-                      selectedCategoryId === category.menu_cat_id ? "#0D775E" : "",
-                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "",
+                      selectedCategoryId === category.menu_cat_id
+                        ? "#0D775E"
+                        : "",
+                    color:
+                      selectedCategoryId === category.menu_cat_id
+                        ? "#ffffff"
+                        : "",
                   }}
                 >
                   {category.name} ({category.menu_count})
@@ -599,7 +604,7 @@ const ProductCard = ({ isVegOnly }) => {
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-checkbox-blank-circle-fill text-danger"
+                            : "ri-triangle-fill text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -637,10 +642,10 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="font_size_12 ">
                         {menu.is_special && (
                           <div className="row ">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium ">
-                               <i className="ri-bard-line me-2"></i>
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-1">
+                              <i className="ri-bard-line me-2"></i>
                               Special
-                              <hr className="mt-2 mb-0" />
+                            
                             </div>
                           </div>
                         )}

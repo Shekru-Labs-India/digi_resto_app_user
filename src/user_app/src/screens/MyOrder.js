@@ -1227,13 +1227,13 @@ const MyOrder = () => {
         <div className="container px-1">
           {ongoingOrPlacedOrders.placed.map((order, index) => (
             <OrderCard
-              key={`${order.order_id}-${index}`} 
+              key={`${order.order_id}-${index}`}
               order={order}
               status="placed"
               setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}
-              setActiveTab={setActiveTab} 
+              setActiveTab={setActiveTab}
             />
           ))}
 
@@ -1257,6 +1257,7 @@ const MyOrder = () => {
               </div>
             ))}
           </div>
+          <Bottom />
         </div>
 
         <div className="container">
@@ -1296,7 +1297,7 @@ const MyOrder = () => {
                         type={activeTab}
                         activeTab={activeTab}
                         setOrders={setOrders} // Make sure this prop is passed
-                        setActiveTab={setActiveTab} 
+                        setActiveTab={setActiveTab}
                       />
                     </div>
                   </div>
