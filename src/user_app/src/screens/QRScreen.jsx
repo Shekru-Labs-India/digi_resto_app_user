@@ -67,7 +67,7 @@ const QRScanner = () => {
         {" "}
         <div className="d-flex align-items-center mt-4 mb-3">
           <img src={logo} alt="logo" width="40" height="40" />
-          <h4 className="text-dark mb-0 mt-1">MenuMitra</h4>
+          <div className="text-dark mb-0 mt-1 font_size_18">MenuMitra</div>
         </div>
       </Link>
       {/* {!showCamera && (
