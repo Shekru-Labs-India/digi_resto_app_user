@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import BlazeSlider from 'blaze-slider';
 import 'blaze-slider/dist/blaze.css';
 import Header from '../Header'
-import Footer from '../Footer'
+import Footer from '../Footer';
+import jpg4 from "../../Assets/img/instagram/4.jpg";
+
 import "./style5756.css";
 
 function HomePage() {
@@ -131,7 +133,7 @@ function HomePage() {
           <div className="hero__pos_contents_img">
             <div className="hero__pos_content">
               <h1 className="hero__title">
-                Do it all with one menu management software
+             Do it all with contactless menu card software with AI features
               </h1>
               <p className="hero_paragph">
                 Customize your restaurant menu and serve your customers with
@@ -143,7 +145,7 @@ function HomePage() {
               </a>
             </div>
             <div className="hero__pos_img">
-              <picture>
+              {/* <picture>
                 <source
                   srcSet="
               https://d28ewddc5mocr5.cloudfront.net/images/pos/menu-hero_sm.webp
@@ -173,7 +175,8 @@ function HomePage() {
                   src="https://d28ewddc5mocr5.cloudfront.net/images/pos/menu-hero_lg.webp"
                   alt="Restaurant POS"
                 />
-              </picture>
+              </picture> */}
+              <img src={jpg4}></img>
             </div>
           </div>
         </div>
@@ -676,154 +679,7 @@ function HomePage() {
           </div>
         </div>
       </section>
-      {/* <section className="happy_customer section_spacing_y">
-        <div className="wrapper">
-          <div className="happy_customer_row">
-            <div className="happy_customer_col">
-              <div className="section_heading">
-                <h2 className="titel_name">
-                  75,000+ happy
-                  <br />
-                  customers
-                </h2>
-                <p className="titel_dec">
-                  Our customers are boosting their businesses with Petpooja
-                  POS&nbsp;
-                </p>
-              </div>
-              <div className="happy_customer_calculatoin_row">
-                <div className="happy_customer_calculatoin_col">
-                  <div className="happy_customer_counter_row">
-                    <h4 className="happy_customer_counter_digit">18</h4>
-                    <h4 className="happy_customer_counter_symbol">+</h4>
-                  </div>
-                  <p className="happy_customer_counter_dec">
-                    configurable national &amp; international languages
-                  </p>
-                </div>
-                <div className="happy_customer_calculatoin_col">
-                  <div className="happy_customer_counter_row">
-                    <h4 className="happy_customer_counter_symbol">150</h4>
-                    <h4 className="happy_customer_counter_digit">+</h4>
-                  </div>
-                  <p className="happy_customer_counter_dec">
-                    integrations to support your business
-                  </p>
-                </div>
-                <div className="happy_customer_calculatoin_col">
-                  <div className="happy_customer_counter_row">
-                    <h4 className="happy_customer_counter_digit">200</h4>
-                    <h4 className="happy_customer_counter_symbol">+</h4>
-                  </div>
-                  <p className="happy_customer_counter_dec">
-                    integrations managed from one screen
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial_slider swiper">
-              <div className="swiper-wrapper">
-                <div className="swiper-slide">
-                  <div className="testimonial__img_content happy_client_testimonial">
-                    <div className="testimonial_contents">
-                      <p className="testimonial_clientparag">
-                        "At Idlinama, we have experimented a lot with customer
-                        behavior towards upselling, combos, and add-ons - All of
-                        this has increased our ticket size considering south
-                        Indian food usually has a small average order value.
-                        None of this would have been possible by the
-                        simple-to-use backend built by Petpooja along with their
-                        dedicated customer helpline. I'm a forever fan!"
-                      </p>
-                      <div className="testimonial_clientdetails">
-                        <div className="clients_name">
-                          <p>Kabir Chugh,</p>
-                          <p>Owner of Idlinama</p>
-                        </div>
-                      </div>
-                      <div className="clients_brand">
-                        <img
-                          loading="lazy"
-                          src="https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily.webp"
-                          alt="kabir-chugh-idily"
-                          title="kabir-chugh-idily"
-                        />
-                      </div>
-                    </div>
-                    <div className="testimonial_img">
-                      <picture>
-                        <source
-                          srcSet="
-                      https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily-nama_xs.webp
-                    "
-                          media="(max-width: 240px)"
-                        />
-                        <source
-                          srcSet="
-                      https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily-nama_sm.webp
-                    "
-                          media="(max-width: 320px)"
-                        />
-                        <source
-                          srcSet="
-                      https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily-nama_md.webp
-                    "
-                          media="(max-width: 480px)"
-                        />
-                        <source
-                          srcSet="
-                      https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily-nama_lg.webp
-                    "
-                          media="(max-width: 800px)"
-                        />
-                        <img
-                          loading="lazy"
-                          src="https://d28ewddc5mocr5.cloudfront.net/images/testimonial/kabir-chugh-idily-nama_md.webp"
-                          alt="Kabir Chugh"
-                        />
-                      </picture>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-      {/* <section className="scheduale">
-        <div className="wrapper" id="free-demo-form">
-          <div className="scheduale_row">
-            <div className="scheduale_col">
-              <h3 className="scheduale_form_titel">Schedule a free demo</h3>
-              <p className="scheduale_form_dec">
-                Get in touch with our team to clarify your queries
-              </p>
-              <div 
-                id="hubspot-form-placeholder" 
-                style={{ paddingTop: "1.5rem" }}
-              />
-            </div>
-            <div className="scheduale_col">
-              <picture>
-                <source
-                  srcSet="https://d28ewddc5mocr5.cloudfront.net/images/scheduale-form_sm.webp"
-                  media="(max-width: 480px)"
-                />
-                <source
-                  srcSet="https://d28ewddc5mocr5.cloudfront.net/images/scheduale-form_md.webp"
-                  media="(max-width: 768px)"
-                />
-                <img
-                  loading="lazy"
-                  src="https://d28ewddc5mocr5.cloudfront.net/images/scheduale-form_md.webp"
-                  alt="Schedule a free demo"
-                  className="scheduale_img"
-                />
-              </picture>
-            </div>
-          </div>
-        </div>
-      </section> */}
+      
       <section className="explore_addons_boost section_spacing_y">
         <div className="explore-section">
           <div className="wrapper">

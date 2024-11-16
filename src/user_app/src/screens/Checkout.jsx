@@ -23,7 +23,7 @@ const Checkout = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
 
-  
+  const location = useLocation();
   // const [cartItems, setCartItems] = useState([]);
  
   const [showPopup, setShowPopup] = useState(false);
@@ -93,7 +93,8 @@ const Checkout = () => {
     }
   
     fetchCartDetails();
-  }, []);
+    
+  }, [location]);
   
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -107,7 +108,7 @@ const Checkout = () => {
   
     try {
       const response = await axios.post(
-        "https://men4u.xyz/user_api/get_cart_detail",
+       `${config.apiDomain}/user_api/get_cart_detail`,
         {
           cart_id: cartId,
           customer_id: currentCustomerId,
