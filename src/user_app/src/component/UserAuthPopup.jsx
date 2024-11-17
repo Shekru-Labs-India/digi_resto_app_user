@@ -355,7 +355,7 @@ const UserAuthPopup = () => {
                   <input
                     key={index}
                     ref={(el) => (otpInputRefs.current[index] = el)}
-                    type="text" 
+                    type="number" 
                     className="form-control text-center d-flex align-items-center border border-1"
                     maxLength="1"
                     value={digit}

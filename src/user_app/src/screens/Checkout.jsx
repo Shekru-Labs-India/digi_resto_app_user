@@ -221,6 +221,11 @@ const Checkout = () => {
       return;
     }
 
+    // Get table number from localStorage or userData
+    const tableNumber = JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
+                       localStorage.getItem("tableNumber") || 
+                       "1";
+
     try {
       const response = await fetch(`${config.apiDomain}/user_api/create_order`, {
         method: "POST",
@@ -231,6 +236,7 @@ const Checkout = () => {
           cart_id: cartId,
           customer_id: customerId,
           restaurant_id: restaurantId,
+          table_number: tableNumber, // Added table number to the request
         }),
       });
 
