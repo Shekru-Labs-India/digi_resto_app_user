@@ -1,7 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useRestaurantId } from '../context/RestaurantIdContext';
 
-const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
+const HotelNameAndTable = ({ restaurantName }) => {
+  const { tableNumber } = useRestaurantId();
+  
+  // Get table number from context, localStorage, or userData
+  const displayTableNumber = tableNumber || 
+    JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
+    localStorage.getItem("tableNumber");
+
   return (
     <div className="container p-0">
       <div className="d-flex justify-content-between align-items-center  my-2">
@@ -13,8 +21,8 @@ const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
         </div>
         <div className="d-flex align-items-center font_size_12">
           <i className="ri-map-pin-user-fill me-2 gray-text"></i>
-          <span className="fw-medium   gray-text">
-            {tableNumber ? `Table ${tableNumber}` : ""}
+          <span className="fw-medium gray-text">
+            {displayTableNumber ? `Table ${displayTableNumber}` : ""}
           </span>
         </div>
       </div>
@@ -24,7 +32,6 @@ const HotelNameAndTable = ({ restaurantName, tableNumber }) => {
 
 HotelNameAndTable.propTypes = {
   restaurantName: PropTypes.string.isRequired,
-  tableNumber: PropTypes.string,
 };
 
 export default HotelNameAndTable;

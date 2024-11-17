@@ -17,12 +17,28 @@ export const RestaurantIdProvider = ({ children }) => {
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    // Get table number from URL params
-    const params = new URLSearchParams(location.search);
-    const tableNo = params.get('table');
-    if (tableNo) {
-      setTableNumber(tableNo);
-      localStorage.setItem("tableNumber", tableNo);
+    // Get table number from URL path
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    
+    // Validate table number: must be numeric and between 1 and 100
+    if (lastPart && !isNaN(lastPart) && lastPart > 0 && lastPart <= 10) {
+      // Make sure it's not the restaurant code
+      const secondLastPart = pathParts[pathParts.length - 2];
+      if (secondLastPart && secondLastPart !== lastPart) { // Ensure it's not the same as restaurant code
+        setTableNumber(lastPart);
+        localStorage.setItem("tableNumber", lastPart);
+        
+        // Update userData if it exists
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        if (Object.keys(userData).length > 0) {
+          const updatedUserData = {
+            ...userData,
+            tableNumber: lastPart
+          };
+          localStorage.setItem("userData", JSON.stringify(updatedUserData));
+        }
+      }
     }
   }, [location]);
 

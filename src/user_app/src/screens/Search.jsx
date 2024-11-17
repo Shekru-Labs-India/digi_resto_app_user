@@ -457,9 +457,9 @@ const Search = () => {
             <div className="d-flex align-items-center">
               <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
-                {customerId && customerId.tableNumber
-                  ? `Table ${customerId.tableNumber}`
-                  : "Table 1"}
+                {`Table ${JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
+                  localStorage.getItem("tableNumber") || 
+                  "1"}`}
               </span>
             </div>
           </div>

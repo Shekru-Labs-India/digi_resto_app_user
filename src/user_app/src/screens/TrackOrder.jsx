@@ -1173,7 +1173,7 @@ const TrackOrder = () => {
                 </div>
                 <div className="col-4 text-end">
                   <i className="ri-map-pin-user-fill ps-0 pe-1 font_size_12 gray-text"></i>
-                  <span className="fs-6 gray-text font_size_12">
+                  <span className="gray-text font_size_12">
                     {order_details.table_number}
                   </span>
                 </div>
@@ -2000,9 +2000,9 @@ const TrackOrder = () => {
             {/* Only show invoice button if order status is completed */}
             {orderStatus === "completed" && (
               <div className="d-flex justify-content-center">
-                {orderDetails.invoice_url ? (
+                {orderDetails?.order_details?.invoice_url ? (
                   <a
-                    href={orderDetails.invoice_url}
+                    href={orderDetails.order_details.invoice_url}
                     download={`invoice_${orderDetails.order_details.order_number}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -2014,7 +2014,10 @@ const TrackOrder = () => {
                     </button>
                   </a>
                 ) : (
-                  <button className="btn btn-success rounded-pill text-white px-5">
+                  <button 
+                    className="btn btn-success rounded-pill text-white px-5"
+                    disabled
+                  >
                     Invoice &nbsp;
                     <i className="ri-download-2-line"></i>
                   </button>
