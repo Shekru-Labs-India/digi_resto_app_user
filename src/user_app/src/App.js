@@ -24,7 +24,7 @@ import RestaurantDetails from "./screens/RestaurantDetails";
 import { ThemeProvider } from "./context/ThemeContext";
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
-import { PopupProvider } from './context/PopupContext';
+import { PopupProvider } from "./context/PopupContext";
 
 function App() {
   const { restaurantCode } = useParams();
@@ -45,10 +45,16 @@ function App() {
             <div className="user-app-root">
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
-                <Route path=":restaurantCode/:table_number" element={<HomeScreen />} />
-                <Route path=":restaurantCode" element={<ValidateAndNavigate />} />
+                <Route
+                  path=":restaurantCode/:table_number"
+                  element={<HomeScreen />}
+                />
+                <Route
+                  path=":restaurantCode"
+                  element={<ValidateAndNavigate />}
+                />
                 <Route path="AllOrderList" element={<AllOrderList />} />
-               
+
                 <Route path="Wishlist" element={<Wishlist />} />
                 <Route path="Cart" element={<Cart />} />
                 <Route path="Checkout" element={<Checkout />} />
@@ -58,9 +64,15 @@ function App() {
                 <Route path="MyOrder" element={<MyOrder />} />
                 <Route path="Menu/:categoryId?" element={<Product />} />
                 <Route path="Search" element={<Search />} />
-                <Route path="ProductDetails/:menuId" element={<MenuDetails />} />
-                <Route path="TrackOrder/:order_number" element={<TrackOrder />} />
-                <Route path="restaurant" element={<RestaurantDetails />} />
+                <Route
+                  path="ProductDetails/:menuId"
+                  element={<MenuDetails />}
+                />
+                <Route
+                  path="TrackOrder/:order_number"
+                  element={<TrackOrder />}
+                />
+                <Route path="/restaurant/" element={<RestaurantDetails />} />
                 <Route path="" element={<Navigate to="Index" replace />} />
                 <Route path="*" element={<Navigate to="Index" replace />} />
               </Routes>
