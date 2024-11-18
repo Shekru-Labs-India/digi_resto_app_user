@@ -335,6 +335,11 @@ const Product = () => {
     //   return;
     // }
 
+if (isMenuItemInCart(menu.menu_id)) {
+  window.showToast("info", "This item is already in your cart.");
+  return;
+}
+
     if (!restaurantId) {
       window.showToast("error", "Restaurant information is missing");
       return;
@@ -594,7 +599,7 @@ const Product = () => {
                       {menuItem.offer !== 0 && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
-                            <i className="ri-percent-line me-1 "></i>
+                      
                             {menuItem.offer}% Off
                           </span>
                         </div>

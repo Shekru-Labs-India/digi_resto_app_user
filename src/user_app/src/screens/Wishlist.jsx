@@ -242,6 +242,10 @@ const Wishlist = () => {
       showLoginPopup();
       return;
     }
+    if (isMenuItemInCart(menu.menu_id)) {
+      window.showToast("info", "This item is already in your cart.");
+      return;
+    }
 
     if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
       window.showToast("warning", "Please complete or clear your existing cart first");
@@ -538,7 +542,7 @@ const Wishlist = () => {
                                       {menu.offer && menu.offer !== "0" && (
                                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                           <span className="font_size_10 text-white">
-                                            <i className="ri-percent-line me-1 "></i>
+                                       
                                             {menu.offer}% Off
                                           </span>
                                         </div>

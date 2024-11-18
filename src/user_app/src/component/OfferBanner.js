@@ -232,6 +232,7 @@ const OfferBanner = () => {
         loop: true,
         autoplay: {
           delay: 2500,
+          // delay: 25000,
           disableOnInteraction: false,
         },
       });
@@ -552,7 +553,7 @@ const OfferBanner = () => {
                     {menu.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-                          <i className="ri-percent-line me-1 "></i>
+                        
                           {menu.offer}% Off
                         </span>
                       </div>
@@ -574,26 +575,28 @@ const OfferBanner = () => {
                           </div>
                         </div> */}
                     <div className="category-text">
-                      <div className="d-flex justify-content-between align-items-center mt-1">
-                        <div className="text-success font_size_10 d-flex align-items-center">
-                          <i className="ri-restaurant-line pe-1"></i>
-                          {menu.category_name}
-                        </div>
-                        <div className="text-end font_size_10 fw-normal gray-text me-1">
-                          <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                          {menu.rating}
-                        </div>
+                      <div className="d-flex justify-content-between align-items-center justify-content-center mt-1">
+                        <span className="font_size_14 fw-medium text-wrap">
+                          {menu.name}
+                        </span>
                       </div>
                     </div>
 
-                    <span className="font_size_14 fw-medium text-wrap">
-                      {menu.name}
-                    </span>
                     <div className="mt-2">
                       <div className="row">
-                        <div className="col-6">
-                          <div className="">
-                            {renderSpiceIcons(menu.spicy_index)}
+                        <div className="col-4">
+                          <div className="text-success font_size_10 d-flex align-items-center">
+                            <i className="ri-restaurant-line pe-1"></i>
+                            {menu.category_name}
+                          </div>
+                        </div>
+                        <div className="col-4">
+                          {renderSpiceIcons(menu.spicy_index)}
+                        </div>
+                        <div className="col-4">
+                          <div className="text-end font_size_10 fw-normal gray-text me-1">
+                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                            {menu.rating}
                           </div>
                         </div>
                       </div>
