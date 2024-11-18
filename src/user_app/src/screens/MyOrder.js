@@ -329,14 +329,22 @@ export const OrderCard = ({
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
-
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const navigate = useNavigate();
 
   const handleCancelClick = () => {
     setShowCancelModal(true);
   };
-
+  const handleCompleteClick = () => {
+    setShowCompleteModal(true);
+  };
   const handleCompleteOrder = async () => {
+    if (!paymentMethod) {
+      window.showToast("error", "Please select a payment method.");
+      return;
+    }
+  
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
@@ -348,35 +356,33 @@ export const OrderCard = ({
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
+            payment_method: paymentMethod, // Added payment method
           }),
         }
       );
-
-      console.log("Response:", response); // Log the full response
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      console.log("Response Data:", data); // Log the parsed response data
-
+  
       if (data.st === 1) {
         window.showToast("success", data.msg);
-
-        // Correctly update the state to remove the order from "ongoing"
+  
+        // Update the state to remove the order from "ongoing"
         setOngoingOrPlacedOrders((prevOrders) => {
-          // Remove the order from "ongoing"
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
-
-          // Return the updated state
+  
           return {
-            placed: prevOrders.placed, // Keep placed orders unchanged
-            ongoing: updatedOngoing, // Update ongoing orders
+            placed: prevOrders.placed,
+            ongoing: updatedOngoing,
           };
         });
+  
+        setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
@@ -385,6 +391,8 @@ export const OrderCard = ({
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
+  
+
 
   const handleConfirmCancel = async () => {
     try {
@@ -532,13 +540,99 @@ export const OrderCard = ({
             <div className="d-flex justify-content-end">
               <button
                 className="btn btn-sm btn-outline-success rounded-pill px-4"
-                onClick={handleCompleteOrder}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCompleteClick();
+                }}
               >
                 Complete Order
               </button>
             </div>
           )}
         </div>
+
+        {showCompleteModal && (
+  <div
+    className="modal fade show d-block"
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content">
+        <div className="modal-header">
+          
+
+<div className="col-6 text-start">
+                  <div className="modal-title font_size_16 fw-medium">
+                  Complete Order
+                  </div>
+                </div>
+
+                <div className="col-6 text-end">
+                  <div className="d-flex justify-content-end">
+                    <span
+                      className="btn-close m-2 font_size_12"
+                      onClick={() => setShowCompleteModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line"></i>
+                    </span>
+                  </div>
+                </div>
+        </div>
+        <div className="modal-body">
+          <p>Are you sure you want to complete this order?</p>
+          <div className="d-flex justify-content-around"> {/* Row for payment buttons */}
+            <button
+              type="button"
+              className={`btn rounded-pill ${
+                paymentMethod === "UPI" ? "btn-info" : "btn-outline-info"
+              }`}
+              onClick={() => setPaymentMethod("UPI")}
+            >
+              UPI
+            </button>
+            <button
+              type="button"
+              className={`btn rounded-pill ${
+                paymentMethod === "Card" ? "btn-info" : "btn-outline-info"
+              }`}
+              onClick={() => setPaymentMethod("Card")}
+            >
+              Card
+            </button>
+            <button
+              type="button"
+              className={`btn rounded-pill ${
+                paymentMethod === "Cash" ? "btn-info" : "btn-outline-info"
+              }`}
+              onClick={() => setPaymentMethod("Cash")}
+            >
+              Cash
+            </button>
+          </div>
+        </div>
+        <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+                <button
+                  type="button"
+                  className="btn btn-outline-dark rounded-pill font_size_14"
+                  onClick={() => setShowCompleteModal(false)}
+                >
+                 Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success rounded-pill"
+                  onClick={handleCompleteOrder}
+                >
+                 
+                  Confirm Complete
+                </button>
+              </div>
+      </div>
+    </div>
+  </div>
+)}
+
         {showCancelModal && (
           <div
             className="modal fade show d-block"
@@ -601,7 +695,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
   const [timeLeft, setTimeLeft] = useState(90);
-
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
