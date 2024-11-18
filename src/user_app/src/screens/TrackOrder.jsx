@@ -1999,7 +1999,7 @@ const TrackOrder = () => {
             </div>
             {/* Only show invoice button if order status is completed */}
             {orderStatus === "completed" && (
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-end mt-4">
                 {orderDetails?.order_details?.invoice_url ? (
                   <a
                     href={orderDetails.order_details.invoice_url}
@@ -2008,14 +2008,14 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn btn-success rounded-pill text-white px-5">
+                    <button className="btn btn-sm btn-light text-dark rounded-pill">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
                   </a>
                 ) : (
                   <button 
-                    className="btn btn-success rounded-pill text-white px-5"
+                    className="btn btn-success rounded-pill text-white px-5 d-none"
                     disabled
                   >
                     Invoice &nbsp;
