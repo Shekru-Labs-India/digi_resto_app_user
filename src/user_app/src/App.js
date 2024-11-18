@@ -18,6 +18,7 @@ import Checkout from "./screens/Checkout";
 import MenuDetails from "./screens/MenuDetails";
 import ValidateAndNavigate from "./components/ValidateAndNavigate";
 import AllOrderList from "./component/AllOrderList";
+import RestaurantDetails from "./screens/RestaurantDetails";
 
 // Context imports
 import { ThemeProvider } from "./context/ThemeContext";
@@ -59,6 +60,7 @@ function App() {
                 <Route path="Search" element={<Search />} />
                 <Route path="ProductDetails/:menuId" element={<MenuDetails />} />
                 <Route path="TrackOrder/:order_number" element={<TrackOrder />} />
+                <Route path="restaurant" element={<RestaurantDetails />} />
                 <Route path="" element={<Navigate to="Index" replace />} />
                 <Route path="*" element={<Navigate to="Index" replace />} />
               </Routes>

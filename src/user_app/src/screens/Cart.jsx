@@ -330,9 +330,16 @@ const Cart = () => {
           <div className="dz-cart-about">
             <h5>Your Cart is Empty</h5>
             <p>Add items to your cart from the product details page.</p>
-            <Link to="/user_app/Menu" className="btn btn-outline-primary btn-sm">
-              Return to Shop
-            </Link>
+       
+
+            <div class="d-flex align-items-center justify-content-center mt-2">
+              <Link
+                class="btn btn-outline-primary  rounded-pill  px-3"
+                to="/user_app/Menu"
+              >
+                <i class="ri-add-circle-line me-1 fs-4"></i> Order More
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -408,7 +415,7 @@ const Cart = () => {
                       {item.offer !== 0 && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
-                            <i className="ri-percent-line me-1 "></i>
+                        
                             {item.offer}% Off
                           </span>
                         </div>

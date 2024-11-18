@@ -94,7 +94,7 @@ const Checkout = () => {
   
     fetchCartDetails();
     
-  }, [location]);
+  }, []);
   
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -426,7 +426,8 @@ await fetchCartDetails();
                     className="btn btn-info rounded-pill w-100 py-2"
                     onClick={handleAddToExistingOrder}
                   >
-                    Add to Existing Order
+                    Add to Existing Order (#{existingOrderDetails.orderNumber}
+                    )
                   </button>
                   <button
                     className="btn btn-outline-secondary rounded-pill w-100 py-2"

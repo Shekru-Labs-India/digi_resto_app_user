@@ -12,138 +12,126 @@ const Footer = () => {
   return (
     <>
       <>
-      <section class="footer-top-area pt-100 pb-70">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-4 col-sm-6 col-md-6">
-						<div class="single-widget">
-							<a href="index.html">
-								<img src="assets/img/rimu-logo.png" alt="Rimu-Logo"/>
-							</a>
+      <section className="footer-top-area pt-100 pb-70">
+			<div className="container">
+				<div className="row">
+					<div className="col-lg-4 col-sm-6 col-md-6">
+						<div className="single-widget">
+							<Link to="/">
+								<img src={logo} alt="Rimu-Logo"  width="60" height="60"/>
+							</Link>
 							<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Velit cupiditate ad quisquam ratione, unde exercitationem ducimus dolor sit amet consectetur adipisicing.</p>
-							<ul class="address">
+							<ul className="address">
 								<li>
-									<i class="fa fa-map-marker"></i>
+									<i className="fa fa-map-marker"></i>
 									123, Western Road, Melbourne Australia
 								</li>
 								<li>
-									<i class="fa fa-envelope"></i>
-									<a href="../../cdn-cgi/l/email-protection#650d0009090a25170c08104b060a08"><span class="__cf_email__" data-cfemail="0f676a6363604f7d66627a216c6062">[email&#160;protected]</span></a>
+									<i className="fa fa-envelope"></i>
+									<a href="../../cdn-cgi/l/email-protection#650d0009090a25170c08104b060a08"><span className="__cf_email__" data-cfemail="0f676a6363604f7d66627a216c6062">[email&#160;protected]</span></a>
 								</li>
 								<li>
-									<i class="fa fa-phone"></i>
+									<i className="fa fa-phone"></i>
 									<a href="tel:123456123">+123(456)123</a>
 								</li>
 							</ul>
-						</div>
-					</div>
-					<div class="col-lg-2 col-sm-6 col-md-6">
-						<div class="single-widget">
-							<h3>Information</h3>
-							<ul class="links">
+							<ul className="social-icon">
 								<li>
-									<a href="checkout.html">Delivery Information</a>
+									<a href="https://www.facebook.com/" target="_blank">
+										<i className="fa-brands fa-facebook-f"></i>
+									</a>
 								</li>
 								<li>
-									<a href="services.html">services</a>
+									<a href="https://www.facebook.com/" target="_blank">
+										<i className="fa-brands fa-facebook-f"></i>
+									</a>
+								</li>
+								
+								<li>
+									<a href="https://www.linkedin.com/" target="_blank">
+										<i className="fa-brands fa-linkedin-in"></i>
+									</a>
 								</li>
 								<li>
-									<a href="about.html">About</a>
-								</li>
-								<li>
-									<a href="shop-grid-view.html">Top Sellers</a>
-								</li>
-								<li>
-									<a href="blog-grid.html">Blog Grid</a>
-								</li>
-								<li>
-									<a href="contact.html">Contact Us</a>
+									<a href="https://www.pinterest.com/" target="_blank">
+										<i className="fa-brands fa-pinterest-p"></i>
+									</a>
 								</li>
 							</ul>
 						</div>
 					</div>
-					<div class="col-lg-2 col-sm-6 col-md-6">
-						<div class="single-widget">
-							<h3>Customer Support</h3>
-							<ul class="links">
+					<div className="col-lg-2 col-sm-6 col-md-6">
+						<div className="single-widget">
+							<h3>Link</h3>
+							<ul className="links">
 								<li>
-									<a href="index.html#">Help & Ordering</a>
+									<Link to="/">Home</Link>
+								</li>
+								<li>
+									<Link to="/">Features</Link>
+								</li>
+								<li>
+									<Link to="/">Pricing</Link>
+								</li>
+								<li>
+									<Link to="/">About</Link>
+								</li>
+								<li>
+									<Link to="/">Contact </Link>
+								</li>
+								<li >
+                      <Link
+                        to="/user_app/Index"
+                       
+                      >
+                        User App
+                      </Link>
+                    </li>
+								
+							</ul>
+						</div>
+					</div>
+					<div className="col-lg-2 col-sm-6 col-md-6">
+						<div className="single-widget">
+							<h3>Customer Support</h3>
+							<ul className="links">
+								<li>
+									<a href="index.html#">Get a demo</a>
+								</li>
+								<li>
+									<a href="index.html#">Enquiry</a>
+								</li>
+								<li>
+									<a href="index.html#">Help and suppport</a>
 								</li>
 								<li>
 									<a href="index.html#">Order Tracking</a>
 								</li>
 								<li>
-									<a href="index.html#">Return & Cancelation</a>
-								</li>
-								<li>
-									<a href="index.html#">Delivery Schedule</a>
-								</li>
-								<li>
 									<a href="contact.html">Get a Call</a>
 								</li>
-								<li>
-									<a href="index.html#">Online Enquiry</a>
-								</li>
+								
 							</ul>
 						</div>
 					</div>
-					<div class="col-lg-4 col-sm-6 col-md-6">
-						<div class="single-widget single-widget-4">
-							<h3>Instagram</h3>
-							<ul class="instagram">
+					<div className="col-lg-4 col-sm-6 col-md-6">
+						<div className="single-widget single-widget-4">
+							<h3>Legal</h3>
+							<ul className="links">
 								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/1.jpg" alt="Instagram"/>
-									</a>
+									<Link to="/terms_conditions">Terms and Conditions</Link>
 								</li>
 								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/2.jpg" alt="Instagram"/>
-									</a>
+									<Link to="/privacy_policy">Privacy Policy</Link>
 								</li>
 								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/3.jpg" alt="Instagram"/>
-									</a>
+									<Link to="/cookie_policy">Cookie Policy</Link>
 								</li>
-								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/4.jpg" alt="Instagram"/>
-									</a>
-								</li>
-								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/5.jpg" alt="Instagram"/>
-									</a>
-								</li>
-								<li>
-									<a href="index.html#">
-										<img src="assets/img/instagram/6.jpg" alt="Instagram"/>
-									</a>
-								</li>
+								
+							
+								
 							</ul>
-							<ul class="social-icon">
-								<li>
-									<a href="https://www.facebook.com/" target="_blank">
-										<i class="fa-brands fa-facebook-f"></i>
-									</a>
-								</li>
-								<li>
-									<a href="https://www.twitter.com/" target="_blank">
-										<i class="fa-brands fa-x-twitter"></i>
-									</a>
-								</li>
-								<li>
-									<a href="https://www.linkedin.com/" target="_blank">
-										<i class="fa-brands fa-linkedin-in"></i>
-									</a>
-								</li>
-								<li>
-									<a href="https://www.pinterest.com/" target="_blank">
-										<i class="fa-brands fa-pinterest-p"></i>
-									</a>
-								</li>
-							</ul>
+							
 						</div>
 					</div>
 				</div>
@@ -166,7 +154,7 @@ const Footer = () => {
               <div className="col-lg-6 col-md-6">
                 <ul className="conditions">
                   <li>
-                    <a href="index.html#">Terms &amp; Conditions</a>
+                    <Link to="/terms_conditions">Terms &amp; Conditions</Link>
                   </li>
                   <li>
                     <Link to="/privacy_policy">Privacy Policy</Link>
