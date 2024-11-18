@@ -14,16 +14,45 @@ const UserAuthPopup = () => {
   const [view, setView] = useState('login');
   const [otp, setOtp] = useState(['', '', '', '']);
   const [name, setName] = useState('');
-  const [nameError, setNameError] = useState('');
+  
   const [agreed, setAgreed] = useState(false);
   const [checkboxError, setCheckboxError] = useState('');
   const checkboxRef = useRef(null);
   const [originalPath, setOriginalPath] = useState(window.location.pathname);
   const mobileInputRef = useRef(null);
-  const nameInputRef = useRef(null);
+ 
   const otpInputRefs = useRef([]);
   const [customerId, setCustomerId] = useState(null);
+  const [nameError, setNameError] = useState('');
+  const nameInputRef = useRef(null);
+  const [isNameValid, setIsNameValid] = useState(false); 
  
+  const handleNameChange = (e) => {
+    let input = e.target.value;
+  
+    // Remove any characters that are not letters or spaces
+    input = input.replace(/[^a-zA-Z\s]/g, '');
+  
+    // Validate name length
+    if (input.length < 3 || input.length > 15) {
+      setNameError('Name must be between 3 and 15 characters.');
+      setIsNameValid(false);
+    } else {
+      setNameError('');
+      setIsNameValid(true);
+    }
+  
+    // Convert to title case
+    const titleCaseName = input
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  
+    setName(titleCaseName);
+  };
+
+  
   const [customerType, setCustomerType] = useState("");
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -422,19 +451,17 @@ const UserAuthPopup = () => {
                   <span className="required-star">*</span>Name
                 </label>
                 <input
-                  ref={nameInputRef}
-                  type="text"
-                  className={`form-control border border-black ${
-                    nameError ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoFocus
-                />
-                {nameError && (
-                  <div className="invalid-feedback">{nameError}</div>
-                )}
+        ref={nameInputRef}
+        type="text"
+        className={`form-control border border-black ${
+          nameError ? 'is-invalid' : ''
+        }`}
+        placeholder="Enter your name"
+        value={name}
+        onChange={handleNameChange}
+        autoFocus
+      />
+      {nameError && <div className="invalid-feedback">{nameError}</div>}
               </div>
 
               <div className="form-group mb-3">
@@ -489,7 +516,7 @@ const UserAuthPopup = () => {
                   type="button"
                   className="btn btn-success rounded-pill w-100 mx-auto"
                   onClick={handleSignUp}
-                  disabled={!name || !isMobileValid || !agreed}
+                  disabled={!isNameValid  || !isMobileValid || !agreed}
                 >
                   Create Account
                 </button>
@@ -573,7 +600,7 @@ const UserAuthPopup = () => {
                   onClick={handleGuestLogin}
                 >
                   continue as guest
-                  <i className="ri-ghost-line ms-1"></i>
+                  <i className="ri-spy-fill ms-1"></i>
                 </button>
               </div>
             </div>
