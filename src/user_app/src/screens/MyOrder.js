@@ -265,13 +265,23 @@ const MyOrder = () => {
 
           <div className="nav nav-tabs nav-fill" role="tablist">
             {["completed", "canceled"].map((tab) => (
-              <div
-                key={tab}
-                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </div>
+              <>
+                <div
+                  key={tab}
+                  className={`nav-link px-0 ${
+                    activeTab === tab ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab === "completed" && (
+                    <i className="ri-checkbox-circle-line text-success me-2 fs-5"></i>
+                  )}
+                  {tab === "canceled" && (
+                    <i className="ri-close-circle-line text-danger me-2 fs-5"></i>
+                  )}
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </div>
+              </>
             ))}
           </div>
           <Bottom />
@@ -361,14 +371,22 @@ export const OrderCard = ({
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
-
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const navigate = useNavigate();
 
   const handleCancelClick = () => {
     setShowCancelModal(true);
   };
-
+  const handleCompleteClick = () => {
+    setShowCompleteModal(true);
+  };
   const handleCompleteOrder = async () => {
+    if (!paymentMethod) {
+      window.showToast("error", "Please select a payment method.");
+      return;
+    }
+  
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
@@ -380,35 +398,33 @@ export const OrderCard = ({
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
+            payment_method: paymentMethod, // Added payment method
           }),
         }
       );
-
-      console.log("Response:", response); // Log the full response
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      console.log("Response Data:", data); // Log the parsed response data
-
+  
       if (data.st === 1) {
         window.showToast("success", data.msg);
-
-        // Correctly update the state to remove the order from "ongoing"
+  
+        // Update the state to remove the order from "ongoing"
         setOngoingOrPlacedOrders((prevOrders) => {
-          // Remove the order from "ongoing"
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
-
-          // Return the updated state
+  
           return {
-            placed: prevOrders.placed, // Keep placed orders unchanged
-            ongoing: updatedOngoing, // Update ongoing orders
+            placed: prevOrders.placed,
+            ongoing: updatedOngoing,
           };
         });
+  
+        setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
@@ -562,13 +578,105 @@ export const OrderCard = ({
             <div className="d-flex justify-content-end">
               <button
                 className="btn btn-sm btn-outline-success rounded-pill px-4"
-                onClick={handleCompleteOrder}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCompleteClick();
+                }}
               >
                 Complete Order
               </button>
             </div>
           )}
         </div>
+        {showCompleteModal && (
+          <div
+            className="modal fade show d-block"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div className="col-6 text-start">
+                    <div className="modal-title font_size_16 fw-medium">
+                      Complete Order
+                    </div>
+                  </div>
+
+                  <div className="col-6 text-end">
+                    <div className="d-flex justify-content-end">
+                      <span
+                        className="btn-close m-2 font_size_12"
+                        onClick={() => setShowCompleteModal(false)}
+                        aria-label="Close"
+                      >
+                        <i className="ri-close-line"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-body">
+                  <p>Are you sure you want to complete this order?</p>
+                  <div className="d-flex justify-content-around">
+                    {" "}
+                    {/* Row for payment buttons */}
+                    <button
+                      type="button"
+                      className={`border rounded-pill px-5 font_size_14 text-center ${
+                        paymentMethod === "UPI"
+                          ? "bg-info text-white"
+                          : "border border-info"
+                      }`}
+                      onClick={() => setPaymentMethod("UPI")}
+                    >
+                      UPI
+                    </button>
+                    <button
+                      type="button"
+                      className={`border rounded-pill px-5 font_size_14 text-center ${
+                        paymentMethod === "Card"
+                          ? "bg-info text-white"
+                          : "border border-info"
+                      }`}
+                      onClick={() => setPaymentMethod("Card")}
+                    >
+                      Card
+                    </button>
+                    <button
+                      type="button"
+                      className={`border rounded-pill px-5 py-2 font_size_14 text-center ${
+                        paymentMethod === "Cash"
+                          ? "bg-info text-white"
+                          : "border border-info"
+                      }`}
+                      onClick={() => setPaymentMethod("Cash")}
+                    >
+                      Cash
+                    </button>
+                  </div>
+                </div>
+                <hr className="my-4" />
+                <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+                  <button
+                    type="button"
+                    className="btn btn-outline-dark rounded-pill font_size_14"
+                    onClick={() => setShowCompleteModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success rounded-pill"
+                    onClick={handleCompleteOrder}
+                  >
+                    <i className="ri-checkbox-circle-line text-white me-2 fs-5"></i>
+                    Confirm Complete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showCancelModal && (
           <div
             className="modal fade show d-block"
@@ -583,7 +691,7 @@ export const OrderCard = ({
                     </div>
                   </div>
                   <div class="col-6 text-end">
-                    <button 
+                    <button
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
@@ -612,8 +720,9 @@ export const OrderCard = ({
                     ></textarea>
                   </div>
                 </div>
+                <hr className="my-4" />
                 <div className="d-flex justify-content-between pb-3 px-4">
-                  <div className="col-6">
+                  <div className="col-4">
                     <button
                       type="button"
                       className="btn btn-outline-dark rounded-pill font_size_14"
@@ -622,12 +731,13 @@ export const OrderCard = ({
                       Close
                     </button>
                   </div>
-                  <div className="col-6 text-end">
+                  <div className="col-6 text-end text-nowrap">
                     <button
                       type="button"
-                      className="btn btn-danger"
+                      className="btn btn-danger  rounded-pill"
                       onClick={handleConfirmCancel}
                     >
+                      <i class="ri-close-circle-line text-white me-2 fs-5"></i>
                       Confirm Cancel
                     </button>
                   </div>
@@ -831,13 +941,20 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         {activeTab === "completed" && (
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-11">
-                                <div className="text-center">
+                              <div className="col-6 ps-0">
+                                <div className="text-start text-nowrap">
                                   <span className="text-success">
-                                    <i className="ri-check-line me-1"></i>
-                                    Order completed
+                                    <i className="ri-checkbox-circle-line me-1"></i>
+                                    Completed
                                   </span>
                                 </div>
+                              </div>
+                              <div className="col-6 pe-0 font_size_14 text-end">
+                                {order.payment_method && (
+                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center">
+                                    Payment Type: {order.payment_method}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>

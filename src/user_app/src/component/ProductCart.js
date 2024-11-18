@@ -631,7 +631,6 @@ const ProductCard = ({ isVegOnly }) => {
                     {menu.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-                     
                           {menu.offer}% Off
                         </span>
                       </div>
@@ -645,7 +644,6 @@ const ProductCard = ({ isVegOnly }) => {
                             <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
                               <i className="ri-bard-line me-2"></i>
                               Special
-                            
                             </div>
                           </div>
                         )}
@@ -765,7 +763,7 @@ const ProductCard = ({ isVegOnly }) => {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr />
+                <hr className="my-4"/>
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -804,13 +802,14 @@ const ProductCard = ({ isVegOnly }) => {
                   </div>
                 </div>
               </div>
+              <hr className="my-4" />
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
                   className="btn btn-outline-dark rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
-                 Close
+                  Close
                 </button>
                 <button
                   type="button"

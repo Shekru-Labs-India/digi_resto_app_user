@@ -851,11 +851,18 @@ const TrackOrder = () => {
             {!loading && orderStatus && (
               <>
                 {orderStatus === "completed" ? (
-                  <div className="card-body text-center bg-success rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
-                      Your delicious order has been served
-                    </span>
-                  </div>
+                  <>
+                    <div className="card-body text-center bg-success rounded-4 text-white">
+                      <span className="fs-6 fw-medium h-100">
+                        Your delicious order has been served
+                      </span>
+                    </div>
+                   <div className="d-flex justify-content-center pt-3">
+                     <div className="border border-success rounded-pill py-0 px-2 font_size_14">
+                      Payment Type: {order_details.payment_method}
+                     </div>
+                   </div>
+                  </>
                 ) : ["canceled", "cancelled", "cancle"].includes(
                     orderStatus
                   ) ? (
@@ -915,15 +922,8 @@ const TrackOrder = () => {
             <RemainingTimeDisplay />
           )}
 
-        
-
           {customerId ? (
             <section className="container mt-1 py-1">
-              
-
-
-             
-
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
               )}
@@ -1010,7 +1010,6 @@ const TrackOrder = () => {
                             {menu.offer && (
                               <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                 <span className="font_size_10 text-white">
-                                
                                   {menu.offer || "No"}% Off
                                 </span>
                               </div>
@@ -1066,14 +1065,13 @@ const TrackOrder = () => {
                                   </span>
                                 )}
                               </div>
-                             
-                                <div className="col-4 text-end px-0">
-                                  <i className="ri-star-half-line ratingStar font_size_10"></i>
-                                  <span className="gray-text font_size_10 fw-medium">
-                                    {parseFloat(menu.rating).toFixed(1)}
-                                  </span>
-                                </div>
-                             
+
+                              <div className="col-4 text-end px-0">
+                                <i className="ri-star-half-line ratingStar font_size_10"></i>
+                                <span className="gray-text font_size_10 fw-medium">
+                                  {parseFloat(menu.rating).toFixed(1)}
+                                </span>
+                              </div>
                             </div>
 
                             {/* Rating */}
@@ -1212,7 +1210,7 @@ const TrackOrder = () => {
                 </div>
               </div>
             </div>
-          
+
             {orderStatus === "completed" && (
               <div className="d-flex justify-content-center">
                 {orderDetails?.order_details?.invoice_url ? (
@@ -1242,7 +1240,6 @@ const TrackOrder = () => {
           </div>
         )}
 
-       
         <Bottom></Bottom>
       </div>
     </>

@@ -756,7 +756,7 @@ const Search = () => {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr />
+                <hr className="my-4"/>
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
