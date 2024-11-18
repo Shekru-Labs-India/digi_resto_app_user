@@ -57,14 +57,6 @@ const Profile = () => {
   const renderContent = () => {
     const isLoggedIn = userData && userData.customer_id;
 
-    const handleUpiPayment = () => {
-      // Construct the UPI URL
-      const upiUrl = `upi://pay?pa=your-vpa@bank&pn=Your Name&mc=1234&tid=1234567890123456&tr=unique-transaction-id&tn=Payment for Order&am=100&cu=INR`;
-  
-      // Open the UPI URL, prompting the user to select a UPI app
-      window.location.href = upiUrl;
-    };
-
     return (
       <>
         {/* <header className="header header-fixed style-3 shadow-sm">
@@ -299,12 +291,7 @@ const Profile = () => {
             </a>
           </div>
         </div>
-        <button
-      className="btn btn-primary"
-      onClick={handleUpiPayment}
-    >
-      Pay with UPI
-    </button>
+        
       </>
     );
   };
