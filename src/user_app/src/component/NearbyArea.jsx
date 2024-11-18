@@ -189,6 +189,7 @@ const NearbyArea = () => {
         loop: true,
         autoplay: {
           delay: 2500,
+          // delay: 25000,
           disableOnInteraction: false,
         },
       });
@@ -451,23 +452,26 @@ const NearbyArea = () => {
                         </div>
                       </div> */}
                       <div className="d-flex justify-content-between align-items-center mt-1">
-                        <div className="text-success font_size_10 d-flex align-items-center">
-                          <i className="ri-restaurant-line pe-1"></i>
-                          {menuItem.category_name}
-                        </div>
-                        <div className="text-end font_size_10 fw-normal gray-text me-1">
-                          <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                          {menuItem.rating}
-                        </div>
+                        <span className="font_size_14 fw-medium text-wrap">
+                          {menuItem.name}
+                        </span>
                       </div>
-                      <span className="font_size_14 fw-medium text-wrap">
-                        {menuItem.name}
-                      </span>
+
                       <div className="mt-2">
-                        <div className="row">
-                          <div className="col-6">
-                            <div className="">
+                        <div className="row d-flexalign-item-center">
+                          <div className="col-4">
+                            <div className="text-success font_size_10 d-flex align-items-center">
+                              <i className="ri-restaurant-line pe-1"></i>
+                              {menuItem.category_name}
+                            </div>
+                          </div>
+                          <div className="col-4">
                               {renderSpiceIcons(menuItem.spicy_index)}
+                          </div>
+                          <div className="col-4">
+                            <div className="text-end font_size_10 fw-normal gray-text me-1">
+                              <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+                              {menuItem.rating}
                             </div>
                           </div>
                         </div>

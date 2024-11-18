@@ -1811,31 +1811,35 @@ const TrackOrder = () => {
 
                           <div className="col-8 ps-2 pt-1 pe-0">
                             <div className="row">
-                              <div className="col-8">
+                              <div className="col-12">
                                 {/* Menu Name with Delete Icon for placed orders */}
                                 <div className="d-flex justify-content-between align-items-start">
                                   <span className="fw-medium font_size_14 mb-1 d-block">
                                     {menu.menu_name}
                                   </span>
-                                  {orderStatus === "placed" &&
-                                    isWithinPlacedWindow && (
-                                      <div className="col-2 text-end">
-                                        <i
-                                          className="ri-close-line text-danger"
-                                          style={{ cursor: "pointer" }}
-                                          onClick={(e) =>
-                                            handleRemoveItem(menu, e)
-                                          }
-                                        ></i>
-                                      </div>
-                                    )}
                                 </div>
-                                {/* Category with Spicy Index */}
+                                {orderStatus === "placed" &&
+                                  isWithinPlacedWindow && (
+                                    <div className="col-2 text-end">
+                                      <i
+                                        className="ri-close-line text-danger"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={(e) =>
+                                          handleRemoveItem(menu, e)
+                                        }
+                                      ></i>
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col-4">
                                 <span className="text-success font_size_10 fw-medium">
                                   <i className="ri-restaurant-line mt-0 me-2"></i>
                                   {menu.category_name}
                                 </span>
-                                {/* Spicy Index next to category name */}
+                              </div>
+                              <div className="col-4 px-0">
                                 {menu.spicy_index && (
                                   <span className="ms-2 spicy-index ">
                                     {Array.from({ length: 5 }).map((_, index) =>
@@ -1854,15 +1858,18 @@ const TrackOrder = () => {
                                   </span>
                                 )}
                               </div>
-
-                              {/* Rating */}
-                              <div className="col-4 text-end px-0">
-                                <i className="ri-star-half-line ratingStar font_size_10"></i>
-                                <span className="gray-text font_size_10 fw-medium">
-                                  {parseFloat(menu.rating).toFixed(1)}
-                                </span>
-                              </div>
+                             
+                                <div className="col-4 text-end px-0">
+                                  <i className="ri-star-half-line ratingStar font_size_10"></i>
+                                  <span className="gray-text font_size_10 fw-medium">
+                                    {parseFloat(menu.rating).toFixed(1)}
+                                  </span>
+                                </div>
+                             
                             </div>
+
+                            {/* Rating */}
+
                             <div className="row mt-2">
                               <div className="col-9 px-0">
                                 <span className="mt-0 mb-2 text-start">
@@ -1999,7 +2006,7 @@ const TrackOrder = () => {
             </div>
             {/* Only show invoice button if order status is completed */}
             {orderStatus === "completed" && (
-              <div className="d-flex justify-content-end mt-4">
+              <div className="d-flex justify-content-center">
                 {orderDetails?.order_details?.invoice_url ? (
                   <a
                     href={orderDetails.order_details.invoice_url}
@@ -2008,14 +2015,14 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn btn-sm btn-light text-dark rounded-pill">
+                    <button className="btn btn-success rounded-pill text-white px-5">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
                   </a>
                 ) : (
-                  <button 
-                    className="btn btn-success rounded-pill text-white px-5 d-none"
+                  <button
+                    className="btn btn-success rounded-pill text-white px-5"
                     disabled
                   >
                     Invoice &nbsp;
