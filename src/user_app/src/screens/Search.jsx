@@ -448,12 +448,14 @@ const Search = () => {
       <main className="page-content p-t80 p-b40">
         <div className="container py-0">
           <div className="d-flex justify-content-between align-items-center  my-2">
+            <Link to={`/user_app/restaurant/`}>
             <div className="d-flex align-items-center">
               <i className="ri-store-2-line me-2"></i>
               <span className="fw-medium font_size_14">
                 {restaurantName.toUpperCase() || "Restaurant Name"}
               </span>
             </div>
+            </Link>
             <div className="d-flex align-items-center">
               <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
