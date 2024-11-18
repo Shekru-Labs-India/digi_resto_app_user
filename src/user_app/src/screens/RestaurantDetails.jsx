@@ -23,6 +23,7 @@ function RestaurantDetails() {
   const [countDetails, setCountDetails] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
   const [menuList, setMenuList] = useState([]);
+  const [filteredMenus, setFilteredMenus] = useState([]);
 
   
 
@@ -60,10 +61,22 @@ function RestaurantDetails() {
     fetchRestaurantDetails();
   }, []);
 
+  useEffect(() => {
+    setFilteredMenus(menuList);
+  }, [menuList]);
+
   const totalMenuCount = menuList.length || 25;
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
+    
+    if (categoryId === "special") {
+      setFilteredMenus(menuList.filter(menu => menu.is_special));
+    } else if (categoryId === null) {
+      setFilteredMenus(menuList);
+    } else {
+      setFilteredMenus(menuList.filter(menu => menu.menu_cat_id === categoryId));
+    }
   };
 
   return (
@@ -84,7 +97,7 @@ function RestaurantDetails() {
             <div>
               <div className="card rounded-4">
                 <img
-                  src={restaurantDetails.image || img }
+                  src={restaurantDetails.image || img}
                   className="card-img-top rounded-4"
                   alt={restaurantDetails.name || "Restaurant Image"}
                 />
@@ -110,21 +123,24 @@ function RestaurantDetails() {
                   </span>
                 </div>
               </div>
-              <div
-                className="card "
-                style={{
-                  border: "2px dashed silver",
-                }}
-              >
-                <div className="p-3 rounded-4 d-flex justify-content-between align-items-center">
-                  <span className="font_size_16">
-                    UPI : {restaurantDetails.upi_id}
-                  </span>
-                  <a class="btn btn-info rounded-pill btn-sm">
-                    <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
-                  </a>
+
+              {restaurantDetails.upi_id && (
+                <div
+                  className="card "
+                  style={{
+                    border: "2px dashed silver",
+                  }}
+                >
+                  <div className="p-3 rounded-4 d-flex justify-content-between align-items-center">
+                    <span className="font_size_16">
+                      UPI : {restaurantDetails.upi_id}
+                    </span>
+                    <a class="btn btn-info rounded-pill btn-sm">
+                      <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -173,7 +189,7 @@ function RestaurantDetails() {
 
         <div className="dz-category">
           <div className="title-bar">
-            <h5 className="title p-r50">Categories</h5>
+            <h5 className="font_size_14 fw-medium">Categories</h5>
           </div>
 
           {/* Category Buttons Slider */}
@@ -248,7 +264,7 @@ function RestaurantDetails() {
 
           {/* Image Categories Slider */}
           <div className="title-bar mt-4">
-            <h5 className="title p-r50">Menus</h5>
+            <h5 className="font_size_14 fw-medium">Menus</h5>
           </div>
 
           <Swiper
@@ -256,13 +272,13 @@ function RestaurantDetails() {
             spaceBetween={10}
             slidesPerView={3.5}
             autoplay={{
-              delay: 2500,
+              delay: 2500000,
               disableOnInteraction: false,
             }}
-            loop={true}
+            loop={filteredMenus.length > 3}
             className="dz-category-swiper mb-5 pb-3"
           >
-            {menuList.map((menu) => (
+            {filteredMenus.map((menu) => (
               <SwiperSlide key={menu.menu_id}>
                 <div className="dz-category-items">
                   <a href="#" className="dz-media">
@@ -270,38 +286,37 @@ function RestaurantDetails() {
                       src={menu.image || img}
                       alt={menu.menu_name}
                       style={{ height: 110 }}
+                      onError={(e) => {
+                        e.target.src = img;
+                      }}
                     />
-                    <div>
-                      <div
-                        className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
-                        style={{
-                          position: "absolute",
-                          bottom: 3,
-                          left: 3,
-                          height: 17,
-                          width: 17,
-                        }}
-                      >
-                        <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
-                      </div>
+                    <div
+                      className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
+                      style={{
+                        position: "absolute",
+                        bottom: 3,
+                        left: 3,
+                        height: 17,
+                        width: 17,
+                      }}
+                    >
+                      <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
                     </div>
                   </a>
                   <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                    <span className="font_size_10 text-white"> 30% off</span>
+                    <span className="font_size_10 text-white">30% off</span>
                   </div>
                   {menu.is_special && (
-                    <div className="">
-                      <i
-                        className="ri-bard-line  border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          top: 3,
-                          right: 5,
-                          height: 17,
-                          width: 17,
-                        }}
-                      ></i>
-                    </div>
+                    <i
+                      className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                      style={{
+                        position: "absolute",
+                        top: 3,
+                        right: 5,
+                        height: 17,
+                        width: 17,
+                      }}
+                    ></i>
                   )}
 
                   <div className="font_size_14 fw-medium text-wrap text-center">

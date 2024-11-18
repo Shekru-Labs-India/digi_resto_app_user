@@ -975,13 +975,13 @@ const MenuDetails = () => {
 
                 <div className="col-6 text-end">
                   <div className="d-flex justify-content-end">
-                    <span
-                      className="btn-close m-2 font_size_12"
+                    <button
+                      className="btn p-0 fs-3 text-muted"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line"></i>
-                    </span>
+                      <i className="ri-close-line text-muted"></i>
+                    </button>
                   </div>
                 </div>
               </div>

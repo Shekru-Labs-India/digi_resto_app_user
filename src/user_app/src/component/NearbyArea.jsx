@@ -335,7 +335,7 @@ const NearbyArea = () => {
   };
 
   return (
-    <div className="dz-box style-2 nearby-area pb-0">
+    <div className="dz-box style-2 nearby-area pb-3">
       <div className=" align-items-start mb-0 ">
         <div className="">
           {menuItems.length > 0 && (
@@ -568,15 +568,12 @@ const NearbyArea = () => {
                 </div>
 
                 <div className="col-6 text-end">
-                  <div className="d-flex justify-content-end">
-                    <span
-                      className="btn-close m-2 font_size_12"
-                      onClick={() => setShowModal(false)}
-                      aria-label="Close"
-                    >
-                      <i className="ri-close-line"></i>
-                    </span>
-                  </div>
+                  <button 
+                    className="btn p-0 fs-3 text-muted"
+                    onClick={() => setShowModal(false)}
+                  >
+                    <i className="ri-close-line text-muted"></i>
+                  </button>
                 </div>
               </div>
               <div className="modal-body py-2 px-3">
