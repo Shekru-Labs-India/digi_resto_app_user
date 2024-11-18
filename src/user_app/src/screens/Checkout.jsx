@@ -94,7 +94,7 @@ const Checkout = () => {
   
     fetchCartDetails();
     
-  }, [location]);
+  }, []);
   
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));

@@ -1394,7 +1394,7 @@ const TrackOrder = () => {
                                   {menu.offer && (
                                     <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                       <span className="font_size_10 text-white">
-                                        <i className="ri-percent-line me-1 "></i>
+                                   
                                         {menu.offer || "No"}% Off
                                       </span>
                                     </div>
@@ -1629,7 +1629,7 @@ const TrackOrder = () => {
                               {menu.offer && (
                                 <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                   <span className="font_size_10 text-white">
-                                    <i className="ri-percent-line me-1 "></i>
+                                
                                     {menu.offer || "No "}% Off
                                   </span>
                                 </div>
@@ -1802,7 +1802,7 @@ const TrackOrder = () => {
                             {menu.offer && (
                               <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                 <span className="font_size_10 text-white">
-                                  <i className="ri-percent-line me-1 "></i>
+                                
                                   {menu.offer || "No"}% Off
                                 </span>
                               </div>

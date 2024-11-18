@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import CompanyVersion from '../constants/CompanyVersion';
 // import '../assets/styles.css'
 // import '../assets/custom.css'
 import config from "../component/config"
@@ -19,7 +18,6 @@ const HotelList = () => {
           });
           setHotels(formattedHotels);
         } else {
-       
         }
       } catch (error) {
        

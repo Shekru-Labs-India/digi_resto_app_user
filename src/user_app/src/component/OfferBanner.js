@@ -553,7 +553,7 @@ const OfferBanner = () => {
                     {menu.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-                          <i className="ri-percent-line me-1 "></i>
+                        
                           {menu.offer}% Off
                         </span>
                       </div>
