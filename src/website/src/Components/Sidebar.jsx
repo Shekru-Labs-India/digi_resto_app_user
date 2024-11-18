@@ -78,15 +78,11 @@ const Sidebar = () => {
                     <li>
                       <Link to="/features">Features</Link>
                     </li>
-                    <li>
-                      <Link to="/client">Clients</Link>
-                    </li>
+                    
                     <li>
                       <Link to="/pricing">Pricing</Link>
                     </li>
-                    <li>
-                      <Link to="/user_app">User App</Link>
-                    </li>
+                   
                   </ul>
                 </div>
                 <div className="sidebar-modal-widget">
@@ -120,11 +116,7 @@ const Sidebar = () => {
                       <i className="fa-brands fa-facebook-f" />
                       </Link>
                     </li>
-                    <li>
-                      <Link to="https://x.com/MenuMitra" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-x-twitter" />
-                      </Link>
-                    </li>
+                   
                     <li>
                       <Link to="https://www.linkedin.com/company/102429337/admin/dashboard/" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-linkedin-in" />
@@ -147,41 +139,7 @@ const Sidebar = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="sidebar-modal-widget">
-                  <h3 className="title">Instagram</h3>
-                  <ul className="instagram">
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg1} alt="Instagram" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg2} alt="Instagram" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg3} alt="Instagram" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg4} alt="Instagram" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg5} alt="Instagram" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="index.html#">
-                        <img src={jpg6} alt="Instagram" />
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                
               </div>
             </div>
           </div>

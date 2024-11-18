@@ -1,15 +1,19 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./Components/Header";
-import HomePage from "./Components/homepage/HomePage";
+
 import About from "./Components/About";
 import Contact from "./Components/Contact";
 import Features from "./Components/Features";
-import Pricing from "./Components/Pricing";
+
 import Client from "./Components/Client";
-import PricingPage from "./Components/pricing/PricingPage";
+// import PricingPage from "./Components/pricing/PricingPage";
 import FAQs from "./Components/FAQs";
 import PrivacyPolicy from "./Components/PrivacyPolicy";
+import Home from "./Components/Home";
+import Pricing from "./Components/Pricing"
+import TermsConditions from "./Components/TermsConditions";
+import CookiePolicy from "./Components/CookiePolicy";
 
 function App({ currentPath }) {
   const location = useLocation();
@@ -20,18 +24,24 @@ function App({ currentPath }) {
         return <FAQs />;
         case '/privacy_policy':
           return <PrivacyPolicy />;
+          case '/cookie_policy':
+            return <CookiePolicy />;
+          case '/terms_conditions':
+            return <TermsConditions />;
       case '/features':
         return <Features />;
       case '/client':
         return <Client />;
-      case '/pricing':
-        return <PricingPage />;
+      // case '/pricing':
+      //   return <PricingPage />;
       case '/about':
         return <About />;
+        case '/pricing':
+          return <Pricing />;
       case '/contact':
         return <Contact />;
       default:
-        return <HomePage />;
+        return < Home/>;
     }
   };
 

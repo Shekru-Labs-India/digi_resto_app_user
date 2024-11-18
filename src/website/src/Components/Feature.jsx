@@ -237,7 +237,7 @@ const Feature = () => {
                 <div className="col-lg-4 col-md-6 offset-md-3 offset-lg-0 icon-color">
                   <div className="single-box">
                     <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
+                      <i className="fa-solid fa-user"></i>
                     </div>
                     <h3>Low Staff Cost</h3>
                   </div>

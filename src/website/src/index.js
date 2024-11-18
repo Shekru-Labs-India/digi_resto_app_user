@@ -1,22 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-
-// Only keep third-party CSS
-import 'animate.css/animate.min.css';
-import 'remixicon/fonts/remixicon.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'blaze-slider/dist/blaze.css';
-
-// Website-specific scripts
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-// import './assets/js/main.js';
-import "./Assets/Css/responsive.css ";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
 import "./Assets/Css/stylewebsite.css"
+import "./Assets/Css/responsive.css"
+// Get the root element from the DOM
+const rootElement = document.getElementById("root");
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// Create a root using createRoot and render your app
+const root = createRoot(rootElement);
 root.render(
- 
+    <BrowserRouter
+    future={{
+      v7_startTransition: true, // Opt into the startTransition behavior
+      v7_relativeSplatPath: true, // Opt into the relative splat path behavior
+    }}
+  >
     <App />
-
+  </BrowserRouter>
 );
+
+
+

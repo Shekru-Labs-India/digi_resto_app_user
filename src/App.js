@@ -121,8 +121,8 @@ const AppContent = () => {
       ], 'user-app');
     } else {
       loadStyles([
-        '/assets/website/css/stylewebsite.css',
-        '/assets/website/css/responsive.css'
+        '/assets/website/Css/stylewebsite.css',
+        '/assets/website/Css/responsive.css'
       ], 'website');
       
       loadScripts([
@@ -143,7 +143,9 @@ const AppContent = () => {
         <Route index element={<Website currentPath="/" />} />
         <Route path="features" element={<Website currentPath="/features" />} />
         <Route path="privacy_policy" element={<Website currentPath="/privacy_policy" />} />
-        <Route path="client" element={<Website currentPath="/client" />} />
+        <Route path="cookie_policy" element={<Website currentPath="/cookie_policy" />} />
+        <Route path="terms_conditions" element={<Website currentPath="/terms_conditions" />} />
+     
         <Route path="pricing" element={<Website currentPath="/pricing" />} />
         <Route path="faqs" element={<Website currentPath="/faqs" />} />
 
