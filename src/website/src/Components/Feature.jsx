@@ -42,7 +42,7 @@ const Feature = () => {
                 <div className="row">
                   <div className="col-lg-12 col-md-6 p-0">
                     <div className="single-choose-three mr-2">
-                      <i className="icon flaticon-plant" />
+                      <i className="fa-solid fa-wifi" />
                       <h3>Contactless Ordering</h3>
                       <p>
                         Our app offers contactless ordering via QR code, with
@@ -52,7 +52,8 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 col-md-6 p-0">
                     <div className="single-choose-three ml-2 ">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-bowl-rice"></i>
+
                       <h3>Order Customization</h3>
                       <p>
                         Add/remove ingredients or customize dishes spice level,
@@ -62,7 +63,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 p-0 col-md-6 offset-md-3 offset-lg-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-regular fa-circle-check"></i>
                       <h3>Order Status</h3>
                       <p>
                         Notifications for order confirmation, preparation, and
@@ -72,7 +73,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 p-0 col-md-6 offset-md-3 offset-lg-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-credit-card"></i>
                       <h3>Multiple Payment Options</h3>
                       <p>
                         Integration with credit cards, digital wallets (Google
@@ -82,7 +83,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 p-0 col-md-6 offset-md-3 offset-lg-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-tags"></i> 
                       <h3>Category Management</h3>
                       <p>
                         Organizes menu items into clear sections for easy guest
@@ -107,7 +108,7 @@ const Feature = () => {
                 <div className="row">
                   <div className="col-lg-12 col-md-6 p-0">
                     <div className="single-choose-three mr-2">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-clipboard"></i>
                       <h3>Menu Management</h3>
                       <p>
                         The app enables real-time menu updates, showcases
@@ -118,7 +119,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 col-md-6 p-0">
                     <div className="single-choose-three ml-2">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-boxes-stacked"></i> 
                       <h3>Inventory Management</h3>
                       <p>
                         Monitor ingredient levels and notify when stock is
@@ -129,7 +130,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12col-md-6 offset-md-3 offset-lg-0 p-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-user-gear"></i>
                       <h3>Staff Management</h3>
                       <p>
                         Set roles and permissions for hotel staff [kitchen,
@@ -139,7 +140,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12col-md-6 offset-md-3 offset-lg-0 p-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-bullhorn"></i> 
                       <h3>Promotion & Marketing Tools</h3>
                       <p>
                         Create and launch discount campaigns or special offers
@@ -149,7 +150,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12col-md-6 offset-md-3 offset-lg-0 p-0">
                     <div className="single-choose-three">
-                      <i className="icon flaticon-plant" />
+                    <i className="fa-solid fa-star"></i>
                       <h3>Ratings & Feedback</h3>
                       <p>
                         Leave ratings or comments for menu items and service{" "}
@@ -161,91 +162,7 @@ const Feature = () => {
             </div>
           </div>
         </section>
-          <section className="box-area pt-100 pb-70">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-4 col-md-6">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Contactless Order</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Inventory Management</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 offset-md-3 offset-lg-0 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Low Staff Cost</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-lg-4 col-md-6">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Contactless Order</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Inventory Management</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 offset-md-3 offset-lg-0 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Low Staff Cost</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-lg-4 col-md-6">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Contactless Order</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i class="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Inventory Management</h3>
-                  </div>
-                </div>
-                <div className="col-lg-4 col-md-6 offset-md-3 offset-lg-0 icon-color">
-                  <div className="single-box">
-                    <div className="box-icon">
-                      <i className="fa-solid fa-user"></i>
-                    </div>
-                    <h3>Low Staff Cost</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        {/* End Why Choose Us Three Area */}
+         
       </>
     </>
   );
