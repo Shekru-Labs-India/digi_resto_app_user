@@ -767,13 +767,13 @@ if (isMenuItemInCart(menu.menu_id)) {
 
                 <div className="col-6 text-end">
                   <div className="d-flex justify-content-end">
-                    <span
-                      className="btn-close m-2 font_size_12"
+                    <button
+                      className="btn p-0 fs-3 text-muted"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line"></i>
-                    </span>
+                      <i className="ri-close-line text-muted"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -794,7 +794,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr />
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size

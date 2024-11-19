@@ -32,7 +32,7 @@ const TrackOrder = () => {
   const toast = useRef(null);
 
   const isLoggedIn = !!localStorage.getItem("userData");
-  const [showModal, setShowModal] = useState(false);
+ 
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
@@ -66,94 +66,9 @@ const TrackOrder = () => {
     });
   };
 
-  const fetchHalfFullPrices = async (menuId) => {
-    setIsPriceFetching(true);
-    try {
-      const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-          }),
-        }
-      );
+ 
 
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        setHalfPrice(data.menu_detail.half_price);
-        setFullPrice(data.menu_detail.full_price);
-      } else {
-        
-        // Show error toast
-      }
-    } catch (error) {
-     
-      // Show error toast
-    } finally {
-      setIsPriceFetching(false);
-    }
-  };
-
-  const handleAddToCartClick = (menu) => {
-    if (!restaurantId) {
-      window.showToast("error", "Restaurant information not found");
-      return;
-    }
-
-    if (orderStatus === "completed" || orderStatus === "cancelled") {
-      window.showToast("error", "Cannot modify completed or cancelled orders");
-      return;
-    }
-
-    // Check if item is already added
-    if (isItemAdded(menu.menu_id)) {
-      window.showToast("info", "This item is already in your order");
-      return;
-    }
-
-    setSelectedMenu(menu);
-    fetchHalfFullPrices(menu.menu_id);
-    setPortionSize("full");
-    setNotes("");
-    setShowModal(true);
-  };
-
-  const handleConfirmAddToCart = () => {
-    if (!selectedMenu) return;
-
-    const currentQuantity = quantities[selectedMenu.menu_id] || 1;
-
-    const newMenuItem = {
-      ...selectedMenu,
-      price: portionSize === "half" ? halfPrice : fullPrice,
-      quantity: currentQuantity,
-      half_or_full: portionSize,
-      notes: notes,
-      isPending: true,
-    };
-
-    setPendingItems((prev) => [...prev, newMenuItem]);
-
-    // Add the item to removed items set
-    setRemovedItems((prev) => new Set([...prev, selectedMenu.menu_id]));
-
-    // Update search results to remove the added item
-    setSearchedMenu((prev) =>
-      prev.filter((item) => item.menu_id !== selectedMenu.menu_id)
-    );
-
-    setShowModal(false);
-    setSelectedMenu(null);
-    setNotes("");
-
-    window.showToast("success", "Item added to basket");
-  };
-
+ 
   const isItemAdded = (menuId) => {
     return (
       removedItems.has(menuId) ||
@@ -373,66 +288,7 @@ const TrackOrder = () => {
     }
   }, [orderDetails, removedItems]);
 
-  const handleUpdatePlacedOrder = async () => {
-    try {
-      const updatedOrderItems = [
-        ...menu_details.map((item) => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || "",
-        })),
-        ...pendingItems.map((item) => ({
-          menu_id: item.menu_id.toString(),
-          quantity: item.quantity.toString(),
-          half_or_full: item.half_or_full || "full",
-          comment: item.notes || "",
-        })),
-      ];
-
-      // Filter out removed items
-      const filteredItems = updatedOrderItems.filter(
-        (item) =>
-          !removedItems.some(
-            (removedItem) => removedItem.menu_id.toString() === item.menu_id
-          )
-      );
-
-      const response = await fetch(
-         `${config.apiDomain}/user_api/update_placed_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: orderDetails.order_details.order_id,
-            table_number: orderDetails.order_details.table_number,
-            restaurant_id: restaurantId,
-            order_items: filteredItems,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        window.showToast("success", "Order updated successfully");
-
-        // Refresh order details
-        fetchOrderDetails(order_number);
-
-        // Clear pending and removed items
-        setPendingItems([]);
-        setRemovedItems([]);
-      } else {
-        throw new Error(data.msg || "Failed to update order");
-      }
-    } catch (error) {
-      
-      window.showToast("error", error.message || "Failed to update order");
-    }
-  };
+  
 
   const handleRemovePendingItem = (menuId) => {
     setPendingItems((prev) => prev.filter((item) => item.menu_id !== menuId));
@@ -550,114 +406,7 @@ const TrackOrder = () => {
     });
   };
 
-  const handleAddToOrder = async (menuItem) => {
-    if (!restaurantId) {
-      
-      window.showToast("error", "Restaurant information not found");
-      return;
-    }
-
-    if (isItemAdded(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your order");
-      return;
-    }
-
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
-      const cartId = localStorage.getItem("cartId"); // Get cart_id from localStorage
-
-      if (!currentCustomerId) {
-        window.showToast("error", "Please login to add items to order");
-        return;
-      }
-
-      const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-      if (!selectedPrice) {
-        window.showToast("error", "Price information is not available");
-        return;
-      }
-
-      const quantity = quantities[menuItem.menu_id] || 1;
-
-      // First add to pending items locally
-      setPendingItems((prevItems) => [
-        ...prevItems,
-        {
-          ...menuItem,
-          quantity: quantity,
-          totalPrice: (selectedPrice * quantity).toFixed(2),
-          half_or_full: portionSize,
-          notes: notes,
-        },
-      ]);
-
-      // Remove from search results
-      setSearchedMenu((prevMenu) =>
-        prevMenu.filter((item) => item.menu_id !== menuItem.menu_id)
-      );
-
-      // If there's an existing order, add to it
-      if (orderDetails?.order_details?.order_id) {
-        const response = await fetch(
-           `${config.apiDomain}/user_api/add_to_existing_order`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              order_id: orderDetails.order_details.order_id,
-              customer_id: currentCustomerId,
-              customer_type: currentCustomerType,
-              restaurant_id: restaurantId,
-              cart_id: cartId, // Add cart_id to request
-              order_items: [
-                {
-                  menu_id: menuItem.menu_id,
-                  quantity: quantity.toString(),
-                  half_or_full: portionSize,
-                  comment: notes || "",
-                },
-              ],
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        if (data.st === 1) {
-          setShowModal(false);
-          // Refresh order details
-          if (order_number) {
-            fetchOrderDetails(order_number);
-          }
-
-          window.showToast(
-            "success",
-            `${menuItem.menu_name} (${portionSize}, Qty: ${quantity}) added to your order`
-          );
-        } else {
-          throw new Error(data.msg || "Failed to add item to order");
-        }
-      }
-    } catch (error) {
-      
-      window.showToast(
-        "error",
-        "Failed to add item to order. Please try again."
-      );
-
-      // Rollback the pending items change on error
-      setPendingItems((prevItems) =>
-        prevItems.filter((item) => item.menu_id !== menuItem.menu_id)
-      );
-      setSearchedMenu((prevMenu) => [...prevMenu, menuItem]);
-    }
-  };
+  
 
   // Update the handleLikeClick function
   useEffect(() => {
@@ -921,58 +670,7 @@ const TrackOrder = () => {
 
  
 
-  // const fetchOrderStatus = async () => {
-  //   try {
-  //     // Get current customer ID from localStorage or userData
-  //     const userData = JSON.parse(localStorage.getItem("userData"));
-  //     const currentCustomerId =
-  //       userData?.customer_id || localStorage.getItem("customer_id");
-
-  //     if (!currentCustomerId) {
-        
-  //       window.showToast("error", "Customer information not found");
-  //       return;
-  //     }
-
-  //     if (!restaurantId) {
-        
-  //       return;
-  //     }
-
-  //     const response = await fetch(
-  //        `${config.apiDomain}/user_api/get_order_list`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           restaurant_id: restaurantId,
-  //           order_status: "completed",
-  //           customer_id: currentCustomerId,
-  //           customer_type:
-  //             userData?.customer_type || localStorage.getItem("customer_type"),
-  //         }),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       if (data.st === 1 && Array.isArray(data.lists)) {
-  //         const isCompleted = data.lists.some(
-  //           (order) => order.order_number === order_number
-  //         );
-  //         setIsCompleted(isCompleted);
-  //       }
-  //     } else {
-       
-  //       window.showToast("error", "Failed to fetch order status");
-  //     }
-  //   } catch (error) {
-      
-  //     window.showToast("error", "Failed to check order status");
-  //   }
-  // };
+ 
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
@@ -1047,50 +745,7 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, customerId]);
 
-  const formatDateTime = (dateTime) => {
-    if (!dateTime) return ""; // Return empty string if dateTime is undefined or null
-
-    const parts = dateTime.split(" ");
-    if (parts.length < 2) return dateTime; // Return original string if it doesn't have expected parts
-
-    const [date, time] = parts;
-    const [hours, minutes] = (time || "").split(":");
-
-    if (!hours || !minutes) return dateTime; // Return original string if hours or minutes are missing
-
-    // Convert hours to 12-hour format
-    let hours12 = parseInt(hours, 10);
-    const period = hours12 >= 12 ? "PM" : "AM";
-    hours12 = hours12 % 12 || 12; // Convert 0 to 12 for midnight
-
-    // Pad single-digit hours and minutes with leading zeros
-    const formattedHours = hours12.toString().padStart(2, "0");
-    const formattedMinutes = minutes.padStart(2, "0");
-
-    // Array of month abbreviations
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-
-    const [day, month, year] = (date || "").split("-");
-    const monthIndex = month ? parseInt(month, 10) - 1 : new Date().getMonth();
-    const monthAbbr = monthNames[monthIndex] || "";
-
-    return `${formattedHours}:${formattedMinutes} ${period} ${
-      day || ""
-    }-${monthAbbr}-${year || ""}`;
-  };
+ 
 
   if (loading || !orderDetails) {
     return (
@@ -1107,24 +762,7 @@ const TrackOrder = () => {
 
   const { order_details, menu_details } = orderDetails;
 
-  const renderSpicyIndex = (spicyIndex) => {
-    const totalFires = 5;
-    return (
-      <div className="spicy-index ">
-        {Array.from({ length: totalFires }).map((_, index) => (
-          <i
-            key={index}
-            className={`ri-fire-${
-              index < spicyIndex ? "fill fs-6" : "line fs-6"
-            }`}
-            style={{
-              color: index < spicyIndex ? "#eb8e57" : "#bbbaba",
-            }}
-          ></i>
-        ))}
-      </div>
-    );
-  };
+ 
 
   return (
     <>
@@ -1213,11 +851,18 @@ const TrackOrder = () => {
             {!loading && orderStatus && (
               <>
                 {orderStatus === "completed" ? (
-                  <div className="card-body text-center bg-success rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
-                      Your delicious order has been served
-                    </span>
-                  </div>
+                  <>
+                    <div className="card-body text-center bg-success rounded-4 text-white">
+                      <span className="fs-6 fw-medium h-100">
+                        Your delicious order has been served
+                      </span>
+                    </div>
+                   <div className="d-flex justify-content-center pt-3">
+                     <div className="border border-success rounded-pill py-0 px-2 font_size_14">
+                      Payment Type: {order_details.payment_method}
+                     </div>
+                   </div>
+                  </>
                 ) : ["canceled", "cancelled", "cancle"].includes(
                     orderStatus
                   ) ? (
@@ -1277,445 +922,8 @@ const TrackOrder = () => {
             <RemainingTimeDisplay />
           )}
 
-          <div className="container p-0">
-            {!isCompleted &&
-              orderStatus !== "canceled" &&
-              orderStatus !== "cancelled" &&
-              orderStatus !== "cancle" && (
-                <div className="container py-0">
-                  <div className="input-group w-100 my-2 border border-muted rounded-4">
-                    <span className="input-group-text py-0">
-                      <i className="ri-search-line fs-3 gray-text"></i>
-                    </span>
-                    <input
-                      ref={searchInputRef}
-                      type="search"
-                      className="form-control bg-white ps-2"
-                      placeholder="Search to add more items"
-                      onChange={handleSearch}
-                      value={searchTerm}
-                    />
-                  </div>
-                </div>
-              )}
-          </div>
-
           {customerId ? (
             <section className="container mt-1 py-1">
-              {!isCompleted &&
-                orderStatus !== "canceled" &&
-                orderStatus !== "cancelled" &&
-                orderStatus !== "cancle" && (
-                  <div className="row g-3 mb-4">
-                    {searchedMenu.length > 0 && (
-                      <div className="d-flex justify-content-between align-items-center mt-3">
-                        <div className="  mb-0 gray-text">Search Results</div>
-                        <div className="  gray-text" onClick={handleClearAll}>
-                          Clear All
-                        </div>
-                      </div>
-                    )}
-
-                    {searchedMenu
-                      .filter((menu) => !removedItems.has(menu.menu_id))
-                      .map((menu) => (
-                        <div key={menu.menu_id} className="col-12">
-                          <div
-                            className="card mb-3 rounded-4"
-                            onClick={() => handleMenuItemClick(menu)}
-                          >
-                            <div className="card-body py-0">
-                              <div className="row">
-                                <div className="col-3 px-0 position-relative">
-                                  <img
-                                    src={menu.image || images}
-                                    alt={menu.menu_name}
-                                    className="img-fluid rounded-start-4"
-                                    style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "cover",
-                                      aspectRatio: "1/1",
-                                    }}
-                                    onError={(e) => {
-                                      e.target.src = images;
-                                    }}
-                                  />
-
-                                  <div
-                                    className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                                      isVegMenu(menu?.menu_veg_nonveg)
-                                        ? "border-success"
-                                        : "border-danger"
-                                    }`}
-                                    style={{
-                                      position: "absolute",
-                                      bottom: "3px",
-                                      left: "3px",
-                                      height: "20px",
-                                      width: "20px",
-                                      borderWidth: "2px",
-                                      borderRadius: "3px",
-                                    }}
-                                  >
-                                    <i
-                                      className={`${
-                                        isVegMenu(menu?.menu_veg_nonveg)
-                                          ? "ri-checkbox-blank-circle-fill text-success"
-                                          : "ri-triangle-fill text-danger"
-                                      } font_size_12`}
-                                    ></i>
-                                  </div>
-
-                                  <div
-                                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                    style={{
-                                      position: "absolute",
-                                      bottom: "3px",
-                                      right: "3px",
-                                      height: "20px",
-                                      width: "20px",
-                                    }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleLikeClick(menu, e);
-                                    }}
-                                  >
-                                    <i
-                                      className={`${
-                                        favoriteMenus[menu.menu_id] ||
-                                        menu.is_favourite
-                                          ? "ri-heart-3-fill text-danger"
-                                          : "ri-heart-3-line"
-                                      } fs-6`}
-                                    ></i>
-                                  </div>
-
-                                  {menu.offer && (
-                                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                                      <span className="font_size_10 text-white">
-                                   
-                                        {menu.offer || "No"}% Off
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="col-9 pt-1 pb-0 pe-0 ps-2">
-                                  <div className="d-flex justify-content-between align-items-center">
-                                    <div className="font_size_14 fw-medium">
-                                      {menu.menu_name}
-                                    </div>
-                                    <div className="col-3">
-                                      <span
-                                        className={`btn btn-success  px-2 py-1 ${
-                                          isItemAdded(menu.menu_id)
-                                            ? "btn-secondary gray-text"
-                                            : "btn-success text-white addOrder-btn"
-                                        }`}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          !isItemAdded(menu.menu_id) &&
-                                            handleAddToCartClick(menu);
-                                        }}
-                                        style={{
-                                          cursor: isItemAdded(menu.menu_id)
-                                            ? "default"
-                                            : "pointer",
-                                        }}
-                                      >
-                                        {isItemAdded(menu.menu_id)
-                                          ? "Added"
-                                          : "Add"}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="row">
-                                    <div className="col-7 mt-1 pe-0">
-                                      <span>
-                                        <div className="mt-0">
-                                          <span
-                                            onClick={() =>
-                                              handleCategoryClick(
-                                                menu.menu_cat_id,
-                                                menu.category_name
-                                              )
-                                            }
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <span className="text-success font_size_10">
-                                              <i className="ri-restaurant-line mt-0 me-2"></i>
-                                              {menu.category_name}
-                                            </span>
-                                          </span>
-                                        </div>
-                                      </span>
-                                    </div>
-                                    <div className="col-4 text-center me-0 ms-2 p-0 mt-1">
-                                      <span>
-                                        <span className="font_size_10 gray-text">
-                                          <i className="ri-star-half-line pe-1 ratingStar font_size_10"></i>
-                                          {parseFloat(menu.rating).toFixed(1)}
-                                        </span>
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="row mt-2">
-                                    <div className="col-8 px-0">
-                                      <span className="mb-0 mt-1 text-start">
-                                        <span className="ms-3 me-1 text-info font_size_14 fw-semibold">
-                                          ₹{calculatePrice(menu)}
-                                        </span>
-                                        <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                          ₹
-                                          {(
-                                            parseFloat(
-                                              menu.oldPrice || menu.price
-                                            ) * (quantities[menu.menu_id] || 1)
-                                          ).toFixed(2)}
-                                        </span>
-                                      </span>
-                                    </div>
-                                    {/* <div className="col-4 increment-decrement">
-                                      <div className="d-flex justify-content-end align-items-center">
-                                        <i
-                                          className="ri-subtract-line mx-2 fs-2"
-                                          style={{ cursor: "pointer" }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDecrement(menu.menu_id);
-                                          }}
-                                        ></i>
-                                        <span className="">
-                                          {quantities[menu.menu_id] || 1}
-                                        </span>
-                                        <i
-                                          className="ri-add-line mx-2 fs-2"
-                                          style={{ cursor: "pointer" }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleIncrement(menu.menu_id);
-                                          }}
-                                        ></i>
-                                      </div>
-                                    </div> */}
-                                    <div className="col-4 ">
-                                      <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
-                                        <div
-                                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                          style={{
-                                            height: "25px",
-                                            width: "25px",
-                                          }}
-                                        >
-                                          <i
-                                            className="ri-subtract-line fs-6"
-                                            style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleDecrement(menu.menu_id);
-                                            }}
-                                          ></i>
-                                        </div>
-                                        <span className="text-light  px-2">
-                                          {quantities[menu.menu_id] || 1}
-                                        </span>
-                                        <div
-                                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                          style={{
-                                            height: "25px",
-                                            width: "25px",
-                                          }}
-                                        >
-                                          <i
-                                            className="ri-add-line  fs-6"
-                                            style={{ cursor: "pointer" }}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleIncrement(menu.menu_id);
-                                            }}
-                                          ></i>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <hr></hr>
-                        </div>
-                      ))}
-                  </div>
-                )}
-
-              {!isCompleted && pendingItems.length > 0 && (
-                <div className="row g-3 mb-3">
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    <h6 className="mb-0 gray-text">Newly Added In Basket</h6>
-                  </div>
-                  {pendingItems.map((menu) => (
-                    <div key={menu.menu_id} className="col-12 mt-2">
-                      <div
-                        className="card my-2 rounded-4"
-                        onClick={() => handleMenuItemClick(menu)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <div className="card-body py-0">
-                          <div className="row">
-                            <div className="col-3 px-0">
-                              <img
-                                src={menu.image || images}
-                                alt={menu.menu_name}
-                                // className="img-fluid rounded-start-4rounded-end-0"
-                                className="img-fluid rounded-start-4"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                  aspectRatio: "1/1",
-                                }}
-                                onError={(e) => {
-                                  e.target.src = images;
-                                }}
-                              />
-                              <div
-                                className={`border bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                                  isVegMenu(menu?.menu_veg_nonveg)
-                                    ? "border-success"
-                                    : "border-danger"
-                                }`}
-                                style={{
-                                  position: "absolute",
-                                  bottom: "3px",
-                                  left: "3px",
-                                  height: "20px",
-                                  width: "20px",
-                                  borderWidth: "2px",
-                                  borderRadius: "3px",
-                                }}
-                              >
-                                <i
-                                  className={`${
-                                    isVegMenu(menu?.menu_veg_nonveg)
-                                      ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-triangle-fill text-danger"
-                                  } font_size_12`}
-                                ></i>
-                                <div
-                                  className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                  style={{
-                                    position: "absolute",
-                                    bottom: "-2px",
-                                    right: "-62px",
-                                    height: "20px",
-                                    width: "20px",
-                                  }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleLikeClick(menu, e);
-                                  }}
-                                >
-                                  <i
-                                    className={`${
-                                      favoriteMenus[menu.menu_id] ||
-                                      menu.is_favourite
-                                        ? "ri-heart-3-fill text-danger"
-                                        : "ri-heart-3-line"
-                                    } fs-6`}
-                                  ></i>
-                                </div>
-                              </div>
-                              {menu.offer && (
-                                <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                                  <span className="font_size_10 text-white">
-                                
-                                    {menu.offer || "No "}% Off
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="col-8 ps-2 pt-1 pe-0">
-                              <div className="row">
-                                <div className="col-11">
-                                  <div className="font_size_14 fw-medium">
-                                    {menu.menu_name}
-                                  </div>
-                                </div>
-                                <div className="col-1 text-end px-0">
-                                  <i
-                                    className="ri-close-line"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleRemovePendingItem(menu.menu_id);
-                                    }}
-                                  ></i>
-                                </div>
-                              </div>
-                              <div className="row mt-2">
-                                <div className="col-8">
-                                  <span className="text-success font_size_10 fw-medium">
-                                    <i className="ri-restaurant-line mt-0 me-2"></i>
-                                    {menu.category_name}
-                                  </span>
-                                </div>
-                                <div className="col-4 text-end px-0">
-                                  <i className="ri-star-half-line ratingStar font_size_10"></i>
-                                  <span className="  gray-text font_size_10 fw-medium">
-                                    {parseFloat(menu.rating).toFixed(1)}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="row mt-2">
-                                <div className="col-9">
-                                  <span className=" font_size_14 fw-semibold text-info">
-                                    ₹{menu.price * menu.quantity}
-                                  </span>
-                                  <span className="gray-text  font_size_12 fw-normal text-decoration-line-through ms-2">
-                                    ₹
-                                    {(menu.oldPrice || menu.price) *
-                                      menu.quantity}
-                                  </span>
-                                </div>
-                                <div className="col-3 text-end px-0">
-                                  <span className="quantity gray-text  ">
-                                    x {menu.quantity}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Submit Order button */}
-              {/* {!isCompleted && pendingItems.length > 0 && (
-                <div className="d-flex justify-content-center my-3">
-                  {orderStatus === "placed" ? (
-                    <button
-                      className="btn btn-success text-white btn-sm"
-                      onClick={handlePlacedOrderUpdate}
-                    >
-                      Update Order ({pendingItems.length})
-                    </button>
-                  ) : orderStatus === "ongoing" ? (
-                    <button
-                      className="btn btn-success text-white btn-sm"
-                      onClick={handleOngoingOrderUpdate}
-                    >
-                      Add to Order ({pendingItems.length})
-                    </button>
-                  ) : null}
-                </div>
-              )} */}
-
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
               )}
@@ -1802,7 +1010,6 @@ const TrackOrder = () => {
                             {menu.offer && (
                               <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                 <span className="font_size_10 text-white">
-                                
                                   {menu.offer || "No"}% Off
                                 </span>
                               </div>
@@ -1858,14 +1065,13 @@ const TrackOrder = () => {
                                   </span>
                                 )}
                               </div>
-                             
-                                <div className="col-4 text-end px-0">
-                                  <i className="ri-star-half-line ratingStar font_size_10"></i>
-                                  <span className="gray-text font_size_10 fw-medium">
-                                    {parseFloat(menu.rating).toFixed(1)}
-                                  </span>
-                                </div>
-                             
+
+                              <div className="col-4 text-end px-0">
+                                <i className="ri-star-half-line ratingStar font_size_10"></i>
+                                <span className="gray-text font_size_10 fw-medium">
+                                  {parseFloat(menu.rating).toFixed(1)}
+                                </span>
+                              </div>
                             </div>
 
                             {/* Rating */}
@@ -2004,7 +1210,7 @@ const TrackOrder = () => {
                 </div>
               </div>
             </div>
-            {/* Only show invoice button if order status is completed */}
+
             {orderStatus === "completed" && (
               <div className="d-flex justify-content-center">
                 {orderDetails?.order_details?.invoice_url ? (
@@ -2034,86 +1240,6 @@ const TrackOrder = () => {
           </div>
         )}
 
-        {showModal && selectedMenu && (
-          <div
-            className="modal fade show"
-            style={{ display: "block" }}
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title text-center">
-                    {selectedMenu.menu_name}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Portion Size</label>
-                    <div>
-                      <button
-                        className={`btn ${
-                          portionSize === "half"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                        } me-2`}
-                        onClick={() => setPortionSize("half")}
-                        disabled={!halfPrice}
-                      >
-                        Half (₹{halfPrice || "N/A"})
-                      </button>
-                      <button
-                        className={`btn ${
-                          portionSize === "full"
-                            ? "btn-primary"
-                            : "btn-outline-primary"
-                        }`}
-                        onClick={() => setPortionSize("full")}
-                      >
-                        Full (₹{fullPrice || "N/A"})
-                      </button>
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="notes" className="form-label">
-                      Special Instructions
-                    </label>
-                    <textarea
-                      className="form-control border-primary  "
-                      id="notes"
-                      rows="3"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Any special requests?"
-                    ></textarea>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleConfirmAddToCart}
-                    disabled={isPriceFetching}
-                  >
-                    {isPriceFetching ? "Loading..." : "Add to Order"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         <Bottom></Bottom>
       </div>
     </>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Bottom from "../component/bottom";
 import Sidebar from "../../../website/src/Components/Sidebar";
 import Header from "../components/Header";
@@ -6,113 +6,141 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation, Autoplay } from 'swiper/modules';
+import config from "../component/config";
+import HotelNameAndTable from "../components/HotelNameAndTable";
+import img from "../assets/MenuDefault.png";
 
 function RestaurantDetails() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [restaurantDetails, setRestaurantDetails] = useState({
+    name: "",
+    mobile: "",
+    address: "",
+    upi_id: null,
+    veg_nonveg: "",
+    image: null
+  });
+  const [countDetails, setCountDetails] = useState(null);
+  const [categoryList, setCategoryList] = useState([]);
+  const [menuList, setMenuList] = useState([]);
+  const [filteredMenus, setFilteredMenus] = useState([]);
+
   
-  // Category buttons data
-  const menuCategories = [
-    { menu_cat_id: 1, name: "Starters", menu_count: 8 },
-    { menu_cat_id: 2, name: "Main Course", menu_count: 12 },
-    { menu_cat_id: 3, name: "Desserts", menu_count: 5 },
-  ];
 
-  // Image slider data
-  const categories = [
-    {
-      id: 1,
-      name: "Indoor Plants",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-    {
-      id: 2,
-      name: "House Plant",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-    {
-      id: 3,
-      name: "Paneer Butter Masala",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-    {
-      id: 4,
-      name: "Succulents",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-    {
-      id: 5,
-      name: "House Plant",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-    {
-      id: 6,
-      name: "Tropical",
-      image:
-        "https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg",
-    },
-  ];
+  useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      try {
 
-  const menuList = [];
+        const restaurantId = localStorage.getItem("restaurantId");
+        const response = await fetch(
+          `${config.apiDomain}/user_api/get_restaurant_details`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              restaurant_id: restaurantId,
+            }),
+          }
+        );
+        const data = await response.json();
+        console.log("API Response:", data);
+        
+        if (data.st === 1) {
+          setRestaurantDetails(data.restaurant_details);
+          setCountDetails(data.count);
+          setCategoryList(data.categorys);
+          setMenuList(data.menu_list);
+        }
+      } catch (error) {
+        console.error('Error fetching restaurant details:', error);
+      }
+    };
+
+    fetchRestaurantDetails();
+  }, []);
+
+  useEffect(() => {
+    setFilteredMenus(menuList);
+  }, [menuList]);
+
   const totalMenuCount = menuList.length || 25;
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
+    
+    if (categoryId === "special") {
+      setFilteredMenus(menuList.filter(menu => menu.is_special));
+    } else if (categoryId === null) {
+      setFilteredMenus(menuList);
+    } else {
+      setFilteredMenus(menuList.filter(menu => menu.menu_cat_id === categoryId));
+    }
   };
 
   return (
     <div>
       <Sidebar />
       <Header title="Restaurant Details" />
-      <div className="container mt-5">
+
+      <div className="container">
+        <div className="pt-5">
+          <HotelNameAndTable
+            restaurantName={restaurantDetails.name || ""}
+            tableNumber={"1"}
+          />
+        </div>
+
         <div class="col-12">
           <div class="">
             <div>
               <div className="card rounded-4">
                 <img
-                  src="https://www.shutterstock.com/image-vector/jagdamb-name-indian-godess-marathi-600w-2193084831.jpg"
+                  src={restaurantDetails.image || img}
                   className="card-img-top rounded-4"
-                  alt="..."
+                  alt={restaurantDetails.name || "Restaurant Image"}
                 />
               </div>
               <div className="card p-3">
                 <div className="my-1">
                   <i className="ri-store-2-line font_size_14 fw-medium"></i>
-                  <span className="card-title ms-2 ">Jagdamb</span>
+                  {/* <span className="card-title ms-2 ">Jagdamb</span> */}
+                  <span className="card-title ms-2 ">
+                    {restaurantDetails.name}
+                  </span>
                 </div>
                 <div className="my-1">
                   <i className="ri-phone-line text-primary font_size_14 fw-medium"></i>
-                  <span className="card-title ms-2">9876543210</span>
+                  <span className="card-title ms-2">
+                    {restaurantDetails.mobile}
+                  </span>
                 </div>
                 <div className="my-1">
                   <i className="ri-map-pin-line gray-text text-primary font_size_14 fw-medium"></i>
-                  <span className="card-title ms-2">Swargate Pune</span>
+                  <span className="card-title ms-2">
+                    {restaurantDetails.address}
+                  </span>
                 </div>
               </div>
-              <div
-                className="card "
-                style={{
-                  border: "2px dashed silver",
-                }}
-              >
-                <ul className="list-group list-group-flush rounded-4">
-                  <li className="list-group-item">UPI : jagdamb@upi</li>
-                  {/* <li className="list-group-item">A second item</li>
-                  <li className="list-group-item">A third item</li> */}
-                </ul>
-              </div>
-              {/* <div className="card-body">
-                <a href="javascript:void(0);" className="card-link">
-                  Card link
-                </a>
-                <a href="javascript:void(0);" className="card-link">
-                  Another link
-                </a>
-              </div> */}
+
+              {restaurantDetails.upi_id && (
+                <div
+                  className="card "
+                  style={{
+                    border: "2px dashed silver",
+                  }}
+                >
+                  <div className="p-3 rounded-4 d-flex justify-content-between align-items-center">
+                    <span className="font_size_16">
+                      UPI : {restaurantDetails.upi_id}
+                    </span>
+                    <a class="btn btn-info rounded-pill btn-sm">
+                      <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -126,23 +154,33 @@ function RestaurantDetails() {
               <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   Total Menus
-                  <span class="badge bg-primary rounded-pill">14</span>
+                  <span class="badge bg-primary rounded-pill">
+                    {totalMenuCount}
+                  </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   Total Categories
-                  <span class="badge bg-primary rounded-pill">2</span>
+                  <span class="badge bg-primary rounded-pill">
+                    {categoryList.length}
+                  </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   Total Tables
-                  <span class="badge bg-primary rounded-pill">1</span>
+                  <span class="badge bg-primary rounded-pill">
+                    {countDetails?.total_tables}
+                  </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   Total Offer Menus
-                  <span class="badge bg-primary rounded-pill">1</span>
+                  <span class="badge bg-primary rounded-pill">
+                    {countDetails?.total_offer_menu}
+                  </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   Total Special Menus
-                  <span class="badge bg-primary rounded-pill">1</span>
+                  <span class="badge bg-primary rounded-pill">
+                    {countDetails?.total_special_menu}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -151,7 +189,7 @@ function RestaurantDetails() {
 
         <div className="dz-category">
           <div className="title-bar">
-            <h5 className="title p-r50">Categories</h5>
+            <h5 className="font_size_14 fw-medium">Categories</h5>
           </div>
 
           {/* Category Buttons Slider */}
@@ -177,7 +215,7 @@ function RestaurantDetails() {
               >
                 <i className="ri-bard-line me-2"></i>
                 Special (
-                {menuList.filter((menu) => menu.is_special)?.length || 5})
+                {menuList.filter((menu) => menu.is_special)?.length || 0})
               </div>
             </SwiperSlide>
 
@@ -194,12 +232,12 @@ function RestaurantDetails() {
                   cursor: "pointer",
                 }}
               >
-                All ({totalMenuCount})
+                All ({countDetails?.total_menu || 0})
               </div>
             </SwiperSlide>
 
             {/* Regular category buttons */}
-            {menuCategories.map((category) => (
+            {categoryList.map((category) => (
               <SwiperSlide key={category.menu_cat_id} style={{ width: "auto" }}>
                 <div
                   className={`category-btn font_size_14 border border-2 rounded-5 px-3 py-2 ${
@@ -218,7 +256,7 @@ function RestaurantDetails() {
                     cursor: "pointer",
                   }}
                 >
-                  {category.name} ({category.menu_count})
+                  {category.category_name} ({category.menu_count})
                 </div>
               </SwiperSlide>
             ))}
@@ -226,7 +264,7 @@ function RestaurantDetails() {
 
           {/* Image Categories Slider */}
           <div className="title-bar mt-4">
-            <h5 className="title p-r50">Menus</h5>
+            <h5 className="font_size_14 fw-medium">Menus</h5>
           </div>
 
           <Swiper
@@ -234,55 +272,55 @@ function RestaurantDetails() {
             spaceBetween={10}
             slidesPerView={3.5}
             autoplay={{
-              //   delay: 2500,
-              delay: 25000,
+              delay: 2500000,
               disableOnInteraction: false,
             }}
-            loop={true}
+            loop={filteredMenus.length > 3}
             className="dz-category-swiper mb-5 pb-3"
           >
-            {categories.map((category) => (
-              <SwiperSlide key={category.id}>
+            {filteredMenus.map((menu) => (
+              <SwiperSlide key={menu.menu_id}>
                 <div className="dz-category-items">
                   <a href="#" className="dz-media">
-                    <img src={category.image} alt={category.name} />
-                    <div>
-                      <div
-                        className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
-                        style={{
-                          position: "absolute",
-                          bottom: 3,
-                          left: 3,
-                          height: 20,
-                          width: 20,
-                          borderWidth: 2,
-                          borderRadius: 3,
-                        }}
-                      >
-                        <i className="ri-checkbox-blank-circle-fill text-success font_size_12" />
-                      </div>
+                    <img
+                      src={menu.image || img}
+                      alt={menu.menu_name}
+                      style={{ height: 110 }}
+                      onError={(e) => {
+                        e.target.src = img;
+                      }}
+                    />
+                    <div
+                      className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
+                      style={{
+                        position: "absolute",
+                        bottom: 3,
+                        left: 3,
+                        height: 17,
+                        width: 17,
+                      }}
+                    >
+                      <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
                     </div>
                   </a>
                   <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                    <span className="font_size_10 text-white"> 30% off</span>
+                    <span className="font_size_10 text-white">30% off</span>
                   </div>
-                  <div className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success">
+                  {menu.is_special && (
                     <i
-                      className="ri-bard-line me-2"
+                      className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
                       style={{
                         position: "absolute",
-                        top: 0,
-                        left: 90,
-                        height: 15,
-                        width: 65,
-                        borderRadius: "13px 0",
-                        color: "#0d9edf",
+                        top: 3,
+                        right: 5,
+                        height: 17,
+                        width: 17,
                       }}
                     ></i>
-                  </div>
+                  )}
 
                   <div className="font_size_14 fw-medium text-wrap text-center">
-                    <a href="#">{category.name}</a>
+                    <a href="#">{menu.menu_name}</a>
                   </div>
                 </div>
               </SwiperSlide>
