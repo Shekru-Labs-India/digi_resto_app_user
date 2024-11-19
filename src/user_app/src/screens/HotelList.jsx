@@ -152,6 +152,9 @@ const HotelList = () => {
           >
             Shekru Labs India Pvt. Ltd.
           </a>
+
+          <button onClick={() => {throw new Error("This is your first error!");}}>Break the world</button>
+
         </div>
       </div>
     </div>
