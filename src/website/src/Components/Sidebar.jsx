@@ -93,7 +93,7 @@ const Sidebar = () => {
                   </ul>
                 </div>
                 <div className="sidebar-modal-widget">
-                  <h3 className="title">Contact Info</h3>
+                  <h3 className="title">Contact </h3>
                   <ul className="contact-info">
                     <li>
                       <i className="fa fa-map-marker" />
@@ -118,28 +118,24 @@ const Sidebar = () => {
                 <div className="sidebar-modal-widget">
                   <h3 className="title">Connect With Us</h3>
                   <ul className="social-list">
-                    <li>
+                    <li className='mx-1'>
                       <Link to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-facebook-f" />
                       </Link>
                     </li>
                    
-                    <li>
-                      <Link to="https://www.linkedin.com/company/102429337/admin/dashboard/" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-linkedin-in" />
-                      </Link>
-                    </li>
-                    <li>
+                    
+                    <li className='mx-1'>
                       <Link to="https://www.youtube.com/@menumitra" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-youtube"></i>
                       </Link>
                     </li>
-                    <li>
-                      <Link to="https://t.me/MenuMitra" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-telegram"></i>
+                    <li className='mx-1'>
+                      <Link to="https://x.com/MenuMitra" target="_blank" rel="noreferrer">
+                      <i className="fa-brands fa-twitter"></i>
                       </Link>
                     </li>
-                    <li>
+                    <li className='mx-1'>
                       <Link to="https://www.instagram.com/menumitra/" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-instagram"></i>
                       </Link>
