@@ -542,7 +542,6 @@ const Wishlist = () => {
                                       {menu.offer && menu.offer !== "0" && (
                                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                           <span className="font_size_10 text-white">
-                                       
                                             {menu.offer}% Off
                                           </span>
                                         </div>
@@ -566,7 +565,7 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i className="ri-close-fill me-1 font_size_14 gray-text"></i>
+                                            <i className="me-1 font_size_14 ri-close-line text-muted"></i>
                                           </div>
                                         </div>
                                       </div>
@@ -611,7 +610,11 @@ const Wishlist = () => {
                                             {menu.offer ? (
                                               <>
                                                 <span className="font_size_14 fw-semibold text-info">
-                                                  ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
+                                                  ₹
+                                                  {Math.floor(
+                                                    menu.price *
+                                                      (1 - menu.offer / 100)
+                                                  )}
                                                 </span>
                                                 <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                                   ₹{menu.price}
@@ -812,10 +815,9 @@ const Wishlist = () => {
                   className="btn btn-outline-dark rounded-pill font_size_14"
                   onClick={() => setShowModal(false)}
                 >
-                 Close
+                  Close
                 </button>
-                 
-              
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
