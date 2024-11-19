@@ -495,6 +495,8 @@ export const OrderCard = ({
     const userData = JSON.parse(localStorage.getItem("userData"));
     const restaurantName = userData?.restaurantName;
     const customerName = userData?.name;
+    
+    
 
     const orderId = order.order_id;
 
@@ -1073,7 +1075,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         {activeTab === "completed" && (
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-7 ps-0">
+                              <div className="col-10 ps-0">
                                 <div className="text-start text-nowrap">
                                   <span className="text-success">
                                     <i className="ri-checkbox-circle-line me-1"></i>
@@ -1081,10 +1083,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="col-5 pe-0 font_size_14 text-end">
+                              <div className="col-2 pe-0 font_size_14 text-end">
                                 {order.payment_method && (
-                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap">
-                                    Payment Type: {order.payment_method}
+                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
+                                    {order.payment_method}
                                   </div>
                                 )}
                               </div>

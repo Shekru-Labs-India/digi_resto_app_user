@@ -859,7 +859,7 @@ const TrackOrder = () => {
                     </div>
                     <div className="d-flex justify-content-center pt-3">
                       <div className="border border-success rounded-pill py-0 px-2 font_size_14">
-                        Payment Type: {order_details.payment_method}
+                        Payment Method: {order_details.payment_method}
                       </div>
                     </div>
                   </>
