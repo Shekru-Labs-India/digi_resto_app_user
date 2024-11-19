@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom'
 import png1 from "../Assets/img/product-details/1.png"
 import product1 from "../Assets/img/product/1.jpg"
@@ -7,6 +7,10 @@ import product3 from "../Assets/img/product/3.jpg"
 import product4 from "../Assets/img/product/4.jpg"
 
 const PricingBody = () => {
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     
   <>

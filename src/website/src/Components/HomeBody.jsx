@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+
 import shapepng1 from "../Assets/img/shape/1.png"
 import shapepng2 from "../Assets/img/shape/2.png"
 import shapepng3 from "../Assets/img/shape/3.png"
@@ -15,6 +16,10 @@ import qrcode from "../Assets/img/QRcode-basedorderingsystem.jpg"
 import shape from "../Assets/img/shape/1.png"
 import { Link } from 'react-router-dom'
 const HomeBody = () => {
+
+	useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
   return (
     
  <>

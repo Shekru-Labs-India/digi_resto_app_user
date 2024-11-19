@@ -1,9 +1,12 @@
-import React from 'react'
 
+import React, { useEffect, useState } from "react";
 import choseus from "../Assets/img/choose-us-img-four.png"
 import menumitrapng from "../Assets/img/MenuMItra Key Features.png"
 
 const Feature = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <>
       <>

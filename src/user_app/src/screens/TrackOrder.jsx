@@ -857,11 +857,11 @@ const TrackOrder = () => {
                         Your delicious order has been served
                       </span>
                     </div>
-                   <div className="d-flex justify-content-center pt-3">
-                     <div className="border border-success rounded-pill py-0 px-2 font_size_14">
-                      Payment Type: {order_details.payment_method}
-                     </div>
-                   </div>
+                    <div className="d-flex justify-content-center pt-3">
+                      <div className="border border-success rounded-pill py-0 px-2 font_size_14">
+                        Payment Type: {order_details.payment_method}
+                      </div>
+                    </div>
                   </>
                 ) : ["canceled", "cancelled", "cancle"].includes(
                     orderStatus
@@ -1212,7 +1212,7 @@ const TrackOrder = () => {
             </div>
 
             {orderStatus === "completed" && (
-              <div className="d-flex justify-content-center">
+              <div className="d-flex justify-content-end">
                 {orderDetails?.order_details?.invoice_url ? (
                   <a
                     href={orderDetails.order_details.invoice_url}
@@ -1221,14 +1221,14 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn btn-success rounded-pill text-white px-5">
+                    <button className="btn mb-2 me-2 btn-sm  rounded-pill light btn-info border-info">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
                   </a>
                 ) : (
                   <button
-                    className="btn btn-success rounded-pill text-white px-5"
+                    className="btn btn-success rounded-pill text-white px-5 light btn-light"
                     disabled
                   >
                     Invoice &nbsp;
