@@ -496,7 +496,6 @@ export const OrderCard = ({
     const restaurantName = userData?.restaurantName;
     const customerName = userData?.name;
     
-    
 
     const orderId = order.order_id;
 
