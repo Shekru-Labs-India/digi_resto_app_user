@@ -570,7 +570,11 @@ export const OrderCard = ({
               </span>
             </div>
             <div className="col-8 text-end">
-              <span className="gray-text font_size_12">{order.time}</span>
+              <span className="gray-text font_size_12">
+                {order.time?.split(":").slice(0, 2).join(":") +
+                  " " +
+                  order.time?.slice(-2)}
+              </span>
             </div>
           </div>
           <div className="row">
@@ -733,14 +737,18 @@ export const OrderCard = ({
                     Are you sure you want to complete this order?
                   </p>
                   <div className="d-flex justify-content-center">
-                    <button className="btn btn-info" onClick={() => {
-                      setPaymentMethod("UPI");
-                      handleUpiPayment();
-                      
-                    
-                    }}>
+                    <button
+                      className="btn btn-info"
+                      onClick={() => {
+                        setPaymentMethod("UPI");
+                        handleUpiPayment();
+                      }}
+                    >
                       Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <span className="fs-4 mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+                      via
                       <img
                         className="text-white ms-1"
                         src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
@@ -852,7 +860,7 @@ export const OrderCard = ({
                       placeholder="Enter your reason here..."
                     ></textarea>
                   </div>
-                </div> 
+                </div>
                 <div className="modal-body">
                   <span className="text-danger">Reason for cancellation:</span>
                   <div className="form-check mt-2">
@@ -867,9 +875,7 @@ export const OrderCard = ({
                     <label className="form-check-label" htmlFor="delay">
                       <span className="fw-semibold">Delivery Delays:</span>
 
-                      <div className="">
-                        Waiting too long, I lost patience.
-                      </div>
+                      <div className="">Waiting too long, I lost patience.</div>
                     </label>
                   </div>
                   <div className="form-check mt-3">
@@ -930,7 +936,9 @@ export const OrderCard = ({
                       onChange={(e) => setCancelReason(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="quality">
-                      <span className="fw-semibold">Poor Reviews/Quality Doubts:</span>
+                      <span className="fw-semibold">
+                        Poor Reviews/Quality Doubts:
+                      </span>
                       <div className="">
                         Doubts about quality, I canceled quickly.
                       </div>
@@ -1082,15 +1090,15 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   <span className="icon-circle">
                     <i
                       className={`ri-arrow-down-s-line arrow-icon ${
-                        checkedItems[`${date}-${type}`]
-                          ? "rotated"
-                          : "rotated-1"
+                        checkedItems[`${date}-${type}`] ? "rotated" : ""
                       }`}
                     ></i>
                   </span>
                 </span>
               </label>
-              <div className="tab-content">
+              <div className="tab-content" style={{ 
+                display: checkedItems[`${date}-${type}`] ? 'block' : 'none' 
+              }}>
                 <>
                   {activeOrders.map((order) => (
                     <div
@@ -1278,8 +1286,8 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   if (isExpired || timeLeft === 0) return null;
   return (
     <div className="text-muted font_size_14 text-center mb-2">
-      You can cancel the order within{" "}
-      <span className="fw-semibold">{timeLeft}</span> seconds
+      You can cancel this order within{" "}
+      <span className="fw-semibold">{timeLeft}s</span> 
     </div>
   );
 };

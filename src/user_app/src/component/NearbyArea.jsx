@@ -444,13 +444,8 @@ const NearbyArea = () => {
                       </div>
 
                       <div className="mt-2">
-<<<<<<< HEAD
                         <div className="row d-flex align-items-center">
                           <div className="col-4 d-flex align-items-center">
-=======
-                        <div className="row d-flex align-item-center">
-                          <div className="col-4">
->>>>>>> bddf98e2a6383094f8224784ccd927f3ca16abe4
                             <div className="text-success font_size_10 d-flex align-items-center">
                               <i className="ri-restaurant-line pe-1"></i>
                               {menuItem.category_name}
