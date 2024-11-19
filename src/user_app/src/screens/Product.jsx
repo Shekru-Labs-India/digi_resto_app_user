@@ -685,7 +685,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                           </div>
                         </div>
 
-                        <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
+                        <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-3 ps-0">
                           {userData ? (
                             <div
                               className="border border-1 rounded-circle bg-white opacity-75"
