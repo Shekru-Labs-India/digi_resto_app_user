@@ -1,39 +1,37 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from "../Assets/img/mm-logo-bg-fill.png";
-import jpg1 from '../Assets/img/instagram/1.jpg'
-import jpg2 from '../Assets/img/instagram/2.jpg'
-import jpg3 from '../Assets/img/instagram/3.jpg'
-import jpg4 from '../Assets/img/instagram/4.jpg'
-import jpg5 from '../Assets/img/instagram/5.jpg'
-import jpg6 from '../Assets/img/instagram/6.jpg'
-
-
 
 const Sidebar = () => {
   const location = useLocation(); // Hook to get the current location
 
   useEffect(() => {
-    // Close the modal and remove the backdrop when the location changes
-    const modal = document.getElementById('myModal2');
-    if (modal) {
-      const bootstrapModal = window.bootstrap.Modal.getInstance(modal);
-      if (bootstrapModal) {
-        bootstrapModal.hide();
+    const closeModal = () => {
+      const modal = document.getElementById('myModal2');
+      if (modal) {
+        const bootstrapModal = window.bootstrap.Modal.getInstance(modal);
+        if (bootstrapModal) {
+          bootstrapModal.hide();
+        }
       }
-    }
 
-    // Manually remove the modal backdrop if it exists
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
-      backdrop.remove();
-    }
+      // Remove the modal backdrop
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
 
-    // Remove the 'modal-open' class and reset body styles to allow scrolling
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = ''; // Reset any overflow style
-    document.body.style.paddingRight = ''; // Reset padding if applied for scrollbar width
-  }, [location]); // Effect triggered when location changes
+      // Remove 'modal-open' class and reset styles
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+
+    // Close modal on location change
+    closeModal();
+
+    // Listen for additional events if necessary
+  }, [location]);
 
   return (
     <>
@@ -70,7 +68,7 @@ const Sidebar = () => {
               </div>
               <div className="modal-body">
                 <div className="sidebar-modal-widget">
-                  <h3 className="title">Additional Links</h3>
+                  <h3 className="title"> Links</h3>
                   <ul>
                     <li>
                       <Link to="/">Home</Link>
@@ -82,11 +80,20 @@ const Sidebar = () => {
                     <li>
                       <Link to="/pricing">Pricing</Link>
                     </li>
+
+                 
+								<li>
+									<Link to="/about">About</Link>
+								</li>
+								<li>
+									<Link to="/contact">Contact </Link>
+								</li>
+								
                    
                   </ul>
                 </div>
                 <div className="sidebar-modal-widget">
-                  <h3 className="title">Contact Info</h3>
+                  <h3 className="title">Contact </h3>
                   <ul className="contact-info">
                     <li>
                       <i className="fa fa-map-marker" />
@@ -111,28 +118,24 @@ const Sidebar = () => {
                 <div className="sidebar-modal-widget">
                   <h3 className="title">Connect With Us</h3>
                   <ul className="social-list">
-                    <li>
+                    <li className='mx-1'>
                       <Link to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-facebook-f" />
                       </Link>
                     </li>
                    
-                    <li>
-                      <Link to="https://www.linkedin.com/company/102429337/admin/dashboard/" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-linkedin-in" />
-                      </Link>
-                    </li>
-                    <li>
+                    
+                    <li className='mx-1'>
                       <Link to="https://www.youtube.com/@menumitra" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-youtube"></i>
                       </Link>
                     </li>
-                    <li>
-                      <Link to="https://t.me/MenuMitra" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-telegram"></i>
+                    <li className='mx-1'>
+                      <Link to="https://x.com/MenuMitra" target="_blank" rel="noreferrer">
+                      <i className="fa-brands fa-twitter"></i>
                       </Link>
                     </li>
-                    <li>
+                    <li className='mx-1'>
                       <Link to="https://www.instagram.com/menumitra/" target="_blank" rel="noreferrer">
                       <i className="fa-brands fa-instagram"></i>
                       </Link>
