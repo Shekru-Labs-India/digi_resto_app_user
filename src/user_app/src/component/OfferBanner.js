@@ -232,7 +232,7 @@ const OfferBanner = () => {
         loop: true,
         autoplay: {
           delay: 2500,
-          // delay: 25000,
+          // delay: 2500000,
           disableOnInteraction: false,
         },
       });
@@ -553,7 +553,6 @@ const OfferBanner = () => {
                     {menu.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-                        
                           {menu.offer}% Off
                         </span>
                       </div>
@@ -584,13 +583,13 @@ const OfferBanner = () => {
 
                     <div className="mt-2">
                       <div className="row">
-                        <div className="col-4">
-                          <div className="text-success font_size_10 d-flex align-items-center">
+                        <div className="col-4 d-flex align-items-center">
+                          <div className="text-success font_size_10">
                             <i className="ri-restaurant-line pe-1"></i>
                             {menu.category_name}
                           </div>
                         </div>
-                        <div className="col-4">
+                        <div className="col-4 d-flex align-items-center">
                           {renderSpiceIcons(menu.spicy_index)}
                         </div>
                         <div className="col-4">
@@ -602,7 +601,7 @@ const OfferBanner = () => {
                       </div>
                     </div>
                     <div className="row ">
-                      <div className="col-6 pe-0 mt-1 mb-1">
+                      <div className="col-6 d-flex align-items-center">
                         <span className="me-2 text-info font_size_14 fw-semibold">
                           ₹{menu.price}
                         </span>
@@ -612,7 +611,7 @@ const OfferBanner = () => {
                           </span>
                         )}
                       </div>
-                      <div className="d-flex justify-content-end col-6">
+                      <div className="col-6 d-flex align-items-center justify-content-end">
                         {userData ? (
                           <div
                             onClick={(e) => handleCartIconClick(e, menu)}
@@ -689,7 +688,7 @@ const OfferBanner = () => {
                 </div>
 
                 <div className="col-6 text-end">
-                  <button 
+                  <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowModal(false)}
                   >

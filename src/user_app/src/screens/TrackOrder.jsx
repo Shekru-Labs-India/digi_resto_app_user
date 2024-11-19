@@ -858,9 +858,11 @@ const TrackOrder = () => {
                       </span>
                     </div>
                     <div className="d-flex justify-content-center pt-3">
-                      <div className="border border-success rounded-pill py-0 px-2 font_size_14">
-                        Payment Method: {order_details.payment_method}
-                      </div>
+                      {order_details.payment_method && (
+                        <div className="border border-success rounded-pill py-0 px-2 font_size_14">
+                          Payment Method: {order_details.payment_method}
+                        </div>
+                      )}
                     </div>
                   </>
                 ) : ["canceled", "cancelled", "cancle"].includes(
@@ -927,13 +929,7 @@ const TrackOrder = () => {
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
               )}
-              {/* Horizontal line */}
-
-              {/* Original menu items */}
-              <div className="row">
-                <span className="gray-text ms-1 mb-2">
-                  Existing Ordered Items
-                </span>
+              <div className="row mt-2">
                 {menu_details.map((menu) => (
                   <div key={menu.menu_id} className="col-12">
                     <div
@@ -1040,13 +1036,13 @@ const TrackOrder = () => {
                               </div>
                             </div>
                             <div className="row">
-                              <div className="col-4">
+                              <div className="col-5 d-flex align-items-center">
                                 <span className="text-success font_size_10 fw-medium">
                                   <i className="ri-restaurant-line mt-0 me-2"></i>
                                   {menu.category_name}
                                 </span>
                               </div>
-                              <div className="col-4 px-0">
+                              <div className="col-4 px-0 d-flex align-items-center">
                                 {menu.spicy_index && (
                                   <span className="ms-2 spicy-index ">
                                     {Array.from({ length: 5 }).map((_, index) =>
@@ -1066,7 +1062,7 @@ const TrackOrder = () => {
                                 )}
                               </div>
 
-                              <div className="col-4 text-end px-0">
+                              <div className="col-3 text-end px-0 ">
                                 <i className="ri-star-half-line ratingStar font_size_10"></i>
                                 <span className="gray-text font_size_10 fw-medium">
                                   {parseFloat(menu.rating).toFixed(1)}
@@ -1221,19 +1217,13 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn mb-2 me-2 btn-sm  rounded-pill light btn-info border-info">
+                    <button className="btn mb-2 me-2 btn-sm rounded-pill light btn-info border-info">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
                   </a>
                 ) : (
-                  <button
-                    className="btn btn-success rounded-pill text-white px-5 light btn-light"
-                    disabled
-                  >
-                    Invoice &nbsp;
-                    <i className="ri-download-2-line"></i>
-                  </button>
+                  <></>
                 )}
               </div>
             )}

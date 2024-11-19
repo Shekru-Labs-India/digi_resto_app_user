@@ -522,7 +522,7 @@ const ProductCard = ({ isVegOnly }) => {
                   color: selectedCategoryId === null ? "#ffffff" : "",
                 }}
               >
-                All ({totalMenuCount})
+                All <span className="font_size_12">({totalMenuCount})</span>
               </div>
             </div>
 
@@ -545,7 +545,10 @@ const ProductCard = ({ isVegOnly }) => {
                         : "",
                   }}
                 >
-                  {category.name} ({category.menu_count})
+                  {category.name}
+                  <span className="font_size_12 gray-text">
+                    ({category.menu_count})
+                  </span>
                 </div>
               </div>
             ))}
@@ -763,7 +766,7 @@ const ProductCard = ({ isVegOnly }) => {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr className="my-4"/>
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
