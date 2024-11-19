@@ -142,10 +142,11 @@ const AppContent = () => {
       <Route path="/" element={<Website />}>
         <Route index element={<Website currentPath="/" />} />
         <Route path="features" element={<Website currentPath="/features" />} />
+        <Route path="about" element={<Website currentPath="/about" />} />
         <Route path="privacy_policy" element={<Website currentPath="/privacy_policy" />} />
         <Route path="cookie_policy" element={<Website currentPath="/cookie_policy" />} />
         <Route path="terms_conditions" element={<Website currentPath="/terms_conditions" />} />
-     
+         <Route path="contact" element={<Website currentPath="/contact" />} />
         <Route path="pricing" element={<Website currentPath="/pricing" />} />
         <Route path="faqs" element={<Website currentPath="/faqs" />} />
 

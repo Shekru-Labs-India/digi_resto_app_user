@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
 import qrcode from "../Assets/img/QRcode-basedorderingsystem.jpg"
 import about1 from "../Assets/img/about/1.jpg"
 
 const AboutBody = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     
   <>
