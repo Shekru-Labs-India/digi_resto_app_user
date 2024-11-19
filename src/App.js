@@ -149,7 +149,8 @@ const AppContent = () => {
          <Route path="contact" element={<Website currentPath="/contact" />} />
         <Route path="pricing" element={<Website currentPath="/pricing" />} />
         <Route path="faqs" element={<Website currentPath="/faqs" />} />
-
+        <Route path="request_data_removal" element={<Website currentPath="/request_data_removal" />} />
+       
       </Route>
       <Route path="/user_app/*" element={<UserApp />} />
       <Route path="*" element={<Navigate to="/" replace />} />

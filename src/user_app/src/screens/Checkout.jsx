@@ -22,6 +22,7 @@ const Checkout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
+  const storedRestaurantId = localStorage.getItem("restaurantId");
 
   const location = useLocation();
   // const [cartItems, setCartItems] = useState([]);
@@ -88,9 +89,9 @@ const Checkout = () => {
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
   
-    if (!cartId || !currentCustomerId || !restaurantId) {
-      return;
-    }
+    // if (!cartId || !currentCustomerId || !restaurantId) {
+    //   return;
+    // }
   
     fetchCartDetails();
     
@@ -102,10 +103,10 @@ const Checkout = () => {
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
   
-    if (!cartId || !currentCustomerId || !restaurantId) {
+    // if (!cartId || !currentCustomerId || !restaurantId) {
       
-      return;
-    }
+    //   return;
+    // }
   
     try {
       const response = await axios.post(
@@ -113,7 +114,7 @@ const Checkout = () => {
         {
           cart_id: cartId,
           customer_id: currentCustomerId,
-          restaurant_id: restaurantId,
+          restaurant_id: storedRestaurantId,
         }
       );
   

@@ -14,6 +14,7 @@ import Home from "./Components/Home";
 import Pricing from "./Components/Pricing"
 import TermsConditions from "./Components/TermsConditions";
 import CookiePolicy from "./Components/CookiePolicy";
+import DeleteUser from "./Components/DeleteUser";
 
 function App({ currentPath }) {
   const location = useLocation();
@@ -38,6 +39,8 @@ function App({ currentPath }) {
         return <About />;
         case '/pricing':
           return <Pricing />;
+          case '/request_data_removal':
+            return <DeleteUser />;
       case '/contact':
         return <Contact />;
       default:

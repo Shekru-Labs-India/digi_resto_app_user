@@ -677,7 +677,7 @@ const Wishlist = () => {
                 <div className="dz-cart-about">
                   <h5 className=" ">Nothing to show in favourites.</h5>
                   <p>Add some products to show here!</p>
-                  <Link to="/Menu" className="btn btn-outline-primary btn-sm">
+                  <Link to="/user_app/Menu" className="btn btn-outline-primary btn-sm">
                     Browse Menus
                   </Link>
                 </div>

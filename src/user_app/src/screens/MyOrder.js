@@ -146,7 +146,7 @@ const MyOrder = () => {
             },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              order_status: activeTab === "canceled" ? "cancle" : activeTab,
+              order_status: activeTab === "cancelled" ? "cancle" : activeTab,
               customer_id: currentCustomerId,
               customer_type: currentCustomerType,
             }),
@@ -158,8 +158,8 @@ const MyOrder = () => {
 
           if (data.st === 1 && data.lists) {
             const mappedData = {};
-            if (activeTab === "canceled" && data.lists.cancle) {
-              mappedData.canceled = data.lists.cancle;
+            if (activeTab === "cancelled" && data.lists.cancle) {
+              mappedData.cancelled = data.lists.cancle;
             } else if (data.lists[activeTab]) {
               mappedData[activeTab] = data.lists[activeTab];
             }
@@ -233,7 +233,7 @@ const MyOrder = () => {
         title="My Order"
         count={
           orders &&
-          (activeTab === "canceled" && orders.cancle
+          (activeTab === "cancelled" && orders.cancle
             ? Array.isArray(orders.cancle)
               ? orders.cancle.length
               : 0
@@ -265,7 +265,7 @@ const MyOrder = () => {
           ))}
 
           <div className="nav nav-tabs nav-fill" role="tablist">
-            {["completed", "canceled"].map((tab) => (
+            {["completed", "cancelled"].map((tab) => (
               <>
                 <div
                   key={tab}
@@ -277,7 +277,7 @@ const MyOrder = () => {
                   {tab === "completed" && (
                     <i className="ri-checkbox-circle-line text-success me-2 fs-5"></i>
                   )}
-                  {tab === "canceled" && (
+                  {tab === "cancelled" && (
                     <i className="ri-close-circle-line text-danger me-2 fs-5"></i>
                   )}
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -336,9 +336,9 @@ const MyOrder = () => {
                     </div>
                     <div
                       className={`tab-pane fade ${
-                        activeTab === "canceled" ? "show active" : ""
+                        activeTab === "cancelled" ? "show active" : ""
                       }`}
-                      id="canceled"
+                      id="cancelled"
                       role="tabpanel"
                     >
                       <OrdersTab
@@ -472,7 +472,7 @@ export const OrderCard = ({
           ),
           ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
         }));
-        setActiveTab("canceled");
+        setActiveTab("cancelled");
       } else {
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
@@ -852,6 +852,90 @@ export const OrderCard = ({
                       placeholder="Enter your reason here..."
                     ></textarea>
                   </div>
+                </div> 
+                <div className="modal-body">
+                  <span className="text-danger">Reason for cancellation:</span>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="delay"
+                      name="cancelReason"
+                      value="Delivery Delays: Waiting too long, I lost patience."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="delay">
+                      <span className="fw-semibold">Delivery Delays:</span>
+
+                      <div className="">
+                        Waiting too long, I lost patience.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-3">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="mind"
+                      name="cancelReason"
+                      value="Change of Mind: Don't want it anymore, found something better."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="mind">
+                      <span className="fw-semibold">Change of Mind:</span>
+                      <div className="">
+                        Don't want it anymore, found something better.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="price"
+                      name="cancelReason"
+                      value="Pricing Concerns: Extra charges made it too expensive."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="price">
+                      <span className="fw-semibold">Pricing Concerns:</span>
+                      <div className="">
+                        Extra charges made it too expensive.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="error"
+                      name="cancelReason"
+                      value="Order Errors: Wrong customization or item, not worth it."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="error">
+                      <span className="fw-semibold">Order Errors:</span>
+                      <div className="">
+                        Wrong customization or item, not worth it.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="quality"
+                      name="cancelReason"
+                      value="Poor Reviews/Quality Doubts: Doubts about quality, I canceled quickly."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="quality">
+                      <span className="fw-semibold">Poor Reviews/Quality Doubts:</span>
+                      <div className="">
+                        Doubts about quality, I canceled quickly.
+                      </div>
+                    </label>
+                  </div>
                 </div>
                 <hr className="my-4" />
                 <div className="d-flex justify-content-between pb-3 px-4">
@@ -1093,11 +1177,11 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           </div>
                         )}
 
-                        {activeTab === "canceled" && (
+                        {activeTab === "cancelled" && (
                           <div className="text-center">
                             <span className="text-danger">
                               <i className="ri-close-circle-line me-1"></i>
-                              Order canceled
+                              Order cancelled
                             </span>
                           </div>
                         )}
@@ -1117,7 +1201,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     <>
       <div className="row g-1">
         {!orders || Object.keys(orders).length === 0
-          ? (type === "completed" || type === "canceled") && (
+          ? (type === "completed" || type === "cancelled") && (
               <div
                 className="d-flex justify-content-center align-items-center flex-column"
                 style={{ height: "80vh" }}

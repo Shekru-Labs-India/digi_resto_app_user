@@ -50,7 +50,7 @@ const MenuDetails = () => {
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-
+  const storedRestaurantId = localStorage.getItem("restaurantId");
 
   const [customerType, setCustomerType] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -234,7 +234,7 @@ const MenuDetails = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId,
+            restaurant_id: storedRestaurantId,
             menu_id: menuId
           }),
         }
