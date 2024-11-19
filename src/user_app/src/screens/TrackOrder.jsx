@@ -931,9 +931,7 @@ const TrackOrder = () => {
 
               {/* Original menu items */}
               <div className="row">
-                <span className="gray-text ms-1 mb-2">
-                  Existing Ordered Items
-                </span>
+               
                 {menu_details.map((menu) => (
                   <div key={menu.menu_id} className="col-12">
                     <div

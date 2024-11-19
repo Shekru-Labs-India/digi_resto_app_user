@@ -39,7 +39,7 @@ const PricingBody = () => {
 
   <div className="section-title">
         
-        <h2 className="text-nowrap"> Transparent and affordable pricing
+        <h2 className=""> Transparent and affordable pricing
        </h2>
         <p>
         Manage restaurant operations efficiently without burning a hole in your pockets
@@ -134,13 +134,13 @@ const PricingBody = () => {
             </li>
           </ul>
         </div>
-        <div className="col-md-6">
-          <h2 className="text-danger fw-bold">MenuMitra Pro Max</h2>
+        <div className="col-md-6 mt-5 mt-md-0">
+          <h2 className="text-danger fw-bold">MM Pro Max</h2>
           <p className="text-muted">
             Power up your MenuMitra Core with features that simplify your kitchen operations, customer management, and staff responsibilities.
           </p>
           <h1 className="fw-bold">₹14,999*</h1>
-          <p className="text-muted">per year / per outlet</p>
+          <p className="text-muted">/ per outlet</p>
           <button className="btn btn-danger my-3">Book A Free Demo</button>
 
           {/* Features List */}
