@@ -138,6 +138,8 @@ function RestaurantDetails() {
                     <a class="btn btn-info rounded-pill btn-sm">
                       <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
                     </a>
+
+                    {/* <a href="upi://pay?pa=pratikshashitole29-2@oksbi&pn=Tasty Diner&mc=1234&tid=1234567890&tr=1234567890&tn=Payment to Tasty Diner&am=500&cu=INR">Test</a> */}
                   </div>
                 </div>
               )}

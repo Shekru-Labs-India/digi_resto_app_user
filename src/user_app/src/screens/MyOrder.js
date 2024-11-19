@@ -109,8 +109,9 @@ const MyOrder = () => {
     };
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
-    
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+
     if (!currentCustomerId) {
       setLoading(false);
       return;
@@ -386,7 +387,7 @@ export const OrderCard = ({
       window.showToast("error", "Please select a payment method.");
       return;
     }
-  
+
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
@@ -402,28 +403,28 @@ export const OrderCard = ({
           }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-  
+
       if (data.st === 1) {
         window.showToast("success", data.msg);
-  
+
         // Update the state to remove the order from "ongoing"
         setOngoingOrPlacedOrders((prevOrders) => {
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
-  
+
           return {
             placed: prevOrders.placed,
             ongoing: updatedOngoing,
           };
         });
-  
+
         setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
@@ -436,17 +437,20 @@ export const OrderCard = ({
 
   const handleConfirmCancel = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/cancle_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: order.restaurant_id,
-          order_id: order.order_id,
-          note: cancelReason,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/cancle_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: order.restaurant_id,
+            order_id: order.order_id,
+            note: cancelReason,
+          }),
+        }
+      );
 
       console.log("Response:", response); // Log the full response
 
@@ -480,6 +484,74 @@ export const OrderCard = ({
 
   const handleOrderClick = (orderNumber) => {
     navigate(`/user_app/TrackOrder/${orderNumber}`);
+
+    
+  };
+
+
+
+  const handleUpiPayment = async () => {
+
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const restaurantName = userData?.restaurantName;
+    const customerName = userData?.name;
+
+    const orderId = order.order_id;
+
+    setPaymentMethod("UPI");
+
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/complete_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: order.order_id,
+            restaurant_id: order.restaurant_id,
+            payment_method: "UPI", // Added payment method
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        window.showToast("success", data.msg);
+
+        // Update the state to remove the order from "ongoing"
+        setOngoingOrPlacedOrders((prevOrders) => {
+          const updatedOngoing = prevOrders.ongoing.filter(
+            (o) => o.order_id !== order.order_id
+          );
+
+          return {
+            placed: prevOrders.placed,
+            ongoing: updatedOngoing,
+          };
+        });
+
+        setShowCompleteModal(false); // Close the modal
+      } else {
+        window.showToast("error", data.msg || "Failed to complete the order.");
+      }
+    } catch (error) {
+      console.error("Error completing order:", error);
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+
+  
+      // Wait 1 second before opening UPI deep link
+      setTimeout(() => {
+        const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${restaurantName}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${customerName} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. ${order.order_number}&am=${order.grand_total}&cu=INR`;
+        window.location.href = upiUrl;
+    }, 1000);
   };
 
   return (
@@ -605,20 +677,20 @@ export const OrderCard = ({
                   <div className="col-6 text-end">
                     <div className="d-flex justify-content-end">
                       <span
-                        className="btn-close m-2 font_size_12"
+                        className="m-2 font_size_16"
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line"></i>
+                        <i className="ri-close-line text-muted"></i>
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="modal-body">
+                {/* <div className="modal-body">
                   <p>Are you sure you want to complete this order?</p>
                   <div className="d-flex justify-content-around">
                     {" "}
-                    {/* Row for payment buttons */}
+               
                     <button
                       type="button"
                       className={`border rounded-pill px-5 font_size_14 text-center ${
@@ -653,8 +725,68 @@ export const OrderCard = ({
                       Cash
                     </button>
                   </div>
+                </div> */}
+
+                <div className="modal-body">
+                  <p className="text-center">
+                    Are you sure you want to complete this order?
+                  </p>
+                  <div className="d-flex justify-content-center">
+                    <button className="btn btn-info" onClick={() => {
+                      setPaymentMethod("UPI");
+                      handleUpiPayment();
+                      
+                    
+                    }}>
+                      Pay
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <img
+                        className="text-white ms-1"
+                        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                        width={45}
+                      />
+                    </button>
+                  </div>
+                  {/* <hr className="my-4" /> */}
                 </div>
-                <hr className="my-4" />
+
+                <div className="text-center">
+                  <div>or make payment via:</div>
+                </div>
+                <div className="d-flex justify-content-center pt-2 mb-4">
+                  <button
+                    type="button"
+                    class={`px-2 bg-white mb-2 me-4 rounded-pill py-1 gray-text ${
+                      paymentMethod === "Card"
+                        ? "bg-success text-white"
+                        : "border border-muted"
+                    }`}
+                    onClick={() => {
+                      setPaymentMethod("Card");
+                      handleCompleteOrder();
+                    }}
+                  >
+                    <i class="ri-bank-card-line me-1"></i>
+                    Card
+                  </button>
+                  <button
+                    type="button"
+                    class={`px-2 bg-white mb-2 me-2 rounded-pill py-1 gray-text ${
+                      paymentMethod === "Cash"
+                        ? "bg-success text-white"
+                        : "border border-muted"
+                    }`}
+                    onClick={() => {
+                      setPaymentMethod("Cash");
+                      handleCompleteOrder();
+                    }}
+                  >
+                    <i class="ri-wallet-3-fill me-1"></i>
+                    Cash
+                  </button>
+                </div>
+
+                {/* <hr className="my-4" />
                 <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                   <button
                     type="button"
@@ -671,7 +803,7 @@ export const OrderCard = ({
                     <i className="ri-checkbox-circle-line text-white me-2 fs-5"></i>
                     Confirm Complete
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -941,7 +1073,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         {activeTab === "completed" && (
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-6 ps-0">
+                              <div className="col-7 ps-0">
                                 <div className="text-start text-nowrap">
                                   <span className="text-success">
                                     <i className="ri-checkbox-circle-line me-1"></i>
@@ -949,9 +1081,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="col-6 pe-0 font_size_14 text-end">
+                              <div className="col-5 pe-0 font_size_14 text-end">
                                 {order.payment_method && (
-                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center">
+                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap">
                                     Payment Type: {order.payment_method}
                                   </div>
                                 )}
