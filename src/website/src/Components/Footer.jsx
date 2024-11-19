@@ -143,8 +143,8 @@ const Footer = () => {
 
         {/* End Footer Top Area */}
         {/* Start Footer Bottom Area */}
-        <footer className="footer-bottom-area shadow-lg">
-          <div className="container ">
+        <footer className="footer-bottom-area">
+          <div className="container">
             <div className="row">
               <div className="col-lg-6 col-md-6">
                 <div>
@@ -156,7 +156,7 @@ const Footer = () => {
               </div>
               <div className="col-lg-6 col-md-6">
                
-				<p className="conditions text-white">
+				<p className="conditions">
 			   <i className="ri-flashlight-fill "></i> Powered by
                     <span className="fw-bold ms-2"><a
               className=" "
