@@ -382,12 +382,7 @@ export const OrderCard = ({
   const handleCompleteClick = () => {
     setShowCompleteModal(true);
   };
-  const handleCompleteOrder = async () => {
-    if (!paymentMethod) {
-      window.showToast("error", "Please select a payment method.");
-      return;
-    }
-
+  const handleCompleteOrder = async (method) => {
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
@@ -399,35 +394,21 @@ export const OrderCard = ({
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
-            payment_method: paymentMethod, // Added payment method
+            payment_method: method, // Use passed method instead of state
           }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       const data = await response.json();
-
       if (data.st === 1) {
         window.showToast("success", data.msg);
-
-        // Update the state to remove the order from "ongoing"
-        setOngoingOrPlacedOrders((prevOrders) => {
-          const updatedOngoing = prevOrders.ongoing.filter(
-            (o) => o.order_id !== order.order_id
-          );
-
-          return {
-            placed: prevOrders.placed,
-            ongoing: updatedOngoing,
-          };
-        });
-
-        setShowCompleteModal(false); // Close the modal
+        setOngoingOrPlacedOrders((prevOrders) => ({
+          placed: prevOrders.placed,
+          ongoing: prevOrders.ongoing.filter(o => o.order_id !== order.order_id)
+        }));
+        setShowCompleteModal(false);
       } else {
-        window.showToast("error", data.msg || "Failed to complete the order.");
+        window.showToast("error", data.msg || "Failed to complete the order");
       }
     } catch (error) {
       console.error("Error completing order:", error);
@@ -552,6 +533,16 @@ export const OrderCard = ({
         const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${restaurantName}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${customerName} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. ${order.order_number}&am=${order.grand_total}&cu=INR`;
         window.location.href = upiUrl;
     }, 1000);
+  };
+
+  const handleCardPayment = () => {
+    setPaymentMethod("Card");
+    handleCompleteOrder("Card"); // Pass payment method directly
+  };
+
+  const handleCashPayment = () => {
+    setPaymentMethod("Cash");
+    handleCompleteOrder("Cash"); // Pass payment method directly
   };
 
   return (
@@ -732,14 +723,18 @@ export const OrderCard = ({
                     Are you sure you want to complete this order?
                   </p>
                   <div className="d-flex justify-content-center">
-                    <button className="btn btn-info" onClick={() => {
-                      setPaymentMethod("UPI");
-                      handleUpiPayment();
-                      
-                    
-                    }}>
+                    <button
+                      className="btn btn-info"
+                      onClick={() => {
+                        setPaymentMethod("UPI");
+                        handleUpiPayment();
+                      }}
+                    >
                       Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <span className="fs- mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+                      via
                       <img
                         className="text-white ms-1"
                         src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
@@ -756,32 +751,26 @@ export const OrderCard = ({
                 <div className="d-flex justify-content-center pt-2 mb-4">
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-4 rounded-pill py-1 gray-text ${
+                    className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 gray-text ${
                       paymentMethod === "Card"
-                        ? "bg-success text-white"
+                        ? "bg-success text-dark"
                         : "border border-muted"
                     }`}
-                    onClick={() => {
-                      setPaymentMethod("Card");
-                      handleCompleteOrder();
-                    }}
+                    onClick={handleCardPayment}
                   >
-                    <i class="ri-bank-card-line me-1"></i>
+                    <i className="ri-bank-card-line me-1"></i>
                     Card
                   </button>
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-2 rounded-pill py-1 gray-text ${
+                    className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 gray-text ${
                       paymentMethod === "Cash"
-                        ? "bg-success text-white"
+                        ? "bg-success text-dark"
                         : "border border-muted"
                     }`}
-                    onClick={() => {
-                      setPaymentMethod("Cash");
-                      handleCompleteOrder();
-                    }}
+                    onClick={handleCashPayment}
                   >
-                    <i class="ri-wallet-3-fill me-1"></i>
+                    <i className="ri-wallet-3-fill me-1"></i>
                     Cash
                   </button>
                 </div>
@@ -836,7 +825,7 @@ export const OrderCard = ({
                     onClick={() => setShowCancelModal(false)}
                   ></button>
                 </div>
-                <div className="modal-body">
+                {/* <div className="modal-body">
                   <div className="form-group">
                     <label htmlFor="cancelReason" className="form-label">
                       <span className="text-danger">*</span>
@@ -850,6 +839,90 @@ export const OrderCard = ({
                       onChange={(e) => setCancelReason(e.target.value)}
                       placeholder="Enter your reason here..."
                     ></textarea>
+                  </div>
+                </div> */}
+                <div className="modal-body">
+                  <span className="text-danger">Reason for cancellation:</span>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="delay"
+                      name="cancelReason"
+                      value="Delivery Delays: Waiting too long, I lost patience."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="delay">
+                      <span className="fw-semibold">Delivery Delays:</span>
+
+                      <div className="">
+                        Waiting too long, I lost patience.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-3">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="mind"
+                      name="cancelReason"
+                      value="Change of Mind: Don't want it anymore, found something better."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="mind">
+                      <span className="fw-semibold">Change of Mind:</span>
+                      <div className="">
+                        Don't want it anymore, found something better.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="price"
+                      name="cancelReason"
+                      value="Pricing Concerns: Extra charges made it too expensive."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="price">
+                      <span className="fw-semibold">Pricing Concerns:</span>
+                      <div className="">
+                        Extra charges made it too expensive.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="error"
+                      name="cancelReason"
+                      value="Order Errors: Wrong customization or item, not worth it."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="error">
+                      <span className="fw-semibold">Order Errors:</span>
+                      <div className="">
+                        Wrong customization or item, not worth it.
+                      </div>
+                    </label>
+                  </div>
+                  <div className="form-check mt-2">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      id="quality"
+                      name="cancelReason"
+                      value="Poor Reviews/Quality Doubts: Doubts about quality, I canceled quickly."
+                      onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="quality">
+                      <span className="fw-semibold">Poor Reviews/Quality Doubts:</span>
+                      <div className="">
+                        Doubts about quality, I canceled quickly.
+                      </div>
+                    </label>
                   </div>
                 </div>
                 <hr className="my-4" />
@@ -1073,7 +1146,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         {activeTab === "completed" && (
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-7 ps-0">
+                              <div className="col-10 ps-0">
                                 <div className="text-start text-nowrap">
                                   <span className="text-success">
                                     <i className="ri-checkbox-circle-line me-1"></i>
@@ -1081,10 +1154,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="col-5 pe-0 font_size_14 text-end">
+                              <div className="col-2 pe-0 font_size_14 d-flex justify-content-end">
                                 {order.payment_method && (
-                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap">
-                                    Payment Type: {order.payment_method}
+                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
+                                  {order.payment_method}
                                   </div>
                                 )}
                               </div>
@@ -1209,63 +1282,79 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
-  const timerKey = `timer_${orderId}`;
 
   useEffect(() => {
-    const startTime = localStorage.getItem(timerKey);
-    if (!startTime) {
-      localStorage.setItem(timerKey, new Date().getTime().toString());
-    }
+    if (!order.time) return;
 
-    const now = new Date().getTime();
-    const start = parseInt(localStorage.getItem(timerKey));
-    const elapsed = now - start;
+    try {
+      // Convert API time (03:14:38 PM) to Date object
+      const today = new Date();
+      const [time, period] = order.time.split(' ');
+      const [hours, minutes, seconds] = time.split(':');
+      
+      // Convert 12-hour format to 24-hour
+      let hour = parseInt(hours);
+      if (period === 'PM' && hour !== 12) hour += 12;
+      if (period === 'AM' && hour === 12) hour = 0;
 
-    if (elapsed >= 90000) {
-      handleTimerComplete();
-      return;
-    }
+      // Set the order time
+      const orderTime = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        hour,
+        parseInt(minutes),
+        parseInt(seconds)
+      );
 
-    const calculateTimeLeft = () => {
-      const start = parseInt(localStorage.getItem(timerKey));
-      if (!start) {
-        handleTimerComplete();
-        return;
-      }
+      // Get current time
+      const currentTime = new Date();
+      
+      // Calculate elapsed seconds
+      const elapsedSeconds = Math.floor((currentTime - orderTime) / 1000);
+      
+      // Calculate remaining time from 90 seconds
+      const remaining = Math.max(90 - elapsedSeconds, 0);
 
-      const now = new Date().getTime();
-      const elapsed = now - start;
-      const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
-
+      // If already expired
       if (remaining <= 0) {
-        clearInterval(timerRef.current);
         handleTimerComplete();
         return;
       }
-      setTimeLeft(remaining);
-    };
 
-    calculateTimeLeft();
-    timerRef.current = setInterval(calculateTimeLeft, 1000);
+      // Set initial time
+      setTimeLeft(remaining);
+
+      // Start countdown
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            handleTimerComplete();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (error) {
+      console.error('Error calculating countdown:', error);
+    }
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [orderId]);
+  }, [order.time, orderId]);
 
   const handleTimerComplete = async () => {
     setTimeLeft(0);
     setIsCompleted(true);
-    localStorage.removeItem(timerKey);
 
-    // Call the API to fetch updated orders
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
+      const currentCustomerId = userData?.customer_id || localStorage.getItem("customer_id");
+      const restaurantId = order.restaurant_id;
 
       if (!currentCustomerId || !restaurantId) return;
 
@@ -1287,26 +1376,33 @@ export const CircularCountdown = ({
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
         if (orders.length > 0) {
-          const status = orders[0]?.status;
-          const orderList =
-            status === "placed"
-              ? { placed: orders, ongoing: [] }
-              : { placed: [], ongoing: orders };
-          setOngoingOrPlacedOrders(orderList);
+          // Update the order status to ongoing
+          const updatedOrders = orders.map(o => ({
+            ...o,
+            status: o.order_id === order.order_id ? "ongoing" : o.status
+          }));
+          
+          // Set the orders with updated status
+          setOngoingOrPlacedOrders({
+            placed: [],
+            ongoing: updatedOrders
+          });
         } else {
           setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
         }
-      } else {
-        setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
       console.error("Error fetching orders after timer complete:", error);
     }
 
-    // Call the onComplete function
+    // Call onComplete to update parent component
     onComplete();
-    // window.showToast("success", "Your order has moved to ongoing orders!");
   };
+
+  // Don't render if completed or no time left
+  if (isCompleted || timeLeft <= 0) {
+    return null;
+  }
 
   const percentage = (timeLeft / 90) * 100;
 
@@ -1314,17 +1410,13 @@ export const CircularCountdown = ({
     <div className="circular-countdown">
       <svg viewBox="0 0 36 36" className="circular-timer">
         <path
-          d="M18 2.0845
-            a 15.9155 15.9155 0 0 1 0 31.831
-            a 15.9155 15.9155 0 0 1 0 -31.831"
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
           fill="none"
           stroke="#eee"
           strokeWidth="3"
         />
         <path
-          d="M18 2.0845
-            a 15.9155 15.9155 0 0 1 0 31.831
-            a 15.9155 15.9155 0 0 1 0 -31.831"
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
           fill="none"
           stroke="#2196f3"
           strokeWidth="3"
