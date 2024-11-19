@@ -15,7 +15,6 @@ import services from "../Assets/img/services/1.jpg"
 import qrcode from "../Assets/img/QRcode-basedorderingsystem.jpg"
 import shape from "../Assets/img/shape/1.png"
 import { Link } from 'react-router-dom'
-import logo from "../Assets/img/mm-logo-bg-fill.png";
 const HomeBody = () => {
 
 	useEffect(() => {
@@ -228,106 +227,8 @@ const HomeBody = () => {
     </div>
   </section>
   {/* End About US Area */}
- <section className="bg-white ptb-100">
-  <div className="container">
-    <h2 className="text-center mb-4">Your digital menu</h2>
-    <h3 className="text-center text-muted">Why choose MenuMitra?</h3>
-
-    <div className="row mt-4">
-      {/* MenuMitra Table */}
-      <div className="col-md-3 col-12 mb-3">
-        <div className="table-responsive ">
-          <table className="table table-bordered  text-start custom-table" >
-            <thead className="bg-danger text-white text-center">
-              <tr>
-                <th>
-                  <img src={logo} alt="MenuMitra-Logo" width="60" height="60" className="me-2" />
-                  MenuMitra
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Low cost</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Self manageable</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Advanced functionality</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Accessible everywhere</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> View on own device</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Digitally available</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Static Website Table */}
-      <div className="col-md-3 col-12 mb-3">
-        <div className="table-responsive">
-          <table className="table table-bordered text-start custom-table">
-            <thead className="bg-danger text-white text-center">
-              <tr>
-                <th>Static website</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> High cost</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Changes on request</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Limited functionality</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Accessible everywhere</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> View on own device</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Digitally available</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Menu on Tablet Table */}
-      <div className="col-md-3 col-12 mb-3">
-        <div className="table-responsive">
-          <table className="table table-bordered text-start custom-table">
-            <thead className="bg-danger text-white text-center">
-              <tr>
-                <th>Menu on tablet</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Very high cost</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Changes on request</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Limited functionality</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Only accessible locally</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> View on shared tablet</td></tr>
-              <tr><td><i className="text-success fas fa-check-circle me-2"></i> Digitally available</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Printed Menu Table */}
-      <div className="col-md-3 col-12 mb-3">
-        <div className="table-responsive">
-          <table className="table table-bordered text-start custom-table">
-            <thead className="bg-danger text-white text-center">
-              <tr>
-                <th>Printed menu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> High cost</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Changes need reprint</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> No functionality</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Only accessible locally</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Shared printed menu</td></tr>
-              <tr><td><i className="text-danger fas fa-times-circle me-2"></i> Not digitally available</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-
-
+  
+  
   <section className="see-product-area ptb-100">
 			<div className="container">
 				<div className="section-title">

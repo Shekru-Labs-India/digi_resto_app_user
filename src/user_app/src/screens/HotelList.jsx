@@ -152,8 +152,6 @@ const HotelList = () => {
           >
             Shekru Labs India Pvt. Ltd.
           </a>
-
-
         </div>
       </div>
     </div>
