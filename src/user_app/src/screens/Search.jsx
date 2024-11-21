@@ -579,7 +579,7 @@ const Search = () => {
                           } font_size_12`}
                         ></i>
                       </div>
-                      {menu.offer && menu.offer !== "0" && (
+                      {menu.offer !== 0 && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
                             {menu.offer}% Off
