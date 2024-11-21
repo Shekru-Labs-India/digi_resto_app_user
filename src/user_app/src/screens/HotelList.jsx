@@ -33,7 +33,10 @@ const HotelList = () => {
   }, []);
 
   return (
-    <div className="page-wrapper full-height">
+    <div
+      className="page-wrapper full-height"
+     
+    >
       <main className="page-content pt-0">
         <div className="container py-1 px-0">
           <div className="d-flex justify-content-center"></div>
@@ -53,7 +56,7 @@ const HotelList = () => {
                               {hotel.restaurant_name.toUpperCase()}
                             </span>
                             {hotel.is_open && hotel.is_open === true ? null : (
-                              <span class="badge bg-danger ms-2 font_size_10">
+                              <span class="badge badge-sm bg-danger ms-2 font_size_10">
                                 Closed
                               </span>
                             )}

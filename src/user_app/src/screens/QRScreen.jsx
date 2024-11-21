@@ -62,15 +62,18 @@ const QRScanner = () => {
   }, [showCamera]);
 
   return (
-    <div className="container-fluid bg-light d-flex flex-column align-items-center vh-100">
-      <Link to="/">
-        {" "}
-        <div className="d-flex align-items-center mt-4 mb-3">
-          <img src={logo} alt="logo" width="40" height="40" />
-          <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">MenuMitra</div>
-        </div>
-      </Link>
-      {/* {!showCamera && (
+    <div className="" style={{ backgroundColor: "#182C25" }}>
+      <div className="container-fluid  d-flex flex-column align-items-center vh-100 ">
+        <Link to="/">
+          {" "}
+          <div className="d-flex align-items-center mt-4 mb-3">
+            <img src={logo} alt="logo" width="40" height="40" />
+            <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+              MenuMitra
+            </div>
+          </div>
+        </Link>
+        {/* {!showCamera && (
         <button
           className="btn btn-primary my-3 rounded-pill"
           onClick={handleScanButtonClick}
@@ -79,7 +82,7 @@ const QRScanner = () => {
         </button>
       )} */}
 
-      {/* {showCamera && (
+        {/* {showCamera && (
         <div
           className="position-relative w-75 mb-4 rounded-5"
           style={{ maxWidth: "300px", aspectRatio: "1 / 1" }}
@@ -104,8 +107,9 @@ const QRScanner = () => {
         </div>
       )} */}
 
-      <div className="container px-0">
-        <HotelList />
+        <div className="container px-0 ">
+          <HotelList />
+        </div>
       </div>
     </div>
   );

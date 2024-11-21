@@ -487,7 +487,10 @@ const ProductCard = ({ isVegOnly }) => {
       {restaurantStatus === "false" && (
         <div
           className="modal fade show d-block"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          style={{
+            backdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -500,7 +503,8 @@ const ProductCard = ({ isVegOnly }) => {
               </div>
               <div className="modal-body">
                 <p className="text-center">
-                  This restaurant is currently disabled.<br />
+                  This restaurant is currently disabled.
+                  <br />
                   Please try again later or contact support.
                 </p>
               </div>
@@ -511,7 +515,11 @@ const ProductCard = ({ isVegOnly }) => {
       {isRestaurantOpen === "false" && (
         <div
           className="modal fade show d-block"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          // style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          style={{
+            backdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -524,7 +532,8 @@ const ProductCard = ({ isVegOnly }) => {
               </div>
               <div className="modal-body">
                 <p className="text-center">
-                  This restaurant is currently closed.<br />
+                  This restaurant is currently closed.
+                  <br />
                   Please try again later or come back tomorrow.
                 </p>
               </div>
@@ -589,11 +598,12 @@ const ProductCard = ({ isVegOnly }) => {
                   color: selectedCategoryId === null ? "#ffffff" : "",
                 }}
               >
-                All <span className="font_size_12">
+                All{" "}
+                <span className="font_size_12">
                   <span className="gray-text font_size_10">
-                  ({totalMenuCount})
+                    ({totalMenuCount})
                   </span>
-                  </span>
+                </span>
               </div>
             </div>
 
@@ -617,9 +627,10 @@ const ProductCard = ({ isVegOnly }) => {
                   }}
                 >
                   {category.name}
-                  <span className="font_size_12 gray-text">{" "}
+                  <span className="font_size_12 gray-text">
+                    {" "}
                     <span className="gray-text font_size_10">
-                    ({category.menu_count})
+                      ({category.menu_count})
                     </span>
                   </span>
                 </div>
