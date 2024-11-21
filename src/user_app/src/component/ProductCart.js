@@ -49,6 +49,8 @@ const ProductCard = ({ isVegOnly }) => {
 
   const { showLoginPopup } = usePopup();
 
+   const restaurantStatus = localStorage.getItem("restaurantStatus");
+
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -461,20 +463,34 @@ const ProductCard = ({ isVegOnly }) => {
     return (
       <div id="preloader">
         <div className="loader">
-          {restaurantStatus === "false" && (
-            <div 
-            className="modal fade show d-block"
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <div className="col-6 text-center">
-                    <div className="modal-title font_size_16 fw-medium text-nowrap ">
-                      This restaurant is disabled
-                    </div>
+          <LoaderGif />
+        </div>
+      </div>
+    );
+  }
+
+  if (restaurantStatus === "false") {
+    setTimeout(()=>{
+      navigate("/user_app/Index")
+    }, 3000)
+  }
+
+  return (
+    <div>
+      {restaurantStatus === "false" && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="col-6 text-center">
+                  <div className="modal-title font_size_16 fw-medium text-nowrap ">
+                    This restaurant is disabled
                   </div>
-                  {/* <div className="col-6 text-end">
+                </div>
+                {/* <div className="col-6 text-end">
                           <div className="d-flex justify-content-end">
                             <span
                               className="m-2 font_size_16"
@@ -485,13 +501,13 @@ const ProductCard = ({ isVegOnly }) => {
                             </span>
                           </div>
                         </div> */}
-                </div>
-                <div className="modal-body">
-                  <p className="text-center">
-                    This restaurant is currently disabled. <br />
-                    Please try again later or contact support.
-                  </p>
-                  {/* <div className="d-flex justify-content-center">
+              </div>
+              <div className="modal-body">
+                <p className="text-center">
+                  This restaurant is currently disabled. <br />
+                  Please try again later or contact support.
+                </p>
+                {/* <div className="d-flex justify-content-center">
                         <button
                           className="btn px-4 font_size_14 btn-outline-danger rounded-pill"
                           data-bs-dismiss="modal"
@@ -499,18 +515,12 @@ const ProductCard = ({ isVegOnly }) => {
                           Close
                         </button>
                       </div> */}
-                </div>
-                </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div>
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
           <div className="title-bar">
