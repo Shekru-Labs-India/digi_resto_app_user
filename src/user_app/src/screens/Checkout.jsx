@@ -521,7 +521,8 @@ await fetchCartDetails();
 
                   <div className="p-3">
                     <p className="text-center mb-4 text-dark">
-                      No ongoing order found. Would you like to create a new
+                      No ongoing order found. <br /> 
+                      Would you like to create a new
                       order?
                     </p>
 

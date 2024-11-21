@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 // import '../assets/styles.css'
 // import '../assets/custom.css'
-import config from "../component/config"
+import config from "../component/config";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch( `${config.apiDomain}/user_api/get_all_restaurants`);
+        const response = await fetch(
+          `${config.apiDomain}/user_api/get_all_restaurants`
+        );
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {
-            const code = hotel.code || (hotel.resto_url && hotel.resto_url.match(/\/(\d{6})\//)[1]);
+            const code =
+              hotel.code ||
+              (hotel.resto_url && hotel.resto_url.match(/\/(\d{6})\//)[1]);
             return { ...hotel, code };
           });
           setHotels(formattedHotels);
@@ -22,9 +26,7 @@ const HotelList = () => {
           // localStorage.removeItem("restaurantStatus");
         } else {
         }
-      } catch (error) {
-       
-      }
+      } catch (error) {}
     };
 
     fetchHotels();
@@ -50,6 +52,11 @@ const HotelList = () => {
                             <span className="font_size_14 fw-medium m-0">
                               {hotel.restaurant_name.toUpperCase()}
                             </span>
+                            {hotel.is_open && hotel.is_open === true ? (
+                              <span class="badge bg-danger ms-2 font_size_10">
+                                Closed
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                         <div className="row mt-1">

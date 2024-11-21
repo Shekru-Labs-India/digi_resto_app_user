@@ -642,7 +642,7 @@ export const OrderCard = ({
   
       // Wait 1 second before opening UPI deep link
       setTimeout(() => {
-        const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${restaurantName}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${customerName} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. ${order.order_number}&am=${order.grand_total}&cu=INR`;
+        const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${restaurantName}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${customerName} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
         window.location.href = upiUrl;
     }, 1000);
   };
