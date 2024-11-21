@@ -28,6 +28,10 @@ const HomeScreen = () => {
     return localStorage.getItem("isVegOnly") === "true" || false;
   });
 
+  const [showRestaurantDisabledModal, setShowRestaurantDisabledModal] = useState(null)
+
+  const restaurantStatus = localStorage.getItem("restaurantStatus");
+
   const toggleVegNonVeg = () => {
     const newValue = !isVegOnly;
     setIsVegOnly(newValue);
@@ -57,6 +61,12 @@ const HomeScreen = () => {
       localStorage.setItem("restaurantId", restaurantId);
     }
   }, [restaurantId, restaurantDetails, table_number]);
+
+  useEffect(()=>{
+    if(restaurantStatus !== true){
+      setShowRestaurantDisabledModal(false)
+    }
+  },[restaurantStatus])
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -397,14 +407,60 @@ const HomeScreen = () => {
 
         <main className="page-content space-top mb-5 pb-3">
           <div className="container overflow-hidden pt-0">
+            {showRestaurantDisabledModal && (
+              <div
+                className="modal fade show d-block"
+                style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+              >
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <div className="col-6 text-center">
+                        <div className="modal-title font_size_16 fw-medium text-nowrap ">
+                          This restaurant is disabled
+                        </div>
+                      </div>
+                      {/* <div className="col-6 text-end">
+                          <div className="d-flex justify-content-end">
+                            <span
+                              className="m-2 font_size_16"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <i className="ri-close-line text-dark"></i>
+                            </span>
+                          </div>
+                        </div> */}
+                    </div>
+                    <div className="modal-body">
+                      <p className="text-center">
+                        This restaurant is currently disabled. <br /> 
+                        Please try again
+                        later or contact support.
+                      </p>
+                      {/* <div className="d-flex justify-content-center">
+                        <button
+                          className="btn px-4 font_size_14 btn-outline-danger rounded-pill"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <OfferBanner />
             <OrdersPlacedOngoing />
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
             </div>
-            <div className="divider border-success inner-divider transparent mb-5" ><span className="bg-body">End</span></div>
+            <div className="divider border-success inner-divider transparent mb-5">
+              <span className="bg-body">End</span>
             </div>
+          </div>
         </main>
 
         <Bottom />
