@@ -107,7 +107,7 @@ export const RestaurantIdProvider = ({ children }) => {
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
           
-          // navigate("/user_app/Index");
+          navigate("/user_app/Index");
 
           localStorage.setItem("restaurantStatus", false);
         } else {
