@@ -104,13 +104,13 @@ const Sidebar = () => {
                       <i className="fa fa-envelope" />
                       Email
                       <a href="mailto:example@example.com">
-                      shekrulabs@gmail.com
+                      info@menumitra.com
                       </a>
                     </li>
                     <li>
                       <i className="fa fa-phone" />
                       Phone
-                      <a href="tel:123456124">+91 7776827177</a>
+                      <a href="tel:123456124">+91 9172530151</a>
                       
                     </li>
                   </ul>
