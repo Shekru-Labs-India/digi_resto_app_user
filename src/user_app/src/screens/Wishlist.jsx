@@ -570,13 +570,13 @@ const Wishlist = () => {
                                         </div>
                                       </div>
                                       <div className="row mt-1">
-                                        <div className="col-5 text-start">
+                                        <div className="col-5 text-start d-flex align-items-center">
                                           <span className="ps-2 font_size_10 text-success">
                                             <i className="ri-restaurant-line mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
-                                        <div className="col-3 text-center">
+                                        <div className="col-3 d-flex aign-items-center">
                                           {menu.spicy_index && (
                                             <div className="">
                                               {Array.from({ length: 5 }).map(
@@ -596,7 +596,7 @@ const Wishlist = () => {
                                             </div>
                                           )}
                                         </div>
-                                        <div className="col-4 text-end ">
+                                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
                                           <i className="ri-star-half-line font_size_10 ratingStar "></i>
                                           <span className="font_size_10  fw-normal gray-text">
                                             {menu.rating || 0.1}
@@ -630,8 +630,10 @@ const Wishlist = () => {
 
                                         <div className="col-6 d-flex justify-content-end">
                                           {customerId &&
-                                          menu.restaurant_id ===
-                                            restaurantId ? (
+                                          menu.restaurant_id === restaurantId &&
+                                          !isCartFromDifferentRestaurant(
+                                            menu.restaurant_id
+                                          ) ? (
                                             <div
                                               className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
                                               style={{
@@ -646,23 +648,10 @@ const Wishlist = () => {
                                             >
                                               <i
                                                 className={`ri-shopping-cart-${
-                                                  isCartFromDifferentRestaurant(
-                                                    menu.restaurant_id
-                                                  )
-                                                    ? ""
-                                                    : isMenuItemInCart(
-                                                        menu.menu_id
-                                                      )
+                                                  isMenuItemInCart(menu.menu_id)
                                                     ? "fill text-black"
                                                     : "line"
                                                 } fs-6`}
-                                                title={
-                                                  isCartFromDifferentRestaurant(
-                                                    menu.restaurant_id
-                                                  )
-                                                    ? "Different Restaurant"
-                                                    : ""
-                                                }
                                               ></i>
                                             </div>
                                           ) : null}
@@ -677,6 +666,8 @@ const Wishlist = () => {
                         ))}
                       </div>
                     </div>
+                    <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
                   </div>
                 ) : null
               )}
@@ -690,7 +681,10 @@ const Wishlist = () => {
                 <div className="dz-cart-about">
                   <h5 className=" ">Nothing to show in favourites.</h5>
                   <p>Add some products to show here!</p>
-                  <Link to="/user_app/Menu" className="btn btn-outline-primary btn-sm">
+                  <Link
+                    to="/user_app/Menu"
+                    className="btn btn-outline-primary btn-sm"
+                  >
                     Browse Menus
                   </Link>
                 </div>
@@ -719,6 +713,7 @@ const Wishlist = () => {
             </div>
           </div>
         )}
+        
       </main>
 
       {showModal && (
@@ -812,7 +807,7 @@ const Wishlist = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-dark rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close
@@ -832,7 +827,9 @@ const Wishlist = () => {
           </div>
         </div>
       )}
+      
       {showModal && <div className="modal-backdrop fade show"></div>}
+      
       <Bottom />
     </div>
   );

@@ -14224,8 +14224,9 @@ hr.dotted {
       .divider.inner-divider.transparent {
         border-width: 1px 0 0 0; }
         .divider.inner-divider.transparent span {
-          background-color: var(--bg-white);
-          color: #000000; }
+          background-color: var(--bg-body);
+          color: #000000;
+         }
   
   .dropdown-toggle {
     gap: 5px; }
@@ -33452,8 +33453,9 @@ hr.dotted {
       .divider.inner-divider.transparent {
         border-width: 1px 0 0 0; }
         .divider.inner-divider.transparent span {
-          background-color: var(--bg-white);
-          color: #000000; }
+          background-color: var(--bg-body);
+          color: #000000; 
+        }
   
   .dropdown-toggle {
     gap: 5px; }

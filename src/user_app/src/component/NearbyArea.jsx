@@ -189,7 +189,7 @@ const NearbyArea = () => {
         loop: true,
         autoplay: {
           delay: 2500,
-          // delay: 25000,
+          // delay: 25000000,
           disableOnInteraction: false,
         },
       });
@@ -430,27 +430,12 @@ const NearbyArea = () => {
                       {menuItem.offer !== 0 && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
-                            
                             {menuItem.offer}% Off
                           </span>
                         </div>
                       )}
                     </div>
                     <div className="dz-content d-block">
-                      {/* <div className="category-text">
-                        <div className="row mt-1">
-                          <div className="col-8 text-success font_size_10">
-                            <i className="ri-restaurant-line pe-1"></i>
-                            {menuItem.category_name}
-                          </div>
-                          <div className="col-4 ps-0 text-end">
-                            <span className="font_size_10 fw-normal gray-text me-2">
-                              <i className="ri-star-half-line font_size_10  ratingStar me-1"></i>
-                              {menuItem.rating}
-                            </span>
-                          </div>
-                        </div>
-                      </div> */}
                       <div className="d-flex justify-content-between align-items-center mt-1">
                         <span className="font_size_14 fw-medium text-wrap">
                           {menuItem.name}
@@ -458,17 +443,17 @@ const NearbyArea = () => {
                       </div>
 
                       <div className="mt-2">
-                        <div className="row d-flex align-item-center">
-                          <div className="col-4">
+                        <div className="row d-flex align-items-center">
+                          <div className="col-4 d-flex align-items-center">
                             <div className="text-success font_size_10 d-flex align-items-center">
                               <i className="ri-restaurant-line pe-1"></i>
                               {menuItem.category_name}
                             </div>
                           </div>
-                          <div className="col-4">
-                              {renderSpiceIcons(menuItem.spicy_index)}
+                          <div className="col-4 d-flex aign-items-center justify-content-center">
+                            {renderSpiceIcons(menuItem.spicy_index)}
                           </div>
-                          <div className="col-4">
+                          <div className="col-4 d-flex aign-items-center justify-content-end">
                             <div className="text-end font_size_10 fw-normal gray-text me-1">
                               <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
                               {menuItem.rating}
@@ -487,7 +472,7 @@ const NearbyArea = () => {
                             </span>
                           )}
                         </div>
-                        <div className="d-flex justify-content-end col-6">
+                        <div className="col-6 d-flex align-items-center justify-content-end">
                           {customerId ? (
                             <div
                               onClick={(e) => {
@@ -568,7 +553,7 @@ const NearbyArea = () => {
                 </div>
 
                 <div className="col-6 text-end">
-                  <button 
+                  <button
                     className="btn p-0 fs-3 text-muted"
                     onClick={() => setShowModal(false)}
                   >
@@ -593,7 +578,7 @@ const NearbyArea = () => {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr className="my-4"/>
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -635,10 +620,10 @@ const NearbyArea = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="button"

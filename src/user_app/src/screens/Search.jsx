@@ -449,12 +449,12 @@ const Search = () => {
         <div className="container py-0">
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
-            <div className="d-flex align-items-center">
-              <i className="ri-store-2-line me-2"></i>
-              <span className="fw-medium font_size_14">
-                {restaurantName.toUpperCase() || "Restaurant Name"}
-              </span>
-            </div>
+              <div className="d-flex align-items-center">
+                <i className="ri-store-2-line me-2"></i>
+                <span className="fw-medium font_size_14">
+                  {restaurantName.toUpperCase() || "Restaurant Name"}
+                </span>
+              </div>
             </Link>
             <div className="d-flex align-items-center">
               <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
@@ -515,25 +515,49 @@ const Search = () => {
               >
                 <div className="card-body py-0">
                   <div className="row">
-                    <div className="col-3 px-0 position-relative">
+                    <div className="col-3 px-0">
                       <img
                         src={menu.image || images}
                         alt={menu.menu_name}
-                        className="img-fluid rounded-4 "
+                        className="rounded-4 img-fluid"
                         style={{
                           width: "100%",
                           height: "100%",
-                          objectFit: "cover",
                           aspectRatio: "1/1",
                         }}
                         onError={(e) => {
                           e.target.src = images;
+                          e.target.style.width = "100%";
+                          e.target.style.height = "100%";
+                          e.target.style.aspectRatio = "1/1";
                         }}
                       />
-                      {/* Veg/Non-veg indicator */}
+                      <div
+                        className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "76%",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menu.is_favourite
+                              ? "ri-heart-3-fill text-danger"
+                              : "ri-heart-3-line"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
+                          }}
+                        ></i>
+                      </div>
                       <div
                         className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          isVegMenu(menu?.menu_veg_nonveg)
+                          menu.menu_veg_nonveg.toLowerCase() === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -549,40 +573,13 @@ const Search = () => {
                       >
                         <i
                           className={`${
-                            isVegMenu(menu?.menu_veg_nonveg)
+                            menu.menu_veg_nonveg.toLowerCase() === "veg"
                               ? "ri-checkbox-blank-circle-fill text-success"
                               : "ri-triangle-fill text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
-
-                      {/* Heart icon */}
-                      <div
-                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "3px",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation(); // Prevent card click
-                          handleLikeClick(menu.menu_id);
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
-                          } fs-6`}
-                        ></i>
-                      </div>
-
-                      {/* Offer badge */}
-                      {menu.offer > 0 && (
+                      {menu.offer && menu.offer !== "0" && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
                             {menu.offer}% Off
@@ -590,96 +587,82 @@ const Search = () => {
                         </div>
                       )}
                     </div>
-
-                    <div className="col-8 pb-0 pe-0 ps-2">
+                    <div className="col-9 pt-1 p-0">
                       <div className="row">
-                        {/* Menu Name and Rating on First Line */}
-                        <div className="col-12 mt-1">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <div className="font_size_14 fw-medium">
-                              {menu.menu_name}
-                            </div>
+                        <div className="col-10">
+                          <div className="ps-2 font_size_14 fw-medium">
+                            {menu.menu_name}
                           </div>
                         </div>
-
-                        {/* Category and Spicy Index on Second Line */}
-                        <div className="row pe-0">
-                          <div className="col-5 mt-1">
-                            <span className="text-success font_size_10">
-                              <i className="ri-restaurant-line mt-0 me-2"></i>
-                              {menu.category_name}
-                              {/* Spicy Index */}
-                            </span>
-                          </div>
-                          <div className="col-4 px-0 text-end">
-                            {menu.spicy_index && (
-                              <span className="ms-2 spicy-index">
-                                {Array.from({ length: 5 }).map((_, index) =>
-                                  index < menu.spicy_index ? (
-                                    <i
-                                      key={index}
-                                      className="ri-fire-fill text-danger font_size_12 firefill offer-code"
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      key={index}
-                                      className="ri-fire-line gray-text font_size_12"
-                                    ></i>
-                                  )
-                                )}
-                              </span>
-                            )}
-                          </div>
-                          <div className="col-3 text-end pe-0">
-                            {" "}
-                            <div className="text-end">
-                              <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                              <span className="font_size_10 fw-normal gray-text">
-                                {parseFloat(menu.rating).toFixed(1)}
-                              </span>
-                            </div>
-                          </div>
+                      </div>
+                      <div className="row mt-1">
+                        <div className="col-5 text-start d-flex align-items-center">
+                          <span className="ps-2 font_size_10 text-success">
+                            <i className="ri-restaurant-line mt-0 me-1"></i>
+                            {menu.category_name}
+                          </span>
                         </div>
+                        <div className="col-3 d-flex aign-items-center">
+                          {menu.spicy_index && (
+                            <div className="">
+                              {Array.from({ length: 5 }).map((_, index) =>
+                                index < menu.spicy_index ? (
+                                  <i
+                                    className="ri-fire-fill font_size_12 text-danger"
+                                    key={index}
+                                  ></i>
+                                ) : (
+                                  <i
+                                    className="ri-fire-line font_size_12 gray-text"
+                                    key={index}
+                                  ></i>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
+                          <i className="ri-star-half-line font_size_10 ratingStar "></i>
+                          <span className="font_size_10 fw-normal gray-text">
+                            {menu.rating || 0.1}
+                          </span>
+                        </div>
+                      </div>
 
-                        {/* Price and Cart Section */}
-                        <div className="row mt-2 pe-0">
-                          <div className="col-10 px-0">
-                            <span className="mb-0 mt-1 text-start fw-medium">
-                              {menu.offer ? (
-                                <>
-                                  <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                    ₹
-                                    {Math.floor(
-                                      menu.price * (1 - menu.offer / 100)
-                                    )}
-                                  </span>
-                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                    ₹{menu.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
+                      <div className="row mt-1">
+                        <div className="col-6">
+                          <p className="ms-2 mb-0 fw-medium">
+                            {menu.offer ? (
+                              <>
+                                <span className="font_size_14 fw-semibold text-info">
+                                  ₹
+                                  {Math.floor(
+                                    menu.price * (1 - menu.offer / 100)
+                                  )}
+                                </span>
+                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                   ₹{menu.price}
                                 </span>
-                              )}
-                            </span>
-                          </div>
-                          <div className="col-2 px-0 d-flex justify-content-end">
+                              </>
+                            ) : (
+                              <span className="font_size_14 fw-semibold text-info">
+                                ₹{menu.price}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="col-6 d-flex justify-content-end">
+                          {customerId && (
                             <div
-                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
                               style={{
-                                border: "1px solid gray",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
                                 width: "25px",
                                 height: "25px",
-                                cursor: "pointer",
                               }}
                               onClick={(e) => {
                                 e.preventDefault();
-                                e.stopPropagation(); // Prevent card click
+                                e.stopPropagation();
                                 handleAddToCartClick(menu);
                               }}
                             >
@@ -691,15 +674,18 @@ const Search = () => {
                                 } fs-6`}
                               ></i>
                             </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <div className="divider border-success inner-divider transparent mt-5" ><span className="bg-body">End</span></div>
+
             </div>
           ))}
+          
         </div>
       </main>
 
@@ -756,7 +742,7 @@ const Search = () => {
                     placeholder="Add any special instructions here..."
                   />
                 </div>
-                <hr className="my-4"/>
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -800,7 +786,7 @@ const Search = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-dark rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

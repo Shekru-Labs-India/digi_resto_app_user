@@ -496,7 +496,6 @@ export const OrderCard = ({
     const restaurantName = userData?.restaurantName;
     const customerName = userData?.name;
     
-    
 
     const orderId = order.order_id;
 
@@ -571,7 +570,11 @@ export const OrderCard = ({
               </span>
             </div>
             <div className="col-8 text-end">
-              <span className="gray-text font_size_12">{order.time}</span>
+              <span className="gray-text font_size_12">
+                {order.time?.split(":").slice(0, 2).join(":") +
+                  " " +
+                  order.time?.slice(-2)}
+              </span>
             </div>
           </div>
           <div className="row">
@@ -734,14 +737,18 @@ export const OrderCard = ({
                     Are you sure you want to complete this order?
                   </p>
                   <div className="d-flex justify-content-center">
-                    <button className="btn btn-info" onClick={() => {
-                      setPaymentMethod("UPI");
-                      handleUpiPayment();
-                      
-                    
-                    }}>
+                    <button
+                      className="btn btn-info"
+                      onClick={() => {
+                        setPaymentMethod("UPI");
+                        handleUpiPayment();
+                      }}
+                    >
                       Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <span className="fs-4 mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+                      via
                       <img
                         className="text-white ms-1"
                         src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
@@ -853,7 +860,7 @@ export const OrderCard = ({
                       placeholder="Enter your reason here..."
                     ></textarea>
                   </div>
-                </div> 
+                </div>
                 <div className="modal-body">
                   <span className="text-danger">Reason for cancellation:</span>
                   <div className="form-check mt-2">
@@ -868,9 +875,7 @@ export const OrderCard = ({
                     <label className="form-check-label" htmlFor="delay">
                       <span className="fw-semibold">Delivery Delays:</span>
 
-                      <div className="">
-                        Waiting too long, I lost patience.
-                      </div>
+                      <div className="">Waiting too long, I lost patience.</div>
                     </label>
                   </div>
                   <div className="form-check mt-3">
@@ -931,7 +936,9 @@ export const OrderCard = ({
                       onChange={(e) => setCancelReason(e.target.value)}
                     />
                     <label className="form-check-label" htmlFor="quality">
-                      <span className="fw-semibold">Poor Reviews/Quality Doubts:</span>
+                      <span className="fw-semibold">
+                        Poor Reviews/Quality Doubts:
+                      </span>
                       <div className="">
                         Doubts about quality, I canceled quickly.
                       </div>
@@ -943,7 +950,7 @@ export const OrderCard = ({
                   <div className="col-4">
                     <button
                       type="button"
-                      className="btn btn-outline-dark rounded-pill font_size_14"
+                      className="border border-outline-dark rounded-pill font_size_14"
                       onClick={() => setShowCancelModal(false)}
                     >
                       Close
@@ -1083,15 +1090,15 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   <span className="icon-circle">
                     <i
                       className={`ri-arrow-down-s-line arrow-icon ${
-                        checkedItems[`${date}-${type}`]
-                          ? "rotated"
-                          : "rotated-1"
+                        checkedItems[`${date}-${type}`] ? "rotated" : ""
                       }`}
                     ></i>
                   </span>
                 </span>
               </label>
-              <div className="tab-content">
+              <div className="tab-content" style={{ 
+                display: checkedItems[`${date}-${type}`] ? 'block' : 'none' 
+              }}>
                 <>
                   {activeOrders.map((order) => (
                     <div
@@ -1159,7 +1166,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         {activeTab === "completed" && (
                           <div className="container py-0">
                             <div className="row">
-                              <div className="col-10 ps-0">
+                              <div className="col-9 ps-0">
                                 <div className="text-start text-nowrap">
                                   <span className="text-success">
                                     <i className="ri-checkbox-circle-line me-1"></i>
@@ -1167,7 +1174,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="col-2 pe-0 font_size_14 text-end">
+                              <div className="col-3 pe-0 font_size_14 text-end">
                                 {order.payment_method && (
                                   <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
                                     {order.payment_method}
@@ -1219,6 +1226,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
               </div>
             )
           : renderOrders()}
+                        <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
       </div>
       <Bottom />
     </>
@@ -1279,8 +1288,8 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   if (isExpired || timeLeft === 0) return null;
   return (
     <div className="text-muted font_size_14 text-center mb-2">
-      You can cancel the order within{" "}
-      <span className="fw-semibold">{timeLeft}</span> seconds
+      You can cancel this order within{" "}
+      <span className="fw-semibold">{timeLeft}s</span> 
     </div>
   );
 };
