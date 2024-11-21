@@ -631,7 +631,9 @@ const Wishlist = () => {
                                         <div className="col-6 d-flex justify-content-end">
                                           {customerId &&
                                           menu.restaurant_id === restaurantId &&
-                                          !isCartFromDifferentRestaurant(menu.restaurant_id) ? (
+                                          !isCartFromDifferentRestaurant(
+                                            menu.restaurant_id
+                                          ) ? (
                                             <div
                                               className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
                                               style={{
@@ -677,7 +679,10 @@ const Wishlist = () => {
                 <div className="dz-cart-about">
                   <h5 className=" ">Nothing to show in favourites.</h5>
                   <p>Add some products to show here!</p>
-                  <Link to="/user_app/Menu" className="btn btn-outline-primary btn-sm">
+                  <Link
+                    to="/user_app/Menu"
+                    className="btn btn-outline-primary btn-sm"
+                  >
                     Browse Menus
                   </Link>
                 </div>
@@ -799,7 +804,7 @@ const Wishlist = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-dark rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

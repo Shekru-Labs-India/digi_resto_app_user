@@ -436,7 +436,6 @@ const NearbyArea = () => {
                       )}
                     </div>
                     <div className="dz-content d-block">
-                 
                       <div className="d-flex justify-content-between align-items-center mt-1">
                         <span className="font_size_14 fw-medium text-wrap">
                           {menuItem.name}
@@ -621,10 +620,10 @@ const NearbyArea = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="button"

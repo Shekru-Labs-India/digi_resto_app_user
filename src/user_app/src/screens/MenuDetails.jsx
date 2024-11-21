@@ -652,7 +652,6 @@ const MenuDetails = () => {
                     {productDetails?.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-              
                           {productDetails.offer}% Off
                         </span>
                       </div>
@@ -723,7 +722,6 @@ const MenuDetails = () => {
                     {productDetails?.offer !== 0 && (
                       <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                         <span className="font_size_10 text-white">
-                   
                           {productDetails.offer}% Off
                         </span>
                       </div>
@@ -888,7 +886,10 @@ const MenuDetails = () => {
                       </span>
                       <div className="d-flex align-items-baseline">
                         <div className="font_size_14 fw-semibold text-info">
-                          ₹{(productDetails.discountedPrice * quantity).toFixed(0)}
+                          ₹
+                          {(productDetails.discountedPrice * quantity).toFixed(
+                            0
+                          )}
                         </div>
                         {productDetails.oldPrice && (
                           <span className="text-decoration-line-through ms-2 font_size_12 fw-normal gray-text">
@@ -1044,10 +1045,10 @@ const MenuDetails = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary rounded-pill font_size_14"
+                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="button"
