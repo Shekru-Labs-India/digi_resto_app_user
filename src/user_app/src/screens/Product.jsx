@@ -473,7 +473,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                       color: selectedCategory === null ? "#ffffff" : "",
                     }}
                   >
-                    All{" "}
+                    All{" "} 
                     <span className="gray-text font_size_10">
                       ({menuList.length})
                     </span>
