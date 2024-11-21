@@ -165,6 +165,8 @@ const Category = () => {
                   </div>
                 ))}
               </div>
+              <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
             </div>
           ) : (
             <div className="container text-center mt-5">
@@ -173,10 +175,13 @@ const Category = () => {
                 <p>Please log in or scan a QR code to view categories.</p>
               )}
               {window.showToast("warning", "Please log in or scan a QR code to view categories")}
+              
             </div>
           )}
+
         </main>
       )}
+      
       <Bottom />
     </div>
   );

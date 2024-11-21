@@ -666,6 +666,8 @@ const Wishlist = () => {
                         ))}
                       </div>
                     </div>
+                    <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
                   </div>
                 ) : null
               )}
@@ -711,6 +713,7 @@ const Wishlist = () => {
             </div>
           </div>
         )}
+        
       </main>
 
       {showModal && (
@@ -824,7 +827,9 @@ const Wishlist = () => {
           </div>
         </div>
       )}
+      
       {showModal && <div className="modal-backdrop fade show"></div>}
+      
       <Bottom />
     </div>
   );

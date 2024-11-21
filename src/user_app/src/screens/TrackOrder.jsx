@@ -1227,6 +1227,8 @@ const TrackOrder = () => {
                 )}
               </div>
             )}
+                          <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
           </div>
         )}
 

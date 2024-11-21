@@ -744,7 +744,10 @@ if (isMenuItemInCart(menu.menu_id)) {
               </div>
             ))}
           </div>
+          <div className="divider border-success inner-divider transparent mb-5" ><span className="bg-body">End</span></div>
+
         </div>
+
       </main>
 
       {showModal && (

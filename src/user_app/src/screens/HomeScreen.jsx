@@ -403,7 +403,8 @@ const HomeScreen = () => {
             <div className="mb-3">
               <NearbyArea />
             </div>
-          </div>
+            <div className="divider border-success inner-divider transparent mb-5" ><span className="bg-body">End</span></div>
+            </div>
         </main>
 
         <Bottom />

@@ -681,8 +681,11 @@ const Search = () => {
                   </div>
                 </div>
               </div>
+              <div className="divider border-success inner-divider transparent mt-5" ><span className="bg-body">End</span></div>
+
             </div>
           ))}
+          
         </div>
       </main>
 

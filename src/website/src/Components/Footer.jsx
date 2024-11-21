@@ -32,10 +32,10 @@ const Footer = () => {
         <li><i className="fa fa-map-marker"></i> 123, Western Road, Melbourne Australia</li>
         <li><i className="fa fa-envelope"></i>
           <a href="../../cdn-cgi/l/email-protection#650d0009090a25170c08104b060a08">
-            <span className="__cf_email__" data-cfemail="0f676a6363604f7d66627a216c6062">[email&#160;protected]</span>
+            <span className="__cf_email__" data-cfemail="0f676a6363604f7d66627a216c6062">info@menumitra.com</span>
           </a>
         </li>
-        <li><i className="fa fa-phone"></i> <a href="tel:123456123">+123(456)123</a></li>
+        <li><i className="fa fa-phone"></i> <a href="tel:123456123">+91 9172530151</a></li>
       </ul>
       <ul className="social-icon d-flex justify-content-center">
         <li><a href="https://www.facebook.com/" target="_blank" rel="noreferrer"><i className="fa-brands fa-facebook-f"></i></a></li>

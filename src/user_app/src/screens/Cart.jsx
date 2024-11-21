@@ -668,7 +668,10 @@ const Cart = () => {
           )}
           <div className="container py-0">
             <NearbyArea />
+            <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+
           </div>
+
         </main>
       )}
 
