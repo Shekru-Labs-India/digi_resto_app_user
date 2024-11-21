@@ -87,7 +87,7 @@ const HomeBody = () => {
           <div className="single-box rounded-4">
             <div className="box-icon">
               <i>
-            <i className="fa-solid fa-wifi" width="40" height="40" />
+            <i className="fa-solid fa-wifi " width="40" height="40" />
             </i>
             </div>
             <h3>Contactless Order</h3>
