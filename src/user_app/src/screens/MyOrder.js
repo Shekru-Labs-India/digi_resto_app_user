@@ -316,7 +316,7 @@ const MyOrder = () => {
             </div>
           ) : (
             <>
-              {customerId ? (
+              {customerId && customerId ? (
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
@@ -1189,7 +1189,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 checked={checkedItems[`${date}-${type}`] || false}
                 onChange={() => toggleChecked(`${date}-${type}`)}
               />
-              <label className="tab-label" htmlFor={`chck${date}-${type}`}>
+              <label className="tab-label mb-2" htmlFor={`chck${date}-${type}`}>
                 <span>{date}</span>
                 <span className="d-flex align-items-center">
                   <span className="gray-text pe-2 small-number">
