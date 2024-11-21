@@ -941,7 +941,7 @@ export const OrderCard = ({
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="ri-close-line text-muted"></i>
+                      <i class="ri-close-line text-dark"></i>
                     </button>
                   </div>
                   <button
@@ -1066,7 +1066,7 @@ export const OrderCard = ({
                     <span className="col-6 d-flex justify-content-end">
                       <button
                         type="button"
-                        className="btn btn-danger rounded-pill text-nowrap text-dark px-3"
+                        className="btn btn-danger rounded-pill text-nowrap text-white px-3"
                         onClick={handleConfirmCancel}
                       >
                         <i class="ri-close-circle-line text-white me-2 fs-5"></i>
@@ -1177,15 +1177,56 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     // Special handling for cancelled orders which might be nested differently
     let ordersToRender = orders;
     if (type === "cancelled" && orders.cancle) {
-      // If cancelled orders are nested under 'cancle' key
       ordersToRender = orders.cancle;
     }
 
     return (
       <>
+        {/* Add collapse/expand all button */}
+          <div className="d-flex justify-content-end mb-2 pe-0">
+        <div className="tab-label mb-2">
+            <button
+              className="btn btn-link text-decoration-none pe-0 pb-0"
+              onClick={() => {
+                const allDates = Object.keys(ordersToRender);
+                const newCheckedItems = {};
+
+                // If any item is collapsed, expand all. Otherwise, collapse all
+                const shouldExpand = allDates.some(
+                  (date) => !checkedItems[`${date}-${type}`]
+                );
+
+                allDates.forEach((date) => {
+                  newCheckedItems[`${date}-${type}`] = shouldExpand;
+                });
+
+                setCheckedItems(newCheckedItems);
+              }}
+            >
+              <span className="d-flex align-items-center">
+                <span className="gray-text pe-2 font_size_10">
+                  {Object.values(checkedItems).every(Boolean)
+                    ? "Collapse All"
+                    : "Expand All"}
+                </span>
+                <span className="icon-circle">
+                  <i
+                    className={`ri-arrow-down-s-line arrow-icon ${
+                      Object.values(checkedItems).every(Boolean)
+                        ? "rotated"
+                        : ""
+                    }`}
+                  ></i>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Existing order rendering code */}
         {Object.entries(ordersToRender).map(([date, dateOrders]) => {
           // Ensure dateOrders is always an array
-          const activeOrders = Array.isArray(dateOrders) 
+          const activeOrders = Array.isArray(dateOrders)
             ? dateOrders
             : Object.values(dateOrders);
 
@@ -1201,8 +1242,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 checked={checkedItems[dateTypeKey] || false}
                 onChange={() => toggleChecked(dateTypeKey)}
               />
-              <label 
-                className="tab-label mb-2" 
+              <label
+                className="tab-label mb-2"
                 htmlFor={`chck${dateTypeKey}`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -1223,18 +1264,18 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   </span>
                 </span>
               </label>
-              <div 
-                className="tab-content" 
-                style={{ 
+              <div
+                className="tab-content"
+                style={{
                   // display: checkedItems[dateTypeKey] ? 'block' : 'none',
                   // maxHeight: checkedItems[dateTypeKey] ? '1000px' : '0',
-                  overflow: 'hidden',
-                  transition: 'max-height 0.3s ease-out'
+                  overflow: "hidden",
+                  transition: "max-height 0.3s ease-out",
                 }}
               >
                 {activeOrders.map((order) => (
                   <div
-                    className="custom-card my-2 rounded-4 shadow-sm pb-3"
+                    className="custom-card my-2 rounded-4 shadow-sm"
                     key={order.order_number}
                   >
                     <div
@@ -1287,8 +1328,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             ₹{order.grand_total}
                           </span>
                           <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                            ₹
-                            {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                            ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
                           </span>
                         </div>
                       </div>
