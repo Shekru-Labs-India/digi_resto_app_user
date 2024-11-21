@@ -11,7 +11,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
 import { getUserData } from "../utils/userUtils";
-import config from "../component/config"
+import config from "../component/config";
 const Cart = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const { cartItems, updateCart, removeFromCart } = useCart();
@@ -22,7 +22,7 @@ const Cart = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
-    const [menuItems, setMenuItems] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
 
   // Helper function to get stored restaurant ID
   const getStoredRestaurantId = useCallback(() => {
@@ -42,7 +42,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -60,14 +60,14 @@ const Cart = () => {
         if (data.cart_id) {
           localStorage.setItem("cartId", data.cart_id);
         }
-        
+
         if (data.order_items?.length > 0) {
           setCartDetails({
             ...data,
-            order_items: data.order_items.map(item => ({
+            order_items: data.order_items.map((item) => ({
               ...item,
               oldPrice: Math.floor(item.price * 1.1),
-            }))
+            })),
           });
         } else {
           setCartDetails({ order_items: [] });
@@ -88,7 +88,7 @@ const Cart = () => {
     const initializeCart = async () => {
       const { customerId, customerType } = getUserData();
       const currentRestaurantId = getStoredRestaurantId();
-      
+
       if (customerId && currentRestaurantId) {
         setIsLoggedIn(true);
         setCustomerId(customerId);
@@ -103,7 +103,7 @@ const Cart = () => {
         setIsLoading(false);
       }
     };
-  
+
     initializeCart();
   }, [fetchCartDetails, getStoredRestaurantId]);
 
@@ -115,8 +115,8 @@ const Cart = () => {
       }
     };
 
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
   }, [fetchCartDetails, restaurantId]);
 
   // Window focus handler with restaurant ID check
@@ -126,8 +126,8 @@ const Cart = () => {
         fetchCartDetails();
       };
 
-      window.addEventListener('focus', handleFocus);
-      return () => window.removeEventListener('focus', handleFocus);
+      window.addEventListener("focus", handleFocus);
+      return () => window.removeEventListener("focus", handleFocus);
     }
   }, [userData, fetchCartDetails, restaurantId]);
 
@@ -158,34 +158,39 @@ const Cart = () => {
     //   cartId: getCartId(),
     // };
     navigate("/user_app/Checkout");
-   // navigate("/user_app/Checkout", { state: { checkoutData } });
+    // navigate("/user_app/Checkout", { state: { checkoutData } });
   };
 
   const handleRemoveFromCart = async (item) => {
     const currentCustomerId = getCustomerId();
     try {
       await removeFromCart(item.menu_id, currentCustomerId, restaurantId);
-      
+
       // Update localStorage and dispatch events
       const updatedCartItems = cartDetails.order_items.filter(
-        cartItem => cartItem.menu_id !== item.menu_id
+        (cartItem) => cartItem.menu_id !== item.menu_id
       );
-      
+
       // Update localStorage
       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      
+
       // Dispatch removal event
-      window.dispatchEvent(new CustomEvent("cartItemRemoved", {
-        detail: { menuId: item.menu_id }
-      }));
-      
+      window.dispatchEvent(
+        new CustomEvent("cartItemRemoved", {
+          detail: { menuId: item.menu_id },
+        })
+      );
+
       // Update cart details
-      setCartDetails(prev => ({
+      setCartDetails((prev) => ({
         ...prev,
-        order_items: updatedCartItems
+        order_items: updatedCartItems,
       }));
 
-      window.showToast("success", `${item.menu_name} has been removed from your cart.`);
+      window.showToast(
+        "success",
+        `${item.menu_name} has been removed from your cart.`
+      );
       fetchCartDetails();
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -199,7 +204,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/update_cart_menu_quantity`,
+        `${config.apiDomain}/user_api/update_cart_menu_quantity`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -222,7 +227,10 @@ const Cart = () => {
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
-      window.showToast("error", "An error occurred while updating item quantity.");
+      window.showToast(
+        "error",
+        "An error occurred while updating item quantity."
+      );
     }
   };
 
@@ -230,7 +238,10 @@ const Cart = () => {
     if (item.quantity < 20) {
       updateCartQuantity(item.menu_id, item.quantity + 1);
     } else {
-      window.showToast("warn", "You cannot add more than 20 items of this product.");
+      window.showToast(
+        "warn",
+        "You cannot add more than 20 items of this product."
+      );
     }
   };
 
@@ -242,13 +253,11 @@ const Cart = () => {
 
   const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favorites functionality");
-    
   };
 
   const handleLikeClick = async (menuId) => {
-   
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -259,7 +268,9 @@ const Cart = () => {
       return;
     }
 
-    const menuItem = cartDetails.order_items.find((item) => item.menu_id === menuId);
+    const menuItem = cartDetails.order_items.find(
+      (item) => item.menu_id === menuId
+    );
     if (!menuItem) {
       console.error("Menu item not found:", menuId);
       return;
@@ -269,7 +280,9 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -277,7 +290,7 @@ const Cart = () => {
             restaurant_id: currentRestaurantId,
             menu_id: menuId,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type
+            customer_type: userData.customer_type,
           }),
         }
       );
@@ -287,8 +300,10 @@ const Cart = () => {
         setCartDetails((prevCart) => ({
           ...prevCart,
           order_items: prevCart.order_items.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
-          )
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
+          ),
         }));
 
         window.dispatchEvent(
@@ -302,11 +317,14 @@ const Cart = () => {
           isFavorite ? "Removed from favorites" : "Added to favorites"
         );
       } else {
-        throw new Error(data.msg || 'Failed to update favorite status');
+        throw new Error(data.msg || "Failed to update favorite status");
       }
     } catch (error) {
       console.error("Error updating favorite status:", error);
-      window.showToast("error", error.message || "Failed to update favorite status");
+      window.showToast(
+        "error",
+        error.message || "Failed to update favorite status"
+      );
     }
   };
 
@@ -330,7 +348,6 @@ const Cart = () => {
           <div className="dz-cart-about">
             <h5>Your Cart is Empty</h5>
             <p>Add items to your cart from the product details page.</p>
-       
 
             <div class="d-flex align-items-center justify-content-center mt-2">
               <Link
@@ -415,8 +432,7 @@ const Cart = () => {
                       {item.offer && item.offer !== 0 ? (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
-                            {item.offer}
-                            % Off
+                            {item.offer}% Off
                           </span>
                         </div>
                       ) : null}
@@ -500,9 +516,8 @@ const Cart = () => {
                       </div>
                       <div className="row"></div>
                       <div className="row pe-2">
-                        <div className="col-8 mx-0 my-auto px-0">
+                        <div className="col-7 mx-0 my-auto px-0">
                           <p className="mb-0 fw-medium">
-                            
                             <span className="ms-3 font_size_14 fw-semibold text-info">
                               ₹
                               {item.offer
@@ -519,10 +534,11 @@ const Cart = () => {
                           </p>
                         </div>
 
-                        <div className="col-4 ps-2">
+                        {/* OLD STEPPER CODE */}
+                        {/* <div className="col-4 ps-2">
                           <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
                             <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center "
                               style={{
                                 height: "25px",
                                 width: "25px",
@@ -557,6 +573,44 @@ const Cart = () => {
                                   incrementQuantity(item);
                                 }}
                               ></i>
+                            </div>
+                          </div>
+                        </div> */}
+
+                        {/* NEW STEPPER CODE */}
+
+                        <div className="col-5 ps-2 my-1">
+                          <div className="dz-stepper style-3 d-flex justify-content-end">
+                            <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
+                              <span className="input-group-btn input-group-prepend">
+                                <button
+                                  className="btn btn-primary bootstrap-touchspin-down"
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    decrementQuantity(item);
+                                  }}
+                                >
+                                  <i className="ri-subtract-line fs-6"></i>
+                                </button>
+                              </span>
+                              <span className="text-dark font_size_14 px-2">
+                                {item.quantity}
+                              </span>
+                              <span className="input-group-btn input-group-append">
+                                <button
+                                  className="btn btn-primary bootstrap-touchspin-up"
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    incrementQuantity(item);
+                                  }}
+                                >
+                                  <i className="ri-add-line fs-6"></i>
+                                </button>
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -669,10 +723,10 @@ const Cart = () => {
           )}
           <div className="container py-0">
             <NearbyArea />
-            <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
-
+            <div className="divider border-success inner-divider transparent mb-0">
+              <span className="bg-body">End</span>
+            </div>
           </div>
-
         </main>
       )}
 
