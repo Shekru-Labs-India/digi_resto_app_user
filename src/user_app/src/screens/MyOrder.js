@@ -435,6 +435,102 @@ export const OrderCard = ({
     }
   };
 
+  const handleCardPayment = async() =>{
+     try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/complete_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: order.order_id,
+            restaurant_id: order.restaurant_id,
+            payment_method: "Card",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        window.showToast("success", data.msg);
+
+        // Update the state to remove the order from "ongoing"
+        setOngoingOrPlacedOrders((prevOrders) => {
+          const updatedOngoing = prevOrders.ongoing.filter(
+            (o) => o.order_id !== order.order_id
+          );
+
+          return {
+            placed: prevOrders.placed,
+            ongoing: updatedOngoing,
+          };
+        });
+
+        setShowCompleteModal(false); // Close the modal
+      } else {
+        window.showToast("error", data.msg || "Failed to complete the order.");
+      }
+    } catch (error) {
+      console.error("Error completing order:", error);
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  }
+
+  const handleCashPayment = async() =>{
+     try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/complete_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: order.order_id,
+            restaurant_id: order.restaurant_id,
+            payment_method: "Cash",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        window.showToast("success", data.msg);
+
+        // Update the state to remove the order from "ongoing"
+        setOngoingOrPlacedOrders((prevOrders) => {
+          const updatedOngoing = prevOrders.ongoing.filter(
+            (o) => o.order_id !== order.order_id
+          );
+
+          return {
+            placed: prevOrders.placed,
+            ongoing: updatedOngoing,
+          };
+        });
+
+        setShowCompleteModal(false); // Close the modal
+      } else {
+        window.showToast("error", data.msg || "Failed to complete the order.");
+      }
+    } catch (error) {
+      console.error("Error completing order:", error);
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  }
+
   const handleConfirmCancel = async () => {
     try {
       const response = await fetch(
@@ -484,11 +580,7 @@ export const OrderCard = ({
 
   const handleOrderClick = (orderNumber) => {
     navigate(`/user_app/TrackOrder/${orderNumber}`);
-
-    
   };
-
-
 
   const handleUpiPayment = async () => {
 
@@ -554,6 +646,9 @@ export const OrderCard = ({
         window.location.href = upiUrl;
     }, 1000);
   };
+
+  const isDarkMode = localStorage.getItem("isDarkMode");
+// console.log("isDarkMode ->" + isDarkMode);
 
   return (
     <div className="container pt-0">
@@ -686,7 +781,7 @@ export const OrderCard = ({
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line text-muted"></i>
+                        <i className="ri-close-line fs-3 text-dark"></i>
                       </span>
                     </div>
                   </div>
@@ -738,7 +833,7 @@ export const OrderCard = ({
                   </p>
                   <div className="d-flex justify-content-center">
                     <button
-                      className="btn btn-info"
+                      className="btn btn-info text-white"
                       onClick={() => {
                         setPaymentMethod("UPI");
                         handleUpiPayment();
@@ -749,11 +844,19 @@ export const OrderCard = ({
                         ₹{order.grand_total}
                       </span>{" "}
                       via
-                      <img
-                        className="text-white ms-1"
-                        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                        width={45}
-                      />
+                      {isDarkMode === "true" ? (
+                        <img
+                          className="text-white ms-1"
+                          src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                          width={45}
+                        />
+                      ) : (
+                        <img
+                          className="text-white ms-1"
+                          src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                          width={45}
+                        />
+                      )}
                     </button>
                   </div>
                   {/* <hr className="my-4" /> */}
@@ -765,14 +868,15 @@ export const OrderCard = ({
                 <div className="d-flex justify-content-center pt-2 mb-4">
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-4 rounded-pill py-1 gray-text ${
+                    class={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
                       paymentMethod === "Card"
                         ? "bg-success text-white"
-                        : "border border-muted"
+                        : "border "
                     }`}
                     onClick={() => {
-                      setPaymentMethod("Card");
-                      handleCompleteOrder();
+                      // setPaymentMethod("Card");
+                      // handleCompleteOrder();
+                      handleCardPayment()
                     }}
                   >
                     <i class="ri-bank-card-line me-1"></i>
@@ -780,14 +884,15 @@ export const OrderCard = ({
                   </button>
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-2 rounded-pill py-1 gray-text ${
+                    class={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
                       paymentMethod === "Cash"
                         ? "bg-success text-white"
                         : "border border-muted"
                     }`}
                     onClick={() => {
-                      setPaymentMethod("Cash");
-                      handleCompleteOrder();
+                      // setPaymentMethod("Cash");
+                      // handleCompleteOrder();
+                      handleCashPayment()
                     }}
                   >
                     <i class="ri-wallet-3-fill me-1"></i>
