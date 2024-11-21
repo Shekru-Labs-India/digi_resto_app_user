@@ -61,8 +61,10 @@ const QRScanner = () => {
     }
   }, [showCamera]);
 
+  const isDarkMode = localStorage.getItem("isDarkMode");
+
   return (
-    <div className="" style={{ backgroundColor: "#182C25" }}>
+    <div>
       <div className="container-fluid  d-flex flex-column align-items-center vh-100 ">
         <Link to="/">
           {" "}
