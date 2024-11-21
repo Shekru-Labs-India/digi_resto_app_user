@@ -52,11 +52,11 @@ const HotelList = () => {
                             <span className="font_size_14 fw-medium m-0">
                               {hotel.restaurant_name.toUpperCase()}
                             </span>
-                            {hotel.is_open && hotel.is_open === true ? (
+                            {hotel.is_open && hotel.is_open === true ? null : (
                               <span class="badge bg-danger ms-2 font_size_10">
                                 Closed
                               </span>
-                            ) : null}
+                            )}
                           </div>
                         </div>
                         <div className="row mt-1">
