@@ -412,7 +412,7 @@ const Cart = () => {
                           } font_size_12`}
                         ></i>
                       </div>
-                      {item.offer !== 0 && (
+                      {item.offer && item.offer !== 0 && (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
                         
@@ -502,6 +502,7 @@ const Cart = () => {
                       <div className="row pe-2">
                         <div className="col-8 mx-0 my-auto px-0">
                           <p className="mb-0 fw-medium">
+                            
                             <span className="ms-3 font_size_14 fw-semibold text-info">
                               ₹
                               {item.offer
@@ -510,11 +511,11 @@ const Cart = () => {
                                   )
                                 : item.price}
                             </span>
-                            {item.offer && (
+                            {item.offer && item.offer !== 0 ? (
                               <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                 ₹{item.price}
                               </span>
-                            )}
+                            ) : null}
                           </p>
                         </div>
 

@@ -1287,7 +1287,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
 
   if (isExpired || timeLeft === 0) return null;
   return (
-    <div className="text-muted font_size_14 text-center mb-2">
+    <div className="text-dark font_size_14 text-center mb-2">
       You can cancel this order within{" "}
       <span className="fw-semibold">{timeLeft}s</span> 
     </div>
