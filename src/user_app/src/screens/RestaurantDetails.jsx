@@ -305,9 +305,11 @@ function RestaurantDetails() {
                       <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
                     </div>
                   </a>
+                  {menu.offer !== 0 && (
                   <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                    <span className="font_size_10 text-white">30% off</span>
+                    <span className="font_size_10 text-white">{menu.offer}% Off</span>
                   </div>
+                  )}
                   {menu.is_special && (
                     <i
                       className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"

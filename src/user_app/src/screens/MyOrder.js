@@ -849,7 +849,7 @@ export const OrderCard = ({
                   <div className="form-group">
                     <label htmlFor="cancelReason" className="form-label">
                       <span className="text-danger">*</span>
-                      Please provide a reason for cancellation
+                      Please provide a reason for cancellations
                     </label>
                     <textarea
                       id="cancelReason"

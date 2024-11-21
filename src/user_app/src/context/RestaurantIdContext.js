@@ -12,6 +12,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantName, setRestaurantName] = useState("");
   const [restaurantCode, setRestaurantCode] = useState("");
   const [tableNumber, setTableNumber] = useState("");
+  const [restaurantStatus, setRestaurantStatus] = useState(null)
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
@@ -62,14 +63,16 @@ export const RestaurantIdProvider = ({ children }) => {
 
         const data = await response.json();
         if (data.st === 1) {
-          const { restaurant_id, name } = data.restaurant_details;
+          const { restaurant_id, name, account_status } = data.restaurant_details;
           setRestaurantId(restaurant_id);
           setRestaurantName(name);
+          setRestaurantStatus(account_status)
 
           // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
+          localStorage.setItem("restaurantStatus", account_status)
 
           // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -105,6 +108,8 @@ export const RestaurantIdProvider = ({ children }) => {
           }
           
           navigate("/user_app/Index");
+
+          localStorage.setItem("restaurantStatus", false);
         } else {
           console.error("Failed to fetch restaurant details:", data.msg);
         }
