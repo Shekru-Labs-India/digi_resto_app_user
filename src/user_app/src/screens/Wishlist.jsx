@@ -565,7 +565,7 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i className="me-1 font_size_14 ri-close-line text-muted"></i>
+                                            <i className="me-1 font_size_14 ri-close-line text-dark"></i>
                                           </div>
                                         </div>
                                       </div>
@@ -740,11 +740,11 @@ const Wishlist = () => {
                 <div className="col-6 text-end">
                   <div className="d-flex justify-content-end">
                     <button
-                      className="btn p-0 fs-3 text-muted"
+                      className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-muted"></i>
+                      <i className="ri-close-line text-dark"></i>
                     </button>
                   </div>
                 </div>

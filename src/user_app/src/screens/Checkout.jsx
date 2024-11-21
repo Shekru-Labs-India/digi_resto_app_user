@@ -389,53 +389,62 @@ await fetchCartDetails();
 
         {showExistingOrderModal && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="p-2 pb-2 border-bottom">
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="mb-0 fs-5 fw-semibold text-muted text-start">
-                    Existing Order Found
-                  </span>
-                  <button
-                    className="btn p-0 fs-3 text-muted"
-                    onClick={() => setShowExistingOrderModal(false)}
-                  >
-                    <i className="ri-close-line text-muted"></i>
-                  </button>
+            <div
+              className="modal-dialog modal-dialog-centered"
+              role="document"
+              style={{ maxWidth: "350px", margin: "auto" }}
+            >
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <h5 className="modal-title font_size_16 fw-medium mb-0">
+                      Existing Order Found
+                    </h5>
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowExistingOrderModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="ri-close-line text-dark"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="py-3">
-                <p className="text-center mb-4 text-muted">
-                  You have an ongoing order (#{existingOrderDetails.orderNumber}
-                  ). Would you like to add to this order or create a new one?
-                </p>
+                <div className="modal-body py-2 px-3">
+                  <p className="text-center mb-4">
+                    You have an ongoing order (#
+                    {existingOrderDetails.orderNumber}). Would you like to add
+                    to this order or create a new one?
+                  </p>
 
-                <div className="d-flex flex-column gap-2">
-                  <button
-                    className="btn btn-danger rounded-pill w-100 py-2"
-                    onClick={() => handleOrderAction("cancle")}
-                  >
-                    Cancel Existing & Create New Order
-                  </button>
-                  <button
-                    className="btn btn-success rounded-pill w-100 py-2"
-                    onClick={() => handleOrderAction("completed")}
-                  >
-                    Complete Existing & Create New Order
-                  </button>
-                  <button
-                    className="btn btn-info rounded-pill w-100 py-2"
-                    onClick={handleAddToExistingOrder}
-                  >
-                    Add to Existing Order (#{existingOrderDetails.orderNumber}
-                    )
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary rounded-pill w-100 py-2"
-                    onClick={() => setShowExistingOrderModal(false)}
-                  >
-                    Close
-                  </button>
+                  <div className="d-flex flex-column gap-2">
+                    <button
+                      className="btn btn-danger rounded-pill font_size_14"
+                      onClick={() => handleOrderAction("cancle")}
+                    >
+                      Cancel Existing & Create New Order
+                    </button>
+                    <button
+                      className="btn btn-success rounded-pill font_size_14"
+                      onClick={() => handleOrderAction("completed")}
+                    >
+                      Complete Existing & Create New Order
+                    </button>
+                    <button
+                      className="btn btn-primary rounded-pill font_size_14"
+                      onClick={handleAddToExistingOrder}
+                    >
+                      Add to Existing Order (#{existingOrderDetails.orderNumber}
+                      )
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary rounded-pill font_size_14"
+                      onClick={() => setShowExistingOrderModal(false)}
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -444,214 +453,238 @@ await fetchCartDetails();
 
         {showPopup && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <span className="fs-6 fw-semibold">Success</span>
-                <button
-                  className="btn-close"
-                  onClick={() => setShowPopup(false)}
-                ></button>
-              </div>
-              <div className="circle">
-                <img src={OrderGif} alt="Order Success" className="popup-gif" />
-              </div>
-              <span className="text-dark my-2 d-block text-center">
-                Order placed successfully
-              </span>
-              <div className="fs-6 fw-semibold">#{newOrderNumber||existingOrderDetails.orderNumber}</div>
-              <p className="text-muted text-center mb-4">
-                You have successfully made payment and placed your order.
-              </p>
-              <button
-                className="btn btn-success rounded-pill text-white w-100"
-                onClick={closePopup}
+            <div className="container d-flex align-items-center justify-content-center">
+              <div
+                className="modal-dialog modal-dialog-centered"
+                role="document"
               >
-                View Order
-              </button>
+                <div className="modal-content">
+                  <h5 className="modal-title border-bottom py-2 text-center">
+                    Success
+                  </h5>
+                  <div className="modal-header py-0">
+                    <button
+                      className="btn-close"
+                      onClick={() => setShowPopup(false)}
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="d-flex justify-content-center bg-light rounded-circle w-25 h-25 mx-auto">
+                      <img
+                        src={OrderGif}
+                        alt="Order Success"
+                        className="popup-gif"
+                        height={100}
+                        width={100}
+                      />
+                    </div>
+                    <span className="text-dark my-2 d-block text-center">
+                      Order placed successfully
+                    </span>
+                    <div className="fs-6 fw-semibold text-center">
+                      #{newOrderNumber || existingOrderDetails.orderNumber}
+                    </div>
+                    <p className="text-dark text-center mb-4">
+                      You have successfully made payment and placed your order.
+                    </p>
+                    <button
+                      className="btn btn-success rounded-pill text-white w-100"
+                      onClick={closePopup}
+                    >
+                      View Order
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {showNewOrderModal && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="p-3 border-bottom">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">
-                    Create New Order
-                  </h5>
-                  <button
-                    className="btn p-0 fs-3 text-muted"
-                    onClick={() => setShowNewOrderModal(false)}
-                  >
-                    <i className="ri-close-line text-muted"></i>
-                  </button>
+            <div className="modal-dialog modal-dialog-centered" role="document">
+              <div className="container">
+                <div className="modal-content">
+                  <div className="p-3 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 className="mb-0 fw-semibold text-dark">
+                        Create New Order
+                      </h5>
+                      <button
+                        className="btn p-0 fs-3 text-dark"
+                        onClick={() => setShowNewOrderModal(false)}
+                      >
+                        <i className="ri-close-line text-dark"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3">
+                    <p className="text-center mb-4 text-dark">
+                      No ongoing order found. Would you like to create a new
+                      order?
+                    </p>
+
+                    <button
+                      className="btn btn-success rounded-pill w-100 py-2"
+                      onClick={handleCreateOrder}
+                    >
+                      Create Order
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="p-3">
-                <p className="text-center mb-4 text-muted">
-                  No ongoing order found. Would you like to create a new order?
-                </p>
-
-                <button
-                  className="btn btn-success rounded-pill w-100 py-2"
-                  onClick={handleCreateOrder}
-                >
-                  Create Order
-                </button>
               </div>
             </div>
           </div>
         )}
 
-<div className="m-3">
-      <div className="dz-flex-box">
-        <div className="dz-flex-box mt-2">
-          {cartItems.length > 0 ? (
-            cartItems.map((item, index) => (
-              <Link
-                key={index}
-                to={`/user_app/ProductDetails/${item.menu_id}`}
-                state={{ menu_cat_id: item.menu_cat_id }}
-              >
-                <div className="card rounded-4 my-1">
-                  <div className="card-body py-2 rounded-4 px-0">
-                    <div className="row">
-                      <div className="row">
-                        <div className="col-7 pe-0">
-                          <span className="mb-0 fw-medium ps-2 font_size_14">
-                            {item.menu_name}
-                          </span>
-                        </div>
-                        <div className="col-4 p-0 text-end">
-                          {item.offer ? (
-                            <>
-                              <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                ₹{item.discountedPrice}
+        <div className="m-3">
+          <div className="dz-flex-box">
+            <div className="dz-flex-box mt-2">
+              {cartItems.length > 0 ? (
+                cartItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={`/user_app/ProductDetails/${item.menu_id}`}
+                    state={{ menu_cat_id: item.menu_cat_id }}
+                  >
+                    <div className="card rounded-4 my-1">
+                      <div className="card-body py-2 rounded-4 px-0">
+                        <div className="row">
+                          <div className="row">
+                            <div className="col-7 pe-0">
+                              <span className="mb-0 fw-medium ps-2 font_size_14">
+                                {item.menu_name}
                               </span>
-                              <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                ₹{item.price}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                              ₹{item.price}
-                            </span>
-                          )}
-                        </div>
-                        <div className="col-1 text-end px-0">
-                          <span>x {item.quantity}</span>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-8">
-                          <div className="ps-2">
-                            <span className="text-success font_size_10">
-                              <i className="ri-restaurant-line me-2"></i>
-                              {item.menu_cat_name}
-                            </span>
+                            </div>
+                            <div className="col-4 p-0 text-end">
+                              {item.offer ? (
+                                <>
+                                  <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
+                                    ₹{item.discountedPrice}
+                                  </span>
+                                  <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                    ₹{item.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
+                                  ₹{item.price}
+                                </span>
+                              )}
+                            </div>
+                            <div className="col-1 text-end px-0">
+                              <span>x {item.quantity}</span>
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-8">
+                              <div className="ps-2">
+                                <span className="text-success font_size_10">
+                                  <i className="ri-restaurant-line me-2"></i>
+                                  {item.menu_cat_name}
+                                </span>
+                              </div>
+                            </div>
+                            {item.offer > 0 && (
+                              <div className="col-4 text-end px-0">
+                                <span className="ps-2 text-success font_size_10">
+                                  {item.offer}% Off
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        {item.offer > 0 && (
-                          <div className="col-4 text-end px-0">
-                            <span className="ps-2 text-success font_size_10">
-                              {item.offer}% Off
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
+                  </Link>
+                ))
+              ) : (
+                <div>No items in the cart.</div>
+              )}
+            </div>
+            <div className="card mx-auto rounded-4 mt-2">
+              <div className="row px-2 py-1">
+                <div className="col-12 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-1">
+                    <span className="ps-2 font_size_14 fw-semibold">Total</span>
+                    <span className="pe-2 font_size_14 fw-semibold">
+                      ₹{total.toFixed(2)}
+                    </span>
+                  </div>
+                  <hr className="me-0 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12 pt-0 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 font_size_14 gray-text">
+                      Service Charges{" "}
+                      <span className="gray-text small-number">
+                        ({serviceChargesPercent}%)
+                      </span>
+                    </span>
+                    <span className="pe-2 font_size_14 gray-text">
+                      ₹{serviceCharges.toFixed(2)}
+                    </span>
                   </div>
                 </div>
+                <div className="col-12 mb-0 py-1 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 font_size_14 gray-text">
+                      GST{" "}
+                      <span className="gray-text small-number">
+                        ({gstPercent}%)
+                      </span>
+                    </span>
+                    <span className="pe-2 font_size_14 gray-text">
+                      ₹{tax.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-0 pb-2">
+                    <span className="ps-2 font_size_14 gray-text">
+                      Discount{" "}
+                      <span className="gray-text small-number">
+                        ({discountPercent}%)
+                      </span>
+                    </span>
+                    <span className="pe-2 font_size_14 gray-text">
+                      -₹{discount.toFixed(2)}
+                    </span>
+                  </div>
+                  <hr className="me-0 p-0 m-0 text-primary" />
+                </div>
+                <div className="col-12 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                    <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                    <span className="pe-2 fs-6 fw-semibold">
+                      ₹{grandTotal.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <button
+                onClick={handlePlaceOrder}
+                className="btn btn-success rounded-pill text-white"
+              >
+                Place Order
+                <span className="small-number gray-text ps-1">
+                  ({cartItems.length} Items)
+                </span>
+              </button>
+            </div>
+            <div className="d-flex align-items-center justify-content-center mt-3">
+              <Link
+                to="/user_app/Menu"
+                className="btn btn-outline-primary rounded-pill px-3"
+              >
+                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
               </Link>
-            ))
-          ) : (
-            <div>No items in the cart.</div>
-          )}
-        </div>
-        <div className="card mx-auto rounded-4 mt-2">
-          <div className="row px-2 py-1">
-            <div className="col-12 px-2">
-              <div className="d-flex justify-content-between align-items-center py-1">
-                <span className="ps-2 font_size_14 fw-semibold">Total</span>
-                <span className="pe-2 font_size_14 fw-semibold">
-                  ₹{total.toFixed(2)}
-                </span>
-              </div>
-              <hr className="me-0 p-0 m-0 text-primary" />
-            </div>
-            <div className="col-12 pt-0 px-2">
-              <div className="d-flex justify-content-between align-items-center py-0">
-                <span className="ps-2 font_size_14 gray-text">
-                  Service Charges{" "}
-                  <span className="gray-text small-number">
-                    ({serviceChargesPercent}%)
-                  </span>
-                </span>
-                <span className="pe-2 font_size_14 gray-text">
-                  ₹{serviceCharges.toFixed(2)}
-                </span>
-              </div>
-            </div>
-            <div className="col-12 mb-0 py-1 px-2">
-              <div className="d-flex justify-content-between align-items-center py-0">
-                <span className="ps-2 font_size_14 gray-text">
-                  GST{" "}
-                  <span className="gray-text small-number">
-                    ({gstPercent}%)
-                  </span>
-                </span>
-                <span className="pe-2 font_size_14 gray-text">
-                  ₹{tax.toFixed(2)}
-                </span>
-              </div>
-            </div>
-            <div className="col-12 mb-0 pt-0 pb-1 px-2">
-              <div className="d-flex justify-content-between align-items-center py-0 pb-2">
-                <span className="ps-2 font_size_14 gray-text">
-                  Discount{" "}
-                  <span className="gray-text small-number">
-                    ({discountPercent}%)
-                  </span>
-                </span>
-                <span className="pe-2 font_size_14 gray-text">
-                  -₹{discount.toFixed(2)}
-                </span>
-              </div>
-              <hr className="me-0 p-0 m-0 text-primary" />
-            </div>
-            <div className="col-12 px-2">
-              <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
-                <span className="pe-2 fs-6 fw-semibold">
-                  ₹{grandTotal.toFixed(2)}
-                </span>
-              </div>
             </div>
           </div>
         </div>
-        <div className="text-center">
-          <button
-            onClick={handlePlaceOrder}
-            className="btn btn-success rounded-pill text-white"
-          >
-            Place Order
-            <span className="small-number gray-text ps-1">
-              ({cartItems.length} Items)
-            </span>
-          </button>
-        </div>
-        <div className="d-flex align-items-center justify-content-center mt-3">
-          <Link
-            to="/user_app/Menu"
-            className="btn btn-outline-primary rounded-pill px-3"
-          >
-            <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-          </Link>
-        </div>
-      </div>
-    </div>
 
         <div className="container py-0">
           <NearbyArea />

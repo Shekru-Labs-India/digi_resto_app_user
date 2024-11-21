@@ -554,10 +554,10 @@ const NearbyArea = () => {
 
                 <div className="col-6 text-end">
                   <button
-                    className="btn p-0 fs-3 text-muted"
+                    className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowModal(false)}
                   >
-                    <i className="ri-close-line text-muted"></i>
+                    <i className="ri-close-line text-dark"></i>
                   </button>
                 </div>
               </div>
