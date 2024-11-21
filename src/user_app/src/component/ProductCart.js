@@ -474,6 +474,13 @@ const ProductCard = ({ isVegOnly }) => {
       navigate("/user_app/Index")
     }, 3000)
   }
+  const isRestaurantOpen = localStorage.getItem("isRestaurantOpen")
+
+  if (isRestaurantOpen === "false") {
+    setTimeout(()=>{
+      navigate("/user_app/Index")
+    }, 3000)
+  }
 
   return (
     <div>
@@ -490,31 +497,36 @@ const ProductCard = ({ isVegOnly }) => {
                     This restaurant is disabled
                   </div>
                 </div>
-                {/* <div className="col-6 text-end">
-                          <div className="d-flex justify-content-end">
-                            <span
-                              className="m-2 font_size_16"
-                              data-bs-dismiss="modal"
-                              aria-label="Close"
-                            >
-                              <i className="ri-close-line text-dark"></i>
-                            </span>
-                          </div>
-                        </div> */}
               </div>
               <div className="modal-body">
                 <p className="text-center">
-                  This restaurant is currently disabled. <br />
+                  This restaurant is currently disabled.<br />
                   Please try again later or contact support.
                 </p>
-                {/* <div className="d-flex justify-content-center">
-                        <button
-                          className="btn px-4 font_size_14 btn-outline-danger rounded-pill"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                      </div> */}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {isRestaurantOpen === "false" && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="col-6 text-center">
+                  <div className="modal-title font_size_16 fw-medium text-nowrap ">
+                    This restaurant is closed
+                  </div>
+                </div>
+              </div>
+              <div className="modal-body">
+                <p className="text-center">
+                  This restaurant is currently closed.<br />
+                  Please try again later or come back tomorrow.
+                </p>
               </div>
             </div>
           </div>

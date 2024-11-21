@@ -17,6 +17,9 @@ const HotelList = () => {
             return { ...hotel, code };
           });
           setHotels(formattedHotels);
+
+          // localStorage.removeItem("isRestaurantOpen");
+          // localStorage.removeItem("restaurantStatus");
         } else {
         }
       } catch (error) {
