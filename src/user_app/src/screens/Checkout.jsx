@@ -459,7 +459,9 @@ await fetchCartDetails();
                 role="document"
               >
                 <div className="modal-content">
-                    <h5 className="modal-title border-bottom py-2 text-center">Success</h5>
+                  <h5 className="modal-title border-bottom py-2 text-center">
+                    Success
+                  </h5>
                   <div className="modal-header py-0">
                     <button
                       className="btn-close"
@@ -500,32 +502,37 @@ await fetchCartDetails();
 
         {showNewOrderModal && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="p-3 border-bottom">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0 fw-semibold text-muted">
-                    Create New Order
-                  </h5>
-                  <button
-                    className="btn p-0 fs-3 text-muted"
-                    onClick={() => setShowNewOrderModal(false)}
-                  >
-                    <i className="ri-close-line text-muted"></i>
-                  </button>
+            <div className="modal-dialog modal-dialog-centered" role="document">
+              <div className="container">
+                <div className="modal-content">
+                  <div className="p-3 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 className="mb-0 fw-semibold text-dark">
+                        Create New Order
+                      </h5>
+                      <button
+                        className="btn p-0 fs-3 text-dark"
+                        onClick={() => setShowNewOrderModal(false)}
+                      >
+                        <i className="ri-close-line text-dark"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3">
+                    <p className="text-center mb-4 text-dark">
+                      No ongoing order found. Would you like to create a new
+                      order?
+                    </p>
+
+                    <button
+                      className="btn btn-success rounded-pill w-100 py-2"
+                      onClick={handleCreateOrder}
+                    >
+                      Create Order
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="p-3">
-                <p className="text-center mb-4 text-muted">
-                  No ongoing order found. Would you like to create a new order?
-                </p>
-
-                <button
-                  className="btn btn-success rounded-pill w-100 py-2"
-                  onClick={handleCreateOrder}
-                >
-                  Create Order
-                </button>
               </div>
             </div>
           </div>
