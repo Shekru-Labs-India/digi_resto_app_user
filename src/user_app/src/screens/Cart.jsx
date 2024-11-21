@@ -412,14 +412,14 @@ const Cart = () => {
                           } font_size_12`}
                         ></i>
                       </div>
-                      {item.offer && item.offer !== 0 && (
+                      {item.offer && item.offer !== 0 ? (
                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                           <span className="font_size_10 text-white">
-                        
-                            {item.offer}% Off
+                            {item.offer}
+                            % Off
                           </span>
                         </div>
-                      )}
+                      ) : null}
                       <div
                         className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                         style={{
