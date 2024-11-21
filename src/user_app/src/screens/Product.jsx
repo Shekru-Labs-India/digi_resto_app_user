@@ -474,7 +474,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                     }}
                   >
                     All{" "}
-                    <span className="small-number gray-text">
+                    <span className="gray-text font_size_10">
                       ({menuList.length})
                     </span>
                   </div>
@@ -502,7 +502,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                     {category.menu_cat_id === "special"
                       ? category.category_name
                       : category.name || category.category_name}{" "}
-                    <span className="small-number gray-text">
+                    <span className="gray-text font_size_10">
                       ({category.menu_count})
                     </span>
                   </div>

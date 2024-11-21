@@ -577,7 +577,11 @@ const ProductCard = ({ isVegOnly }) => {
                   color: selectedCategoryId === null ? "#ffffff" : "",
                 }}
               >
-                All <span className="font_size_12">({totalMenuCount})</span>
+                All <span className="font_size_12">
+                  <span className="gray-text font_size_10">
+                  ({totalMenuCount})
+                  </span>
+                  </span>
               </div>
             </div>
 
@@ -601,8 +605,10 @@ const ProductCard = ({ isVegOnly }) => {
                   }}
                 >
                   {category.name}
-                  <span className="font_size_12 gray-text">
+                  <span className="font_size_12 gray-text">{" "}
+                    <span className="gray-text font_size_10">
                     ({category.menu_count})
+                    </span>
                   </span>
                 </div>
               </div>
