@@ -876,7 +876,7 @@ export const OrderCard = ({
                     onClick={() => {
                       // setPaymentMethod("Card");
                       // handleCompleteOrder();
-                      handleCardPayment()
+                      handleCardPayment();
                     }}
                   >
                     <i class="ri-bank-card-line me-1"></i>
@@ -892,7 +892,7 @@ export const OrderCard = ({
                     onClick={() => {
                       // setPaymentMethod("Cash");
                       // handleCompleteOrder();
-                      handleCashPayment()
+                      handleCashPayment();
                     }}
                   >
                     <i class="ri-wallet-3-fill me-1"></i>
@@ -971,7 +971,7 @@ export const OrderCard = ({
                   <div className="form-check mt-2">
                     <input
                       type="radio"
-                      className="form-check-input"
+                      className="form-check-input border border-light"
                       id="delay"
                       name="cancelReason"
                       value="Delivery Delays: Waiting too long, I lost patience."
@@ -986,7 +986,7 @@ export const OrderCard = ({
                   <div className="form-check mt-3">
                     <input
                       type="radio"
-                      className="form-check-input"
+                      className="form-check-input border border-light"
                       id="mind"
                       name="cancelReason"
                       value="Change of Mind: Don't want it anymore, found something better."
@@ -1002,7 +1002,7 @@ export const OrderCard = ({
                   <div className="form-check mt-2">
                     <input
                       type="radio"
-                      className="form-check-input"
+                      className="form-check-input border border-light"
                       id="price"
                       name="cancelReason"
                       value="Pricing Concerns: Extra charges made it too expensive."
@@ -1018,7 +1018,7 @@ export const OrderCard = ({
                   <div className="form-check mt-2">
                     <input
                       type="radio"
-                      className="form-check-input"
+                      className="form-check-input border border-light"
                       id="error"
                       name="cancelReason"
                       value="Order Errors: Wrong customization or item, not worth it."
@@ -1034,7 +1034,7 @@ export const OrderCard = ({
                   <div className="form-check mt-2">
                     <input
                       type="radio"
-                      className="form-check-input"
+                      className="form-check-input border border-light"
                       id="quality"
                       name="cancelReason"
                       value="Poor Reviews/Quality Doubts: Doubts about quality, I canceled quickly."
@@ -1051,25 +1051,28 @@ export const OrderCard = ({
                   </div>
                 </div>
                 <hr className="my-4" />
-                <div className="d-flex justify-content-between pb-3 px-4">
-                  <div className="col-4">
-                    <button
-                      type="button"
-                      className="border border-outline-dark rounded-pill font_size_14"
-                      onClick={() => setShowCancelModal(false)}
-                    >
-                      Close
-                    </button>
-                  </div>
-                  <div className="col-6 text-end text-nowrap">
-                    <button
-                      type="button"
-                      className="btn btn-danger  rounded-pill"
-                      onClick={handleConfirmCancel}
-                    >
-                      <i class="ri-close-circle-line text-white me-2 fs-5"></i>
-                      Confirm Cancel
-                    </button>
+                <div className=" ">
+                  <div className="container d-flex justify-content-between">
+                    <span className="col-3">
+                      <button
+                        type="button"
+                        className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                        onClick={() => setShowCancelModal(false)}
+                      >
+                        Close
+                      </button>
+                    </span>
+
+                    <span className="col-6 d-flex justify-content-end">
+                      <button
+                        type="button"
+                        className="btn btn-danger rounded-pill text-nowrap text-dark px-3"
+                        onClick={handleConfirmCancel}
+                      >
+                        <i class="ri-close-circle-line text-white me-2 fs-5"></i>
+                        Confirm Cancel
+                      </button>
+                    </span>
                   </div>
                 </div>
               </div>

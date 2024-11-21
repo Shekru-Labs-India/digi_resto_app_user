@@ -33730,7 +33730,10 @@ hr.dotted {
       border: 1px solid #000;
       background-color: transparent; }
       .form-check .form-check-input:checked {
-        background-color: #000; }
+        /* background-color: #000;  */
+        background-color: #253e35; 
+      
+      }
     .form-check .form-check-label {
       color: var(--title);
       font-size: 15px;
