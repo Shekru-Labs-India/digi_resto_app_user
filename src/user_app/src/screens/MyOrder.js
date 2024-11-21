@@ -320,7 +320,7 @@ const MyOrder = () => {
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
-                      className={`tab-pane fade ${
+                      className={`tab-pane fade p-b70 ${
                         activeTab === "completed" ? "show active" : ""
                       }`}
                       id="completed"
@@ -335,7 +335,7 @@ const MyOrder = () => {
                       />
                     </div>
                     <div
-                      className={`tab-pane fade ${
+                      className={`tab-pane fade p-b70 ${
                         activeTab === "cancelled" ? "show active" : ""
                       }`}
                       id="cancelled"
@@ -1174,22 +1174,41 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       );
     }
 
+    // Special handling for cancelled orders which might be nested differently
+    let ordersToRender = orders;
+    if (type === "cancelled" && orders.cancle) {
+      // If cancelled orders are nested under 'cancle' key
+      ordersToRender = orders.cancle;
+    }
+
     return (
       <>
-        {Object.entries(orders).map(([date, dateOrders]) => {
-          const activeOrders = dateOrders.filter(
-            (order) => !completedTimers.has(order.order_id)
-          );
+        {Object.entries(ordersToRender).map(([date, dateOrders]) => {
+          // Ensure dateOrders is always an array
+          const activeOrders = Array.isArray(dateOrders) 
+            ? dateOrders
+            : Object.values(dateOrders);
 
-          return activeOrders.length > 0 ? (
-            <div className="tab mt-0" key={`${date}-${type}`}>
+          if (activeOrders.length === 0) return null;
+
+          const dateTypeKey = `${date}-${type}`;
+
+          return (
+            <div className="tab mt-0" key={dateTypeKey}>
               <input
                 type="checkbox"
-                id={`chck${date}-${type}`}
-                checked={checkedItems[`${date}-${type}`] || false}
-                onChange={() => toggleChecked(`${date}-${type}`)}
+                id={`chck${dateTypeKey}`}
+                checked={checkedItems[dateTypeKey] || false}
+                onChange={() => toggleChecked(dateTypeKey)}
               />
-              <label className="tab-label mb-2" htmlFor={`chck${date}-${type}`}>
+              <label 
+                className="tab-label mb-2" 
+                htmlFor={`chck${dateTypeKey}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleChecked(dateTypeKey);
+                }}
+              >
                 <span>{date}</span>
                 <span className="d-flex align-items-center">
                   <span className="gray-text pe-2 small-number">
@@ -1198,144 +1217,136 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   <span className="icon-circle">
                     <i
                       className={`ri-arrow-down-s-line arrow-icon ${
-                        checkedItems[`${date}-${type}`] ? "rotated" : ""
+                        checkedItems[dateTypeKey] ? "rotated" : ""
                       }`}
                     ></i>
                   </span>
                 </span>
               </label>
-              <div className="tab-content" style={{ 
-                display: checkedItems[`${date}-${type}`] ? 'block' : 'none' 
-              }}>
-                <>
-                  {activeOrders.map((order) => (
+              <div 
+                className="tab-content" 
+                style={{ 
+                  // display: checkedItems[dateTypeKey] ? 'block' : 'none',
+                  // maxHeight: checkedItems[dateTypeKey] ? '1000px' : '0',
+                  overflow: 'hidden',
+                  transition: 'max-height 0.3s ease-out'
+                }}
+              >
+                {activeOrders.map((order) => (
+                  <div
+                    className="custom-card my-2 rounded-4 shadow-sm pb-3"
+                    key={order.order_number}
+                  >
                     <div
-                      className="custom-card my-2 rounded-4 shadow-sm"
-                      key={order.order_number}
+                      className="card-body py-2"
+                      onClick={() => handleOrderClick(order.order_number)}
                     >
-                      <div
-                        className="card-body py-2"
-                        onClick={() => handleOrderClick(order.order_number)}
-                      >
-                        {/* Card body content remains the same */}
-                        <div className="row align-items-center">
-                          <div className="col-4">
-                            <span className="fw-semibold fs-6">
-                              <i className="ri-hashtag pe-2"></i>
-                              {order.order_number}
-                            </span>
-                          </div>
-                          <div className="col-8 text-end">
-                            <span className="gray-text font_size_12">
-                              {order.time}
-                            </span>
-                          </div>
+                      {/* Card body content remains the same */}
+                      <div className="row align-items-center">
+                        <div className="col-4">
+                          <span className="fw-semibold fs-6">
+                            <i className="ri-hashtag pe-2"></i>
+                            {order.order_number}
+                          </span>
                         </div>
-                        <div className="row">
-                          <div className="col-8 text-start">
-                            <div className="restaurant">
-                              <i className="ri-store-2-line pe-2"></i>
-                              <span className="fw-medium font_size_14">
-                                {order.restaurant_name.toUpperCase()}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="col-4 text-end">
-                            <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
-                            <span className="font_size_12 gray-text">
-                              {order.table_number}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <div className="menu-info">
-                              <i className="ri-bowl-line pe-2 gray-text"></i>
-                              <span className="gray-text font_size_14">
-                                {order.menu_count === 0
-                                  ? "No Menus"
-                                  : `${order.menu_count} Menu`}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="col-6 text-end">
-                            <span className="text-info font_size_14 fw-semibold">
-                              ₹{order.grand_total}
-                            </span>
-                            <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                              ₹
-                              {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
-                            </span>
-                          </div>
+                        <div className="col-8 text-end">
+                          <span className="gray-text font_size_12">
+                            {order.time}
+                          </span>
                         </div>
                       </div>
-
-                      <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-                        {activeTab === "completed" && (
-                          <div className="container py-0">
-                            <div className="row">
-                              <div className="col-9 ps-0">
-                                <div className="text-start text-nowrap">
-                                  <span className="text-success">
-                                    <i className="ri-checkbox-circle-line me-1"></i>
-                                    Completed
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="col-3 pe-0 font_size_14 text-end">
-                                {order.payment_method && (
-                                  <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
-                                    {order.payment_method}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {activeTab === "cancelled" && (
-                          <div className="text-center">
-                            <span className="text-danger">
-                              <i className="ri-close-circle-line me-1"></i>
-                              Order cancelled
+                      <div className="row">
+                        <div className="col-8 text-start">
+                          <div className="restaurant">
+                            <i className="ri-store-2-line pe-2"></i>
+                            <span className="fw-medium font_size_14">
+                              {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
-                        )}
+                        </div>
+                        <div className="col-4 text-end">
+                          <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
+                          <span className="font_size_12 gray-text">
+                            {order.table_number}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-6">
+                          <div className="menu-info">
+                            <i className="ri-bowl-line pe-2 gray-text"></i>
+                            <span className="gray-text font_size_14">
+                              {order.menu_count === 0
+                                ? "No Menus"
+                                : `${order.menu_count} Menu`}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-6 text-end">
+                          <span className="text-info font_size_14 fw-semibold">
+                            ₹{order.grand_total}
+                          </span>
+                          <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                            ₹
+                            {(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </>
+
+                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                      {activeTab === "completed" && (
+                        <div className="container py-0">
+                          <div className="row">
+                            <div className="col-9 ps-0">
+                              <div className="text-start text-nowrap">
+                                <span className="text-success">
+                                  <i className="ri-checkbox-circle-line me-1"></i>
+                                  Completed
+                                </span>
+                              </div>
+                            </div>
+                            <div className="col-3 pe-0 font_size_14 text-end">
+                              {order.payment_method && (
+                                <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
+                                  {order.payment_method}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeTab === "cancelled" && (
+                        <div className="text-center">
+                          <span className="text-danger">
+                            <i className="ri-close-circle-line me-1"></i>
+                            Order cancelled
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ) : null;
+          );
         })}
       </>
     );
   };
 
+  // Add debugging logs
+  useEffect(() => {
+    console.log('Orders:', orders);
+    console.log('Type:', type);
+    console.log('CheckedItems:', checkedItems);
+  }, [orders, type, checkedItems]);
+
   return (
     <>
       <div className="row g-1">
-        {!orders || Object.keys(orders).length === 0
-          ? (type === "completed" || type === "cancelled") && (
-              <div
-                className="d-flex justify-content-center align-items-center flex-column"
-                style={{ height: "80vh" }}
-              >
-                <p className="fw-semibold gray-text">
-                  You haven't placed any {type} orders yet.
-                </p>
-                <Link
-                  to="/user_app/Menu"
-                  className="btn btn-outline-primary rounded-pill px-3 mt-2"
-                >
-                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-                </Link>
-              </div>
-            )
-          : renderOrders()}
-                        <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
-
+        {renderOrders()}
       </div>
       <Bottom />
     </>
