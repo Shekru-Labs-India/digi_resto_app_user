@@ -453,32 +453,47 @@ await fetchCartDetails();
 
         {showPopup && (
           <div className="popup-overlay">
-            <div className="popup-content rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <span className="fs-6 fw-semibold">Success</span>
-                <button
-                  className="btn-close"
-                  onClick={() => setShowPopup(false)}
-                ></button>
-              </div>
-              <div className="circle">
-                <img src={OrderGif} alt="Order Success" className="popup-gif" />
-              </div>
-              <span className="text-dark my-2 d-block text-center">
-                Order placed successfully
-              </span>
-              <div className="fs-6 fw-semibold">
-                #{newOrderNumber || existingOrderDetails.orderNumber}
-              </div>
-              <p className="text-muted text-center mb-4">
-                You have successfully made payment and placed your order.
-              </p>
-              <button
-                className="btn btn-success rounded-pill text-white w-100"
-                onClick={closePopup}
+            <div className="container d-flex align-items-center justify-content-center">
+              <div
+                className="modal-dialog modal-dialog-centered"
+                role="document"
               >
-                View Order
-              </button>
+                <div className="modal-content">
+                    <h5 className="modal-title border-bottom py-2 text-center">Success</h5>
+                  <div className="modal-header py-0">
+                    <button
+                      className="btn-close"
+                      onClick={() => setShowPopup(false)}
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="d-flex justify-content-center bg-light rounded-circle w-25 h-25 mx-auto">
+                      <img
+                        src={OrderGif}
+                        alt="Order Success"
+                        className="popup-gif"
+                        height={100}
+                        width={100}
+                      />
+                    </div>
+                    <span className="text-dark my-2 d-block text-center">
+                      Order placed successfully
+                    </span>
+                    <div className="fs-6 fw-semibold text-center">
+                      #{newOrderNumber || existingOrderDetails.orderNumber}
+                    </div>
+                    <p className="text-dark text-center mb-4">
+                      You have successfully made payment and placed your order.
+                    </p>
+                    <button
+                      className="btn btn-success rounded-pill text-white w-100"
+                      onClick={closePopup}
+                    >
+                      View Order
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
