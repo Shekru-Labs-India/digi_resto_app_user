@@ -40,93 +40,75 @@ const HotelList = () => {
           <div className="d-flex justify-content-center"></div>
           {hotels.map((hotel) => (
             <div className="card rounded-4" key={hotel.restaurant_id}>
-              {hotel.code ? (
-                <Link to={`/user_app/${hotel.code}`}>
-                  <div
-                    className={`card-body py-0 ${
-                      hotel.is_open === false ? "bg-light rounded-4" : ""
-                    }`}
-                  >
-                    <div className="row text-start">
-                      <div className={`col-12`}>
-                        <div className="row mt-2 ">
-                          <div className="col-1 d-flex align-items-center">
-                            <i className="ri-store-2-line font_size_14 fw-medium"></i>
-                          </div>
-                          <div className="col-7 d-flex align-items-center">
-                            <span className="font_size_14 fw-medium m-0">
-                              {hotel.restaurant_name.toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="col-3 d-flex justify-content-end pe-0">
-                            {hotel.is_open && hotel.is_open === true ? null : (
-                              <span class="badge badge-sm bg-danger ms-2 font_size_10">
-                                Closed
-                              </span>
-                            )}
-                          </div>
+              <Link to={`/user_app/${hotel.code}`}>
+                <div className={`card-body py-0 ${hotel.is_open === false ? "bg-light rounded-4" : ""}`}>
+                  <div className="row text-start">
+                    <div className="col-12">
+                      <div className="row mt-2 align-items-center">
+                        <div className="col-1">
+                          <i className="ri-store-2-line font_size_14 fw-medium"></i>
                         </div>
-                        <div className="row mt-1">
-                          <div className="col-1 d-flex align-items-center">
-                            <i className="ri-phone-line text-primary"></i>
-                          </div>
-                          <div className="col-10 d-flex align-items-center">
-                            <span className="text-primary font_size_12">
-                              {hotel.mobile}
-                            </span>
-                          </div>
+                        <div className="col-7">
+                          <span className="font_size_14 fw-medium m-0">
+                            {hotel.restaurant_name.toUpperCase()}
+                          </span>
                         </div>
-                        <div className="row mt-1 pb-1">
-                          <div className="col-1">
-                            <i className="ri-map-pin-line gray-text"></i>
-                          </div>
-                          <div className="col-6 d-flex align-items-center">
-                            <span className="gray-text font_size_12">
-                              {hotel.address
-                                .split(" ")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")}
+                        <div className="col-4 d-flex justify-content-end pe-3">
+                          {hotel.is_open === false && (
+                            <span className="badge bg-danger small">
+                              Closed
                             </span>
-                          </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="row mt-1">
+                        <div className="col-1 d-flex align-items-center">
+                          <i className="ri-phone-line text-primary"></i>
+                        </div>
+                        <div className="col-10 d-flex align-items-center">
+                          <span className="text-primary font_size_12">
+                            {hotel.mobile}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="row mt-1 pb-1 align-items-center">
+                        <div className="col-1">
+                          <i className="ri-map-pin-line gray-text"></i>
+                        </div>
+                        <div className="col-7 d-flex align-items-center">
+                          <span className="gray-text font_size_12">
+                            {hotel.address}
+                          </span>
+                        </div>
+                        <div className="col-4 d-flex justify-content-end pe-3">
                           {hotel.veg_nonveg && (
-                            <div className="col-4 d-flex justify-content-end">
-                              <div
-                                className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                            <div
+                              className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
+                                ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+                                  ? "border-success"
+                                  : "border-danger"
+                              }`}
+                              style={{
+                                height: "20px",
+                                width: "20px",
+                                borderWidth: "2px",
+                              }}
+                            >
+                              <i
+                                className={`${
                                   ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
-                                    ? "border-success"
-                                    : "border-danger"
-                                }`}
-                                style={{
-                                  height: "20px",
-                                  width: "20px",
-                                  borderWidth: "2px",
-                                  borderRadius: "3px",
-                                }}
-                              >
-                                <i
-                                  className={`${
-                                    ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
-                                      ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-triangle-fill text-danger"
-                                  } font_size_12`}
-                                ></i>
-                              </div>
+                                    ? "ri-checkbox-blank-circle-fill text-success"
+                                    : "ri-triangle-fill text-danger"
+                                } font_size_12`}
+                              ></i>
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
-                </Link>
-              ) : (
-                <div className="card-body py-0">
-                  <p>Code not available</p>
                 </div>
-              )}
+              </Link>
             </div>
           ))}
         </div>
