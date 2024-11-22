@@ -852,13 +852,13 @@ const MenuDetails = () => {
                 <div className="product-info menu_details-description">
                   <div>
                     <i className="ri-restaurant-2-line me-2"></i>
-                    <span className="  text-wrap m-0 gray-text font_size_12">
+                    <span className="text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
                   </div>
                   <hr />
                   <div>
-                    <span className=" text-capitalize text-wrap m-0 font_size_12">
+                    <span className="text-capitalize text-wrap m-0 font_size_12">
                       {productDetails.description}
                     </span>
                   </div>
@@ -866,6 +866,11 @@ const MenuDetails = () => {
                   {showQuantityError && (
                     <div className="text-danger">Please add a quantity.</div>
                   )}
+                </div>
+                
+                {/* Add end border */}
+                <div className="divider border-success inner-divider transparent mb-5 pb-5">
+                  <span className="bg-body">End</span>
                 </div>
               </div>
             </div>
@@ -951,6 +956,8 @@ const MenuDetails = () => {
           </div>
         </div>
       </div>
+
+      
       <Bottom />
 
       {showModal && (
@@ -1066,6 +1073,9 @@ const MenuDetails = () => {
         </div>
       )}
       {showModal && <div className="modal-backdrop fade show"></div>}
+
+      {/* Add extra padding at the bottom to prevent footer overlap */}
+      <div style={{ paddingBottom: "50px" }}></div>
     </>
   );
 };

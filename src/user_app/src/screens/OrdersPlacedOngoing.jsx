@@ -158,7 +158,7 @@ const CircularCountdown = ({
         setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
-      console.error("Error fetching orders after timer complete:", error);
+      setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
     }
 
     window.showToast("success", "Your order has moved to ongoing orders!");
@@ -223,10 +223,6 @@ const OrderCard = ({
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       const data = await response.json();
 
       if (data.st === 1) {
@@ -249,7 +245,6 @@ const OrderCard = ({
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -267,10 +262,6 @@ const OrderCard = ({
           note: cancelReason,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
 
       const data = await response.json();
 
@@ -295,13 +286,12 @@ const OrderCard = ({
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
-      console.error("Error cancelling order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
 
   const handleOrderClick = (orderNumber) => {
-    console.log("Order clicked:", orderNumber);
+    // Navigation or other logic without console.log
   };
 
   return (
@@ -467,36 +457,73 @@ function OrdersPlacedOngoing() {
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
+    // Check if we have required data before making the API call
+    if (!userData?.customer_id || !userData?.restaurantId) {
+      setOrders({ placed: [], ongoing: [] });
+      return;
+    }
+
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/get_ongoing_or_placed_order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer_id: userData.customer_id,
-          restaurant_id: userData.restaurantId,
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer_id: userData.customer_id,
+            restaurant_id: userData.restaurantId,
+          }),
+          signal: controller.signal
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      // Handle all non-200 responses silently
+      if (!response.ok) {
+        setOrders({ placed: [], ongoing: [] });
+        return;
+      }
 
       const data = await response.json();
 
-      if (response.ok && data.data) {
-        const ordersData = Array.isArray(data.data) ? data.data : [];
+      // Check if data exists and has the expected structure
+      if (data?.st === 1 && Array.isArray(data.data)) {
+        const ordersData = data.data;
         setOrders({
           placed: ordersData.filter(order => order.status === 'placed'),
           ongoing: ordersData.filter(order => order.status === 'ongoing')
         });
       } else {
-        console.error("Failed to fetch orders:", data.msg);
+        // Handle empty or invalid data structure silently
+        setOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      // Handle all errors silently (including abort errors)
+      if (error.name !== 'AbortError') {
+        setOrders({ placed: [], ongoing: [] });
+      }
     }
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadData = async () => {
+      await fetchData();
+    };
+
+    loadData();
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div>

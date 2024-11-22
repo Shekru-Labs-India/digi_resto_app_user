@@ -35,6 +35,7 @@ function App() {
   }, []);
 
   return (
+    
     <PopupProvider>
       <ThemeProvider>
         <RestaurantIdProvider
