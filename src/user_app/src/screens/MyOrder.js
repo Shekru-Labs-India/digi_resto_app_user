@@ -100,6 +100,8 @@ const MyOrder = () => {
                 ? { placed: orders, ongoing: [] }
                 : { placed: [], ongoing: orders };
             setOngoingOrPlacedOrders(orderList);
+
+            localStorage.setItem("allOrderList", JSON.stringify(orderList));
           } else {
             setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
           }
@@ -169,10 +171,25 @@ const MyOrder = () => {
             } else if (data.lists[activeTab]) {
               mappedData[activeTab] = data.lists[activeTab];
             }
+            
+            // Get existing data from localStorage
+            const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+            
+            // Merge existing data with new data
+            const updatedOrders = {
+              ...existingOrders,
+              ...mappedData
+            };
+            
+            // Update localStorage with merged data
+            localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
+            
             setOrders(mappedData);
           } else {
             setOrders({});
           }
+
+          
         } else {
           setOrders({});
         }

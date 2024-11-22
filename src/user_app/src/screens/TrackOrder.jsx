@@ -575,6 +575,7 @@ const TrackOrder = () => {
           }
         }
       }
+      
     } catch (error) {
       
     } finally {
@@ -745,15 +746,132 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, customerId]);
 
- 
+  useEffect(() => {
+    const checkOrderExists = () => {
+      try {
+        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+        
+        // Check placed orders
+        if (allOrders.placed?.some(order => order.order_number === order_number)) {
+          return true;
+        }
 
-  if (loading || !orderDetails) {
+        // Check ongoing orders
+        if (allOrders.ongoing?.some(order => order.order_number === order_number)) {
+          return true;
+        }
+
+        // Check completed orders (date-wise grouping)
+        if (allOrders.completed) {
+          const exists = Object.values(allOrders.completed).some(dateOrders => 
+            dateOrders.some(order => order.order_number === order_number)
+          );
+          if (exists) return true;
+        }
+
+        // Check cancelled orders (handle both spellings and structures)
+        if (allOrders.cancelled?.some(order => order.order_number === order_number) || 
+            allOrders.canceled?.some(order => order.order_number === order_number) ||
+            allOrders.cancle?.some(order => order.order_number === order_number)) {
+          return true;
+        }
+
+        // If order not found anywhere
+        window.showToast("error", "Order not found");
+        navigate("/user_app/Index");
+        return false;
+
+      } catch (error) {
+        console.error("Error checking order:", error);
+      }
+    };
+
+    if (order_number && !orderDetails) {
+      checkOrderExists();
+    }
+  }, [order_number, navigate, orderDetails]);
+
+  // Add this check right after the component declarations
+  useEffect(() => {
+    const validateOrder = () => {
+      try {
+        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+        let orderFound = false;
+
+        // Check ongoing orders
+        if (allOrders.ongoing?.length > 0) {
+          orderFound = allOrders.ongoing.some(
+            order => order.order_number === order_number
+          );
+        }
+
+        // Check completed orders (date-wise grouping)
+        if (!orderFound && allOrders.completed) {
+          orderFound = Object.values(allOrders.completed).some(dateOrders => 
+            dateOrders.some(order => order.order_number === order_number)
+          );
+        }
+
+        // Check placed orders
+        if (!orderFound && allOrders.placed?.length > 0) {
+          orderFound = allOrders.placed.some(
+            order => order.order_number === order_number
+          );
+        }
+
+        // Check cancelled orders - handle both date-wise and array formats
+        if (!orderFound) {
+          // First check if cancelled orders are date-wise grouped
+          const cancelTypes = ['cancelled', 'canceled', 'cancle'];
+          for (const type of cancelTypes) {
+            if (allOrders[type]) {
+              // If it's an array, check directly
+              if (Array.isArray(allOrders[type])) {
+                orderFound = allOrders[type].some(
+                  order => order.order_number === order_number
+                );
+              } 
+              // If it's date-wise grouped, check each date group
+              else {
+                orderFound = Object.values(allOrders[type]).some(dateOrders =>
+                  Array.isArray(dateOrders) && dateOrders.some(
+                    order => order.order_number === order_number
+                  )
+                );
+              }
+              if (orderFound) break;
+            }
+          }
+        }
+
+        // If order is not found in any category
+        if (!orderFound) {
+          setLoading(false);
+          window.showToast("error", "Order not found");
+          navigate("/user_app/Index");
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Error validating order:", error);
+        setLoading(false);
+        window.showToast("error", "Something went wrong");
+        navigate("/user_app/Index");
+        return false;
+      }
+    };
+
+    if (order_number) {
+      validateOrder();
+    }
+  }, [order_number, navigate]);
+
+  // Update the loading condition in the return statement
+  if (loading && !orderDetails) {
     return (
       <div id="preloader">
         <div className="loader">
-          {/* <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div> */}
           <LoaderGif />
         </div>
       </div>
