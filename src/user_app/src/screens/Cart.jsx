@@ -328,6 +328,39 @@ const Cart = () => {
     }
   };
 
+  // Add the standardized rating function
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
+
+    // 0 to 0.4: Show no star & value
+    if (!numRating || numRating < 0.5) {
+      return <i className="font_size_10 ratingStar me-1"></i>;
+    }
+
+    // 0.5 to 2.5: Show blank star (grey color)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return (
+        <i className="ri-star-line font_size_10 gray-text me-1"></i>
+      );
+    }
+
+    // 3 to 4.5: Show half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    // 5: Show full star
+    if (numRating === 5) {
+      return (
+        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  };
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -508,10 +541,12 @@ const Cart = () => {
                           </div>
                         </div>
                         <div className="col-4 ps-0 text-end">
-                          <span className="font_size_10 fw-normal gray-text me-2">
-                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                            {item.rating}
-                          </span>
+                          {item.rating > 0 && (
+                            <span className="font_size_10 fw-normal gray-text me-2">
+                              {renderStarRating(item.rating)}
+                              {item.rating}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="row"></div>

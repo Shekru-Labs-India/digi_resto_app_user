@@ -463,6 +463,39 @@ const OfferBanner = () => {
     }
   };
 
+  // Update the rating function with the correct logic
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
+
+    // 0 to 0.4: Show no star & value
+    if (!numRating || numRating < 0.5) {
+      return <i className="font_size_10 ratingStar me-1"></i>;
+    }
+
+    // 0.5 to 2.5: Show blank star (grey color)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return (
+        <i className="ri-star-line font_size_10 gray-text me-1"></i>
+      );
+    }
+
+    // 3 to 4.5: Show half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    // 5: Show full star
+    if (numRating === 5) {
+      return (
+        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  };
+
   return (
     <div className="dz-box style-3">
       {/* {loading ? (
@@ -594,10 +627,12 @@ const OfferBanner = () => {
                           {renderSpiceIcons(menu.spicy_index)}
                         </div>
                         <div className="col-4">
-                          <div className="text-end font_size_10 fw-normal gray-text me-1">
-                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                            {menu.rating}
-                          </div>
+                          {menu.rating > 0 && (
+                            <div className="text-end font_size_10 fw-normal gray-text me-1">
+                              {renderStarRating(menu.rating)}
+                              <span>{menu.rating}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

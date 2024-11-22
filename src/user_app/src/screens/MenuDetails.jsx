@@ -8,8 +8,8 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import LoaderGif from "./LoaderGIF";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
-import { usePopup } from '../context/PopupContext';
-import config from "../component/config"
+import { usePopup } from "../context/PopupContext";
+import config from "../component/config";
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -17,16 +17,16 @@ const MenuDetails = () => {
   const [showQuantityError, setShowQuantityError] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
-  const { cartItems,  } = useCart();
+  const { cartItems } = useCart();
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
-  
+
   // At the top with other state declarations
   const [customerId, setCustomerId] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -34,13 +34,13 @@ const MenuDetails = () => {
   });
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
- 
+
   const location = useLocation();
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [notes, setNotes] = useState("");
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -56,7 +56,7 @@ const MenuDetails = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     return userData?.customer_type || null;
   });
-  
+
   const { showLoginPopup } = usePopup();
 
   useEffect(() => {
@@ -64,34 +64,37 @@ const MenuDetails = () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     const storedCustomerId = storedUserData?.customer_id;
     const storedCustomerType = storedUserData?.customer_type;
-  
+
     // Get restaurant data from location state or localStorage
     const locationState = location.state;
     let initialRestaurantId;
-  
+
     if (locationState?.fromDifferentRestaurant) {
       // If coming from a different restaurant menu
       initialRestaurantId = locationState.restaurant_id;
       setCurrentRestaurantId(initialRestaurantId);
-      
+
       // Persist the restaurant ID
       localStorage.setItem("currentRestaurantId", initialRestaurantId);
       localStorage.setItem("restaurantId", initialRestaurantId);
     } else {
       // Use stored restaurant ID
-      initialRestaurantId = localStorage.getItem("currentRestaurantId") || 
-                           localStorage.getItem("restaurantId");
+      initialRestaurantId =
+        localStorage.getItem("currentRestaurantId") ||
+        localStorage.getItem("restaurantId");
     }
-  
+
     setCustomerId(storedCustomerId);
     setCustomerType(storedCustomerType);
     setCurrentRestaurantId(initialRestaurantId);
-  
+
     // Clean up function
     return () => {
       if (!locationState?.fromDifferentRestaurant) {
         // Restore previous restaurant ID only if not viewing a different restaurant's menu
-        const previousRestaurantId = localStorage.getItem("previousRestaurantId");
+        const previousRestaurantId = localStorage.getItem(
+          "previousRestaurantId"
+        );
         if (previousRestaurantId) {
           localStorage.setItem("restaurantId", previousRestaurantId);
           localStorage.setItem("currentRestaurantId", previousRestaurantId);
@@ -108,7 +111,8 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(false);
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
+    useState(false);
 
   const orderedItems = location.state?.orderedItems || [];
   const [previousRestaurantId, setPreviousRestaurantId] = useState(null);
@@ -118,11 +122,13 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    const storedPreviousRestaurantId = localStorage.getItem("previousRestaurantId");
+    const storedPreviousRestaurantId = localStorage.getItem(
+      "previousRestaurantId"
+    );
     if (storedPreviousRestaurantId) {
       setPreviousRestaurantId(storedPreviousRestaurantId);
     }
-  
+
     // Cleanup
     return () => {
       if (!location.state?.fromDifferentRestaurant) {
@@ -152,7 +158,7 @@ const MenuDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         if (data.st === 1 && data.details) {
           const {
             menu_name,
@@ -177,11 +183,16 @@ const MenuDetails = () => {
 
           if (location.state?.fromDifferentRestaurant) {
             setIsFromDifferentRestaurant(true);
-            localStorage.setItem("differentRestaurantName", data.details.restaurant_name || '');
+            localStorage.setItem(
+              "differentRestaurantName",
+              data.details.restaurant_name || ""
+            );
           }
-        
+
           // Calculate discounted and old prices
-          const discountedPrice = offer ? Math.floor(price * (1 - offer / 100)) : price;
+          const discountedPrice = offer
+            ? Math.floor(price * (1 - offer / 100))
+            : price;
           const oldPrice = offer ? price : null;
 
           setProductDetails({
@@ -205,15 +216,13 @@ const MenuDetails = () => {
 
           setIsFavorite(data.details.is_favourite);
           setTotalAmount(discountedPrice * quantity);
-          
+
           const contextRestaurantId = restaurantId;
-          const isDifferent = fetchedRestaurantId && contextRestaurantId && 
-                            fetchedRestaurantId !== contextRestaurantId;
+          const isDifferent =
+            fetchedRestaurantId &&
+            contextRestaurantId &&
+            fetchedRestaurantId !== contextRestaurantId;
           setIsFromDifferentRestaurant(isDifferent);
-
-
-         const menuItems = localStorage.getItem("menuItems");
-         
         }
       }
     } catch (error) {
@@ -224,36 +233,23 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    // Check if menuId exists in menuItems
-    const checkMenuExists = () => {
-      const storedMenuItems = JSON.parse(localStorage.getItem("menuItems") || "[]");
-      const menuExists = storedMenuItems.some(item => item.menu_id.toString() === menuId.toString());
-      
-      if (!menuExists) {
-        window.showToast("error", "Menu not found");
-        navigate("/user_app/Index");
-        return false;
-      }
-      return true;
-    };
-
-    // Only proceed with fetchProductDetails if menu exists
-    if (checkMenuExists() && currentRestaurantId) {
+    if (currentRestaurantId) {
+      // Remove customerId dependency
       fetchProductDetails();
     }
-  }, [menuId, currentRestaurantId]); // Add necessary dependencies
+  }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
 
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: storedRestaurantId,
-            menu_id: menuId
+            menu_id: menuId,
           }),
         }
       );
@@ -293,27 +289,29 @@ const MenuDetails = () => {
     const currentCustomerType = userData?.customer_type;
 
     if (!currentCustomerId || !restaurantId) {
-  
       return;
     }
 
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       window.showToast("error", "Price information is not available");
       return;
     }
 
     try {
-      await addToCart({ 
-        ...productDetails, 
-        quantity, 
-        notes, 
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
-      
+      await addToCart(
+        {
+          ...productDetails,
+          quantity,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
+
       window.showToast("success", "Item has been added to your cart");
 
       setShowModal(false);
@@ -336,14 +334,17 @@ const MenuDetails = () => {
     }
 
     try {
-      await removeFromCart(productDetails.menu_id, currentCustomerId, currentRestaurantId);
+      await removeFromCart(
+        productDetails.menu_id,
+        currentCustomerId,
+        currentRestaurantId
+      );
       window.showToast("info", "Item has been removed from your cart");
     } catch (error) {
       console.error("Error removing item from cart:", error);
       window.showToast("error", "Failed to remove item from cart");
     }
   };
-
 
   const handleUnauthorizedFavorite = () => {
     showLoginPopup();
@@ -352,18 +353,17 @@ const MenuDetails = () => {
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-  if (!userData?.customer_id || userData.customer_type === 'guest') {
-    handleUnauthorizedFavorite(navigate);
-    return;
-  }
-
-    
+    if (!userData?.customer_id || userData.customer_type === "guest") {
+      handleUnauthorizedFavorite(navigate);
+      return;
+    }
 
     const apiUrl = isFavorite
-      ?  `${config.apiDomain}/user_api/remove_favourite_menu`
+      ? `${config.apiDomain}/user_api/remove_favourite_menu`
       : `${config.apiDomain}/user_api/save_favourite_menu`;
 
-    const restaurantIdToUse = currentRestaurantId || productDetails?.restaurant_id;
+    const restaurantIdToUse =
+      currentRestaurantId || productDetails?.restaurant_id;
 
     try {
       const response = await fetch(apiUrl, {
@@ -385,14 +385,14 @@ const MenuDetails = () => {
             ...prevDetails,
             is_favourite: updatedFavoriteStatus,
           }));
-          
+
           window.showToast(
             updatedFavoriteStatus ? "success" : "info",
             updatedFavoriteStatus
               ? "Item has been added to your favorites"
               : "Item has been removed from your favorites"
           );
-          
+
           window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
           console.error("Failed to update favorite status:", data.msg);
@@ -418,7 +418,7 @@ const MenuDetails = () => {
 
   const handleModalClick = (e) => {
     // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -431,7 +431,7 @@ const MenuDetails = () => {
   // Add slider controls
   const nextSlide = () => {
     if (productDetails?.images) {
-      setCurrentSlide((prev) => 
+      setCurrentSlide((prev) =>
         prev === productDetails.images.length - 1 ? 0 : prev + 1
       );
     }
@@ -439,7 +439,7 @@ const MenuDetails = () => {
 
   const prevSlide = () => {
     if (productDetails?.images) {
-      setCurrentSlide((prev) => 
+      setCurrentSlide((prev) =>
         prev === 0 ? productDetails.images.length - 1 : prev - 1
       );
     }
@@ -452,6 +452,39 @@ const MenuDetails = () => {
       return () => clearInterval(timer);
     }
   }, [productDetails]);
+
+  // Add the standardized rating function
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
+
+    // 0 to 0.4: Show no star & value
+    if (!numRating || numRating < 0.5) {
+      return <i className="font_size_10 ratingStar me-1"></i>;
+    }
+
+    // 0.5 to 2.5: Show blank star (grey color)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return (
+        <i className="ri-star-line font_size_10 gray-text me-1"></i>
+      );
+    }
+
+    // 3 to 4.5: Show half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    // 5: Show full star
+    if (numRating === 5) {
+      return (
+        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  };
 
   if (isLoading) {
     return (
@@ -810,11 +843,15 @@ const MenuDetails = () => {
                       </div>
                     )}
                   </div>
-                  <div className="col-4 text-end px-0 ">
-                    <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                    <span className="font_size_10  fw-normal gray-text">
-                      {productDetails.rating}
-                    </span>
+                  <div className="col-4 text-end px-0">
+                    {productDetails.rating > 0 && (
+                      <>
+                        {renderStarRating(productDetails.rating)}
+                        <span className="font_size_10 fw-normal gray-text">
+                          {productDetails.rating}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

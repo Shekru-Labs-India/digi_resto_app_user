@@ -21,16 +21,35 @@ const toTitleCase = (text) => {
 
 const renderStarRating = (rating) => {
   const numRating = parseFloat(rating);
-  
-  if (!numRating || numRating === 0) {
-    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+
+  // 0 to 0.4: Show no star & value
+  if (!numRating || numRating < 0.5) {
+    return <i className=" font_size_10 ratingStar me-1"></i>;
   }
-  
-  if (numRating >= 4) {
-    return <i className="ri-star-fill font_size_10 ratingStar me-1 text-warning"></i>;
+
+  // 0.5 to 2.5: Show blank star (grey color)
+  if (numRating >= 0.5 && numRating <= 2.5) {
+    return (
+      <i className="ri-star-line font_size_10 gray-text me-1"></i>
+    );
   }
-  
-  return <i className="ri-star-half-fill font_size_10 ratingStar me-1 text-warning"></i>;
+
+  // 3 to 4.5: Show half star
+  if (numRating >= 3 && numRating <= 4.5) {
+    return (
+      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+    );
+  }
+
+  // 5: Show full star
+  if (numRating === 5) {
+    return (
+      <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+    );
+  }
+
+  // Default case (shouldn't reach here based on your ranges)
+  return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
 };
 
 const ProductCard = ({ isVegOnly }) => {
@@ -63,7 +82,7 @@ const ProductCard = ({ isVegOnly }) => {
 
   const { showLoginPopup } = usePopup();
 
-   const restaurantStatus = localStorage.getItem("restaurantStatus");
+  const restaurantStatus = localStorage.getItem("restaurantStatus");
 
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
@@ -73,7 +92,9 @@ const ProductCard = ({ isVegOnly }) => {
     setTotalMenuCount(menus.length);
 
     // Count special items
-    const specialItemsCount = menus.filter(menu => menu.is_special === true).length;
+    const specialItemsCount = menus.filter(
+      (menu) => menu.is_special === true
+    ).length;
 
     // Apply veg filter if needed
     if (vegOnly) {
@@ -84,9 +105,11 @@ const ProductCard = ({ isVegOnly }) => {
 
     // Handle category filtering
     if (categoryId === "special") {
-      filteredMenus = menus.filter(menu => menu.is_special === true);
+      filteredMenus = menus.filter((menu) => menu.is_special === true);
     } else if (categoryId) {
-      filteredMenus = filteredMenus.filter(menu => menu.menu_cat_id === categoryId);
+      filteredMenus = filteredMenus.filter(
+        (menu) => menu.menu_cat_id === categoryId
+      );
     }
 
     // If no items found after filtering, set empty array
@@ -102,11 +125,11 @@ const ProductCard = ({ isVegOnly }) => {
 
     // Update special count in UI
     if (specialItemsCount > 0) {
-      setMenuCategories(prevCategories => [
-        ...prevCategories.map(category => ({
+      setMenuCategories((prevCategories) => [
+        ...prevCategories.map((category) => ({
           ...category,
-          menu_count: categoryCounts[category.menu_cat_id] || 0
-        }))
+          menu_count: categoryCounts[category.menu_cat_id] || 0,
+        })),
       ]);
     }
   }, []);
@@ -163,8 +186,6 @@ const ProductCard = ({ isVegOnly }) => {
 
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
-
-        localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
       }
     } catch (error) {
       console.clear();
@@ -231,11 +252,11 @@ const ProductCard = ({ isVegOnly }) => {
     //   return;
     // }
 
-       const userData = JSON.parse(localStorage.getItem("userData"));
-       if (!userData?.customer_id || userData.customer_type === "guest") {
-         handleUnauthorizedFavorite();
-         return;
-       }
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === "guest") {
+      handleUnauthorizedFavorite();
+      return;
+    }
 
     const menuItem = menuList.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
@@ -371,51 +392,10 @@ const ProductCard = ({ isVegOnly }) => {
     setShowModal(true);
   };
 
-  // Add this new function to handle cart item removal
-  const handleRemoveFromCart = async (menu) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
-    const cartId = localStorage.getItem("cartId");
-    
-    try {
-      // Get cart item details
-      const cartItem = cartItems.find(item => item.menu_id === menu.menu_id);
-      if (!cartItem) return;
-
-      const response = await fetch(
-        `${config.apiDomain}/user_api/remove_from_cart`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: userData.customer_id,
-            restaurant_id: currentRestaurantId,
-            menu_id: menu.menu_id,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
-        // Remove item from local cart state
-        removeFromCart(menu.menu_id);
-        window.showToast("success", `${menu.name} removed from cart`);
-      } else {
-        window.showToast("error", "Failed to remove item from cart");
-      }
-    } catch (error) {
-      console.clear();
-      window.showToast("error", "Failed to remove item from cart");
-    }
-  };
-
-  // Update the renderCartIcon function
+  // Updated renderCartIcon
   const renderCartIcon = useCallback(
     (menu) => {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const isInCart = isMenuItemInCart(menu.menu_id);
-
       return (
         <div
           className="border border-1 rounded-circle bg-white opacity-75"
@@ -432,27 +412,22 @@ const ProductCard = ({ isVegOnly }) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!userData?.customer_id) {
-              showLoginPopup();
-              return;
-            }
-
-            if (isInCart) {
-              handleRemoveFromCart(menu);
-            } else {
+            if (userData?.customer_id) {
               handleAddToCartClick(menu);
+            } else {
+              showLoginPopup();
             }
           }}
         >
           <i
             className={`ri-shopping-cart-${
-              isInCart ? "fill text-black" : "line"
+              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
             } fs-6`}
           ></i>
         </div>
       );
     },
-    [cartItems, handleAddToCartClick, isMenuItemInCart, removeFromCart]
+    [handleAddToCartClick, isMenuItemInCart]
   );
 
   const handleConfirmAddToCart = async () => {
@@ -512,8 +487,7 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   const handleModalClick = (e) => {
-
-    const restaurantStatus = localStorage.getItem("restaurantStatus")
+    const restaurantStatus = localStorage.getItem("restaurantStatus");
     // Close the modal if the click is outside the modal content
     if (e.target.classList.contains("modal")) {
       setShowModal(false);
@@ -521,7 +495,7 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   if (isLoading || menuList.length === 0) {
-    const restaurantStatus = localStorage.getItem("restaurantStatus")
+    const restaurantStatus = localStorage.getItem("restaurantStatus");
     return (
       <div id="preloader">
         <div className="loader">
@@ -532,16 +506,16 @@ const ProductCard = ({ isVegOnly }) => {
   }
 
   if (restaurantStatus === "false") {
-    setTimeout(()=>{
-      navigate("/user_app/Index")
-    }, 3000)
+    setTimeout(() => {
+      navigate("/user_app/Index");
+    }, 3000);
   }
-  const isRestaurantOpen = localStorage.getItem("isRestaurantOpen")
+  const isRestaurantOpen = localStorage.getItem("isRestaurantOpen");
 
   if (isRestaurantOpen === "false") {
-    setTimeout(()=>{
-      navigate("/user_app/Index")
-    }, 3000)
+    setTimeout(() => {
+      navigate("/user_app/Index");
+    }, 3000);
   }
 
   return (
@@ -803,12 +777,14 @@ const ProductCard = ({ isVegOnly }) => {
                               {menu.category}
                             </span>
                           </div>
-                          <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
-                            {renderStarRating(menu.rating)}
-                            <span className="font_size_10 fw-normal gray-text">
-                              {menu.rating || "0"}
-                            </span>
-                          </div>
+                          {menu.rating > 0 && (
+                            <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
+                              {renderStarRating(menu.rating)}
+                              <span className="font_size_10 fw-normal gray-text">
+                                {menu.rating}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

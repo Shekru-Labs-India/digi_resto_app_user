@@ -371,6 +371,39 @@ const Wishlist = () => {
     }
   }, [isDarkMode]);
 
+  // Add the standardized rating function
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
+
+    // 0 to 0.4: Show no star & value
+    if (!numRating || numRating < 0.5) {
+      return <i className="font_size_10 ratingStar me-1"></i>;
+    }
+
+    // 0.5 to 2.5: Show blank star (grey color)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return (
+        <i className="ri-star-line font_size_10 gray-text me-1"></i>
+      );
+    }
+
+    // 3 to 4.5: Show half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    // 5: Show full star
+    if (numRating === 5) {
+      return (
+        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  };
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -597,10 +630,14 @@ const Wishlist = () => {
                                           )}
                                         </div>
                                         <div className="col-4 d-flex align-items-center justify-content-end pe-4">
-                                          <i className="ri-star-half-line font_size_10 ratingStar pe-1"></i>
-                                          <span className="font_size_10  fw-normal gray-text">
-                                            {menu.rating || 0.1}
-                                          </span>
+                                          {menu.rating > 0 && (
+                                            <>
+                                              {renderStarRating(menu.rating)}
+                                              <span className="font_size_10 fw-normal gray-text">
+                                                {menu.rating}
+                                              </span>
+                                            </>
+                                          )}
                                         </div>
                                       </div>
 

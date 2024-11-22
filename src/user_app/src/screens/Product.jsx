@@ -437,6 +437,39 @@ if (isMenuItemInCart(menu.menu_id)) {
     }
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
+  // Add the standardized rating function
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
+
+    // 0 to 0.4: Show no star & value
+    if (!numRating || numRating < 0.5) {
+      return <i className="font_size_10 ratingStar me-1"></i>;
+    }
+
+    // 0.5 to 2.5: Show blank star (grey color)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return (
+        <i className="ri-star-line font_size_10 gray-text me-1"></i>
+      );
+    }
+
+    // 3 to 4.5: Show half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    // 5: Show full star
+    if (numRating === 5) {
+      return (
+        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      );
+    }
+
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  };
+
   return (
     <div>
       <Header title="Menu" count={menuList.length} />
@@ -627,10 +660,14 @@ if (isMenuItemInCart(menu.menu_id)) {
                             )?.name || menuItem.category}
                           </div>
                           <div className="text-end">
-                            <i className="ri-star-half-line font_size_10 ratingStar"></i>
-                            <span className="font_size_10 fw-normal gray-text ms-1">
-                              {menuItem.rating}
-                            </span>
+                            {menuItem.rating > 0 && (
+                              <>
+                                {renderStarRating(menuItem.rating)}
+                                <span className="font_size_10 fw-normal gray-text">
+                                  {menuItem.rating}
+                                </span>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
