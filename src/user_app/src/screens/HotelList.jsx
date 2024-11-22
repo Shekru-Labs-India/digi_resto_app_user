@@ -80,7 +80,7 @@ const HotelList = () => {
                           <div className="col-1">
                             <i className="ri-map-pin-line gray-text"></i>
                           </div>
-                          <div className="col-10 d-flex align-items-center">
+                          <div className="col-6 d-flex align-items-center">
                             <span className="gray-text font_size_12">
                               {hotel.address
                                 .split(" ")
@@ -92,6 +92,31 @@ const HotelList = () => {
                                 .join(" ")}
                             </span>
                           </div>
+                          {hotel.veg_nonveg && (
+                            <div className="col-4 d-flex justify-content-end">
+                              <div
+                                className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                                  ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+                                    ? "border-success"
+                                    : "border-danger"
+                                }`}
+                                style={{
+                                  height: "20px",
+                                  width: "20px",
+                                  borderWidth: "2px",
+                                  borderRadius: "3px",
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+                                      ? "ri-checkbox-blank-circle-fill text-success"
+                                      : "ri-triangle-fill text-danger"
+                                  } font_size_12`}
+                                ></i>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
