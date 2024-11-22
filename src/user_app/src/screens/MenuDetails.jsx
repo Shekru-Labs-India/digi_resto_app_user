@@ -210,6 +210,10 @@ const MenuDetails = () => {
           const isDifferent = fetchedRestaurantId && contextRestaurantId && 
                             fetchedRestaurantId !== contextRestaurantId;
           setIsFromDifferentRestaurant(isDifferent);
+
+
+         const menuItems = localStorage.getItem("menuItems");
+         
         }
       }
     } catch (error) {
@@ -220,10 +224,24 @@ const MenuDetails = () => {
   };
 
   useEffect(() => {
-    if (currentRestaurantId) { // Remove customerId dependency
+    // Check if menuId exists in menuItems
+    const checkMenuExists = () => {
+      const storedMenuItems = JSON.parse(localStorage.getItem("menuItems") || "[]");
+      const menuExists = storedMenuItems.some(item => item.menu_id.toString() === menuId.toString());
+      
+      if (!menuExists) {
+        window.showToast("error", "Menu not found");
+        navigate("/user_app/Index");
+        return false;
+      }
+      return true;
+    };
+
+    // Only proceed with fetchProductDetails if menu exists
+    if (checkMenuExists() && currentRestaurantId) {
       fetchProductDetails();
     }
-  }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
+  }, [menuId, currentRestaurantId]); // Add necessary dependencies
 
   const fetchHalfFullPrices = async () => {
     setIsPriceFetching(true);

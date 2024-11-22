@@ -163,6 +163,8 @@ const ProductCard = ({ isVegOnly }) => {
 
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
+
+        localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
       }
     } catch (error) {
       console.clear();
@@ -369,10 +371,51 @@ const ProductCard = ({ isVegOnly }) => {
     setShowModal(true);
   };
 
-  // Updated renderCartIcon
+  // Add this new function to handle cart item removal
+  const handleRemoveFromCart = async (menu) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentRestaurantId = restaurantId || localStorage.getItem("restaurantId");
+    const cartId = localStorage.getItem("cartId");
+    
+    try {
+      // Get cart item details
+      const cartItem = cartItems.find(item => item.menu_id === menu.menu_id);
+      if (!cartItem) return;
+
+      const response = await fetch(
+        `${config.apiDomain}/user_api/remove_from_cart`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: userData.customer_id,
+            restaurant_id: currentRestaurantId,
+            menu_id: menu.menu_id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        // Remove item from local cart state
+        removeFromCart(menu.menu_id);
+        window.showToast("success", `${menu.name} removed from cart`);
+      } else {
+        window.showToast("error", "Failed to remove item from cart");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "Failed to remove item from cart");
+    }
+  };
+
+  // Update the renderCartIcon function
   const renderCartIcon = useCallback(
     (menu) => {
       const userData = JSON.parse(localStorage.getItem("userData"));
+      const isInCart = isMenuItemInCart(menu.menu_id);
+
       return (
         <div
           className="border border-1 rounded-circle bg-white opacity-75"
@@ -389,22 +432,27 @@ const ProductCard = ({ isVegOnly }) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (userData?.customer_id) {
-              handleAddToCartClick(menu);
-            } else {
+            if (!userData?.customer_id) {
               showLoginPopup();
+              return;
+            }
+
+            if (isInCart) {
+              handleRemoveFromCart(menu);
+            } else {
+              handleAddToCartClick(menu);
             }
           }}
         >
           <i
             className={`ri-shopping-cart-${
-              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
+              isInCart ? "fill text-black" : "line"
             } fs-6`}
           ></i>
         </div>
       );
     },
-    [handleAddToCartClick, isMenuItemInCart]
+    [cartItems, handleAddToCartClick, isMenuItemInCart, removeFromCart]
   );
 
   const handleConfirmAddToCart = async () => {
