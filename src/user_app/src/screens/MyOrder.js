@@ -1395,7 +1395,12 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-      </>
+        
+        <div className="divider border-success inner-divider transparent mb-3">
+          <span className="bg-body">End</span>
+        </div>
+        
+        </>
     );
   };
 

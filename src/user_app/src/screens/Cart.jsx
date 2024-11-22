@@ -382,12 +382,12 @@ const Cart = () => {
             <h5>Your Cart is Empty</h5>
             <p>Add items to your cart from the product details page.</p>
 
-            <div class="d-flex align-items-center justify-content-center mt-2">
+            <div className="d-flex align-items-center justify-content-center mt-2">
               <Link
-                class="btn btn-outline-primary  rounded-pill  px-3"
+                className="btn btn-outline-primary  rounded-pill  px-3"
                 to="/user_app/Menu"
               >
-                <i class="ri-add-circle-line me-1 fs-4"></i> Order More
+                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
               </Link>
             </div>
           </div>
