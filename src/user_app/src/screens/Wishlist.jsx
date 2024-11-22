@@ -547,7 +547,7 @@ const Wishlist = () => {
                                         </div>
                                       )}
                                     </div>
-                                    <div className="col-9 pt-1 p-0">
+                                    <div className="col-9 pt-1 p-0 pe-2">
                                       <div className="row">
                                         <div className="col-10">
                                           <div className="ps-2 font_size_14 fw-medium">
@@ -570,13 +570,13 @@ const Wishlist = () => {
                                         </div>
                                       </div>
                                       <div className="row mt-1">
-                                        <div className="col-5 text-start d-flex align-items-center">
+                                        <div className="col-4 text-start d-flex align-items-center pe-0">
                                           <span className="ps-2 font_size_10 text-success">
                                             <i className="ri-restaurant-line mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
-                                        <div className="col-3 d-flex aign-items-center">
+                                        <div className="col-4 d-flex aign-items-center justify-content-center pe-3">
                                           {menu.spicy_index && (
                                             <div className="">
                                               {Array.from({ length: 5 }).map(
@@ -596,8 +596,8 @@ const Wishlist = () => {
                                             </div>
                                           )}
                                         </div>
-                                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
-                                          <i className="ri-star-half-line font_size_10 ratingStar "></i>
+                                        <div className="col-4 d-flex align-items-center justify-content-end pe-4">
+                                          <i className="ri-star-half-line font_size_10 ratingStar pe-1"></i>
                                           <span className="font_size_10  fw-normal gray-text">
                                             {menu.rating || 0.1}
                                           </span>

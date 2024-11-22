@@ -1143,7 +1143,10 @@ const TrackOrder = () => {
                         Total
                       </span>
                       <span className="pe-2 font_size_14 fw-semibold">
-                        ₹{orderDetails.order_details.total_total || 0}
+                        ₹
+                        {parseFloat(
+                          orderDetails.order_details.total_total || 0
+                        ).toFixed(2)}
                       </span>
                     </div>
                     <hr className="p-0 m-0 text-primary" />
@@ -1161,7 +1164,9 @@ const TrackOrder = () => {
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
                         ₹
-                        {orderDetails.order_details.service_charges_amount || 0}
+                        {parseFloat(
+                          orderDetails.order_details.service_charges_amount
+                        ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
@@ -1175,7 +1180,10 @@ const TrackOrder = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14  text-start gray-text">
-                        ₹{orderDetails.order_details.gst_amount || 0}
+                        ₹
+                        {parseFloat(
+                          orderDetails.order_details.gst_amount
+                        ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
@@ -1188,7 +1196,10 @@ const TrackOrder = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
-                        -₹{orderDetails.order_details.discount_amount || 0}
+                        -₹
+                        {parseFloat(
+                          orderDetails.order_details.discount_amount
+                        ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
@@ -1199,7 +1210,8 @@ const TrackOrder = () => {
                     <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
                       <span className="ps-2 fw-semibold fs-6">Grand Total</span>
                       <span className="pe-2  fw-semibold fs-6">
-                        ₹{orderDetails.order_details.grand_total || 0}
+                        ₹
+                        {parseFloat(orderDetails.order_details.grand_total).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
@@ -1227,8 +1239,9 @@ const TrackOrder = () => {
                 )}
               </div>
             )}
-            <div className="divider border-success inner-divider transparent mt-5" ><span className="bg-body">End</span></div>
-
+            <div className="divider border-success inner-divider transparent mt-5">
+              <span className="bg-body">End</span>
+            </div>
           </div>
         )}
 
