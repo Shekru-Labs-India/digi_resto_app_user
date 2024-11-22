@@ -163,6 +163,8 @@ const ProductCard = ({ isVegOnly }) => {
 
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
+
+        localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
       }
     } catch (error) {
       console.clear();
