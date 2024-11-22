@@ -487,7 +487,8 @@ const OfferBanner = () => {
                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                 state={{ menu_cat_id: menu.menu_cat_id }}
               >
-                <div className="cart-list bg-white p-0 rounded-4">
+                <div className="cart-list bg-white p-0 rounded-4"
+                style={{width:"345px"}}>
                   <div className="dz-media media-100">
                     <img
                       style={{
