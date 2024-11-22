@@ -19,6 +19,20 @@ const toTitleCase = (text) => {
   return text.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+const renderStarRating = (rating) => {
+  const numRating = parseFloat(rating);
+  
+  if (!numRating || numRating === 0) {
+    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+  }
+  
+  if (numRating >= 4) {
+    return <i className="ri-star-fill font_size_10 ratingStar me-1 text-warning"></i>;
+  }
+  
+  return <i className="ri-star-half-fill font_size_10 ratingStar me-1 text-warning"></i>;
+};
+
 const ProductCard = ({ isVegOnly }) => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
@@ -742,9 +756,9 @@ const ProductCard = ({ isVegOnly }) => {
                             </span>
                           </div>
                           <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
-                            <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-                            <span className="font_size_10 fw-normal gray-text ">
-                              {menu.rating}
+                            {renderStarRating(menu.rating)}
+                            <span className="font_size_10 fw-normal gray-text">
+                              {menu.rating || "0"}
                             </span>
                           </div>
                         </div>

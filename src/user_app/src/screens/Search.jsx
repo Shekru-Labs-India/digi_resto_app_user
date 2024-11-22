@@ -681,11 +681,11 @@ const Search = () => {
                   </div>
                 </div>
               </div>
-              <div className="divider border-success inner-divider transparent mt-5" ><span className="bg-body">End</span></div>
-
+              <div className="divider border-success inner-divider transparent mt-5">
+                <span className="bg-body">End</span>
+              </div>
             </div>
           ))}
-          
         </div>
       </main>
 
@@ -781,7 +781,7 @@ const Search = () => {
                   </div>
                 </div>
               </div>
-
+              <hr className="my-4" />
               {/* Updated Footer */}
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button

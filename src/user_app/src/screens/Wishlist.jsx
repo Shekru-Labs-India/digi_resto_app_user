@@ -539,7 +539,7 @@ const Wishlist = () => {
                                           } font_size_12`}
                                         ></i>
                                       </div>
-                                       {menu.offer && menu.offer !== "0" && (
+                                      {menu.offer && menu.offer !== "0" && (
                                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                           <span className="font_size_10 text-white">
                                             {menu.offer}% Off
@@ -666,13 +666,14 @@ const Wishlist = () => {
                         ))}
                       </div>
                     </div>
-
                   </div>
                 ) : null
               )}
               <div className="container">
-                                  <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
-                                  </div>
+                <div className="divider border-success inner-divider transparent mb-0">
+                  <span className="bg-body">End</span>
+                </div>
+              </div>
             </>
           ) : (
             <div
@@ -715,7 +716,6 @@ const Wishlist = () => {
             </div>
           </div>
         )}
-        
       </main>
 
       {showModal && (
@@ -768,6 +768,7 @@ const Wishlist = () => {
                     placeholder="Add any special instructions here..."
                   ></textarea>
                 </div>
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -806,6 +807,7 @@ const Wishlist = () => {
                   </div>
                 </div>
               </div>
+              <hr className="my-4" />
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
@@ -829,9 +831,9 @@ const Wishlist = () => {
           </div>
         </div>
       )}
-      
+
       {showModal && <div className="modal-backdrop fade show"></div>}
-      
+
       <Bottom />
     </div>
   );

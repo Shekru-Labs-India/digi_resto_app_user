@@ -1042,6 +1042,7 @@ const MenuDetails = () => {
                   </div>
                 </div>
               </div>
+              <hr className="my-4" />
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"

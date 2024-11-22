@@ -713,6 +713,7 @@ const OfferBanner = () => {
                     placeholder="Add any special instructions here..."
                   ></textarea>
                 </div>
+                <hr className="my-4"/>
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -751,6 +752,7 @@ const OfferBanner = () => {
                   </div>
                 </div>
               </div>
+              <hr className="my-4"/>
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"

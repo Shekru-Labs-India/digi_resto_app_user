@@ -473,7 +473,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                       color: selectedCategory === null ? "#ffffff" : "",
                     }}
                   >
-                    All{" "} 
+                    All{" "}
                     <span className="gray-text font_size_10">
                       ({menuList.length})
                     </span>
@@ -744,10 +744,10 @@ if (isMenuItemInCart(menu.menu_id)) {
               </div>
             ))}
           </div>
-          <div className="divider border-success inner-divider transparent mb-5" ><span className="bg-body">End</span></div>
-
+          <div className="divider border-success inner-divider transparent mb-5">
+            <span className="bg-body">End</span>
+          </div>
         </div>
-
       </main>
 
       {showModal && (
@@ -839,6 +839,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                   </div>
                 </div>
               </div>
+              <hr className="my-4" />
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
