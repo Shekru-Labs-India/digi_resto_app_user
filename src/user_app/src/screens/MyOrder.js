@@ -12,6 +12,12 @@ import Header from "../components/Header";
 import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
 
+const calculateOriginalPrice = (grandTotal) => {
+  const numericTotal = parseFloat(grandTotal);
+  const originalPrice = (numericTotal / 0.6).toFixed(2); // 40% discount means price is 60% of original
+  return originalPrice;
+};
+
 const MyOrder = () => {
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -704,7 +710,7 @@ export const OrderCard = ({
                 ₹{order.grand_total}
               </span>
               <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                ₹{calculateOriginalPrice(order.grand_total)}
               </span>
             </div>
           </div>
@@ -1328,7 +1334,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             ₹{order.grand_total}
                           </span>
                           <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                            ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                            ₹{calculateOriginalPrice(order.grand_total)}
                           </span>
                         </div>
                       </div>
