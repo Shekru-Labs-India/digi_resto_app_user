@@ -387,7 +387,7 @@ const MenuDetails = () => {
           }));
 
           window.showToast(
-            updatedFavoriteStatus ? "success" : "info",
+            updatedFavoriteStatus ? "success" : "success",
             updatedFavoriteStatus
               ? "Item has been added to your favorites"
               : "Item has been removed from your favorites"

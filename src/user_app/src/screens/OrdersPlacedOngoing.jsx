@@ -310,7 +310,9 @@ const OrderCard = ({
               </span>
             </div>
             <div className="col-8 text-end">
-              <span className="gray-text font_size_12">{order.time}</span>
+              <span className="gray-text font_size_12">{order.time?.split(":").slice(0,2).join(":")+" "+ order.time?.slice(-2)}
+
+              </span>
             </div>
           </div>
           <div className="row">

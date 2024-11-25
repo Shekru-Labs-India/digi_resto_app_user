@@ -226,7 +226,7 @@ const Product = () => {
           );
           setFavorites(updatedMenuList.filter((item) => item.is_favourite));
           window.showToast(
-            isFavorite ? "info" : "success",
+            "success",
             isFavorite
               ? "Item has been removed from your favourites."
               : "Item has been added to your favourites."
@@ -264,33 +264,48 @@ const Product = () => {
   useEffect(() => {
     if (menuList.length > 0) {
       let filtered = [...menuList];
-      
-      // Filter by category if selected
+  
+      // If a category is selected, filter by category
       if (selectedCategory) {
-        filtered = menuList.filter(item => item.menu_cat_id === selectedCategory);
+        const selectedCategoryName = categories.find(
+          (category) => category.menu_cat_id === selectedCategory
+        )?.name;
+  
+        filtered = menuList.filter(
+          (item) => item.category === selectedCategoryName
+        );
       }
-
-      // Always include special items at the top of the list
-      const specialItems = menuList.filter(item => item.is_special);
-      const nonSpecialItems = filtered.filter(item => !item.is_special);
-      
-      setFilteredMenuList([...specialItems, ...nonSpecialItems]);
+  
+      // If "Special" category is selected, filter by special items only
+      if (selectedCategory === "special") {
+        filtered = menuList.filter((item) => item.is_special);
+      }
+  
+      setFilteredMenuList(filtered);
     }
-  }, [selectedCategory, menuList]);
+  }, [selectedCategory, menuList, categories]);
+  
+  
 
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId);
+    if (categoryId === "special") {
+      setSelectedCategory("special");
+    } else {
+      setSelectedCategory(categoryId);
+    }
+  
     if (swiperRef.current) {
-      const activeIndex = categoryId
-        ? categories.findIndex(
-            (category) => category.menu_cat_id === categoryId
-          )
-        : 0;
+      const activeIndex = categories.findIndex(
+        (category) => category.menu_cat_id === categoryId
+      );
+  
       if (activeIndex !== -1) {
         swiperRef.current.slideTo(activeIndex);
       }
     }
   };
+  
+  
 
   const fetchHalfFullPrices = async (menuId) => {
     if (!restaurantId) {
@@ -491,7 +506,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                 onClick={() => handleCategorySelect("special")}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special
+                Special <span className="font_size_10">({menuList.filter((menu)=> menu.is_special).length})</span>
               </div>
               {menuList.length > 0 && categories.length > 0 && (
                 <>
