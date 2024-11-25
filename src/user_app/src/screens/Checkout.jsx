@@ -439,7 +439,7 @@ await fetchCartDetails();
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary rounded-pill font_size_14"
+                      className="btn btn-sm btn-outline-primary rounded-pill font_size_14 "
                       onClick={() => setShowExistingOrderModal(false)}
                     >
                       Close

@@ -339,7 +339,7 @@ const MenuDetails = () => {
         currentCustomerId,
         currentRestaurantId
       );
-      window.showToast("info", "Item has been removed from your cart");
+      window.showToast("success", "Item has been removed from your cart");
     } catch (error) {
       console.error("Error removing item from cart:", error);
       window.showToast("error", "Failed to remove item from cart");

@@ -854,7 +854,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex fw-medium justify-content-between">
                     Select Portion Size
                   </label>
                   <div className="d-flex justify-content-between">

@@ -6,7 +6,7 @@ import "../assets/css/custom.css";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import Bottom from "../component/bottom";
-
+import { usePopup } from "../context/PopupContext";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
@@ -23,7 +23,7 @@ const Cart = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
-
+  const { showLoginPopup } = usePopup();
   // Helper function to get stored restaurant ID
   const getStoredRestaurantId = useCallback(() => {
     return localStorage.getItem("restaurantId") || restaurantId;
@@ -252,7 +252,8 @@ const Cart = () => {
   };
 
   const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
+  
+    showLoginPopup();
   };
 
   const handleLikeClick = async (menuId) => {
