@@ -922,10 +922,10 @@ const MenuDetails = () => {
                     <div className="text-danger">Please add a quantity.</div>
                   )}
                 </div>
-                
+
                 {/* Add end border */}
                 <div className="divider border-success inner-divider transparent mb-5 pb-5">
-                  <span className="bg-body">End</span>
+                  <span className="bg-body bg-white">End</span>
                 </div>
               </div>
             </div>
@@ -960,7 +960,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-8 px-0 text-center menu_details-add-to-cart">
+                <div className="col-8 px-0 text-center">
                   {!customerId ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
@@ -971,10 +971,10 @@ const MenuDetails = () => {
                     </button>
                   ) : isFromDifferentRestaurant ? (
                     <button
-                      className="btn btn-outline-secondary rounded-pill p-3"
+                      className="btn btn-outline-white rounded-pill p-3"
                       disabled
                     >
-                      <div className="font-poppins text-break">
+                      <div className="font-poppins text-break text-dark">
                         Different Restaurant
                       </div>
                     </button>
@@ -1012,7 +1012,6 @@ const MenuDetails = () => {
         </div>
       </div>
 
-      
       <Bottom />
 
       {showModal && (
@@ -1043,7 +1042,7 @@ const MenuDetails = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-muted"></i>
+                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>

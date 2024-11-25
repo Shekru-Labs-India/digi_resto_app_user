@@ -804,7 +804,7 @@ export const OrderCard = ({
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line fs-3 text-dark"></i>
+                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                       </span>
                     </div>
                   </div>
@@ -964,7 +964,7 @@ export const OrderCard = ({
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="ri-close-line text-dark"></i>
+                      <i class="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                   <button
@@ -1613,7 +1613,7 @@ export const CircularCountdown = ({
           strokeDasharray={`${percentage}, 100`}
         />
       </svg>
-      <div className="timer-text-overlay">{timeLeft}s</div>
+      <div className="timer-text-overlay text-dark">{timeLeft}s</div>
     </div>
   );
 };

@@ -598,7 +598,7 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i className="me-1 font_size_14 ri-close-line text-dark"></i>
+                                            <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                                           </div>
                                         </div>
                                       </div>
@@ -783,7 +783,7 @@ const Wishlist = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark"></i>
+                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>

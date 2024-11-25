@@ -830,7 +830,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-muted"></i>
+                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>

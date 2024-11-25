@@ -866,7 +866,7 @@ const ProductCard = ({ isVegOnly }) => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark"></i>
+                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>

@@ -1174,7 +1174,7 @@ const TrackOrder = () => {
                                   isWithinPlacedWindow && (
                                     <div className="col-2 text-end">
                                       <i
-                                        className="ri-close-line text-danger"
+                                        className="ri-close-line text-dark font_size_14 pe-3"
                                         style={{ cursor: "pointer" }}
                                         onClick={(e) =>
                                           handleRemoveItem(menu, e)
@@ -1364,7 +1364,9 @@ const TrackOrder = () => {
                       <span className="ps-2 fw-semibold fs-6">Grand Total</span>
                       <span className="pe-2  fw-semibold fs-6">
                         ₹
-                        {parseFloat(orderDetails.order_details.grand_total).toFixed(2) || 0}
+                        {parseFloat(
+                          orderDetails.order_details.grand_total
+                        ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>

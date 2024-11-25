@@ -509,7 +509,7 @@ const Cart = () => {
                               handleRemoveFromCart(item, index);
                             }}
                           >
-                            <i className="ri-close-line fs-4 mb-5 icon-adjust"></i>
+                            <i className="ri-close-line text-dark font_size_14"></i>
                           </div>
                         </div>
                       </div>
