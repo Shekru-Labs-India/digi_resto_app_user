@@ -54,7 +54,7 @@ window.showToast = function(type, message) {
       <i class="toast-icon ${iconClass}"></i>
       <div class="message">
         <span class="text-title">${title}</span>
-        <span class="text-body">${message}</span>
+        <span class="text-body text-dark">${message}</span>
       </div>
     </div>
     <span class="close" onclick="window.hideToast()">✖</span>

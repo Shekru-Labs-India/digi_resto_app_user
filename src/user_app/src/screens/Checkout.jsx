@@ -405,7 +405,7 @@ await fetchCartDetails();
                       onClick={() => setShowExistingOrderModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark"></i>
+                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -419,13 +419,13 @@ await fetchCartDetails();
 
                   <div className="d-flex flex-column gap-2">
                     <button
-                      className="btn btn-danger rounded-pill font_size_14"
+                      className="btn btn-danger rounded-pill font_size_14 text-white"
                       onClick={() => handleOrderAction("cancle")}
                     >
                       Cancel Existing & Create New Order
                     </button>
                     <button
-                      className="btn btn-success rounded-pill font_size_14"
+                      className="btn btn-success rounded-pill font_size_14 text-white"
                       onClick={() => handleOrderAction("completed")}
                     >
                       Complete Existing & Create New Order
@@ -514,20 +514,19 @@ await fetchCartDetails();
                         className="btn p-0 fs-3 text-dark"
                         onClick={() => setShowNewOrderModal(false)}
                       >
-                        <i className="ri-close-line text-dark"></i>
+                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
                       </button>
                     </div>
                   </div>
 
                   <div className="p-3">
                     <p className="text-center mb-4 text-dark">
-                      No ongoing order found. <br /> 
-                      Would you like to create a new
-                      order?
+                      No ongoing order found. <br />
+                      Would you like to create a new order?
                     </p>
 
                     <button
-                      className="btn btn-success rounded-pill w-100 py-2"
+                      className="btn btn-success rounded-pill w-100 py-2 text-dark"
                       onClick={handleCreateOrder}
                     >
                       Create Order
@@ -689,8 +688,9 @@ await fetchCartDetails();
 
         <div className="container py-0">
           <NearbyArea />
-          <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
-
+          <div className="divider border-success inner-divider transparent mb-0">
+            <span className="bg-body">End</span>
+          </div>
         </div>
       </main>
 
