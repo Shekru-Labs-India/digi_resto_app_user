@@ -252,7 +252,7 @@ const Cart = () => {
   };
 
   const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
+    window.showToast("info", "Please login to use favourite functionality");
   };
 
   const handleLikeClick = async (menuId) => {
@@ -314,7 +314,7 @@ const Cart = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favorites" : "Added to favorites"
+          isFavorite ? "Removed from favourite" : "Added to favourite"
         );
       } else {
         throw new Error(data.msg || "Failed to update favorite status");

@@ -174,7 +174,7 @@ const Product = () => {
   }, []);
 
   const handleUnauthorizedFavorite = (navigate) => {
-    window.showToast("info", "Please login to use favorites functionality");
+    window.showToast("info", "Please login to use favourite functionality");
   };
 
   // Handle favorites (like/unlike)

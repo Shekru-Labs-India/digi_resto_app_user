@@ -352,10 +352,10 @@ const Wishlist = () => {
           return updatedMenuList;
         });
 
-        window.showToast("success", "Item has been removed from favorites");
+        window.showToast("success", "Item has been removed from favourite");
       } else {
     
-        window.showToast("error", "Failed to remove item from favorites");
+        window.showToast("error", "Failed to remove item from favourite");
       }
     } catch (error) {
      

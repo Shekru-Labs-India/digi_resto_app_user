@@ -254,7 +254,10 @@ const NearbyArea = () => {
           })
         );
 
-        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
+        window.showToast(
+          "success",
+          isFavorite ? "Removed from favourite" : "Added to favourite"
+        );
       }
     } catch (error) {
       console.clear();

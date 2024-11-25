@@ -339,8 +339,8 @@ const Search = () => {
         );
 
         window.showToast(
-          "success", 
-          isFavorite ? "Removed from favorites" : "Added to favorites"
+          "success",
+          isFavorite ? "Removed from favourite" : "Added to favourite"
         );
       }
     } catch (error) {
