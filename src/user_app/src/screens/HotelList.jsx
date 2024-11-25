@@ -41,24 +41,30 @@ const HotelList = () => {
           {hotels.map((hotel) => (
             <div className="card rounded-4" key={hotel.restaurant_id}>
               <Link to={`/user_app/${hotel.code}`}>
-                <div className={`card-body py-0 ${hotel.is_open === false ? "bg-light rounded-4" : ""}`}>
-                  <div className="row text-start">
+                <div
+                  className={`card-body py-0 ${
+                    hotel.is_open === false ? "bg-light rounded-4" : ""
+                  }`}
+                >
+                  <div className="row">
                     <div className="col-12">
-                      <div className="row mt-2 align-items-center">
+                      <div className="row mt-2 d-flex justify-content-between">
                         <div className="col-1">
                           <i className="ri-store-2-line font_size_14 fw-medium"></i>
                         </div>
-                        <div className="col-7">
+                        <div className="col-6 ps-0">
                           <span className="font_size_14 fw-medium m-0">
                             {hotel.restaurant_name.toUpperCase()}
                           </span>
                         </div>
-                        <div className="col-4 d-flex justify-content-end pe-3">
-                          {hotel.is_open === false && (
-                            <span className="badge bg-danger small">
-                              Closed
-                            </span>
-                          )}
+                        <div className="col-4">
+                          <div className="d-flex justify-content-end">
+                            {hotel.is_open === false && (
+                              <span className="badge bg-danger small ">
+                                Closed
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="row mt-1">
@@ -71,38 +77,44 @@ const HotelList = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="row mt-1 pb-1 align-items-center">
+                      <div className="row mb-2 d-flex justify-content-between">
                         <div className="col-1">
                           <i className="ri-map-pin-line gray-text"></i>
                         </div>
-                        <div className="col-7 d-flex align-items-center">
+                        <div className="col-6 ps-0">
                           <span className="gray-text font_size_12">
                             {hotel.address}
                           </span>
                         </div>
-                        <div className="col-4 d-flex justify-content-end pe-3">
-                          {hotel.veg_nonveg && (
-                            <div
-                              className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-                                ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
-                                  ? "border-success"
-                                  : "border-danger"
-                              }`}
-                              style={{
-                                height: "20px",
-                                width: "20px",
-                                borderWidth: "2px",
-                              }}
-                            >
-                              <i
-                                className={`${
-                                  ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
-                                    ? "ri-checkbox-blank-circle-fill text-success"
-                                    : "ri-triangle-fill text-danger"
-                                } font_size_12`}
-                              ></i>
-                            </div>
-                          )}
+                        <div className="col-4">
+                          <div className="d-flex justify-content-end">
+                            {hotel.veg_nonveg && (
+                              <div
+                                className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
+                                  ["veg", "Veg", "VEG"].includes(
+                                    hotel.veg_nonveg
+                                  )
+                                    ? "border-success"
+                                    : "border-danger"
+                                }`}
+                                style={{
+                                  height: "20px",
+                                  width: "20px",
+                                  borderWidth: "2px",
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    ["veg", "Veg", "VEG"].includes(
+                                      hotel.veg_nonveg
+                                    )
+                                      ? "ri-checkbox-blank-circle-fill text-success"
+                                      : "ri-triangle-fill text-danger"
+                                  } font_size_12`}
+                                ></i>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -149,7 +161,7 @@ const HotelList = () => {
                   <i className="ri-linkedin-fill ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.threads.net/@menumitra"
+                  href="https://x.com/MenuMitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"

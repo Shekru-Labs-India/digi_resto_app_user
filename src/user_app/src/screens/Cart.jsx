@@ -252,7 +252,6 @@ const Cart = () => {
   };
 
   const handleUnauthorizedFavorite = (navigate) => {
-  
     showLoginPopup();
   };
 
@@ -315,7 +314,7 @@ const Cart = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favorites" : "Added to favorites"
+          isFavorite ? "Removed from favourite" : "Added to favourite"
         );
       } else {
         throw new Error(data.msg || "Failed to update favorite status");

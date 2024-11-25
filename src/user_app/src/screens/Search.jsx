@@ -339,8 +339,8 @@ const Search = () => {
         );
 
         window.showToast(
-          "success", 
-          isFavorite ? "Removed from favorites" : "Added to favorites"
+          "success",
+          isFavorite ? "Removed from favourite" : "Added to favourite"
         );
       }
     } catch (error) {
@@ -503,7 +503,7 @@ const Search = () => {
         </div>
 
         <div className="container pt-0">
-          <div className="input-group w-100 my-2 border border-muted rounded-4">
+          <div className="input-group w-100 my-2 border border-muted rounded-3">
             <span className="input-group-text py-0">
               <i className="ri-search-line fs-3 text-primary"></i>
             </span>

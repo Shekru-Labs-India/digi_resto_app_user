@@ -304,8 +304,8 @@ const ProductCard = ({ isVegOnly }) => {
           window.showToast(
             "success",
             updatedFavoriteStatus
-              ? "Item has been added to your favorites."
-              : "Item has been removed from your favorites."
+              ? "Item has been added to your favourite."
+              : "Item has been removed from your favourite."
           );
         } else {
           console.clear();
@@ -618,7 +618,10 @@ const ProductCard = ({ isVegOnly }) => {
                 }}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special <span className="font_size_10">({menuList.filter((menu) => menu.is_special).length})</span>
+                Special
+                <span className="gray-text font_size_10">{" "}
+                  ({menuList.filter((menu) => menu.is_special).length})
+                </span>
               </div>
             </div>
 

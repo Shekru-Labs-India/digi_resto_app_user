@@ -26,7 +26,7 @@ export const FavoritesProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Error fetching favorites:', error);
+      console.error("Error fetching favourite:", error);
     }
   }, []);
 

@@ -456,7 +456,7 @@ const TrackOrder = () => {
   }, []);
 
   const handleUnauthorizedFavorite = () => {
-    window.showToast("info", "Please login to use favorites functionality");
+    window.showToast("info", "Please login to use favourite functionality");
    
   };
 
@@ -529,7 +529,7 @@ const TrackOrder = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favorites" : "Added to favorites"
+          isFavorite ? "Removed from favourite" : "Added to favourite"
         );
       }
     } catch (error) {

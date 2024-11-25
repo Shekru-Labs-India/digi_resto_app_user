@@ -352,10 +352,10 @@ const Wishlist = () => {
           return updatedMenuList;
         });
 
-        window.showToast("success", "Item has been removed from favorites");
+        window.showToast("success", "Item has been removed from favourite");
       } else {
     
-        window.showToast("error", "Failed to remove item from favorites");
+        window.showToast("error", "Failed to remove item from favourite");
       }
     } catch (error) {
      
@@ -572,10 +572,10 @@ const Wishlist = () => {
                                           } font_size_12`}
                                         ></i>
                                       </div>
-                                      {menu.offer && menu.offer !== "0" && (
+                                      {menu.offer !== 0 && (
                                         <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                           <span className="font_size_10 text-white">
-                                            {menu.offer}% Off
+                                            {menu.offer || "No"}% Off
                                           </span>
                                         </div>
                                       )}

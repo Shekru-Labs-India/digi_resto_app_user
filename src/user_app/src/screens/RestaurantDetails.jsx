@@ -135,7 +135,7 @@ function RestaurantDetails() {
                     <span className="font_size_16">
                       UPI : {restaurantDetails.upi_id}
                     </span>
-                    <a class="btn btn-info rounded-pill btn-sm">
+                    <a class="btn btn-info rounded-pill btn-sm text-white">
                       <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
                     </a>
                     {/* <a href="upi://pay?pa=sugatraj.2106@oksbi&pn=Tasty Diner&mc=1234&tid=ORDER123&tr=ORDER123&tn=Customer is paying Rs. 0.01 for order no. ORDER123&am=1&cu=INR">Pay Now</a> */}

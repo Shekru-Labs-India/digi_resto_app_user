@@ -389,8 +389,8 @@ const MenuDetails = () => {
           window.showToast(
             updatedFavoriteStatus ? "success" : "success",
             updatedFavoriteStatus
-              ? "Item has been added to your favorites"
-              : "Item has been removed from your favorites"
+              ? "Item has been added to your favourite"
+              : "Item has been removed from your favourite"
           );
 
           window.dispatchEvent(new CustomEvent("favoritesUpdated"));
