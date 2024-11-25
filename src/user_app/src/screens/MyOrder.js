@@ -606,67 +606,61 @@ export const OrderCard = ({
   };
 
   const handleUpiPayment = async () => {
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const restaurantName = userData?.restaurantName;
-    const customerName = userData?.name;
+    let paymentUrl;
     
-
-    const orderId = order.order_id;
-
-    setPaymentMethod("UPI");
+    switch(paymentMethod) {
+      case "PhonePe":
+        paymentUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+        break;
+      
+      case "GooglePay":
+        paymentUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+        break;
+      
+      default: // Regular UPI
+        paymentUrl = `upi://pay?pa=hivirajkadam@okhdfcbank&pn=MenuMitra&tr=ORDER123&tn=Payment for order&am=1&cu=INR`;
+    }
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/complete_order`,
+        `${config.baseURL}/orders/${order.order_id}/status`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            order_id: order.order_id,
-            restaurant_id: order.restaurant_id,
-            payment_method: "UPI", // Added payment method
+            status: "Payment Initiated",
+            payment_method: paymentMethod,
           }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        window.showToast("success", data.msg);
-
-        // Update the state to remove the order from "ongoing"
-        setOngoingOrPlacedOrders((prevOrders) => {
-          const updatedOngoing = prevOrders.ongoing.filter(
-            (o) => o.order_id !== order.order_id
-          );
-
-          return {
-            placed: prevOrders.placed,
-            ongoing: updatedOngoing,
-          };
-        });
-
-        setShowCompleteModal(false); // Close the modal
-      } else {
-        window.showToast("error", data.msg || "Failed to complete the order.");
+      if (response.ok) {
+        // Add setTimeout for redirection
+        setTimeout(() => {
+          window.location.href = paymentUrl;
+        }, 1000);
       }
     } catch (error) {
-      console.error("Error completing order:", error);
-      window.showToast("error", "An error occurred. Please try again later.");
+      console.error("Error updating order status:", error);
     }
+  };
 
-  
-      // Wait 1 second before opening UPI deep link
-      setTimeout(() => {
-        const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${restaurantName}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${customerName} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
-        window.location.href = upiUrl;
+  // Separate functions for direct payment links
+  const openPhonePeLink = () => {
+    const phonePeUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+
+    setTimeout(() => {
+      window.location.href = phonePeUrl;
+    }, 1000);
+  };
+
+  const openGooglePayLink = () => {
+    const googlePayUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+
+    setTimeout(() => {
+      window.location.href = googlePayUrl;
     }, 1000);
   };
 
@@ -809,52 +803,11 @@ export const OrderCard = ({
                     </div>
                   </div>
                 </div>
-                {/* <div className="modal-body">
-                  <p>Are you sure you want to complete this order?</p>
-                  <div className="d-flex justify-content-around">
-                    {" "}
-               
-                    <button
-                      type="button"
-                      className={`border rounded-pill px-5 font_size_14 text-center ${
-                        paymentMethod === "UPI"
-                          ? "bg-info text-white"
-                          : "border border-info"
-                      }`}
-                      onClick={() => setPaymentMethod("UPI")}
-                    >
-                      UPI
-                    </button>
-                    <button
-                      type="button"
-                      className={`border rounded-pill px-5 font_size_14 text-center ${
-                        paymentMethod === "Card"
-                          ? "bg-info text-white"
-                          : "border border-info"
-                      }`}
-                      onClick={() => setPaymentMethod("Card")}
-                    >
-                      Card
-                    </button>
-                    <button
-                      type="button"
-                      className={`border rounded-pill px-5 py-2 font_size_14 text-center ${
-                        paymentMethod === "Cash"
-                          ? "bg-info text-white"
-                          : "border border-info"
-                      }`}
-                      onClick={() => setPaymentMethod("Cash")}
-                    >
-                      Cash
-                    </button>
-                  </div>
-                </div> */}
-
                 <div className="modal-body">
                   <p className="text-center">
                     Are you sure you want to complete this order?
                   </p>
-                  <div className="d-flex justify-content-center">
+                  <div className="d-flex flex-column align-items-center gap-3">
                     <button
                       className="btn btn-info text-white"
                       onClick={() => {
@@ -863,26 +816,48 @@ export const OrderCard = ({
                       }}
                     >
                       Pay
-                      <span className="fs-4 mx-1">
-                        ₹{order.grand_total}
-                      </span>{" "}
-                      via
-                      {isDarkMode === "true" ? (
-                        <img
-                          className="text-white ms-1"
-                          src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                          width={45}
-                        />
-                      ) : (
-                        <img
-                          className="text-white ms-1"
-                          src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                          width={45}
-                        />
-                      )}
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <img
+                        className="text-white ms-1"
+                        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                        width={45}
+                        alt="UPI"
+                      />
+                    </button>
+
+                    <button
+                      className="btn text-white"
+                      style={{ backgroundColor: '#5f259f' }}
+                      onClick={openPhonePeLink}
+                    >
+                      Pay
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <img
+                        className="ms-1"
+                        src="https://www.phonepe.com/webstatic/static/favicon-32x32-c735c361.png"
+                        width={45}
+                        alt="PhonePe"
+                      />
+                    </button>
+
+                    <button
+                      className="btn text-dark"
+                      style={{ 
+                        background: 'white',
+                        border: '1px solid #ccc'
+                      }}
+                      onClick={openGooglePayLink}
+                    >
+                      Pay
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      <img
+                        className="ms-1"
+                        src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                        width={45}
+                        alt="Google Pay"
+                      />
                     </button>
                   </div>
-                  {/* <hr className="my-4" /> */}
                 </div>
 
                 <div className="text-center">

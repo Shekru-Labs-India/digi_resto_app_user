@@ -287,10 +287,7 @@ const OfferBanner = () => {
           })
         );
 
-        window.showToast(
-          "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
-        );
+        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
       }
     } catch (error) {
       console.clear();
@@ -523,10 +520,8 @@ const OfferBanner = () => {
                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                 state={{ menu_cat_id: menu.menu_cat_id }}
               >
-                <div
-                  className="cart-list bg-white p-0 rounded-4"
-                  style={{ width: "345px" }}
-                >
+                <div className="cart-list bg-white p-0 rounded-4"
+                style={{width:"345px"}}>
                   <div className="dz-media media-100">
                     <img
                       style={{
@@ -733,7 +728,7 @@ const OfferBanner = () => {
                     className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowModal(false)}
                   >
-                    <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                    <i className="ri-close-line text-dark"></i>
                   </button>
                 </div>
               </div>
@@ -754,7 +749,7 @@ const OfferBanner = () => {
                     placeholder="Add any special instructions here..."
                   ></textarea>
                 </div>
-                <hr className="my-4" />
+                <hr className="my-4"/>
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-between">
                     Select Portion Size
@@ -793,7 +788,7 @@ const OfferBanner = () => {
                   </div>
                 </div>
               </div>
-              <hr className="my-4" />
+              <hr className="my-4"/>
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"

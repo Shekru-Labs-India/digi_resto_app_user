@@ -25,6 +25,7 @@ const NearbyArea = () => {
   const [selectedMenu, setSelectedMenu] = useState(null);
   const hasFetchedData = useRef(false);
   const { showLoginPopup } = usePopup();
+  const swiperRef = useRef(null);
 
   
   useEffect(() => {
@@ -183,19 +184,21 @@ const NearbyArea = () => {
 
   useEffect(() => {
     if (menuItems.length > 0) {
-      const swiper = new Swiper(".nearby-swiper", {
+      swiperRef.current = new Swiper(".nearby-swiper", {
         slidesPerView: "auto",
         spaceBetween: 20,
         loop: true,
         autoplay: {
           delay: 2500,
-          // delay: 25000000,
           disableOnInteraction: false,
         },
       });
 
       return () => {
-        swiper.destroy();
+        if (swiperRef.current && typeof swiperRef.current.destroy === 'function') {
+          swiperRef.current.destroy(true, true);
+          swiperRef.current = null;
+        }
       };
     }
   }, [menuItems]);

@@ -79,6 +79,16 @@ function RestaurantDetails() {
     }
   };
 
+  const openPhonePeLink = () => {
+    const phonePeUrl = `phonepe://pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+    window.location.href = phonePeUrl;
+  };
+
+  const openGooglePayLink = () => {
+    const googlePayUrl = `tez://upi/pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+    window.location.href = googlePayUrl;
+  };
+
   return (
     <div>
       <Sidebar />
@@ -142,6 +152,51 @@ function RestaurantDetails() {
                   </div>
                 </div>
               )}
+
+              <div
+                className="card"
+                style={{
+                  border: "2px dashed silver",
+                }}
+              >
+                <div className="p-3 rounded-4 d-flex justify-content-center align-items-center">
+                  <span className="font_size_16">
+                    UPI : {restaurantDetails.upi_id}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-center align-items-center gap-3 pb-3">
+                  <button 
+                    className="btn rounded-pill btn-sm text-white"
+                    onClick={openPhonePeLink}
+                    style={{
+                      backgroundColor: "#5f259f", // PhonePe purple
+                      borderColor: "#5f259f",
+                      minWidth: "120px"
+                    }}
+                  >
+                    <i className="ri-checkbox-circle-line py-0 me-2"></i>PhonePe
+                  </button>
+                  <button 
+                    className="btn rounded-pill btn-sm text-white"
+                    onClick={openGooglePayLink}
+                    style={{
+                      background: "linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335)", // Google colors
+                      borderColor: "#4285f4",
+                      minWidth: "120px"
+                    }}
+                  >
+                    <i className="ri-google-line py-0 me-2"></i>Google Pay
+                  </button>
+                </div>
+                <div className="d-flex justify-content-center align-items-center pb-3">
+                  <a 
+                    href={`upi://pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`}
+                    className="btn btn-primary rounded-pill btn-sm text-white"
+                  >
+                    <i className="ri-checkbox-circle-line pe-2"></i>Pay Now
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -215,8 +270,11 @@ function RestaurantDetails() {
                 }}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special 
-               <span className="font_size_10"> ({menuList.filter((menu) => menu.is_special)?.length || 0})</span>
+                Special
+                <span className="font_size_10">
+                  {" "}
+                  ({menuList.filter((menu) => menu.is_special)?.length || 0})
+                </span>
               </div>
             </SwiperSlide>
 
@@ -233,7 +291,10 @@ function RestaurantDetails() {
                   cursor: "pointer",
                 }}
               >
-                All <span className="gray-text font_size_10">({countDetails?.total_menu || 0})</span>
+                All{" "}
+                <span className="gray-text font_size_10">
+                  ({countDetails?.total_menu || 0})
+                </span>
               </div>
             </SwiperSlide>
 
@@ -257,7 +318,10 @@ function RestaurantDetails() {
                     cursor: "pointer",
                   }}
                 >
-                  {category.category_name} <span className=" gray-text font_size_10">({category.menu_count})</span>
+                  {category.category_name}{" "}
+                  <span className=" gray-text font_size_10">
+                    ({category.menu_count})
+                  </span>
                 </div>
               </SwiperSlide>
             ))}
@@ -305,9 +369,11 @@ function RestaurantDetails() {
                     </div>
                   </a>
                   {menu.offer !== 0 && (
-                  <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                    <span className="font_size_10 text-white">{menu.offer}% Off</span>
-                  </div>
+                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                      <span className="font_size_10 text-white">
+                        {menu.offer}% Off
+                      </span>
+                    </div>
                   )}
                   {menu.is_special && (
                     <i
