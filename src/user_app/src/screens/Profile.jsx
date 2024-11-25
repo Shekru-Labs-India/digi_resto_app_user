@@ -254,7 +254,7 @@ const Profile = () => {
               className="footer-link mx-2"
               target="_blank"
               rel="noopener noreferrer"
-            >
+            > 
               <i className="ri-twitter-x-line ri-xl"></i>
             </a>
             <a
