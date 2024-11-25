@@ -41,7 +41,11 @@ const HotelList = () => {
           {hotels.map((hotel) => (
             <div className="card rounded-4" key={hotel.restaurant_id}>
               <Link to={`/user_app/${hotel.code}`}>
-                <div className={`card-body py-0 ${hotel.is_open === false ? "bg-light rounded-4" : ""}`}>
+                <div
+                  className={`card-body py-0 ${
+                    hotel.is_open === false ? "bg-light rounded-4" : ""
+                  }`}
+                >
                   <div className="row text-start">
                     <div className="col-12">
                       <div className="row mt-2 align-items-center">
@@ -84,7 +88,7 @@ const HotelList = () => {
                           {hotel.veg_nonveg && (
                             <div
                               className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-                                ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+                                ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
                                   ? "border-success"
                                   : "border-danger"
                               }`}
@@ -96,7 +100,9 @@ const HotelList = () => {
                             >
                               <i
                                 className={`${
-                                  ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+                                  ["veg", "Veg", "VEG"].includes(
+                                    hotel.veg_nonveg
+                                  )
                                     ? "ri-checkbox-blank-circle-fill text-success"
                                     : "ri-triangle-fill text-danger"
                                 } font_size_12`}
@@ -149,7 +155,7 @@ const HotelList = () => {
                   <i className="ri-linkedin-fill ri-xl"></i>
                 </a>
                 <a
-                  href="https://www.threads.net/@menumitra"
+                  href="https://x.com/MenuMitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"

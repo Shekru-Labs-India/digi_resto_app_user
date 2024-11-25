@@ -291,7 +291,7 @@ export const SidebarToggler = () => {
               <i className="ri-linkedin-fill ri-xl"></i>
             </a>
             <a
-              href="https://www.threads.net/@menumitra"
+              href="https://x.com/MenuMitra"
               className="footer-link mx-2"
               target="_blank"
             >

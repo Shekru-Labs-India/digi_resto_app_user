@@ -618,7 +618,10 @@ const ProductCard = ({ isVegOnly }) => {
                 }}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special <span className="font_size_10">({menuList.filter((menu) => menu.is_special).length})</span>
+                Special
+                <span className="gray-text font_size_10">{" "}
+                  ({menuList.filter((menu) => menu.is_special).length})
+                </span>
               </div>
             </div>
 

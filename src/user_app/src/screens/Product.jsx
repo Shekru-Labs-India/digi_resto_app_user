@@ -506,7 +506,10 @@ if (isMenuItemInCart(menu.menu_id)) {
                 onClick={() => handleCategorySelect("special")}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special <span className="font_size_10">({menuList.filter((menu)=> menu.is_special).length})</span>
+                Special <span className="gray-muted font_size_10">
+                  {" "}
+                  ({menuList.filter((menu)=> menu.is_special).length})
+                </span>
               </div>
               {menuList.length > 0 && categories.length > 0 && (
                 <>
