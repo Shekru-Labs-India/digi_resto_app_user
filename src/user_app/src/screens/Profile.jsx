@@ -121,8 +121,8 @@ const Profile = () => {
                       to="/user_app/Menu"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-bowl-line me-2 font_size_16"></i>
-                      <span className=" ">Menu</span>
+                      <i className="ri-bowl-line me-2 fs-3"></i>
+                      <span className="font_size_16">Menu</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -130,8 +130,8 @@ const Profile = () => {
                       to="/user_app/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-history-line me-2 font_size_16"></i>
-                      <span className=" ">My Order</span>
+                      <i className="ri-history-line me-2 fs-3"></i>
+                      <span className="font_size_16">My Order</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -139,8 +139,8 @@ const Profile = () => {
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-shopping-cart-line me-2 font_size_16"></i>
-                      <span className=" ">Cart</span>
+                      <i className="ri-shopping-cart-line me-2 fs-3"></i>
+                      <span className="font_size_16">Cart</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -148,8 +148,8 @@ const Profile = () => {
                       to="/user_app/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-3-line me-2 font_size_16"></i>
-                      <span className=" ">Favourite</span>
+                      <i className="ri-heart-3-line me-2 fs-3"></i>
+                      <span className="font_size_16">Favourite</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -157,8 +157,8 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-search-line me-2 font_size_16"></i>
-                      <span className=" ">Search</span>
+                      <i className="ri-search-line me-2 fs-3"></i>
+                      <span className="font_size_16">Search</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -166,8 +166,8 @@ const Profile = () => {
                       to="/user_app/Category"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-list-check-2 me-2 font_size_16"></i>
-                      <span className=" ">Category</span>
+                      <i className="ri-list-check-2 me-2 fs-3"></i>
+                      <span className="font_size_16">Category</span>
                     </Link>
                   </li>
                 </ul>
