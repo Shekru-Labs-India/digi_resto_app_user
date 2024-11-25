@@ -215,8 +215,8 @@ function RestaurantDetails() {
                 }}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special (
-                {menuList.filter((menu) => menu.is_special)?.length || 0})
+                Special 
+               <span className="font_size_10"> ({menuList.filter((menu) => menu.is_special)?.length || 0})</span>
               </div>
             </SwiperSlide>
 
@@ -233,7 +233,7 @@ function RestaurantDetails() {
                   cursor: "pointer",
                 }}
               >
-                All ({countDetails?.total_menu || 0})
+                All <span className="gray-text font_size_10">({countDetails?.total_menu || 0})</span>
               </div>
             </SwiperSlide>
 
@@ -257,7 +257,7 @@ function RestaurantDetails() {
                     cursor: "pointer",
                   }}
                 >
-                  {category.category_name} ({category.menu_count})
+                  {category.category_name} <span className=" gray-text font_size_10">({category.menu_count})</span>
                 </div>
               </SwiperSlide>
             ))}

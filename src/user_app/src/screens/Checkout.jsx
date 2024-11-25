@@ -97,52 +97,52 @@ const Checkout = () => {
     
   }, []);
   
-  const fetchCartDetails = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const cartId = getCartId();
-  
-    // if (!cartId || !currentCustomerId || !restaurantId) {
-      
-    //   return;
-    // }
-  
-    try {
-      const response = await axios.post(
-       `${config.apiDomain}/user_api/get_cart_detail`,
-        {
-          cart_id: cartId,
-          customer_id: currentCustomerId,
-          restaurant_id: storedRestaurantId,
-        }
-      );
-  
-      if (response.data.st === 1) {
-        const data = response.data;
-        const mappedItems = data.order_items.map(item => ({
-          ...item,
-          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
-        }));
+ const fetchCartDetails = async () => {
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const currentCustomerId =
+    userData?.customer_id || localStorage.getItem("customer_id");
+  const cartId = getCartId();
 
-        setCartItems(mappedItems);
-        setTotal(parseFloat(data.total_bill));
-        setServiceChargesPercent(parseFloat(data.service_charges_percent));
-        setServiceCharges(parseFloat(data.service_charges_amount));
-        setGstPercent(parseFloat(data.gst_percent));
-        setTax(parseFloat(data.gst_amount));
-        setDiscountPercent(parseFloat(data.discount_percent));
-        setDiscount(parseFloat(data.discount_amount));
-        setGrandTotal(parseFloat(data.grand_total));
-        setCartId(data.cart_id);
-      } else {
-        console.error("Failed to fetch cart details:", response.data.msg);
-        
+  try {
+    const response = await axios.post(
+      `${config.apiDomain}/user_api/get_cart_detail`,
+      {
+        cart_id: cartId,
+        customer_id: currentCustomerId,
+        restaurant_id: storedRestaurantId,
       }
-    } catch (error) {
-      console.error("Error fetching cart details:", error);
+    );
+
+    if (response.data.st === 1) {
+      const data = response.data;
+
+      // Map and update state
+      const mappedItems = data.order_items.map((item) => ({
+        ...item,
+        discountedPrice: item.offer
+          ? Math.floor(item.price * (1 - item.offer / 100))
+          : item.price,
+      }));
+
+      // Update state immediately
+      setCartItems(mappedItems);
+      setTotal(parseFloat(data.total_bill));
+      setServiceChargesPercent(parseFloat(data.service_charges_percent));
+      setServiceCharges(parseFloat(data.service_charges_amount));
+      setGstPercent(parseFloat(data.gst_percent));
+      setTax(parseFloat(data.gst_amount));
+      setDiscountPercent(parseFloat(data.discount_percent));
+      setDiscount(parseFloat(data.discount_amount));
+      setGrandTotal(parseFloat(data.grand_total));
+      setCartId(data.cart_id);
+    } else {
+      console.error("Failed to fetch cart details:", response.data.msg);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching cart details:", error);
+  }
+};
+
   
 
  
