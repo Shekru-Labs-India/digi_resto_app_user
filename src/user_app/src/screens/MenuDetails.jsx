@@ -925,7 +925,7 @@ const MenuDetails = () => {
 
                 {/* Add end border */}
                 <div className="divider border-success inner-divider transparent mb-5 pb-5">
-                  <span className="bg-body">End</span>
+                  <span className="bg-body bg-white">End</span>
                 </div>
               </div>
             </div>

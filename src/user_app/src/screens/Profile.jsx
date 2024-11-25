@@ -215,7 +215,7 @@ const Profile = () => {
             <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
-        <div className="mt-5">
+        <div className="mt-3 p-b70">
           <div className="text-center pt-3">
             <a
               href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
@@ -291,7 +291,6 @@ const Profile = () => {
             </a>
           </div>
         </div>
-        
       </>
     );
   };
