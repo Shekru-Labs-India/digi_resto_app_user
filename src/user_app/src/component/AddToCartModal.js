@@ -31,7 +31,7 @@ const AddToCartModal = ({
             <div className="modal-header ps-3 pe-2">
               <div className="col-6 text-start">
                 <div className="modal-title font_size_16 fw-medium ">
-                  Add to Cart
+                  Add {menu_name} to Cart
                 </div>
               </div>
 

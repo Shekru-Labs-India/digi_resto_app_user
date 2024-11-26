@@ -589,13 +589,13 @@ const NearbyArea = () => {
               }}
             >
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {selectedMenu.name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <button
                     className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowModal(false)}

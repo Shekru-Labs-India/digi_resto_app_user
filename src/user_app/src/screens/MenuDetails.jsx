@@ -1029,13 +1029,13 @@ const MenuDetails = () => {
               }}
             >
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {productDetails.name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
                     <button
                       className="btn p-0 fs-3 text-muted"
