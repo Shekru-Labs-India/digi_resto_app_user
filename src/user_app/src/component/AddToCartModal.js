@@ -31,7 +31,7 @@ const AddToCartModal = ({
             <div className="modal-header ps-3 pe-2">
               <div className="col-6 text-start">
                 <div className="modal-title font_size_16 fw-medium ">
-                  Add to Cart
+                  Add {menu_name} to Cart
                 </div>
               </div>
 
@@ -108,7 +108,7 @@ const AddToCartModal = ({
               <button
                 type="button"
                 // className="btn btn-outline-secondary rounded-pill font_size_14"
-                className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                 onClick={() => setShowModal(false)}
               >
                 Close

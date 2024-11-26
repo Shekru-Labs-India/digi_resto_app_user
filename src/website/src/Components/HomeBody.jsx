@@ -258,20 +258,9 @@ const HomeBody = () => {
 					<h2>What Our Customers Say</h2>
 					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
 				</div>
-				<div className="row testimonial-bg-color">
-					<div className="col-lg-6 col-md-6 p-0">
-						<div className="client-img">
-							<img src="assets/img/testimonial/6.jpg" alt=""/>
-							<div className="video-wrap">
-								<div className="video-btn-wrap">
-									<a href="https://templates.envytheme.com/rimu/default/play-video" className="video-btn"  data-ilb2-video='{"controls":"controls", "autoplay":false, "sources":[{"src":"assets/img/video.mp4", "type":"video/mp4"}]}' data-imagelightbox="video">
-										<i className="fa fa-play"></i>
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div className="col-lg-6 col-md-6 p-0">
+				<div className="row testimonial-bg-color ">
+				
+					<div className="col-12 p-0">
 						<div className="testimonials-wrap owl-carousel owl-theme">
 							<div className="single-testimonial">
 								<img src="assets/img/testimonial/1.jpg" alt=""/>

@@ -34,7 +34,7 @@ const ContactBody = () => {
           <div className="row">
             <div className="col-lg-6 col-sm-6 col-md-6">
               <div className="single-contact-info">
-                <i className="flaticon-paper-plane" />
+                <i className="fa fa-envelope" />
                 <h3>Email Us:</h3>
                 <a href="contact.html#">
                   <span
@@ -49,7 +49,7 @@ const ContactBody = () => {
             </div>
             <div className="col-lg-6 col-sm-6 col-md-6">
               <div className="single-contact-info">
-                <i className="flaticon-customer-service" />
+                <i className="fa fa-phone" />
                 <h3>Call Us:</h3>
                 <a href="contact.html#">Tel. +91 7776827177</a>
                 
@@ -57,7 +57,7 @@ const ContactBody = () => {
             </div>
             <div className="col-lg-6 col-sm-6 col-md-6">
               <div className="single-contact-info">
-                <i className="flaticon-pin" />
+                <i className="fa fa-map-marker" />
                 <h3>Address</h3>
                 <a href="contact.html#">
                 Muktangan English School & Jr College, office No. 6, 2 Floor manogat, Parvati, Pune, Maharashtra 411009

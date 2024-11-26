@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import config from "../component/config";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
+  const [filteredHotels, setFilteredHotels] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeStatusFilter, setActiveStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -21,6 +24,7 @@ const HotelList = () => {
             return { ...hotel, code };
           });
           setHotels(formattedHotels);
+          setFilteredHotels(formattedHotels);
 
           // localStorage.removeItem("isRestaurantOpen");
           // localStorage.removeItem("restaurantStatus");
@@ -33,96 +37,201 @@ const HotelList = () => {
     fetchHotels();
   }, []);
 
+  const handleFilter = (type) => {
+    setActiveFilter(type);
+    applyFilters(type, activeStatusFilter); // Pass current status filter
+  };
+
+  const handleStatusFilter = (status) => {
+    setActiveStatusFilter(status);
+    applyFilters(activeFilter, status); // Pass current veg/nonveg filter
+  };
+
+  const applyFilters = (type, status) => {
+    let filtered = [...hotels];
+
+    // Apply veg/nonveg filter
+    if (type !== "all") {
+      filtered = filtered.filter((hotel) =>
+        type === "veg"
+          ? ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+          : !["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+      );
+    }
+
+    // Apply open/closed filter
+    if (status !== "all") {
+      filtered = filtered.filter((hotel) =>
+        status === "open" ? hotel.is_open === true : hotel.is_open === false
+      );
+    }
+
+    setFilteredHotels(filtered);
+  };
+
   return (
     <div className="page-wrapper">
       <main className="page-content pt-0">
         <div className="container py-1 px-0">
-          <div className="d-flex justify-content-center"></div>
-          {hotels.map((hotel) => (
-            <div className="card rounded-4" key={hotel.restaurant_id}>
-              <Link to={`/user_app/${hotel.code}`}>
-                <div
-                  className={`card-body py-0 ${
-                    hotel.is_open === false ? "bg-light rounded-4" : ""
-                  }`}
-                >
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="row mt-2 d-flex justify-content-between">
-                        <div className="col-1">
-                          <i className="ri-store-2-line font_size_14 fw-medium"></i>
-                        </div>
-                        <div className="col-6 ps-0">
-                          <span className="font_size_14 fw-medium m-0">
-                            {hotel.restaurant_name.toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="col-4">
-                          <div className="d-flex justify-content-end">
-                            {hotel.is_open === false && (
-                              <span className="badge bg-danger small ">
-                                Closed
-                              </span>
-                            )}
+          <div className="d-flex justify-content-between mb-3">
+            <div className="btn-group btn-group-sm">
+              <button
+                className={`btn fw-normal p-2 btn-outline-info ${
+                  activeFilter === "all" ? "active text-white" : ""
+                }`}
+                onClick={() => handleFilter("all")}
+              >
+                All
+              </button>
+              <button
+                className={`btn fw-normal p-2 btn-outline-success ${
+                  activeFilter === "veg" ? "active text-white" : ""
+                }`}
+                onClick={() => handleFilter("veg")}
+              >
+                Veg
+              </button>
+              <button
+                className={`btn fw-normal p-2 btn-outline-warning ${
+                  activeFilter === "nonveg" ? "active text-white" : ""
+                }`}
+                onClick={() => handleFilter("nonveg")}
+              >
+                Non-Veg
+              </button>
+            </div>
+            <div className="btn-group btn-group-sm">
+              <button
+                className={`btn p-2 btn-outline-info ${
+                  activeStatusFilter === "all" ? "active text-white" : ""
+                }`}
+                onClick={() => handleStatusFilter("all")}
+              >
+                All
+              </button>
+              <button
+                className={`btn p-2 btn-outline-success ${
+                  activeStatusFilter === "open" ? "active text-white" : ""
+                }`}
+                onClick={() => handleStatusFilter("open")}
+              >
+                Open
+              </button>
+              <button
+                className={`btn p-2 btn-outline-dark ${
+                  activeStatusFilter === "closed" ? "active text-white" : ""
+                }`}
+                onClick={() => handleStatusFilter("closed")}
+              >
+                Closed
+              </button>
+            </div>
+          </div>
+          {filteredHotels.length > 0 ? (
+            filteredHotels.map((hotel) => (
+              <div className="card rounded-4" key={hotel.restaurant_id}>
+                <Link to={`/user_app/${hotel.code}`}>
+                  <div
+                    className={`card-body py-0 ${
+                      hotel.is_open === false ? "bg-light rounded-4" : ""
+                    }`}
+                  >
+                    <div className="row">
+                      <div className="col-12">
+                        <div className="row mt-2 d-flex justify-content-between">
+                          <div className="col-1">
+                            <i className="ri-store-2-line font_size_14 fw-medium"></i>
+                          </div>
+                          <div className="col-6 ps-0">
+                            <span className="font_size_14 fw-medium m-0">
+                              {hotel.restaurant_name.toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="col-4">
+                            <div className="d-flex justify-content-end">
+                              {hotel.is_open === false && (
+                                <span className="badge btn-dark light small ">
+                                  Closed
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="row mt-1">
-                        <div className="col-1 d-flex align-items-center">
-                          <i className="ri-phone-line text-primary"></i>
+                        <div className="row mt-1">
+                          <div className="col-1 d-flex align-items-center">
+                            <i className="ri-phone-line text-primary"></i>
+                          </div>
+                          <div className="col-10 d-flex align-items-center">
+                            <span className="text-primary font_size_12">
+                              {hotel.mobile}
+                            </span>
+                          </div>
                         </div>
-                        <div className="col-10 d-flex align-items-center">
-                          <span className="text-primary font_size_12">
-                            {hotel.mobile}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="row mb-2 d-flex justify-content-between">
-                        <div className="col-1">
-                          <i className="ri-map-pin-line gray-text"></i>
-                        </div>
-                        <div className="col-6 ps-0">
-                          <span className="gray-text font_size_12">
-                            {hotel.address}
-                          </span>
-                        </div>
-                        <div className="col-4">
-                          <div className="d-flex justify-content-end">
-                            {hotel.veg_nonveg && (
-                              <div
-                                className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-                                  ["veg", "Veg", "VEG"].includes(
-                                    hotel.veg_nonveg
-                                  )
-                                    ? "border-success"
-                                    : "border-danger"
-                                }`}
-                                style={{
-                                  height: "20px",
-                                  width: "20px",
-                                  borderWidth: "2px",
-                                }}
-                              >
-                                <i
-                                  className={`${
+                        <div className="row mb-2 d-flex justify-content-between">
+                          <div className="col-1">
+                            <i className="ri-map-pin-line gray-text"></i>
+                          </div>
+                          <div className="col-6 ps-0">
+                            <span className="gray-text font_size_12">
+                              {hotel.address}
+                            </span>
+                          </div>
+                          <div className="col-4">
+                            <div className="d-flex justify-content-end">
+                              {hotel.veg_nonveg && (
+                                <div
+                                  className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
                                     ["veg", "Veg", "VEG"].includes(
                                       hotel.veg_nonveg
                                     )
-                                      ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-triangle-fill text-danger"
-                                  } font_size_12`}
-                                ></i>
-                              </div>
-                            )}
+                                      ? "border-success"
+                                      : "border-danger"
+                                  }`}
+                                  style={{
+                                    height: "20px",
+                                    width: "20px",
+                                    borderWidth: "2px",
+                                  }}
+                                >
+                                  <i
+                                    className={`${
+                                      ["veg", "Veg", "VEG"].includes(
+                                        hotel.veg_nonveg
+                                      )
+                                        ? "ri-checkbox-blank-circle-fill text-success"
+                                        : "ri-triangle-fill text-danger"
+                                    } font_size_12`}
+                                  ></i>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div className="card rounded-4 p-0 text-center">
+              <div className="card-body">
+                <i className="ri-restaurant-2-line font_size_24 mb-2 text-muted"></i>
+                <h5 className="text-muted mb-2">No Restaurants Found</h5>
+                <p className="text-muted font_size_14">
+                  {activeFilter !== 'all' && activeStatusFilter !== 'all' ? (
+                    `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
+                  ) : activeFilter !== 'all' ? (
+                    `No ${activeFilter} restaurants available`
+                  ) : activeStatusFilter !== 'all' ? (
+                    `No restaurants are currently ${activeStatusFilter}`
+                  ) : (
+                    'No restaurants available at the moment'
+                  )}
+                </p>
+              </div>
             </div>
-          ))}
+          )}
         </div>
         <div className="align-bottom border-top">
           <div className="text-center text-md-center mt-2 gray-text font_size_12 pb-5">

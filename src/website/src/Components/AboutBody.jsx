@@ -52,23 +52,23 @@ const AboutBody = () => {
             <div className="col-lg-6 col-sm-6">
                 <ul>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Increased Efficiency And Speed Of
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Improved Accuracy Of Orders
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Enhanced Customer Experience
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Reduced Costs And Increased
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Contactless Ordering And Payments
                   </li>
                 </ul>
@@ -77,23 +77,23 @@ const AboutBody = () => {
               <div className="col-lg-6 col-sm-6">
                 <ul>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Real-Time Updates To Menu And
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Customer Data And Insights
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Marketing Opportunities
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Integration With Other Applications
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Error-free Orders
                   </li>
                 </ul>
@@ -202,19 +202,19 @@ const AboutBody = () => {
               <div className="col-lg-6 col-sm-6">
                 <ul>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Premium Quality
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Harvest Everyday
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                      <i className="fa fa-check-circle" />
                     100% Organic
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Fast Delivery
                   </li>
                 </ul>
@@ -222,19 +222,19 @@ const AboutBody = () => {
               <div className="col-lg-6 col-sm-6">
                 <ul>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Premium Quality
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                      <i className="fa fa-check-circle" />
                     Harvest Everyday
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     100% Organic
                   </li>
                   <li>
-                    <i className="flaticon-check-mark" />
+                    <i className="fa fa-check-circle" />
                     Fast Delivery
                   </li>
                 </ul>

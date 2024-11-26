@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css"; // Correctly import Swiper CSS
 import images from "../assets/MenuDefault.png";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
-import { usePopup } from '../context/PopupContext';
+import { usePopup } from "../context/PopupContext";
 import config from "./config";
 
 const pulse = keyframes`
@@ -46,8 +46,8 @@ const OfferBanner = () => {
   const navigate = useNavigate();
   const { cartItems, addToCart, isMenuItemInCart } = useCart(); // Add this line
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [notes, setNotes] = useState("");
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -111,7 +111,8 @@ const OfferBanner = () => {
       if (!restaurantId) return;
 
       // Retrieve customer_id from state or localStorage
-      const currentCustomerId = customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+      const currentCustomerId =
+        customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
@@ -142,12 +143,6 @@ const OfferBanner = () => {
         setPrice(data.data.menus.price);
         setDiscountAmount(data.data.menus.offer);
 
-        
-        
-
-        
-
-
         setMenuLists(formattedMenuList);
       }
     } catch (error) {
@@ -156,9 +151,6 @@ const OfferBanner = () => {
       setLoading(false);
     }
   };
-
-
-   
 
   // Load User Data and Fetch Menu Data on Initial Render
   useEffect(() => {
@@ -244,23 +236,24 @@ const OfferBanner = () => {
   }, [menuLists]);
 
   const handleUnauthorizedFavorite = () => {
-   
     showLoginPopup();
   };
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-  if (!userData?.customer_id || userData.customer_type === 'guest') {
-    handleUnauthorizedFavorite();
-    return;
-  }
+    if (!userData?.customer_id || userData.customer_type === "guest") {
+      handleUnauthorizedFavorite();
+      return;
+    }
 
     const menuItem = menuLists.find((item) => item.menu_id === menuId);
     const isFavorite = menuItem.is_favourite;
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -268,7 +261,7 @@ const OfferBanner = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type
+            customer_type: userData.customer_type,
           }),
         }
       );
@@ -277,7 +270,9 @@ const OfferBanner = () => {
       if (response.ok && data.st === 1) {
         setMenuLists((prevMenuLists) =>
           prevMenuLists.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
           )
         );
 
@@ -287,11 +282,17 @@ const OfferBanner = () => {
           })
         );
 
-        window.showToast("success", isFavorite ? "Removed from favorites" : "Added to favorites");
+        window.showToast(
+          "success",
+          isFavorite ? "Removed from favorites" : "Added to favorites"
+        );
       }
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to update favorite status. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to update favorite status. Please try again."
+      );
     }
   };
 
@@ -304,16 +305,16 @@ const OfferBanner = () => {
         )
       );
     };
-  
+
     window.addEventListener("favoriteUpdated", handleFavoriteUpdate);
-  
+
     return () => {
       window.removeEventListener("favoriteUpdated", handleFavoriteUpdate);
     };
   }, []);
 
   const handleModalClick = (e) => {
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -321,22 +322,31 @@ const OfferBanner = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         console.clear();
-        window.showToast("error", data.msg || "Failed to fetch price information");
+        window.showToast(
+          "error",
+          data.msg || "Failed to fetch price information"
+        );
       }
     } catch (error) {
       console.clear();
@@ -349,13 +359,14 @@ const OfferBanner = () => {
   const handleAddToCartClick = async (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !restaurantId) {
-      
-   
       return;
     }
 
     if (isCartFromDifferentRestaurant(restaurantId)) {
-      window.showToast("error", "This item is from a different restaurant. Clear your cart first.");
+      window.showToast(
+        "error",
+        "This item is from a different restaurant. Clear your cart first."
+      );
       return;
     }
 
@@ -371,57 +382,62 @@ const OfferBanner = () => {
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
-  
+
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
       showLoginPopup();
       return;
     }
-  
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       window.showToast("error", "Price information is not available.");
       return;
     }
-  
+
     try {
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
-  
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
+
       window.showToast("success", selectedMenu.name);
-  
+
       setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
+      setNotes("");
+      setPortionSize("full");
       setSelectedMenu(null);
-  
+
       // Update cart items
       const updatedCartItems = await fetchCartItems();
       localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: updatedCartItems }));
-  
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", { detail: updatedCartItems })
+      );
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to add item to cart. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to add item to cart. Please try again."
+      );
     }
   };
-
-  
 
   const fetchCartItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) return [];
-  
+
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -435,9 +451,11 @@ const OfferBanner = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-      return response.ok && data.st === 1 && data.order_items ? data.order_items : [];
+      return response.ok && data.st === 1 && data.order_items
+        ? data.order_items
+        : [];
     } catch (error) {
       console.clear();
       return [];
@@ -474,23 +492,17 @@ const OfferBanner = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -520,8 +532,10 @@ const OfferBanner = () => {
                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                 state={{ menu_cat_id: menu.menu_cat_id }}
               >
-                <div className="cart-list bg-white p-0 rounded-4"
-                style={{width:"345px"}}>
+                <div
+                  className="cart-list bg-white p-0 rounded-4"
+                  style={{ width: "345px" }}
+                >
                   <div className="dz-media media-100">
                     <img
                       style={{
@@ -717,13 +731,13 @@ const OfferBanner = () => {
               }}
             >
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {selectedMenu.name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <button
                     className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowModal(false)}
@@ -749,50 +763,56 @@ const OfferBanner = () => {
                     placeholder="Add any special instructions here..."
                   ></textarea>
                 </div>
-                <hr className="my-4"/>
+                <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
-                          className={`btn px-4 font_size_14  ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14  ${
+                          className={`btn px-4 font_size_14 ${
                             portionSize === "full"
                               ? "btn-primary"
                               : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}
                   </div>
                 </div>
               </div>
-              <hr className="my-4"/>
+              <hr className="my-4" />
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

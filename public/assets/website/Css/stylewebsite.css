@@ -4,7 +4,7 @@ body {
   margin: 0;
   font-size: 14px;
   line-height: 1.8;
-  font-family: "Poppins", sans-serif;
+  font-family: lato, sans-serif;
   color: #686868;
 }
 a {
@@ -41,7 +41,7 @@ h5,
 h6 {
   color: #333;
   font-weight: 700;
-  font-family: "Poppins", sans-serif;
+  font-family: lato, sans-serif;
 }
 h3 {
   font-size: 20px;
@@ -2038,7 +2038,7 @@ textarea.form-control {
 }
 .footer-bottom-area {
   background-color: #3a8d00;
-  padding: 15px 0;
+  
 }
 .footer-bottom-area p {
   color: #fff;
@@ -2542,7 +2542,7 @@ textarea.form-control {
 }
 .error-area .error-contant-wrap h3 {
   margin: 30px 0 0;
-  font-family: "Poppins", sans-serif;
+  font-family: lato, sans-serif;
   position: relative;
   color: red;
 }

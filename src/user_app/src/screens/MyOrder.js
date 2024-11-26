@@ -171,25 +171,25 @@ const MyOrder = () => {
             } else if (data.lists[activeTab]) {
               mappedData[activeTab] = data.lists[activeTab];
             }
-            
+
             // Get existing data from localStorage
-            const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-            
+            const existingOrders = JSON.parse(
+              localStorage.getItem("allOrderList") || "{}"
+            );
+
             // Merge existing data with new data
             const updatedOrders = {
               ...existingOrders,
-              ...mappedData
+              ...mappedData,
             };
-            
+
             // Update localStorage with merged data
             localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-            
+
             setOrders(mappedData);
           } else {
             setOrders({});
           }
-
-          
         } else {
           setOrders({});
         }
@@ -458,8 +458,8 @@ export const OrderCard = ({
     }
   };
 
-  const handleCardPayment = async() =>{
-     try {
+  const handleCardPayment = async () => {
+    try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
         {
@@ -504,10 +504,10 @@ export const OrderCard = ({
       console.error("Error completing order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
-  }
+  };
 
-  const handleCashPayment = async() =>{
-     try {
+  const handleCashPayment = async () => {
+    try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
         {
@@ -552,7 +552,7 @@ export const OrderCard = ({
       console.error("Error completing order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
-  }
+  };
 
   const handleConfirmCancel = async () => {
     try {
@@ -607,8 +607,11 @@ export const OrderCard = ({
 
   const handleUpiPayment = async () => {
     let paymentUrl;
+<<<<<<< HEAD
     const amount = Math.round(parseFloat(order.grand_total)); // Ensure whole number
     const transactionNote = `${order.customer_name} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`;
+=======
+>>>>>>> 5d332cc5d8cd5d508f71b549ac49743500cb09ea
 
     switch (paymentMethod) {
       case "PhonePe":
@@ -681,7 +684,7 @@ export const OrderCard = ({
   };
 
   const isDarkMode = localStorage.getItem("isDarkMode");
-// console.log("isDarkMode ->" + isDarkMode);
+  // console.log("isDarkMode ->" + isDarkMode);
 
   return (
     <div className="container pt-0">
@@ -831,8 +834,15 @@ export const OrderCard = ({
                         handleUpiPayment();
                       }}
                     >
+<<<<<<< HEAD
                       Pay{" "}
                       <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+=======
+                      Pay
+                      <span className="fs-4 mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+>>>>>>> 5d332cc5d8cd5d508f71b549ac49743500cb09ea
                       via
                       <img
                         className="text-white ms-1"
@@ -845,6 +855,7 @@ export const OrderCard = ({
                     <button
                       className="btn text-white"
                       style={{ backgroundColor: "#5f259f" }}
+<<<<<<< HEAD
                       onClick={() => {
                         setPaymentMethod("PhonePe");
                         handleUpiPayment();
@@ -852,6 +863,14 @@ export const OrderCard = ({
                     >
                       Pay{" "}
                       <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+=======
+                      onClick={openPhonePeLink}
+                    >
+                      Pay
+                      <span className="fs-4 mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+>>>>>>> 5d332cc5d8cd5d508f71b549ac49743500cb09ea
                       via
                       <img
                         className="ms-1"
@@ -863,14 +882,27 @@ export const OrderCard = ({
 
                     <button
                       className="btn text-dark"
+<<<<<<< HEAD
                       style={{ background: "white", border: "1px solid #ccc" }}
                       onClick={() => {
                         setPaymentMethod("GooglePay");
                         handleUpiPayment();
+=======
+                      style={{
+                        background: "white",
+                        border: "1px solid #ccc",
+>>>>>>> 5d332cc5d8cd5d508f71b549ac49743500cb09ea
                       }}
                     >
+<<<<<<< HEAD
                       Pay{" "}
                       <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+=======
+                      Pay
+                      <span className="fs-4 mx-1">
+                        ₹{order.grand_total}
+                      </span>{" "}
+>>>>>>> 5d332cc5d8cd5d508f71b549ac49743500cb09ea
                       via
                       <img
                         className="ms-1"
@@ -1076,7 +1108,7 @@ export const OrderCard = ({
                     <span className="col-3">
                       <button
                         type="button"
-                        className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                        className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                         onClick={() => setShowCancelModal(false)}
                       >
                         Close
@@ -1203,8 +1235,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     return (
       <>
         {/* Add collapse/expand all button */}
-          <div className="d-flex justify-content-end mb-2 pe-0">
-        <div className="tab-label mb-2">
+        <div className="d-flex justify-content-end mb-2 pe-0">
+          <div className="tab-label mb-2">
             <button
               className="btn btn-link text-decoration-none pe-0 pb-0"
               onClick={() => {
@@ -1392,27 +1424,24 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-        
+
         <div className="divider border-success inner-divider transparent mb-3">
           <span className="bg-body">End</span>
         </div>
-        
-        </>
+      </>
     );
   };
 
   // Add debugging logs
   useEffect(() => {
-    console.log('Orders:', orders);
-    console.log('Type:', type);
-    console.log('CheckedItems:', checkedItems);
+    console.log("Orders:", orders);
+    console.log("Type:", type);
+    console.log("CheckedItems:", checkedItems);
   }, [orders, type, checkedItems]);
 
   return (
     <>
-      <div className="row g-1">
-        {renderOrders()}
-      </div>
+      <div className="row g-1">{renderOrders()}</div>
       <Bottom />
     </>
   );
@@ -1473,7 +1502,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   return (
     <div className="text-dark font_size_14 text-center mb-2">
       You can cancel this order within{" "}
-      <span className="fw-semibold">{timeLeft}s</span> 
+      <span className="fw-semibold">{timeLeft}s</span>
     </div>
   );
 };

@@ -29,23 +29,17 @@ const renderStarRating = (rating) => {
 
   // 0.5 to 2.5: Show blank star (grey color)
   if (numRating >= 0.5 && numRating <= 2.5) {
-    return (
-      <i className="ri-star-line font_size_10 gray-text me-1"></i>
-    );
+    return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
   }
 
   // 3 to 4.5: Show half star
   if (numRating >= 3 && numRating <= 4.5) {
-    return (
-      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-    );
+    return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
   }
 
   // 5: Show full star
   if (numRating === 5) {
-    return (
-      <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-    );
+    return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
   }
 
   // Default case (shouldn't reach here based on your ranges)
@@ -494,6 +488,11 @@ const ProductCard = ({ isVegOnly }) => {
     }
   };
 
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
+
   if (isLoading || menuList.length === 0) {
     const restaurantStatus = localStorage.getItem("restaurantStatus");
     return (
@@ -619,7 +618,8 @@ const ProductCard = ({ isVegOnly }) => {
               >
                 <i className="ri-bard-line me-2"></i>
                 Special
-                <span className="gray-text font_size_10">{" "}
+                <span className="gray-text font_size_10">
+                  {" "}
                   ({menuList.filter((menu) => menu.is_special).length})
                 </span>
               </div>
@@ -710,6 +710,18 @@ const ProductCard = ({ isVegOnly }) => {
                       }}
                       loading="lazy"
                     />
+                    {menu.is_special && (
+                      <i
+                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 5,
+                          height: 17,
+                          width: 17,
+                        }}
+                      ></i>
+                    )}
                     <div
                       className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         menu.menu_veg_nonveg.toLowerCase() === "veg"
@@ -765,14 +777,6 @@ const ProductCard = ({ isVegOnly }) => {
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
                       <div className="font_size_12 ">
-                        {menu.is_special && (
-                          <div className="row ">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
-                              <i className="ri-bard-line me-2"></i>
-                              Special
-                            </div>
-                          </div>
-                        )}
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="ri-restaurant-line pe-1"></i>
@@ -856,13 +860,13 @@ const ProductCard = ({ isVegOnly }) => {
               }}
             >
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {selectedMenu.name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
                     <button
                       className="btn p-0 fs-3 gray-text"
@@ -882,37 +886,65 @@ const ProductCard = ({ isVegOnly }) => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa fa-chevron-right me-2"></i> Make it more
+                    sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more spicy 🥵")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa fa-chevron-right me-2"></i> Make it more
+                    spicy 🥵
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
@@ -921,9 +953,8 @@ const ProductCard = ({ isVegOnly }) => {
                               : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}
@@ -934,7 +965,7 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

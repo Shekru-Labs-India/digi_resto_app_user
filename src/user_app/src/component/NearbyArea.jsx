@@ -7,18 +7,18 @@ import "swiper/swiper-bundle.css";
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
-import { usePopup } from '../context/PopupContext';
-import config from "./config"
+import { usePopup } from "../context/PopupContext";
+import config from "./config";
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
-  const { cartItems, addToCart,isMenuItemInCart } = useCart();
+  const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [notes, setNotes] = useState("");
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -27,21 +27,17 @@ const NearbyArea = () => {
   const { showLoginPopup } = usePopup();
   const swiperRef = useRef(null);
 
-  
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
       setCustomerId(userData.customer_id);
     }
 
-   
-
-    
     // Only fetch if we have a restaurantId
     if (restaurantId) {
       fetchMenuData();
     }
-  }, [restaurantId]); 
+  }, [restaurantId]);
 
   const toTitleCase = (str) => {
     if (!str) return "";
@@ -50,7 +46,6 @@ const NearbyArea = () => {
       (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
   };
-
 
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
@@ -61,15 +56,15 @@ const NearbyArea = () => {
         )
       );
     };
-  
+
     const handleCartUpdate = (event) => {
       // Refresh cart status for all items
       setMenuItems((prevItems) => [...prevItems]); // Force re-render
     };
-  
+
     window.addEventListener("favoriteStatusChanged", handleFavoriteUpdate);
     window.addEventListener("cartStatusChanged", handleCartUpdate);
-  
+
     return () => {
       window.removeEventListener("favoriteStatusChanged", handleFavoriteUpdate);
       window.removeEventListener("cartStatusChanged", handleCartUpdate);
@@ -78,12 +73,13 @@ const NearbyArea = () => {
 
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
-    const currentCustomerId = customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+    const currentCustomerId =
+      customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
 
     setIsLoading(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_special_menu_list`,
+        `${config.apiDomain}/user_api/get_special_menu_list`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,47 +118,49 @@ const NearbyArea = () => {
     }
   }, [restaurantId, customerId]);
 
-  
-
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-     
       return;
     }
 
-    const selectedPrice = portionSize === 'half' ? halfPrice : fullPrice;
-    
+    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
+
     if (!selectedPrice) {
       window.showToast("error", "Price information is not available.");
       return;
     }
 
     try {
-      await addToCart({
-        ...selectedMenu,
-        quantity: 1,
-        notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
-        restaurant_id: restaurantId
-      }, restaurantId);
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: selectedPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
 
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setNotes('');
-      setPortionSize('full');
+      setNotes("");
+      setPortionSize("full");
       setSelectedMenu(null);
-      
-      window.dispatchEvent(new Event('cartUpdated'));
 
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to add item to cart. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to add item to cart. Please try again."
+      );
     }
   };
 
@@ -195,7 +193,10 @@ const NearbyArea = () => {
       });
 
       return () => {
-        if (swiperRef.current && typeof swiperRef.current.destroy === 'function') {
+        if (
+          swiperRef.current &&
+          typeof swiperRef.current.destroy === "function"
+        ) {
           swiperRef.current.destroy(true, true);
           swiperRef.current = null;
         }
@@ -213,14 +214,13 @@ const NearbyArea = () => {
     );
   };
 
-
   const handleUnauthorizedFavorite = () => {
     showLoginPopup();
   };
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -230,7 +230,9 @@ const NearbyArea = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -238,7 +240,7 @@ const NearbyArea = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type
+            customer_type: userData.customer_type,
           }),
         }
       );
@@ -247,7 +249,9 @@ const NearbyArea = () => {
       if (response.ok && data.st === 1) {
         setMenuItems((prevItems) =>
           prevItems.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
           )
         );
 
@@ -287,7 +291,7 @@ const NearbyArea = () => {
   }, []);
 
   const handleModalClick = (e) => {
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -295,21 +299,27 @@ const NearbyArea = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         console.clear();
         window.showToast("error", "Failed to fetch price information");
@@ -351,23 +361,17 @@ const NearbyArea = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -589,13 +593,13 @@ const NearbyArea = () => {
               }}
             >
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {selectedMenu.name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <button
                     className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowModal(false)}
@@ -623,26 +627,33 @@ const NearbyArea = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
@@ -651,9 +662,8 @@ const NearbyArea = () => {
                               : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}
@@ -664,7 +674,7 @@ const NearbyArea = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close
