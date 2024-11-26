@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import config from "../component/config";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
+  const [filteredHotels, setFilteredHotels] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeStatusFilter, setActiveStatusFilter] = useState('all');
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -21,6 +24,7 @@ const HotelList = () => {
             return { ...hotel, code };
           });
           setHotels(formattedHotels);
+          setFilteredHotels(formattedHotels);
 
           // localStorage.removeItem("isRestaurantOpen");
           // localStorage.removeItem("restaurantStatus");
@@ -33,12 +37,85 @@ const HotelList = () => {
     fetchHotels();
   }, []);
 
+  const handleFilter = (type) => {
+    setActiveFilter(type);
+    applyFilters(type, activeStatusFilter);
+  };
+
+  const handleStatusFilter = (status) => {
+    setActiveStatusFilter(status);
+    applyFilters(activeFilter, status);
+  };
+
+  const applyFilters = (type, status) => {
+    let filtered = [...hotels];
+    
+    // Apply veg/nonveg filter
+    if (type !== 'all') {
+      filtered = filtered.filter(hotel => 
+        type === 'veg' 
+          ? ['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+          : !['veg', 'Veg', 'VEG'].includes(hotel.veg_nonveg)
+      );
+    }
+    
+    // Apply open/closed filter
+    if (status !== 'all') {
+      filtered = filtered.filter(hotel => 
+        status === 'open' ? hotel.is_open === true : hotel.is_open === false
+      );
+    }
+    
+    setFilteredHotels(filtered);
+  };
+
   return (
     <div className="page-wrapper">
       <main className="page-content pt-0">
         <div className="container py-1 px-0">
-          <div className="d-flex justify-content-center"></div>
-          {hotels.map((hotel) => (
+          <div className="d-flex justify-content-between mb-3">
+            <div className="btn-group btn-group-sm">
+              <button 
+                className={`btn p-2 ${activeFilter === 'all' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleFilter('all')}
+              >
+                All
+              </button>
+              <button 
+                className={`btn p-2  ${activeFilter === 'veg' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleFilter('veg')}
+              >
+                Veg
+              </button>
+              <button 
+                className={`btn p-2  ${activeFilter === 'nonveg' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleFilter('nonveg')}
+              >
+                Non-Veg
+              </button>
+            </div>
+            <div className="btn-group btn-group-sm">
+              <button 
+                className={`btn p-2 ${activeStatusFilter === 'all' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleStatusFilter('all')}
+              >
+                All
+              </button>
+              <button 
+                className={`btn p-2 ${activeStatusFilter === 'open' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleStatusFilter('open')}
+              >
+                Open
+              </button>
+              <button 
+                className={`btn p-2 btn-dark  text-white ${activeStatusFilter === 'closed' ? 'btn-success' : 'btn-primary'}`} 
+                onClick={() => handleStatusFilter('closed')}
+              >
+                Closed
+              </button>
+            </div>
+          </div>
+          {filteredHotels.map((hotel) => (
             <div className="card rounded-4" key={hotel.restaurant_id}>
               <Link to={`/user_app/${hotel.code}`}>
                 <div
@@ -60,7 +137,7 @@ const HotelList = () => {
                         <div className="col-4">
                           <div className="d-flex justify-content-end">
                             {hotel.is_open === false && (
-                              <span className="badge bg-danger small ">
+                              <span className="badge btn-dark light small ">
                                 Closed
                               </span>
                             )}
