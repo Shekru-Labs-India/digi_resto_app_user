@@ -6,8 +6,8 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
-import { usePopup } from '../context/PopupContext';
-import config from "../component/config"
+import { usePopup } from "../context/PopupContext";
+import config from "../component/config";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -32,8 +32,7 @@ const Search = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const { addToCart, isMenuItemInCart } =
-    useCart();
+  const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
 
   useEffect(() => {
@@ -99,7 +98,7 @@ const Search = () => {
         };
 
         const response = await fetch(
-           `${config.apiDomain}/user_api/search_menu`,
+          `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
@@ -130,14 +129,10 @@ const Search = () => {
               JSON.stringify(updatedHistory)
             );
           } else {
-           
           }
         } else {
-         
         }
-      } catch (error) {
-       
-      }
+      } catch (error) {}
 
       setIsLoading(false);
     };
@@ -151,7 +146,7 @@ const Search = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -174,7 +169,6 @@ const Search = () => {
       }
       return [];
     } catch (error) {
-     
       return [];
     }
   };
@@ -215,7 +209,7 @@ const Search = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
@@ -236,11 +230,9 @@ const Search = () => {
           setPortionSize("full");
         }
       } else {
-     
         window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
-    
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -282,9 +274,8 @@ const Search = () => {
       setPortionSize("full");
       setSelectedMenu(null);
 
-      window.dispatchEvent(new Event('cartUpdated'));
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-    
       window.showToast("error", "Failed to add item to cart. Please try again");
     }
   };
@@ -299,10 +290,9 @@ const Search = () => {
     showLoginPopup();
   };
 
-
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       showLoginPopup();
       return;
     }
@@ -314,7 +304,9 @@ const Search = () => {
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -322,7 +314,7 @@ const Search = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type
+            customer_type: userData.customer_type,
           }),
         }
       );
@@ -331,7 +323,9 @@ const Search = () => {
       if (response.ok && data.st === 1) {
         setSearchedMenu((prevMenu) =>
           prevMenu.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
           )
         );
 
@@ -347,7 +341,6 @@ const Search = () => {
         );
       }
     } catch (error) {
-      
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -372,7 +365,10 @@ const Search = () => {
   const handleRemoveItem = (menuId) => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
-    window.showToast("warn", `${menuItem.menu_name} has been removed from the search list`);
+    window.showToast(
+      "warn",
+      `${menuItem.menu_name} has been removed from the search list`
+    );
   };
 
   const handleClearAll = () => {
@@ -383,10 +379,10 @@ const Search = () => {
   };
 
   const handleMenuClick = (menuId) => {
-    const menu = searchedMenu.find(item => item.menu_id === menuId);
+    const menu = searchedMenu.find((item) => item.menu_id === menuId);
     if (menu) {
       navigate(`/user_app/ProductDetails/${menuId}`, {
-        state: { ...menu }
+        state: { ...menu },
       });
     }
   };
@@ -453,23 +449,17 @@ const Search = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -784,10 +774,16 @@ const Search = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
@@ -796,7 +792,9 @@ const Search = () => {
                           <button
                             type="button"
                             className={`btn px-4 font_size_14 ${
-                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
                             }`}
                             onClick={() => setPortionSize("half")}
                           >
@@ -806,7 +804,9 @@ const Search = () => {
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
                         >
@@ -822,7 +822,7 @@ const Search = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

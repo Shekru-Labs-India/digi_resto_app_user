@@ -11,10 +11,8 @@ import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
 import config from "../component/config";
-import axios from 'axios';
+import axios from "axios";
 const Checkout = () => {
-  
-  
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart } = useCart();
@@ -26,10 +24,9 @@ const Checkout = () => {
 
   const location = useLocation();
   // const [cartItems, setCartItems] = useState([]);
- 
+
   const [showPopup, setShowPopup] = useState(false);
- 
- 
+
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
@@ -41,7 +38,6 @@ const Checkout = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [cartId, setCartId] = useState(null);
 
- 
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
 
@@ -81,71 +77,65 @@ const Checkout = () => {
     setCustomerType(currentCustomerType);
   }, []);
 
-
-
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
       userData?.customer_id || localStorage.getItem("customer_id");
     const cartId = getCartId();
-  
+
     // if (!cartId || !currentCustomerId || !restaurantId) {
     //   return;
     // }
-  
+
     fetchCartDetails();
-    
   }, []);
-  
- const fetchCartDetails = async () => {
-  const userData = JSON.parse(localStorage.getItem("userData"));
-  const currentCustomerId =
-    userData?.customer_id || localStorage.getItem("customer_id");
-  const cartId = getCartId();
 
-  try {
-    const response = await axios.post(
-      `${config.apiDomain}/user_api/get_cart_detail`,
-      {
-        cart_id: cartId,
-        customer_id: currentCustomerId,
-        restaurant_id: storedRestaurantId,
+  const fetchCartDetails = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const currentCustomerId =
+      userData?.customer_id || localStorage.getItem("customer_id");
+    const cartId = getCartId();
+
+    try {
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/get_cart_detail`,
+        {
+          cart_id: cartId,
+          customer_id: currentCustomerId,
+          restaurant_id: storedRestaurantId,
+        }
+      );
+
+      if (response.data.st === 1) {
+        const data = response.data;
+
+        // Map and update state
+        const mappedItems = data.order_items.map((item) => ({
+          ...item,
+          discountedPrice: item.offer
+            ? Math.floor(item.price * (1 - item.offer / 100))
+            : item.price,
+        }));
+
+        // Update state immediately
+        setCartItems(mappedItems);
+        setTotal(parseFloat(data.total_bill));
+        setServiceChargesPercent(parseFloat(data.service_charges_percent));
+        setServiceCharges(parseFloat(data.service_charges_amount));
+        setGstPercent(parseFloat(data.gst_percent));
+        setTax(parseFloat(data.gst_amount));
+        setDiscountPercent(parseFloat(data.discount_percent));
+        setDiscount(parseFloat(data.discount_amount));
+        setGrandTotal(parseFloat(data.grand_total));
+        setCartId(data.cart_id);
+      } else {
+        console.error("Failed to fetch cart details:", response.data.msg);
       }
-    );
-
-    if (response.data.st === 1) {
-      const data = response.data;
-
-      // Map and update state
-      const mappedItems = data.order_items.map((item) => ({
-        ...item,
-        discountedPrice: item.offer
-          ? Math.floor(item.price * (1 - item.offer / 100))
-          : item.price,
-      }));
-
-      // Update state immediately
-      setCartItems(mappedItems);
-      setTotal(parseFloat(data.total_bill));
-      setServiceChargesPercent(parseFloat(data.service_charges_percent));
-      setServiceCharges(parseFloat(data.service_charges_amount));
-      setGstPercent(parseFloat(data.gst_percent));
-      setTax(parseFloat(data.gst_amount));
-      setDiscountPercent(parseFloat(data.discount_percent));
-      setDiscount(parseFloat(data.discount_amount));
-      setGrandTotal(parseFloat(data.grand_total));
-      setCartId(data.cart_id);
-    } else {
-      console.error("Failed to fetch cart details:", response.data.msg);
+    } catch (error) {
+      console.error("Error fetching cart details:", error);
     }
-  } catch (error) {
-    console.error("Error fetching cart details:", error);
-  }
-};
+  };
 
-  
-
- 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
     if (storedRestaurantCode) {
@@ -199,16 +189,13 @@ const Checkout = () => {
             setShowExistingOrderModal(true);
           }
         } else if (data.st === 2) {
-          
         } else {
           throw new Error("Failed to check order status");
         }
       } else {
         throw new Error("Failed to check order status");
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   const handleCreateOrder = async () => {
@@ -223,23 +210,27 @@ const Checkout = () => {
     }
 
     // Get table number from localStorage or userData
-    const tableNumber = JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
-                       localStorage.getItem("tableNumber") || 
-                       "1";
+    const tableNumber =
+      JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
+      localStorage.getItem("tableNumber") ||
+      "1";
 
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/create_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cart_id: cartId,
-          customer_id: customerId,
-          restaurant_id: restaurantId,
-          table_number: tableNumber, // Added table number to the request
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/create_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            table_number: tableNumber, // Added table number to the request
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -251,9 +242,7 @@ const Checkout = () => {
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   };
 
   const clearCartData = () => {
@@ -299,7 +288,7 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if ( data.st === 1) {
+      if (data.st === 1) {
         // Store the new order number from the API response
         const newOrderNumber = data.data.new_order_number;
 
@@ -308,15 +297,13 @@ const Checkout = () => {
         setShowExistingOrderModal(false);
         clearCartData();
         setNewOrderNumber(newOrderNumber);
-await fetchCartDetails()
+        await fetchCartDetails();
         // Store the new order number in state or localStorage for navigation
         setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
       } else {
         throw new Error(data.msg || "Failed to update order");
       }
-    } catch (error) {
-    
-    }
+    } catch (error) {}
   };
 
   const handleAddToExistingOrder = async () => {
@@ -349,9 +336,8 @@ await fetchCartDetails()
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
-        
         setShowPopup(true);
-await fetchCartDetails();
+        await fetchCartDetails();
         clearCartData();
         setShowExistingOrderModal(false); // Close the modal
       } else {
@@ -359,20 +345,14 @@ await fetchCartDetails();
           data.msg || "Failed to add items to the existing order"
         );
       }
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   };
 
   const closePopup = () => {
     setShowPopup(false);
 
-  
-
-    
     navigate(`/user_app/MyOrder/`);
   };
-
 
   return (
     <div className="page-wrapper full-height">
@@ -594,6 +574,11 @@ await fetchCartDetails();
                               </div>
                             )}
                           </div>
+
+                          <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
+                            <i className="fa fa-chevron-right me-2"></i> Make it
+                            more spicy 🥵{item.notes}
+                          </p>
                         </div>
                       </div>
                     </div>

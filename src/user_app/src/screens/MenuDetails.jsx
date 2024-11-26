@@ -467,23 +467,17 @@ const MenuDetails = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -560,7 +554,7 @@ const MenuDetails = () => {
                     right: 10,
                     height: 17,
                     width: 17,
-                    zIndex: 2
+                    zIndex: 2,
                   }}
                 ></i>
               )}
@@ -685,8 +679,7 @@ const MenuDetails = () => {
                   >
                     <i
                       className={`${
-                        productDetails.menu_veg_nonveg?.toLowerCase() ===
-                        "veg"
+                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "ri-checkbox-blank-circle-fill text-success"
                           : "ri-triangle-fill text-danger"
                       } font_size_12`}
@@ -755,8 +748,7 @@ const MenuDetails = () => {
                   >
                     <i
                       className={`${
-                        productDetails.menu_veg_nonveg?.toLowerCase() ===
-                        "veg"
+                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                           ? "ri-checkbox-blank-circle-fill text-success"
                           : "ri-triangle-fill text-danger"
                       } font_size_12`}
@@ -810,7 +802,6 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-             
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -1077,10 +1068,16 @@ const MenuDetails = () => {
                 </div>
                 <hr />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
@@ -1089,7 +1086,9 @@ const MenuDetails = () => {
                           <button
                             type="button"
                             className={`btn px-4 font_size_14 ${
-                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
                             }`}
                             onClick={() => setPortionSize("half")}
                           >
@@ -1099,7 +1098,9 @@ const MenuDetails = () => {
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
                         >
@@ -1114,7 +1115,7 @@ const MenuDetails = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

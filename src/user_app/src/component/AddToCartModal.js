@@ -108,7 +108,7 @@ const AddToCartModal = ({
               <button
                 type="button"
                 // className="btn btn-outline-secondary rounded-pill font_size_14"
-                className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                 onClick={() => setShowModal(false)}
               >
                 Close

@@ -672,7 +672,6 @@ const Product = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                       
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="fw-medium text-success font_size_10 d-flex align-items-center">
                             <i className="ri-restaurant-line pe-1"></i>
@@ -861,10 +860,16 @@ const Product = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex fw-medium justify-content-between">
+                  <label className="form-label d-flex fw-medium justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
@@ -873,7 +878,9 @@ const Product = () => {
                           <button
                             type="button"
                             className={`btn px-4 font_size_14 ${
-                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
                             }`}
                             onClick={() => setPortionSize("half")}
                           >
@@ -883,7 +890,9 @@ const Product = () => {
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
                         >
@@ -898,7 +907,7 @@ const Product = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

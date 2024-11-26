@@ -29,23 +29,17 @@ const renderStarRating = (rating) => {
 
   // 0.5 to 2.5: Show blank star (grey color)
   if (numRating >= 0.5 && numRating <= 2.5) {
-    return (
-      <i className="ri-star-line font_size_10 gray-text me-1"></i>
-    );
+    return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
   }
 
   // 3 to 4.5: Show half star
   if (numRating >= 3 && numRating <= 4.5) {
-    return (
-      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-    );
+    return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
   }
 
   // 5: Show full star
   if (numRating === 5) {
-    return (
-      <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-    );
+    return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
   }
 
   // Default case (shouldn't reach here based on your ranges)
@@ -494,6 +488,11 @@ const ProductCard = ({ isVegOnly }) => {
     }
   };
 
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
+
   if (isLoading || menuList.length === 0) {
     const restaurantStatus = localStorage.getItem("restaurantStatus");
     return (
@@ -619,7 +618,8 @@ const ProductCard = ({ isVegOnly }) => {
               >
                 <i className="ri-bard-line me-2"></i>
                 Special
-                <span className="gray-text font_size_10">{" "}
+                <span className="gray-text font_size_10">
+                  {" "}
                   ({menuList.filter((menu) => menu.is_special).length})
                 </span>
               </div>
@@ -886,21 +886,48 @@ const ProductCard = ({ isVegOnly }) => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa fa-chevron-right me-2"></i> Make it more
+                    sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more spicy 🥵")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa fa-chevron-right me-2"></i> Make it more
+                    spicy 🥵
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
@@ -938,7 +965,7 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

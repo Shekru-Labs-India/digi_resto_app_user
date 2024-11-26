@@ -8,8 +8,8 @@ import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
-import { usePopup } from '../context/PopupContext';
-import config from "../component/config"
+import { usePopup } from "../context/PopupContext";
+import config from "../component/config";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 const Wishlist = () => {
@@ -108,8 +108,9 @@ const Wishlist = () => {
 
   const fetchFavoriteItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedRestaurantId = localStorage.getItem("restaurantId"); // Get current restaurant ID
+
     if (!userData?.customer_id) {
-     
       setIsLoading(false);
       return;
     }
@@ -117,7 +118,7 @@ const Wishlist = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_favourite_list`,
+        `${config.apiDomain}/user_api/get_favourite_list`,
         {
           method: "POST",
           headers: {
@@ -136,22 +137,19 @@ const Wishlist = () => {
           setMenuList(data.lists);
           setHasFavorites(Object.keys(data.lists).length > 0);
 
-            const firstRestaurantName = Object.keys(data.lists)[0];
-            setCheckedItems({ [firstRestaurantName]: true });
+          const firstRestaurantName = Object.keys(data.lists)[0];
+          setCheckedItems({ [firstRestaurantName]: true });
         } else {
-        
           setWishlistItems({});
           setMenuList({});
           setHasFavorites(false);
         }
       } else {
-        
         setWishlistItems({});
         setMenuList({});
         setHasFavorites(false);
       }
     } catch (error) {
-     
       setWishlistItems({});
       setMenuList({});
       setHasFavorites(false);
@@ -209,7 +207,7 @@ const Wishlist = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -228,11 +226,12 @@ const Wishlist = () => {
           setPortionSize("full");
         }
       } else {
-      
-        window.showToast("error", data.msg || "Failed to fetch price information");
+        window.showToast(
+          "error",
+          data.msg || "Failed to fetch price information"
+        );
       }
     } catch (error) {
-      
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -241,7 +240,7 @@ const Wishlist = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       showLoginPopup();
       return;
     }
@@ -251,19 +250,22 @@ const Wishlist = () => {
     }
 
     if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
-      window.showToast("warning", "Please complete or clear your existing cart first");
+      window.showToast(
+        "warning",
+        "Please complete or clear your existing cart first"
+      );
       return;
     }
 
     setSelectedMenu(menu);
-    setPortionSize('full');
+    setPortionSize("full");
     fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       showLoginPopup();
       return;
     }
@@ -301,8 +303,10 @@ const Wishlist = () => {
       // Dispatch cart update event
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-   
-      window.showToast("error", "Failed to add item to cart. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to add item to cart. Please try again."
+      );
     }
   };
 
@@ -317,17 +321,20 @@ const Wishlist = () => {
     0
   );
 
-  const handleRemoveItemClick = async (restaurantName, menuId, restaurantId) => {
+  const handleRemoveItemClick = async (
+    restaurantName,
+    menuId,
+    restaurantId
+  ) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || !menuId || !restaurantId) {
-      
       window.showToast("error", "Missing required information");
       return;
     }
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/remove_favourite_menu`,
+        `${config.apiDomain}/user_api/remove_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -344,8 +351,9 @@ const Wishlist = () => {
       if (response.ok && data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
-          updatedMenuList[restaurantName] = updatedMenuList[restaurantName]
-            .filter((item) => item.menu_id !== menuId);
+          updatedMenuList[restaurantName] = updatedMenuList[
+            restaurantName
+          ].filter((item) => item.menu_id !== menuId);
 
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
@@ -357,11 +365,9 @@ const Wishlist = () => {
 
         window.showToast("success", "Item has been removed from favourite");
       } else {
-    
         window.showToast("error", "Failed to remove item from favourite");
       }
     } catch (error) {
-     
       window.showToast("error", "An error occurred while removing the item");
     }
   };
@@ -385,23 +391,17 @@ const Wishlist = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -810,10 +810,16 @@ const Wishlist = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
@@ -822,7 +828,9 @@ const Wishlist = () => {
                           <button
                             type="button"
                             className={`btn px-4 font_size_14 ${
-                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
                             }`}
                             onClick={() => setPortionSize("half")}
                           >
@@ -832,7 +840,9 @@ const Wishlist = () => {
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
+                            portionSize === "full"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
                         >
@@ -847,7 +857,7 @@ const Wishlist = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close
