@@ -27,11 +27,7 @@ const Footer = () => {
       <Link className="ms-3" to="/">
         <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
       </Link>
-      <p>Easy and inexpensive  <br />
-Your digital menu with Yumm  <br />
-
-Are you looking for an easy and inexpensive way to create and maintain your menu? With Yumm you can manage your menus at any time and on any device, supporting allergens and multiple languages, for any type of business. <br />
-
+      <p>
 Your menus are available digitally and on your own website, letting you reduce costs and keeping your menu up-to-date in an easy and inexpensive way.</p>
      
      
@@ -52,7 +48,7 @@ Your menus are available digitally and on your own website, letting you reduce c
           <a href="tel:+919172530151">+91 9172530151</a>
         </li>
       </ul>
-      <ul className="social-icon d-flex justify-content-center">
+      <ul className="social-icon d-flex justify-content-left">
         <li>
           <Link to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg" target="_blank" rel="noreferrer">
             <i className="fa-brands fa-facebook-f"></i>
