@@ -40,6 +40,15 @@ const MyOrder = () => {
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
 
+  // const [customerName, setCustomerName] = useState(null);
+
+
+  // useEffect(() => {
+  //   const customerName = localStorage.getItem("customerName");
+  //   setCustomerName(customerName);
+  //   console.log(customerName);
+  // }, []); // Empty dependency array ensures this runs only once when the component mounts
+
   useEffect(() => {
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
@@ -405,6 +414,15 @@ export const OrderCard = ({
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const timeoutRef = useRef({});
 
+  const [customerName, setCustomerName] = useState("");
+
+
+  useEffect(() => {
+    const customerName = localStorage.getItem("customerName");
+    setCustomerName(customerName);
+    console.log(customerName);
+  }, []);
+
   const handleCancelClick = () => {
     setShowCancelModal(true);
   };
@@ -619,7 +637,7 @@ export const OrderCard = ({
       if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      const transactionNote = encodeURIComponent(`${order.customer_name} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
       
@@ -635,13 +653,13 @@ export const OrderCard = ({
 
   const handlePhonePe = async () => {
     if (isProcessingPhonePe) return;
-
+console.log(customerName);
     try {
       setIsProcessingPhonePe(true);
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      const transactionNote = encodeURIComponent(`${order.customer_name} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
       
@@ -663,7 +681,9 @@ export const OrderCard = ({
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      const transactionNote = encodeURIComponent(`${order.customer_name} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      console.log(customerName+"gpay");
+      
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
       
@@ -888,7 +908,7 @@ export const OrderCard = ({
                       {isProcessingUPI ? "Processing..." : (
                         <>
                           Pay <span className="fs-4 mx-1">₹{order.grand_total}</span> via
-                          <span className="ms-2">All UPI Apps</span>
+                          <span className="ms-2">Other UPI Apps</span>
                           <img className="text-white ms-1" src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
                         </>
                       )}
@@ -1454,9 +1474,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
   // Add debugging logs
   useEffect(() => {
-    console.log("Orders:", orders);
-    console.log("Type:", type);
-    console.log("CheckedItems:", checkedItems);
+    // console.log("Orders:", orders);
+    // console.log("Type:", type);
+    // console.log("CheckedItems:", checkedItems);
   }, [orders, type, checkedItems]);
 
   return (
