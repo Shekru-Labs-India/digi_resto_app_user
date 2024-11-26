@@ -21,10 +21,10 @@ const Footer = () => {
   {/* MenuMitra Section */}
   <div className="col-lg-4 col-sm-6 col-md-6 mb-3">
     <div className="single-widget">
-      <Link to="/">
+     < Link to="/website">
         <img src={logo} alt="Rimu-Logo" width="60" height="60" />
       </Link>
-      <Link className="ms-3" to="/">
+      <Link className="ms-3" to="/website">
         <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
       </Link>
       <p>

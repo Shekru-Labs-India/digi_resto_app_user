@@ -202,11 +202,11 @@ const Header = () => {
           {/* Mobile Navbar */}
           <div className="mobile-nav d-flex justify-content-between align-items-center d-lg-none bg-white px-3 py-2">
             <div className="d-flex align-items-center">
-              <Link to="/" className="logo">
+              <Link to="/website" className="logo">
                 <img src={logo} alt="Menumitra Logo" width="30" height="30" />
               </Link>
               <Link
-                to="/"
+                to="/website"
                 className="text-dark ms-2"
                 style={{ fontWeight: "bold" }}
               >
@@ -230,11 +230,11 @@ const Header = () => {
           <div className="main-nav">
             <nav className="navbar navbar-expand-lg fixed-top bg-transparent d-none d-lg-block">
               <div className="container">
-                <Link className="navbar-brand" to="/">
+                <Link className="navbar-brand" to="/website">
                   <img src={logo} alt="Rimu Logo" width="60" height="60" />
                 </Link>
                 <div>
-                  <Link to="/">
+                  <Link to="/website">
                     <div className="fs-2 fw-semibold text-dark me-3">MenuMitra</div>
                   </Link>
                 </div>
@@ -245,7 +245,7 @@ const Header = () => {
                   <ul className="navbar-nav m-auto">
                     <li className="nav-item">
                       <Link
-                        to="/"
+                        to="/website"
                         className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
                         onClick={hideMobileNavbar}
                       >
