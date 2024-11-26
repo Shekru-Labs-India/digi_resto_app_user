@@ -232,6 +232,9 @@ const Search = () => {
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
      
         window.showToast("error", "Failed to fetch price information");
@@ -789,29 +792,25 @@ const Search = () => {
                       <p>Loading prices...</p>
                     ) : (
                       <>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
+                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}

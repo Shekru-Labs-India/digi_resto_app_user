@@ -710,6 +710,18 @@ const ProductCard = ({ isVegOnly }) => {
                       }}
                       loading="lazy"
                     />
+                    {menu.is_special && (
+                      <i
+                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 5,
+                          height: 17,
+                          width: 17,
+                        }}
+                      ></i>
+                    )}
                     <div
                       className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         menu.menu_veg_nonveg.toLowerCase() === "veg"
@@ -765,14 +777,6 @@ const ProductCard = ({ isVegOnly }) => {
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
                       <div className="font_size_12 ">
-                        {menu.is_special && (
-                          <div className="row ">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
-                              <i className="ri-bard-line me-2"></i>
-                              Special
-                            </div>
-                          </div>
-                        )}
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="ri-restaurant-line pe-1"></i>
@@ -901,18 +905,19 @@ const ProductCard = ({ isVegOnly }) => {
                       <p>Loading prices...</p>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
@@ -921,9 +926,8 @@ const ProductCard = ({ isVegOnly }) => {
                               : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}

@@ -258,6 +258,9 @@ const MenuDetails = () => {
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         console.error("API Error:", data.msg);
         window.showToast("error", "Failed to fetch price information");
@@ -529,257 +532,270 @@ const MenuDetails = () => {
           </div>
           <div className="container py-0">
             <div
+              className="border border-1"
               style={{
                 position: "relative",
                 width: "100%",
-                marginBottom: "20px",
+                height: "330px",
+                borderRadius: "17px",
+                overflow: "hidden",
+                backgroundColor: "#f6f6f6",
               }}
             >
-              {/* Main Image Container */}
-              <div
-                className="border border-1"
+              <img
+                src={images}
+                alt={productDetails.name}
                 style={{
-                  position: "relative",
                   width: "100%",
-                  height: "330px",
-                  borderRadius: "17px",
-                  overflow: "hidden",
-                  backgroundColor: "#f6f6f6",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
-              >
-                {productDetails?.images?.length > 0 ? (
-                  <>
-                    <img
-                      src={productDetails.images[currentSlide]}
-                      alt={productDetails.name}
-                      onError={(e) => {
-                        e.target.src = images;
-                      }}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        transition: "opacity 0.3s ease",
-                        aspectRatio: "16/9",
-                      }}
-                    />
+              />
+              {productDetails.is_special && (
+                <i
+                  className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    height: 17,
+                    width: 17,
+                    zIndex: 2
+                  }}
+                ></i>
+              )}
+              {productDetails?.images?.length > 0 ? (
+                <>
+                  <img
+                    src={productDetails.images[currentSlide]}
+                    alt={productDetails.name}
+                    onError={(e) => {
+                      e.target.src = images;
+                    }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      transition: "opacity 0.3s ease",
+                      aspectRatio: "16/9",
+                    }}
+                  />
 
-                    {/* Navigation Arrows */}
-                    {productDetails.images.length > 1 && (
-                      <>
-                        <div
-                          onClick={prevSlide}
-                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                          style={{
-                            position: "absolute",
-                            left: "10px",
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            height: "30px",
-                            width: "30px",
-                            cursor: "pointer",
-                            zIndex: 2,
-                          }}
-                        >
-                          <i className="ri-arrow-left-s-line fs-4"></i>
-                        </div>
-
-                        <div
-                          onClick={nextSlide}
-                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                          style={{
-                            position: "absolute",
-                            right: "10px",
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            height: "30px",
-                            width: "30px",
-                            cursor: "pointer",
-                            zIndex: 2,
-                          }}
-                        >
-                          <i className="ri-arrow-right-s-line fs-4"></i>
-                        </div>
-
-                        {/* Pagination Dots */}
-                        <div
-                          className=""
-                          style={{
-                            position: "absolute",
-                            bottom: "10px",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            display: "flex",
-                            gap: "8px",
-                            zIndex: 2,
-                            padding: "3px 7px",
-                            borderRadius: "15px",
-                            // background: "rgba(255, 255, 255, 0.3)",
-                          }}
-                        >
-                          {productDetails.images.map((_, index) => (
-                            <div
-                              className=""
-                              key={index}
-                              onClick={() => setCurrentSlide(index)}
-                              style={{
-                                width: "7px",
-                                height: "7px",
-                                borderRadius: "50%",
-                                cursor: "pointer",
-                                backgroundColor:
-                                  currentSlide === index
-                                    ? "var(--primary)"
-                                    : "rgba(128, 128, 128, .6)",
-                                // border:
-                                //   currentSlide === index
-                                //     ? "none"
-                                //     : "1px solid rgba(255, 255, 255, 0.8)",
-                                transition: "all 0.3s ease",
-                                opacity: currentSlide === index ? 1 : 0.8,
-                                transform:
-                                  currentSlide === index
-                                    ? "scale(1.2)"
-                                    : "scale(1)",
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-
-                    {/* Veg/Non-veg indicator */}
-                    <div
-                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "border-success"
-                          : "border-danger"
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "10px",
-                        left: "10px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <i
-                        className={`${
-                          productDetails.menu_veg_nonveg?.toLowerCase() ===
-                          "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
-                        } font_size_12`}
-                      ></i>
-                    </div>
-
-                    {/* Like button */}
-                    <div
-                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                      style={{
-                        position: "absolute",
-                        bottom: "10px",
-                        right: "10px",
-                        height: "20px",
-                        width: "20px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <i
-                        className={`${
-                          isFavorite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
-                        } fs-6`}
-                        onClick={handleLikeClick}
-                        style={{ cursor: "pointer" }}
-                      ></i>
-                    </div>
-
-                    {/* Discount badge */}
-                    {productDetails?.offer !== 0 && (
-                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                        <span className="font_size_10 text-white">
-                          {productDetails.offer}% Off
-                        </span>
+                  {/* Navigation Arrows */}
+                  {productDetails.images.length > 1 && (
+                    <>
+                      <div
+                        onClick={prevSlide}
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          left: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          height: "30px",
+                          width: "30px",
+                          cursor: "pointer",
+                          zIndex: 2,
+                        }}
+                      >
+                        <i className="ri-arrow-left-s-line fs-4"></i>
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <img
-                      src={images}
-                      alt={productDetails.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <div
-                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "border-success"
-                          : "border-danger"
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "10px",
-                        left: "10px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <i
-                        className={`${
-                          productDetails.menu_veg_nonveg?.toLowerCase() ===
-                          "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
-                        } font_size_12`}
-                      ></i>
-                    </div>
 
-                    {/* Like button */}
-                    <div
-                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                      style={{
-                        position: "absolute",
-                        bottom: "10px",
-                        right: "10px",
-                        height: "20px",
-                        width: "20px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <i
-                        className={`${
-                          isFavorite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
-                        } fs-6`}
-                        onClick={handleLikeClick}
-                        style={{ cursor: "pointer" }}
-                      ></i>
-                    </div>
-
-                    {/* Discount badge */}
-                    {productDetails?.offer !== 0 && (
-                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                        <span className="font_size_10 text-white">
-                          {productDetails.offer}% Off
-                        </span>
+                      <div
+                        onClick={nextSlide}
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          height: "30px",
+                          width: "30px",
+                          cursor: "pointer",
+                          zIndex: 2,
+                        }}
+                      >
+                        <i className="ri-arrow-right-s-line fs-4"></i>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
+
+                      {/* Pagination Dots */}
+                      <div
+                        className=""
+                        style={{
+                          position: "absolute",
+                          bottom: "10px",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          display: "flex",
+                          gap: "8px",
+                          zIndex: 2,
+                          padding: "3px 7px",
+                          borderRadius: "15px",
+                          // background: "rgba(255, 255, 255, 0.3)",
+                        }}
+                      >
+                        {productDetails.images.map((_, index) => (
+                          <div
+                            className=""
+                            key={index}
+                            onClick={() => setCurrentSlide(index)}
+                            style={{
+                              width: "7px",
+                              height: "7px",
+                              borderRadius: "50%",
+                              cursor: "pointer",
+                              backgroundColor:
+                                currentSlide === index
+                                  ? "var(--primary)"
+                                  : "rgba(128, 128, 128, .6)",
+                              // border:
+                              //   currentSlide === index
+                              //     ? "none"
+                              //     : "1px solid rgba(255, 255, 255, 0.8)",
+                              transition: "all 0.3s ease",
+                              opacity: currentSlide === index ? 1 : 0.8,
+                              transform:
+                                currentSlide === index
+                                  ? "scale(1.2)"
+                                  : "scale(1)",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Veg/Non-veg indicator */}
+                  <div
+                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                        ? "border-success"
+                        : "border-danger"
+                    }`}
+                    style={{
+                      position: "absolute",
+                      bottom: "10px",
+                      left: "10px",
+                      height: "20px",
+                      width: "20px",
+                      borderWidth: "2px",
+                      borderRadius: "3px",
+                      zIndex: 2,
+                    }}
+                  >
+                    <i
+                      className={`${
+                        productDetails.menu_veg_nonveg?.toLowerCase() ===
+                        "veg"
+                          ? "ri-checkbox-blank-circle-fill text-success"
+                          : "ri-triangle-fill text-danger"
+                      } font_size_12`}
+                    ></i>
+                  </div>
+
+                  {/* Like button */}
+                  <div
+                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                    style={{
+                      position: "absolute",
+                      bottom: "10px",
+                      right: "10px",
+                      height: "20px",
+                      width: "20px",
+                      zIndex: 2,
+                    }}
+                  >
+                    <i
+                      className={`${
+                        isFavorite
+                          ? "ri-heart-3-fill text-danger"
+                          : "ri-heart-3-line"
+                      } fs-6`}
+                      onClick={handleLikeClick}
+                      style={{ cursor: "pointer" }}
+                    ></i>
+                  </div>
+
+                  {/* Discount badge */}
+                  {productDetails?.offer !== 0 && (
+                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                      <span className="font_size_10 text-white">
+                        {productDetails.offer}% Off
+                      </span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <img
+                    src={images}
+                    alt={productDetails.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                      productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
+                        ? "border-success"
+                        : "border-danger"
+                    }`}
+                    style={{
+                      position: "absolute",
+                      bottom: "10px",
+                      left: "10px",
+                      height: "20px",
+                      width: "20px",
+                      borderWidth: "2px",
+                      borderRadius: "3px",
+                      zIndex: 2,
+                    }}
+                  >
+                    <i
+                      className={`${
+                        productDetails.menu_veg_nonveg?.toLowerCase() ===
+                        "veg"
+                          ? "ri-checkbox-blank-circle-fill text-success"
+                          : "ri-triangle-fill text-danger"
+                      } font_size_12`}
+                    ></i>
+                  </div>
+
+                  {/* Like button */}
+                  <div
+                    className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                    style={{
+                      position: "absolute",
+                      bottom: "10px",
+                      right: "10px",
+                      height: "20px",
+                      width: "20px",
+                      zIndex: 2,
+                    }}
+                  >
+                    <i
+                      className={`${
+                        isFavorite
+                          ? "ri-heart-3-fill text-danger"
+                          : "ri-heart-3-line"
+                      } fs-6`}
+                      onClick={handleLikeClick}
+                      style={{ cursor: "pointer" }}
+                    ></i>
+                  </div>
+
+                  {/* Discount badge */}
+                  {productDetails?.offer !== 0 && (
+                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                      <span className="font_size_10 text-white">
+                        {productDetails.offer}% Off
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -794,12 +810,7 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-              {productDetails.is_special && (
-                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                  <i className="ri-bard-line me-2"></i> Special
-                  <hr className="mt-2 mb-0" />
-                </div>
-              )}
+             
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -1074,29 +1085,25 @@ const MenuDetails = () => {
                       <p>Loading prices...</p>
                     ) : (
                       <>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
+                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}

@@ -116,7 +116,7 @@ const Product = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-      // Formatting the menu list
+        // Formatting the menu list
         const formattedMenuList = data.data.menus.map((menuItem) => ({
           ...menuItem,
           name: toTitleCase(menuItem.menu_name || ""),
@@ -137,7 +137,9 @@ const Product = () => {
         setCategories(formattedCategories);
 
         // Handle special items in filtering logic
-        const specialItems = formattedMenuList.filter(item => item.is_special);
+        const specialItems = formattedMenuList.filter(
+          (item) => item.is_special
+        );
         setFilteredMenuList(formattedMenuList);
       } else {
         throw new Error("API request unsuccessful");
@@ -264,28 +266,26 @@ const Product = () => {
   useEffect(() => {
     if (menuList.length > 0) {
       let filtered = [...menuList];
-  
+
       // If a category is selected, filter by category
       if (selectedCategory) {
         const selectedCategoryName = categories.find(
           (category) => category.menu_cat_id === selectedCategory
         )?.name;
-  
+
         filtered = menuList.filter(
           (item) => item.category === selectedCategoryName
         );
       }
-  
+
       // If "Special" category is selected, filter by special items only
       if (selectedCategory === "special") {
         filtered = menuList.filter((item) => item.is_special);
       }
-  
+
       setFilteredMenuList(filtered);
     }
   }, [selectedCategory, menuList, categories]);
-  
-  
 
   const handleCategorySelect = (categoryId) => {
     if (categoryId === "special") {
@@ -293,19 +293,17 @@ const Product = () => {
     } else {
       setSelectedCategory(categoryId);
     }
-  
+
     if (swiperRef.current) {
       const activeIndex = categories.findIndex(
         (category) => category.menu_cat_id === categoryId
       );
-  
+
       if (activeIndex !== -1) {
         swiperRef.current.slideTo(activeIndex);
       }
     }
   };
-  
-  
 
   const fetchHalfFullPrices = async (menuId) => {
     if (!restaurantId) {
@@ -332,6 +330,9 @@ const Product = () => {
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         throw new Error(data.msg || "Failed to fetch price information");
       }
@@ -350,10 +351,10 @@ const Product = () => {
     //   return;
     // }
 
-if (isMenuItemInCart(menu.menu_id)) {
-  window.showToast("info", "This item is already in your cart.");
-  return;
-}
+    if (isMenuItemInCart(menu.menu_id)) {
+      window.showToast("info", "This item is already in your cart.");
+      return;
+    }
 
     if (!restaurantId) {
       window.showToast("error", "Restaurant information is missing");
@@ -463,23 +464,17 @@ if (isMenuItemInCart(menu.menu_id)) {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -506,9 +501,10 @@ if (isMenuItemInCart(menu.menu_id)) {
                 onClick={() => handleCategorySelect("special")}
               >
                 <i className="ri-bard-line me-2"></i>
-                Special <span className="gray-muted font_size_10">
+                Special{" "}
+                <span className="gray-muted font_size_10">
                   {" "}
-                  ({menuList.filter((menu)=> menu.is_special).length})
+                  ({menuList.filter((menu) => menu.is_special).length})
                 </span>
               </div>
               {menuList.length > 0 && categories.length > 0 && (
@@ -600,6 +596,21 @@ if (isMenuItemInCart(menu.menu_id)) {
                           e.target.src = images;
                         }}
                       />
+                      {/* Add special icon here */}
+                      {menuItem.is_special && (
+                        <i
+                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 5,
+                            height: 17,
+                            width: 17,
+                            zIndex: 2,
+                          }}
+                        ></i>
+                      )}
+                      {/* Existing heart icon */}
                       <div
                         className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                         style={{
@@ -611,7 +622,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                         }}
                       >
                         <i
-                          className={` ${
+                          className={`${
                             menuItem.is_favourite
                               ? "ri-heart-3-fill text-danger"
                               : "ri-heart-3-line"
@@ -661,14 +672,7 @@ if (isMenuItemInCart(menu.menu_id)) {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                        {menuItem.is_special && (
-                          <div className="row">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2 ">
-                              <i className="ri-bard-line me-2"></i>
-                              Special
-                            </div>
-                          </div>
-                        )}
+                       
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="fw-medium text-success font_size_10 d-flex align-items-center">
                             <i className="ri-restaurant-line pe-1"></i>
@@ -865,29 +869,25 @@ if (isMenuItemInCart(menu.menu_id)) {
                       <p>Loading prices...</p>
                     ) : (
                       <>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
+                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}

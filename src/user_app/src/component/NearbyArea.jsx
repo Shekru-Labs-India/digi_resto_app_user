@@ -18,7 +18,7 @@ const NearbyArea = () => {
   const [customerId, setCustomerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [notes, setNotes] = useState('');
-  const [portionSize, setPortionSize] = useState('full');
+  const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -295,7 +295,7 @@ const NearbyArea = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch( `${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
+      const response = await fetch(`${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -310,6 +310,9 @@ const NearbyArea = () => {
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         console.clear();
         window.showToast("error", "Failed to fetch price information");
@@ -631,29 +634,25 @@ const NearbyArea = () => {
                       <p>Loading prices...</p>
                     ) : (
                       <>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half" ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
+                            portionSize === "full" ? "btn-primary" : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}
