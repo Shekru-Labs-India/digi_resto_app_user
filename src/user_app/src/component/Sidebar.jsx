@@ -326,7 +326,8 @@ export const SidebarToggler = () => {
               href="https://www.shekruweb.com"
               target="_blank"
             >
-              Shekru Labs India Pvt. Ltd.
+              Shekru Labs India Pvt. Ltd. <br />
+              Office no 6, 2nd Floor Manogat Appt Near Muktangan,Sahakar nagar, Pune, MH-411037
             </a>
           </div>
         </div>

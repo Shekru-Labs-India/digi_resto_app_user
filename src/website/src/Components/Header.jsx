@@ -235,7 +235,7 @@ const Header = () => {
                 </Link>
                 <div>
                   <Link to="/">
-                    <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
+                    <div className="fs-2 fw-semibold text-dark me-3">MenuMitra</div>
                   </Link>
                 </div>
                 <div
@@ -270,7 +270,28 @@ const Header = () => {
                         Pricing
                       </Link>
                     </li>
+
+                    <li className="nav-item">
+                      <Link
+                        to="/about"
+                        className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+                        onClick={hideMobileNavbar}
+                      >
+                        About
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        to="/contact"
+                        className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}
+                        onClick={hideMobileNavbar}
+                      >
+                        Contact
+                      </Link>
+                    </li>
                   </ul>
+
+
                   <div className="others-option">
                     <a
                       className="sidebar-menu"
@@ -312,6 +333,25 @@ const Header = () => {
                   Pricing
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  to="/about"
+                  className="nav-link"
+                  onClick={hideMobileNavbar}
+                >
+                  About
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/contact"
+                  className="nav-link"
+                  onClick={hideMobileNavbar}
+                >
+                  Contact
+                </Link>
+              </li>
+
             </ul>
           </div>
         </div>

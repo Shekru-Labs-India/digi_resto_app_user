@@ -8,7 +8,7 @@ const Footer = () => {
     <>
       <>
 	  
-      <section className="footer-top-area  border border-top shadow-lg  pt-100 pb-70"   style={{
+      <section className="footer-top-area  border border-top shadow-lg  pt-100 "   style={{
         backgroundImage: `url(${footerbg})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
@@ -27,20 +27,57 @@ const Footer = () => {
       <Link className="ms-3" to="/">
         <div className="fs-2 fw-semibold text-dark">MenuMitra</div>
       </Link>
-      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Velit cupiditate ad quisquam ratione, unde exercitationem ducimus dolor sit amet consectetur adipisicing.</p>
-      <ul className="address">
-        <li><i className="fa fa-map-marker"></i> 123, Western Road, Melbourne Australia</li>
-        <li><i className="fa fa-envelope"></i>
-          <a href="../../cdn-cgi/l/email-protection#650d0009090a25170c08104b060a08">
-            <span className="__cf_email__" data-cfemail="0f676a6363604f7d66627a216c6062">info@menumitra.com</span>
+      <p>Easy and inexpensive  <br />
+Your digital menu with Yumm  <br />
+
+Are you looking for an easy and inexpensive way to create and maintain your menu? With Yumm you can manage your menus at any time and on any device, supporting allergens and multiple languages, for any type of business. <br />
+
+Your menus are available digitally and on your own website, letting you reduce costs and keeping your menu up-to-date in an easy and inexpensive way.</p>
+     
+     
+     
+<ul className="address">
+        <li>
+          <i className="fa fa-map-marker" />
+          <span>Muktangan English School & Jr College, office No. 6, 2 Floor manogat, Parvati, Pune, Maharashtra 411009</span>
+        </li>
+        <li>
+          <i className="fa fa-envelope" />
+          <a href="mailto:info@menumitra.com">
+            info@menumitra.com
           </a>
         </li>
-        <li><i className="fa fa-phone"></i> <a href="tel:123456123">+91 9172530151</a></li>
+        <li>
+          <i className="fa fa-phone" />
+          <a href="tel:+919172530151">+91 9172530151</a>
+        </li>
       </ul>
       <ul className="social-icon d-flex justify-content-center">
-        <li><a href="https://www.facebook.com/" target="_blank" rel="noreferrer"><i className="fa-brands fa-facebook-f"></i></a></li>
-        <li><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><i className="fa-brands fa-linkedin-in"></i></a></li>
-        <li><a href="https://www.pinterest.com/" target="_blank" rel="noreferrer"><i className="fa-brands fa-pinterest-p"></i></a></li>
+        <li>
+          <Link to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg" target="_blank" rel="noreferrer">
+            <i className="fa-brands fa-facebook-f"></i>
+          </Link>
+        </li>
+        <li>
+          <Link to="https://www.linkedin.com/company/102429337/admin/dashboard/" target="_blank" rel="noreferrer">
+            <i className="fa-brands fa-linkedin-in"></i>
+          </Link>
+        </li>
+        <li>
+          <Link to="https://www.youtube.com/@menumitra" target="_blank" rel="noreferrer">
+            <i className="fa-brands fa-youtube"></i>
+          </Link>
+        </li>
+        <li>
+          <Link to="https://t.me/MenuMitra" target="_blank" rel="noreferrer">
+            <i className="fa-brands fa-telegram"></i>
+          </Link>
+        </li>
+        <li>
+          <Link to="https://www.instagram.com/menumitra/" target="_blank" rel="noreferrer">
+            <i className="fa-brands fa-instagram"></i>
+          </Link>
+        </li>
       </ul>
     </div>
   </div>
@@ -97,30 +134,34 @@ const Footer = () => {
 
         {/* End Footer Top Area */}
         {/* Start Footer Bottom Area */}
+              
+               <div className="container pb-0">
+          <div className="row ">
+            <div className="col-12 text-center">
+              <p className="mb-0">
+                All trademarks and logos belong to their respective owners and are hereby acknowledged.
+              </p>
+            </div>
+          </div>
+          <hr className="border-white mt-0" />
+        </div>
         <footer className="footer-bottom-area">
           <div className="container">
             <div className="row">
-              <div className="col-lg-6 col-md-6">
-                <div>
-                  <p>
-				  All trademarks and logos belong to their respective owners and are hereby acknowledged. Copyright 2024.
-				 
-                  </p>
-                </div>
+              <div className="col-lg-6 col-md-6 text-center text-lg-start">
+                <p className="mb-0">
+                  Copyright © 2024
+                </p>
               </div>
-              <div className="col-lg-6 col-md-6">
-               
-				<p className="conditions">
-			   <i className="ri-flashlight-fill "></i> Powered by
-                    <span className="fw-bold ms-2"><a
-              className=" "
-              href="https://www.shekruweb.com"
-              target="_blank"
-            >
-              Shekru Labs India Pvt. Ltd.
-            </a></span>
-			   </p>
-                
+              <div className="col-lg-6 col-md-6 text-center ">
+                <p className="conditions mb-0">
+                <i className="fa-solid fa-bolt"></i> Powered by
+                  <span className="fw-bold ms-2">
+                    <a href="https://www.shekruweb.com" target="_blank" rel="noopener noreferrer">
+                      Shekru Labs India Pvt. Ltd.
+                    </a>
+                  </span>
+                </p>
               </div>
             </div>
           </div>
