@@ -607,45 +607,61 @@ export const OrderCard = ({
 
   const handleUpiPayment = async () => {
     let paymentUrl;
-    
-    switch(paymentMethod) {
+    const amount = Math.round(parseFloat(order.grand_total)); // Ensure whole number
+    const transactionNote = `${order.customer_name} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`;
+
+    switch (paymentMethod) {
       case "PhonePe":
-        paymentUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+        paymentUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${encodeURIComponent(
+          order.restaurant_name
+        )}&mc=1234&tid=${order.order_id}&tr=${
+          order.order_id
+        }&tn=${encodeURIComponent(
+          transactionNote
+        )}&am=${amount}&cu=INR&mode=04`;
         break;
-      
+
       case "GooglePay":
-        paymentUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+        paymentUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${encodeURIComponent(
+          order.restaurant_name
+        )}&mc=1234&tid=${order.order_id}&tr=${
+          order.order_id
+        }&tn=${encodeURIComponent(
+          transactionNote
+        )}&am=${amount}&cu=INR&mode=04`;
         break;
-      
+
       default: // Regular UPI
-        paymentUrl = `upi://pay?pa=hivirajkadam@okhdfcbank&pn=MenuMitra&tr=ORDER123&tn=Payment for order&am=1&cu=INR`;
+        const upiUrl = `upi://pay?pa=your-vpa@bank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+        paymentUrl = upiUrl;
     }
 
     try {
       const response = await fetch(
-        `${config.baseURL}/orders/${order.order_id}/status`,
+        `${config.apiDomain}/user_api/complete_order`, // Updated to use correct API endpoint
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            status: "Payment Initiated",
+            order_id: order.order_id,
+            restaurant_id: order.restaurant_id,
             payment_method: paymentMethod,
           }),
         }
       );
 
       if (response.ok) {
-        // Add setTimeout for redirection
         setTimeout(() => {
           window.location.href = paymentUrl;
-        }, 1000);
+        }, );
       }
     } catch (error) {
       console.error("Error updating order status:", error);
     }
   };
+
 
   // Separate functions for direct payment links
   const openPhonePeLink = () => {
@@ -815,8 +831,9 @@ export const OrderCard = ({
                         handleUpiPayment();
                       }}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      Pay{" "}
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+                      via
                       <img
                         className="text-white ms-1"
                         src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
@@ -827,14 +844,18 @@ export const OrderCard = ({
 
                     <button
                       className="btn text-white"
-                      style={{ backgroundColor: '#5f259f' }}
-                      onClick={openPhonePeLink}
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={() => {
+                        setPaymentMethod("PhonePe");
+                        handleUpiPayment();
+                      }}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      Pay{" "}
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+                      via
                       <img
                         className="ms-1"
-                        src="https://www.phonepe.com/webstatic/static/favicon-32x32-c735c361.png"
+                        src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
                         width={45}
                         alt="PhonePe"
                       />
@@ -842,14 +863,15 @@ export const OrderCard = ({
 
                     <button
                       className="btn text-dark"
-                      style={{ 
-                        background: 'white',
-                        border: '1px solid #ccc'
+                      style={{ background: "white", border: "1px solid #ccc" }}
+                      onClick={() => {
+                        setPaymentMethod("GooglePay");
+                        handleUpiPayment();
                       }}
-                      onClick={openGooglePayLink}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                      Pay{" "}
+                      <span className="fs-4 mx-1">₹{order.grand_total}</span>{" "}
+                      via
                       <img
                         className="ms-1"
                         src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"

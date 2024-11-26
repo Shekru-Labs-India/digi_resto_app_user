@@ -52,6 +52,7 @@ function RestaurantDetails() {
           setCountDetails(data.count);
           setCategoryList(data.categorys);
           setMenuList(data.menu_list);
+          localStorage.setItem("restoUPI", data.restaurant_details.upi_id);
         }
       } catch (error) {
         console.error('Error fetching restaurant details:', error);

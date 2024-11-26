@@ -540,189 +540,191 @@ const Search = () => {
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div key={menu.menu_id} className="col-12">
-              <div
-                className="card mb-3 rounded-4"
-                onClick={() => handleMenuClick(menu.menu_id)}
-                style={{ cursor: "pointer" }}
-              >
-                <div className="card-body py-0">
-                  <div className="row">
-                    <div className="col-3 px-0">
-                      <img
-                        src={menu.image || images}
-                        alt={menu.menu_name}
-                        className="rounded-4 img-fluid"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          aspectRatio: "1/1",
-                        }}
-                        onError={(e) => {
-                          e.target.src = images;
-                          e.target.style.width = "100%";
-                          e.target.style.height = "100%";
-                          e.target.style.aspectRatio = "1/1";
-                        }}
-                      />
-                      <div
-                        className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "76%",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
-                          } fs-6`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
+            <>
+              <div key={menu.menu_id} className="col-12">
+                <div
+                  className="card mb-3 rounded-4"
+                  onClick={() => handleMenuClick(menu.menu_id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body py-0">
+                    <div className="row">
+                      <div className="col-3 px-0">
+                        <img
+                          src={menu.image || images}
+                          alt={menu.menu_name}
+                          className="rounded-4 img-fluid"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            aspectRatio: "1/1",
                           }}
-                        ></i>
-                      </div>
-                      <div
-                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "border-success"
-                            : "border-danger"
-                        }`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          left: "3px",
-                          height: "20px",
-                          width: "20px",
-                          borderWidth: "2px",
-                          borderRadius: "3px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
-                          } font_size_12`}
-                        ></i>
-                      </div>
-                      {menu.offer !== 0 && (
-                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                          <span className="font_size_10 text-white">
-                            {menu.offer}% Off
-                          </span>
+                          onError={(e) => {
+                            e.target.src = images;
+                            e.target.style.width = "100%";
+                            e.target.style.height = "100%";
+                            e.target.style.aspectRatio = "1/1";
+                          }}
+                        />
+                        <div
+                          className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
+                          style={{
+                            position: "absolute",
+                            bottom: "3px",
+                            right: "76%",
+                            height: "20px",
+                            width: "20px",
+                          }}
+                        >
+                          <i
+                            className={`${
+                              menu.is_favourite
+                                ? "ri-heart-3-fill text-danger"
+                                : "ri-heart-3-line"
+                            } fs-6`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleLikeClick(menu.menu_id);
+                            }}
+                          ></i>
                         </div>
-                      )}
-                    </div>
-                    <div className="col-9 pt-1 p-0">
-                      <div className="row">
-                        <div className="col-10">
-                          <div className="ps-2 font_size_14 fw-medium">
-                            {menu.menu_name}
+                        <div
+                          className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                            menu.menu_veg_nonveg.toLowerCase() === "veg"
+                              ? "border-success"
+                              : "border-danger"
+                          }`}
+                          style={{
+                            position: "absolute",
+                            bottom: "3px",
+                            left: "3px",
+                            height: "20px",
+                            width: "20px",
+                            borderWidth: "2px",
+                            borderRadius: "3px",
+                          }}
+                        >
+                          <i
+                            className={`${
+                              menu.menu_veg_nonveg.toLowerCase() === "veg"
+                                ? "ri-checkbox-blank-circle-fill text-success"
+                                : "ri-triangle-fill text-danger"
+                            } font_size_12`}
+                          ></i>
+                        </div>
+                        {menu.offer !== 0 && (
+                          <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                            <span className="font_size_10 text-white">
+                              {menu.offer}% Off
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="col-9 pt-1 p-0">
+                        <div className="row">
+                          <div className="col-10">
+                            <div className="ps-2 font_size_14 fw-medium">
+                              {menu.menu_name}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="row mt-1">
-                        <div className="col-5 text-start d-flex align-items-center">
-                          <span className="ps-2 font_size_10 text-success">
-                            <i className="ri-restaurant-line mt-0 me-1"></i>
-                            {menu.category_name}
-                          </span>
-                        </div>
-                        <div className="col-3 d-flex aign-items-center">
-                          {menu.spicy_index && (
-                            <div className="">
-                              {Array.from({ length: 5 }).map((_, index) =>
-                                index < menu.spicy_index ? (
-                                  <i
-                                    className="ri-fire-fill font_size_12 text-danger"
-                                    key={index}
-                                  ></i>
-                                ) : (
-                                  <i
-                                    className="ri-fire-line font_size_12 gray-text"
-                                    key={index}
-                                  ></i>
-                                )
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
-                          {menu.rating > 0 && (
-                            <>
-                              {renderStarRating(menu.rating)}
-                              <span className="font_size_10 fw-normal gray-text">
-                                {menu.rating}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="row mt-1">
-                        <div className="col-6">
-                          <p className="ms-2 mb-0 fw-medium">
-                            {menu.offer ? (
+                        <div className="row mt-1">
+                          <div className="col-5 text-start d-flex align-items-center">
+                            <span className="ps-2 font_size_10 text-success">
+                              <i className="ri-restaurant-line mt-0 me-1"></i>
+                              {menu.category_name}
+                            </span>
+                          </div>
+                          <div className="col-3 d-flex aign-items-center">
+                            {menu.spicy_index && (
+                              <div className="">
+                                {Array.from({ length: 5 }).map((_, index) =>
+                                  index < menu.spicy_index ? (
+                                    <i
+                                      className="ri-fire-fill font_size_12 text-danger"
+                                      key={index}
+                                    ></i>
+                                  ) : (
+                                    <i
+                                      className="ri-fire-line font_size_12 gray-text"
+                                      key={index}
+                                    ></i>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="col-4 d-flex align-items-center justify-content-end text-start">
+                            {menu.rating > 0 && (
                               <>
-                                <span className="font_size_14 fw-semibold text-info">
-                                  ₹
-                                  {Math.floor(
-                                    menu.price * (1 - menu.offer / 100)
-                                  )}
-                                </span>
-                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                  ₹{menu.price}
+                                {renderStarRating(menu.rating)}
+                                <span className="font_size_10 fw-normal gray-text">
+                                  {menu.rating}
                                 </span>
                               </>
-                            ) : (
-                              <span className="font_size_14 fw-semibold text-info">
-                                ₹{menu.price}
-                              </span>
                             )}
-                          </p>
+                          </div>
                         </div>
 
-                        <div className="col-6 d-flex justify-content-end">
-                          {customerId && (
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                              style={{
-                                width: "25px",
-                                height: "25px",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menu);
-                              }}
-                            >
-                              <i
-                                className={`ri-shopping-cart-${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "fill text-black"
-                                    : "line"
-                                } fs-6`}
-                              ></i>
-                            </div>
-                          )}
+                        <div className="row mt-1">
+                          <div className="col-6">
+                            <p className="ms-2 mb-0 fw-medium">
+                              {menu.offer ? (
+                                <>
+                                  <span className="font_size_14 fw-semibold text-info">
+                                    ₹
+                                    {Math.floor(
+                                      menu.price * (1 - menu.offer / 100)
+                                    )}
+                                  </span>
+                                  <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                    ₹{menu.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="font_size_14 fw-semibold text-info">
+                                  ₹{menu.price}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+
+                          <div className="col-6 d-flex justify-content-end">
+                            {customerId && (
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCartClick(menu);
+                                }}
+                              >
+                                <i
+                                  className={`ri-shopping-cart-${
+                                    isMenuItemInCart(menu.menu_id)
+                                      ? "fill text-black"
+                                      : "line"
+                                  } fs-6`}
+                                ></i>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="divider border-success inner-divider transparent mt-5">
-                <span className="bg-body">End</span>
-              </div>
-            </div>
+            </>
           ))}
+        <div className="divider border-success inner-divider transparent mt-5">
+          <span className="bg-body">End</span>
+        </div>
         </div>
       </main>
 

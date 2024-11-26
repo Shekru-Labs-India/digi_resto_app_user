@@ -526,7 +526,7 @@ await fetchCartDetails();
                     </p>
 
                     <button
-                      className="btn btn-success rounded-pill w-100 py-2 text-dark"
+                      className="btn btn-success rounded-pill w-100 py-2 text-white"
                       onClick={handleCreateOrder}
                     >
                       Create Order
