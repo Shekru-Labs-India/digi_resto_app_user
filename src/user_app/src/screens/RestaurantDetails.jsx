@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Bottom from "../component/bottom";
 import Sidebar from "../../../website/src/Components/Sidebar";
 import Header from "../components/Header";
@@ -24,8 +24,10 @@ function RestaurantDetails() {
   const [categoryList, setCategoryList] = useState([]);
   const [menuList, setMenuList] = useState([]);
   const [filteredMenus, setFilteredMenus] = useState([]);
-
-  
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
+  const timeoutRef = useRef({});
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -80,15 +82,79 @@ function RestaurantDetails() {
     }
   };
 
-  const openPhonePeLink = () => {
-    const phonePeUrl = `phonepe://pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
-    window.location.href = phonePeUrl;
+  const handleGenericUPI = () => {
+    if (isProcessingUPI) return;
+    try {
+      setIsProcessingUPI(true);
+      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+      const upiUrl = `upi://pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      window.location.href = upiUrl;
+
+      timeoutRef.current.upi = setTimeout(() => {
+        if (!document.hidden) {
+          window.showToast?.("error", "No UPI app found. Please install a UPI payment app.");
+        }
+        setIsProcessingUPI(false);
+      }, 3000);
+    } catch (error) {
+      console.error("UPI payment error:", error);
+      setIsProcessingUPI(false);
+    }
   };
 
-  const openGooglePayLink = () => {
-    const googlePayUrl = `tez://upi/pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
-    window.location.href = googlePayUrl;
+  const handlePhonePe = () => {
+    if (isProcessingPhonePe) return;
+    try {
+      setIsProcessingPhonePe(true);
+      if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+      const phonePeUrl = `phonepe://pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      window.location.href = phonePeUrl;
+
+      timeoutRef.current.phonepe = setTimeout(() => {
+        if (!document.hidden) {
+          window.showToast?.("error", "PhonePe app not found. Please install PhonePe.");
+        }
+        setIsProcessingPhonePe(false);
+      }, 3000);
+    } catch (error) {
+      console.error("PhonePe payment error:", error);
+      setIsProcessingPhonePe(false);
+    }
   };
+
+  const handleGooglePay = () => {
+    if (isProcessingGPay) return;
+    try {
+      setIsProcessingGPay(true);
+      if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
+
+      const googlePayUrl = `gpay://upi/pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      window.location.href = googlePayUrl;
+
+      timeoutRef.current.gpay = setTimeout(() => {
+        if (!document.hidden) {
+          window.showToast?.("error", "Google Pay app not found. Please install Google Pay.");
+        }
+        setIsProcessingGPay(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Google Pay payment error:", error);
+      setIsProcessingGPay(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      Object.values(timeoutRef.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
+      });
+      setIsProcessingUPI(false);
+      setIsProcessingPhonePe(false);
+      setIsProcessingGPay(false);
+    };
+  }, []);
 
   return (
     <div>
@@ -135,7 +201,7 @@ function RestaurantDetails() {
                 </div>
               </div>
 
-              {restaurantDetails.upi_id && (
+              {/* {restaurantDetails.upi_id && (
                 <div
                   className="card "
                   style={{
@@ -149,11 +215,13 @@ function RestaurantDetails() {
                     <a class="btn btn-info rounded-pill btn-sm text-white">
                       <i class="ri-checkbox-circle-line py-0 me-2"></i>Pay
                     </a>
-                    {/* <a href="upi://pay?pa=sugatraj.2106@oksbi&pn=Tasty Diner&mc=1234&tid=ORDER123&tr=ORDER123&tn=Customer is paying Rs. 0.01 for order no. ORDER123&am=1&cu=INR">Pay Now</a> */}
+                    <a href="upi://pay?pa=sugatraj.2106@oksbi&pn=Tasty Diner&mc=1234&tid=ORDER123&tr=ORDER123&tn=Customer is paying Rs. 0.01 for order no. ORDER123&am=1&cu=INR">Pay Now</a>
                   </div>
                 </div>
-              )}
+              )} */}
 
+
+{restaurantDetails.upi_id && (
               <div
                 className="card"
                 style={{
@@ -165,39 +233,55 @@ function RestaurantDetails() {
                     UPI : {restaurantDetails.upi_id}
                   </span>
                 </div>
-                <div className="d-flex justify-content-center align-items-center gap-3 pb-3">
-                  <button 
-                    className="btn rounded-pill btn-sm text-white"
-                    onClick={openPhonePeLink}
-                    style={{
-                      backgroundColor: "#5f259f", // PhonePe purple
-                      borderColor: "#5f259f",
-                      minWidth: "120px"
-                    }}
-                  >
-                    <i className="ri-checkbox-circle-line py-0 me-2"></i>PhonePe
-                  </button>
-                  <button 
-                    className="btn rounded-pill btn-sm text-white"
-                    onClick={openGooglePayLink}
-                    style={{
-                      background: "linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335)", // Google colors
-                      borderColor: "#4285f4",
-                      minWidth: "120px"
-                    }}
-                  >
-                    <i className="ri-google-line py-0 me-2"></i>Google Pay
-                  </button>
-                </div>
-                <div className="d-flex justify-content-center align-items-center pb-3">
-                  <a 
-                    href={`upi://pay?pa=${restaurantDetails.upi_id}&pn=${restaurantDetails.name}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`}
-                    className="btn btn-primary rounded-pill btn-sm text-white"
-                  >
-                    <i className="ri-checkbox-circle-line pe-2"></i>Pay Now
-                  </a>
+                
+                <div className="px-3 pb-3">
+                  <div className="row g-2">
+                    <div className="col-6">
+                      <button 
+                        className="btn w-100 btn-sm"
+                        onClick={handlePhonePe}
+                        disabled={isProcessingPhonePe}
+                        style={{
+                          backgroundColor: "#5f259f",
+                          color: "white",
+                          borderRadius: "8px"
+                        }}
+                      >
+                        {isProcessingPhonePe ? "Processing..." : "PhonePe"}
+                      </button>
+                    </div>
+                    
+                    <div className="col-6">
+                      <button 
+                        className="btn w-100 btn-sm"
+                        onClick={handleGooglePay}
+                        disabled={isProcessingGPay}
+                        style={{
+                          backgroundColor: "#1a73e8",
+                          color: "white",
+                          borderRadius: "8px"
+                        }}
+                      >
+                        {isProcessingGPay ? "Processing..." : "Google Pay"}
+                      </button>
+                    </div>
+                    
+                    <div className="col-12">
+                      <button 
+                        className="btn btn-primary w-100 btn-sm"
+                        onClick={handleGenericUPI}
+                        disabled={isProcessingUPI}
+                        style={{
+                          borderRadius: "8px"
+                        }}
+                      >
+                        {isProcessingUPI ? "Processing..." : "Other UPI Apps"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+            )}
             </div>
           </div>
         </div>
