@@ -39,12 +39,12 @@ const HotelList = () => {
 
   const handleFilter = (type) => {
     setActiveFilter(type);
-    applyFilters(type, activeStatusFilter);
+    applyFilters(type, activeStatusFilter);  // Pass current status filter
   };
 
   const handleStatusFilter = (status) => {
     setActiveStatusFilter(status);
-    applyFilters(activeFilter, status);
+    applyFilters(activeFilter, status);  // Pass current veg/nonveg filter
   };
 
   const applyFilters = (type, status) => {
@@ -73,48 +73,48 @@ const HotelList = () => {
     <div className="page-wrapper">
       <main className="page-content pt-0">
         <div className="container py-1 px-0">
-          <div className="d-flex justify-content-between mb-3">
-            <div className="btn-group btn-group-sm">
-              <button 
-                className={`btn p-2 ${activeFilter === 'all' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleFilter('all')}
-              >
-                All
-              </button>
-              <button 
-                className={`btn p-2  ${activeFilter === 'veg' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleFilter('veg')}
-              >
-                Veg
-              </button>
-              <button 
-                className={`btn p-2  ${activeFilter === 'nonveg' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleFilter('nonveg')}
-              >
-                Non-Veg
-              </button>
-            </div>
-            <div className="btn-group btn-group-sm">
-              <button 
-                className={`btn p-2 ${activeStatusFilter === 'all' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleStatusFilter('all')}
-              >
-                All
-              </button>
-              <button 
-                className={`btn p-2 ${activeStatusFilter === 'open' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleStatusFilter('open')}
-              >
-                Open
-              </button>
-              <button 
-                className={`btn p-2 btn-dark  text-white ${activeStatusFilter === 'closed' ? 'btn-success' : 'btn-primary'}`} 
-                onClick={() => handleStatusFilter('closed')}
-              >
-                Closed
-              </button>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between mb-3">
+  <div className="btn-group btn-group-sm">
+    <button 
+      className={`btn fw-normal p-2 btn-outline-info ${activeFilter === 'all' ? 'active text-white' : ''}`} 
+      onClick={() => handleFilter('all')}
+    >
+      All
+    </button>
+    <button 
+      className={`btn fw-normal p-2 btn-outline-success ${activeFilter === 'veg' ? 'active text-white' : ''}`} 
+      onClick={() => handleFilter('veg')}
+    >
+      Veg
+    </button>
+    <button 
+      className={`btn fw-normal p-2 btn-outline-warning ${activeFilter === 'nonveg' ? 'active text-white' : ''}`} 
+      onClick={() => handleFilter('nonveg')}
+    >
+      Non-Veg
+    </button>
+  </div>
+  <div className="btn-group btn-group-sm">
+    <button 
+      className={`btn p-2 btn-outline-info ${activeStatusFilter === 'all' ? 'active text-white' : ''}`} 
+      onClick={() => handleStatusFilter('all')}
+    >
+      All
+    </button>
+    <button 
+      className={`btn p-2 btn-outline-success ${activeStatusFilter === 'open' ? 'active text-white' : ''}`} 
+      onClick={() => handleStatusFilter('open')}
+    >
+      Open
+    </button>
+    <button 
+      className={`btn p-2 btn-outline-dark ${activeStatusFilter === 'closed' ? 'active text-white' : ''}`} 
+      onClick={() => handleStatusFilter('closed')}
+    >
+      Closed
+    </button>
+  </div>
+</div>
           {filteredHotels.map((hotel) => (
             <div className="card rounded-4" key={hotel.restaurant_id}>
               <Link to={`/user_app/${hotel.code}`}>
