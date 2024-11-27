@@ -11,6 +11,7 @@ import Header from "../components/Header";
 
 import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
+import RestaurantSocials from "../components/RestaurantSocials";
 
 const calculateOriginalPrice = (grandTotal) => {
   const numericTotal = parseFloat(grandTotal);
@@ -273,7 +274,7 @@ const MyOrder = () => {
         }
       />
 
-      <main className="page-content space-top mb-5 pb-3">
+      <main className="page-content space-top p-b70">
         <div className="container px-1">
           {ongoingOrPlacedOrders.placed.map((order, index) => (
             <OrderCard
@@ -1495,10 +1496,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-
-        <div className="divider border-success inner-divider transparent mb-3">
-          <span className="bg-body">End</span>
-        </div>
+<div className="contain">
+  <RestaurantSocials/>
+</div>
       </>
     );
   };

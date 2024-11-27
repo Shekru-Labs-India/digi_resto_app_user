@@ -144,6 +144,7 @@ export const RestaurantIdProvider = ({ children }) => {
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
+          localStorage.removeItem("restaurantSocial");
           
           
           // Update userData if it exists

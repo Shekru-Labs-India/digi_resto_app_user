@@ -406,7 +406,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content space-top mb-5 pb-3">
+        <main className="page-content space-top mb-5 p-b70">
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
             <OrdersPlacedOngoing />
@@ -414,7 +414,7 @@ const HomeScreen = () => {
             <div className="mb-3">
               <NearbyArea />
             </div>
-          <RestaurantSocials/>
+            <RestaurantSocials />
           </div>
         </main>
 

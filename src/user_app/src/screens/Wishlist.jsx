@@ -11,6 +11,7 @@ import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
+import RestaurantSocials from "../components/RestaurantSocials";
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -423,7 +424,7 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <main className="page-content space-top mb-5 pb-5">
+      <main className="page-content space-top p-b70">
         <div className="container ">
           <Header title="Favourite" count={wishlistCount} />
 
@@ -749,9 +750,7 @@ const Wishlist = () => {
                 ) : null
               )}
               <div className="container">
-                <div className="divider border-success inner-divider transparent mb-0">
-                  <span className="bg-body">End</span>
-                </div>
+                <RestaurantSocials />
               </div>
             </>
           ) : (

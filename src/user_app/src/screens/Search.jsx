@@ -722,6 +722,9 @@ const Search = () => {
             </>
           ))}
 
+        </div>
+        <div className="container">
+
           <RestaurantSocials />
         </div>
       </main>

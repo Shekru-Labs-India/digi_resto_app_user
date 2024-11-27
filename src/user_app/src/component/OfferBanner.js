@@ -229,8 +229,8 @@ const OfferBanner = () => {
         spaceBetween: 20,
         loop: true,
         autoplay: {
-          // delay: 2500,
-          delay: 2500000,
+          delay: 2500,
+          // delay: 2500000,
           disableOnInteraction: false,
         },
       });

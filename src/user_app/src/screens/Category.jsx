@@ -166,7 +166,10 @@ const Category = () => {
                   </div>
                 ))}
               </div>
+              <div className="container">
+
               <RestaurantSocials />
+              </div>
 
             </div>
           ) : (

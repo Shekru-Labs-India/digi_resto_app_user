@@ -13,6 +13,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import config from "../component/config";
 import "../assets/css/toast.css";
+import RestaurantSocials from "../components/RestaurantSocials";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -563,8 +564,8 @@ const Product = () => {
           </div>
         </div>
         {/* Menu Items */}
-        <div className="container mb-5 pt-0 pb-5">
-          <div className="row g-3 grid-style-1 pb-5">
+        <div className="container p-b70 ">
+          <div className="row g-3 grid-style-1">
             {filteredMenuList.map((menuItem) => (
               <div key={menuItem.menu_id} className="col-6">
                 <div className="card-item style-6 rounded-4">
@@ -814,8 +815,8 @@ const Product = () => {
               </div>
             ))}
           </div>
-          <div className="divider border-success inner-divider transparent mb-5">
-            <span className="bg-body">End</span>
+          <div className="container">
+            <RestaurantSocials />
           </div>
         </div>
       </main>

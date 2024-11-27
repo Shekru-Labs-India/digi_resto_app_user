@@ -15,7 +15,7 @@ function RestaurantSocials() {
 
   return (
     <div>
-      <div className="divider border-success inner-divider transparent mt-5">
+      <div className="divider border-success inner-divider transparent">
         <span className="bg-body">End</span>
       </div>
 
@@ -138,4 +138,4 @@ function RestaurantSocials() {
   );
 }
 
-export default RestaurantSocials
+export default RestaurantSocials;
