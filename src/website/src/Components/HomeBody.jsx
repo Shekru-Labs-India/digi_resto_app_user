@@ -213,8 +213,8 @@ const HomeBody = () => {
         <section className="box-area pt-100 pb-70">
           <div className="container">
             <div className="row">
-              <div className="col-lg-4 col-md-6 ">
-                <div className="single-box rounded-4">
+              <div className="col-lg-4 col-md-6">
+                <div className="single-box rounded-4 h-100">
                   <div className="box-icon">
                     <i>
                       <i className="fa-solid fa-wifi " width="40" height="40" />
@@ -229,7 +229,7 @@ const HomeBody = () => {
                 </div>
               </div>
               <div className="col-lg-4 col-md-6 icon-color">
-                <div className="single-box rounded-4">
+                <div className="single-box rounded-4 h-100">
                   <div className="box-icon">
                     <i>
                       <i
@@ -248,7 +248,7 @@ const HomeBody = () => {
                 </div>
               </div>
               <div className="col-lg-4 col-md-6 offset-md-3 offset-lg-0 icon-color">
-                <div className="single-box rounded-4">
+                <div className="single-box rounded-4 h-100">
                   <div className="box-icon">
                     <i>
                       <i
@@ -380,13 +380,13 @@ const HomeBody = () => {
               <span>All Foods</span>
               <h2>It’s About a healthier Lifestyle but in a Natural Way</h2>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Asperiores dignissimos libero molestiae harum dolores numquam
-                velit iste modi optio.
+                Experience the future of dining with MenuMitra, where technology meets taste.
+                Our app streamlines your restaurant experience, offering seamless ordering and
+                personalized service. Join us in revolutionizing the way you enjoy your meals.
               </p>
-              <a className="default-btn" href="index.html#">
+              <Link to="/pricing" className="default-btn" href="index.html#">
                 See All Foods
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -397,9 +397,10 @@ const HomeBody = () => {
               <span>Testimonial</span>
               <h2>What Our Customers Say</h2>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis
-                ipsum suspendisse ultrices gravida.
+                Discover how MenuMitra has transformed the dining experience for our customers. 
+                From seamless digital ordering to efficient staff management, our app has made 
+                restaurant operations smoother and more enjoyable. Hear from our satisfied users 
+                about the positive impact MenuMitra has had on their businesses.
               </p>
             </div>
             <div className="row testimonial-bg-color ">
@@ -411,10 +412,10 @@ const HomeBody = () => {
                     autoplay={{
                       delay: 2500,
                       disableOnInteraction: false,
-                      pauseOnMouseEnter: true
+                      pauseOnMouseEnter: true,
                     }}
                     pagination={{
-                      clickable: true
+                      clickable: true,
                     }}
                     loop={true}
                     modules={[Autoplay, Pagination]}
@@ -427,16 +428,27 @@ const HomeBody = () => {
                         <span>Hotel Owner, Pune</span>
                         <i className="flaticon-quote"></i>
                         <p>
-                          "MenuMitra ne mera restaurant digital kar diya! Staff ki efficiency badh gayi 
-                          aur customers bhi khush hai. QR code scanning se ordering system ekdum smooth 
-                          ho gaya hai. Best investment for my business!"
+                          "MenuMitra ne mera restaurant digital kar diya! Staff
+                          ki efficiency badh gayi aur customers bhi khush hai.
+                          QR code scanning se ordering system ekdum smooth ho
+                          gaya hai. Best investment for my business!"
                         </p>
                         <ul>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
                         </ul>
                       </div>
                     </SwiperSlide>
@@ -448,16 +460,26 @@ const HomeBody = () => {
                         <span>Restaurant Manager, Mumbai</span>
                         <i className="flaticon-quote"></i>
                         <p>
-                          "MenuMitra मुळे आमच्या रेस्टॉरंटचं डिजिटलायझेशन झालं. ऑर्डर मॅनेजमेंट 
-                          आता खूप सोपं झालंय. कस्टमर सर्विस इम्प्रूव्ह झाली आणि बिझनेस वाढला. 
-                          एकदम झकास app आहे!"
+                          "MenuMitra मुळे आमच्या रेस्टॉरंटचं डिजिटलायझेशन झालं.
+                          ऑर्डर मॅनेजमेंट आता खूप सोपं झालंय. कस्टमर सर्विस
+                          इम्प्रूव्ह झाली आणि बिझनेस वाढला. एकदम झकास app आहे!"
                         </p>
                         <ul>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star-half-o"></i></li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star-half-o"></i>
+                          </li>
                         </ul>
                       </div>
                     </SwiperSlide>
@@ -469,16 +491,28 @@ const HomeBody = () => {
                         <span>Cafe Owner, Bangalore</span>
                         <i className="flaticon-quote"></i>
                         <p>
-                          "Being a new cafe owner, MenuMitra has been a game-changer! The digital menu 
-                          system is so user-friendly, and their customer support is excellent. Saved 
-                          costs on menu printing and improved order accuracy by 95%."
+                          "Being a new cafe owner, MenuMitra has been a
+                          game-changer! The digital menu system is so
+                          user-friendly, and their customer support is
+                          excellent. Saved costs on menu printing and improved
+                          order accuracy by 95%."
                         </p>
                         <ul>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
                         </ul>
                       </div>
                     </SwiperSlide>
@@ -490,16 +524,28 @@ const HomeBody = () => {
                         <span>Hotel Manager, Nashik</span>
                         <i className="flaticon-quote"></i>
                         <p>
-                          "MenuMitra ekdum mast app hai! Hamari service quality improve hui hai, 
-                          customers ka time bacha hai, aur staff ko bhi manage karna easy ho gaya. 
-                          Inventory tracking feature toh kamaal ka hai. Full paisa vasool!"
+                          "MenuMitra ekdum mast app hai! Hamari service quality
+                          improve hui hai, customers ka time bacha hai, aur
+                          staff ko bhi manage karna easy ho gaya. Inventory
+                          tracking feature toh kamaal ka hai. Full paisa
+                          vasool!"
                         </p>
                         <ul>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
-                          <li><i className="fa fa-star"></i></li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
+                          <li>
+                            <i className="fa fa-star"></i>
+                          </li>
                         </ul>
                       </div>
                     </SwiperSlide>
@@ -514,23 +560,21 @@ const HomeBody = () => {
             <div className="row align-items-center">
               <div className="col-lg-4">
                 <div className="offer-logo">
-                  <p>50%</p>
+                  <p>20%</p>
                   <span>Off</span>
                 </div>
               </div>
               <div className="col-lg-8">
                 <div className="offer-title">
                   <span>Deal of The Day</span>
-                  <h2>We offer a bit less at Midday</h2>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Quis ipsum suspendisse ultrices gravida sit amet,
-                    consectetur adipiscing elit.
+                  <h2>Get Flat 20% Off on MenuMitra!</h2>
+                  <p className="text-wrap">
+                    Experience the best in restaurant management with MenuMitra. Improve your service quality, save time for your customers, and make staff management easier. Our inventory tracking feature is top-notch. Don't miss out on this exclusive offer - get flat 20% off now!
                   </p>
                   <a
                     className="default-btn"
-                    href="https://templates.envytheme.com/rimu/default/shop.html"
+                    href="https://whatsapp.com/channel/0029Vaxm0hDBPzjcPHd8Md1u"
+                    target="_blank"
                   >
                     Shop Now
                     <i className="flaticon-next"></i>

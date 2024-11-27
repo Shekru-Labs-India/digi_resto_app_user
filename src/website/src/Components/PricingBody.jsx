@@ -5,6 +5,10 @@ import product1 from "../Assets/img/product/1.jpg"
 import product2 from "../Assets/img/product/2.jpg"
 import product3 from "../Assets/img/product/3.jpg"
 import product4 from "../Assets/img/product/4.jpg"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 const PricingBody = () => {
 
@@ -74,7 +78,7 @@ const PricingBody = () => {
           <i  className="fa-solid fa-cart-shopping text-dark mb-2 fs-1" size="100"  />
           <h3 className="text-danger fw-bold mt-2">44%</h3>
           <p className="text-muted">
-            <strong>Online order volume</strong> on Zomato & Swiggy orders processed by Petpooja
+            <strong>Online order volume</strong> processed by MenuMitra
           </p>
         </div>
 
@@ -177,51 +181,108 @@ const PricingBody = () => {
       <h2 className="text-center fw-bold mb-5">Trusted by some of the best restaurants</h2>
 
       {/* Testimonials */}
-      <div className="row">
-        {/* Testimonial 1 */}
-        <div className="col-md-6 mb-4">
-          <div className="p-3 border rounded bg-white">
+      <Swiper
+        spaceBetween={30}
+        slidesPerView={1}
+        breakpoints={{
+          576: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: 2,
+          },
+          992: {
+            slidesPerView: 2,
+          },
+          1200: {
+            slidesPerView: 2,
+          },
+        }}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
+        }}
+        loop={true}
+        modules={[Autoplay]}
+        className="mySwiper"
+      >
+        {/* Slide 1 */}
+        <SwiperSlide>
+          <div className="p-3 border rounded bg-white h-100">
             <div className="d-flex align-items-center mb-2">
-              
               <p className="mb-0">
-                MenuMitra has been the POS solution for our 90+ outlets for over two years. And these numbers are proof
-                of how content we are with their services. Especially for a large chain like us, MenuMitra is the
-                one-point data bridge between all the outlets and the owner. Kudos to the team. Recommending MenuMitra to
-                everyone!
+                "MenuMitra ne hamari 90+ branches ki operations ekdum smooth kar di hai. 
+                Data management ho ya phir customer service, sab kuch ek click pe available hai. 
+                Franchise owners bhi khush hai aur staff bhi. Best investment for large scale operations!"
               </p>
             </div>
             <div className="text-end mt-3">
               <div>
-                <strong>Jolly Christian</strong>
-                <p className="mb-0 text-muted">General Manager</p>
+                <strong>Rajesh Mehta</strong>
+                <p className="mb-0 text-muted">Operations Head, Mumbai</p>
               </div>
             </div>
           </div>
-        </div>
+        </SwiperSlide>
 
-        {/* Testimonial 2 */}
-        <div className="col-md-6 mb-4">
-          <div className="p-3 border rounded bg-white">
+        {/* Slide 2 */}
+        <SwiperSlide>
+          <div className="p-3 border rounded bg-white h-100">
             <div className="d-flex align-items-center mb-2">
-              
               <p className="mb-0">
-                MenuMitra has helped me to manage inventory levels and food costs. I can track sales and expenses in real
-                time, which helps me make informed decisions about purchasing and pricing. The system also provides
-                detailed reports, which has helped me reduce waste and optimize my inventory. Overall, I am extremely
-                satisfied with MenuMitra and highly recommend it to anyone looking to streamline their operations and
-                improve their bottom line.
+                "As a South Indian restaurant chain owner, MenuMitra's multi-language support 
+                is fantastic. Inventory tracking and cost management features are saving us 
+                lakhs every month. Integration was smooth, and ROI is amazing!"
               </p>
             </div>
             <div className="text-end mt-3">
-             
               <div>
-                <strong>Jaipratap Singh</strong>
-                <p className="mb-0 text-muted">Managing Director</p>
+                <strong>Venkatesh Iyer</strong>
+                <p className="mb-0 text-muted">Restaurant Chain Owner, Bangalore</p>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </SwiperSlide>
+
+        {/* Slide 3 */}
+        <SwiperSlide>
+          <div className="p-3 border rounded bg-white h-100">
+            <div className="d-flex align-items-center mb-2">
+              <p className="mb-0">
+                "MenuMitra ka digital menu system bahut effective hai. Hamari billing accuracy 
+                95% tak improve hui hai. Customer feedback system se service quality track 
+                karna aur improve karna bohot easy ho gaya hai."
+              </p>
+            </div>
+            <div className="text-end mt-3">
+              <div>
+                <strong>Priya Malhotra</strong>
+                <p className="mb-0 text-muted">Restaurant Manager, Delhi</p>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+
+        {/* Slide 4 */}
+        <SwiperSlide>
+          <div className="p-3 border rounded bg-white h-100">
+            <div className="d-flex align-items-center mb-2">
+              <p className="mb-0">
+                "MenuMitra ची inventory management system एकदम झकास आहे. 
+                Stock tracking आणि wastage control करणे खूप सोपे झाले आहे. 
+                Customer service टीम पण खूप helpful आहे. Highly recommended!"
+              </p>
+            </div>
+            <div className="text-end mt-3">
+              <div>
+                <strong>Amit Deshmukh</strong>
+                <p className="mb-0 text-muted">Hotel Owner, Pune</p>
+              </div>
+            </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
 
       {/* Icons Section */}
       <div className="row text-center mt-5">
