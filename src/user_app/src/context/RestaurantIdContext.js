@@ -17,6 +17,14 @@ export const RestaurantIdProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
+  const [socials, setSocials] = useState({
+    whatsapp: "",
+    facebook: "",
+    instagram: "",
+    website: "",
+    google_review: "",
+    google_business_link: "",
+  });
 
   useEffect(() => {
     // Get table number from URL path
@@ -70,12 +78,22 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantStatus(account_status)
           setIsRestaurantOpen(is_open)
 
-          // Update restaurant data in localStorage
+
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
           localStorage.setItem("restaurantStatus", account_status)
           localStorage.setItem("isRestaurantOpen", is_open)
+          localStorage.setItem("restaurantSocial", socials)
+
+           setSocials({
+             whatsapp: data.restaurant_details.whatsapp || "",
+             facebook: data.restaurant_details.facebook || "",
+             instagram: data.restaurant_details.instagram || "",
+             website: data.restaurant_details.website || "",
+             google_review: data.restaurant_details.google_review || "",
+             google_business_link: data.restaurant_details.google_business_link || "",
+           });
 
           // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");

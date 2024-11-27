@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
+import RestaurantSocials from "../components/RestaurantSocials";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -725,17 +726,8 @@ const Search = () => {
               </div>
             </>
           ))}
-          <div className="divider border-success inner-divider transparent mt-5">
-            <span className="bg-body">End</span>
-          </div>
-          <div className="d-flex justify-content-between align-items-center px-4 my-3">
-            <i className="ri-whatsapp-line"></i>
-            <i className="ri-whatsapp-line"></i>
-            <i className="ri-whatsapp-line"></i>
-            <i className="ri-whatsapp-line"></i>
-            <i className="ri-whatsapp-line"></i>
-            <i className="ri-whatsapp-line"></i>
-          </div>
+        
+          <RestaurantSocials/>
         </div>
       </main>
 
