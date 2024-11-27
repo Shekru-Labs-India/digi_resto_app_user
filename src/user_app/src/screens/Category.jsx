@@ -8,6 +8,7 @@ import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import HotelNameAndTable from '../components/HotelNameAndTable';
 import config from "../component/config"
+import RestaurantSocials from "../components/RestaurantSocials";
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +129,7 @@ const Category = () => {
           </div>
           
           {categories.length > 0 ? (
-            <div className="container pt-0">
+            <div className="container pt-0 p-b55">
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>
@@ -165,7 +166,7 @@ const Category = () => {
                   </div>
                 ))}
               </div>
-              <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
+              <RestaurantSocials />
 
             </div>
           ) : (

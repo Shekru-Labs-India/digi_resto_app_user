@@ -14,17 +14,10 @@ export const RestaurantIdProvider = ({ children }) => {
   const [tableNumber, setTableNumber] = useState("");
   const [restaurantStatus, setRestaurantStatus] = useState(null)
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
+  const [socials, setSocials] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
-  const [socials, setSocials] = useState({
-    whatsapp: "",
-    facebook: "",
-    instagram: "",
-    website: "",
-    google_review: "",
-    google_business_link: "",
-  });
 
   useEffect(() => {
     // Get table number from URL path
@@ -78,22 +71,12 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantStatus(account_status)
           setIsRestaurantOpen(is_open)
 
-
+          // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
           localStorage.setItem("restaurantStatus", account_status)
           localStorage.setItem("isRestaurantOpen", is_open)
-          localStorage.setItem("restaurantSocial", socials)
-
-           setSocials({
-             whatsapp: data.restaurant_details.whatsapp || "",
-             facebook: data.restaurant_details.facebook || "",
-             instagram: data.restaurant_details.instagram || "",
-             website: data.restaurant_details.website || "",
-             google_review: data.restaurant_details.google_review || "",
-             google_business_link: data.restaurant_details.google_business_link || "",
-           });
 
           // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -106,6 +89,52 @@ export const RestaurantIdProvider = ({ children }) => {
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
+
+          // Create social media array from restaurant_details
+          const socialsArray = [
+            {
+              id: 'whatsapp',
+              icon: 'ri-whatsapp-line',
+              name: 'WhatsApp',
+              link: data.restaurant_details.whatsapp || '',
+            },
+            {
+              id: 'facebook',
+              icon: 'ri-facebook-line',
+              name: 'Facebook',
+              link: data.restaurant_details.facebook || '',
+            },
+            {
+              id: 'instagram',
+              icon: 'ri-instagram-line',
+              name: 'Instagram',
+              link: data.restaurant_details.instagram || '',
+            },
+            {
+              id: 'website',
+              icon: 'ri-global-line',
+              name: 'Website',
+              link: data.restaurant_details.website || '',
+            },
+            {
+              id: 'google_review',
+              icon: 'ri-google-line',
+              name: 'Review',
+              link: data.restaurant_details.google_review || '',
+            },
+            {
+              id: 'google_business',
+              icon: 'ri-store-2-line',
+              name: 'Business',
+              link: data.restaurant_details.google_business_link || '',
+            }
+          ].filter(item => item.link); // Only keep items with non-empty links
+
+          // Store in localStorage
+          localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
+          
+          // Update state if needed
+          setSocials(socialsArray);
         } else if (data.st === 2) {
           // Invalid restaurant code
           setRestaurantId(null);
@@ -174,6 +203,7 @@ export const RestaurantIdProvider = ({ children }) => {
         updateRestaurantCode,
         updateTableNumber,
         setRestaurantCode, 
+        socials,
       }}
     >
       {children}

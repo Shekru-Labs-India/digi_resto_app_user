@@ -12,6 +12,7 @@ import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
 import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
+import RestaurantSocials from "../components/RestaurantSocials";
 const Cart = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const { cartItems, updateCart, removeFromCart } = useCart();
@@ -770,9 +771,7 @@ const Cart = () => {
           )}
           <div className="container py-0">
             <NearbyArea />
-            <div className="divider border-success inner-divider transparent mb-0">
-              <span className="bg-body">End</span>
-            </div>
+            <RestaurantSocials />
           </div>
         </main>
       )}
