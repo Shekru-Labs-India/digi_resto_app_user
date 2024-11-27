@@ -266,7 +266,7 @@ const UserAuthPopup = () => {
           mobile: data.customer_details.mobile,
           customer_type: data.customer_details.customer_type
         };
-        
+        localStorage.setItem("customerName",data.customer_details.name);
         localStorage.setItem("userData", JSON.stringify(userData));
         setCustomerId(data.customer_details.customer_id);
         setCustomerType(data.customer_details.customer_type);

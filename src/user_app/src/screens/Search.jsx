@@ -6,8 +6,8 @@ import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
-import { usePopup } from '../context/PopupContext';
-import config from "../component/config"
+import { usePopup } from "../context/PopupContext";
+import config from "../component/config";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -32,8 +32,7 @@ const Search = () => {
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
-  const { addToCart, isMenuItemInCart } =
-    useCart();
+  const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
 
   useEffect(() => {
@@ -99,7 +98,7 @@ const Search = () => {
         };
 
         const response = await fetch(
-           `${config.apiDomain}/user_api/search_menu`,
+          `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
@@ -130,14 +129,10 @@ const Search = () => {
               JSON.stringify(updatedHistory)
             );
           } else {
-           
           }
         } else {
-         
         }
-      } catch (error) {
-       
-      }
+      } catch (error) {}
 
       setIsLoading(false);
     };
@@ -151,7 +146,7 @@ const Search = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
           headers: {
@@ -174,7 +169,6 @@ const Search = () => {
       }
       return [];
     } catch (error) {
-     
       return [];
     }
   };
@@ -215,7 +209,7 @@ const Search = () => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
@@ -232,12 +226,13 @@ const Search = () => {
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
-     
         window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
-    
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -279,9 +274,8 @@ const Search = () => {
       setPortionSize("full");
       setSelectedMenu(null);
 
-      window.dispatchEvent(new Event('cartUpdated'));
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-    
       window.showToast("error", "Failed to add item to cart. Please try again");
     }
   };
@@ -296,10 +290,9 @@ const Search = () => {
     showLoginPopup();
   };
 
-
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === 'guest') {
+    if (!userData?.customer_id || userData.customer_type === "guest") {
       showLoginPopup();
       return;
     }
@@ -311,7 +304,9 @@ const Search = () => {
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/${isFavorite ? 'remove' : 'save'}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -319,7 +314,7 @@ const Search = () => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             customer_id: userData.customer_id,
-            customer_type: userData.customer_type
+            customer_type: userData.customer_type,
           }),
         }
       );
@@ -328,7 +323,9 @@ const Search = () => {
       if (response.ok && data.st === 1) {
         setSearchedMenu((prevMenu) =>
           prevMenu.map((item) =>
-            item.menu_id === menuId ? { ...item, is_favourite: !isFavorite } : item
+            item.menu_id === menuId
+              ? { ...item, is_favourite: !isFavorite }
+              : item
           )
         );
 
@@ -344,7 +341,6 @@ const Search = () => {
         );
       }
     } catch (error) {
-      
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -369,7 +365,10 @@ const Search = () => {
   const handleRemoveItem = (menuId) => {
     const menuItem = searchedMenu.find((item) => item.menu_id === menuId);
     setSearchedMenu(searchedMenu.filter((item) => item.menu_id !== menuId));
-    window.showToast("warn", `${menuItem.menu_name} has been removed from the search list`);
+    window.showToast(
+      "warn",
+      `${menuItem.menu_name} has been removed from the search list`
+    );
   };
 
   const handleClearAll = () => {
@@ -380,10 +379,10 @@ const Search = () => {
   };
 
   const handleMenuClick = (menuId) => {
-    const menu = searchedMenu.find(item => item.menu_id === menuId);
+    const menu = searchedMenu.find((item) => item.menu_id === menuId);
     if (menu) {
       navigate(`/user_app/ProductDetails/${menuId}`, {
-        state: { ...menu }
+        state: { ...menu },
       });
     }
   };
@@ -450,9 +449,7 @@ const Search = () => {
 
     // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
     // 3 to 4.5: Show half star
@@ -533,98 +530,110 @@ const Search = () => {
               <div className="fw-normal fs-6 gray-text"></div>
               <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
-              </div>
+              </div>``
             </div>
           )}
 
           {isLoading && <p>Loading...</p>}
 
           {searchedMenu.map((menu) => (
-            <div key={menu.menu_id} className="col-12">
-              <div
-                className="card mb-3 rounded-4"
-                onClick={() => handleMenuClick(menu.menu_id)}
-                style={{ cursor: "pointer" }}
-              >
-                <div className="card-body py-0">
-                  <div className="row">
-                    <div className="col-3 px-0">
-                      <img
-                        src={menu.image || images}
-                        alt={menu.menu_name}
-                        className="rounded-4 img-fluid"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          aspectRatio: "1/1",
-                        }}
-                        onError={(e) => {
-                          e.target.src = images;
-                          e.target.style.width = "100%";
-                          e.target.style.height = "100%";
-                          e.target.style.aspectRatio = "1/1";
-                        }}
-                      />
-                      <div
-                        className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "76%",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.is_favourite
-                              ? "fa-solid fa-heart text-danger"
-                              : "fa-regular fa-heart"
-                          } fs-6`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
+            <>
+              <div key={menu.menu_id} className="col-12">
+                <div
+                  className="card mb-3 rounded-4"
+                  onClick={() => handleMenuClick(menu.menu_id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body py-0">
+                    <div className="row">
+                      <div className="col-3 px-0">
+                        <img
+                          src={menu.image || images}
+                          alt={menu.menu_name}
+                          className="rounded-4 img-fluid"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            aspectRatio: "1/1",
                           }}
-                        ></i>
-                      </div>
-                      <div
-                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "border-success"
-                            : "border-danger"
-                        }`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          left: "3px",
-                          height: "20px",
-                          width: "20px",
-                          borderWidth: "2px",
-                          borderRadius: "3px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "fa-solid fa-circle-check text-success"
-                              : "fa-solid fa-caret-up text-danger"
-                          } font_size_12`}
-                        ></i>
-                      </div>
-                      {menu.offer !== 0 && (
-                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                          <span className="font_size_10 text-white">
-                            {menu.offer}% Off
-                          </span>
+                          onError={(e) => {
+                            e.target.src = images;
+                            e.target.style.width = "100%";
+                            e.target.style.height = "100%";
+                            e.target.style.aspectRatio = "1/1";
+                          }}
+                        />
+                        {menu.is_special && (
+                          <i
+                            className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                            style={{
+                              position: "absolute",
+                              top: 3,
+                              right: "76%",
+                            }}
+                          ></i>
+                        )}
+                        <div
+                          className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
+                          style={{
+                            position: "absolute",
+                            bottom: "3px",
+                            right: "76%",
+                            height: "20px",
+                            width: "20px",
+                          }}
+                        >
+                          <i
+                            className={`${
+                              menu.is_favourite
+                                ? "fa-solid fa-heart text-danger"
+                                : "fa-regular fa-heart"
+                            } fs-6`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleLikeClick(menu.menu_id);
+                            }}
+                          ></i>
                         </div>
-                      )}
-                    </div>
-                    <div className="col-9 pt-1 p-0">
-                      <div className="row">
-                        <div className="col-10">
-                          <div className="ps-2 font_size_14 fw-medium">
-                            {menu.menu_name}
+                        <div
+                          className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                            menu.menu_veg_nonveg.toLowerCase() === "veg"
+                              ? "border-success"
+                              : "border-danger"
+                          }`}
+                          style={{
+                            position: "absolute",
+                            bottom: "3px",
+                            left: "3px",
+                            height: "20px",
+                            width: "20px",
+                            borderWidth: "2px",
+                            borderRadius: "3px",
+                          }}
+                        >
+                          <i
+                            className={`${
+                              menu.menu_veg_nonveg.toLowerCase() === "veg"
+                                ? "fa-solid fa-circle-check text-success"
+                                : "fa-solid fa-caret-up text-danger"
+                            } font_size_12`}
+                          ></i>
+                        </div>
+                        {menu.offer !== 0 && (
+                          <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                            <span className="font_size_10 text-white">
+                              {menu.offer}% Off
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="col-9 pt-1 p-0">
+                        <div className="row">
+                          <div className="col-10">
+                            <div className="ps-2 font_size_14 fw-medium">
+                              {menu.menu_name}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -669,60 +678,62 @@ const Search = () => {
                       <div className="row mt-1">
                         <div className="col-6">
                           <p className="ms-2 mb-0 fw-medium">
-                            {menu.offer ? (
+                            <span className="text-primary">₹{menu.price}</span>
+                            {menu.offer > 0 && (
                               <>
-                                <span className="font_size_14 fw-semibold text-info">
-                                  ₹
-                                  {Math.floor(
-                                    menu.price * (1 - menu.offer / 100)
-                                  )}
+                                <span className="text-decoration-line-through ms-2 gray-text">
+                                  ₹{menu.oldPrice}
                                 </span>
-                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                  ₹{menu.price}
+                                <span className="badge bg-success ms-2">
+                                  {menu.offer}% OFF
                                 </span>
                               </>
-                            ) : (
-                              <span className="font_size_14 fw-semibold text-info">
-                                ₹{menu.price}
-                              </span>
                             )}
                           </p>
                         </div>
+                      </div>
 
-                        <div className="col-6 d-flex justify-content-end">
-                          {customerId && (
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                              style={{
-                                width: "25px",
-                                height: "25px",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCartClick(menu);
-                              }}
-                            >
-                              <i
-                                className={`fa-solid fa-cart-shopping-${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "fill text-black"
-                                    : "line"
-                                } fs-6`}
-                              ></i>
-                            </div>
-                          )}
-                        </div>
+                      <div className="col-6 d-flex justify-content-end">
+                        {customerId && (
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "25px",
+                              height: "25px",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCartClick(menu);
+                            }}
+                          >
+                            <i
+                              className={`fa-solid fa-cart-${
+                                isMenuItemInCart(menu.menu_id)
+                                  ? "check text-success"
+                                  : "plus"
+                              } fs-6`}
+                            ></i>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="divider border-success inner-divider transparent mt-5">
-                <span className="bg-body">End</span>
-              </div>
-            </div>
+            </>
           ))}
+          <div className="divider border-success inner-divider transparent mt-5">
+            <span className="bg-body">End</span>
+          </div>
+          <div className="d-flex justify-content-between align-items-center px-4 my-3">
+            <i className="fa-brands fa-whatsapp"></i>
+            <i className="fa-brands fa-whatsapp"></i>
+            <i className="fa-brands fa-whatsapp"></i>
+            <i className="fa-brands fa-whatsapp"></i>
+            <i className="fa-brands fa-whatsapp"></i>
+            <i className="fa-brands fa-whatsapp"></i>
+          </div>
         </div>
       </main>
 
@@ -742,20 +753,20 @@ const Search = () => {
             >
               {/* Updated Header */}
               <div className="modal-header ps-3 pe-2">
-                <div className="col-6 text-start">
+                <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add to Cart
+                    Add {selectedMenu?.menu_name} to Cart
                   </div>
                 </div>
 
-                <div className="col-6 text-end">
+                <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
                     <span
                       className="btn-close m-2 font_size_12"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line"></i>
+                      <i className="fa-solid fa-xmark"></i>
                     </span>
                   </div>
                 </div>
@@ -781,26 +792,33 @@ const Search = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-between">
+                  <label className="form-label d-flex justify-content-center">
                     Select Portion Size
                   </label>
-                  <div className="d-flex justify-content-between">
+                  <div
+                    className={`d-flex ${
+                      halfPrice !== null
+                        ? "justify-content-between"
+                        : "justify-content-center"
+                    }`}
+                  >
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "half"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("half")}
-                          disabled={!halfPrice}
-                        >
-                          Half {halfPrice ? `(₹${halfPrice})` : "(N/A)"}
-                        </button>
+                        {halfPrice !== null && (
+                          <button
+                            type="button"
+                            className={`btn px-4 font_size_14 ${
+                              portionSize === "half"
+                                ? "btn-primary"
+                                : "btn-outline-primary"
+                            }`}
+                            onClick={() => setPortionSize("half")}
+                          >
+                            Half (₹{halfPrice})
+                          </button>
+                        )}
                         <button
                           type="button"
                           className={`btn px-4 font_size_14 ${
@@ -809,9 +827,8 @@ const Search = () => {
                               : "btn-outline-primary"
                           }`}
                           onClick={() => setPortionSize("full")}
-                          disabled={!fullPrice}
                         >
-                          Full {fullPrice ? `(₹${fullPrice})` : "(N/A)"}
+                          Full (₹{fullPrice})
                         </button>
                       </>
                     )}
@@ -823,7 +840,7 @@ const Search = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                   onClick={() => setShowModal(false)}
                 >
                   Close

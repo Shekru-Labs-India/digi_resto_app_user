@@ -1102,6 +1102,16 @@ const TrackOrder = () => {
                                 e.target.src = images;
                               }}
                             />
+                            {menu.is_special && (
+                              <i
+                                className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                                style={{
+                                  position: "absolute",
+                                  top: 3,
+                                  right: 3,
+                                }}
+                              ></i>
+                            )}
 
                             {/* Veg/Non-veg indicator */}
                             <div
@@ -1174,7 +1184,7 @@ const TrackOrder = () => {
                                   isWithinPlacedWindow && (
                                     <div className="col-2 text-end">
                                       <i
-                                        className="ri-close-line text-dark font_size_14 pe-3"
+                                        className="fa-solid fa-xmark text-dark font_size_14 pe-3"
                                         style={{ cursor: "pointer" }}
                                         onClick={(e) =>
                                           handleRemoveItem(menu, e)

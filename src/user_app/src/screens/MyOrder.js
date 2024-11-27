@@ -40,6 +40,15 @@ const MyOrder = () => {
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
 
+  // const [customerName, setCustomerName] = useState(null);
+
+
+  // useEffect(() => {
+  //   const customerName = localStorage.getItem("customerName");
+  //   setCustomerName(customerName);
+  //   console.log(customerName);
+  // }, []); // Empty dependency array ensures this runs only once when the component mounts
+
   useEffect(() => {
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
@@ -171,25 +180,25 @@ const MyOrder = () => {
             } else if (data.lists[activeTab]) {
               mappedData[activeTab] = data.lists[activeTab];
             }
-            
+
             // Get existing data from localStorage
-            const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-            
+            const existingOrders = JSON.parse(
+              localStorage.getItem("allOrderList") || "{}"
+            );
+
             // Merge existing data with new data
             const updatedOrders = {
               ...existingOrders,
-              ...mappedData
+              ...mappedData,
             };
-            
+
             // Update localStorage with merged data
             localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-            
+
             setOrders(mappedData);
           } else {
             setOrders({});
           }
-
-          
         } else {
           setOrders({});
         }
@@ -398,6 +407,21 @@ export const OrderCard = ({
   const [paymentMethod, setPaymentMethod] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const navigate = useNavigate();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const paymentTimeoutRef = useRef(null);
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
+  const timeoutRef = useRef({});
+
+  const [customerName, setCustomerName] = useState("");
+
+
+  useEffect(() => {
+    const customerName = localStorage.getItem("customerName");
+    setCustomerName(customerName);
+    console.log(customerName);
+  }, []);
 
   const handleCancelClick = () => {
     setShowCancelModal(true);
@@ -458,8 +482,8 @@ export const OrderCard = ({
     }
   };
 
-  const handleCardPayment = async() =>{
-     try {
+  const handleCardPayment = async () => {
+    try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
         {
@@ -504,10 +528,10 @@ export const OrderCard = ({
       console.error("Error completing order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
-  }
+  };
 
-  const handleCashPayment = async() =>{
-     try {
+  const handleCashPayment = async () => {
+    try {
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_order`,
         {
@@ -552,7 +576,7 @@ export const OrderCard = ({
       console.error("Error completing order:", error);
       window.showToast("error", "An error occurred. Please try again later.");
     }
-  }
+  };
 
   const handleConfirmCancel = async () => {
     try {
@@ -605,67 +629,133 @@ export const OrderCard = ({
     navigate(`/user_app/TrackOrder/${orderNumber}`);
   };
 
-  const handleUpiPayment = async () => {
-    let paymentUrl;
+  const handleGenericUPI = async () => {
+    if (isProcessingUPI) return;
     
-    switch(paymentMethod) {
-      case "PhonePe":
-        paymentUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
-        break;
+    try {
+      setIsProcessingUPI(true);
+      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+      const amount = Math.round(parseFloat(order.grand_total));
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const upiId = "hivirajkadam@okhdfcbank";
       
-      case "GooglePay":
-        paymentUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
-        break;
-      
-      default: // Regular UPI
-        paymentUrl = `upi://pay?pa=hivirajkadam@okhdfcbank&pn=MenuMitra&tr=ORDER123&tn=Payment for order&am=1&cu=INR`;
+      const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
+    } catch (error) {
+      console.error("UPI payment error:", error);
+      window.showToast("error", "UPI payment initiation failed. Please try again.");
+      setIsProcessingUPI(false);
     }
+  };
+
+  const handlePhonePe = async () => {
+    if (isProcessingPhonePe) return;
+console.log(customerName);
+    try {
+      setIsProcessingPhonePe(true);
+      if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+      const amount = Math.round(parseFloat(order.grand_total));
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const upiId = "hivirajkadam@okhdfcbank";
+      
+      const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
+    } catch (error) {
+      console.error("PhonePe payment error:", error);
+      window.showToast("error", "PhonePe payment initiation failed. Please try again.");
+      setIsProcessingPhonePe(false);
+    }
+  };
+
+  const handleGooglePay = async () => {
+    if (isProcessingGPay) return;
 
     try {
-      const response = await fetch(
-        `${config.baseURL}/orders/${order.order_id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "Payment Initiated",
-            payment_method: paymentMethod,
-          }),
-        }
-      );
+      setIsProcessingGPay(true);
+      if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
 
-      if (response.ok) {
-        // Add setTimeout for redirection
-        setTimeout(() => {
-          window.location.href = paymentUrl;
-        }, 1000);
-      }
+      const amount = Math.round(parseFloat(order.grand_total));
+      console.log(customerName+"gpay");
+      
+      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const upiId = "hivirajkadam@okhdfcbank";
+      
+      const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+      await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
-      console.error("Error updating order status:", error);
+      console.error("Google Pay payment error:", error);
+      window.showToast("error", "Google Pay payment initiation failed. Please try again.");
+      setIsProcessingGPay(false);
     }
   };
 
-  // Separate functions for direct payment links
-  const openPhonePeLink = () => {
-    const phonePeUrl = `phonepe://pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
+  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+    const response = await fetch(`${config.apiDomain}/user_api/complete_order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        order_id: order.order_id,
+        restaurant_id: order.restaurant_id,
+        payment_method: method,
+      }),
+    });
 
-    setTimeout(() => {
-      window.location.href = phonePeUrl;
-    }, 1000);
+    if (response.ok) {
+      if (/android/i.test(navigator.userAgent)) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
+          }
+          setProcessing(false);
+        }, 3000);
+      } 
+      else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            setProcessing(false);
+          }
+        }, 2000);
+      } 
+      else {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
+          }
+          setProcessing(false);
+        }, 3000);
+      }
+    }
   };
 
-  const openGooglePayLink = () => {
-    const googlePayUrl = `tez://upi/pay?pa=hivirajkadam@okhdfcbank&pn=${order.restaurant_name}&mc=1234&tid=${order.order_id}&tr=${order.order_id}&tn=${order.customer_name} is paying Rs. ${order.grand_total} to ${order.restaurant_name} for order no. #${order.order_number}&am=${order.grand_total}&cu=INR`;
-
-    setTimeout(() => {
-      window.location.href = googlePayUrl;
-    }, 1000);
-  };
+  // Clean up timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(timeoutRef.current).forEach(timeout => {
+        if (timeout) clearTimeout(timeout);
+      });
+      setIsProcessingUPI(false);
+      setIsProcessingPhonePe(false);
+      setIsProcessingGPay(false);
+    };
+  }, []);
 
   const isDarkMode = localStorage.getItem("isDarkMode");
-// console.log("isDarkMode ->" + isDarkMode);
+  // console.log("isDarkMode ->" + isDarkMode);
 
   return (
     <div className="container pt-0">
@@ -798,7 +888,7 @@ export const OrderCard = ({
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                       </span>
                     </div>
                   </div>
@@ -809,53 +899,59 @@ export const OrderCard = ({
                   </p>
                   <div className="d-flex flex-column align-items-center gap-3">
                     <button
-                      className="btn btn-info text-white"
-                      onClick={() => {
-                        setPaymentMethod("UPI");
-                        handleUpiPayment();
+                      className="btn btn-info text-white w-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleGenericUPI();
                       }}
+                      disabled={isProcessingUPI}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
-                      <img
-                        className="text-white ms-1"
-                        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                        width={45}
-                        alt="UPI"
-                      />
+                      {isProcessingUPI ? "Processing..." : (
+                        <>
+                          Pay <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                          <span className="ms-2">Other UPI Apps</span>
+                          <img className="text-white ms-1" src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
+                        </>
+                      )}
                     </button>
 
                     <button
-                      className="btn text-white"
-                      style={{ backgroundColor: '#5f259f' }}
-                      onClick={openPhonePeLink}
+                      className="btn text-white w-100"
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handlePhonePe();
+                      }}
+                      disabled={isProcessingPhonePe}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
-                      <img
-                        className="ms-1"
-                        src="https://www.phonepe.com/webstatic/static/favicon-32x32-c735c361.png"
-                        width={45}
-                        alt="PhonePe"
-                      />
+                      {isProcessingPhonePe ? "Processing..." : (
+                        <>
+                          Pay with PhonePe
+                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
+                          <img className="ms-1" src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000" width={45} alt="PhonePe" />
+                        </>
+                      )}
                     </button>
 
                     <button
-                      className="btn text-dark"
-                      style={{ 
-                        background: 'white',
-                        border: '1px solid #ccc'
+                      className="btn text-dark w-100"
+                      style={{ background: "white", border: "1px solid #ccc" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleGooglePay();
                       }}
-                      onClick={openGooglePayLink}
+                      disabled={isProcessingGPay}
                     >
-                      Pay
-                      <span className="fs-4 mx-1">₹{order.grand_total}</span> via
-                      <img
-                        className="ms-1"
-                        src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
-                        width={45}
-                        alt="Google Pay"
-                      />
+                      {isProcessingGPay ? "Processing..." : (
+                        <>
+                          Pay with Google Pay
+                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
+                          <img className="ms-1" src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png" width={45} alt="Google Pay" />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -939,7 +1035,7 @@ export const OrderCard = ({
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i class="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                   <button
@@ -1054,7 +1150,7 @@ export const OrderCard = ({
                     <span className="col-3">
                       <button
                         type="button"
-                        className="btn px-4 font_size_14 btn-outline-primary rounded-pill"
+                        className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
                         onClick={() => setShowCancelModal(false)}
                       >
                         Close
@@ -1181,8 +1277,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     return (
       <>
         {/* Add collapse/expand all button */}
-          <div className="d-flex justify-content-end mb-2 pe-0">
-        <div className="tab-label mb-2">
+        <div className="d-flex justify-content-end mb-2 pe-0">
+          <div className="tab-label mb-2">
             <button
               className="btn btn-link text-decoration-none pe-0 pb-0"
               onClick={() => {
@@ -1336,7 +1432,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {activeTab === "completed" && (
                         <div className="container py-0">
                           <div className="row">
-                            <div className="col-9 ps-0">
+                            <div className="col-7 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
                                   <i className="ri-checkbox-circle-line me-1"></i>
@@ -1344,7 +1440,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                 </span>
                               </div>
                             </div>
-                            <div className="col-3 pe-0 font_size_14 text-end">
+                            <div className="col-5 pe-0 font_size_14 text-end">
                               {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
                                   {order.payment_method}
@@ -1370,27 +1466,24 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-        
+
         <div className="divider border-success inner-divider transparent mb-3">
           <span className="bg-body">End</span>
         </div>
-        
-        </>
+      </>
     );
   };
 
   // Add debugging logs
   useEffect(() => {
-    console.log('Orders:', orders);
-    console.log('Type:', type);
-    console.log('CheckedItems:', checkedItems);
+    // console.log("Orders:", orders);
+    // console.log("Type:", type);
+    // console.log("CheckedItems:", checkedItems);
   }, [orders, type, checkedItems]);
 
   return (
     <>
-      <div className="row g-1">
-        {renderOrders()}
-      </div>
+      <div className="row g-1">{renderOrders()}</div>
       <Bottom />
     </>
   );
@@ -1451,7 +1544,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   return (
     <div className="text-dark font_size_14 text-center mb-2">
       You can cancel this order within{" "}
-      <span className="fw-semibold">{timeLeft}s</span> 
+      <span className="fw-semibold">{timeLeft}s</span>
     </div>
   );
 };

@@ -438,6 +438,18 @@ const Cart = () => {
                           e.target.src = images;
                         }}
                       />
+                      {item.is_special && (
+                        <i
+                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 3,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
                       <div
                         className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                           item.menu_veg_nonveg.toLowerCase() === "veg"
@@ -509,7 +521,7 @@ const Cart = () => {
                               handleRemoveFromCart(item, index);
                             }}
                           >
-                            <i className="ri-close-line text-dark font_size_14"></i>
+                            <i className="fa-solid fa-xmark text-dark font_size_14"></i>
                           </div>
                         </div>
                       </div>
