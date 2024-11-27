@@ -559,6 +559,16 @@ const Search = () => {
                             e.target.style.aspectRatio = "1/1";
                           }}
                         />
+                        {menu.is_special && (
+                          <i
+                            className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                            style={{
+                              position: "absolute",
+                              top: 3,
+                              right: "76%",
+                            }}
+                          ></i>
+                        )}
                         <div
                           className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
                           style={{
@@ -715,9 +725,17 @@ const Search = () => {
               </div>
             </>
           ))}
-        <div className="divider border-success inner-divider transparent mt-5">
-          <span className="bg-body">End</span>
-        </div>
+          <div className="divider border-success inner-divider transparent mt-5">
+            <span className="bg-body">End</span>
+          </div>
+          <div className="d-flex justify-content-between align-items-center px-4 my-3">
+            <i className="ri-whatsapp-line"></i>
+            <i className="ri-whatsapp-line"></i>
+            <i className="ri-whatsapp-line"></i>
+            <i className="ri-whatsapp-line"></i>
+            <i className="ri-whatsapp-line"></i>
+            <i className="ri-whatsapp-line"></i>
+          </div>
         </div>
       </main>
 

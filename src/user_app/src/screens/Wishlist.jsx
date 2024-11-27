@@ -521,7 +521,19 @@ const Wishlist = () => {
                                           e.target.style.height = "100%";
                                           e.target.style.aspectRatio = "1/1";
                                         }}
-                                      />
+                                      />{" "}
+                                      {menu.is_special && (
+                                        <i
+                                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                                          style={{
+                                            position: "absolute",
+                                            top: 3,
+                                            right: "76%",
+                                            height: 17,
+                                            width: 17,
+                                          }}
+                                        ></i>
+                                      )}
                                       <div
                                         className={`border border-1 rounded-circle ${
                                           isDarkMode ? "bg-dark" : "bg-white"

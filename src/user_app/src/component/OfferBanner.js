@@ -551,6 +551,18 @@ const OfferBanner = () => {
                         e.target.src = images; // Set local image source on error
                       }}
                     />
+                    {menu.is_special && (
+                      <i
+                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 5,
+                          height: 17,
+                          width: 17,
+                        }}
+                      ></i>
+                    )}
                     <div
                       className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
                         menu.menu_veg_nonveg.toLowerCase() === "veg"
