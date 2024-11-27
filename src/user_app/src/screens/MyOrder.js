@@ -642,6 +642,7 @@ export const OrderCard = ({
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
 
       await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
     } catch (error) {
@@ -664,6 +665,7 @@ console.log(customerName);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
 
       await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
     } catch (error) {
@@ -688,7 +690,7 @@ console.log(customerName);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-
+      console.log(paymentUrl);
       await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
       console.error("Google Pay payment error:", error);
@@ -1430,7 +1432,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {activeTab === "completed" && (
                         <div className="container py-0">
                           <div className="row">
-                            <div className="col-9 ps-0">
+                            <div className="col-7 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
                                   <i className="ri-checkbox-circle-line me-1"></i>
@@ -1438,7 +1440,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                 </span>
                               </div>
                             </div>
-                            <div className="col-3 pe-0 font_size_14 text-end">
+                            <div className="col-5 pe-0 font_size_14 text-end">
                               {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
                                   {order.payment_method}
