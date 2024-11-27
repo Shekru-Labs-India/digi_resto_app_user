@@ -57,7 +57,10 @@ const Sidebar = () => {
                     <i className="fa fa-times" />
                   </span>
                 </button>
-                <h2 className="modal-title d-flex align-items-center" id="myModalLabel2">
+                <h2
+                  className="modal-title d-flex align-items-center"
+                  id="myModalLabel2"
+                >
                   <Link to="/">
                     <img src={logo} alt="Logo" width="50" height="50" />
                   </Link>
@@ -76,42 +79,41 @@ const Sidebar = () => {
                     <li>
                       <Link to="/features">Features</Link>
                     </li>
-                    
+
                     <li>
                       <Link to="/pricing">Pricing</Link>
                     </li>
 
-                 
-								<li>
-									<Link to="/about">About</Link>
-								</li>
-								<li>
-									<Link to="/contact">Contact </Link>
-								</li>
-								
-                   
+                    <li>
+                      <Link to="/about">About</Link>
+                    </li>
+                    <li>
+                      <Link to="/contact">Contact </Link>
+                    </li>
                   </ul>
                 </div>
                 <div className="sidebar-modal-widget">
                   <h3 className="title">Contact Info</h3>
                   <ul className="contact-info">
                     <li>
-                      <i className="fa fa-map-marker" />
+                      <i className="fa-solid fa-location-dot" />
                       Address
-                      <span>Muktangan English School & Jr College, office No. 6, 2 Floor manogat, Parvati, Pune, Maharashtra 411009</span>
+                      <span>
+                        Muktangan English School & Jr College, office No. 6, 2
+                        Floor manogat, Parvati, Pune, Maharashtra 411009
+                      </span>
                     </li>
                     <li>
                       <i className="fa fa-envelope" />
                       Email
                       <a href="mailto:example@example.com">
-                      info@menumitra.com
+                        info@menumitra.com
                       </a>
                     </li>
                     <li>
                       <i className="fa fa-phone" />
                       Phone
                       <a href="tel:123456124">+91 9172530151</a>
-                      
                     </li>
                   </ul>
                 </div>
@@ -119,34 +121,53 @@ const Sidebar = () => {
                   <h3 className="title">Connect With Us</h3>
                   <ul className="social-list">
                     <li>
-                      <Link to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-facebook-f" />
+                      <Link
+                        to="https://www.facebook.com/share/x5wymXr6w7W49vaQ/?mibextid=qi2Omg"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <i className="fa-brands fa-facebook-f" />
                       </Link>
                     </li>
-                   
+
                     <li>
-                      <Link to="https://www.linkedin.com/company/102429337/admin/dashboard/" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-linkedin-in" />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="https://www.youtube.com/@menumitra" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-youtube"></i>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="https://t.me/MenuMitra" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-telegram"></i>
+                      <Link
+                        to="https://www.linkedin.com/company/102429337/admin/dashboard/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <i className="fa-brands fa-linkedin-in" />
                       </Link>
                     </li>
                     <li>
-                      <Link to="https://www.instagram.com/menumitra/" target="_blank" rel="noreferrer">
-                      <i className="fa-brands fa-instagram"></i>
+                      <Link
+                        to="https://www.youtube.com/@menumitra"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <i className="fa-brands fa-youtube"></i>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="https://t.me/MenuMitra"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <i className="fa-brands fa-telegram"></i>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="https://www.instagram.com/menumitra/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <i className="fa-brands fa-instagram"></i>
                       </Link>
                     </li>
                   </ul>
                 </div>
-                
               </div>
             </div>
           </div>

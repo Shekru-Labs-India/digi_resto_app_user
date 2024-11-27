@@ -54,7 +54,7 @@ const ContactBody = () => {
                   </div>
                   <div className="col-lg-6 col-sm-6 col-md-6">
                     <div className="single-contact-info">
-                      <i className="fa fa-map-marker" />
+                      <i className="fa-solid fa-location-dot" />
                       <h3>Address</h3>
                       <a href="contact.html#">
                         Muktangan English School & Jr College, office No. 6, 2
