@@ -49,9 +49,9 @@ const HotelList = () => {
                   <div className="row">
                     <div className="col-12">
                       <div className="row mt-2 d-flex justify-content-between">
-                        <div className="col-1">
-                          <i className="ri-store-2-line font_size_14 fw-medium"></i>
-                        </div>
+                      <div className="col-1">
+                      <i className="fa-solid fa-store me-2 font_size_14  "></i>
+</div>
                         <div className="col-6 ps-0">
                           <span className="font_size_14 fw-medium m-0">
                             {hotel.restaurant_name.toUpperCase()}
@@ -69,7 +69,7 @@ const HotelList = () => {
                       </div>
                       <div className="row mt-1">
                         <div className="col-1 d-flex align-items-center">
-                          <i className="ri-phone-line text-primary"></i>
+                          <i className="fa-solid fa-phone text-primary"></i>
                         </div>
                         <div className="col-10 d-flex align-items-center">
                           <span className="text-primary font_size_12">
@@ -79,7 +79,7 @@ const HotelList = () => {
                       </div>
                       <div className="row mb-2 d-flex justify-content-between">
                         <div className="col-1">
-                          <i className="ri-map-pin-line gray-text"></i>
+                          <i className="fa-solid fa-location-dot gray-text"></i>
                         </div>
                         <div className="col-6 ps-0">
                           <span className="gray-text font_size_12">
@@ -108,8 +108,8 @@ const HotelList = () => {
                                     ["veg", "Veg", "VEG"].includes(
                                       hotel.veg_nonveg
                                     )
-                                      ? "ri-checkbox-blank-circle-fill text-success"
-                                      : "ri-triangle-fill text-danger"
+                                      ? "fa-solid fa-circle-check text-success"
+                                      : "fa-solid fa-caret-up text-danger"
                                   } font_size_12`}
                                 ></i>
                               </div>
@@ -134,7 +134,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-facebook-circle-fill ri-xl"></i>
+                  <i className="fa-brands fa-facebook "></i>
                 </a>
                 <a
                   href="https://www.instagram.com/menumitra/"
@@ -142,7 +142,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-instagram-line ri-xl"></i>
+                  <i className="fa-brands fa-instagram"></i>
                 </a>
                 <a
                   href="https://www.youtube.com/@menumitra"
@@ -150,7 +150,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-youtube-line ri-xl"></i>
+                  <i className="fa-brands fa-youtube"></i>
                 </a>
                 <a
                   href="https://www.linkedin.com/company/102429337/admin/dashboard/"
@@ -158,7 +158,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-linkedin-fill ri-xl"></i>
+                  <i className="fa-brands fa-linkedin"></i>
                 </a>
                 <a
                   href="https://x.com/MenuMitra"
@@ -166,7 +166,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-twitter-x-line ri-xl"></i>
+                  <i className="fa-brands fa-x-twitter"></i>
                 </a>
                 <a
                   href="https://t.me/MenuMitra"
@@ -174,11 +174,11 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-telegram-line ri-xl"></i>
+                  <i className="fa-brands fa-telegram"></i>
                 </a>
               </div>
             </div>
-            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
             <a
               className="text-success font_size_12"
               href="https://www.shekruweb.com"

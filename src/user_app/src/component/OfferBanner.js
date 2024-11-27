@@ -81,9 +81,9 @@ const OfferBanner = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill font_size_12 text-danger" key={index}></i>
+        <i className="fa-solid fa-fire-flame-curved font_size_12 text-danger" key={index}></i>
       ) : (
-        <i className="ri-fire-line font_size_12 gray-text" key={index}></i>
+        <i className="fa-solid fa-fire-flame-simple font_size_12 gray-text" key={index}></i>
       )
     );
   };
@@ -482,14 +482,14 @@ const OfferBanner = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -556,8 +556,8 @@ const OfferBanner = () => {
                       <i
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
+                            ? "fa-solid fa-circle-check text-success"
+                            : "fa-solid fa-caret-up text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -574,8 +574,8 @@ const OfferBanner = () => {
                       <i
                         className={`${
                           menu.is_favourite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
+                            ? "fa-solid fa-heart text-danger"
+                            : "fa-regular fa-heart"
                         } fs-6`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -596,12 +596,12 @@ const OfferBanner = () => {
                     {/* <div className="category-text">
                           <div className="row mt-1">
                             <div className="col-8 text-success font_size_10">
-                              <i className="ri-restaurant-line pe-1"></i>
+                              <i className="fa-solid fa-utensils pe-1"></i>
                               {menu.category_name}
                             </div>
                             <div className="col-4 ps-0 text-end">
                               <span className="font_size_10 fw-normal gray-text me-2">
-                                <i className="ri-star-half-line font_size_10  ratingStar me-1"></i>
+                                <i className="fa-solid fa-star-half-stroke font_size_10  ratingStar me-1"></i>
                                 {menu.rating}
                               </span>
                             </div>
@@ -619,7 +619,7 @@ const OfferBanner = () => {
                       <div className="row">
                         <div className="col-4 d-flex align-items-center">
                           <div className="text-success font_size_10">
-                            <i className="ri-restaurant-line pe-1"></i>
+                            <i className="fa-solid fa-utensils pe-1"></i>
                             {menu.category_name}
                           </div>
                         </div>
@@ -663,7 +663,7 @@ const OfferBanner = () => {
                             }}
                           >
                             <i
-                              className={`ri-shopping-cart-${
+                              className={`fa-solid fa-cart-shopping-${
                                 isMenuItemInCart(menu.menu_id)
                                   ? "fill text-black"
                                   : "line"
@@ -687,7 +687,7 @@ const OfferBanner = () => {
                               showLoginPopup();
                             }}
                           >
-                            <i className="ri-shopping-cart-line fs-6"></i>
+                            <i className="fa-solid fa-cart-shopping fs-6"></i>
                           </div>
                         )}
                       </div>
@@ -803,7 +803,7 @@ const OfferBanner = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

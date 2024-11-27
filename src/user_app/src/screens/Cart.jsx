@@ -347,14 +347,14 @@ const Cart = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -457,8 +457,8 @@ const Cart = () => {
                         <i
                           className={`${
                             item.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
+                              ? "fa-solid fa-circle-check text-success"
+                              : "fa-solid fa-caret-up text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -482,8 +482,8 @@ const Cart = () => {
                         <i
                           className={`${
                             item.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -516,7 +516,7 @@ const Cart = () => {
                       <div className="row">
                         <div className="col-5 px-0">
                           <span className="ps-3 text-success mt-1 font_size_10">
-                            <i className="ri-restaurant-line me-1 text-success"></i>
+                            <i className="fa-solid fa-utensils me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>

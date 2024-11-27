@@ -390,14 +390,14 @@ const Wishlist = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -439,7 +439,7 @@ const Wishlist = () => {
                 >
                   <span className="icon-circle">
                     <i
-                      className={`ri-arrow-down-s-line arrow-icon ${
+                      className={`fa-solid fa-arrow-down arrow-icon ${
                         expandAll ? "rotated" : "rotated-1"
                       }`}
                     ></i>
@@ -463,7 +463,7 @@ const Wishlist = () => {
                       >
                         <span className="">
                           <span className="font_size_14 fw-medium">
-                            <i className="ri-store-2-line me-2"></i>
+                            <i className="fa-solid fa-store me-2"></i>
                             {restaurantName.toUpperCase()}
                           </span>
                         </span>
@@ -473,7 +473,7 @@ const Wishlist = () => {
                           </span>
                           <span className="icon-circle">
                             <i
-                              className={`ri-arrow-down-s-line arrow-icon pt-0 ${
+                              className={`fa-solid fa-arrow-down arrow-icon pt-0 ${
                                 checkedItems[restaurantName]
                                   ? "rotated"
                                   : "rotated-1"
@@ -532,7 +532,7 @@ const Wishlist = () => {
                                         }}
                                       >
                                         <i
-                                          className={`ri-heart-3-fill text-danger fs-6`}
+                                          className={`fa-solid fa-heart text-danger fs-6`}
                                           onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -567,8 +567,8 @@ const Wishlist = () => {
                                           className={`${
                                             menu.menu_veg_nonveg.toLowerCase() ===
                                             "veg"
-                                              ? "ri-checkbox-blank-circle-fill text-success"
-                                              : "ri-triangle-fill text-danger"
+                                              ? "fa-solid fa-circle-check text-success"
+                                              : "fa-solid fa-caret-up text-danger"
                                           } font_size_12`}
                                         ></i>
                                       </div>
@@ -605,7 +605,7 @@ const Wishlist = () => {
                                       <div className="row mt-1">
                                         <div className="col-4 text-start d-flex align-items-center pe-0">
                                           <span className="ps-2 font_size_10 text-success">
-                                            <i className="ri-restaurant-line mt-0 me-1"></i>
+                                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
@@ -616,12 +616,12 @@ const Wishlist = () => {
                                                 (_, index) =>
                                                   index < menu.spicy_index ? (
                                                     <i
-                                                      className="ri-fire-fill font_size_12 text-danger"
+                                                      className="fa-solid fa-fire-flame-curved font_size_12 text-danger"
                                                       key={index}
                                                     ></i>
                                                   ) : (
                                                     <i
-                                                      className="ri-fire-line font_size_12 gray-text"
+                                                      className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
                                                       key={index}
                                                     ></i>
                                                   )
@@ -684,7 +684,7 @@ const Wishlist = () => {
                                               }}
                                             >
                                               <i
-                                                className={`ri-shopping-cart-${
+                                                className={`fa-solid fa-cart-shopping-${
                                                   isMenuItemInCart(menu.menu_id)
                                                     ? "fill text-black"
                                                     : "line"
@@ -743,7 +743,7 @@ const Wishlist = () => {
                     className="btn btn-outline-primary rounded-pill"
                     onClick={showLoginPopup}
                   >
-                    <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                    <i className="fa-solid fa-lock me-2 fs-3"></i> Login
                   </button>
                 </div>
                 <span className="mt-4">
@@ -860,7 +860,7 @@ const Wishlist = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

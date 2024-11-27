@@ -51,7 +51,7 @@ const Faq = () => {
                   </div>
                   <div className="col-4">
                     {" "}
-                    <i class="ri-arrow-down-s-line"></i>
+                    <i class="fa-solid fa-arrow-down"></i>
                   </div>
                 </div>
               </h2>

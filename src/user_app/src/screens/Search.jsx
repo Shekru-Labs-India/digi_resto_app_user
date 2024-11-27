@@ -458,14 +458,14 @@ const Search = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -483,14 +483,14 @@ const Search = () => {
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
-                <i className="ri-store-2-line me-2"></i>
+                <i className="fa-solid fa-store me-2"></i>
                 <span className="fw-medium font_size_14">
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                 </span>
               </div>
             </Link>
             <div className="d-flex align-items-center">
-              <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
+              <i className="fa-solid fa-location-dot font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
                 {`Table ${
                   JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
@@ -578,8 +578,8 @@ const Search = () => {
                         <i
                           className={`${
                             menu.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -607,8 +607,8 @@ const Search = () => {
                         <i
                           className={`${
                             menu.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
+                              ? "fa-solid fa-circle-check text-success"
+                              : "fa-solid fa-caret-up text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -631,7 +631,7 @@ const Search = () => {
                       <div className="row mt-1">
                         <div className="col-5 text-start d-flex align-items-center">
                           <span className="ps-2 font_size_10 text-success">
-                            <i className="ri-restaurant-line mt-0 me-1"></i>
+                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
                             {menu.category_name}
                           </span>
                         </div>
@@ -641,12 +641,12 @@ const Search = () => {
                               {Array.from({ length: 5 }).map((_, index) =>
                                 index < menu.spicy_index ? (
                                   <i
-                                    className="ri-fire-fill font_size_12 text-danger"
+                                    className="fa-solid fa-fire-flame-curved font_size_12 text-danger"
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
-                                    className="ri-fire-line font_size_12 gray-text"
+                                    className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
                                     key={index}
                                   ></i>
                                 )
@@ -704,7 +704,7 @@ const Search = () => {
                               }}
                             >
                               <i
-                                className={`ri-shopping-cart-${
+                                className={`fa-solid fa-cart-shopping-${
                                   isMenuItemInCart(menu.menu_id)
                                     ? "fill text-black"
                                     : "line"
@@ -834,7 +834,7 @@ const Search = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

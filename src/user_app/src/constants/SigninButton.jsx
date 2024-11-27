@@ -7,7 +7,7 @@ const SigninButton = () => {
       <div className="m-b20 dz-flex-box text-center">
         <div className="dz-cart-about">
           <Link className="btn btn-outline-primary mt-3 rounded-pill" to="/Signinscreen">
-            <i className="ri-lock-2-line me-2 fs-3"></i> Login
+            <i className="fa-solid fa-lock me-2 fs-3"></i> Login
           </Link>
           <span className="mt-4">Access fresh flavors with a quick login.</span>
         </div>

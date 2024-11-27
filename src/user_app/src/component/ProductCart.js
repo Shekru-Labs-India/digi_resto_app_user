@@ -37,14 +37,14 @@ const renderStarRating = (rating) => {
   // 3 to 4.5: Show half star
   if (numRating >= 3 && numRating <= 4.5) {
     return (
-      <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+      <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
     );
   }
 
   // 5: Show full star
   if (numRating === 5) {
     return (
-      <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+      <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
     );
   }
 
@@ -420,8 +420,10 @@ const ProductCard = ({ isVegOnly }) => {
           }}
         >
           <i
-            className={`ri-shopping-cart-${
-              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
+            className={`fa-solid ${
+              isMenuItemInCart(menu.menu_id) 
+                ? "fa-cart-plus text-black" 
+                : "fa-cart-shopping"
             } fs-6`}
           ></i>
         </div>
@@ -584,7 +586,7 @@ const ProductCard = ({ isVegOnly }) => {
             <span className="font_size_14 fw-medium">Menu</span>
             <Link to="/user_app/Menu">
               <span>see all</span>
-              <i className="ri-arrow-right-line"></i>
+              <i className="fa-solid fa-arrow-right"></i>
             </Link>
           </div>
         )}
@@ -597,7 +599,7 @@ const ProductCard = ({ isVegOnly }) => {
               }`}
               onClick={() => handleCategorySelect("special")}
             >
-              <i className="ri-bard-line me-2"></i> Special{" "}
+              <i className="fa-regular fa-star me-2"></i> Special{" "}
             </div>
           )}
         </div> */}
@@ -617,7 +619,7 @@ const ProductCard = ({ isVegOnly }) => {
                   border: "none",
                 }}
               >
-                <i className="ri-bard-line me-2"></i>
+                <i className="fa-regular fa-star me-2"></i>
                 Special
                 <span className="gray-text font_size_10">{" "}
                   ({menuList.filter((menu) => menu.is_special).length})
@@ -729,8 +731,8 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
+                            ? "fa-solid fa-circle-check text-success"
+                            : "fa-solid fa-caret-up text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -747,8 +749,8 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={` ${
                           menu.is_favourite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
+                            ? "fa-solid fa-heart text-danger"
+                            : "fa-regular fa-heart"
                         } fs-6`}
                         onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>
@@ -768,14 +770,14 @@ const ProductCard = ({ isVegOnly }) => {
                         {menu.is_special && (
                           <div className="row ">
                             <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
-                              <i className="ri-bard-line me-2"></i>
+                              <i className="fa-regular fa-star me-2"></i>
                               Special
                             </div>
                           </div>
                         )}
                         <div className="row">
                           <div className="col-8 text-success">
-                            <i className="ri-restaurant-line pe-1"></i>
+                            <i className="fa-solid fa-utensils pe-1"></i>
                             <span className="font_size_10">
                               {menu.category}
                             </span>
@@ -803,12 +805,12 @@ const ProductCard = ({ isVegOnly }) => {
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="ri-fire-fill text-danger font_size_12"
+                                  className="fa-solid fa-fire-flame-curved text-danger font_size_12"
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ri-fire-line font_size_12 gray-text"
+                                  className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
                                   key={index}
                                 ></i>
                               )
@@ -945,7 +947,7 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

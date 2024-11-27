@@ -114,20 +114,20 @@ function RestaurantDetails() {
               </div>
               <div className="card p-3">
                 <div className="my-1">
-                  <i className="ri-store-2-line font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-store font_size_14 fw-medium"></i>
                   {/* <span className="card-title ms-2 ">Jagdamb</span> */}
                   <span className="card-title ms-2 ">
                     {restaurantDetails.name}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="ri-phone-line text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-phone text-primary font_size_14 fw-medium"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.mobile}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="ri-map-pin-line gray-text text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-location-dot gray-text text-primary font_size_14 fw-medium"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.address}
                   </span>
@@ -269,7 +269,7 @@ function RestaurantDetails() {
                   cursor: "pointer",
                 }}
               >
-                <i className="ri-bard-line me-2"></i>
+                <i className="fa-regular fa-star me-2"></i>
                 Special
                 <span className="font_size_10">
                   {" "}
@@ -365,7 +365,7 @@ function RestaurantDetails() {
                         width: 17,
                       }}
                     >
-                      <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
+                      <i className="fa-solid fa-circle-check text-success font_size_10" />
                     </div>
                   </a>
                   {menu.offer !== 0 && (
@@ -377,7 +377,7 @@ function RestaurantDetails() {
                   )}
                   {menu.is_special && (
                     <i
-                      className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                      className="fa-regular fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
                       style={{
                         position: "absolute",
                         top: 3,

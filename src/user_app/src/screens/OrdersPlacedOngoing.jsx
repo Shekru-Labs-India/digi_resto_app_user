@@ -318,14 +318,14 @@ const OrderCard = ({
           <div className="row">
             <div className="col-8 text-start">
               <div className="restaurant">
-                <i className="ri-store-2-line pe-2"></i>
+                <i className="fa-solid fa-store pe-2"></i>
                 <span className="fw-medium font_size_14">
                   {order.restaurant_name.toUpperCase()}
                 </span>
               </div>
             </div>
             <div className="col-4 text-end">
-              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
+              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
               <span className="font_size_12 gray-text">
                 {order.table_number}
               </span>
@@ -334,7 +334,7 @@ const OrderCard = ({
           <div className="row">
             <div className="col-6">
               <div className="menu-info">
-                <i className="ri-bowl-line pe-2 gray-text"></i>
+                <i className="fa-solid fa-bowl-rice pe-2 gray-text"></i>
                 <span className="gray-text font_size_14">
                   {order.menu_count === 0
                     ? "No orders"
@@ -549,7 +549,7 @@ function OrdersPlacedOngoing() {
 
       {orders.ongoing.length > 0 && (
         <div>
-          <i className="ri-timer-flash-line pe-2 font_size_14 text-warning"></i>
+          <i className="fa-solid fa-clock pe-2 font_size_14 text-warning"></i>
           <span className="font_size_14 fw-medium">Ongoing Orders</span>
           {orders.ongoing.map((order, index) => (
             <OrderCard

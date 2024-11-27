@@ -67,7 +67,7 @@ const Profile = () => {
                 className="back-btn fs-3"
                 onClick={() => navigate(-1)}
               >
-                <i className="ri-arrow-left-line "></i>
+                <i className="fa-solid fa-arrow-left "></i>
               </Link>
             </div>
             <div className="mid-content">
@@ -78,7 +78,7 @@ const Profile = () => {
                 className="menu-toggler toggler-icon"
                 onClick={toggleSidebar}
               >
-                <i className="ri-menu-line fs-3"></i>
+                <i className="fa-solid fa-bars fs-3"></i>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ const Profile = () => {
                           className="btn btn-outline-primary rounded-pill"
                           onClick={showLoginPopup}
                         >
-                          <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                          <i className="fa-solid fa-lock me-2 fs-3"></i> Login
                         </button>
                       )}
                     </div>
@@ -121,7 +121,7 @@ const Profile = () => {
                       to="/user_app/Menu"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-bowl-line me-2 fs-3"></i>
+                      <i className="fa-solid fa-bowl-rice me-2 fs-3"></i>
                       <span className="font_size_16">Menu</span>
                     </Link>
                   </li>
@@ -130,7 +130,7 @@ const Profile = () => {
                       to="/user_app/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-history-line me-2 fs-3"></i>
+                      <i className="fa-solid fa-clock-rotate-left me-2 fs-3"></i>
                       <span className="font_size_16">My Order</span>
                     </Link>
                   </li>
@@ -139,7 +139,7 @@ const Profile = () => {
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-shopping-cart-line me-2 fs-3"></i>
+                      <i className="fa-solid fa-cart-shopping me-2 fs-3"></i>
                       <span className="font_size_16">Cart</span>
                     </Link>
                   </li>
@@ -148,7 +148,7 @@ const Profile = () => {
                       to="/user_app/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-heart-3-line me-2 fs-3"></i>
+                      <i className="fa-regular fa-heart me-2 fs-3"></i>
                       <span className="font_size_16">Favourite</span>
                     </Link>
                   </li>
@@ -166,7 +166,7 @@ const Profile = () => {
                       to="/user_app/Category"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-list-check-2 me-2 fs-3"></i>
+                      <i className="fa-solid fa-bars-staggered me-2 fs-3"></i>
                       <span className="font_size_16">Category</span>
                     </Link>
                   </li>
@@ -183,8 +183,8 @@ const Profile = () => {
                   >
                     <div className="row align-items-center ms-0">
                       <div className="col-auto px-0">
-                        {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "ri-user-3-line fs-3"}></i> */}
-                        <i className="ri-user-3-line fs-3 font_size_14"></i>
+                        {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "fa-solid fa-user fs-3"}></i> */}
+                        <i className="fa-solid fa-user fs-3 font_size_14"></i>
                       </div>
                       <div className="col text-start px-1 font_size_14">
                         Edit Profile
@@ -211,7 +211,7 @@ const Profile = () => {
 
         <div className="d-flex justify-content-center align-items-center mt-2">
           <Link to="/user_app/index">
-            <i className="ri-store-2-line gray-text font_size_14"></i>
+            <i className="fa-solid fa-store gray-text font_size_14"></i>
             <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
@@ -223,7 +223,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="ri-facebook-circle-fill ri-xl"></i>
+              <i className="fa-brands fa-facebook"></i>
             </a>
             <a
               href="https://www.instagram.com/menumitra/"
@@ -231,7 +231,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="ri-instagram-line ri-xl"></i>
+              <i className="fa-brands fa-instagram"></i>
             </a>
             <a
               href="https://www.youtube.com/@menumitra"
@@ -239,7 +239,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="ri-youtube-line ri-xl"></i>
+              <i className="fa-brands fa-youtube"></i>
             </a>
             <a
               href="https://www.linkedin.com/company/102429337/admin/dashboard/"
@@ -247,7 +247,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="ri-linkedin-fill ri-xl"></i>
+              <i className="fa-brands fa-linkedin"></i>
             </a>
             <a
               href="https://x.com/MenuMitra"
@@ -255,7 +255,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             > 
-              <i className="ri-twitter-x-line ri-xl"></i>
+              <i className="fa-brands fa-x-twitter"></i>
             </a>
             <a
               href="https://t.me/MenuMitra"
@@ -263,7 +263,7 @@ const Profile = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="ri-telegram-line ri-xl"></i>
+              <i className="fa-brands fa-telegram"></i>
             </a>
           </div>
           <div className="sidebar-logo text-center mt-5">
@@ -279,7 +279,7 @@ const Profile = () => {
           </div>
 
           <div className="text-center text-md-center mt-2 gray-text font_size_12">
-            <i className="ri-flashlight-fill "></i> Powered by <br />
+            <i className="fa-solid fa-bolt "></i> Powered by <br />
           </div>
           <div className="text-center">
             <a
