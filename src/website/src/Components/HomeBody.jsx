@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
 import shapepng1 from "../Assets/img/shape/1.png"
 import shapepng2 from "../Assets/img/shape/2.png"
@@ -101,6 +105,36 @@ const DemoPopup = ({ show, onClose }) => {
 
 const HomeBody = () => {
   const [showDemoPopup, setShowDemoPopup] = useState(false);
+
+  const testimonialOptions = {
+    items: 1,
+    loop: true,
+    margin: 10,
+    nav: true,
+    dots: true,
+    autoplay: true,
+    autoplayTimeout: 3000,
+    autoplayHoverPause: true,
+    responsive: {
+      0: {
+        items: 1,
+      },
+      600: {
+        items: 1,
+      },
+      1000: {
+        items: 1,
+      },
+    },
+  };
+
+    useEffect(() => {
+      if (showDemoPopup) {
+        document.body.classList.add("no-scroll");
+      } else {
+        document.body.classList.remove("no-scroll");
+      }
+    }, [showDemoPopup]);
   
 
 	useEffect(() => {
@@ -315,7 +349,7 @@ const HomeBody = () => {
                       </ul>
                     </div>
                   </div>
-                  <Link to="/about" className="default-btn">
+                  <Link to="/features" className="default-btn">
                     Learn More
                   </Link>
                 </div>
@@ -370,36 +404,106 @@ const HomeBody = () => {
             </div>
             <div className="row testimonial-bg-color ">
               <div className="col-12 p-0">
-                <div className="testimonials-wrap owl-carousel owl-theme">
-                  <div className="single-testimonial">
-                    <img src="assets/img/testimonial/1.jpg" alt="" />
-                    <h3>Amelia Daniel</h3>
-                    <span>Chairman and founder</span>
-                    <i className="flaticon-quote"></i>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore dolore magna
-                      aliqua. Quis ipsum suspendisse ultrices gravida. Risus
-                      viverra maecenas accumsan lacus vel facilisis.
-                    </p>
-                    <ul>
-                      <li>
-                        <i className="fa fa-star"></i>
-                      </li>
-                      <li>
-                        <i className="fa fa-star"></i>
-                      </li>
-                      <li>
-                        <i className="fa fa-star"></i>
-                      </li>
-                      <li>
-                        <i className="fa fa-star"></i>
-                      </li>
-                      <li>
-                        <i className="fa fa-star"></i>
-                      </li>
-                    </ul>
-                  </div>
+                <div className="testimonials-wrap">
+                  <Swiper
+                    spaceBetween={30}
+                    centeredSlides={true}
+                    autoplay={{
+                      delay: 2500,
+                      disableOnInteraction: false,
+                      pauseOnMouseEnter: true
+                    }}
+                    pagination={{
+                      clickable: true
+                    }}
+                    loop={true}
+                    modules={[Autoplay, Pagination]}
+                    className="mySwiper"
+                  >
+                    <SwiperSlide>
+                      <div className="single-testimonial">
+                        {/* <img src="assets/img/testimonial/1.jpg" alt="Restaurant Owner" /> */}
+                        <h3>Rajesh Patil</h3>
+                        <span>Hotel Owner, Pune</span>
+                        <i className="flaticon-quote"></i>
+                        <p>
+                          "MenuMitra ne mera restaurant digital kar diya! Staff ki efficiency badh gayi 
+                          aur customers bhi khush hai. QR code scanning se ordering system ekdum smooth 
+                          ho gaya hai. Best investment for my business!"
+                        </p>
+                        <ul>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                        </ul>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                      <div className="single-testimonial">
+                        {/* <img src="assets/img/testimonial/2.jpg" alt="Restaurant Manager" /> */}
+                        <h3>Suresh Deshmukh</h3>
+                        <span>Restaurant Manager, Mumbai</span>
+                        <i className="flaticon-quote"></i>
+                        <p>
+                          "MenuMitra मुळे आमच्या रेस्टॉरंटचं डिजिटलायझेशन झालं. ऑर्डर मॅनेजमेंट 
+                          आता खूप सोपं झालंय. कस्टमर सर्विस इम्प्रूव्ह झाली आणि बिझनेस वाढला. 
+                          एकदम झकास app आहे!"
+                        </p>
+                        <ul>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star-half-o"></i></li>
+                        </ul>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                      <div className="single-testimonial">
+                        {/* <img src="assets/img/testimonial/3.jpg" alt="Cafe Owner" /> */}
+                        <h3>Priya Sharma</h3>
+                        <span>Cafe Owner, Bangalore</span>
+                        <i className="flaticon-quote"></i>
+                        <p>
+                          "Being a new cafe owner, MenuMitra has been a game-changer! The digital menu 
+                          system is so user-friendly, and their customer support is excellent. Saved 
+                          costs on menu printing and improved order accuracy by 95%."
+                        </p>
+                        <ul>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                        </ul>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                      <div className="single-testimonial">
+                        {/* <img src="assets/img/testimonial/4.jpg" alt="Hotel Manager" /> */}
+                        <h3>Amit Patel</h3>
+                        <span>Hotel Manager, Nashik</span>
+                        <i className="flaticon-quote"></i>
+                        <p>
+                          "MenuMitra ekdum mast app hai! Hamari service quality improve hui hai, 
+                          customers ka time bacha hai, aur staff ko bhi manage karna easy ho gaya. 
+                          Inventory tracking feature toh kamaal ka hai. Full paisa vasool!"
+                        </p>
+                        <ul>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                          <li><i className="fa fa-star"></i></li>
+                        </ul>
+                      </div>
+                    </SwiperSlide>
+                  </Swiper>
                 </div>
               </div>
             </div>

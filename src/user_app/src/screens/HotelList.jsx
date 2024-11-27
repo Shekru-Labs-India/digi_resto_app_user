@@ -118,7 +118,7 @@ const HotelList = () => {
                 Open
               </button>
               <button
-                className={`btn p-2 btn-outline-dark ${
+                className={`btn p-2 btn-outline-warning ${
                   activeStatusFilter === "closed" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("closed")}
