@@ -134,6 +134,13 @@ const HomeScreen = () => {
             <div className=" ">
               <Link to="/user_app/Profile">
                 <span className="ms-3 pt-4    ">
+                  <i
+                    className={
+                      userData?.customer_id
+                        ? "fa-solid fa-user me-2 font_size_14"
+                        : "fa-regular fa-user me-2 font_size_14"
+                    }
+                  ></i>
                   {userData?.name ? (
                     `Hello, ${toTitleCase(getFirstName(userData.name))}`
                   ) : (
@@ -145,7 +152,7 @@ const HomeScreen = () => {
                           toggleSidebar();
                         }}
                       >
-                        <i className="fa-solid fa-lock me-2 fs-3"></i> Login
+                        <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                       </Link>
                     </>
                   )}
@@ -306,9 +313,9 @@ const HomeScreen = () => {
                 <span className="dz-icon icon-sm">
                   <i
                     className={
-                      userData && userData.customer_id
-                        ? "ri-user-3-fill fs-4"
-                        : "fa-solid fa-user fs-4"
+                      userData?.customer_id
+                        ? "fa-solid fa-user"
+                        : "fa-regular fa-user"
                     }
                   ></i>
                 </span>

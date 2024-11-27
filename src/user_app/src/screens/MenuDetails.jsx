@@ -596,7 +596,7 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        <i className="ri-arrow-left-s-line fs-4"></i>
+                        <i className="fa-solid fa-angle-left fs-4"></i>
                       </div>
 
                       <div
@@ -613,7 +613,7 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        <i className="ri-arrow-right-s-line fs-4"></i>
+                        <i className="fa-solid fa-chevron-right fs-4"></i>
                       </div>
 
                       {/* Pagination Dots */}

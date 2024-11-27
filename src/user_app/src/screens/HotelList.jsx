@@ -140,7 +140,7 @@ const HotelList = () => {
                       <div className="col-12">
                         <div className="row mt-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="ri-store-2-line font_size_14 fw-medium"></i>
+                            <i className="fa-solid fa-shop font_size_14 "></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="font_size_14 fw-medium m-0">
@@ -159,7 +159,7 @@ const HotelList = () => {
                         </div>
                         <div className="row mt-1">
                           <div className="col-1 d-flex align-items-center">
-                            <i className="ri-phone-line text-primary"></i>
+                            <i className="fa-solid fa-phone text-primary"></i>
                           </div>
                           <div className="col-10 d-flex align-items-center">
                             <span className="text-primary font_size_12">
@@ -169,7 +169,7 @@ const HotelList = () => {
                         </div>
                         <div className="row mb-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="ri-map-pin-line gray-text"></i>
+                            <i className="fa-solid fa-location-dot gray-text"></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="gray-text font_size_12">
@@ -219,15 +219,13 @@ const HotelList = () => {
                 <i className="ri-restaurant-2-line font_size_24 mb-2 text-muted"></i>
                 <h5 className="text-muted mb-2">No Restaurants Found</h5>
                 <p className="text-muted font_size_14">
-                  {activeFilter !== 'all' && activeStatusFilter !== 'all' ? (
-                    `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
-                  ) : activeFilter !== 'all' ? (
-                    `No ${activeFilter} restaurants available`
-                  ) : activeStatusFilter !== 'all' ? (
-                    `No restaurants are currently ${activeStatusFilter}`
-                  ) : (
-                    'No restaurants available at the moment'
-                  )}
+                  {activeFilter !== "all" && activeStatusFilter !== "all"
+                    ? `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
+                    : activeFilter !== "all"
+                    ? `No ${activeFilter} restaurants available`
+                    : activeStatusFilter !== "all"
+                    ? `No restaurants are currently ${activeStatusFilter}`
+                    : "No restaurants available at the moment"}
                 </p>
               </div>
             </div>

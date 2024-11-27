@@ -425,7 +425,7 @@ const Wishlist = () => {
   return (
     <div className="page-wrapper full-height">
       <main className="page-content space-top p-b70">
-        <div className="container ">
+        <div className="container px-3 py-0 mb-0">
           <Header title="Favourite" count={wishlistCount} />
 
           <HotelNameAndTable
@@ -729,7 +729,7 @@ const Wishlist = () => {
                                               <i
                                                 className={`fa-solid ${
                                                   isMenuItemInCart(menu.menu_id)
-                                                    ? "fa-cart-shopping "
+                                                    ? "fa-solid fa-circle-check"
                                                     : "fa-cart-plus text-secondary"
                                                 } fs-6`}
                                               ></i>
@@ -784,7 +784,7 @@ const Wishlist = () => {
                     className="btn btn-outline-primary rounded-pill"
                     onClick={showLoginPopup}
                   >
-                    <i className="fa-solid fa-lock me-2 fs-3"></i> Login
+                    <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                   </button>
                 </div>
                 <span className="mt-4">

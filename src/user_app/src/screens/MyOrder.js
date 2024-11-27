@@ -321,7 +321,7 @@ const MyOrder = () => {
           <Bottom />
         </div>
 
-        <div className="container">
+        <div className="container pt-0">
           {loading ? (
             <div id="">
               <div className="loader">{/* <LoaderGif /> */}</div>
@@ -338,7 +338,7 @@ const MyOrder = () => {
                       className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}
                     >
-                      <i className="fa-solid fa-lock me-2 fs-3"></i> Login
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                     </button>
                   </div>
                   <span className="mt-4">
@@ -1496,7 +1496,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-<div className="contain">
+<div className="container">
   <RestaurantSocials/>
 </div>
       </>

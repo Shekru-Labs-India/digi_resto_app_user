@@ -107,7 +107,7 @@ const Profile = () => {
                           className="btn btn-outline-primary rounded-pill"
                           onClick={showLoginPopup}
                         >
-                          <i className="fa-solid fa-lock me-2 fs-3"></i> Login
+                          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                         </button>
                       )}
                     </div>
@@ -157,7 +157,7 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                      <i class="fa-solid fa-magnifying-glass me-2 fs-3"></i>
                       <span className="font_size_16">Search</span>
                     </Link>
                   </li>

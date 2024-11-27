@@ -3,8 +3,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
+import { useLocation } from "react-router-dom";
 
 export const SidebarToggler = () => {
+  const location = useLocation();
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
   const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
@@ -81,8 +83,17 @@ export const SidebarToggler = () => {
   return (
     <>
       <div className="right-content gap-1">
-        <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
-          <i className="fa-solid fa-bars-staggered fs-3"></i>
+        <span className=""> </span>
+        <div className="menu-toggler toggler-icon">
+          {location.pathname !== "/user_app/Search" && (
+            <Link to="/user_app/Search">
+              <i className="fa-solid fa-magnifying-glass me-3 fs-3"></i>
+            </Link>
+          )}
+          <i
+            className="fa-solid fa-bars-staggered fs-3"
+            onClick={toggleSidebar}
+          ></i>
         </div>
       </div>
 
@@ -97,6 +108,14 @@ export const SidebarToggler = () => {
           <div className=" ">
             <Link to="/user_app/Profile">
               <span className="ms-3 pt-4    ">
+                <i
+                  className={
+                    userData?.customer_id
+                      ? "fa-solid fa-user me-2 font_size_14"
+                      : "fa-regular fa-user me-2 font_size_14"
+                  }
+                ></i>
+
                 {userData?.name ? (
                   `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 ) : (
@@ -108,7 +127,7 @@ export const SidebarToggler = () => {
                         toggleSidebar(); // Closes the sidebar
                       }}
                     >
-                      <i className="fa-solid fa-lock me-2 fs-3"></i> Login
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                     </Link>
                   </>
                 )}
@@ -236,9 +255,9 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i
                   className={
-                    userData && userData.customer_id
-                      ? "far fa-user fs-4"
-                      : "fa-solid fa-user fs-4"
+                    userData?.customer_id
+                      ? "fa-solid fa-user"
+                      : "fa-regular fa-user"
                   }
                 ></i>
               </span>
