@@ -10,6 +10,7 @@ import logo from "../assets/logos/menumitra_logo_128.png";
 import NearbyArea from "../component/NearbyArea";
 import { usePopup } from '../context/PopupContext';
 import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
+import RestaurantSocials from "../components/RestaurantSocials";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -202,12 +203,12 @@ const HomeScreen = () => {
                   >
                     {isVegOnly ? (
                       <i
-                        className="fa-solid fa-circle-check text-success"
+                        className="fa-solid fa-circle text-success"
                         style={{ fontSize: "16px" }} // Adjust icon size
                       ></i>
                     ) : (
                       <i
-                        className="fa-solid fa-caret-up text-danger"
+                        className="fa-solid fa-play fa-rotate-270 text-danger"
                         style={{ fontSize: "16px" }} // Adjust icon size
                       ></i>
                     )}
@@ -224,11 +225,11 @@ const HomeScreen = () => {
                 >
                   
                     <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle-check text-danger me-1"></i>
+                      <i className="fa-solid fa-circle text-danger me-1"></i>
                     
                     </span>
                     <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle-check text-success me-1"></i>
+                      <i className="fa-solid fa-circle text-success me-1"></i>
                   
                     </span>
                   
@@ -246,7 +247,7 @@ const HomeScreen = () => {
   >
     <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
       <i
-        className="fa-solid fa-circle-check text-danger me-1"
+        className="fa-solid fa-circle text-danger me-1"
         style={{
           border: '1px solid red', // Set border color for Non-Veg icon
           fontSize: '16px',
@@ -256,7 +257,7 @@ const HomeScreen = () => {
     </span>
     <span className={`veg ${!isVegOnly ? "active" : ""}`}>
       <i
-        className="fa-solid fa-circle-check text-success me-1"
+        className="fa-solid fa-circle text-success me-1"
         style={{
           border: '2px solid green', // Set border color for Veg icon
           
@@ -413,9 +414,7 @@ const HomeScreen = () => {
             <div className="mb-3">
               <NearbyArea />
             </div>
-            <div className="divider border-success inner-divider transparent mb-5">
-              <span className="bg-body">End</span>
-            </div>
+          <RestaurantSocials/>
           </div>
         </main>
 

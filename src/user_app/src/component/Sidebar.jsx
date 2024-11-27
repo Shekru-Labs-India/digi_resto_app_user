@@ -155,11 +155,11 @@ export const SidebarToggler = () => {
                 >
                   <div className="toggle-label">
                     <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle-check text-danger me-1"></i>
+                      <i className="fa-solid fa-circle text-danger me-1"></i>
                       Non-Veg
                     </span>
                     <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle-check text-success me-1"></i>
+                      <i className="fa-solid fa-circle text-success me-1"></i>
                       Veg
                     </span>
                   </div>
@@ -186,12 +186,12 @@ export const SidebarToggler = () => {
                 >
                   {isVegOnly ? (
                     <i
-                      className="fa-solid fa-circle-check text-success"
+                      className="fa-solid fa-circle text-success"
                       style={{ fontSize: "16px" }} // Adjust icon size
                     ></i>
                   ) : (
                     <i
-                      className="fa-solid fa-caret-up text-danger"
+                      className="fa-solid fa-play fa-rotate-270 text-danger"
                       style={{ fontSize: "16px" }} // Adjust icon size
                     ></i>
                   )}
@@ -237,7 +237,7 @@ export const SidebarToggler = () => {
                 <i
                   className={
                     userData && userData.customer_id
-                      ? "ri-user-3-fill fs-4"
+                      ? "far fa-user fs-4"
                       : "fa-solid fa-user fs-4"
                   }
                 ></i>

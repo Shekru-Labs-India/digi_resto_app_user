@@ -41,8 +41,8 @@ const Bottom = () => {
             isHomePath(location.pathname) ? "active" : ""
           }`}
         >
-          <i className="fa-solid fa-house"></i>
-          <span className="name">Home</span>
+          <i className="fa-solid fa-house me-2 font_size_14"></i>
+          <span className="name font_size_14">Home</span>
         </Link>
 
         <Link
@@ -51,8 +51,8 @@ const Bottom = () => {
             location.pathname === "/user_app/Wishlist" ? "active" : ""
           }`}
         >
-          <i className="fa-regular fa-heart"></i>
-          <span className="name">Favourite</span>
+          <i className="fa-regular fa-heart me-2 font_size_14"></i>
+          <span className="name font_size_14">Favourite</span>
         </Link>
 
         <Link
@@ -62,31 +62,19 @@ const Bottom = () => {
           }`}
         >
           <div className="position-relative">
-            <i className="fa-solid fa-cart-shopping"></i>
-            {/* {cartItemCount > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {cartItemCount}
-              </span>
-            )} */}
+            <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
           </div>
-          <span className="name">Cart</span>
+          <span className="name font_size_14">Cart</span>
         </Link>
 
-        {/* <Link
-          to="/user_app/Search"
-          className={`nav-link ${location.pathname === "/user_app/Search" ? "active" : ""}`}
-        >
-          <i className="ri-search-line"></i>
-          <span className="name">Search</span>
-        </Link> */}
         <Link
           to="/user_app/MyOrder"
           className={`nav-link ${
             location.pathname === "/user_app/MyOrder" ? "active" : ""
           }`}
         >
-          <i className="fa-solid fa-clock-rotate-left"></i>
-          <span className="name">My Order</span>
+          <i className="fa-solid fa-clock-rotate-left me-2 font_size_14"></i>
+          <span className="name font_size_14">My Order</span>
         </Link>
 
         <Link
@@ -97,10 +85,10 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id ? "fa-solid fa-user" : "fa-regular fa-user"
+              userData?.customer_id ? "fa-solid fa-user me-2 font_size_14" : "fa-regular fa-user me-2 font_size_14"
             }
           ></i>
-          <span className="name">Profile</span>
+          <span className="name font_size_14">Profile</span>
         </Link>
       </div>
 

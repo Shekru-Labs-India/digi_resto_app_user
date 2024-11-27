@@ -307,10 +307,10 @@ const MyOrder = () => {
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab === "completed" && (
-                    <i className="ri-checkbox-circle-line text-success me-2 fs-5"></i>
+                    <i className="far fa-check-circle text-success me-2 fs-5"></i>
                   )}
                   {tab === "cancelled" && (
-                    <i className="ri-close-circle-line text-danger me-2 fs-5"></i>
+                    <i className="far fa-times-circle text-danger me-2 fs-5"></i>
                   )}
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </div>
@@ -766,8 +766,8 @@ console.log(customerName);
         >
           <div className="row align-items-center">
             <div className="col-4">
-              <span className="fw-semibold fs-6">
-                <i className="ri-hashtag pe-2"></i>
+              <span className="fw-semibold font_size_14">
+                <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                 {order.order_number}
               </span>
             </div>
@@ -782,7 +782,7 @@ console.log(customerName);
           <div className="row">
             <div className="col-8 text-start">
               <div className="restaurant">
-                <i className="fa-solid fa-store pe-2"></i>
+                <i className="fa-solid fa-shop pe-2 font_size_14"></i>
                 <span className="fw-medium font_size_14">
                   {order.restaurant_name.toUpperCase()}
                 </span>
@@ -790,7 +790,7 @@ console.log(customerName);
             </div>
             <div className="col-4 text-end">
               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-              <span className="font_size_12 gray-text">
+              <span className="font_size_12 gray-text font_size_12">
                 {order.table_number}
               </span>
             </div>
@@ -798,8 +798,8 @@ console.log(customerName);
           <div className="row">
             <div className="col-6">
               <div className="menu-info">
-                <i className="fa-solid fa-bowl-rice pe-2 gray-text"></i>
-                <span className="gray-text font_size_14">
+                <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
+                <span className="gray-text font_size_12">
                   {order.menu_count === 0
                     ? "No orders"
                     : `${order.menu_count} Menu`}
@@ -907,11 +907,22 @@ console.log(customerName);
                       }}
                       disabled={isProcessingUPI}
                     >
-                      {isProcessingUPI ? "Processing..." : (
+                      {isProcessingUPI ? (
+                        "Processing..."
+                      ) : (
                         <>
-                          Pay <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                          Pay{" "}
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>{" "}
+                          via
                           <span className="ms-2">Other UPI Apps</span>
-                          <img className="text-white ms-1" src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
+                          <img
+                            className="text-white ms-1"
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
                         </>
                       )}
                     </button>
@@ -926,11 +937,20 @@ console.log(customerName);
                       }}
                       disabled={isProcessingPhonePe}
                     >
-                      {isProcessingPhonePe ? "Processing..." : (
+                      {isProcessingPhonePe ? (
+                        "Processing..."
+                      ) : (
                         <>
                           Pay with PhonePe
-                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
-                          <img className="ms-1" src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000" width={45} alt="PhonePe" />
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>
+                          <img
+                            className="ms-1"
+                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                            width={45}
+                            alt="PhonePe"
+                          />
                         </>
                       )}
                     </button>
@@ -945,11 +965,20 @@ console.log(customerName);
                       }}
                       disabled={isProcessingGPay}
                     >
-                      {isProcessingGPay ? "Processing..." : (
+                      {isProcessingGPay ? (
+                        "Processing..."
+                      ) : (
                         <>
                           Pay with Google Pay
-                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
-                          <img className="ms-1" src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png" width={45} alt="Google Pay" />
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>
+                          <img
+                            className="ms-1"
+                            src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
                         </>
                       )}
                     </button>
@@ -1305,7 +1334,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 </span>
                 <span className="icon-circle">
                   <i
-                    className={`fa-solid fa-arrow-down arrow-icon ${
+                    className={`fas fa-chevron-down arrow-icon ${
                       Object.values(checkedItems).every(Boolean)
                         ? "rotated"
                         : ""
@@ -1351,7 +1380,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   </span>
                   <span className="icon-circle">
                     <i
-                      className={`fa-solid fa-arrow-down arrow-icon ${
+                      className={`fas fa-chevron-down arrow-icon ${
                         checkedItems[dateTypeKey] ? "rotated" : ""
                       }`}
                     ></i>
@@ -1379,8 +1408,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {/* Card body content remains the same */}
                       <div className="row align-items-center">
                         <div className="col-4">
-                          <span className="fw-semibold fs-6">
-                            <i className="ri-hashtag pe-2"></i>
+                          <span className="fw-semibold font_size_14">
+                            <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                             {order.order_number}
                           </span>
                         </div>
@@ -1393,7 +1422,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       <div className="row">
                         <div className="col-8 text-start">
                           <div className="restaurant">
-                            <i className="fa-solid fa-store pe-2"></i>
+                            <i className="fa-solid fa-shop pe-2 font_size_14"></i>
                             <span className="fw-medium font_size_14">
                               {order.restaurant_name.toUpperCase()}
                             </span>
@@ -1401,7 +1430,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         </div>
                         <div className="col-4 text-end">
                           <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                          <span className="font_size_12 gray-text">
+                          <span className="font_size_12 gray-text font_size_12">
                             {order.table_number}
                           </span>
                         </div>
@@ -1409,8 +1438,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       <div className="row">
                         <div className="col-6">
                           <div className="menu-info">
-                            <i className="fa-solid fa-bowl-rice pe-2 gray-text"></i>
-                            <span className="gray-text font_size_14">
+                            <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
+                            <span className="gray-text font_size_12">
                               {order.menu_count === 0
                                 ? "No Menus"
                                 : `${order.menu_count} Menu`}
@@ -1435,14 +1464,14 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             <div className="col-7 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
-                                  <i className="ri-checkbox-circle-line me-1"></i>
+                                  <i className="far fa-check-circle me-1"></i>
                                   Completed
                                 </span>
                               </div>
                             </div>
                             <div className="col-5 pe-0 font_size_14 text-end">
                               {order.payment_method && (
-                                <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
+                                <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">
                                   {order.payment_method}
                                 </div>
                               )}

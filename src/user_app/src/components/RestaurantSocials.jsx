@@ -85,7 +85,8 @@ function RestaurantSocials() {
             }}
             title="WhatsApp"
           >
-            <i className="ri-whatsapp-line fs-4"></i>
+            <i class="fa-brands fa-whatsapp fs-4"></i>
+            
           </button>
         </div>
 
@@ -129,7 +130,7 @@ function RestaurantSocials() {
             }}
             title="Instagram"
           >
-            <i className="ri-instagram-line fs-4"></i>
+            <i class="fa-brands fa-instagram fs-4"></i>
           </button>
         </div>
       </div>

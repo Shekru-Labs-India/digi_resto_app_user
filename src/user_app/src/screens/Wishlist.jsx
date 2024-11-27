@@ -437,20 +437,43 @@ const Wishlist = () => {
         ) : isLoggedIn ? (
           hasFavorites ? (
             <>
-              <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
-                <div
-                  className="d-flex align-items-center cursor-pointer ps-0 py-0 icon-border"
-                  onClick={toggleExpandAll}
-                  role="button"
-                  aria-label={expandAll ? "Collapse All" : "Expand All"}
-                >
-                  <span className="icon-circle">
-                    <i
-                      className={`fa-solid fa-arrow-down arrow-icon ${
-                        expandAll ? "rotated" : "rotated-1"
-                      }`}
-                    ></i>
-                  </span>
+              <div className="d-flex justify-content-end mb-2 pe-0">
+                <div className="tab-label me-3">
+                  <button
+                    className="btn btn-link text-decoration-none pe-0 pb-0"
+                    onClick={() => {
+                      const allRestaurants = Object.keys(menuList);
+                      const newCheckedItems = {};
+
+                      // If any restaurant is collapsed, expand all. Otherwise, collapse all
+                      const shouldExpand = allRestaurants.some(
+                        (restaurant) => !checkedItems[restaurant]
+                      );
+
+                      allRestaurants.forEach((restaurant) => {
+                        newCheckedItems[restaurant] = shouldExpand;
+                      });
+
+                      setCheckedItems(newCheckedItems);
+                    }}
+                  >
+                    <span className="d-flex align-items-center">
+                      <span className="text-secondary opacity-25 pe-2 font_size_10">
+                        {Object.values(checkedItems).every(Boolean)
+                          ? "Collapse All"
+                          : "Expand All"}
+                      </span>
+                      <span className="icon-circle">
+                        <i
+                          className={`fas fa-chevron-down arrow-icon ${
+                            Object.values(checkedItems).every(Boolean)
+                              ? "rotated"
+                              : "rotated-1"
+                          }`}
+                        ></i>
+                      </span>
+                    </span>
+                  </button>
                 </div>
               </div>
               {Object.keys(wishlistItems).map((restaurantName) =>
@@ -470,7 +493,7 @@ const Wishlist = () => {
                       >
                         <span className="">
                           <span className="font_size_14 fw-medium">
-                            <i className="fa-solid fa-store me-2"></i>
+                            {/* <i className="fa-solid fa-shop me-2"></i> */}
                             {restaurantName.toUpperCase()}
                           </span>
                         </span>
@@ -480,7 +503,7 @@ const Wishlist = () => {
                           </span>
                           <span className="icon-circle">
                             <i
-                              className={`fa-solid fa-arrow-down arrow-icon pt-0 ${
+                              className={`fas fa-chevron-down arrow-icon pt-0 ${
                                 checkedItems[restaurantName]
                                   ? "rotated"
                                   : "rotated-1"
@@ -528,7 +551,7 @@ const Wishlist = () => {
                                       />{" "}
                                       {menu.is_special && (
                                         <i
-                                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                                           style={{
                                             position: "absolute",
                                             top: 3,
@@ -586,8 +609,8 @@ const Wishlist = () => {
                                           className={`${
                                             menu.menu_veg_nonveg.toLowerCase() ===
                                             "veg"
-                                              ? "fa-solid fa-circle-check text-success"
-                                              : "fa-solid fa-caret-up text-danger"
+                                              ? "fa-solid fa-circle text-success"
+                                              : "fa-solid fa-play fa-rotate-270 text-danger"
                                           } font_size_12`}
                                         ></i>
                                       </div>
@@ -635,12 +658,12 @@ const Wishlist = () => {
                                                 (_, index) =>
                                                   index < menu.spicy_index ? (
                                                     <i
-                                                      className="fa-solid fa-fire-flame-curved font_size_12 text-danger"
+                                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
                                                       key={index}
                                                     ></i>
                                                   ) : (
                                                     <i
-                                                      className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
+                                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                                       key={index}
                                                     ></i>
                                                   )
@@ -703,10 +726,10 @@ const Wishlist = () => {
                                               }}
                                             >
                                               <i
-                                                className={`fa-solid fa-cart-shopping-${
+                                                className={`fa-solid ${
                                                   isMenuItemInCart(menu.menu_id)
-                                                    ? "fill text-black"
-                                                    : "line"
+                                                    ? "fa-cart-shopping "
+                                                    : "fa-cart-plus text-secondary"
                                                 } fs-6`}
                                               ></i>
                                             </div>

@@ -606,7 +606,7 @@ const TrackOrder = () => {
       case "cancle":
         return "ri-close-circle-line text-danger";
       case "ongoing":
-        return "fa-solid fa-clock text-warning";
+        return "fa-solid fa-hourglass-half text-secondary opacity-25 font_size_14";
       case "placed":
         return "ri-file-list-3-line text-primary";
       case "completed":
@@ -939,7 +939,7 @@ const TrackOrder = () => {
               <div className="row align-items-center mb-0">
                 <div className="col-4">
                   <span className="fs-6 fw-semibold mb-0">
-                    <i className="ri-hashtag pe-2    "></i>
+                    <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                     {order_details.order_number}
                   </span>
                 </div>
@@ -952,7 +952,7 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                    <i className="fa-solid fa-store pe-2 "></i>
+                    <i className="fa-solid fa-shop pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>
@@ -968,8 +968,8 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-6">
                   <div className="menu-info">
-                    <span className="font_size_14   gray-text">
-                      <i className="fa-solid fa-bowl-rice pe-2 "></i>
+                    <span className="font_size_12 gray-text">
+                      <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                       {order_details.menu_count} Menu
                     </span>
                   </div>
@@ -1104,7 +1104,7 @@ const TrackOrder = () => {
                             />
                             {menu.is_special && (
                               <i
-                                className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                                className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                                 style={{
                                   position: "absolute",
                                   top: 3,
@@ -1133,8 +1133,8 @@ const TrackOrder = () => {
                               <i
                                 className={`${
                                   isVegMenu(menu?.menu_veg_nonveg)
-                                    ? "fa-solid fa-circle-check text-success"
-                                    : "fa-solid fa-caret-up text-danger"
+                                    ? "fa-solid fa-circle text-success"
+                                    : "fa-solid fa-play fa-rotate-270 text-danger"
                                 } font_size_12`}
                               ></i>
                             </div>
@@ -1208,12 +1208,12 @@ const TrackOrder = () => {
                                       index < menu.spicy_index ? (
                                         <i
                                           key={index}
-                                          className="fa-solid fa-fire-flame-curved text-danger font_size_12 firefill offer-code"
+                                          className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
                                         ></i>
                                       ) : (
                                         <i
                                           key={index}
-                                          className="fa-solid fa-fire-flame-simple gray-text font_size_12"
+                                          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                         ></i>
                                       )
                                     )}

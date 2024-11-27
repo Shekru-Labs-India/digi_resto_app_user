@@ -181,7 +181,7 @@ function RestaurantDetails() {
               </div>
               <div className="card p-3">
                 <div className="my-1">
-                  <i className="fa-solid fa-store font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-shop font_size_14 fw-medium"></i>
                   {/* <span className="card-title ms-2 ">Jagdamb</span> */}
                   <span className="card-title ms-2 ">
                     {restaurantDetails.name}
@@ -450,7 +450,7 @@ function RestaurantDetails() {
                         width: 17,
                       }}
                     >
-                      <i className="fa-solid fa-circle-check text-success font_size_10" />
+                      <i className="fa-solid fa-circle text-success font_size_10" />
                     </div>
                   </a>
                   {menu.offer !== 0 && (

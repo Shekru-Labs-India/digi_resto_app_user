@@ -207,9 +207,15 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="fa-solid fa-fire-flame-curved font_size_12 text-danger" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-danger"
+          key={index}
+        ></i>
       ) : (
-        <i className="fa-solid fa-fire-flame-simple font_size_12 gray-text" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+          key={index}
+        ></i>
       )
     );
   };
@@ -390,7 +396,7 @@ const NearbyArea = () => {
               <span className="font_size_14 fw-medium">Our Speciality</span>
               <Link to="/user_app/Menu">
                 <span>see all</span>
-                <i className="fa-solid fa-arrow-right"></i>
+                <i className="fa-solid fa-arrow-right ms-2"></i>
               </Link>
             </div>
           )}
@@ -446,8 +452,8 @@ const NearbyArea = () => {
                         <i
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "fa-solid fa-circle-check text-success"
-                              : "fa-solid fa-caret-up text-danger"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -543,10 +549,10 @@ const NearbyArea = () => {
                               }}
                             >
                               <i
-                                className={`fa-solid fa-cart-shopping-${
+                                className={`fa-solid ${
                                   isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill text-black"
-                                    : "line"
+                                    ? "fa-cart-shopping "
+                                    : "fa-cart-plus text-secondary"
                                 } fs-6`}
                               ></i>
                             </div>

@@ -481,7 +481,7 @@ const Search = () => {
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
-                <i className="fa-solid fa-store me-2"></i>
+                <i className="fa-solid fa-shop me-2"></i>
                 <span className="fw-medium font_size_14">
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                 </span>
@@ -531,7 +531,8 @@ const Search = () => {
               <div className="fw-normal fs-6 gray-text"></div>
               <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
-              </div>``
+              </div>
+              ``
             </div>
           )}
 
@@ -564,16 +565,6 @@ const Search = () => {
                             e.target.style.aspectRatio = "1/1";
                           }}
                         />
-                        {menu.is_special && (
-                          <i
-                            className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
-                            style={{
-                              position: "absolute",
-                              top: 3,
-                              right: "76%",
-                            }}
-                          ></i>
-                        )}
                         <div
                           className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
                           style={{
@@ -616,8 +607,8 @@ const Search = () => {
                           <i
                             className={`${
                               menu.menu_veg_nonveg.toLowerCase() === "veg"
-                                ? "fa-solid fa-circle-check text-success"
-                                : "fa-solid fa-caret-up text-danger"
+                                ? "fa-solid fa-circle text-success"
+                                : "fa-solid fa-play fa-rotate-270 text-danger"
                             } font_size_12`}
                           ></i>
                         </div>
@@ -637,86 +628,92 @@ const Search = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="row mt-1">
-                        <div className="col-5 text-start d-flex align-items-center">
-                          <span className="ps-2 font_size_10 text-success">
-                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
-                            {menu.category_name}
-                          </span>
-                        </div>
-                        <div className="col-3 d-flex aign-items-center">
-                          {menu.spicy_index && (
-                            <div className="">
-                              {Array.from({ length: 5 }).map((_, index) =>
-                                index < menu.spicy_index ? (
-                                  <i
-                                    className="fa-solid fa-fire-flame-curved font_size_12 text-danger"
-                                    key={index}
-                                  ></i>
-                                ) : (
-                                  <i
-                                    className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
-                                    key={index}
-                                  ></i>
-                                )
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
-                          {menu.rating > 0 && (
-                            <>
-                              {renderStarRating(menu.rating)}
-                              <span className="font_size_10 fw-normal gray-text">
-                                {menu.rating}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="row mt-1">
-                        <div className="col-6">
-                          <p className="ms-2 mb-0 fw-medium">
-                            <span className="text-primary">₹{menu.price}</span>
-                            {menu.offer > 0 && (
+                        <div className="row mt-1">
+                          <div className="col-5 text-start d-flex align-items-center">
+                            <span className="ps-2 font_size_10 text-success">
+                              <i className="ri-restaurant-line mt-0 me-1"></i>
+                              {menu.category_name}
+                            </span>
+                          </div>
+                          <div className="col-3 d-flex aign-items-center px-0">
+                            {menu.spicy_index && (
+                              <div className="">
+                                {Array.from({ length: 5 }).map((_, index) =>
+                                  index < menu.spicy_index ? (
+                                    <i
+                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
+                                      key={index}
+                                    ></i>
+                                  ) : (
+                                    <i
+                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+                                      key={index}
+                                    ></i>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="col-4 d-flex align-items-center justify-content-end text-start">
+                            {menu.rating > 0 && (
                               <>
-                                <span className="text-decoration-line-through ms-2 gray-text">
-                                  ₹{menu.oldPrice}
-                                </span>
-                                <span className="badge bg-success ms-2">
-                                  {menu.offer}% OFF
+                                {renderStarRating(menu.rating)}
+                                <span className="font_size_10 fw-normal gray-text">
+                                  {menu.rating}
                                 </span>
                               </>
                             )}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="col-6 d-flex justify-content-end">
-                        {customerId && (
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                            style={{
-                              width: "25px",
-                              height: "25px",
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleAddToCartClick(menu);
-                            }}
-                          >
-                            <i
-                              className={`fa-solid fa-cart-${
-                                isMenuItemInCart(menu.menu_id)
-                                  ? "check text-success"
-                                  : "plus"
-                              } fs-6`}
-                            ></i>
                           </div>
-                        )}
+                        </div>
+
+                        <div className="row mt-1">
+                          <div className="col-6">
+                            <p className="ms-2 mb-0 fw-medium">
+                              {menu.offer ? (
+                                <>
+                                  <span className="font_size_14 fw-semibold text-info">
+                                    ₹
+                                    {Math.floor(
+                                      menu.price * (1 - menu.offer / 100)
+                                    )}
+                                  </span>
+                                  <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                    ₹{menu.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="font_size_14 fw-semibold text-info">
+                                  ₹{menu.price}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+
+                          <div className="col-6 d-flex justify-content-end">
+                            {customerId && (
+                              <div
+                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: "25px",
+                                  height: "25px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCartClick(menu);
+                                }}
+                              >
+                                <i
+                                  className={`fa-solid ${
+                                    isMenuItemInCart(menu.menu_id)
+                                      ? "fa-cart-shopping "
+                                      : "fa-cart-plus text-secondary"
+                                  } fs-6`}
+                                ></i>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -724,8 +721,8 @@ const Search = () => {
               </div>
             </>
           ))}
-        
-          <RestaurantSocials/>
+
+          <RestaurantSocials />
         </div>
       </main>
 

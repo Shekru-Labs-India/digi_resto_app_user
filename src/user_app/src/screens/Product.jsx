@@ -505,7 +505,8 @@ const Product = () => {
                 onClick={() => handleCategorySelect("special")}
               >
                 <i className="fa-regular fa-star me-2"></i>
-                Special <span className="gray-muted font_size_10">
+                Special{" "}
+                <span className="gray-muted font_size_10">
                   {" "}
                   ({menuList.filter((menu) => menu.is_special).length})
                 </span>
@@ -602,7 +603,7 @@ const Product = () => {
                       {/* Add special icon here */}
                       {menuItem.is_special && (
                         <i
-                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                           style={{
                             position: "absolute",
                             top: 3,
@@ -656,8 +657,8 @@ const Product = () => {
                         <i
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "fa-solid fa-circle-check text-success"
-                              : "fa-solid fa-caret-up text-danger"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -675,14 +676,14 @@ const Product = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
-                        {menuItem.is_special && (
+                        {/* {menuItem.is_special && (
                           <div className="row">
                             <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2 ">
                               <i className="fa-regular fa-star me-2"></i>
                               Special
                             </div>
                           </div>
-                        )}
+                        )} */}
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="fw-medium text-success font_size_10 d-flex align-items-center">
                             <i className="fa-solid fa-utensils pe-1"></i>
@@ -716,12 +717,12 @@ const Product = () => {
                               {Array.from({ length: 5 }).map((_, index) =>
                                 index < menuItem.spicy_index ? (
                                   <i
-                                    className="fa-solid fa-fire-flame-curved text-danger font_size_12"
+                                    className="fa-solid fa-pepper-hot text-danger font_size_12"
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
-                                    className="fa-solid fa-fire-flame-simple gray-text font_size_12"
+                                    className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                     style={{ color: "#bbbaba" }}
                                     key={index}
                                   ></i>
@@ -777,10 +778,10 @@ const Product = () => {
                               }}
                             >
                               <i
-                                className={`fa-solid fa-cart-shopping-${
+                                className={`fa-solid ${
                                   isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill text-black"
-                                    : "line"
+                                    ? "fa-cart-shopping "
+                                    : "fa-cart-plus text-secondary"
                                 } fs-6 `}
                               ></i>
                             </div>

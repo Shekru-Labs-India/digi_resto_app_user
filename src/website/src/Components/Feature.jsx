@@ -66,7 +66,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 p-0 col-md-6 offset-md-3 offset-lg-0">
                     <div className="single-choose-three">
-                    <i className="fa-regular fa-circle-check"></i>
+                    <i className="fa-regular fa-circle"></i>
                       <h3>Order Status</h3>
                       <p>
                         Notifications for order confirmation, preparation, and

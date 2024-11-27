@@ -396,13 +396,17 @@ const ProductCard = ({ isVegOnly }) => {
       const userData = JSON.parse(localStorage.getItem("userData"));
       return (
         <div
-          className="border border-1 rounded-circle bg-white opacity-75"
+          className={`
+            d-flex 
+            align-items-center 
+            justify-content-center 
+            rounded-circle 
+            bg-white 
+            border-opacity-25 
+            border-secondary 
+            border
+          `}
           style={{
-            border: "1px solid gray",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             width: "25px",
             height: "25px",
             cursor: "pointer",
@@ -419,9 +423,9 @@ const ProductCard = ({ isVegOnly }) => {
         >
           <i
             className={`fa-solid ${
-              isMenuItemInCart(menu.menu_id) 
-                ? "fa-cart-plus text-black" 
-                : "fa-cart-shopping"
+              isMenuItemInCart(menu.menu_id)
+                ? "fa-solid fa-circle-check"
+                : "fa-cart-plus text-secondary"
             } fs-6`}
           ></i>
         </div>
@@ -589,7 +593,7 @@ const ProductCard = ({ isVegOnly }) => {
             <span className="font_size_14 fw-medium">Menu</span>
             <Link to="/user_app/Menu">
               <span>see all</span>
-              <i className="fa-solid fa-arrow-right"></i>
+              <i className="fa-solid fa-arrow-right ms-2"></i>
             </Link>
           </div>
         )}
@@ -718,7 +722,8 @@ const ProductCard = ({ isVegOnly }) => {
                     />
                     {menu.is_special && (
                       <i
-                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        // className="fa-solid fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                         style={{
                           position: "absolute",
                           top: 3,
@@ -747,8 +752,8 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "fa-solid fa-circle-check text-success"
-                            : "fa-solid fa-caret-up text-danger"
+                            ? "fa-solid fa-circle text-success"
+                            : "fa-solid fa-play fa-rotate-270 text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -783,14 +788,14 @@ const ProductCard = ({ isVegOnly }) => {
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
                       <div className="font_size_12 ">
-                        {menu.is_special && (
+                        {/* {menu.is_special && (
                           <div className="row ">
                             <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
                               <i className="fa-regular fa-star me-2"></i>
                               Special
                             </div>
                           </div>
-                        )}
+                        )} */}
                         <div className="row">
                           <div className="col-8 text-success">
                             <i className="fa-solid fa-utensils pe-1"></i>
@@ -821,12 +826,12 @@ const ProductCard = ({ isVegOnly }) => {
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="fa-solid fa-fire-flame-curved text-danger font_size_12"
+                                  className="fa-solid fa-pepper-hot text-danger font_size_12"
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
-                                  className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
+                                  className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                   key={index}
                                 ></i>
                               )

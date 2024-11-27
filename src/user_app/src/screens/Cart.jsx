@@ -441,7 +441,7 @@ const Cart = () => {
                       />
                       {item.is_special && (
                         <i
-                          className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                           style={{
                             position: "absolute",
                             top: 3,
@@ -470,8 +470,8 @@ const Cart = () => {
                         <i
                           className={`${
                             item.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "fa-solid fa-circle-check text-success"
-                              : "fa-solid fa-caret-up text-danger"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
                         ></i>
                       </div>

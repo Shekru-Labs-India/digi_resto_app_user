@@ -81,9 +81,15 @@ const OfferBanner = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="fa-solid fa-fire-flame-curved font_size_12 text-danger" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-danger"
+          key={index}
+        ></i>
       ) : (
-        <i className="fa-solid fa-fire-flame-simple font_size_12 gray-text" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+          key={index}
+        ></i>
       )
     );
   };
@@ -223,8 +229,8 @@ const OfferBanner = () => {
         spaceBetween: 20,
         loop: true,
         autoplay: {
-          delay: 2500,
-          // delay: 2500000,
+          // delay: 2500,
+          delay: 2500000,
           disableOnInteraction: false,
         },
       });
@@ -557,7 +563,7 @@ const OfferBanner = () => {
                     />
                     {menu.is_special && (
                       <i
-                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                         style={{
                           position: "absolute",
                           top: 3,
@@ -586,8 +592,8 @@ const OfferBanner = () => {
                       <i
                         className={`${
                           menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "fa-solid fa-circle-check text-success"
-                            : "fa-solid fa-caret-up text-danger"
+                            ? "fa-solid fa-circle text-success"
+                            : "fa-solid fa-play fa-rotate-270 text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -693,10 +699,10 @@ const OfferBanner = () => {
                             }}
                           >
                             <i
-                              className={`fa-solid fa-cart-shopping-${
+                              className={`fa-solid ${
                                 isMenuItemInCart(menu.menu_id)
-                                  ? "fill text-black"
-                                  : "line"
+                                  ? "fa-cart-shopping "
+                                  : "fa-cart-plus text-secondary"
                               } fs-6`}
                             ></i>
                           </div>

@@ -551,7 +551,7 @@ const MenuDetails = () => {
               />
               {productDetails.is_special && (
                 <i
-                  className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                   style={{
                     position: "absolute",
                     top: 10,
@@ -684,8 +684,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "fa-solid fa-circle-check text-success"
-                          : "fa-solid fa-caret-up text-danger"
+                          ? "fa-solid fa-circle text-success"
+                          : "fa-solid fa-play fa-rotate-270 text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -753,8 +753,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "fa-solid fa-circle-check text-success"
-                          : "fa-solid fa-caret-up text-danger"
+                          ? "fa-solid fa-circle text-success"
+                          : "fa-solid fa-play fa-rotate-270 text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -843,12 +843,12 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="fa-solid fa-fire-flame-curved text-danger font_size_12 firefill offer-code"
+                              className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="fa-solid fa-fire-flame-simple  gray-text font_size_12"
+                              className="fa-solid fa-pepper-hot  gray-text font_size_12 text-secondary opacity-25"
                             ></i>
                           )
                         )}

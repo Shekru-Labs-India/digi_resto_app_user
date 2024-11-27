@@ -198,8 +198,8 @@ const HotelList = () => {
                                       ["veg", "Veg", "VEG"].includes(
                                         hotel.veg_nonveg
                                       )
-                                        ? "fa-solid fa-circle-check text-success"
-                                        : "fa-solid fa-caret-up text-danger"
+                                        ? "fa-solid fa-circle text-success"
+                                        : "fa-solid fa-play fa-rotate-270 text-danger"
                                     } font_size_12`}
                                   ></i>
                                 </div>
