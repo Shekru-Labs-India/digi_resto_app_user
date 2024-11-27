@@ -41,7 +41,7 @@ const Bottom = () => {
             isHomePath(location.pathname) ? "active" : ""
           }`}
         >
-          <i className="ri-home-2-line"></i>
+          <i className="fa-solid fa-house"></i>
           <span className="name">Home</span>
         </Link>
 
@@ -51,7 +51,7 @@ const Bottom = () => {
             location.pathname === "/user_app/Wishlist" ? "active" : ""
           }`}
         >
-          <i className="ri-heart-3-line"></i>
+          <i className="fa-regular fa-heart"></i>
           <span className="name">Favourite</span>
         </Link>
 
@@ -62,7 +62,7 @@ const Bottom = () => {
           }`}
         >
           <div className="position-relative">
-            <i className="ri-shopping-cart-line"></i>
+            <i className="fa-solid fa-cart-shopping"></i>
             {/* {cartItemCount > 0 && (
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {cartItemCount}
@@ -85,7 +85,7 @@ const Bottom = () => {
             location.pathname === "/user_app/MyOrder" ? "active" : ""
           }`}
         >
-          <i className="ri-history-line"></i>
+          <i className="fa-solid fa-clock-rotate-left"></i>
           <span className="name">My Order</span>
         </Link>
 
@@ -97,7 +97,7 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id ? "ri-user-3-fill" : "ri-user-3-line"
+              userData?.customer_id ? "ri-user-3-fill" : "fa-solid fa-user"
             }
           ></i>
           <span className="name">Profile</span>

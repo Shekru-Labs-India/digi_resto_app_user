@@ -42,7 +42,7 @@ const AddToCartModal = ({
                     onClick={() => setShowModal(false)}
                     aria-label="Close"
                   >
-                    <i className="ri-close-line"></i>
+                    <i className="fa-solid fa-xmark"></i>
                   </span>
                 </div>
               </div>
@@ -119,7 +119,7 @@ const AddToCartModal = ({
                 onClick={handleConfirmAddToCart}
                 disabled={isPriceFetching || (!halfPrice && !fullPrice)}
               >
-                <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                 Add to Cart
               </button>
             </div>

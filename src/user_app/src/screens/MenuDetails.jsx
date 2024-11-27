@@ -472,12 +472,16 @@ const MenuDetails = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -680,8 +684,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "ri-checkbox-blank-circle-fill text-success"
-                          : "ri-triangle-fill text-danger"
+                          ? "fa-solid fa-circle-check text-success"
+                          : "fa-solid fa-caret-up text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -701,8 +705,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         isFavorite
-                          ? "ri-heart-3-fill text-danger"
-                          : "ri-heart-3-line"
+                          ? "fa-solid fa-heart text-danger"
+                          : "fa-regular fa-heart"
                       } fs-6`}
                       onClick={handleLikeClick}
                       style={{ cursor: "pointer" }}
@@ -749,8 +753,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "ri-checkbox-blank-circle-fill text-success"
-                          : "ri-triangle-fill text-danger"
+                          ? "fa-solid fa-circle-check text-success"
+                          : "fa-solid fa-caret-up text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -770,8 +774,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         isFavorite
-                          ? "ri-heart-3-fill text-danger"
-                          : "ri-heart-3-line"
+                          ? "fa-solid fa-heart text-danger"
+                          : "fa-regular fa-heart"
                       } fs-6`}
                       onClick={handleLikeClick}
                       style={{ cursor: "pointer" }}
@@ -802,6 +806,12 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
+              {productDetails.is_special && (
+                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                  <i className="fa-regular fa-star me-2"></i> Special
+                  <hr className="mt-2 mb-0" />
+                </div>
+              )}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -821,7 +831,7 @@ const MenuDetails = () => {
                 <div className="row me-1">
                   <div className="col-5 px-0 pt-2">
                     <div className="ps-3 text-success font_size_10 ">
-                      <i className="ri-restaurant-line  me-1 text-success "></i>
+                      <i className="fa-solid fa-utensils  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
@@ -833,12 +843,12 @@ const MenuDetails = () => {
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill text-danger font_size_12 firefill offer-code"
+                              className="fa-solid fa-fire-flame-curved text-danger font_size_12 firefill offer-code"
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line  gray-text font_size_12"
+                              className="fa-solid fa-fire-flame-simple  gray-text font_size_12"
                             ></i>
                           )
                         )}
@@ -908,7 +918,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <i className="ri-restaurant-2-line me-2"></i>
+                    <i className="fa-solid fa-spoon me-2"></i>
                     <span className="text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
@@ -993,7 +1003,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleRemoveFromCart}
                     >
-                      <i className="ri-close-fill pe-1 text-white"></i>
+                      <i className="fa-solid fa-xmark pe-1 text-white"></i>
                       <div className="font-poppins text-nowrap text-white">
                         Remove from Cart
                       </div>
@@ -1003,7 +1013,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleAddToCart}
                     >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                       <div className="text-nowrap text-white">Add to Cart</div>
                     </button>
                   )}
@@ -1044,7 +1054,7 @@ const MenuDetails = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -1126,7 +1136,7 @@ const MenuDetails = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

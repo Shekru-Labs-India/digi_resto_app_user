@@ -33,7 +33,7 @@
 //         <div className="header-content">
 //           <div className="left-content">
 //             <Link to="" className="back-btn dz-icon icon-fill icon-sm"  onClick={handleBack}>
-//               <i className="ri-arrow-left-line fs-3"></i>
+//               <i className="fa-solid fa-arrow-left fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">
@@ -176,7 +176,7 @@
 //               className="back-btn dz-icon icon-fill icon-sm"
 //               onClick={handleBack}
 //             >
-//               <i className="ri-arrow-left-line fs-3"></i>
+//               <i className="fa-solid fa-arrow-left fs-3"></i>
 //             </Link>
 //           </div>
 //           <div className="mid-content">

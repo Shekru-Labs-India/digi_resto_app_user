@@ -130,7 +130,7 @@ const EditProfile = () => {
                 className="back-btn dz-icon icon-fill icon-sm"
                 onClick={() => navigate(-1)}
               >
-                <i className="ri-arrow-left-line fs-3"></i>
+                <i className="fa-solid fa-arrow-left fs-3"></i>
               </Link>
             </div>
             <div className="mid-content">

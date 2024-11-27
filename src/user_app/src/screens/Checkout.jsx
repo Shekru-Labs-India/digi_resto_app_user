@@ -385,7 +385,7 @@ const Checkout = () => {
                       onClick={() => setShowExistingOrderModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -494,7 +494,7 @@ const Checkout = () => {
                         className="btn p-0 fs-3 text-dark"
                         onClick={() => setShowNewOrderModal(false)}
                       >
-                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                       </button>
                     </div>
                   </div>
@@ -561,7 +561,7 @@ const Checkout = () => {
                             <div className="col-8">
                               <div className="ps-2">
                                 <span className="text-success font_size_10">
-                                  <i className="ri-restaurant-line me-2"></i>
+                                  <i className="fa-solid fa-utensils me-2"></i>
                                   {item.menu_cat_name}
                                 </span>
                               </div>

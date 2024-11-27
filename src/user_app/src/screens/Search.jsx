@@ -455,12 +455,16 @@ const Search = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -477,14 +481,14 @@ const Search = () => {
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
-                <i className="ri-store-2-line me-2"></i>
+                <i className="fa-solid fa-store me-2"></i>
                 <span className="fw-medium font_size_14">
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                 </span>
               </div>
             </Link>
             <div className="d-flex align-items-center">
-              <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
+              <i className="fa-solid fa-location-dot font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
                 {`Table ${
                   JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
@@ -527,7 +531,7 @@ const Search = () => {
               <div className="fw-normal fs-6 gray-text"></div>
               <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
-              </div>
+              </div>``
             </div>
           )}
 
@@ -583,8 +587,8 @@ const Search = () => {
                           <i
                             className={`${
                               menu.is_favourite
-                                ? "ri-heart-3-fill text-danger"
-                                : "ri-heart-3-line"
+                                ? "fa-solid fa-heart text-danger"
+                                : "fa-regular fa-heart"
                             } fs-6`}
                             onClick={(e) => {
                               e.preventDefault();
@@ -612,8 +616,8 @@ const Search = () => {
                           <i
                             className={`${
                               menu.menu_veg_nonveg.toLowerCase() === "veg"
-                                ? "ri-checkbox-blank-circle-fill text-success"
-                                : "ri-triangle-fill text-danger"
+                                ? "fa-solid fa-circle-check text-success"
+                                : "fa-solid fa-caret-up text-danger"
                             } font_size_12`}
                           ></i>
                         </div>
@@ -633,92 +637,86 @@ const Search = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="row mt-1">
-                          <div className="col-5 text-start d-flex align-items-center">
-                            <span className="ps-2 font_size_10 text-success">
-                              <i className="ri-restaurant-line mt-0 me-1"></i>
-                              {menu.category_name}
-                            </span>
-                          </div>
-                          <div className="col-3 d-flex aign-items-center">
-                            {menu.spicy_index && (
-                              <div className="">
-                                {Array.from({ length: 5 }).map((_, index) =>
-                                  index < menu.spicy_index ? (
-                                    <i
-                                      className="ri-fire-fill font_size_12 text-danger"
-                                      key={index}
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      className="ri-fire-line font_size_12 gray-text"
-                                      key={index}
-                                    ></i>
-                                  )
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <div className="col-4 d-flex align-items-center justify-content-end text-start">
-                            {menu.rating > 0 && (
+                      </div>
+                      <div className="row mt-1">
+                        <div className="col-5 text-start d-flex align-items-center">
+                          <span className="ps-2 font_size_10 text-success">
+                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
+                            {menu.category_name}
+                          </span>
+                        </div>
+                        <div className="col-3 d-flex aign-items-center">
+                          {menu.spicy_index && (
+                            <div className="">
+                              {Array.from({ length: 5 }).map((_, index) =>
+                                index < menu.spicy_index ? (
+                                  <i
+                                    className="fa-solid fa-fire-flame-curved font_size_12 text-danger"
+                                    key={index}
+                                  ></i>
+                                ) : (
+                                  <i
+                                    className="fa-solid fa-fire-flame-simple font_size_12 gray-text"
+                                    key={index}
+                                  ></i>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="col-4 d-flex align-items-center justify-content-end text-start">
+                          {menu.rating > 0 && (
+                            <>
+                              {renderStarRating(menu.rating)}
+                              <span className="font_size_10 fw-normal gray-text">
+                                {menu.rating}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="row mt-1">
+                        <div className="col-6">
+                          <p className="ms-2 mb-0 fw-medium">
+                            <span className="text-primary">₹{menu.price}</span>
+                            {menu.offer > 0 && (
                               <>
-                                {renderStarRating(menu.rating)}
-                                <span className="font_size_10 fw-normal gray-text">
-                                  {menu.rating}
+                                <span className="text-decoration-line-through ms-2 gray-text">
+                                  ₹{menu.oldPrice}
+                                </span>
+                                <span className="badge bg-success ms-2">
+                                  {menu.offer}% OFF
                                 </span>
                               </>
                             )}
-                          </div>
+                          </p>
                         </div>
+                      </div>
 
-                        <div className="row mt-1">
-                          <div className="col-6">
-                            <p className="ms-2 mb-0 fw-medium">
-                              {menu.offer ? (
-                                <>
-                                  <span className="font_size_14 fw-semibold text-info">
-                                    ₹
-                                    {Math.floor(
-                                      menu.price * (1 - menu.offer / 100)
-                                    )}
-                                  </span>
-                                  <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                    ₹{menu.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="font_size_14 fw-semibold text-info">
-                                  ₹{menu.price}
-                                </span>
-                              )}
-                            </p>
+                      <div className="col-6 d-flex justify-content-end">
+                        {customerId && (
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "25px",
+                              height: "25px",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCartClick(menu);
+                            }}
+                          >
+                            <i
+                              className={`fa-solid fa-cart-${
+                                isMenuItemInCart(menu.menu_id)
+                                  ? "check text-success"
+                                  : "plus"
+                              } fs-6`}
+                            ></i>
                           </div>
-
-                          <div className="col-6 d-flex justify-content-end">
-                            {customerId && (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i
-                                  className={`ri-shopping-cart-${
-                                    isMenuItemInCart(menu.menu_id)
-                                      ? "fill text-black"
-                                      : "line"
-                                  } fs-6`}
-                                ></i>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -749,7 +747,7 @@ const Search = () => {
               <div className="modal-header ps-3 pe-2">
                 <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add {selectedMenu.name} to Cart
+                    Add {selectedMenu?.menu_name} to Cart
                   </div>
                 </div>
 
@@ -760,7 +758,7 @@ const Search = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line"></i>
+                      <i className="fa-solid fa-xmark"></i>
                     </span>
                   </div>
                 </div>
@@ -845,7 +843,7 @@ const Search = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

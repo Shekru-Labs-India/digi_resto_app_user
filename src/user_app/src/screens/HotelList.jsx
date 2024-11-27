@@ -198,8 +198,8 @@ const HotelList = () => {
                                       ["veg", "Veg", "VEG"].includes(
                                         hotel.veg_nonveg
                                       )
-                                        ? "ri-checkbox-blank-circle-fill text-success"
-                                        : "ri-triangle-fill text-danger"
+                                        ? "fa-solid fa-circle-check text-success"
+                                        : "fa-solid fa-caret-up text-danger"
                                     } font_size_12`}
                                   ></i>
                                 </div>
@@ -243,7 +243,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-facebook-circle-fill ri-xl"></i>
+                  <i className="fa-brands fa-facebook "></i>
                 </a>
                 <a
                   href="https://www.instagram.com/menumitra/"
@@ -251,7 +251,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-instagram-line ri-xl"></i>
+                  <i className="fa-brands fa-instagram"></i>
                 </a>
                 <a
                   href="https://www.youtube.com/@menumitra"
@@ -259,7 +259,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-youtube-line ri-xl"></i>
+                  <i className="fa-brands fa-youtube"></i>
                 </a>
                 <a
                   href="https://www.linkedin.com/company/102429337/admin/dashboard/"
@@ -267,7 +267,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-linkedin-fill ri-xl"></i>
+                  <i className="fa-brands fa-linkedin"></i>
                 </a>
                 <a
                   href="https://x.com/MenuMitra"
@@ -275,7 +275,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-twitter-x-line ri-xl"></i>
+                  <i className="fa-brands fa-x-twitter"></i>
                 </a>
                 <a
                   href="https://t.me/MenuMitra"
@@ -283,11 +283,11 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-telegram-line ri-xl"></i>
+                  <i className="fa-brands fa-telegram"></i>
                 </a>
               </div>
             </div>
-            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
             <a
               className="text-success font_size_12"
               href="https://www.shekruweb.com"

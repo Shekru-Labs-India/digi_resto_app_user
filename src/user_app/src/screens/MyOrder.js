@@ -337,7 +337,7 @@ const MyOrder = () => {
                       className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}
                     >
-                      <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                      <i className="fa-solid fa-lock me-2 fs-3"></i> Login
                     </button>
                   </div>
                   <span className="mt-4">
@@ -782,14 +782,14 @@ console.log(customerName);
           <div className="row">
             <div className="col-8 text-start">
               <div className="restaurant">
-                <i className="ri-store-2-line pe-2"></i>
+                <i className="fa-solid fa-store pe-2"></i>
                 <span className="fw-medium font_size_14">
                   {order.restaurant_name.toUpperCase()}
                 </span>
               </div>
             </div>
             <div className="col-4 text-end">
-              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
+              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
               <span className="font_size_12 gray-text">
                 {order.table_number}
               </span>
@@ -798,7 +798,7 @@ console.log(customerName);
           <div className="row">
             <div className="col-6">
               <div className="menu-info">
-                <i className="ri-bowl-line pe-2 gray-text"></i>
+                <i className="fa-solid fa-bowl-rice pe-2 gray-text"></i>
                 <span className="gray-text font_size_14">
                   {order.menu_count === 0
                     ? "No orders"
@@ -888,7 +888,7 @@ console.log(customerName);
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                       </span>
                     </div>
                   </div>
@@ -1035,7 +1035,7 @@ console.log(customerName);
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i class="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                   <button
@@ -1305,7 +1305,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 </span>
                 <span className="icon-circle">
                   <i
-                    className={`ri-arrow-down-s-line arrow-icon ${
+                    className={`fa-solid fa-arrow-down arrow-icon ${
                       Object.values(checkedItems).every(Boolean)
                         ? "rotated"
                         : ""
@@ -1351,7 +1351,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   </span>
                   <span className="icon-circle">
                     <i
-                      className={`ri-arrow-down-s-line arrow-icon ${
+                      className={`fa-solid fa-arrow-down arrow-icon ${
                         checkedItems[dateTypeKey] ? "rotated" : ""
                       }`}
                     ></i>
@@ -1393,14 +1393,14 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       <div className="row">
                         <div className="col-8 text-start">
                           <div className="restaurant">
-                            <i className="ri-store-2-line pe-2"></i>
+                            <i className="fa-solid fa-store pe-2"></i>
                             <span className="fw-medium font_size_14">
                               {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
                         </div>
                         <div className="col-4 text-end">
-                          <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
+                          <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                           <span className="font_size_12 gray-text">
                             {order.table_number}
                           </span>
@@ -1409,7 +1409,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       <div className="row">
                         <div className="col-6">
                           <div className="menu-info">
-                            <i className="ri-bowl-line pe-2 gray-text"></i>
+                            <i className="fa-solid fa-bowl-rice pe-2 gray-text"></i>
                             <span className="gray-text font_size_14">
                               {order.menu_count === 0
                                 ? "No Menus"

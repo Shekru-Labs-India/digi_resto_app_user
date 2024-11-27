@@ -469,12 +469,16 @@ const Product = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -500,9 +504,8 @@ const Product = () => {
                 className={`category-btn bg-info border border-1 border-info text-white font_size_14 rounded-5 swiper-slide`}
                 onClick={() => handleCategorySelect("special")}
               >
-                <i className="ri-bard-line me-2"></i>
-                Special{" "}
-                <span className="gray-muted font_size_10">
+                <i className="fa-regular fa-star me-2"></i>
+                Special <span className="gray-muted font_size_10">
                   {" "}
                   ({menuList.filter((menu) => menu.is_special).length})
                 </span>
@@ -624,8 +627,8 @@ const Product = () => {
                         <i
                           className={`${
                             menuItem.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -653,8 +656,8 @@ const Product = () => {
                         <i
                           className={`${
                             menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
+                              ? "fa-solid fa-circle-check text-success"
+                              : "fa-solid fa-caret-up text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -672,9 +675,17 @@ const Product = () => {
                         className="detail-content"
                         style={{ position: "relative" }}
                       >
+                        {menuItem.is_special && (
+                          <div className="row">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2 ">
+                              <i className="fa-regular fa-star me-2"></i>
+                              Special
+                            </div>
+                          </div>
+                        )}
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="fw-medium text-success font_size_10 d-flex align-items-center">
-                            <i className="ri-restaurant-line pe-1"></i>
+                            <i className="fa-solid fa-utensils pe-1"></i>
                             {categories.find(
                               (category) =>
                                 category.menu_cat_id === menuItem.menu_cat_id
@@ -705,12 +716,12 @@ const Product = () => {
                               {Array.from({ length: 5 }).map((_, index) =>
                                 index < menuItem.spicy_index ? (
                                   <i
-                                    className="ri-fire-fill text-danger font_size_12"
+                                    className="fa-solid fa-fire-flame-curved text-danger font_size_12"
                                     key={index}
                                   ></i>
                                 ) : (
                                   <i
-                                    className="ri-fire-line gray-text font_size_12"
+                                    className="fa-solid fa-fire-flame-simple gray-text font_size_12"
                                     style={{ color: "#bbbaba" }}
                                     key={index}
                                   ></i>
@@ -766,7 +777,7 @@ const Product = () => {
                               }}
                             >
                               <i
-                                className={`ri-shopping-cart-${
+                                className={`fa-solid fa-cart-shopping-${
                                   isMenuItemInCart(menuItem.menu_id)
                                     ? "fill text-black"
                                     : "line"
@@ -791,7 +802,7 @@ const Product = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-line fs-6"></i>
+                              <i className="fa-solid fa-cart-shopping fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -836,7 +847,7 @@ const Product = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -918,7 +929,7 @@ const Product = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
                   Add to Cart
                 </button>
               </div>

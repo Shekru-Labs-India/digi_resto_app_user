@@ -606,7 +606,7 @@ const TrackOrder = () => {
       case "cancle":
         return "ri-close-circle-line text-danger";
       case "ongoing":
-        return "ri-timer-flash-line text-warning";
+        return "fa-solid fa-clock text-warning";
       case "placed":
         return "ri-file-list-3-line text-primary";
       case "completed":
@@ -899,14 +899,14 @@ const TrackOrder = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -952,14 +952,14 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                    <i className="ri-store-2-line pe-2 "></i>
+                    <i className="fa-solid fa-store pe-2 "></i>
                     <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>
                   </div>
                 </div>
                 <div className="col-4 text-end">
-                  <i className="ri-map-pin-user-fill ps-0 pe-1 font_size_12 gray-text"></i>
+                  <i className="fa-solid fa-location-dot ps-0 pe-1 font_size_12 gray-text"></i>
                   <span className="gray-text font_size_12">
                     {order_details.table_number}
                   </span>
@@ -969,7 +969,7 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="menu-info">
                     <span className="font_size_14   gray-text">
-                      <i className="ri-bowl-line pe-2 "></i>
+                      <i className="fa-solid fa-bowl-rice pe-2 "></i>
                       {order_details.menu_count} Menu
                     </span>
                   </div>
@@ -1133,8 +1133,8 @@ const TrackOrder = () => {
                               <i
                                 className={`${
                                   isVegMenu(menu?.menu_veg_nonveg)
-                                    ? "ri-checkbox-blank-circle-fill text-success"
-                                    : "ri-triangle-fill text-danger"
+                                    ? "fa-solid fa-circle-check text-success"
+                                    : "fa-solid fa-caret-up text-danger"
                                 } font_size_12`}
                               ></i>
                             </div>
@@ -1155,8 +1155,8 @@ const TrackOrder = () => {
                                 className={`${
                                   favoriteMenus[menu.menu_id] ||
                                   menu.is_favourite
-                                    ? "ri-heart-3-fill text-danger"
-                                    : "ri-heart-3-line"
+                                    ? "fa-solid fa-heart text-danger"
+                                    : "fa-regular fa-heart"
                                 } fs-6`}
                               ></i>
                             </div>
@@ -1184,7 +1184,7 @@ const TrackOrder = () => {
                                   isWithinPlacedWindow && (
                                     <div className="col-2 text-end">
                                       <i
-                                        className="ri-close-line text-dark font_size_14 pe-3"
+                                        className="fa-solid fa-xmark text-dark font_size_14 pe-3"
                                         style={{ cursor: "pointer" }}
                                         onClick={(e) =>
                                           handleRemoveItem(menu, e)
@@ -1197,7 +1197,7 @@ const TrackOrder = () => {
                             <div className="row">
                               <div className="col-5 d-flex align-items-center">
                                 <span className="text-success font_size_10 fw-medium">
-                                  <i className="ri-restaurant-line mt-0 me-2"></i>
+                                  <i className="fa-solid fa-utensils mt-0 me-2"></i>
                                   {menu.category_name}
                                 </span>
                               </div>
@@ -1208,12 +1208,12 @@ const TrackOrder = () => {
                                       index < menu.spicy_index ? (
                                         <i
                                           key={index}
-                                          className="ri-fire-fill text-danger font_size_12 firefill offer-code"
+                                          className="fa-solid fa-fire-flame-curved text-danger font_size_12 firefill offer-code"
                                         ></i>
                                       ) : (
                                         <i
                                           key={index}
-                                          className="ri-fire-line gray-text font_size_12"
+                                          className="fa-solid fa-fire-flame-simple gray-text font_size_12"
                                         ></i>
                                       )
                                     )}

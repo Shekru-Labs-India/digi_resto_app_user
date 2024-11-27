@@ -57,7 +57,7 @@ window.showToast = function(type, message) {
         <span class="text-body text-dark">${message}</span>
       </div>
     </div>
-    <span class="close" onclick="window.hideToast()">    <i class="ri-close-line"></i></span>
+    <span class="close" onclick="window.hideToast()">    <i class="fa-solid fa-xmark"></i></span>
     <div class="progress-bar"></div>`;
 
   toast.classList.add("show");
