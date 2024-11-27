@@ -78,7 +78,7 @@ const Profile = () => {
                 className="menu-toggler toggler-icon"
                 onClick={toggleSidebar}
               >
-                <i className="fa-solid fa-bars fs-3"></i>
+                <i className="fa-solid fa-bars-staggered"></i>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="ri-search-line me-2 fs-3"></i>
+                      <i class="fa-solid fa-magnifying-glass fs-3"></i>
                       <span className="font_size_16">Search</span>
                     </Link>
                   </li>
@@ -166,7 +166,7 @@ const Profile = () => {
                       to="/user_app/Category"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-solid fa-bars-staggered me-2 fs-3"></i>
+                      <i className="fa-solid fa-layer-group me-2 fs-3"></i>
                       <span className="font_size_16">Category</span>
                     </Link>
                   </li>
@@ -184,7 +184,7 @@ const Profile = () => {
                     <div className="row align-items-center ms-0">
                       <div className="col-auto px-0">
                         {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "fa-solid fa-user fs-3"}></i> */}
-                        <i className="fa-solid fa-user fs-3 font_size_14"></i>
+                        <i className="fa-solid fa-user font_size_14 me-2"></i>
                       </div>
                       <div className="col text-start px-1 font_size_14">
                         Edit Profile
@@ -211,7 +211,7 @@ const Profile = () => {
 
         <div className="d-flex justify-content-center align-items-center mt-2">
           <Link to="/user_app/index">
-            <i className="fa-solid fa-store gray-text font_size_14"></i>
+            <i className="fa-solid fa-shop gray-text font_size_14"></i>
             <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
@@ -254,7 +254,7 @@ const Profile = () => {
               className="footer-link mx-2"
               target="_blank"
               rel="noopener noreferrer"
-            > 
+            >
               <i className="fa-brands fa-x-twitter"></i>
             </a>
             <a

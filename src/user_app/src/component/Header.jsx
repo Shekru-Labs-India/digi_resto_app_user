@@ -58,7 +58,7 @@ const Header = ({ userData, isLoggedIn, handleLogout, currentPage }) => {
 
             <div className="right-content gap-1">
               <div className="menu-toggler " onClick={toggleSidebar}>
-                <i className="fa-solid fa-bars fs-3"></i>
+                <i className="fa-solid fa-layer-group fs-3"></i>
               </div>
             </div>
           </div>

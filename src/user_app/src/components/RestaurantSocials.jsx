@@ -93,7 +93,7 @@ function RestaurantSocials() {
         <div className="ratio ratio-1x1" style={{ width: "50px" }}>
           <button
             type="button"
-            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3"
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 "
             onClick={() => {
               const facebookUrl = allSocialLinks.find(
                 (link) => link.id === "facebook"

@@ -97,7 +97,7 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id ? "ri-user-3-fill" : "fa-solid fa-user"
+              userData?.customer_id ? "fa-solid fa-user" : "fa-regular fa-user"
             }
           ></i>
           <span className="name">Profile</span>

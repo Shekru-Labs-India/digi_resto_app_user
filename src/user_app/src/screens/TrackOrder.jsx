@@ -1394,7 +1394,7 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn mb-2 me-2 btn-sm rounded-pill light btn-info border-info">
+                    <button className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
@@ -1404,6 +1404,69 @@ const TrackOrder = () => {
                 )}
               </div>
             )}
+
+            <div className="d-flex flex-column align-items-center mt-4">
+              <div className="d-flex justify-content-center gap-5 mb-2">
+                {/* Bad Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="bad-rating"
+                    value="bad"
+                  />
+                  <label htmlFor="bad-rating">
+                    <i
+                      className="fa-solid fa-face-frown text-danger"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1 ">Bad</span>
+                  </label>
+                </div>
+
+                {/* Okay Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="okay-rating"
+                    value="okay"
+                  />
+                  <label htmlFor="okay-rating">
+                    <i
+                      className="fa-solid fa-face-meh text-light"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1">Okay</span>
+                  </label>
+                </div>
+
+                {/* Good Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="good-rating"
+                    value="good"
+                  />
+                  <label htmlFor="good-rating">
+                    <i
+                      className="fa-solid fa-face-smile text-success"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1">Good</span>
+                  </label>
+                </div>
+              </div>
+              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
+                <i class="fa-solid fa-star me-2"></i>
+                Rate us on Google
+              </div>
+            </div>
+
             <div className="divider border-success inner-divider transparent mt-5">
               <span className="bg-body">End</span>
             </div>

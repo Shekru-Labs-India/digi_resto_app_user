@@ -82,7 +82,7 @@ export const SidebarToggler = () => {
     <>
       <div className="right-content gap-1">
         <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
-          <i className="fa-solid fa-bars fs-3"></i>
+          <i className="fa-solid fa-bars-staggered fs-3"></i>
         </div>
       </div>
 
@@ -202,7 +202,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/Category">
               <span className="dz-icon icon-sm">
-                <i className="fa-solid fa-bars-staggered fs-4"></i>
+                <i className="fa-solid fa-layer-group fs-3"></i>
               </span>
               <span className="  font_size_16 fw-medium">Category</span>
             </Link>
@@ -327,7 +327,6 @@ export const SidebarToggler = () => {
               target="_blank"
             >
               Shekru Labs India Pvt. Ltd.
-            
             </a>
           </div>
         </div>
