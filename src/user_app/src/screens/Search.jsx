@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
-
+ import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
@@ -501,30 +501,30 @@ const Search = () => {
         </div>
 
         <div className="container pt-0">
-          <div className="input-group w-100 my-2 border border-muted rounded-3">
-            <span className="input-group-text py-0">
-              <i className="ri-search-line fs-3 text-primary"></i>
-            </span>
-            <input
-              type="search"
-              className="form-control  ps-2     "
-              placeholder="Search Best items for You"
-              onChange={handleSearch}
-              value={searchTerm}
-            />
-          </div>
-          {/* {searchHistory.length > 0 && (
-            <div className="search-history">
-              <h6 className="gray-text">Search History</h6>
-              <ul>
-                {searchHistory.map((term, index) => (
-                  <li className="h6" key={index} onClick={() => handleHistoryClick(term)}>
-                    {term}
-                  </li>
-                ))}
-              </ul>
+          <div className="input-group w-100 my-2">
+            <div className="position-relative w-100">
+              <input
+                id="searchInput"
+                type="search"
+                className="form-control ps-5 border border-success rounded-5"
+                placeholder="Search Best items for You"
+                onChange={handleSearch}
+                value={searchTerm}
+              />
+              <i 
+                className="fa-solid fa-magnifying-glass position-absolute text-primary"
+                style={{
+                  left: "15px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "18px",
+                  cursor: "pointer"
+                }}
+                onClick={() => document.getElementById("searchInput").focus()}
+              ></i>
             </div>
-          )} */}
+          </div>
+         
 
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
@@ -552,7 +552,7 @@ const Search = () => {
                         <img
                           src={menu.image || images}
                           alt={menu.menu_name}
-                          className="rounded-4 img-fluid"
+                          className="rounded-4 img-fluid object-fit-cover"
                           style={{
                             width: "100%",
                             height: "100%",

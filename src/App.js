@@ -65,77 +65,77 @@ window.showToast = function(type, message) {
 };
 
 const AppContent = () => {
-  const loadStyles = (styleUrls, appType) => {
-    styleUrls.forEach(url => {
-      const link = document.createElement('link');
-      link.href = url;
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.dataset.appStyle = appType;
-      document.head.appendChild(link);
-    });
-  };
+  // const loadStyles = (styleUrls, appType) => {
+  //   styleUrls.forEach(url => {
+  //     const link = document.createElement('link');
+  //     link.href = url;
+  //     link.rel = 'stylesheet';
+  //     link.type = 'text/css';
+  //     link.dataset.appStyle = appType;
+  //     document.head.appendChild(link);
+  //   });
+  // };
 
-  const loadScripts = (scriptUrls, appType) => {
-    scriptUrls.forEach(url => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.dataset.appScript = appType;
-      script.async = true;
-      document.body.appendChild(script);
-    });
-  };
+  // const loadScripts = (scriptUrls, appType) => {
+  //   scriptUrls.forEach(url => {
+  //     const script = document.createElement('script');
+  //     script.src = url;
+  //     script.dataset.appScript = appType;
+  //     script.async = true;
+  //     document.body.appendChild(script);
+  //   });
+  // };
 
-  const cleanupResources = (type) => {
-    // Remove styles
-    document.querySelectorAll(`link[data-app-style="${type}"]`)
-      .forEach(link => link.remove());
+  // const cleanupResources = (type) => {
+  //   // Remove styles
+  //   document.querySelectorAll(`link[data-app-style="${type}"]`)
+  //     .forEach(link => link.remove());
     
-    // Remove scripts
-    document.querySelectorAll(`script[data-app-script="${type}"]`)
-      .forEach(script => script.remove());
-  };
+  //   // Remove scripts
+  //   document.querySelectorAll(`script[data-app-script="${type}"]`)
+  //     .forEach(script => script.remove());
+  // };
 
-  useEffect(() => {
-    const path = window.location.pathname;
-    const isUserApp = path.startsWith('/user_app');
-    const appType = isUserApp ? 'user-app' : 'website';
+  // useEffect(() => {
+  //   const path = window.location.pathname;
+  //   const isUserApp = path.startsWith('/user_app');
+  //   const appType = isUserApp ? 'user-app' : 'website';
     
-    // Set data attribute for CSS switching
-    document.body.dataset.appType = appType;
+  //   // Set data attribute for CSS switching
+  //   document.body.dataset.appType = appType;
     
-    // Clean up existing resources
-    cleanupResources('user-app');
-    cleanupResources('website');
+  //   // Clean up existing resources
+  //   cleanupResources('user-app');
+  //   cleanupResources('website');
     
-    // Load appropriate resources
-    if (isUserApp) {
-      loadStyles([
-        '/assets/user_app/css/style.css',
-        '/assets/user_app/css/custom.css'
-      ], 'user-app');
+  //   // Load appropriate resources
+  //   if (isUserApp) {
+  //     loadStyles([
+  //       '/assets/user_app/css/style.css',
+  //       '/assets/user_app/css/custom.css'
+  //     ], 'user-app');
       
-      loadScripts([
-        // '/assets/user_app/js/main.js',
-        // '/assets/user_app/js/custom.js'
-      ], 'user-app');
-    } else {
-      loadStyles([
-        '/assets/website/Css/stylewebsite.css',
-        '/assets/website/Css/responsive.css'
-      ], 'website');
+  //     loadScripts([
+  //       // '/assets/user_app/js/main.js',
+  //       // '/assets/user_app/js/custom.js'
+  //     ], 'user-app');
+  //   } else {
+  //     loadStyles([
+  //       '/assets/website/Css/stylewebsite.css',
+  //       '/assets/website/Css/responsive.css'
+  //     ], 'website');
       
-      loadScripts([
-        // '/assets/website/js/main.js',
-        // '/assets/website/js/custom.js'
-      ], 'website');
-    }
+  //     loadScripts([
+  //       // '/assets/website/js/main.js',
+  //       // '/assets/website/js/custom.js'
+  //     ], 'website');
+  //   }
 
-    // Cleanup function
-    return () => {
-      cleanupResources(appType);
-    };
-  }, [window.location.pathname]);
+  //   // Cleanup function
+  //   return () => {
+  //     cleanupResources(appType);
+  //   };
+  // }, [window.location.pathname]);
 
   return (
     <Routes>

@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
+ import "../assets/css/toast.css"
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
@@ -554,6 +555,7 @@ const OfferBanner = () => {
                         objectFit: "fill",
                         aspectRatio: "1/1",
                       }}
+                      className="object-fit-cover"
                       src={menu.image || images} // Use default image if menu.image is null
                       alt={menu.name}
                       loading="lazy"

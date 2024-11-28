@@ -4,7 +4,8 @@ import { Routes, Route, Navigate, useParams } from "react-router-dom";
 // Component imports (keeping only what's used in the Routes)
 import QRScreen from "./screens/QRScreen";
 import HomeScreen from "./screens/HomeScreen";
-
+import "./assets/css/style.css"
+import "./assets/css/custom.css"
 import Profile from "./screens/Profile";
 import Wishlist from "./screens/Wishlist";
 import Category from "./screens/Category";

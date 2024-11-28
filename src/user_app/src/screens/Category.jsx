@@ -112,7 +112,7 @@ const Category = () => {
   return (
     <div className="page-wrapper">
       <Header title="Categories" count={categories.length} />
-      
+
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -122,12 +122,12 @@ const Category = () => {
       ) : (
         <main className="page-content space-top mb-5 pb-3">
           <div className="container px-3 py-0">
-            <HotelNameAndTable 
+            <HotelNameAndTable
               restaurantName={restaurantName}
               tableNumber={tableNumber}
             />
           </div>
-          
+
           {categories.length > 0 ? (
             <div className="container pt-0 p-b55">
               <div className="row g-3">
@@ -149,6 +149,7 @@ const Category = () => {
                         </div>
                         <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
                           <img
+                            className="object-fit-cover"
                             style={{
                               width: "100%",
                               height: "180px",
@@ -167,10 +168,8 @@ const Category = () => {
                 ))}
               </div>
               <div className="container">
-
-              <RestaurantSocials />
+                <RestaurantSocials />
               </div>
-
             </div>
           ) : (
             <div className="container text-center mt-5">
@@ -178,14 +177,15 @@ const Category = () => {
               {!userData.restaurantId && (
                 <p>Please log in or scan a QR code to view categories.</p>
               )}
-              {window.showToast("warning", "Please log in or scan a QR code to view categories")}
-              
+              {window.showToast(
+                "warning",
+                "Please log in or scan a QR code to view categories"
+              )}
             </div>
           )}
-
         </main>
       )}
-      
+
       <Bottom />
     </div>
   );

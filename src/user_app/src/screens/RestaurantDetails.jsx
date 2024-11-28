@@ -220,68 +220,67 @@ function RestaurantDetails() {
                 </div>
               )} */}
 
+              {restaurantDetails.upi_id && (
+                <div
+                  className="card"
+                  style={{
+                    border: "2px dashed silver",
+                  }}
+                >
+                  <div className="p-3 rounded-4 d-flex justify-content-center align-items-center">
+                    <span className="font_size_16">
+                      UPI : {restaurantDetails.upi_id}
+                    </span>
+                  </div>
 
-{restaurantDetails.upi_id && (
-              <div
-                className="card"
-                style={{
-                  border: "2px dashed silver",
-                }}
-              >
-                <div className="p-3 rounded-4 d-flex justify-content-center align-items-center">
-                  <span className="font_size_16">
-                    UPI : {restaurantDetails.upi_id}
-                  </span>
-                </div>
-                
-                <div className="px-3 pb-3">
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <button 
-                        className="btn w-100 btn-sm"
-                        onClick={handlePhonePe}
-                        disabled={isProcessingPhonePe}
-                        style={{
-                          backgroundColor: "#5f259f",
-                          color: "white",
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingPhonePe ? "Processing..." : "PhonePe"}
-                      </button>
-                    </div>
-                    
-                    <div className="col-6">
-                      <button 
-                        className="btn w-100 btn-sm"
-                        onClick={handleGooglePay}
-                        disabled={isProcessingGPay}
-                        style={{
-                          backgroundColor: "#1a73e8",
-                          color: "white",
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingGPay ? "Processing..." : "Google Pay"}
-                      </button>
-                    </div>
-                    
-                    <div className="col-12">
-                      <button 
-                        className="btn btn-primary w-100 btn-sm"
-                        onClick={handleGenericUPI}
-                        disabled={isProcessingUPI}
-                        style={{
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingUPI ? "Processing..." : "Other UPI Apps"}
-                      </button>
+                  <div className="px-3 pb-3">
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <button
+                          className="btn w-100 btn-sm"
+                          onClick={handlePhonePe}
+                          disabled={isProcessingPhonePe}
+                          style={{
+                            backgroundColor: "#5f259f",
+                            color: "white",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingPhonePe ? "Processing..." : "PhonePe"}
+                        </button>
+                      </div>
+
+                      <div className="col-6">
+                        <button
+                          className="btn w-100 btn-sm"
+                          onClick={handleGooglePay}
+                          disabled={isProcessingGPay}
+                          style={{
+                            backgroundColor: "#1a73e8",
+                            color: "white",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingGPay ? "Processing..." : "Google Pay"}
+                        </button>
+                      </div>
+
+                      <div className="col-12">
+                        <button
+                          className="btn btn-primary w-100 btn-sm"
+                          onClick={handleGenericUPI}
+                          disabled={isProcessingUPI}
+                          style={{
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingUPI ? "Processing..." : "Other UPI Apps"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </div>
@@ -433,6 +432,7 @@ function RestaurantDetails() {
                 <div className="dz-category-items">
                   <a href="#" className="dz-media">
                     <img
+                      className="object-fit-cover"
                       src={menu.image || img}
                       alt={menu.menu_name}
                       style={{ height: 110 }}

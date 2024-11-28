@@ -4,6 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css";
+import "../assets/css/toast.css"
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
@@ -427,6 +428,7 @@ const NearbyArea = () => {
                           objectFit: "cover",
                           aspectRatio: 1,
                         }}
+                        className="object-fit-cover"
                         onError={(e) => {
                           e.target.src = images;
                         }}

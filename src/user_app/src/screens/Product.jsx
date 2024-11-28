@@ -6,13 +6,13 @@ import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { usePopup } from "../context/PopupContext";
-
+ import "../assets/css/toast.css";
 import Bottom from "../component/bottom";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import config from "../component/config";
-import "../assets/css/toast.css";
+
 import RestaurantSocials from "../components/RestaurantSocials";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -597,6 +597,7 @@ const Product = () => {
                           objectFit: "cover",
                           height: "100%",
                         }}
+                        className="object-fit-cover"
                         onError={(e) => {
                           e.target.src = images;
                         }}

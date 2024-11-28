@@ -12,7 +12,7 @@ import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import RestaurantSocials from "../components/RestaurantSocials";
-
+ import "../assets/css/toast.css";
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
@@ -537,7 +537,7 @@ const Wishlist = () => {
                                       <img
                                         src={menu.image || images}
                                         alt={menu.menu_name}
-                                        className="rounded-4 img-fluid"
+                                        className="rounded-4 img-fluid object-fit-cover"
                                         style={{
                                           width: "100%",
                                           height: "100%",

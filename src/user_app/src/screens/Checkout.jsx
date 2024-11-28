@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import "../assets/css/custom.css";
+ import "../assets/css/toast.css";
 import OrderGif from "../assets/gif/cooking.gif";
 import { ThemeContext } from "../context/ThemeContext.js";
 import Header from "../components/Header";

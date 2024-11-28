@@ -541,6 +541,7 @@ const MenuDetails = () => {
               }}
             >
               <img
+                className="object-fit-cover"
                 src={images}
                 alt={productDetails.name}
                 style={{
@@ -565,6 +566,7 @@ const MenuDetails = () => {
               {productDetails?.images?.length > 0 ? (
                 <>
                   <img
+                    className="object-fit-cover"
                     src={productDetails.images[currentSlide]}
                     alt={productDetails.name}
                     onError={(e) => {
@@ -725,6 +727,7 @@ const MenuDetails = () => {
               ) : (
                 <>
                   <img
+                    className="object-fit-cover"
                     src={images}
                     alt={productDetails.name}
                     style={{

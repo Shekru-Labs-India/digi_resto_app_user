@@ -5,11 +5,12 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
-
+ import "../assets/css/toast.css";
+ 
 import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
-import { Toast } from "../assets/js/toast";
+
 import { usePopup } from "../context/PopupContext";
 import config from "./config";
 
@@ -848,7 +849,7 @@ const ProductCard = ({ isVegOnly }) => {
                     <img
                       src={menu.image || images}
                       alt={menu.name}
-                      className=""
+                      className="object-fit-cover"
                       style={{
                         height: "100%",
                         width: "100%",

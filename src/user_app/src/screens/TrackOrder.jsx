@@ -4,7 +4,7 @@ import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
-import "../assets/css/custom.css";
+ import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
@@ -1091,7 +1091,7 @@ const TrackOrder = () => {
                             <img
                               src={menu.image || images}
                               alt={menu.menu_name}
-                              className="img-fluid rounded-start-4"
+                              className="img-fluid rounded-start-4 object-fit-cover"
                               style={{
                                 width: "100%",
                                 height: "100%",

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import "../assets/css/custom.css";
+import "../assets/css/toast.css";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import Bottom from "../component/bottom";
@@ -221,17 +221,14 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         fetchCartDetails();
-        window.showToast("success", "Item quantity has been updated.");
+     
       } else {
         console.error("Failed to update cart quantity:", data.msg);
-        window.showToast("error", "Failed to update item quantity.");
+        
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
-      window.showToast(
-        "error",
-        "An error occurred while updating item quantity."
-      );
+    
     }
   };
 
@@ -428,7 +425,7 @@ const Cart = () => {
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
-                        className="img-fluid rounded-4 "
+                        className="img-fluid rounded-4 object-fit-cover"
                         style={{
                           width: "100%",
                           height: "100%",
