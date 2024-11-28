@@ -11685,7 +11685,7 @@ hr.dotted {
         font-size: 20px;
         color: var(--secondary); }
       .menubar-area .menubar-nav .nav-link.active {
-        background: linear-gradient(45deg, #0D775E, #00513E);
+              background: linear-gradient(201deg, #7cffa8, #159e42);
         color: #fff;
         border-radius: 50px; }
         .menubar-area .menubar-nav .nav-link.active i {
@@ -30914,7 +30914,7 @@ hr.dotted {
         font-size: 20px;
         color: var(--secondary); }
       .menubar-area .menubar-nav .nav-link.active {
-        background: linear-gradient(45deg, #0D775E, #00513E);
+        background: linear-gradient(201deg, #7cffa8, #159e42);
         color: #fff;
         border-radius: 50px; }
         .menubar-area .menubar-nav .nav-link.active i {

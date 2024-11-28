@@ -420,7 +420,7 @@ const Checkout = () => {
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={() => {
-                        handleOrderTypeSelection('pickup');
+                        handleOrderTypeSelection("Pickup");
                       }}
                     >
                       Pickup
@@ -428,7 +428,7 @@ const Checkout = () => {
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={() => {
-                        handleOrderTypeSelection('drive-through');
+                        handleOrderTypeSelection("Drive-through");
                       }}
                     >
                       Drive-through
@@ -436,7 +436,7 @@ const Checkout = () => {
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={() => {
-                        handleOrderTypeSelection('dine-in');
+                        handleOrderTypeSelection("Dine-in");
                       }}
                     >
                       Dine-in
@@ -444,7 +444,7 @@ const Checkout = () => {
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={() => {
-                        handleOrderTypeSelection('delivery');
+                        handleOrderTypeSelection("Delivery");
                       }}
                     >
                       Delivery

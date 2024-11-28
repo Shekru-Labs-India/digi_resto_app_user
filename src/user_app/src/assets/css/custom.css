@@ -1048,3 +1048,8 @@ hr.dashed {
   width: 55px;
   border-radius: 13px 0px;
 }
+
+
+.bottom_buttons_gradient{
+      background: linear-gradient(201deg, #7cffa8, #159e42);
+}
