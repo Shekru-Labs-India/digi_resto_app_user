@@ -782,7 +782,7 @@ const Product = () => {
                                 className={`fa-solid ${
                                   isMenuItemInCart(menuItem.menu_id)
                                     ? "fa-cart-shopping "
-                                    : "fa-cart-plus text-secondary"
+                                    : "fa-solid fa-plus text-secondary"
                                 } fs-6 `}
                               ></i>
                             </div>

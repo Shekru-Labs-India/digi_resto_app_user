@@ -707,7 +707,7 @@ const Search = () => {
                                   className={`fa-solid ${
                                     isMenuItemInCart(menu.menu_id)
                                       ? "fa-cart-shopping "
-                                      : "fa-cart-plus text-secondary"
+                                      : "fa-solid fa-plus text-secondary"
                                   } fs-6`}
                                 ></i>
                               </div>
@@ -721,10 +721,8 @@ const Search = () => {
               </div>
             </>
           ))}
-
         </div>
         <div className="container">
-
           <RestaurantSocials />
         </div>
       </main>

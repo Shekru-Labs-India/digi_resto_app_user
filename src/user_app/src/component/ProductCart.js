@@ -82,6 +82,9 @@ const ProductCard = ({ isVegOnly }) => {
 
   const restaurantStatus = localStorage.getItem("restaurantStatus");
 
+  // Add state for loading if not already present
+  const [isMagicLoading, setIsMagicLoading] = useState(false);
+
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -425,7 +428,7 @@ const ProductCard = ({ isVegOnly }) => {
             className={`fa-solid ${
               isMenuItemInCart(menu.menu_id)
                 ? "fa-solid fa-circle-check"
-                : "fa-cart-plus text-secondary"
+                : "fa-solid fa-plus text-secondary"
             } fs-6`}
           ></i>
         </div>
@@ -501,6 +504,66 @@ const ProductCard = ({ isVegOnly }) => {
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
     setNotes(suggestion);
+  };
+
+  // Add the magic handler function
+  const handleMagicClick = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    setIsMagicLoading(true);
+    try {
+      const response = await fetch(
+        "https://men4u.xyz/user_api/auto_create_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: userData?.customer_id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (data.st === 1) {
+        // Get cart details before navigation
+        const cartResponse = await fetch(
+          "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cart_id: data.cart_id,
+              customer_id: userData?.customer_id,
+              restaurant_id: restaurantId,
+            }),
+          }
+        );
+
+        const cartData = await cartResponse.json();
+        
+        if (cartData.st === 1) {
+          navigate("/user_app/Cart", { 
+            state: { 
+              cartId: data.cart_id 
+            }
+          });
+        } else {
+          window.showToast("error", "Failed to fetch cart details");
+        }
+      } else {
+        window.showToast("error", data.msg || "Failed to create magic cart");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "Something went wrong. Please try again.");
+    } finally {
+      setIsMagicLoading(false);
+    }
   };
 
   if (isLoading || menuList.length === 0) {
@@ -589,13 +652,90 @@ const ProductCard = ({ isVegOnly }) => {
 
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
-          <div className="title-bar">
-            <span className="font_size_14 fw-medium">Menu</span>
-            <Link to="/user_app/Menu">
-              <span>see all</span>
-              <i className="fa-solid fa-arrow-right ms-2"></i>
-            </Link>
-          </div>
+          <>
+            <div className="title-bar">
+              <span className="font_size_14 fw-medium">Menu</span>
+              <Link to="/user_app/Menu">
+                <span>see all</span>
+                <i className="fa-solid fa-arrow-right ms-2"></i>
+              </Link>
+            </div>
+
+            <div className="d-flex justify-content-between gap-2 my-3">
+              <div
+                className={`category-btn font_size_14 rounded-pill ${
+                  selectedCategoryId === "special" ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect("special")}
+                style={{
+                  backgroundColor: "#0D9EDF",
+                  color: "#ffffff",
+                  border: "none",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0 15px",
+                  whiteSpace: "nowrap",
+                  flex: "0 0 auto",
+                }}
+              >
+                <i className="fa-regular fa-star me-2"></i>
+                Special
+                <span className="ms-1 font_size_10">
+                  ({menuList.filter((menu) => menu.is_special).length})
+                </span>
+              </div>
+
+              <div
+                className="category-btn font_size_14 rounded-pill btn btn-primary"
+                style={{
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0 15px",
+                  whiteSpace: "nowrap",
+                  flex: "0 0 auto",
+                }}
+              >
+                <i className="fa-solid fa-percent me-2"></i>
+                Offer
+              </div>
+
+              <div
+                className="category-btn font_size_14 rounded-pill btn magic-btn"
+                onClick={handleMagicClick}
+                style={{
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0 15px",
+                  whiteSpace: "nowrap",
+                  flex: "0 0 auto",
+                  background: "white",
+                  border: "none",
+                  position: "relative",
+                  overflow: "hidden",
+                  cursor: "pointer"
+                }}
+              >
+                <div
+                  style={{
+                    position: "relative",
+                    zIndex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {isMagicLoading ? (
+                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                  ) : (
+                    <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+                  )}
+                  Magic
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* <div className="d-flex justify-content-center">
@@ -614,7 +754,7 @@ const ProductCard = ({ isVegOnly }) => {
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
             {/* Special button - always first */}
-            <div className="swiper-slide">
+            {/* <div className="swiper-slide">
               <div
                 className={`category-btn font_size_14 rounded-5 ${
                   selectedCategoryId === "special" ? "active" : ""
@@ -633,7 +773,7 @@ const ProductCard = ({ isVegOnly }) => {
                   ({menuList.filter((menu) => menu.is_special).length})
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* All button */}
             <div className="swiper-slide">
@@ -667,7 +807,7 @@ const ProductCard = ({ isVegOnly }) => {
                   style={{
                     backgroundColor:
                       selectedCategoryId === category.menu_cat_id
-                        ? "#0D775E"
+                        ? "linear-gradient(201deg, #7cffa8, #159e42)"
                         : "",
                     color:
                       selectedCategoryId === category.menu_cat_id
@@ -723,7 +863,7 @@ const ProductCard = ({ isVegOnly }) => {
                     {menu.is_special && (
                       <i
                         // className="fa-solid fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
-                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info font_size_12"
                         style={{
                           position: "absolute",
                           top: 3,
@@ -921,8 +1061,8 @@ const ProductCard = ({ isVegOnly }) => {
                     }
                     style={{ cursor: "pointer" }}
                   >
-                    <i className="fa fa-chevron-right me-2"></i> Make it more
-                    sweet 😋
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
                   </p>
                   <p
                     className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
@@ -931,8 +1071,8 @@ const ProductCard = ({ isVegOnly }) => {
                     }
                     style={{ cursor: "pointer" }}
                   >
-                    <i className="fa fa-chevron-right me-2"></i> Make it more
-                    spicy 🥵
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy 🥵
                   </p>
                 </div>
                 <hr className="my-4" />

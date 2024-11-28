@@ -451,7 +451,7 @@ const Checkout = () => {
 
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
-                            <i className="fa-solid fa-hand-holding-heart fs-3 mb-2 text-primary"></i>
+                            <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
                             <p className="mb-0 fw-medium">Pickup</p>
                           </div>
                         </div>
@@ -468,7 +468,7 @@ const Checkout = () => {
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
-                            <i className="fa-solid fa-car-side fs-3 mb-2 text-primary"></i>
+                            <i className="fa-solid fa-car-side fs-2 mb-2 text-primary"></i>
                             <p className="mb-0 fw-medium">Drive-Through</p>
                           </div>
                         </div>
@@ -483,7 +483,7 @@ const Checkout = () => {
                       >
                         <div className="card-body d-flex align-items-center py-3">
                           <div className="text-center me-3">
-                            <i className="fa-solid fa-utensils fs-3 text-primary"></i>
+                            <i className="fa-solid fa-utensils fs-2 text-primary"></i>
                           </div>
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>

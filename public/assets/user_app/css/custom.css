@@ -1046,3 +1046,54 @@ hr.dashed {
     border-radius: 13px 0px;
 }
 
+
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.magic-btn {
+  position: relative;
+  background: white;
+  border: none !important;
+  z-index: 1;
+}
+
+.magic-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(var(--angle), #0d6efd, #00ff00, #0d6efd);
+  border-radius: 50px;
+  z-index: -1;
+  animation: rotate 3s linear infinite;
+}
+
+.magic-btn::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: white;
+  border-radius: 50px;
+  z-index: -1;
+}
+
+.theme-dark .magic-btn {
+  background: #253e35;
+}
+
+.theme-dark .magic-btn::after {
+  background: #333;
+}
+
+@keyframes rotate {
+  0% {
+    --angle: 0deg;
+  }
+
+  100% {
+    --angle: 360deg;
+  }
+}
