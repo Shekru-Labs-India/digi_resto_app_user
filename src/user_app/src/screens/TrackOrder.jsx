@@ -952,7 +952,7 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                    <i className="fa-solid fa-shop pe-2 font_size_14"></i>
+                    <i className="fa-solid fa-store pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>

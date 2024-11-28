@@ -153,6 +153,11 @@ const Checkout = () => {
     }
   }, [isDarkMode]);
 
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [selectedOrderType, setSelectedOrderType] = useState('');
+
+  const [pendingOrderAction, setPendingOrderAction] = useState(null);
+
   const handlePlaceOrder = async () => {
     try {
       const response = await fetch(
@@ -171,35 +176,46 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        if (data.st === 1) {
-          if (data.order_number === null && data.order_status === null) {
-            // Show the modal for creating a new order
-            setShowNewOrderModal(true);
-          } else if (
-            data.order_status === "ongoing" ||
-            data.order_status === "placed"
-          ) {
-            // Store the order details, including order_id
-            setExistingOrderDetails({
-              orderNumber: data.order_number,
-              orderStatus: data.order_status,
-              orderId: data.order_id,
-            });
-            setShowExistingOrderModal(true);
-          }
-        } else if (data.st === 2) {
-        } else {
-          throw new Error("Failed to check order status");
+      if (response.ok && data.st === 1) {
+        // If no existing order, show order type selection
+        if (data.order_number === null && data.order_status === null) {
+          setShowOrderTypeModal(true);
+        } 
+        // If there's an ongoing or placed order, show modal with options
+        else if (
+          data.order_status === "ongoing" ||
+          data.order_status === "placed"
+        ) {
+          setExistingOrderDetails({
+            orderNumber: data.order_number,
+            orderStatus: data.order_status,
+            orderId: data.order_id,
+          });
+          setShowExistingOrderModal(true);
         }
       } else {
         throw new Error("Failed to check order status");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process order",
+        life: 3000,
+      });
+    }
   };
 
-  const handleCreateOrder = async () => {
-    if (!cartId || !customerId || !restaurantId) {
+  const handleOrderTypeSelection = (orderType) => {
+    if (pendingOrderAction) {
+      handleOrderAction(pendingOrderAction, orderType);
+    } else {
+      handleCreateOrder(orderType);
+    }
+  };
+
+  const handleCreateOrder = async (orderType) => {
+    if (!cartId || !customerId || !restaurantId || !orderType) {
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -209,7 +225,6 @@ const Checkout = () => {
       return;
     }
 
-    // Get table number from localStorage or userData
     const tableNumber =
       JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
       localStorage.getItem("tableNumber") ||
@@ -227,7 +242,8 @@ const Checkout = () => {
             cart_id: cartId,
             customer_id: customerId,
             restaurant_id: restaurantId,
-            table_number: tableNumber, // Added table number to the request
+            table_number: tableNumber,
+            order_type: orderType,
           }),
         }
       );
@@ -235,14 +251,22 @@ const Checkout = () => {
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
+        setNewOrderNumber(data.order_number);
         clearCartData();
-        setShowNewOrderModal(false);
+        setShowOrderTypeModal(false);
+        setShowPopup(true);
         await fetchCartDetails();
-        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to create order",
+        life: 3000,
+      });
+    }
   };
 
   const clearCartData = () => {
@@ -252,12 +276,13 @@ const Checkout = () => {
     setCartItems([]); // Clear cart items state if you're using it
   };
 
-  const handleOrderAction = async (orderStatus) => {
+  const handleOrderAction = async (orderStatus, orderType) => {
     if (
       !cartId ||
       !customerId ||
       !restaurantId ||
-      !existingOrderDetails.orderNumber
+      !existingOrderDetails.orderNumber ||
+      !orderType
     ) {
       toast.current.show({
         severity: "error",
@@ -281,7 +306,8 @@ const Checkout = () => {
             customer_id: customerId,
             restaurant_id: restaurantId,
             order_number: existingOrderDetails.orderNumber,
-            order_status: orderStatus, // Pass the order status dynamically
+            order_status: orderStatus,
+            order_type: orderType,
           }),
         }
       );
@@ -289,21 +315,22 @@ const Checkout = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        // Store the new order number from the API response
-        const newOrderNumber = data.data.new_order_number;
-
-        // Show success popup
-        setShowPopup(true);
-        setShowExistingOrderModal(false);
+        setShowOrderTypeModal(false);
+        setPendingOrderAction(null);
         clearCartData();
-        setNewOrderNumber(newOrderNumber);
         await fetchCartDetails();
-        // Store the new order number in state or localStorage for navigation
-        setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
+        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to update order");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process order",
+        life: 3000,
+      });
+    }
   };
 
   const handleAddToExistingOrder = async () => {
@@ -354,6 +381,12 @@ const Checkout = () => {
     navigate(`/user_app/MyOrder/`);
   };
 
+  const handleOrderActionClick = (actionType) => {
+    setPendingOrderAction(actionType);
+    setShowExistingOrderModal(false);
+    setShowOrderTypeModal(true);
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -366,6 +399,62 @@ const Checkout = () => {
             tableNumber={userData?.tableNumber || "1"}
           />
         </div>
+
+        {showOrderTypeModal && (
+          <div className="popup-overlay">
+            <div className="modal-dialog w-75" role="document">
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <h5 className="modal-title font_size_16 fw-medium mb-0">
+                    Select Order Type
+                  </h5>
+                  {/* <button
+                    className="btn p-0 fs-3 gray-text"
+                    onClick={() => setShowOrderTypeModal(false)}
+                  >
+                    <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                  </button> */}
+                </div>
+                <div className="modal-body py-2 px-3">
+                  <div className="d-flex flex-column gap-2">
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={() => {
+                        handleOrderTypeSelection('pickup');
+                      }}
+                    >
+                      Pickup
+                    </button>
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={() => {
+                        handleOrderTypeSelection('drive-through');
+                      }}
+                    >
+                      Drive-through
+                    </button>
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={() => {
+                        handleOrderTypeSelection('dine-in');
+                      }}
+                    >
+                      Dine-in
+                    </button>
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={() => {
+                        handleOrderTypeSelection('delivery');
+                      }}
+                    >
+                      Delivery
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showExistingOrderModal && (
           <div className="popup-overlay">
@@ -400,18 +489,18 @@ const Checkout = () => {
                   <div className="d-flex flex-column gap-2">
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderAction("cancle")}
+                      onClick={() => handleOrderActionClick("cancle")}
                     >
                       Cancel Existing & Create New Order
                     </button>
                     <button
                       className="btn btn-success rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderAction("completed")}
+                      onClick={() => handleOrderActionClick("completed")}
                     >
                       Complete Existing & Create New Order
                     </button>
                     <button
-                      className="btn btn-primary rounded-pill font_size_14"
+                      className="btn btn-info rounded-pill font_size_14"
                       onClick={handleAddToExistingOrder}
                     >
                       Add to Existing Order (#{existingOrderDetails.orderNumber}
@@ -419,7 +508,7 @@ const Checkout = () => {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary rounded-pill font_size_14 "
+                      className="btn btn-sm btn-outline-dark rounded-pill font_size_14 "
                       onClick={() => setShowExistingOrderModal(false)}
                     >
                       Close

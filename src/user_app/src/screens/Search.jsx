@@ -481,7 +481,7 @@ const Search = () => {
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
-                <i className="fa-solid fa-shop me-2"></i>
+                <i className="fa-solid fa-store me-2"></i>
                 <span className="fw-medium font_size_14">
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                 </span>

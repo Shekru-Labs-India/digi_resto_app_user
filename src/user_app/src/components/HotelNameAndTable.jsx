@@ -25,7 +25,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
             onClick={handleRestaurantClick}
             style={{ cursor: "pointer" }}
           >
-            <i className="fa-solid fa-shop me-2 font_size_12"></i>
+            <i className="fa-solid fa-store me-2 font_size_12"></i>
             {restaurantName?.toUpperCase() || ""}
           </span>
         </div>

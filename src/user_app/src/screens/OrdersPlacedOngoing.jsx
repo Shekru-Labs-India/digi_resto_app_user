@@ -320,7 +320,7 @@ const OrderCard = ({
             <div className="row">
               <div className="col-8 text-start">
                 <div className="restaurant">
-                  <i className="fa-solid fa-shop pe-2 font_size_14"></i>
+                  <i className="fa-solid fa-store pe-2 font_size_14"></i>
                   <span className="fw-medium font_size_14">
                     {order.restaurant_name.toUpperCase()}
                   </span>

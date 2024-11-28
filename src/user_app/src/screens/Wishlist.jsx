@@ -494,7 +494,7 @@ const Wishlist = () => {
                       >
                         <span className="">
                           <span className="font_size_14 fw-medium">
-                            {/* <i className="fa-solid fa-shop me-2"></i> */}
+                            {/* <i className="fa-solid fa-store me-2"></i> */}
                             {restaurantName.toUpperCase()}
                           </span>
                         </span>

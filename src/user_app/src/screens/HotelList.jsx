@@ -140,7 +140,7 @@ const HotelList = () => {
                       <div className="col-12">
                         <div className="row mt-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="fa-solid fa-shop font_size_14 "></i>
+                            <i className="fa-solid fa-store font_size_14 "></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="font_size_14 fw-medium m-0">

@@ -211,7 +211,7 @@ const Profile = () => {
 
         <div className="d-flex justify-content-center align-items-center mt-2">
           <Link to="/user_app/index">
-            <i className="fa-solid fa-shop gray-text font_size_14"></i>
+            <i className="fa-solid fa-store gray-text font_size_14"></i>
             <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
