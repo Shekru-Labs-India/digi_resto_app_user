@@ -416,39 +416,84 @@ const Checkout = () => {
                   </button> */}
                 </div>
                 <div className="modal-body py-2 px-3">
-                  <div className="d-flex flex-column gap-2">
-                    <button
-                      className="btn btn-outline-primary rounded-pill"
-                      onClick={() => {
-                        handleOrderTypeSelection("Pickup");
-                      }}
-                    >
-                      Pickup
-                    </button>
-                    <button
-                      className="btn btn-outline-primary rounded-pill"
-                      onClick={() => {
-                        handleOrderTypeSelection("Drive-through");
-                      }}
-                    >
-                      Drive-through
-                    </button>
-                    <button
-                      className="btn btn-outline-primary rounded-pill"
-                      onClick={() => {
-                        handleOrderTypeSelection("Dine-in");
-                      }}
-                    >
-                      Dine-in
-                    </button>
-                    <button
-                      className="btn btn-outline-primary rounded-pill"
-                      onClick={() => {
-                        handleOrderTypeSelection("Delivery");
-                      }}
-                    >
-                      Delivery
-                    </button>
+                  <div className="row g-3">
+                    {/* Pickup */}
+                    <div className="col-6">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer position-relative"
+                        onClick={() => handleOrderTypeSelection("Pickup")}
+                      >
+                        {/* Icons container */}
+                        <div className="position-absolute top-0 end-0 p-2 pt-0">
+                          <div className="d-flex flex-column gap-1">
+                            <div
+                              className="rounded-circle p-1"
+                              style={{ width: "24px", height: "24px" }}
+                            >
+                              <img
+                                src="https://play-lh.googleusercontent.com/ymXDmYihTOzgPDddKSvZRKzXkboAapBF2yoFIeQBaWSAJmC9IUpSPKgvfaAgS5yFxQ=w240-h480-rw"
+                                className="img-fluid rounded-circle"
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className="rounded-circle p-1 pt-0"
+                              style={{ width: "24px", height: "24px" }}
+                            >
+                              <img
+                                src="https://play-lh.googleusercontent.com/HJdzprqlCwh_8YNyhMBU6rIaGBGwxHXflZuuqI3iR4US7Jb-bSYiJk_DKV2la9SoBM0K=w240-h480-rw"
+                                className="img-fluid rounded-circle"
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card-body d-flex justify-content-center align-items-center py-3">
+                          <div className="text-center">
+                            <i className="fa-solid fa-hand-holding-heart fs-3 mb-2 text-primary"></i>
+                            <p className="mb-0 fw-medium">Pickup</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Drive-Through */}
+                    <div className="col-6">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer"
+                        onClick={() =>
+                          handleOrderTypeSelection("Drive-through")
+                        }
+                      >
+                        <div className="card-body d-flex justify-content-center align-items-center py-3">
+                          <div className="text-center">
+                            <i className="fa-solid fa-car-side fs-3 mb-2 text-primary"></i>
+                            <p className="mb-0 fw-medium">Drive-Through</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dine-in */}
+                    <div className="col-12">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer"
+                        onClick={() => handleOrderTypeSelection("Dine-in")}
+                      >
+                        <div className="card-body d-flex align-items-center py-3">
+                          <div className="text-center me-3">
+                            <i className="fa-solid fa-utensils fs-3 text-primary"></i>
+                          </div>
+                          <div>
+                            <p className="mb-0 fw-medium">Dine-In</p>
+                            <small className="text-muted">
+                              13 Tables Available
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

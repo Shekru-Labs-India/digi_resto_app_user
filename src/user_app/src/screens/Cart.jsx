@@ -640,7 +640,7 @@ const Cart = () => {
                                     decrementQuantity(item);
                                   }}
                                 >
-                                  <i className="fa-solid fa-plus fs-6"></i>
+                                  <i className="fa-solid fa-minus fs-6"></i>
                                 </button>
                               </span>
                               <span className="text-dark font_size_14 px-2">
@@ -656,7 +656,7 @@ const Cart = () => {
                                     incrementQuantity(item);
                                   }}
                                 >
-                                  <i className="fa-solid fa-minus fs-6"></i>
+                                  <i className="fa-solid fa-plus fs-6"></i>
                                 </button>
                               </span>
                             </div>
