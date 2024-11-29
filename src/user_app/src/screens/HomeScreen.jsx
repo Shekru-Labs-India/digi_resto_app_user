@@ -113,11 +113,10 @@ const HomeScreen = () => {
             <div className="right-content gap-1">
               <span className=""> </span>
               <div className="menu-toggler toggler-icon">
-              
-                  <Link to="/user_app/Search">
-                    <i className="fa-solid fa-magnifying-glass me-3 fs-3"></i>
-                  </Link>
-               
+                <Link to="/user_app/Search">
+                  <i className="fa-solid fa-magnifying-glass me-3 fs-3"></i>
+                </Link>
+
                 <i
                   className="fa-solid fa-bars-staggered fs-3"
                   onClick={toggleSidebar}
@@ -311,6 +310,14 @@ const HomeScreen = () => {
                   <i className="fa-solid fa-cart-shopping fs-4"></i>
                 </span>
                 <span className=" font_size_16  fw-medium">Cart</span>
+              </Link>
+            </li>
+            <li>
+              <Link className="nav-link active" to="/user_app/Search">
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <span className=" font_size_16 fw-medium  ">Search</span>
               </Link>
             </li>
             <li>

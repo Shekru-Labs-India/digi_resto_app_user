@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import UserAuthPopup from './UserAuthPopup';
+import config from "./config";
 
 const Bottom = () => {
   const location = useLocation();
@@ -10,6 +11,7 @@ const Bottom = () => {
   const [userData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
+  const [hasCartItems, setHasCartItems] = useState(false);
 
   const isHomePath = (pathname) => {
     const homePathPattern = new RegExp(
@@ -31,6 +33,47 @@ const Bottom = () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
+
+  useEffect(() => {
+    // Initial check
+    checkCartItems();
+
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      checkCartItems();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, []);
+
+  const checkCartItems = async () => {
+    const cartId = localStorage.getItem("cartId");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const restaurantId = localStorage.getItem("restaurantId");
+
+    if (cartId && userData?.customer_id && restaurantId) {
+      try {
+        const response = await fetch(
+          `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              cart_id: cartId,
+              customer_id: userData.customer_id,
+              restaurant_id: restaurantId,
+            }),
+          }
+        );
+
+        const data = await response.json();
+        setHasCartItems(data.st === 1 && data.order_items?.length > 0);
+      } catch (error) {
+        console.error("Error checking cart:", error);
+      }
+    }
+  };
 
   return (
     <div className="menubar-area footer-fixed">
@@ -63,6 +106,20 @@ const Bottom = () => {
         >
           <div className="position-relative">
             <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
+            {hasCartItems && (
+              <span 
+                className="position-absolute"
+                style={{
+                  top: "-5px",
+                  right: "5px",
+                  width: "8px",
+                  height: "8px",
+                  backgroundColor: "#ff0000",
+                  borderRadius: "50%",
+                  display: "block"
+                }}
+              />
+            )}
           </div>
           <span className="name font_size_14">Cart</span>
         </Link>
