@@ -97,11 +97,6 @@ const ProductCard = ({ isVegOnly }) => {
     // Set total count before applying any filters
     setTotalMenuCount(menus.length);
 
-    // Count special items
-    const specialItemsCount = menus.filter(
-      (menu) => menu.is_special === true
-    ).length;
-
     // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
@@ -112,6 +107,8 @@ const ProductCard = ({ isVegOnly }) => {
     // Handle category filtering
     if (categoryId === "special") {
       filteredMenus = menus.filter((menu) => menu.is_special === true);
+    } else if (categoryId === "offer") {
+      filteredMenus = menus.filter((menu) => menu.offer > 0);
     } else if (categoryId) {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_cat_id === categoryId
@@ -130,14 +127,12 @@ const ProductCard = ({ isVegOnly }) => {
     }, {});
 
     // Update special count in UI
-    if (specialItemsCount > 0) {
-      setMenuCategories((prevCategories) => [
-        ...prevCategories.map((category) => ({
-          ...category,
-          menu_count: categoryCounts[category.menu_cat_id] || 0,
-        })),
-      ]);
-    }
+    setMenuCategories((prevCategories) => [
+      ...prevCategories.map((category) => ({
+        ...category,
+        menu_count: categoryCounts[category.menu_cat_id] || 0,
+      })),
+    ]);
   }, []);
 
   // Optimized category selection handler
@@ -664,7 +659,7 @@ const ProductCard = ({ isVegOnly }) => {
                 <i className="fa-solid fa-percent me-2"></i>
                 Offer
                 <span className="ms-1 font_size_10">
-                  ({menuList.filter((menu) => menu.offer !== 0).length})
+                  ({menuList.filter((menu) => menu.offer > 0).length})
                 </span>
               </div>
 
