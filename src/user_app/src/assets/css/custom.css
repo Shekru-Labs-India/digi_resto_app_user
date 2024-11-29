@@ -1047,7 +1047,6 @@ hr.dashed {
 }
 
 
-
 @property --angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -1065,7 +1064,7 @@ hr.dashed {
   content: "";
   position: absolute;
   inset: -2px;
-  background: linear-gradient(var(--angle), #0d6efd, #00ff00, #0d6efd);
+  background: linear-gradient(var(--angle), #ffbe0b, #fb5607, #ff006e, #8338ec, #3a86ff);
   border-radius: 50px;
   z-index: -1;
   animation: rotate 3s linear infinite;
@@ -1099,4 +1098,63 @@ hr.dashed {
 }
 
 
+.magic-button {
+  height: 40px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: white;
+  border: none;
+}
 
+.theme-dark .magic-button {
+  background: #253e35;
+}
+
+
+
+
+
+
+
+
+.custom-menu-btn {
+  background-color: #0D775E;
+  border: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Dark theme variant if needed */
+.theme-dark .custom-menu-btn {
+  background-color: #0D775E;
+}
+
+
+
+
+
+
+
+.offer-menu-btn {
+  background-color: #0D9EDF;
+  border: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  color: #ffffff;
+}
+
+/* Dark theme variant if needed */
+.theme-dark .offer-menu-btn {
+  background-color: #0D9EDF;
+}

@@ -90,6 +90,8 @@ const ProductCard = ({ isVegOnly }) => {
   // Add state for modal
   const [showAIModal, setShowAIModal] = useState(false);
 
+  const [countdown, setCountdown] = useState(null);
+
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -100,7 +102,7 @@ const ProductCard = ({ isVegOnly }) => {
     // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
-        (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
+        (menu) => menu.menu_veg_nonveg === "veg"
       );
     }
 
@@ -113,6 +115,11 @@ const ProductCard = ({ isVegOnly }) => {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_cat_id === categoryId
       );
+    }
+
+    // If categoryId is null, show all menus
+    if (categoryId === null) {
+      filteredMenus = menus;
     }
 
     // If no items found after filtering, set empty array
@@ -501,7 +508,8 @@ const ProductCard = ({ isVegOnly }) => {
         setTimeout(() => {
           navigate("/user_app/Cart", { 
             state: { 
-              cartId: data.cart_id 
+              cartId: data.cart_id,
+              magicMessage: "Your magic cart has been created!"
             }
           });
         }, 5000);
@@ -518,6 +526,28 @@ const ProductCard = ({ isVegOnly }) => {
       }, 5000);
     }
   };
+
+  useEffect(() => {
+    if (showAIModal) {
+      // Start countdown after 2s (5s total - 3s countdown)
+      setTimeout(() => {
+        setCountdown(3);
+        const interval = setInterval(() => {
+          setCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, 2000);
+    } else {
+      setCountdown(null);
+    }
+  }, [showAIModal]);
 
   if (isLoading || menuList.length === 0) {
     const restaurantStatus = localStorage.getItem("restaurantStatus");
@@ -616,23 +646,31 @@ const ProductCard = ({ isVegOnly }) => {
 
             <div className="d-flex justify-content-between gap-2 my-3">
               <div
-                className={`category-btn font_size_14 rounded-pill ${
-                  selectedCategoryId === "special" ? "active" : ""
+                className={`category-btn font_size_14 rounded-pill  border border-1 border-info text-info offer-menu-btn ${
+                  selectedCategoryId === "special"
+                    ? "active bg-info text-white"
+                    : "bg-transparent"
                 }`}
                 onClick={() => handleCategorySelect("special")}
-                style={{
-                  backgroundColor: "#0D9EDF",
-                  color: "#ffffff",
-                  border: "none",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 15px",
-                  whiteSpace: "nowrap",
-                  flex: "0 0 auto",
-                }}
+                // style={{
+                //   backgroundColor: "#0D9EDF",
+                //   color: "#ffffff",
+                //   border: "none",
+                //   height: "40px",
+                //   display: "flex",
+                //   alignItems: "center",
+                //   padding: "0 15px",
+                //   whiteSpace: "nowrap",
+                //   flex: "0 0 auto",
+                // }}
               >
-                <i className="fa-regular fa-star me-2"></i>
+                <i
+                  className={`fa-solid fa-star me-2 ${
+                    selectedCategoryId === "special"
+                      ? "text-white"
+                      : "text-info"
+                  }`}
+                ></i>
                 Special
                 <span className="ms-1 font_size_10">
                   ({menuList.filter((menu) => menu.is_special).length})
@@ -640,23 +678,20 @@ const ProductCard = ({ isVegOnly }) => {
               </div>
 
               <div
-                className={`category-btn font_size_14 rounded-pill ${
-                  selectedCategoryId === "offer" ? "active" : ""
+                className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn ${
+                  selectedCategoryId === "offer"
+                    ? "active bg-success text-white"
+                    : "bg-transparent text-success"
                 }`}
                 onClick={() => handleCategorySelect("offer")}
-                style={{
-                  backgroundColor: "#0D9EDF",
-                  color: "#ffffff",
-                  border: "none",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 15px",
-                  whiteSpace: "nowrap",
-                  flex: "0 0 auto",
-                }}
               >
-                <i className="fa-solid fa-percent me-2"></i>
+                <i
+                  className={`fa-solid fa-percent me-2 ${
+                    selectedCategoryId === "offer"
+                      ? "text-white"
+                      : "text-success"
+                  }`}
+                ></i>
                 Offer
                 <span className="ms-1 font_size_10">
                   ({menuList.filter((menu) => menu.offer > 0).length})
@@ -664,29 +699,12 @@ const ProductCard = ({ isVegOnly }) => {
               </div>
 
               <div
-                className="category-btn font_size_14 rounded-pill btn magic-btn"
+                className="category-btn font_size_14 rounded-pill btn magic-btn magic-button"
                 onClick={handleMagicClick}
-                style={{
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 15px",
-                  whiteSpace: "nowrap",
-                  flex: "0 0 auto",
-                  background: "white",
-                  border: "none",
-                  position: "relative",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                }}
               >
                 <div
-                  style={{
-                    position: "relative",
-                    zIndex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+                  className="position-relative z-1 d-flex align-items-center justify-content-center"
+                  style={{ height: "100%" }}
                 >
                   {isMagicLoading ? (
                     <i className="fa-solid fa-spinner fa-spin me-2"></i>
@@ -740,14 +758,14 @@ const ProductCard = ({ isVegOnly }) => {
             {/* All button */}
             <div className="swiper-slide">
               <div
-                className={`category-btn font_size_14 border border-2 rounded-5 ${
+                className={`category-btn font_size_14 rounded-5 ${
                   selectedCategoryId === null ? "active" : ""
                 }`}
                 onClick={() => handleCategorySelect(null)}
-                style={{
-                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
-                  color: selectedCategoryId === null ? "#ffffff" : "",
-                }}
+                // style={{
+                //   backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
+                //   color: selectedCategoryId === null ? "#ffffff" : "",
+                // }}
               >
                 All{" "}
                 <span className="font_size_12">
@@ -762,7 +780,7 @@ const ProductCard = ({ isVegOnly }) => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn font_size_14 border border-2 rounded-5 ${
+                  className={`category-btn font_size_14 rounded-5 ${
                     selectedCategoryId === category.menu_cat_id ? "active" : ""
                   }`}
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
@@ -771,10 +789,7 @@ const ProductCard = ({ isVegOnly }) => {
                       selectedCategoryId === category.menu_cat_id
                         ? "linear-gradient(201deg, #7cffa8, #159e42)"
                         : "",
-                    color:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "",
                   }}
                 >
                   {category.name}
@@ -837,7 +852,7 @@ const ProductCard = ({ isVegOnly }) => {
                     )}
                     <div
                       className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                        menu.menu_veg_nonveg === "veg"
                           ? "border-success"
                           : "border-danger"
                       }`}
@@ -853,7 +868,7 @@ const ProductCard = ({ isVegOnly }) => {
                     >
                       <i
                         className={`${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          menu.menu_veg_nonveg === "veg"
                             ? "fa-solid fa-circle text-success"
                             : "fa-solid fa-play fa-rotate-270 text-danger"
                         } font_size_12`}
@@ -1034,7 +1049,7 @@ const ProductCard = ({ isVegOnly }) => {
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 🥵
+                    more spicy ����
                   </p>
                 </div>
                 <hr className="my-4" />
@@ -1118,8 +1133,51 @@ const ProductCard = ({ isVegOnly }) => {
           }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content border-0 shadow rounded-4">
-              <div className="modal-body text-center p-4">
+            <div
+              className="modal-content border-0 shadow rounded-4"
+              style={{
+                position: "relative",
+                padding: "4px",
+                // background: "#fff",
+                "--angle": "0deg",
+                animation: "rotate 3s linear infinite",
+              }}
+            >
+              <i
+                className="fa-solid fa-xmark gray-text font_size_14"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  margin: "12px",
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
+                onClick={() => setShowAIModal(false)}
+              ></i>
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "-2px",
+                  zIndex: "-1",
+                  background:
+                    "linear-gradient(var(--angle), #ffbe0b, #fb5607, #ff006e, #8338ec, #3a86ff)",
+                  borderRadius: "1rem",
+                  animation: "rotate 3s linear infinite",
+                }}
+              />
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "1px",
+                  zIndex: "-2",
+                  background: "#fff",
+                  borderRadius: "1rem",
+                }}
+              />
+              <div className="modal-body bg-white text-center p-4">
                 <img
                   src={AI_Loading}
                   alt="AI Loading"
@@ -1129,12 +1187,34 @@ const ProductCard = ({ isVegOnly }) => {
                     marginBottom: "20px",
                   }}
                 />
-                <div className="mb-3">AI is generating menu for you</div>
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                <div className="mb-3">
+                  {countdown !== null ? (
+                    <div className="font_size_14">
+                      Magic starts in{" "}
+                      <span className="fw-bold">{countdown}</span>
+                    </div>
+                  ) : (
+                    "AI is generating menu for you"
+                  )}
                 </div>
+                {/* <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div> */}
               </div>
             </div>
+            <style>
+              {`
+                @property --angle {
+                  syntax: "<angle>";
+                  initial-value: 0deg;
+                  inherits: false;
+                }
+                @keyframes rotate {
+                  0%     { --angle: 0deg; }
+                  100%   { --angle: 360deg; }
+                }
+              `}
+            </style>
           </div>
         </div>
       )}

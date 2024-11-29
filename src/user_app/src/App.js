@@ -36,7 +36,6 @@ function App() {
   }, []);
 
   return (
-    
     <PopupProvider>
       <ThemeProvider>
         <RestaurantIdProvider
@@ -48,7 +47,7 @@ function App() {
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
                 <Route
-                  path=":restaurantCode/:table_number"
+                  path=":restaurantCode/:table_number/:section_id"
                   element={<HomeScreen />}
                 />
                 <Route

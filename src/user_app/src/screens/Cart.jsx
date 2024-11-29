@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/toast.css";
@@ -14,6 +14,8 @@ import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 const Cart = () => {
+    const location = useLocation();
+    const magicMessage = location.state?.magicMessage;
   const { restaurantId, restaurantName } = useRestaurantId();
   const { cartItems, updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
@@ -410,6 +412,9 @@ const Cart = () => {
               tableNumber={userData?.tableNumber || "1"}
             />
           </div>
+          {magicMessage && (
+            <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">{magicMessage}</div>
+          )}
           <div className="container scrollable-section pt-0">
             {cartDetails.order_items.map((item, index) => (
               <Link
@@ -667,6 +672,12 @@ const Cart = () => {
                 </div>
               </Link>
             ))}
+          </div>
+          <div className="container py-0">
+            <div className="d-flex justify-content-end align-items-center gray-text font_size_14">
+              <i class="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
+              Clear Cart
+            </div>
           </div>
           {cartDetails && cartDetails.order_items.length > 0 && (
             <div

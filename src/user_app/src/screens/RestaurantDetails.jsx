@@ -9,6 +9,7 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import config from "../component/config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import img from "../assets/MenuDefault.png";
+import RestaurantSocials from "../components/RestaurantSocials";
 
 function RestaurantDetails() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -161,7 +162,7 @@ function RestaurantDetails() {
       <Sidebar />
       <Header title="Restaurant Details" />
 
-      <div className="container">
+      <div className="container pb-0">
         <div className="pt-5">
           <HotelNameAndTable
             restaurantName={restaurantDetails.name || ""}
@@ -425,7 +426,7 @@ function RestaurantDetails() {
               disableOnInteraction: false,
             }}
             loop={filteredMenus.length > 3}
-            className="dz-category-swiper mb-5 pb-3"
+            className="dz-category-swiper"
           >
             {filteredMenus.map((menu) => (
               <SwiperSlide key={menu.menu_id}>
@@ -481,6 +482,10 @@ function RestaurantDetails() {
             ))}
           </Swiper>
         </div>
+      </div>
+      <div className="container p-b65">
+
+      <RestaurantSocials />
       </div>
       <Bottom />
     </div>

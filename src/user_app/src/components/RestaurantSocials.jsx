@@ -15,17 +15,17 @@ function RestaurantSocials() {
 
   return (
     <div>
-      <div className="divider border-success inner-divider transparent">
-        <span className="bg-body">End</span>
+      <div className="divider border-secondary opacity-75 inner-divider transparent opacity-75">
+        <span className="bg-body text-muted">End</span>
       </div>
 
       {/* Top rectangular buttons */}
-      <div className="container px-0 mt-3">
+      <div className="container px-0 mt-3 pb-2">
         <div className="row g-3">
           <div className="col-6">
             <button
               type="button"
-              className="btn w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-info"
+              className="btn fw-regular w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-info font_size_14"
               onClick={() => {
                 const websiteUrl = allSocialLinks.find(
                   (link) => link.id === "website"
@@ -45,7 +45,7 @@ function RestaurantSocials() {
           <div className="col-6">
             <button
               type="button"
-              className="btn w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-success"
+              className="btn fw-regular w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-success font_size_14"
               onClick={() => {
                 const businessUrl = allSocialLinks.find(
                   (link) => link.id === "google_business"
@@ -66,35 +66,12 @@ function RestaurantSocials() {
       </div>
 
       {/* Bottom square social buttons */}
-      <div className="d-flex justify-content-between px-0 my-3">
-        {/* WhatsApp Button */}
-        <div className="ratio ratio-1x1" style={{ width: "50px" }}>
-          <button
-            type="button"
-            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary"
-            onClick={() => {
-              const whatsappUrl = allSocialLinks.find(
-                (link) => link.id === "whatsapp"
-              )?.link;
-              if (whatsappUrl) {
-                const url = whatsappUrl.startsWith("http")
-                  ? whatsappUrl
-                  : `https://${whatsappUrl}`;
-                window.open(url, "_blank");
-              }
-            }}
-            title="WhatsApp"
-          >
-            <i class="fa-brands fa-whatsapp fs-4"></i>
-            
-          </button>
-        </div>
-
+      <div className="d-flex justify-content-between my-1">
         {/* Facebook Button */}
-        <div className="ratio ratio-1x1" style={{ width: "50px" }}>
+        <div style={{ height: "40px" }} className="me-2 w-100">
           <button
             type="button"
-            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary"
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
             onClick={() => {
               const facebookUrl = allSocialLinks.find(
                 (link) => link.id === "facebook"
@@ -113,10 +90,10 @@ function RestaurantSocials() {
         </div>
 
         {/* Instagram Button */}
-        <div className="ratio ratio-1x1" style={{ width: "50px" }}>
+        <div style={{ height: "40px" }} className="mx-2 w-100">
           <button
             type="button"
-            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary"
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
             onClick={() => {
               const instagramUrl = allSocialLinks.find(
                 (link) => link.id === "instagram"
@@ -131,6 +108,27 @@ function RestaurantSocials() {
             title="Instagram"
           >
             <i class="fa-brands fa-instagram fs-4"></i>
+          </button>
+        </div>
+        {/* WhatsApp Button */}
+        <div style={{ height: "40px" }} className="ms-2 w-100">
+          <button
+            type="button"
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
+            onClick={() => {
+              const whatsappUrl = allSocialLinks.find(
+                (link) => link.id === "whatsapp"
+              )?.link;
+              if (whatsappUrl) {
+                const url = whatsappUrl.startsWith("http")
+                  ? whatsappUrl
+                  : `https://${whatsappUrl}`;
+                window.open(url, "_blank");
+              }
+            }}
+            title="WhatsApp"
+          >
+            <i class="fa-brands fa-whatsapp fs-4"></i>
           </button>
         </div>
       </div>

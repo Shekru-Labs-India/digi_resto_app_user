@@ -581,7 +581,7 @@ const OfferBanner = () => {
                     )}
                     <div
                       className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                        menu.menu_veg_nonveg === "veg"
                           ? "border-success"
                           : "border-danger"
                       }`}
@@ -597,7 +597,7 @@ const OfferBanner = () => {
                     >
                       <i
                         className={`${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          menu.menu_veg_nonveg === "veg"
                             ? "fa-solid fa-circle text-success"
                             : "fa-solid fa-play fa-rotate-270 text-danger"
                         } font_size_12`}

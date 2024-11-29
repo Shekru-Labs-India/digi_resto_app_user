@@ -85,7 +85,7 @@ const Profile = () => {
 
         <Header title="Profile" />
 
-        <main className="page-content space-top p-b40">
+        <main className="page-content space-top">
           <div className="container">
             <div className="profile-area">
               <div className="main-profile">
@@ -290,7 +290,7 @@ const Profile = () => {
             </a>
           </div>
         </div> */}
-        <div className="align-bottom border-top mt-4">
+        <div className="align-bottom border-top mt-4 p-b30">
           <div className="d-flex justify-content-center py-0">
             <Link to="/">
               {" "}

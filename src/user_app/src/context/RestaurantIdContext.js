@@ -15,32 +15,33 @@ export const RestaurantIdProvider = ({ children }) => {
   const [restaurantStatus, setRestaurantStatus] = useState(null)
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
   const [socials, setSocials] = useState([]);
+  const [sectionId, setSectionId] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    // Get table number from URL path
     const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    
-    // Validate table number: must be numeric and between 1 and 100
-    if (lastPart && !isNaN(lastPart) && lastPart > 0 && lastPart <= 10) {
-      // Make sure it's not the restaurant code
-      const secondLastPart = pathParts[pathParts.length - 2];
-      if (secondLastPart && secondLastPart !== lastPart) { // Ensure it's not the same as restaurant code
-        setTableNumber(lastPart);
-        localStorage.setItem("tableNumber", lastPart);
-        
-        // Update userData if it exists
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        if (Object.keys(userData).length > 0) {
-          const updatedUserData = {
-            ...userData,
-            tableNumber: lastPart
-          };
-          localStorage.setItem("userData", JSON.stringify(updatedUserData));
-        }
+    const tableNumberPart = pathParts[pathParts.length - 2];
+    const sectionIdPart = pathParts[pathParts.length - 1];
+
+    if (tableNumberPart && !isNaN(tableNumberPart) && tableNumberPart > 0 && tableNumberPart <= 10) {
+      setTableNumber(tableNumberPart);
+      localStorage.setItem("tableNumber", tableNumberPart);
+    }
+
+    if (sectionIdPart && !isNaN(sectionIdPart)) {
+      setSectionId(sectionIdPart);
+      localStorage.setItem("sectionId", sectionIdPart);
+
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      if (Object.keys(userData).length > 0) {
+        const updatedUserData = {
+          ...userData,
+          tableNumber: tableNumberPart,
+          sectionId: sectionIdPart
+        };
+        localStorage.setItem("userData", JSON.stringify(updatedUserData));
       }
     }
   }, [location]);
@@ -59,7 +60,10 @@ export const RestaurantIdProvider = ({ children }) => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ restaurant_code: restaurantCode }),
+            body: JSON.stringify({ 
+              restaurant_code: restaurantCode,
+              section_id: sectionId
+            }),
           }
         );
 
@@ -71,26 +75,24 @@ export const RestaurantIdProvider = ({ children }) => {
           setRestaurantStatus(account_status)
           setIsRestaurantOpen(is_open)
 
-          // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
           localStorage.setItem("restaurantStatus", account_status)
           localStorage.setItem("isRestaurantOpen", is_open)
 
-          // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: restaurant_id,
               restaurantName: name,
-              restaurantCode: restaurantCode
+              restaurantCode: restaurantCode,
+              sectionId: sectionId
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
 
-          // Create social media array from restaurant_details
           const socialsArray = [
             {
               id: 'whatsapp',
@@ -128,26 +130,21 @@ export const RestaurantIdProvider = ({ children }) => {
               name: 'Business',
               link: data.restaurant_details.google_business_link || '',
             }
-          ].filter(item => item.link); // Only keep items with non-empty links
+          ].filter(item => item.link);
 
-          // Store in localStorage
           localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
           
-          // Update state if needed
           setSocials(socialsArray);
         } else if (data.st === 2) {
-          // Invalid restaurant code
           setRestaurantId(null);
           setRestaurantName("");
           
-          // Clear restaurant data from localStorage
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
           localStorage.removeItem("restaurantSocial");
           
           
-          // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -171,17 +168,18 @@ export const RestaurantIdProvider = ({ children }) => {
     };
 
     fetchRestaurantDetails();
-  }, [restaurantCode, navigate]);
+  }, [restaurantCode, sectionId, navigate]);
 
   useEffect(() => {
-    // Load restaurant data from localStorage on initial render
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
+    const storedSectionId = localStorage.getItem("sectionId");
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
     if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
+    if (storedSectionId) setSectionId(storedSectionId);
   }, []);
 
   const updateRestaurantCode = (code) => {
@@ -194,6 +192,11 @@ export const RestaurantIdProvider = ({ children }) => {
     localStorage.setItem("tableNumber", number);
   };
 
+  const updateSectionId = (id) => {
+    setSectionId(id);
+    localStorage.setItem("sectionId", id);
+  };
+
   return (
     <RestaurantIdContext.Provider
       value={{
@@ -201,9 +204,11 @@ export const RestaurantIdProvider = ({ children }) => {
         restaurantName,
         restaurantCode,
         tableNumber,
+        sectionId,
         updateRestaurantCode,
         updateTableNumber,
-        setRestaurantCode, 
+        updateSectionId,
+        setRestaurantCode,
         socials,
       }}
     >

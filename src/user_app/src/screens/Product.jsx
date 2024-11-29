@@ -14,6 +14,7 @@ import { useCart } from "../context/CartContext";
 import config from "../component/config";
 
 import RestaurantSocials from "../components/RestaurantSocials";
+import AI_Loading from "../assets/gif/AI_Loading.gif";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -64,6 +65,13 @@ const Product = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
 
   const { showLoginPopup } = usePopup();
+
+  const [isMagicLoading, setIsMagicLoading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [countdown, setCountdown] = useState(null);
+
+  // Add a ref to track if the process should continue
+  const magicProcessRef = useRef(true);
 
   // Define applySort function
   const applySort = () => {
@@ -268,20 +276,21 @@ const Product = () => {
     if (menuList.length > 0) {
       let filtered = [...menuList];
 
-      // If a category is selected, filter by category
-      if (selectedCategory) {
+      if (selectedCategory === "special") {
+        filtered = filtered.filter(item => 
+          item.rating >= 4 || 
+          item.popularity > 80 || 
+          item.is_special
+        );
+      } else if (selectedCategory === "offer") {
+        filtered = filtered.filter(item => item.offer > 0);
+      } else if (selectedCategory) {
         const selectedCategoryName = categories.find(
           (category) => category.menu_cat_id === selectedCategory
         )?.name;
-
-        filtered = menuList.filter(
+        filtered = filtered.filter(
           (item) => item.category === selectedCategoryName
         );
-      }
-
-      // If "Special" category is selected, filter by special items only
-      if (selectedCategory === "special") {
-        filtered = menuList.filter((item) => item.is_special);
       }
 
       setFilteredMenuList(filtered);
@@ -490,6 +499,97 @@ const Product = () => {
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
   };
 
+  // Modify the handleMagicClick function
+  const handleMagicClick = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    setIsMagicLoading(true);
+    setShowAIModal(true);
+    magicProcessRef.current = true;
+
+    try {
+      // Only proceed if the process hasn't been cancelled
+      if (magicProcessRef.current) {
+        const response = await fetch(
+          `${config.apiDomain}/user_api/auto_create_cart`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              restaurant_id: restaurantId,
+              customer_id: userData?.customer_id,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.st === 1 && magicProcessRef.current) {
+          localStorage.setItem("cartId", data.cart_id);
+          setTimeout(() => {
+            if (magicProcessRef.current) {
+              navigate("/user_app/Cart", {
+                state: {
+                  cartId: data.cart_id,
+                  magicMessage: "Your magic cart has been created!",
+                },
+              });
+            }
+          }, 5000);
+        } else if (magicProcessRef.current) {
+          window.showToast("error", data.msg || "Failed to create magic cart");
+        }
+      }
+    } catch (error) {
+      if (magicProcessRef.current) {
+        console.clear();
+        window.showToast("error", "Something went wrong. Please try again.");
+      }
+    } finally {
+      if (!magicProcessRef.current) {
+        setIsMagicLoading(false);
+        setShowAIModal(false);
+      } else {
+        setTimeout(() => {
+          if (magicProcessRef.current) {
+            setIsMagicLoading(false);
+            setShowAIModal(false);
+          }
+        }, 5000);
+      }
+    }
+  };
+
+  // Add handleCloseModal function
+  const handleCloseModal = () => {
+    magicProcessRef.current = false;
+    setShowAIModal(false);
+    setIsMagicLoading(false);
+    setCountdown(null);
+  };
+
+  useEffect(() => {
+    if (showAIModal) {
+      setTimeout(() => {
+        setCountdown(3);
+        const interval = setInterval(() => {
+          setCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, 2000);
+    } else {
+      setCountdown(null);
+    }
+  }, [showAIModal]);
+
   return (
     <div>
       <Header title="Menu" count={menuList.length} />
@@ -502,42 +602,70 @@ const Product = () => {
           />
         </div>
 
+        
+
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
+          <div className="d-flex justify-content-between gap-2 my-3">
+            <div
+              className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn ${
+                selectedCategory === "special"
+                  ? "active bg-info text-white"
+                  : "bg-transparent"
+              }`}
+              onClick={() => handleCategorySelect("special")}
+            >
+              <i
+                className={`fa-solid fa-star me-2 ${
+                  selectedCategory === "special" ? "text-white" : "text-info"
+                }`}
+              ></i>
+              Special
+              <span className="ms-1 font_size_10">
+                ({menuList.filter((menu) => menu.is_special).length})
+              </span>
+            </div>
+
+            <div
+              className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn ${
+                selectedCategory === "offer"
+                  ? "active bg-success text-white"
+                  : "bg-transparent text-success"
+              }`}
+              onClick={() => handleCategorySelect("offer")}
+            >
+              <i
+                className={`fa-solid fa-percent me-2 ${
+                  selectedCategory === "offer" ? "text-white" : "text-success"
+                }`}
+              ></i>
+              Offer
+              <span className="ms-1 font_size_10">
+                ({menuList.filter((menu) => menu.offer > 0).length})
+              </span>
+            </div>
+
+            <div
+              className="category-btn font_size_14 rounded-pill btn magic-btn magic-button"
+              onClick={handleMagicClick}
+            >
+              <div
+                className="position-relative z-1 d-flex align-items-center justify-content-center"
+                style={{ height: "100%" }}
+              >
+                {isMagicLoading ? (
+                  <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                ) : (
+                  <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+                )}
+                Magic
+              </div>
+            </div>
+          </div>
+
+          {/* Add the swiper container after the buttons */}
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
-              <div
-                className={`category-btn bg-info border border-1 border-info text-white font_size_14 rounded-5 swiper-slide`}
-                onClick={() => handleCategorySelect("special")}
-              >
-                <i className="fa-regular fa-star me-2"></i>
-                Special{" "}
-                <span className="gray-muted font_size_10">
-                  {" "}
-                  ({menuList.filter((menu) => menu.is_special).length})
-                </span>
-              </div>
-              {menuList.length > 0 && categories.length > 0 && (
-                <>
-                  <div
-                    className={`category-btn font_size_14 border border-2 rounded-5 swiper-slide ${
-                      selectedCategory === null ? "active" : ""
-                    }`}
-                    onClick={() => handleCategorySelect(null)}
-                    style={{
-                      backgroundColor:
-                        selectedCategory === null ? "#0D775E" : "",
-                      color: selectedCategory === null ? "#ffffff" : "",
-                    }}
-                  >
-                    All{" "}
-                    <span className="gray-text font_size_10">
-                      ({menuList.length})
-                    </span>
-                  </div>
-                </>
-              )}
-
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
@@ -970,6 +1098,101 @@ const Product = () => {
       {showModal && <div className="modal-backdrop fade show"></div>}
 
       <Bottom />
+
+      {/* Add AI Modal */}
+      {showAIModal && (
+        <div
+          className="modal fade show d-block"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div
+              className="modal-content border-0 shadow rounded-4"
+              style={{
+                position: "relative",
+                padding: "4px",
+                "--angle": "0deg",
+                animation: "rotate 3s linear infinite",
+              }}
+            >
+              <button
+                className="btn p-0 fs-3 gray-text"
+                onClick={handleCloseModal}
+                aria-label="Close"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  margin: "12px",
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
+              >
+                <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+              </button>
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "-2px",
+                  zIndex: "-1",
+                  background:
+                    "linear-gradient(var(--angle), #ffbe0b, #fb5607, #ff006e, #8338ec, #3a86ff)",
+                  borderRadius: "1rem",
+                  animation: "rotate 3s linear infinite",
+                }}
+              />
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "1px",
+                  zIndex: "-2",
+                  background: "#fff",
+                  borderRadius: "1rem",
+                }}
+              />
+              <div className="modal-body bg-white text-center p-4">
+                <img
+                  src={AI_Loading}
+                  alt="AI Loading"
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    marginBottom: "20px",
+                  }}
+                />
+                <div className="mb-3">
+                  {countdown !== null ? (
+                    <div className="font_size_14">
+                      Magic starts in{" "}
+                      <span className="fw-bold">{countdown}</span>
+                    </div>
+                  ) : (
+                    "AI is generating menu for you"
+                  )}
+                </div>
+              </div>
+            </div>
+            <style>
+              {`
+                @property --angle {
+                  syntax: "<angle>";
+                  initial-value: 0deg;
+                  inherits: false;
+                }
+                @keyframes rotate {
+                  0%     { --angle: 0deg; }
+                  100%   { --angle: 360deg; }
+                }
+              `}
+            </style>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

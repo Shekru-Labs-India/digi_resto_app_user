@@ -40,13 +40,13 @@ const NearbyArea = () => {
     }
   }, [restaurantId]);
 
-  const toTitleCase = (str) => {
-    if (!str) return "";
-    return str.replace(
-      /\w\S*/g,
-      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-    );
-  };
+  // const toTitleCase = (str) => {
+  //   if (!str) return "";
+  //   return str.replace(
+  //     /\w\S*/g,
+  //     (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  //   );
+  // };
 
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
@@ -100,8 +100,8 @@ const NearbyArea = () => {
       if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
         const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
           ...menu,
-          name: toTitleCase(menu.menu_name),
-          category_name: toTitleCase(menu.category_name),
+          name: (menu.menu_name),
+          category_name: (menu.category_name),
           oldPrice: menu.offer ? menu.price : null,
           price: menu.offer
             ? Math.floor(menu.price * (1 - menu.offer / 100))
@@ -441,7 +441,7 @@ const NearbyArea = () => {
                       />
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                          menuItem.menu_veg_nonveg === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -457,7 +457,7 @@ const NearbyArea = () => {
                       >
                         <i
                           className={`${
-                            menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                            menuItem.menu_veg_nonveg === "veg"
                               ? "fa-solid fa-circle text-success"
                               : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
