@@ -683,7 +683,7 @@ const ProductCard = ({ isVegOnly }) => {
                 onClick={() => handleCategorySelect("offer")}
                 style={{
                   backgroundColor: "#0D9EDF",
-                  color: "#ffffff", 
+                  color: "#ffffff",
                   border: "none",
                   height: "40px",
                   display: "flex",
@@ -714,7 +714,7 @@ const ProductCard = ({ isVegOnly }) => {
                   border: "none",
                   position: "relative",
                   overflow: "hidden",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               >
                 <div
@@ -1031,7 +1031,7 @@ const ProductCard = ({ isVegOnly }) => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -1054,7 +1054,7 @@ const ProductCard = ({ isVegOnly }) => {
                     placeholder="Add any special instructions here..."
                   />
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
                       handleSuggestionClick("Make it more sweet 😋")
                     }
@@ -1064,7 +1064,7 @@ const ProductCard = ({ isVegOnly }) => {
                     more sweet 😋
                   </p>
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
                       handleSuggestionClick("Make it more spicy 🥵")
                     }
@@ -1120,21 +1120,22 @@ const ProductCard = ({ isVegOnly }) => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>
@@ -1146,23 +1147,23 @@ const ProductCard = ({ isVegOnly }) => {
 
       {/* Add modal JSX */}
       {showAIModal && (
-        <div 
-          className="modal fade show d-block" 
+        <div
+          className="modal fade show d-block"
           style={{
             backgroundColor: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(5px)"
+            backdropFilter: "blur(5px)",
           }}
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content border-0 shadow rounded-4">
               <div className="modal-body text-center p-4">
-                <img 
+                <img
                   src={AI_Loading}
                   alt="AI Loading"
                   style={{
                     width: "120px",
                     height: "120px",
-                    marginBottom: "20px"
+                    marginBottom: "20px",
                   }}
                 />
                 <h5 className="mb-3">AI is generating menu for you</h5>

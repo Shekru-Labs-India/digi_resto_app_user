@@ -405,7 +405,7 @@ const Checkout = () => {
             <div className="modal-dialog w-75" role="document">
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
-                  <h5 className="modal-title font_size_16 fw-medium mb-0">
+                  <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
                     Select Order Type
                   </h5>
                   {/* <button
@@ -476,7 +476,7 @@ const Checkout = () => {
                     </div>
 
                     {/* Dine-in */}
-                    <div className="col-12">
+                    <div className="col-12 mb-3">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() => handleOrderTypeSelection("Dine-in")}
@@ -487,7 +487,7 @@ const Checkout = () => {
                           </div>
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>
-                            <small className="text-muted">
+                            <small className="text-dark">
                               13 Tables Available
                             </small>
                           </div>
@@ -511,7 +511,7 @@ const Checkout = () => {
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
-                    <h5 className="modal-title font_size_16 fw-medium mb-0">
+                    <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
                       Existing Order Found
                     </h5>
                     <button
@@ -519,7 +519,7 @@ const Checkout = () => {
                       onClick={() => setShowExistingOrderModal(false)}
                       aria-label="Close"
                     >
-                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -553,7 +553,7 @@ const Checkout = () => {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-dark rounded-pill font_size_14 "
+                      className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowExistingOrderModal(false)}
                     >
                       Close
@@ -628,7 +628,7 @@ const Checkout = () => {
                         className="btn p-0 fs-3 text-dark"
                         onClick={() => setShowNewOrderModal(false)}
                       >
-                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                       </button>
                     </div>
                   </div>

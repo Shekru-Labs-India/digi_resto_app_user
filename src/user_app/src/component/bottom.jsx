@@ -104,23 +104,21 @@ const Bottom = () => {
             location.pathname === "/user_app/Cart" ? "active" : ""
           }`}
         >
-          <div className="position-relative">
+          <div className="position-relative d-inline-block">
             <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
             {hasCartItems && (
-              <span 
-                className="position-absolute"
+              <span
+                className="position-absolute p-1 bg-danger rounded-circle"
                 style={{
                   top: "-5px",
-                  right: "5px",
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: "#ff0000",
-                  borderRadius: "50%",
-                  display: "block"
+                  right: "20px",
+                  width: "5px",
+                  height: "5px",
                 }}
               />
             )}
           </div>
+
           <span className="name font_size_14">Cart</span>
         </Link>
 
@@ -142,7 +140,9 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id ? "fa-solid fa-user me-2 font_size_14" : "fa-regular fa-user me-2 font_size_14"
+              userData?.customer_id
+                ? "fa-solid fa-user me-2 font_size_14"
+                : "fa-regular fa-user me-2 font_size_14"
             }
           ></i>
           <span className="name font_size_14">Profile</span>

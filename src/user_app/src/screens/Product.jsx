@@ -851,11 +851,11 @@ const Product = () => {
                 <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
                     <button
-                      className="btn p-0 fs-3 text-muted"
+                      className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -878,7 +878,7 @@ const Product = () => {
                     placeholder="Add any special instructions here..."
                   />
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
                       handleSuggestionClick("Make it more sweet 😋")
                     }
@@ -888,7 +888,7 @@ const Product = () => {
                     more sweet 😋
                   </p>
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
                       handleSuggestionClick("Make it more spicy 🥵")
                     }
@@ -944,21 +944,22 @@ const Product = () => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

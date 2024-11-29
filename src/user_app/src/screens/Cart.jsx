@@ -379,7 +379,7 @@ const Cart = () => {
       >
         <div className="m-b20 dz-flex-box text-center">
           <div className="dz-cart-about">
-            <h5>Your Cart is Empty</h5>
+            <div className="fs-4 fw-medium text-dark">Your Cart is Empty</div>
             <p>Add items to your cart from the product details page.</p>
 
             <div className="d-flex align-items-center justify-content-center mt-2">
@@ -521,7 +521,7 @@ const Cart = () => {
                               handleRemoveFromCart(item, index);
                             }}
                           >
-                            <i className="fa-solid fa-xmark text-dark font_size_14"></i>
+                            <i className="fa-solid fa-xmark gray-text font_size_14"></i>
                           </div>
                         </div>
                       </div>
