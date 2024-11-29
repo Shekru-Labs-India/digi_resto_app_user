@@ -594,7 +594,7 @@ const Wishlist = () => {
                                       <div
                                         className={`border rounded-3 ${
                                           isDarkMode ? "bg-dark" : "bg-white"
-                                        } opacity-75 d-flex justify-content-center align-items-center ${
+                                        } opacity-100 d-flex justify-content-center align-items-center ${
                                           menu.menu_veg_nonveg.toLowerCase() ===
                                           "veg"
                                             ? "border-success"

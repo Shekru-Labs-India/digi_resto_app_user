@@ -7,9 +7,9 @@ import { useLocation } from "react-router-dom";
 
 export const SidebarToggler = () => {
   const location = useLocation();
-  const { restaurantCode, table_number } = useParams();
+  const {  table_number } = useParams();
   const { showLoginPopup } = usePopup();
-  const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
+  const {  restaurantId, restaurantDetails, restaurantName } =
     useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(
@@ -23,6 +23,15 @@ export const SidebarToggler = () => {
   const [isVegOnly, setIsVegOnly] = useState(() => {
     return localStorage.getItem("isVegOnly") === "true" || false;
   });
+
+  const [restaurantCode, setRestaurantCode] = useState('');
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData?.restaurantCode) {
+      setRestaurantCode(userData.restaurantCode);
+    }
+  }, []);
 
   const toggleVegNonVeg = () => {
     const newValue = !isVegOnly;
@@ -88,7 +97,7 @@ export const SidebarToggler = () => {
           {location.pathname !== "/user_app/Search" &&
             location.pathname !== "/user_app/Profile" && (
               <Link to="/user_app/Search">
-                <i className="fa-solid fa-magnifying-glass me-3 fs-3"></i>
+                <i className="fa-solid fa-magnifying-glass me-3 fs-6 gray-text"></i>
               </Link>
             )}
           <i
@@ -156,37 +165,14 @@ export const SidebarToggler = () => {
         <ul className="nav navbar-nav">
           <li>
             <Link
-              className="nav-link active d-flex align-items-center justify-content-between"
-              to="/user_app/Menu"
+              className="nav-link active"
+              to={`/user_app/${restaurantCode}`}
             >
-              <div className="d-flex align-items-center">
-                <span className="dz-icon icon-sm">
-                  <i className="fa-solid fa-bowl-rice fs-4"></i>
-                </span>
-                <span className="font_size_16 fw-medium">Menu</span>
-              </div>
-              {/* <div className="veg-toggle ">
-                <div
-                  className={`toggle-switch ${isVegOnly ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleVegNonVeg();
-                  }}
-                >
-                  <div className="toggle-label">
-                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle text-danger me-1"></i>
-                      Non-Veg
-                    </span>
-                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle text-success me-1"></i>
-                      Veg
-                    </span>
-                  </div>
-                  <div className="toggle-button"></div>
-                </div>
-              </div> */}
-              <div className="">
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-house fs-3"></i>
+              </span>
+              <span className="font_size_16 fw-medium">Home</span>
+              <div className="ms-5 ps-5">
                 <div
                   className={`  border ${
                     isVegOnly ? "border-success" : "border-danger"
@@ -217,6 +203,40 @@ export const SidebarToggler = () => {
                   )}
                 </div>
               </div>
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="nav-link active d-flex align-items-center justify-content-between"
+              to="/user_app/Menu"
+            >
+              <div className="d-flex align-items-center">
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-bowl-rice fs-4"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Menu</span>
+              </div>
+              {/* <div className="veg-toggle ">
+                <div
+                  className={`toggle-switch ${isVegOnly ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleVegNonVeg();
+                  }}
+                >
+                  <div className="toggle-label">
+                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
+                      <i className="fa-solid fa-circle text-danger me-1"></i>
+                      Non-Veg
+                    </span>
+                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
+                      <i className="fa-solid fa-circle text-success me-1"></i>
+                      Veg
+                    </span>
+                  </div>
+                  <div className="toggle-button"></div>
+                </div>
+              </div> */}
             </Link>
           </li>
           <li>
@@ -288,7 +308,7 @@ export const SidebarToggler = () => {
             ></i>
           </div>
         </div> */}
-        <div className="sidebar-bottom">
+        {/* <div className="sidebar-bottom">
           <div className="text-center pt-3">
             <a
               href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
@@ -353,6 +373,67 @@ export const SidebarToggler = () => {
               className="text-success font_size_12"
               href="https://www.shekruweb.com"
               target="_blank"
+            >
+              Shekru Labs India Pvt. Ltd.
+            </a>
+          </div>
+        </div> */}
+        <div className="align-bottom border-top">
+          <div className="d-flex justify-content-center py-0">
+            <Link to="/">
+              {" "}
+              <div className="d-flex align-items-center mt-4 mb-0">
+                <img src={logo} alt="logo" width="40" height="40" />
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  MenuMitra
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="text-center text-md-center gray-text font_size_12 pb-5">
+            <div className="my-4">
+              <div className="text-center d-flex justify-content-center">
+                <a
+                  href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-facebook fs-4"></i>
+                </a>
+                <a
+                  href="https://www.instagram.com/menumitra/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-instagram fs-4"></i>
+                </a>
+                <a
+                  href="https://www.youtube.com/@menumitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-youtube fs-4"></i>
+                </a>
+
+                <a
+                  href="https://x.com/MenuMitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-x-twitter fs-4"></i>
+                </a>
+              </div>
+            </div>
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
+            <a
+              className="text-success font_size_12"
+              href="https://www.shekruweb.com"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Shekru Labs India Pvt. Ltd.
             </a>

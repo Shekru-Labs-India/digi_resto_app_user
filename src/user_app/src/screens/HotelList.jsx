@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 // import '../assets/styles.css'
 // import '../assets/custom.css'
 import config from "../component/config";
+import logo from "../assets/logos/menumitra_logo_128.png";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
@@ -76,7 +77,7 @@ const HotelList = () => {
           <div className="d-flex justify-content-between mb-3">
             <div className="btn-group btn-group-sm">
               <button
-                className={`btn fw-normal p-2 btn-outline-info ${
+                className={`btn fw-normal p-2 btn-outline-info shadow-lg ${
                   activeFilter === "all" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("all")}
@@ -84,7 +85,7 @@ const HotelList = () => {
                 All
               </button>
               <button
-                className={`btn fw-normal p-2 btn-outline-success ${
+                className={`btn fw-normal p-2 btn-outline-success shadow-lg ${
                   activeFilter === "veg" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("veg")}
@@ -92,7 +93,7 @@ const HotelList = () => {
                 Veg
               </button>
               <button
-                className={`btn fw-normal p-2 btn-outline-warning ${
+                className={`btn fw-normal p-2 btn-outline-warning shadow-lg ${
                   activeFilter === "nonveg" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("nonveg")}
@@ -102,7 +103,7 @@ const HotelList = () => {
             </div>
             <div className="btn-group btn-group-sm">
               <button
-                className={`btn p-2 btn-outline-info ${
+                className={`btn p-2 btn-outline-info shadow-lg ${
                   activeStatusFilter === "all" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("all")}
@@ -110,7 +111,7 @@ const HotelList = () => {
                 All
               </button>
               <button
-                className={`btn p-2 btn-outline-success ${
+                className={`btn p-2 btn-outline-success shadow-lg ${
                   activeStatusFilter === "open" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("open")}
@@ -118,7 +119,7 @@ const HotelList = () => {
                 Open
               </button>
               <button
-                className={`btn p-2 btn-outline-warning ${
+                className={`btn p-2 btn-outline-dark shadow-lg ${
                   activeStatusFilter === "closed" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("closed")}
@@ -161,7 +162,7 @@ const HotelList = () => {
                           <div className="col-1 d-flex align-items-center">
                             <i className="fa-solid fa-phone text-primary font_size_12"></i>
                           </div>
-                          <div className="col-10 d-flex align-items-center">
+                          <div className="col-10 d-flex align-it  ems-center">
                             <span className="text-primary font_size_12">
                               {hotel.mobile}
                             </span>
@@ -232,7 +233,18 @@ const HotelList = () => {
           )}
         </div>
         <div className="align-bottom border-top">
-          <div className="text-center text-md-center mt-2 gray-text font_size_12 pb-5">
+          <div className="d-flex justify-content-center py-0">
+            <Link to="/">
+              {" "}
+            <div className="d-flex align-items-center mt-4 mb-0">
+              <img src={logo} alt="logo" width="40" height="40" />
+              <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                MenuMitra
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="text-center text-md-center gray-text font_size_12 pb-5">
             <div className="my-4">
               <div className="text-center d-flex justify-content-center">
                 <a
@@ -241,7 +253,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="fa-brands fa-facebook "></i>
+                  <i className="fa-brands fa-facebook fs-4"></i>
                 </a>
                 <a
                   href="https://www.instagram.com/menumitra/"
@@ -249,7 +261,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="fa-brands fa-instagram"></i>
+                  <i className="fa-brands fa-instagram fs-4"></i>
                 </a>
                 <a
                   href="https://www.youtube.com/@menumitra"
@@ -257,32 +269,18 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="fa-brands fa-youtube"></i>
+                  <i className="fa-brands fa-youtube fs-4"></i>
                 </a>
-                <a
-                  href="https://www.linkedin.com/company/102429337/admin/dashboard/"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="fa-brands fa-linkedin"></i>
-                </a>
+               
                 <a
                   href="https://x.com/MenuMitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="fa-brands fa-x-twitter"></i>
+                  <i className="fa-brands fa-x-twitter fs-4"></i>
                 </a>
-                <a
-                  href="https://t.me/MenuMitra"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="fa-brands fa-telegram"></i>
-                </a>
+               
               </div>
             </div>
             <i className="fa-solid fa-bolt"></i> Powered by <br />

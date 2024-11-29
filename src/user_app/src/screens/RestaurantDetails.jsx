@@ -441,7 +441,7 @@ function RestaurantDetails() {
                       }}
                     />
                     <div
-                      className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
+                      className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center border-success"
                       style={{
                         position: "absolute",
                         bottom: 3,

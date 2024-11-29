@@ -214,7 +214,7 @@ const Profile = () => {
             <span className="ms-2 gray-text font_size_14">All Hotels</span>
           </Link>
         </div>
-        <div className="mt-3 p-b70">
+        {/* <div className="mt-3 p-b70">
           <div className="text-center pt-3">
             <a
               href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
@@ -285,6 +285,67 @@ const Profile = () => {
               className="text-success font_size_12 "
               href="https://www.shekruweb.com"
               target="_blank"
+            >
+              Shekru Labs India Pvt. Ltd.
+            </a>
+          </div>
+        </div> */}
+        <div className="align-bottom border-top mt-4">
+          <div className="d-flex justify-content-center py-0">
+            <Link to="/">
+              {" "}
+              <div className="d-flex align-items-center mt-4 mb-0">
+                <img src={logo} alt="logo" width="40" height="40" />
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  MenuMitra
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="text-center text-md-center gray-text font_size_12 pb-5">
+            <div className="my-4">
+              <div className="text-center d-flex justify-content-center">
+                <a
+                  href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-facebook fs-4"></i>
+                </a>
+                <a
+                  href="https://www.instagram.com/menumitra/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-instagram fs-4"></i>
+                </a>
+                <a
+                  href="https://www.youtube.com/@menumitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-youtube fs-4"></i>
+                </a>
+
+                <a
+                  href="https://x.com/MenuMitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-x-twitter fs-4"></i>
+                </a>
+              </div>
+            </div>
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
+            <a
+              className="text-success font_size_12"
+              href="https://www.shekruweb.com"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Shekru Labs India Pvt. Ltd.
             </a>

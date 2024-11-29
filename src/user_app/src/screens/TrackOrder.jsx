@@ -1116,7 +1116,7 @@ const TrackOrder = () => {
 
                             {/* Veg/Non-veg indicator */}
                             <div
-                              className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                              className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                                 isVegMenu(menu?.menu_veg_nonveg)
                                   ? "border-success"
                                   : "border-danger"

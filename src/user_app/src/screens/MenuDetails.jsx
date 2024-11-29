@@ -673,7 +673,7 @@ const MenuDetails = () => {
 
                   {/* Veg/Non-veg indicator */}
                   <div
-                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                       productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                         ? "border-success"
                         : "border-danger"
@@ -743,7 +743,7 @@ const MenuDetails = () => {
                     }}
                   />
                   <div
-                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                       productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                         ? "border-success"
                         : "border-danger"
