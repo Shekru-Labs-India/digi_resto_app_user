@@ -2401,6 +2401,7 @@ textarea.form-control {
   background-repeat: no-repeat;
   background-position: right;
   background-size: contain;
+  z-index: -1;
 }
 .page-title-area .page-title-content h2 {
   margin-bottom: 0;
