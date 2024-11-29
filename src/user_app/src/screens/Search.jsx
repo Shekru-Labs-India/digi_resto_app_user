@@ -287,6 +287,11 @@ const Search = () => {
     }
   };
 
+    const handleSuggestionClick = (suggestion) => {
+      // Simply set the suggestion as the new note value
+      setNotes(suggestion);
+    };
+
   const handleUnauthorizedFavorite = () => {
     showLoginPopup();
   };
@@ -511,20 +516,19 @@ const Search = () => {
                 onChange={handleSearch}
                 value={searchTerm}
               />
-              <i 
+              <i
                 className="fa-solid fa-magnifying-glass position-absolute text-primary"
                 style={{
                   left: "15px",
                   top: "50%",
                   transform: "translateY(-50%)",
                   fontSize: "18px",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
                 onClick={() => document.getElementById("searchInput").focus()}
               ></i>
             </div>
           </div>
-         
 
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
@@ -706,7 +710,7 @@ const Search = () => {
                                 <i
                                   className={`fa-solid ${
                                     isMenuItemInCart(menu.menu_id)
-                                      ? "fa-cart-shopping "
+                                      ? "fa-circle-check "
                                       : "fa-solid fa-plus text-secondary"
                                   } fs-6`}
                                 ></i>
@@ -771,14 +775,35 @@ const Search = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more spicy 🥵")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy 🥵
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">

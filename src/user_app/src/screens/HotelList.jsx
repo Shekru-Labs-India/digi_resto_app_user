@@ -159,7 +159,7 @@ const HotelList = () => {
                         </div>
                         <div className="row mt-1">
                           <div className="col-1 d-flex align-items-center">
-                            <i className="fa-solid fa-phone text-primary"></i>
+                            <i className="fa-solid fa-phone text-primary font_size_12"></i>
                           </div>
                           <div className="col-10 d-flex align-items-center">
                             <span className="text-primary font_size_12">
@@ -169,7 +169,7 @@ const HotelList = () => {
                         </div>
                         <div className="row mb-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="fa-solid fa-location-dot gray-text"></i>
+                            <i className="fa-solid fa-location-dot gray-text font_size_12"></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="gray-text font_size_12">

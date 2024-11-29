@@ -13,6 +13,7 @@ import { getUserData, getRestaurantData } from "../utils/userUtils";
 
 import { usePopup } from "../context/PopupContext";
 import config from "./config";
+import AI_Loading from "../assets/gif/AI_Loading.gif";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -85,6 +86,9 @@ const ProductCard = ({ isVegOnly }) => {
 
   // Add state for loading if not already present
   const [isMagicLoading, setIsMagicLoading] = useState(false);
+
+  // Add state for modal
+  const [showAIModal, setShowAIModal] = useState(false);
 
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
@@ -511,6 +515,7 @@ const ProductCard = ({ isVegOnly }) => {
   const handleMagicClick = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     setIsMagicLoading(true);
+    setShowAIModal(true); // Show modal when starting
     try {
       const response = await fetch(
         "https://men4u.xyz/user_api/auto_create_cart",
@@ -529,33 +534,14 @@ const ProductCard = ({ isVegOnly }) => {
       const data = await response.json();
       
       if (data.st === 1) {
-        // Get cart details before navigation
-        const cartResponse = await fetch(
-          "https://men4u.xyz/user_api/get_cart_detail_add_to_cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              cart_id: data.cart_id,
-              customer_id: userData?.customer_id,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        const cartData = await cartResponse.json();
-        
-        if (cartData.st === 1) {
+        localStorage.setItem("cartId", data.cart_id);
+        setTimeout(() => {
           navigate("/user_app/Cart", { 
             state: { 
               cartId: data.cart_id 
             }
           });
-        } else {
-          window.showToast("error", "Failed to fetch cart details");
-        }
+        }, 5000);
       } else {
         window.showToast("error", data.msg || "Failed to create magic cart");
       }
@@ -563,7 +549,10 @@ const ProductCard = ({ isVegOnly }) => {
       console.clear();
       window.showToast("error", "Something went wrong. Please try again.");
     } finally {
-      setIsMagicLoading(false);
+      setTimeout(() => {
+        setIsMagicLoading(false);
+        setShowAIModal(false); // Hide modal when done
+      }, 5000);
     }
   };
 
@@ -688,8 +677,14 @@ const ProductCard = ({ isVegOnly }) => {
               </div>
 
               <div
-                className="category-btn font_size_14 rounded-pill btn btn-primary"
+                className={`category-btn font_size_14 rounded-pill ${
+                  selectedCategoryId === "offer" ? "active" : ""
+                }`}
+                onClick={() => handleCategorySelect("offer")}
                 style={{
+                  backgroundColor: "#0D9EDF",
+                  color: "#ffffff", 
+                  border: "none",
                   height: "40px",
                   display: "flex",
                   alignItems: "center",
@@ -700,6 +695,9 @@ const ProductCard = ({ isVegOnly }) => {
               >
                 <i className="fa-solid fa-percent me-2"></i>
                 Offer
+                <span className="ms-1 font_size_10">
+                  ({menuList.filter((menu) => menu.offer !== 0).length})
+                </span>
               </div>
 
               <div
@@ -1145,6 +1143,37 @@ const ProductCard = ({ isVegOnly }) => {
         </div>
       )}
       {showModal && <div className="modal-backdrop fade show"></div>}
+
+      {/* Add modal JSX */}
+      {showAIModal && (
+        <div 
+          className="modal fade show d-block" 
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(5px)"
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow rounded-4">
+              <div className="modal-body text-center p-4">
+                <img 
+                  src={AI_Loading}
+                  alt="AI Loading"
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    marginBottom: "20px"
+                  }}
+                />
+                <h5 className="mb-3">AI is generating menu for you</h5>
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

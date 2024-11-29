@@ -47,7 +47,7 @@ const Header = ({ userData, isLoggedIn, handleLogout, currentPage }) => {
           <div className="header-content ">
             <div className="left-content">
               <Link className="back-btn fs-3" onClick={() => navigate(-1)}>
-                <i className="fa-solid fa-arrow-left "></i>
+                <i className="fa-solid fa-arrow-left"></i>
               </Link>
             </div>
             <div className="mid-content">

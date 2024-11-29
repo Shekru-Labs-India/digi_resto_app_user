@@ -181,20 +181,20 @@ function RestaurantDetails() {
               </div>
               <div className="card p-3">
                 <div className="my-1">
-                  <i className="fa-solid fa-store font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-store font_size_14"></i>
                   {/* <span className="card-title ms-2 ">Jagdamb</span> */}
                   <span className="card-title ms-2 ">
                     {restaurantDetails.name}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="fa-solid fa-phone text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-phone text-primary font_size_14"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.mobile}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="fa-solid fa-location-dot gray-text text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-location-dot gray-text text-primary font_size_14"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.address}
                   </span>

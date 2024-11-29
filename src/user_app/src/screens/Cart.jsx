@@ -33,7 +33,9 @@ const Cart = () => {
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
     const customerId = getCustomerId();
-    const cartId = getCartId();
+    // const cartId = getCartId();
+
+    const cartId = getCartId() || localStorage.getItem("cartId");
 
     if (!customerId || !cartId || !restaurantId) {
       setCartDetails({ order_items: [] });

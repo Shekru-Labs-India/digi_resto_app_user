@@ -111,11 +111,17 @@ const HomeScreen = () => {
               </Link>
             </div>
             <div className="right-content gap-1">
-              <div
-                className="menu-toggler toggler-icon"
-                onClick={toggleSidebar}
-              >
-                <i className="fa-solid fa-bars-staggered fs-3"></i>
+              <span className=""> </span>
+              <div className="menu-toggler toggler-icon">
+              
+                  <Link to="/user_app/Search">
+                    <i className="fa-solid fa-magnifying-glass me-3 fs-3"></i>
+                  </Link>
+               
+                <i
+                  className="fa-solid fa-bars-staggered fs-3"
+                  onClick={toggleSidebar}
+                ></i>
               </div>
             </div>
           </div>

@@ -23,7 +23,7 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
                   className="back-btn dz-icon icon-sm"
                   onClick={() => navigate(-1)}
                 >
-                  <i className="fa-solid fa-arrow-left fs-2"></i>
+                  <i className="fa-solid fa-arrow-left fs-2 gray-text"></i>
                 </Link>
               )}
             </div>

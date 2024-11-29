@@ -417,14 +417,14 @@ const Checkout = () => {
                 </div>
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
-                    {/* Pickup */}
+                    {/* Parcel */}
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer position-relative"
-                        onClick={() => handleOrderTypeSelection("Pickup")}
+                        onClick={() => handleOrderTypeSelection("Parcel")}
                       >
                         {/* Icons container */}
-                        <div className="position-absolute top-0 end-0 p-2 pt-0">
+                        {/* <div className="position-absolute top-0 end-0 p-2 pt-0">
                           <div className="d-flex flex-column gap-1">
                             <div
                               className="rounded-circle p-1"
@@ -447,12 +447,12 @@ const Checkout = () => {
                               />
                             </div>
                           </div>
-                        </div>
+                        </div> */}
 
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
                             <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
-                            <p className="mb-0 fw-medium">Pickup</p>
+                            <p className="mb-0 fw-medium">Parcel</p>
                           </div>
                         </div>
                       </div>
@@ -710,8 +710,8 @@ const Checkout = () => {
                           </div>
 
                           <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
-                            <i className="fa fa-chevron-right me-2"></i> Make it
-                            more spicy 🥵{item.notes}
+                            <i className="fa-solid fa-comment-dots me-2"></i>{" "}
+                            Make it more spicy 🥵{item.notes}
                           </p>
                         </div>
                       </div>

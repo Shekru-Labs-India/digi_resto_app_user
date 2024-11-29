@@ -202,7 +202,7 @@ const Profile = () => {
         {isLoggedIn && (
           <div className="d-flex justify-content-center align-items-center">
             <div className="" onClick={handleLogout}>
-              <i className="ri-shut-down-line font_sie_14"></i>
+              <i className="fa-solid fa-power-off font_sie_14"></i>
               <span className="ms-2">Logout</span>
             </div>
           </div>

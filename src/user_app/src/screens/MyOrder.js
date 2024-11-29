@@ -781,7 +781,7 @@ console.log(customerName);
             </div>
           </div>
           <div className="row">
-            <div className="col-8 text-start">
+            <div className="col-5 text-start">
               <div className="restaurant">
                 <i className="fa-solid fa-store pe-2 font_size_14"></i>
                 <span className="fw-medium font_size_14">
@@ -789,7 +789,13 @@ console.log(customerName);
                 </span>
               </div>
             </div>
-            <div className="col-4 text-end">
+            <div className="col-5 text-end text-nowrap pe-0">
+              {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+              <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                Order Type: {order.order_type}
+              </span>
+            </div>
+            <div className="col-2 text-end">
               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
               <span className="font_size_12 gray-text font_size_12">
                 {order.table_number}
@@ -1421,13 +1427,19 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-8 text-start">
+                        <div className="col-5 text-start">
                           <div className="restaurant">
                             <i className="fa-solid fa-store pe-2 font_size_14"></i>
                             <span className="fw-medium font_size_14">
                               {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
+                        </div>
+                        <div className="col-3 text-end pe-0">
+                          {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                          <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                            Order Type: {order.order_type}
+                          </span>
                         </div>
                         <div className="col-4 text-end">
                           <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>

@@ -11,6 +11,7 @@ import LoaderGif from "./LoaderGIF.jsx";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import config from "../component/config"
+import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const TrackOrder = () => {
   // Define displayCartItems
   const [orderDetails, setOrderDetails] = useState(null);
@@ -1467,9 +1468,7 @@ const TrackOrder = () => {
               </div>
             </div>
 
-            <div className="divider border-success inner-divider transparent mt-5">
-              <span className="bg-body">End</span>
-            </div>
+           <RestaurantSocials/>
           </div>
         )}
 

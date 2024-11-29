@@ -130,13 +130,11 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = async (itemId, customerId, restaurantId) => {
-    if (!cartId) {
-      console.error("Cart ID is missing");
-      return;
-    }
-  
+  const removeFromCart = async (menuId, customerId, restaurantId) => {
     try {
+      // Get the current cartId
+      const cartId = localStorage.getItem("cartId");
+      
       const response = await fetch(
         `${config.apiDomain}/user_api/remove_from_cart`,
         {
@@ -145,29 +143,24 @@ export const CartProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            cart_id: cartId,
+            menu_id: menuId,
             customer_id: customerId,
             restaurant_id: restaurantId,
-            menu_id: itemId,
+            cart_id: cartId // Add cart_id to the request
           }),
         }
       );
-  
+
       const data = await response.json();
       if (data.st === 1) {
-        setCartItems((prevItems) => {
-          const updatedItems = prevItems.filter((item) => item.menu_id !== itemId);
-          return updatedItems;
-        });
-  
-        if (cartItems.length === 0) {  // It will be 0 after the removal
-          setCartId(null);
-        }
-      } else {
-        console.error("Failed to remove item from cart:", data.msg);
+        // Update local storage and trigger events
+        window.dispatchEvent(new Event("cartUpdated"));
+        return true;
       }
+      return false;
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.error("Error removing from cart:", error);
+      return false;
     }
   };
 
