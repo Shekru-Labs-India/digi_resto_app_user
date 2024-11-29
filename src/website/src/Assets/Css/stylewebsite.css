@@ -11,7 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 a {
-  display: inline-block;
+  /* display: inline-block !important; */
   transition: all 0.5s;
   text-decoration: none;
 }

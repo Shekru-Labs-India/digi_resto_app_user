@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import "../assets/css/style.css";
 
 import Bottom from "../component/bottom";
 import OfferBanner from "../component/OfferBanner";

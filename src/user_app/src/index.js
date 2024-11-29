@@ -6,6 +6,7 @@ import App from './App';
 // import 'remixicon/fonts/remixicon.css';
 import "./assets/css/custom.css";
 import "./assets/css/style.css";
+import "./assets/css/Tab.css";
 import "../../../public/assets/user_app/css/custom.css"
 import "../../../public/assets/user_app/css/style.css";
 const root = ReactDOM.createRoot(document.getElementById('root'));

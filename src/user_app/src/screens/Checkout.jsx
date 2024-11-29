@@ -21,6 +21,7 @@ const Checkout = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const storedRestaurantId = localStorage.getItem("restaurantId");
+  const [availableTables, setAvailableTables] = useState(0);
 
   const location = useLocation();
   // const [cartItems, setCartItems] = useState([]);
@@ -177,6 +178,8 @@ const Checkout = () => {
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
+        setAvailableTables(data.available_tables);
+
         // If no existing order, show order type selection
         if (data.order_number === null && data.order_status === null) {
           setShowOrderTypeModal(true);
@@ -488,7 +491,7 @@ const Checkout = () => {
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>
                             <small className="text-dark">
-                              13 Tables Available
+                              {availableTables} Tables Available
                             </small>
                           </div>
                         </div>

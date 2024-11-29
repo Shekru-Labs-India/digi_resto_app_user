@@ -1,6 +1,7 @@
 import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
 import { Link } from 'react-router-dom';
+import "../assets/css/Tab.css";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
