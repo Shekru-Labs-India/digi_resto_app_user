@@ -1,78 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useCart } from "../context/CartContext";
 import UserAuthPopup from './UserAuthPopup';
 import config from "./config";
 
 const Bottom = () => {
   const location = useLocation();
   const { restaurantCode } = useRestaurantId();
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const { cartItems } = useCart();
   const [userData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
-  const [hasCartItems, setHasCartItems] = useState(false);
 
   const isHomePath = (pathname) => {
     const homePathPattern = new RegExp(
       `^/user_app/${restaurantCode}(?:/\\d+)?$`
     );
     return homePathPattern.test(pathname);
-  };
-
-  useEffect(() => {
-    const updateCartCount = () => {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-      setCartItemCount(cartItems.length);
-    };
-
-    updateCartCount();
-    window.addEventListener("cartUpdated", updateCartCount);
-
-    return () => {
-      window.removeEventListener("cartUpdated", updateCartCount);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Initial check
-    checkCartItems();
-
-    // Listen for cart updates
-    const handleCartUpdate = () => {
-      checkCartItems();
-    };
-
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-  }, []);
-
-  const checkCartItems = async () => {
-    const cartId = localStorage.getItem("cartId");
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const restaurantId = localStorage.getItem("restaurantId");
-
-    if (cartId && userData?.customer_id && restaurantId) {
-      try {
-        const response = await fetch(
-          `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              cart_id: cartId,
-              customer_id: userData.customer_id,
-              restaurant_id: restaurantId,
-            }),
-          }
-        );
-
-        const data = await response.json();
-        setHasCartItems(data.st === 1 && data.order_items?.length > 0);
-      } catch (error) {
-        console.error("Error checking cart:", error);
-      }
-    }
   };
 
   return (
@@ -106,7 +51,7 @@ const Bottom = () => {
         >
           <div className="position-relative d-inline-block">
             <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
-            {hasCartItems && (
+            {cartItems.length > 0 && (
               <span
                 className="position-absolute p-1 bg-danger rounded-circle"
                 style={{
@@ -118,7 +63,6 @@ const Bottom = () => {
               />
             )}
           </div>
-
           <span className="name font_size_14">Cart</span>
         </Link>
 

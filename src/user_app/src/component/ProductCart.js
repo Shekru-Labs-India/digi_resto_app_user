@@ -442,66 +442,34 @@ const ProductCard = ({ isVegOnly }) => {
     [handleAddToCartClick, isMenuItemInCart]
   );
 
-  const handleConfirmAddToCart = async () => {
-    if (!selectedMenu) return;
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      showLoginPopup();
-      return;
-    }
-
-    const currentRestaurantId =
-      restaurantId || localStorage.getItem("restaurantId");
-    if (!currentRestaurantId) {
-      console.clear();
-      window.showToast("error", "Restaurant information is missing.");
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
-      return;
-    }
-
+  const handleConfirmAddToCart = async (e) => {
+    e.preventDefault();  // Prevent event bubbling
+    e.stopPropagation(); // Stop event propagation
+    
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          restaurant_id: currentRestaurantId,
-        },
-        currentRestaurantId
-      );
+      const itemToAdd = {
+        ...selectedMenu,
+        half_or_full: portionSize,
+        notes: notes,
+        quantity: 1  // Explicitly set quantity to 1
+      };
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
-
+      await addToCart(itemToAdd, restaurantId);
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
-      setSelectedMenu(null);
+      
+      // Show success message or toast here if needed
+      
     } catch (error) {
-      if (error.message === "Item is already in the cart") {
-        window.showToast("info", "This item is already in your cart.");
-      } else {
-        console.clear();
-        window.showToast(
-          "error",
-          "Failed to add item to cart. Please try again."
-        );
-      }
+      // Handle error appropriately
+      console.error("Error adding to cart:", error);
     }
   };
 
   const handleModalClick = (e) => {
-    const restaurantStatus = localStorage.getItem("restaurantStatus");
-    // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains("modal")) {
+    // Only close if clicking the backdrop
+    if (e.target.classList.contains('modal')) {
       setShowModal(false);
     }
   };
@@ -1166,7 +1134,7 @@ const ProductCard = ({ isVegOnly }) => {
                     marginBottom: "20px",
                   }}
                 />
-                <h5 className="mb-3">AI is generating menu for you</h5>
+                <div className="mb-3">AI is generating menu for you</div>
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>

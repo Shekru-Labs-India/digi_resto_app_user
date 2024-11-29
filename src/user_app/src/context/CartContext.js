@@ -132,7 +132,6 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = async (menuId, customerId, restaurantId) => {
     try {
-      // Get the current cartId
       const cartId = localStorage.getItem("cartId");
       
       const response = await fetch(
@@ -146,14 +145,15 @@ export const CartProvider = ({ children }) => {
             menu_id: menuId,
             customer_id: customerId,
             restaurant_id: restaurantId,
-            cart_id: cartId // Add cart_id to the request
+            cart_id: cartId
           }),
         }
       );
 
       const data = await response.json();
       if (data.st === 1) {
-        // Update local storage and trigger events
+        // Immediately update the cartItems state
+        setCartItems(prevItems => prevItems.filter(item => item.menu_id !== menuId));
         window.dispatchEvent(new Event("cartUpdated"));
         return true;
       }
