@@ -425,7 +425,7 @@ const Search = () => {
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
   const isVegMenu = (menu_veg_nonveg) => {
-    return menu_veg_nonveg.toLowerCase() === "veg";
+    return menu_veg_nonveg === "veg";
   };
 
   useEffect(() => {
@@ -593,8 +593,8 @@ const Search = () => {
                           ></i>
                         </div>
                         <div
-                          className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          className={`border rounded-3 bg-white opacity-100  d-flex justify-content-center align-items-center ${
+                            menu.menu_veg_nonveg === "veg"
                               ? "border-success"
                               : "border-danger"
                           }`}
@@ -610,7 +610,7 @@ const Search = () => {
                         >
                           <i
                             className={`${
-                              menu.menu_veg_nonveg.toLowerCase() === "veg"
+                              menu.menu_veg_nonveg === "veg"
                                 ? "fa-solid fa-circle text-success"
                                 : "fa-solid fa-play fa-rotate-270 text-danger"
                             } font_size_12`}

@@ -595,7 +595,7 @@ const Wishlist = () => {
                                         className={`border rounded-3 ${
                                           isDarkMode ? "bg-dark" : "bg-white"
                                         } opacity-100 d-flex justify-content-center align-items-center ${
-                                          menu.menu_veg_nonveg.toLowerCase() ===
+                                          menu.menu_veg_nonveg ===
                                           "veg"
                                             ? "border-success"
                                             : "border-danger"
@@ -612,7 +612,7 @@ const Wishlist = () => {
                                       >
                                         <i
                                           className={`${
-                                            menu.menu_veg_nonveg.toLowerCase() ===
+                                            menu.menu_veg_nonveg ===
                                             "veg"
                                               ? "fa-solid fa-circle text-success"
                                               : "fa-solid fa-play fa-rotate-270 text-danger"

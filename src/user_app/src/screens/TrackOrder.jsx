@@ -540,6 +540,10 @@ const TrackOrder = () => {
   };
 
   const fetchOrderDetails = async (orderNumber) => {
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
     try {
       setLoading(true);
       const response = await fetch(
@@ -553,6 +557,7 @@ const TrackOrder = () => {
             order_number: orderNumber,
             customer_id: customerId,
             customer_type: customerType,
+            section_id: sectionId,
           }),
         }
       );

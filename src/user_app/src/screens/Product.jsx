@@ -775,7 +775,7 @@ const Product = () => {
                       </div>
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                          menuItem.menu_veg_nonveg === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -791,7 +791,7 @@ const Product = () => {
                       >
                         <i
                           className={`${
-                            menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                            menuItem.menu_veg_nonveg === "veg"
                               ? "fa-solid fa-circle text-success"
                               : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}

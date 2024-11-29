@@ -125,6 +125,7 @@ const CircularCountdown = ({
       const currentCustomerId =
         userData?.customer_id || localStorage.getItem("customer_id");
       const restaurantId = order.restaurant_id;
+      const sectionId = order.section_id;
 
       if (!currentCustomerId || !restaurantId) return;
 
@@ -138,6 +139,7 @@ const CircularCountdown = ({
           body: JSON.stringify({
             customer_id: currentCustomerId,
             restaurant_id: restaurantId,
+            section_id: sectionId,
           }),
         }
       );
@@ -417,6 +419,10 @@ function OrdersPlacedOngoing() {
   const [orders, setOrders] = useState({ placed: [], ongoing: [] });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const sectionId =
+    JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+    localStorage.getItem("sectionId") ||
+    "";
 
   const fetchData = async () => {
     // Check if we have required data before making the API call
@@ -437,6 +443,7 @@ function OrdersPlacedOngoing() {
           body: JSON.stringify({
             customer_id: userData.customer_id,
             restaurant_id: userData.restaurantId,
+            section_id: sectionId,
           }),
           signal: controller.signal
         }

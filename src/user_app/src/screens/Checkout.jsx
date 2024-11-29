@@ -233,6 +233,11 @@ const Checkout = () => {
       localStorage.getItem("tableNumber") ||
       "1";
 
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
+
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/create_order`,
@@ -247,6 +252,7 @@ const Checkout = () => {
             restaurant_id: restaurantId,
             table_number: tableNumber,
             order_type: orderType,
+            section_id: sectionId,
           }),
         }
       );
@@ -297,6 +303,11 @@ const Checkout = () => {
     }
 
     try {
+      const sectionId =
+        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+        localStorage.getItem("sectionId") ||
+        "";
+
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
@@ -311,6 +322,7 @@ const Checkout = () => {
             order_number: existingOrderDetails.orderNumber,
             order_status: orderStatus,
             order_type: orderType,
+            section_id: sectionId,
           }),
         }
       );

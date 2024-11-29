@@ -73,6 +73,10 @@ const MyOrder = () => {
   };
 
   useEffect(() => {
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
     const fetchOngoingOrPlacedOrder = async () => {
       try {
         setLoading(true);
@@ -95,6 +99,7 @@ const MyOrder = () => {
             body: JSON.stringify({
               customer_id: currentCustomerId,
               restaurant_id: restaurantId,
+              section_id: sectionId,
             }),
           }
         );
@@ -141,6 +146,10 @@ const MyOrder = () => {
   }, [customerId, restaurantId]);
 
   useEffect(() => {
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -167,6 +176,7 @@ const MyOrder = () => {
               order_status: activeTab === "cancelled" ? "cancle" : activeTab,
               customer_id: currentCustomerId,
               customer_type: currentCustomerType,
+              section_id: sectionId,
             }),
           }
         );
@@ -789,17 +799,25 @@ console.log(customerName);
                 </span>
               </div>
             </div>
-            <div className="col-5 text-end text-nowrap pe-0">
+          
+            <div className="col-7 text-end">
+              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+              <span className="font_size_12 gray-text font_size_12">
+                {order.table_number}
+              </span>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-3 text-start pe-0">
               {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
               <span className="font_size_12 gray-text font_size_12 text-nowrap">
                 Order Type: {order.order_type}
               </span>
             </div>
-            <div className="col-2 text-end">
-              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-              <span className="font_size_12 gray-text font_size_12">
-                {order.table_number}
-              </span>
+            <div className="col-9 text-end">
+              <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                 {order.section_name}
+              </div>
             </div>
           </div>
           <div className="row">
@@ -1435,12 +1453,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             </span>
                           </div>
                         </div>
-                        <div className="col-3 text-end pe-0">
-                          {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
-                          <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                            Order Type: {order.order_type}
-                          </span>
-                        </div>
+                       
                         <div className="col-4 text-end">
                           <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                           <span className="font_size_12 gray-text font_size_12">

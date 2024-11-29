@@ -19,18 +19,18 @@ const HotelList = () => {
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {
-            const code =
-              hotel.code ||
-              (hotel.resto_url && hotel.resto_url.match(/\/(\d{6})\//)[1]);
-            return { ...hotel, code };
+            const sectionId = hotel.resto_url.split('/').pop();
+            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || '';
+            return { 
+              ...hotel, 
+              code,
+              section_id: sectionId
+            };
           });
           setHotels(formattedHotels);
           setFilteredHotels(formattedHotels);
 
-          // localStorage.removeItem("isRestaurantOpen");
-          // localStorage.removeItem("restaurantStatus");
           localStorage.removeItem("allOrderList");
-        } else {
         }
       } catch (error) {}
     };
@@ -131,7 +131,7 @@ const HotelList = () => {
           {filteredHotels.length > 0 ? (
             filteredHotels.map((hotel) => (
               <div className="card rounded-4" key={hotel.restaurant_id}>
-                <Link to={`/user_app/${hotel.code}`}>
+                <Link to={`/user_app/${hotel.code}/1/${hotel.section_id}`}>
                   <div
                     className={`card-body py-0 ${
                       hotel.is_open === false ? "bg-light rounded-4" : ""

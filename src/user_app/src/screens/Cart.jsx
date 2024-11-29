@@ -457,7 +457,7 @@ const Cart = () => {
                       )}
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          item.menu_veg_nonveg.toLowerCase() === "veg"
+                          item.menu_veg_nonveg === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -473,7 +473,7 @@ const Cart = () => {
                       >
                         <i
                           className={`${
-                            item.menu_veg_nonveg.toLowerCase() === "veg"
+                            item.menu_veg_nonveg === "veg"
                               ? "fa-solid fa-circle text-success"
                               : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
