@@ -337,6 +337,19 @@ const OrderCard = ({
               </div>
             </div>
             <div className="row">
+              <div className="col-3 text-start pe-0">
+                {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                  Order Type: {order.order_type}
+                </span>
+              </div>
+              <div className="col-9 text-end">
+                <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                  {order.section_name}
+                </div>
+              </div>
+            </div>
+            <div className="row">
               <div className="col-6">
                 <div className="menu-info">
                   <i className="fa-solid fa-bowl-rice me-3 gray-text font_size_12"></i>
@@ -358,7 +371,6 @@ const OrderCard = ({
             </div>
           </div>
 
-         
           {showCancelModal && (
             <div
               className="modal fade show d-block"

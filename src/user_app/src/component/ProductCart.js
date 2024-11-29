@@ -644,7 +644,7 @@ const ProductCard = ({ isVegOnly }) => {
               </Link>
             </div>
 
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between mb-3 pt-1">
               <div className="me-2 w-100" style={{ height: "40px" }}>
                 <div
                   className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${

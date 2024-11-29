@@ -669,7 +669,7 @@ const Product = () => {
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
-                    className={`category-btn font_size_14 border border-2 rounded-5 ${
+                    className={`category-btn font_size_14 rounded-5 ${
                       selectedCategory === category.menu_cat_id ? "active" : ""
                     }`}
                     onClick={() => handleCategorySelect(category.menu_cat_id)}
