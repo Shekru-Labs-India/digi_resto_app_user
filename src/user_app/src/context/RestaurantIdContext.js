@@ -22,28 +22,57 @@ export const RestaurantIdProvider = ({ children }) => {
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    const pathParts = location.pathname.split('/');
-    const tableNumberPart = pathParts[pathParts.length - 2];
-    const sectionIdPart = pathParts[pathParts.length - 1];
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/);
 
-    if (tableNumberPart && !isNaN(tableNumberPart) && tableNumberPart > 0 && tableNumberPart <= 10) {
-      setTableNumber(tableNumberPart);
-      localStorage.setItem("tableNumber", tableNumberPart);
-    }
-
-    if (sectionIdPart && !isNaN(sectionIdPart)) {
-      setSectionId(sectionIdPart);
-      localStorage.setItem("sectionId", sectionIdPart);
-
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-      if (Object.keys(userData).length > 0) {
-        const updatedUserData = {
-          ...userData,
-          tableNumber: tableNumberPart,
-          sectionId: sectionIdPart
-        };
-        localStorage.setItem("userData", JSON.stringify(updatedUserData));
+    if (match) {
+      const [, code, table, section] = match;
+      setRestaurantCode(code);
+      
+      // Store table number if present
+      if (table) {
+        setTableNumber(table);
+        localStorage.setItem("tableNumber", table);
       }
+
+      // Store section ID if present and valid (not more than 10)
+      if (section && parseInt(section) <= 10) {
+        localStorage.setItem("sectionId", section);
+        
+        // Fetch restaurant details to get section name
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ restaurant_code: code }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const sectionDetails = data.sections.find(s => s.section_id.toString() === section);
+              if (sectionDetails) {
+                const sectionName = sectionDetails.section_name;
+                localStorage.setItem("sectionName", sectionName);
+
+                const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+                if (Object.keys(userData).length > 0) {
+                  const updatedUserData = {
+                    ...userData,
+                    sectionId: section,
+                    section_name: sectionName
+                  };
+                  localStorage.setItem("userData", JSON.stringify(updatedUserData));
+                }
+              }
+            }
+          })
+          .catch((error) => {
+            console.clear();
+          });
+      }
+
+      // ... rest of the code
     }
   }, [location]);
 

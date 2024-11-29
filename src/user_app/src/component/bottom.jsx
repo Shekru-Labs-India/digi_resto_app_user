@@ -9,6 +9,8 @@ const Bottom = () => {
   const location = useLocation();
   const { restaurantCode } = useRestaurantId();
   const { cartItems } = useCart();
+  const tableNumber = localStorage.getItem("tableNumber");
+  const sectionId = localStorage.getItem("sectionId");
   const [userData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
@@ -24,7 +26,7 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/user_app/${restaurantCode}/${userData.tableNumber || ""}/${userData.sectionId || ""}`}
+          to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
           className={`nav-link ${
             isHomePath(location.pathname) ? "active" : ""
           }`}

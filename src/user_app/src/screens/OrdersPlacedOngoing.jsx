@@ -60,6 +60,15 @@ const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   );
 };
 
+ const titleCase = (str) => {
+  if (!str) return "";
+   return str
+     .toLowerCase()
+     .split(" ")
+     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+     .join(" ");
+ };
+
 // Define CircularCountdown component
 const CircularCountdown = ({
   orderId,
@@ -345,7 +354,10 @@ const OrderCard = ({
               </div>
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
-                  {order.section_name}
+              <span className="fw-medium gray-text">
+                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                {titleCase(order.section_name)}
+                </span>
                 </div>
               </div>
             </div>

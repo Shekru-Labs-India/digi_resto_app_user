@@ -4,9 +4,9 @@ import { useRestaurantId } from '../context/RestaurantIdContext';
 import { useNavigate } from 'react-router-dom';
 
 const HotelNameAndTable = ({ restaurantName }) => {
-  const { tableNumber } = useRestaurantId();
+  // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
-  
+  const tableNumber = localStorage.getItem("tableNumber");
   // Get table number from context, localStorage, or userData
   const displayTableNumber = tableNumber || 
     JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
@@ -38,6 +38,14 @@ const HotelNameAndTable = ({ restaurantName }) => {
     }
   }, [sectionId, sectionName]);
 
+  const titleCase = (str) =>{
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  }
+
   const handleRestaurantClick = () => {
     navigate('/user_app/restaurant');
   };
@@ -59,18 +67,19 @@ const HotelNameAndTable = ({ restaurantName }) => {
         <div className="d-flex align-items-center gap-3">
           {sectionName && (
             <div className="d-flex align-items-center font_size_12">
-              <i className="fa-solid fa-map-marker-alt me-2 gray-text font_size_12"></i>
+              {/* <i className="fa-solid fa-map-marker-alt me-2 gray-text font_size_12"></i> */}
+              <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
               <span className="fw-medium gray-text">
-                {sectionName}
+                {titleCase(sectionName)}
               </span>
             </div>
           )}
-          
+
           {displayTableNumber && (
             <div className="d-flex align-items-center font_size_12">
               <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
               <span className="fw-medium gray-text">
-                Table {displayTableNumber}
+                Table {tableNumber}
               </span>
             </div>
           )}

@@ -13,6 +13,15 @@ import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
 import RestaurantSocials from "../components/RestaurantSocials";
 
+const titleCase = (str) => {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 const calculateOriginalPrice = (grandTotal) => {
   const numericTotal = parseFloat(grandTotal);
   const originalPrice = (numericTotal / 0.6).toFixed(2); // 40% discount means price is 60% of original
@@ -73,10 +82,7 @@ const MyOrder = () => {
   };
 
   useEffect(() => {
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
+    const sectionId = localStorage.getItem("sectionId");
     const fetchOngoingOrPlacedOrder = async () => {
       try {
         setLoading(true);
@@ -144,6 +150,8 @@ const MyOrder = () => {
       fetchOngoingOrPlacedOrder();
     }
   }, [customerId, restaurantId]);
+
+
 
   useEffect(() => {
     const sectionId =
@@ -269,6 +277,8 @@ const MyOrder = () => {
       return 0;
     }
   };
+
+
 
   return (
     <div className="page-wrapper">
@@ -426,6 +436,14 @@ export const OrderCard = ({
   const timeoutRef = useRef({});
 
   const [customerName, setCustomerName] = useState("");
+  const titleCase = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
 
   useEffect(() => {
@@ -763,7 +781,9 @@ console.log(customerName);
       setIsProcessingPhonePe(false);
       setIsProcessingGPay(false);
     };
+    
   }, []);
+  
 
   const isDarkMode = localStorage.getItem("isDarkMode");
   // console.log("isDarkMode ->" + isDarkMode);
@@ -799,7 +819,7 @@ console.log(customerName);
                 </span>
               </div>
             </div>
-          
+
             <div className="col-7 text-end">
               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
               <span className="font_size_12 gray-text font_size_12">
@@ -816,7 +836,10 @@ console.log(customerName);
             </div>
             <div className="col-9 text-end">
               <div className="font_size_12 gray-text font_size_12 text-nowrap">
-                 {order.section_name}
+                <span className="fw-medium gray-text">
+                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                  {titleCase(order.section_name)}
+                </span>
               </div>
             </div>
           </div>
@@ -1244,6 +1267,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
+  
+
   useEffect(() => {
     if (orders && Object.keys(orders).length > 0) {
       // Get the first date (top-most order group)
@@ -1444,6 +1469,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           </span>
                         </div>
                       </div>
+
                       <div className="row">
                         <div className="col-5 text-start">
                           <div className="restaurant">
@@ -1453,12 +1479,28 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             </span>
                           </div>
                         </div>
-                       
-                        <div className="col-4 text-end">
+
+                        <div className="col-7 text-end">
                           <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                           <span className="font_size_12 gray-text font_size_12">
                             {order.table_number}
                           </span>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-3 text-start pe-0">
+                          {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                          <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                            Order Type: {order.order_type}
+                          </span>
+                        </div>
+                        <div className="col-9 text-end">
+                          <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                            <span className="fw-medium gray-text">
+                              <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                              {titleCase(order.section_name)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="row">

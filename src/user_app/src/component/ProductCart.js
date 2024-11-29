@@ -1039,12 +1039,12 @@ const ProductCard = ({ isVegOnly }) => {
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
-                      handleSuggestionClick("Make it more spicy 🥵")
+                      handleSuggestionClick("Make it more spicy ")
                     }
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy ����
+                    more spicy 
                   </p>
                 </div>
                 <hr className="my-4" />

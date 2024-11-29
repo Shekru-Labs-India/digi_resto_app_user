@@ -13,6 +13,16 @@ import { useCart } from "../context/CartContext";
 import config from "../component/config"
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const TrackOrder = () => {
+
+
+  const titleCase = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   // Define displayCartItems
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -713,6 +723,15 @@ const TrackOrder = () => {
       return null;
     }
 
+    const titleCase = (str) => {
+      if (!str) return "";
+      return str
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
+
     const orderTime = new Date(orderDetails.order_details.date_time).getTime();
     const currentTime = new Date().getTime();
     const remainingSeconds = Math.max(
@@ -969,6 +988,22 @@ const TrackOrder = () => {
                   <span className="gray-text font_size_12">
                     {order_details.table_number}
                   </span>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3 text-start pe-0">
+                  {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                  <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                    Order Type: {order_details.order_type}
+                  </span>
+                </div>
+                <div className="col-9 text-end">
+                  <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                    <span className="fw-medium gray-text">
+                      <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                      {titleCase(order_details.section_name)}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="row">
@@ -1473,7 +1508,7 @@ const TrackOrder = () => {
               </div>
             </div>
 
-           <RestaurantSocials/>
+            <RestaurantSocials />
           </div>
         )}
 

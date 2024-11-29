@@ -9,6 +9,7 @@ import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
+import HotelNameAndTable from "../components/HotelNameAndTable";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -35,6 +36,7 @@ const Search = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
+    const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -482,7 +484,7 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-        <div className="container py-0">
+        {/* <div className="container py-0">
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
@@ -503,7 +505,11 @@ const Search = () => {
               </span>
             </div>
           </div>
-        </div>
+        </div> */}
+        <HotelNameAndTable
+          restaurantName={restaurantName}
+          tableNumber={customerType?.tableNumber || "1"}
+        />
 
         <div className="container pt-0">
           <div className="input-group w-100 my-2">
@@ -793,13 +799,11 @@ const Search = () => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy 🥵")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 🥵
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />

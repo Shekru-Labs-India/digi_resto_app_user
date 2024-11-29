@@ -726,7 +726,7 @@ const Checkout = () => {
 
                           <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
                             <i className="fa-solid fa-comment-dots me-2"></i>{" "}
-                            Make it more spicy 🥵{item.notes}
+                            Make it more spicy {item.notes}
                           </p>
                         </div>
                       </div>
