@@ -547,95 +547,96 @@ const OfferBanner = () => {
                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                 state={{ menu_cat_id: menu.menu_cat_id }}
               >
-                <div
-                  className="cart-list bg-white p-0 rounded-4"
-                  style={{ width: "345px" }}
-                >
-                  <div className="dz-media media-100">
-                    <img
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "fill",
-                        aspectRatio: "1/1",
-                      }}
-                      className="object-fit-cover"
-                      src={menu.image || images} // Use default image if menu.image is null
-                      alt={menu.name}
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.src = images; // Set local image source on error
-                      }}
-                    />
-                    {menu.is_special && (
-                      <i
-                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                <div className="container">
+                  <div
+                    className="cart-list bg-white p-0 rounded-4"
+                    style={{ width: "345px" }}
+                  >
+                    <div className="dz-media media-100">
+                      <img
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "fill",
+                          aspectRatio: "1/1",
+                        }}
+                        className="object-fit-cover"
+                        src={menu.image || images} // Use default image if menu.image is null
+                        alt={menu.name}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = images; // Set local image source on error
+                        }}
+                      />
+                      {menu.is_special && (
+                        <i
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 5,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
+                      <div
+                        className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                          menu.menu_veg_nonveg === "veg"
+                            ? "border-success"
+                            : "border-danger"
+                        }`}
                         style={{
                           position: "absolute",
-                          top: 3,
-                          right: 5,
-                          height: 17,
-                          width: 17,
+                          bottom: "3px",
+                          left: "3px",
+                          height: "20px",
+                          width: "20px",
+                          borderWidth: "2px",
+                          borderRadius: "3px",
                         }}
-                      ></i>
-                    )}
-                    <div
-                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg === "veg"
-                          ? "border-success"
-                          : "border-danger"
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        left: "3px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                      }}
-                    >
-                      <i
-                        className={`${
-                          menu.menu_veg_nonveg === "veg"
-                            ? "fa-solid fa-circle text-success"
-                            : "fa-solid fa-play fa-rotate-270 text-danger"
-                        } font_size_12`}
-                      ></i>
-                    </div>
-                    <div
-                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        right: "3px",
-                        height: "20px",
-                        width: "20px",
-                      }}
-                    >
-                      <i
-                        className={`${
-                          menu.is_favourite
-                            ? "fa-solid fa-heart text-danger"
-                            : "fa-regular fa-heart"
-                        } fs-6`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleLikeClick(menu.menu_id);
-                        }}
-                      ></i>
-                    </div>
-                    {menu.offer !== 0 && (
-                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                        <span className="font_size_10 text-white">
-                          {menu.offer}% Off
-                        </span>
+                      >
+                        <i
+                          className={`${
+                            menu.menu_veg_nonveg === "veg"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
+                          } font_size_12`}
+                        ></i>
                       </div>
-                    )}
-                  </div>
-                  <div className="dz-content d-block">
-                    {/* <div className="category-text">
+                      <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menu.is_favourite
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
+                          }}
+                        ></i>
+                      </div>
+                      {menu.offer !== 0 && (
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                          <span className="font_size_10 text-white">
+                            {menu.offer}% Off
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="dz-content d-block">
+                      {/* <div className="category-text">
                           <div className="row mt-1">
                             <div className="col-8 text-success font_size_10">
                               <i className="fa-solid fa-utensils pe-1"></i>
@@ -649,89 +650,90 @@ const OfferBanner = () => {
                             </div>
                           </div>
                         </div> */}
-                    <div className="category-text">
-                      <div className="d-flex justify-content-between align-items-center justify-content-center mt-1">
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {menu.name}
-                        </span>
+                      <div className="category-text">
+                        <div className="d-flex justify-content-between align-items-center justify-content-center mt-1">
+                          <span className="font_size_14 fw-medium text-wrap">
+                            {menu.name}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="mt-2">
-                      <div className="row">
-                        <div className="col-4 d-flex align-items-center">
-                          <div className="text-success font_size_10">
-                            <i className="fa-solid fa-utensils pe-1"></i>
-                            {menu.category_name}
+                      <div className="mt-2">
+                        <div className="row">
+                          <div className="col-4 d-flex align-items-center">
+                            <div className="text-success font_size_10">
+                              <i className="fa-solid fa-utensils pe-1"></i>
+                              {menu.category_name}
+                            </div>
+                          </div>
+                          <div className="col-4 d-flex align-items-center">
+                            {renderSpiceIcons(menu.spicy_index)}
+                          </div>
+                          <div className="col-4">
+                            {menu.rating > 0 && (
+                              <div className="text-end font_size_10 fw-normal gray-text me-1">
+                                {renderStarRating(menu.rating)}
+                                <span>{menu.rating}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-4 d-flex align-items-center">
-                          {renderSpiceIcons(menu.spicy_index)}
+                      </div>
+                      <div className="row ">
+                        <div className="col-6 d-flex align-items-center">
+                          <span className="me-2 text-info font_size_14 fw-semibold">
+                            ₹{menu.price}
+                          </span>
+                          {menu.strikePrice && (
+                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                              ₹{menu.strikePrice}
+                            </span>
+                          )}
                         </div>
-                        <div className="col-4">
-                          {menu.rating > 0 && (
-                            <div className="text-end font_size_10 fw-normal gray-text me-1">
-                              {renderStarRating(menu.rating)}
-                              <span>{menu.rating}</span>
+                        <div className="col-6 d-flex align-items-center justify-content-end">
+                          {userData ? (
+                            <div
+                              onClick={(e) => handleCartIconClick(e, menu)}
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i
+                                className={`fa-solid ${
+                                  isMenuItemInCart(menu.menu_id)
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-solid fa-plus text-secondary"
+                                } fs-6`}
+                              ></i>
+                            </div>
+                          ) : (
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                showLoginPopup();
+                              }}
+                            >
+                              <i className="fa-solid fa-cart-shopping fs-6"></i>
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                    <div className="row ">
-                      <div className="col-6 d-flex align-items-center">
-                        <span className="me-2 text-info font_size_14 fw-semibold">
-                          ₹{menu.price}
-                        </span>
-                        {menu.strikePrice && (
-                          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                            ₹{menu.strikePrice}
-                          </span>
-                        )}
-                      </div>
-                      <div className="col-6 d-flex align-items-center justify-content-end">
-                        {userData ? (
-                          <div
-                            onClick={(e) => handleCartIconClick(e, menu)}
-                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                            style={{
-                              border: "1px solid gray",
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "25px",
-                              height: "25px",
-                            }}
-                          >
-                            <i
-                              className={`fa-solid ${
-                                isMenuItemInCart(menu.menu_id)
-                                  ? "fa-solid fa-circle-check"
-                                  : "fa-solid fa-plus text-secondary"
-                              } fs-6`}
-                            ></i>
-                          </div>
-                        ) : (
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                            style={{
-                              border: "1px solid gray",
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "25px",
-                              height: "25px",
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              showLoginPopup();
-                            }}
-                          >
-                            <i className="fa-solid fa-cart-shopping fs-6"></i>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -806,13 +808,11 @@ const OfferBanner = () => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy ")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />

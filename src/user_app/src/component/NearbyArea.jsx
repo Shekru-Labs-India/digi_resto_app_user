@@ -439,6 +439,18 @@ const NearbyArea = () => {
                         alt={menuItem.name}
                         loading="lazy"
                       />
+                      {menuItem.is_special && (
+                        <i
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 5,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                           menuItem.menu_veg_nonveg === "veg"
@@ -656,14 +668,11 @@ const NearbyArea = () => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy ")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 
-                    
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />

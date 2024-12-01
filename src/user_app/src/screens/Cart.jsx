@@ -413,7 +413,12 @@ const Cart = () => {
             />
           </div>
           {magicMessage && (
-            <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">{magicMessage}</div>
+            <div className="container py-0">
+              <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                {magicMessage}
+              </div>
+            </div>
           )}
           <div className="container scrollable-section pt-0">
             {cartDetails.order_items.map((item, index) => (
