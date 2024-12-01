@@ -275,56 +275,27 @@ const Product = () => {
 
   useEffect(() => {
     if (menuList.length > 0) {
-      let filtered = [...menuList];
-
       if (selectedCategory === "special") {
-        filtered = filtered.filter(item => 
-          item.rating >= 4 || 
-          item.popularity > 80 || 
-          item.is_special
-        );
+        setFilteredMenuList(menuList.filter(menu => menu.is_special));
       } else if (selectedCategory === "offer") {
-        filtered = filtered.filter(item => item.offer > 0);
-      } else if (selectedCategory) {
-        const selectedCategoryName = categories.find(
-          (category) => category.menu_cat_id === selectedCategory
-        )?.name;
-        filtered = filtered.filter(
-          (item) => item.category === selectedCategoryName
-        );
-      }
-
-      setFilteredMenuList(filtered);
-    }
-  }, [selectedCategory, menuList, categories]);
-
-  const handleCategorySelect = (categoryId) => {
-    if (categoryId === "special") {
-      setSelectedCategory("special");
-    } else if (categoryId === "offer") {
-      setSelectedCategory("offer");
-    } else {
-      setSelectedCategory(categoryId); // Will be null for "All" button
-    }
-
-    // Update swiper position
-    if (swiperRef.current) {
-      let activeIndex;
-      if (categoryId === null) {
-        activeIndex = 0;
-      } else if (categoryId === "special" || categoryId === "offer") {
-        activeIndex = 0; // Or wherever these special categories should be
+        setFilteredMenuList(menuList.filter(menu => menu.offer > 0));
+      } else if (selectedCategory === null) {
+        setFilteredMenuList(menuList);
       } else {
-        activeIndex = categories.findIndex(
-          (category) => category.menu_cat_id === categoryId
-        ) + 1; // Add 1 for "All" button
-      }
-
-      if (activeIndex !== -1) {
-        swiperRef.current.slideTo(activeIndex);
+        setFilteredMenuList(menuList.filter(menu => menu.menu_cat_id === selectedCategory));
       }
     }
-  };
+  }, [selectedCategory, menuList]);
+
+  const handleCategorySelect = useCallback((categoryId) => {
+    // Force immediate state update
+    setSelectedCategory(prevCategory => {
+      if (prevCategory === categoryId) {
+        return null; // Reset to show all items if clicking the same category
+      }
+      return categoryId;
+    });
+  }, []);
 
   const fetchHalfFullPrices = async (menuId) => {
     if (!restaurantId) {
@@ -635,45 +606,45 @@ const Product = () => {
               </span>
             </div>
 
-            <div
-              className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn ${
-                selectedCategory === "offer"
-                  ? "active bg-success text-white"
-                  : "bg-transparent text-success"
-              }`}
-              onClick={() => handleCategorySelect("offer")}
-            >
-              <i
-                className={`fa-solid fa-percent me-2 ${
-                  selectedCategory === "offer" ? "text-white" : "text-success"
+            <div className="mx-2 w-100" style={{ height: "40px" }}>
+              <div
+                className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                  selectedCategory === "offer"
+                    ? "active bg-success text-white"
+                    : "bg-transparent text-success"
                 }`}
-              ></i>
-              Offer
-              <span className="ms-1 font_size_10">
-                ({menuList.filter((menu) => menu.offer > 0).length})
-              </span>
+                onClick={() => handleCategorySelect("offer")}
+              >
+                <i
+                  className={`fa-solid fa-percent me-2 ${
+                    selectedCategory === "offer" ? "text-white" : "text-success"
+                  }`}
+                ></i>
+                Offer
+                <span className="ms-1 font_size_10">
+                  ({menuList.filter((menu) => menu.offer > 0).length})
+                </span>
+              </div>
             </div>
 
-            <div
-              className="category-btn font_size_14 rounded-pill btn magic-btn magic-button"
-              onClick={handleMagicClick}
-            >
+            <div className="ms-2 w-100" style={{ height: "40px" }}>
               <div
-                className="position-relative z-1 d-flex align-items-center justify-content-center"
-                style={{ height: "100%" }}
+                className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
+                onClick={handleMagicClick}
               >
-                {isMagicLoading ? (
-                  <i className="fa-solid fa-spinner fa-spin me-2"></i>
-                ) : (
-                  <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
-                )}
-                Magic
+                <div className="position-relative z-1 magic-text">
+                  {isMagicLoading ? (
+                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                  ) : (
+                    <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+                  )}
+                  Magic
+                </div>
               </div>
             </div>
           </div>
-          {/* <CategorySlider/> */}
 
-          {/* Add the swiper container after the buttons */}
+          {/* Category slider */}
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
               {/* Add All button */}
