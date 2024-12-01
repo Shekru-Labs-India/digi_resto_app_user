@@ -16,7 +16,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
   const [sectionName, setSectionName] = useState("")
   const [socials, setSocials] = useState([]);
-  const [sectionId, setSectionId] = useState("");
+  const sectionId = localStorage.getItem("sectionId")
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
@@ -45,24 +45,31 @@ export const RestaurantIdProvider = ({ children }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ restaurant_code: code }),
+          body: JSON.stringify({ restaurant_code: code, section_id: sectionId }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.st === 1) {
-              const sectionDetails = data.sections.find(s => s.section_id.toString() === section);
+              const sectionDetails = data.sections.find(
+                (s) => s.section_id.toString() === section
+              );
               if (sectionDetails) {
                 const sectionName = sectionDetails.section_name;
                 localStorage.setItem("sectionName", sectionName);
 
-                const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+                const userData = JSON.parse(
+                  localStorage.getItem("userData") || "{}"
+                );
                 if (Object.keys(userData).length > 0) {
                   const updatedUserData = {
                     ...userData,
                     sectionId: section,
-                    section_name: sectionName
+                    section_name: sectionName,
                   };
-                  localStorage.setItem("userData", JSON.stringify(updatedUserData));
+                  localStorage.setItem(
+                    "userData",
+                    JSON.stringify(updatedUserData)
+                  );
                 }
               }
             }
@@ -211,7 +218,7 @@ export const RestaurantIdProvider = ({ children }) => {
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
     if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
-    if (storedSectionId) setSectionId(storedSectionId);
+    // if (storedSectionId) setSectionId(storedSectionId);
   }, []);
 
   const updateRestaurantCode = (code) => {
@@ -225,7 +232,7 @@ export const RestaurantIdProvider = ({ children }) => {
   };
 
   const updateSectionId = (id) => {
-    setSectionId(id);
+    // setSectionId(id);
     localStorage.setItem("sectionId", id);
   };
 

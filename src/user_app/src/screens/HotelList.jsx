@@ -131,7 +131,14 @@ const HotelList = () => {
           {filteredHotels.length > 0 ? (
             filteredHotels.map((hotel) => (
               <div className="card rounded-4" key={hotel.restaurant_id}>
-                <Link to={`/user_app/${hotel.code}/1/${hotel.section_id}`}>
+                <Link 
+                  to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
+                  onClick={() => {
+                    localStorage.setItem('sectionId', hotel.section_id);
+                    // You can also store other relevant hotel data if needed
+                    localStorage.setItem('restaurantCode', hotel.code);
+                  }}
+                >
                   <div
                     className={`card-body py-0 ${
                       hotel.is_open === false ? "bg-light rounded-4" : ""
