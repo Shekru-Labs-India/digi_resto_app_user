@@ -95,7 +95,7 @@ export const SidebarToggler = () => {
         <span className=""> </span>
         <div className="menu-toggler toggler-icon">
           {
-            location.pathname !== "/user_app/Profile" && (
+             (
               <Link to="/user_app/Search">
                 <i className="fa-solid fa-magnifying-glass me-3 fs-6 gray-text"></i>
               </Link>

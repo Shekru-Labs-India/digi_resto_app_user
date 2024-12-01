@@ -15,6 +15,7 @@ import config from "../component/config";
 
 import RestaurantSocials from "../components/RestaurantSocials";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
+import CategorySlider from "./CategorySlider";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -300,14 +301,24 @@ const Product = () => {
   const handleCategorySelect = (categoryId) => {
     if (categoryId === "special") {
       setSelectedCategory("special");
+    } else if (categoryId === "offer") {
+      setSelectedCategory("offer");
     } else {
-      setSelectedCategory(categoryId);
+      setSelectedCategory(categoryId); // Will be null for "All" button
     }
 
+    // Update swiper position
     if (swiperRef.current) {
-      const activeIndex = categories.findIndex(
-        (category) => category.menu_cat_id === categoryId
-      );
+      let activeIndex;
+      if (categoryId === null) {
+        activeIndex = 0;
+      } else if (categoryId === "special" || categoryId === "offer") {
+        activeIndex = 0; // Or wherever these special categories should be
+      } else {
+        activeIndex = categories.findIndex(
+          (category) => category.menu_cat_id === categoryId
+        ) + 1; // Add 1 for "All" button
+      }
 
       if (activeIndex !== -1) {
         swiperRef.current.slideTo(activeIndex);
@@ -602,8 +613,6 @@ const Product = () => {
           />
         </div>
 
-        
-
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
           <div className="d-flex justify-content-between gap-2 my-3">
@@ -662,32 +671,57 @@ const Product = () => {
               </div>
             </div>
           </div>
+          {/* <CategorySlider/> */}
 
           {/* Add the swiper container after the buttons */}
           <div className="swiper category-slide">
             <div className="swiper-wrapper">
+              {/* Add All button */}
+              <div className="swiper-slide">
+                <div
+                  className={`category-btn font_size_14 rounded-5 py-1`}
+                  onClick={() => handleCategorySelect(null)}
+                  style={{
+                    backgroundColor: selectedCategory === null ? "#0D775E" : "#ffffff",
+                    color: selectedCategory === null ? "#ffffff" : "#000000",
+                    border: "1px solid #ddd",
+                    cursor: "pointer",
+                    padding: "8px 16px",
+                    transition: "all 0.3s ease"
+                  }}
+                >
+                  All{" "}
+                  <span style={{ 
+                    color: selectedCategory === null ? "#ffffff" : "#666",
+                    fontSize: "0.8em" 
+                  }}>
+                    ({menuList.length})
+                  </span>
+                </div>
+              </div>
+
+              {/* Existing category buttons */}
               {categories.map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
-                    className={`category-btn font_size_14 rounded-5 ${
-                      selectedCategory === category.menu_cat_id ? "active" : ""
-                    }`}
+                    className={`category-btn font_size_14 rounded-5 py-1`}
                     onClick={() => handleCategorySelect(category.menu_cat_id)}
                     style={{
-                      backgroundColor:
-                        selectedCategory === category.menu_cat_id
-                          ? "#0D775E"
-                          : "",
-                      color:
-                        selectedCategory === category.menu_cat_id
-                          ? "#ffffff"
-                          : "",
+                      backgroundColor: selectedCategory === category.menu_cat_id ? "#0D775E" : "#ffffff",
+                      color: selectedCategory === category.menu_cat_id ? "#ffffff" : "#000000",
+                      border: "1px solid #ddd",
+                      cursor: "pointer",
+                      padding: "8px 16px",
+                      transition: "all 0.3s ease"
                     }}
                   >
                     {category.menu_cat_id === "special"
                       ? category.category_name
                       : category.name || category.category_name}{" "}
-                    <span className="gray-text font_size_10">
+                    <span style={{ 
+                      color: selectedCategory === category.menu_cat_id ? "#ffffff" : "#666",
+                      fontSize: "0.8em" 
+                    }}>
                       ({category.menu_count})
                     </span>
                   </div>
@@ -915,7 +949,7 @@ const Product = () => {
                               <i
                                 className={`fa-solid ${
                                   isMenuItemInCart(menuItem.menu_id)
-                                    ? "fa-cart-shopping "
+                                    ? "fa-circle-check "
                                     : "fa-solid fa-plus text-secondary"
                                 } fs-6 `}
                               ></i>
@@ -1017,13 +1051,11 @@ const Product = () => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy ")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />

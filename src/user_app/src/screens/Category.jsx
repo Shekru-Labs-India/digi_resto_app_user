@@ -133,7 +133,7 @@ const Category = () => {
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>
-                    <div className="dz-category-items border overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
+                    <div className="dz-category-items border overflow-hidden rounded-4 rounded-bottom-3 d-flex flex-column">
                       <Link
                         to={`/user_app/Menu/${category.menu_cat_id}`}
                         className="d-block"
@@ -147,7 +147,7 @@ const Category = () => {
                             </span>
                           </span>
                         </div>
-                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
+                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-4">
                           <img
                             className="object-fit-cover"
                             style={{

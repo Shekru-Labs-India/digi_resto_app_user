@@ -506,10 +506,12 @@ const Search = () => {
             </div>
           </div>
         </div> */}
-        <HotelNameAndTable
-          restaurantName={restaurantName}
-          tableNumber={customerType?.tableNumber || "1"}
-        />
+        <div className="container py-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={customerType?.tableNumber || "1"}
+          />
+        </div>
 
         <div className="container pt-0">
           <div className="input-group w-100 my-2">

@@ -95,7 +95,7 @@ const Profile = () => {
                       {isLoggedIn ? (
                         <>
                           <Link to="/user_app/Profile">
-                            <i className="ri-user-3-fill me-2 font_size_14 "></i>
+                            <i className="fa-solid fa-user font_size_14 me-2"></i>
                             <span className="font_size_14 fw-medium">
                               Hello, {toTitleCase(getFirstName(userData.name))}
                             </span>

@@ -144,8 +144,35 @@ const ProductCard = ({ isVegOnly }) => {
 
   // Optimized category selection handler
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategoryId(categoryId);
-    applyFilters(menuList, categoryId, isVegOnly);
+    if (categoryId === "special") {
+      setSelectedCategoryId("special");
+    } else if (categoryId === "offer") {
+      setSelectedCategoryId("offer");
+    } else {
+      setSelectedCategoryId(categoryId); // Will be null for "All" button
+    }
+
+    // Update filtered menu list based on selection
+    if (categoryId === null) {
+      setFilteredMenuList(menuList);
+    } else if (categoryId === "special") {
+      setFilteredMenuList(menuList.filter(menu => menu.is_special));
+    } else if (categoryId === "offer") {
+      setFilteredMenuList(menuList.filter(menu => menu.offer > 0));
+    } else {
+      setFilteredMenuList(menuList.filter(menu => menu.menu_cat_id === categoryId));
+    }
+
+    // Update swiper position if needed
+    if (swiperRef.current) {
+      const activeIndex = categoryId === null 
+        ? 0 
+        : menuCategories.findIndex(category => category.menu_cat_id === categoryId) + 1;
+      
+      if (activeIndex !== -1) {
+        swiperRef.current.slideTo(activeIndex);
+      }
+    }
   };
 
   // Fetch menu data with optimized updates
@@ -725,45 +752,26 @@ const ProductCard = ({ isVegOnly }) => {
 
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            {/* Special button - always first */}
-            {/* <div className="swiper-slide">
-              <div
-                className={`category-btn font_size_14 rounded-5 ${
-                  selectedCategoryId === "special" ? "active" : ""
-                }`}
-                onClick={() => handleCategorySelect("special")}
-                style={{
-                  backgroundColor: "#0D9EDF", // Blue background
-                  color: "#ffffff", // White text
-                  border: "none",
-                }}
-              >
-                <i className="fa-regular fa-star me-2"></i>
-                Special
-                <span className="gray-text font_size_10">
-                  {" "}
-                  ({menuList.filter((menu) => menu.is_special).length})
-                </span>
-              </div>
-            </div> */}
-
             {/* All button */}
             <div className="swiper-slide">
               <div
-                className={`category-btn font_size_14 rounded-5 ${
-                  selectedCategoryId === null ? "active" : ""
-                }`}
+                className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
-                // style={{
-                //   backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
-                //   color: selectedCategoryId === null ? "#ffffff" : "",
-                // }}
+                style={{
+                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "#ffffff",
+                  color: selectedCategoryId === null ? "#ffffff" : "#000000",
+                  border: "1px solid #ddd",
+                  cursor: "pointer",
+                  padding: "8px 16px",
+                  transition: "all 0.3s ease"
+                }}
               >
                 All{" "}
-                <span className="font_size_12">
-                  <span className="gray-text font_size_10">
-                    ({totalMenuCount})
-                  </span>
+                <span style={{ 
+                  color: selectedCategoryId === null ? "#ffffff" : "#666",
+                  fontSize: "0.8em" 
+                }}>
+                  ({totalMenuCount})
                 </span>
               </div>
             </div>
@@ -772,27 +780,23 @@ const ProductCard = ({ isVegOnly }) => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn font_size_14 rounded-5 ${
-                    selectedCategoryId === category.menu_cat_id ? "active" : ""
-                  }`}
+                  className="category-btn font_size_14 rounded-5 py-1"
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
-                    backgroundColor:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "linear-gradient(201deg, #7cffa8, #159e42)"
-                        : "",
-                    color:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
+                    backgroundColor: selectedCategoryId === category.menu_cat_id ? "#0D775E" : "#ffffff",
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#000000",
+                    border: "1px solid #ddd",
+                    cursor: "pointer",
+                    padding: "8px 16px",
+                    transition: "all 0.3s ease"
                   }}
                 >
                   {category.name}
-                  <span className="font_size_12 gray-text">
-                    {" "}
-                    <span className="gray-text font_size_10">
-                      ({category.menu_count})
-                    </span>
+                  <span style={{ 
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#666",
+                    fontSize: "0.8em" 
+                  }}>
+                    ({category.menu_count})
                   </span>
                 </div>
               </div>
