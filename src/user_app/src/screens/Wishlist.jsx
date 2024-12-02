@@ -775,7 +775,9 @@ const Wishlist = () => {
               <div className="modal-header ps-3 pe-2">
                 <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
-                    Add {selectedMenu.name} to Cart
+                    {selectedMenu
+                      ? `Add ${selectedMenu.menu_name} to Cart`
+                      : "Add to Cart"}
                   </div>
                 </div>
 
