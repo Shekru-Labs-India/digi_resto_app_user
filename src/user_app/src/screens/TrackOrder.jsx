@@ -702,8 +702,8 @@ const TrackOrder = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-warning",
-          border: "border-warning",
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
         };
       case "vegan":
         return {
@@ -1312,13 +1312,15 @@ const TrackOrder = () => {
                                   <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
                                     ₹{menu.price}
                                   </span>
-                                  <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                    ₹
-                                    {(
-                                      menu.price /
-                                      (1 - menu.offer / 100)
-                                    ).toFixed(2)}
-                                  </span>
+                                  {menu.offer > 0 && (
+                                    <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                      ₹
+                                      {(
+                                        menu.price /
+                                        (1 - menu.offer / 100)
+                                      ).toFixed(2)}
+                                    </span>
+                                  )}
                                 </span>
                               </div>
                               <div className="col-3 text-end p-0">

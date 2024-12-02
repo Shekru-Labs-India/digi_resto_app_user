@@ -165,28 +165,28 @@ const Wishlist = () => {
     switch (foodType?.toLowerCase()) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
+          icon: "fa-solid fa-circle text-primary",
+          border: "border-primary"
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger",
+          border: "border-danger"
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-warning",
-          border: "border-warning",
+          icon: "fa-solid fa-egg text-light",
+          border: "border-light"
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
-          border: "border-success",
+          border: "border-success"
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
-          border: "border-success",
+          border: "border-success"
         };
     }
   };
@@ -448,6 +448,37 @@ const Wishlist = () => {
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
   };
 
+
+  const getFoodTypeTextStyles = (foodType) => {
+    switch(foodType?.toLowerCase()) {
+      case 'veg':
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary"
+        };
+      case 'nonveg':
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger"
+        };
+      case 'egg':
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "text-light"
+        };
+      case 'vegan':
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success"
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary"
+        };
+    }
+  };
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -552,8 +583,8 @@ const Wishlist = () => {
 
                       <div className="tab-content">
                         {menuList[restaurantName].map((menu, index) => (
-                          <div className="container py-1 px-0" key={index}>
-                            <div className="custom-card rounded-4">
+                          <div className="py-1 px-0" key={index}>
+                            <div className="custom-card rounded-4 shadow-sm">
                               <Link
                                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                                 state={{
@@ -586,18 +617,6 @@ const Wishlist = () => {
                                           e.target.style.aspectRatio = "1/1";
                                         }}
                                       />{" "}
-                                      {menu.is_special && (
-                                        <i
-                                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                                          style={{
-                                            position: "absolute",
-                                            top: 3,
-                                            right: "76%",
-                                            height: 17,
-                                            width: 17,
-                                          }}
-                                        ></i>
-                                      )}
                                       <div
                                         className={`border border-1 rounded-circle ${
                                           isDarkMode ? "bg-dark" : "bg-white"
@@ -623,6 +642,18 @@ const Wishlist = () => {
                                           }}
                                         ></i>
                                       </div>
+                                      {menu.is_special && (
+                                        <i
+                                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                          style={{
+                                            position: "absolute",
+                                            top: 3,
+                                            right: "76%",
+                                            height: 17,
+                                            width: 17,
+                                          }}
+                                        ></i>
+                                      )}
                                       <div
                                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                                           getFoodTypeStyles(menu.menu_food_type)
@@ -655,14 +686,15 @@ const Wishlist = () => {
                                       )}
                                     </div>
                                     <div className="col-9 pt-1 p-0 pe-2">
-                                      <div className="row">
+                                      <div className="row d-flex align-items-center mt-1">
                                         <div className="col-10">
                                           <div className="ps-2 font_size_14 fw-medium">
                                             {menu.menu_name}
                                           </div>
                                         </div>
-                                        <div className="col-2 text-end font_size_10">
+                                        <div className="col-2 text-end font_size_10 ">
                                           <div
+                                            className="d-flex align-items-center justify-content-end"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               handleRemoveItemClick(
@@ -672,38 +704,65 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                                            <i className="fa-solid fa-xmark gray-text font_size_14"></i>
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="row mt-1">
-                                        <div className="col-4 text-start d-flex align-items-center pe-0">
-                                          <span className="ps-2 font_size_10 text-success">
-                                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
+                                      <div className="row d-flex align-items-center mt-1">
+                                        <div className="col-6 d-flex align-items-center">
+                                          <span
+                                            className={`ps-2 font_size_10 ${
+                                              getFoodTypeTextStyles(
+                                                menu.menu_food_type
+                                              ).textColor
+                                            }`}
+                                          >
+                                            <i
+                                              className={`${
+                                                getFoodTypeTextStyles(
+                                                  menu.menu_food_type
+                                                ).icon
+                                              } ${
+                                                getFoodTypeTextStyles(
+                                                  menu.menu_food_type
+                                                ).textColor
+                                              } font_size_10 mt-0 me-1`}
+                                            ></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
-                                        <div className="col-4 d-flex aign-items-center justify-content-center pe-3">
+                                        <div className="col-4 d-flex aign-items-center ps-4 pe-3">
                                           {menu.spicy_index && (
                                             <div className="">
-                                              {Array.from({ length: 5 }).map(
-                                                (_, index) =>
-                                                  index < menu.spicy_index ? (
+                                              {Array.from({ length: 3 }).map(
+                                                (_, index) => {
+                                                  const spicyIndex = parseInt(
+                                                    menu.spicy_index,
+                                                    10
+                                                  ); // Parse spicy_index as an integer
+                                                  return index < spicyIndex ? (
                                                     <i
-                                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
+                                                      className={`fa-solid fa-pepper-hot font_size_10 ${
+                                                        spicyIndex === 1
+                                                          ? "text-success" // Green for level 1
+                                                          : spicyIndex === 2
+                                                          ? "text-warning" // Yellow for level 2
+                                                          : "text-danger" // Red for level 3
+                                                      }`}
                                                       key={index}
                                                     ></i>
                                                   ) : (
                                                     <i
-                                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+                                                      className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
                                                       key={index}
                                                     ></i>
-                                                  )
+                                                  );
+                                                }
                                               )}
                                             </div>
                                           )}
                                         </div>
-                                        <div className="col-4 d-flex align-items-center justify-content-end pe-4">
+                                        <div className="col-2 d-flex align-items-center justify-content-end">
                                           {menu.rating > 0 && (
                                             <>
                                               {renderStarRating(menu.rating)}
@@ -715,7 +774,43 @@ const Wishlist = () => {
                                         </div>
                                       </div>
 
+                                      <div className="row">
+                                        <div className="col-5 mt-2">
+                                          <p className="ms-2 mb-0 fw-medium">
+                                            {menu.offer ? (
+                                              <>
+                                                <span className="font_size_14 fw-semibold text-info">
+                                                  ₹
+                                                  {Math.floor(
+                                                    menu.price *
+                                                      (1 - menu.offer / 100)
+                                                  )}
+                                                </span>
+                                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                                  ₹{menu.price}
+                                                </span>
+                                              </>
+                                            ) : (
+                                              <span className="font_size_14 fw-semibold text-info">
+                                                ₹{menu.price}
+                                              </span>
+                                            )}
+                                          </p>
+                                        </div>
+
+                                        <div className="col-3"></div>
+                                      </div>
+
                                       <div className="row mt-1">
+                                        {/* <div className="col-4 text-start d-flex align-items-center pe-0">
+                                          <span className="ps-2 font_size_10 text-success">
+                                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
+                                            {menu.category_name}
+                                          </span>
+                                        </div> */}
+                                      </div>
+
+                                      {/* <div className="row mt-1">
                                         <div className="col-6">
                                           <p className="ms-2 mb-0 fw-medium">
                                             {menu.offer ? (
@@ -767,7 +862,7 @@ const Wishlist = () => {
                                             </div>
                                           ) : null}
                                         </div>
-                                      </div>
+                                      </div> */}
                                     </div>
                                   </div>
                                 </div>

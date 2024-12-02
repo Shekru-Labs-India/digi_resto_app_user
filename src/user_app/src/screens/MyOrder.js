@@ -859,7 +859,11 @@ console.log(customerName);
                 ₹{order.grand_total}
               </span>
               <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                ₹{calculateOriginalPrice(order.grand_total)}
+                ₹{(
+                  order.grand_total /
+                    (1 - order.discount_percent / 100) ||
+                  order.grand_total
+                ).toFixed(2)}
               </span>
             </div>
           </div>
@@ -1519,7 +1523,11 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             ₹{order.grand_total}
                           </span>
                           <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                            ₹{calculateOriginalPrice(order.grand_total)}
+                            ₹{(
+                              order.grand_total /
+                                (1 - order.discount_percent / 100) ||
+                              order.grand_total
+                            ).toFixed(2)}
                           </span>
                         </div>
                       </div>

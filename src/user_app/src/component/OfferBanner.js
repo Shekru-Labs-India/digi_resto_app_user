@@ -496,8 +496,8 @@ const OfferBanner = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-warning",
-          border: "border-warning",
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
         };
       case "vegan":
         return {

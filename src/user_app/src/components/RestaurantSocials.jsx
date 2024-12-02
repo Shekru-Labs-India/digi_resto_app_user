@@ -13,19 +13,23 @@ function RestaurantSocials() {
     ['whatsapp', 'facebook', 'instagram'].includes(link.id)
   );
 
+  // Retrieve restaurant name from localStorage
+  // const userData = JSON.parse(localStorage.getItem("restaurantName"));  
+  const restaurantName = localStorage.getItem("restaurantName");
+
   return (
-    <div>
-      <div className="divider border-secondary opacity-75 inner-divider transparent opacity-75">
-        <span className="bg-body text-muted">End</span>
+    <div className="mb-0">
+      <div className="divider border-secondary opacity-75 inner-divider mb-0 pb-0">
+        <span className="bg-body text-muted">Follow {restaurantName}</span>
       </div>
 
       {/* Top rectangular buttons */}
       <div className="container px-0 mt-3 pb-2">
         <div className="row g-3">
-          <div className="col-6">
+          <div className="col-6 mt-0">
             <button
               type="button"
-              className="btn fw-regular w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-info font_size_14"
+              className="btn fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-white btn-info font_size_14"
               onClick={() => {
                 const websiteUrl = allSocialLinks.find(
                   (link) => link.id === "website"
@@ -42,10 +46,10 @@ function RestaurantSocials() {
               Website
             </button>
           </div>
-          <div className="col-6">
+          <div className="col-6 mt-0">
             <button
               type="button"
-              className="btn fw-regular w-100 text-nowrap px-4 py-2 rounded-1 text-white btn-success font_size_14"
+              className="btn fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-white btn-success font_size_14"
               onClick={() => {
                 const businessUrl = allSocialLinks.find(
                   (link) => link.id === "google_business"
@@ -68,7 +72,7 @@ function RestaurantSocials() {
       {/* Bottom square social buttons */}
       <div className="d-flex justify-content-between my-1">
         {/* Facebook Button */}
-        <div style={{ height: "40px" }} className="me-2 w-100">
+        <div style={{ height: "30px" }} className=" w-100">
           <button
             type="button"
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
@@ -90,7 +94,7 @@ function RestaurantSocials() {
         </div>
 
         {/* Instagram Button */}
-        <div style={{ height: "40px" }} className="mx-2 w-100">
+        <div style={{ height: "30px" }} className="mx-2 w-100">
           <button
             type="button"
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
@@ -111,7 +115,7 @@ function RestaurantSocials() {
           </button>
         </div>
         {/* WhatsApp Button */}
-        <div style={{ height: "40px" }} className="ms-2 w-100">
+        <div style={{ height: "30px" }} className=" w-100">
           <button
             type="button"
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
