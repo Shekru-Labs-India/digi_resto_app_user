@@ -121,7 +121,7 @@ const DeleteUser = () => {
                     aria-label="Close"
                     onClick={closeModal}
                   >
-                    <i className="ri-close-line"></i>
+                    <i className="fa-solid fa-xmark"></i>
                   </button>
                 </div>
                 <div className="modal-body">

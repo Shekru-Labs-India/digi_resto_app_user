@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
+ import "../assets/css/toast.css"
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
@@ -81,9 +82,15 @@ const OfferBanner = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill font_size_12 text-danger" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-danger"
+          key={index}
+        ></i>
       ) : (
-        <i className="ri-fire-line font_size_12 gray-text" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+          key={index}
+        ></i>
       )
     );
   };
@@ -318,6 +325,10 @@ const OfferBanner = () => {
       setShowModal(false);
     }
   };
+   const handleSuggestionClick = (suggestion) => {
+     // Simply set the suggestion as the new note value
+     setNotes(suggestion);
+   };
 
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -497,12 +508,16 @@ const OfferBanner = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -532,178 +547,193 @@ const OfferBanner = () => {
                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                 state={{ menu_cat_id: menu.menu_cat_id }}
               >
-                <div
-                  className="cart-list bg-white p-0 rounded-4"
-                  style={{ width: "345px" }}
-                >
-                  <div className="dz-media media-100">
-                    <img
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "fill",
-                        aspectRatio: "1/1",
-                      }}
-                      src={menu.image || images} // Use default image if menu.image is null
-                      alt={menu.name}
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.src = images; // Set local image source on error
-                      }}
-                    />
-                    <div
-                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg.toLowerCase() === "veg"
-                          ? "border-success"
-                          : "border-danger"
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        left: "3px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                      }}
-                    >
-                      <i
-                        className={`${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
-                        } font_size_12`}
-                      ></i>
-                    </div>
-                    <div
-                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        right: "3px",
-                        height: "20px",
-                        width: "20px",
-                      }}
-                    >
-                      <i
-                        className={`${
-                          menu.is_favourite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
-                        } fs-6`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleLikeClick(menu.menu_id);
+                <div className="container">
+                  <div
+                    className="cart-list bg-white p-0 rounded-4"
+                    style={{ width: "345px" }}
+                  >
+                    <div className="dz-media media-100">
+                      <img
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "fill",
+                          aspectRatio: "1/1",
                         }}
-                      ></i>
-                    </div>
-                    {menu.offer !== 0 && (
-                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                        <span className="font_size_10 text-white">
-                          {menu.offer}% Off
-                        </span>
+                        className="object-fit-cover"
+                        src={menu.image || images} // Use default image if menu.image is null
+                        alt={menu.name}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = images; // Set local image source on error
+                        }}
+                      />
+                      {menu.is_special && (
+                        <i
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 5,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
+                      <div
+                        className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                          menu.menu_veg_nonveg === "veg"
+                            ? "border-success"
+                            : "border-danger"
+                        }`}
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          left: "3px",
+                          height: "20px",
+                          width: "20px",
+                          borderWidth: "2px",
+                          borderRadius: "3px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menu.menu_veg_nonveg === "veg"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
+                          } font_size_12`}
+                        ></i>
                       </div>
-                    )}
-                  </div>
-                  <div className="dz-content d-block">
-                    {/* <div className="category-text">
+                      <div
+                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                        style={{
+                          position: "absolute",
+                          bottom: "3px",
+                          right: "3px",
+                          height: "20px",
+                          width: "20px",
+                        }}
+                      >
+                        <i
+                          className={`${
+                            menu.is_favourite
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
+                          } fs-6`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
+                          }}
+                        ></i>
+                      </div>
+                      {menu.offer !== 0 && (
+                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                          <span className="font_size_10 text-white">
+                            {menu.offer}% Off
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="dz-content d-block">
+                      {/* <div className="category-text">
                           <div className="row mt-1">
                             <div className="col-8 text-success font_size_10">
-                              <i className="ri-restaurant-line pe-1"></i>
+                              <i className="fa-solid fa-utensils pe-1"></i>
                               {menu.category_name}
                             </div>
                             <div className="col-4 ps-0 text-end">
                               <span className="font_size_10 fw-normal gray-text me-2">
-                                <i className="ri-star-half-line font_size_10  ratingStar me-1"></i>
+                                <i className="fa-solid fa-star-half-stroke font_size_10  ratingStar me-1"></i>
                                 {menu.rating}
                               </span>
                             </div>
                           </div>
                         </div> */}
-                    <div className="category-text">
-                      <div className="d-flex justify-content-between align-items-center justify-content-center mt-1">
-                        <span className="font_size_14 fw-medium text-wrap">
-                          {menu.name}
-                        </span>
+                      <div className="category-text">
+                        <div className="d-flex justify-content-between align-items-center justify-content-center mt-1">
+                          <span className="font_size_14 fw-medium text-wrap">
+                            {menu.name}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="mt-2">
-                      <div className="row">
-                        <div className="col-4 d-flex align-items-center">
-                          <div className="text-success font_size_10">
-                            <i className="ri-restaurant-line pe-1"></i>
-                            {menu.category_name}
+                      <div className="mt-2">
+                        <div className="row">
+                          <div className="col-4 d-flex align-items-center">
+                            <div className="text-success font_size_10">
+                              <i className="fa-solid fa-utensils pe-1"></i>
+                              {menu.category_name}
+                            </div>
+                          </div>
+                          <div className="col-4 d-flex align-items-center">
+                            {renderSpiceIcons(menu.spicy_index)}
+                          </div>
+                          <div className="col-4">
+                            {menu.rating > 0 && (
+                              <div className="text-end font_size_10 fw-normal gray-text me-1">
+                                {renderStarRating(menu.rating)}
+                                <span>{menu.rating}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-4 d-flex align-items-center">
-                          {renderSpiceIcons(menu.spicy_index)}
+                      </div>
+                      <div className="row ">
+                        <div className="col-6 d-flex align-items-center">
+                          <span className="me-2 text-info font_size_14 fw-semibold">
+                            ₹{menu.price}
+                          </span>
+                          {menu.strikePrice && (
+                            <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                              ₹{menu.strikePrice}
+                            </span>
+                          )}
                         </div>
-                        <div className="col-4">
-                          {menu.rating > 0 && (
-                            <div className="text-end font_size_10 fw-normal gray-text me-1">
-                              {renderStarRating(menu.rating)}
-                              <span>{menu.rating}</span>
+                        <div className="col-6 d-flex align-items-center justify-content-end">
+                          {userData ? (
+                            <div
+                              onClick={(e) => handleCartIconClick(e, menu)}
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                            >
+                              <i
+                                className={`fa-solid ${
+                                  isMenuItemInCart(menu.menu_id)
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-solid fa-plus text-secondary"
+                                } fs-6`}
+                              ></i>
+                            </div>
+                          ) : (
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 me-1"
+                              style={{
+                                border: "1px solid gray",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "25px",
+                                height: "25px",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                showLoginPopup();
+                              }}
+                            >
+                              <i className="fa-solid fa-cart-shopping fs-6"></i>
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                    <div className="row ">
-                      <div className="col-6 d-flex align-items-center">
-                        <span className="me-2 text-info font_size_14 fw-semibold">
-                          ₹{menu.price}
-                        </span>
-                        {menu.strikePrice && (
-                          <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                            ₹{menu.strikePrice}
-                          </span>
-                        )}
-                      </div>
-                      <div className="col-6 d-flex align-items-center justify-content-end">
-                        {userData ? (
-                          <div
-                            onClick={(e) => handleCartIconClick(e, menu)}
-                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                            style={{
-                              border: "1px solid gray",
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "25px",
-                              height: "25px",
-                            }}
-                          >
-                            <i
-                              className={`ri-shopping-cart-${
-                                isMenuItemInCart(menu.menu_id)
-                                  ? "fill text-black"
-                                  : "line"
-                              } fs-6`}
-                            ></i>
-                          </div>
-                        ) : (
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 me-1"
-                            style={{
-                              border: "1px solid gray",
-                              borderRadius: "50%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "25px",
-                              height: "25px",
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              showLoginPopup();
-                            }}
-                          >
-                            <i className="ri-shopping-cart-line fs-6"></i>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -738,12 +768,15 @@ const OfferBanner = () => {
                 </div>
 
                 <div className="col-2 text-end">
-                  <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => setShowModal(false)}
-                  >
-                    <i className="ri-close-line text-dark"></i>
-                  </button>
+                  <div className="d-flex justify-content-end">
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="modal-body py-2 px-3">
@@ -754,14 +787,33 @@ const OfferBanner = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
@@ -809,21 +861,22 @@ const OfferBanner = () => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

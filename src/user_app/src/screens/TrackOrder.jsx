@@ -4,14 +4,25 @@ import images from "../assets/chiken.jpg";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
-import "../assets/css/custom.css";
+ import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import config from "../component/config"
+import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const TrackOrder = () => {
+
+
+  const titleCase = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   // Define displayCartItems
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -539,6 +550,10 @@ const TrackOrder = () => {
   };
 
   const fetchOrderDetails = async (orderNumber) => {
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
     try {
       setLoading(true);
       const response = await fetch(
@@ -552,6 +567,7 @@ const TrackOrder = () => {
             order_number: orderNumber,
             customer_id: customerId,
             customer_type: customerType,
+            section_id: sectionId,
           }),
         }
       );
@@ -606,7 +622,7 @@ const TrackOrder = () => {
       case "cancle":
         return "ri-close-circle-line text-danger";
       case "ongoing":
-        return "ri-timer-flash-line text-warning";
+        return "fa-solid fa-hourglass-half text-secondary opacity-25 font_size_14";
       case "placed":
         return "ri-file-list-3-line text-primary";
       case "completed":
@@ -706,6 +722,15 @@ const TrackOrder = () => {
     if (!isWithinPlacedWindow || !orderDetails?.order_details?.date_time) {
       return null;
     }
+
+    const titleCase = (str) => {
+      if (!str) return "";
+      return str
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
 
     const orderTime = new Date(orderDetails.order_details.date_time).getTime();
     const currentTime = new Date().getTime();
@@ -899,14 +924,14 @@ const TrackOrder = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -939,7 +964,7 @@ const TrackOrder = () => {
               <div className="row align-items-center mb-0">
                 <div className="col-4">
                   <span className="fs-6 fw-semibold mb-0">
-                    <i className="ri-hashtag pe-2    "></i>
+                    <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                     {order_details.order_number}
                   </span>
                 </div>
@@ -952,24 +977,40 @@ const TrackOrder = () => {
               <div className="row">
                 <div className="col-8 text-start">
                   <div className="restaurant">
-                    <i className="ri-store-2-line pe-2 "></i>
+                    <i className="fa-solid fa-store pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
                       {order_details.restaurant_name.toUpperCase()}
                     </span>
                   </div>
                 </div>
                 <div className="col-4 text-end">
-                  <i className="ri-map-pin-user-fill ps-0 pe-1 font_size_12 gray-text"></i>
+                  <i className="fa-solid fa-location-dot ps-0 pe-1 font_size_12 gray-text"></i>
                   <span className="gray-text font_size_12">
                     {order_details.table_number}
                   </span>
                 </div>
               </div>
               <div className="row">
+                <div className="col-3 text-start pe-0">
+                  {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                  <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                    Order Type: {order_details.order_type}
+                  </span>
+                </div>
+                <div className="col-9 text-end">
+                  <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                    <span className="fw-medium gray-text">
+                      <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                      {titleCase(order_details.section_name)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
                 <div className="col-6">
                   <div className="menu-info">
-                    <span className="font_size_14   gray-text">
-                      <i className="ri-bowl-line pe-2 "></i>
+                    <span className="font_size_12 gray-text">
+                      <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                       {order_details.menu_count} Menu
                     </span>
                   </div>
@@ -1091,7 +1132,7 @@ const TrackOrder = () => {
                             <img
                               src={menu.image || images}
                               alt={menu.menu_name}
-                              className="img-fluid rounded-start-4"
+                              className="img-fluid rounded-start-4 object-fit-cover"
                               style={{
                                 width: "100%",
                                 height: "100%",
@@ -1102,10 +1143,20 @@ const TrackOrder = () => {
                                 e.target.src = images;
                               }}
                             />
+                            {menu.is_special && (
+                              <i
+                                className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                style={{
+                                  position: "absolute",
+                                  top: 3,
+                                  right: 3,
+                                }}
+                              ></i>
+                            )}
 
                             {/* Veg/Non-veg indicator */}
                             <div
-                              className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                              className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                                 isVegMenu(menu?.menu_veg_nonveg)
                                   ? "border-success"
                                   : "border-danger"
@@ -1123,8 +1174,8 @@ const TrackOrder = () => {
                               <i
                                 className={`${
                                   isVegMenu(menu?.menu_veg_nonveg)
-                                    ? "ri-checkbox-blank-circle-fill text-success"
-                                    : "ri-triangle-fill text-danger"
+                                    ? "fa-solid fa-circle text-success"
+                                    : "fa-solid fa-play fa-rotate-270 text-danger"
                                 } font_size_12`}
                               ></i>
                             </div>
@@ -1145,8 +1196,8 @@ const TrackOrder = () => {
                                 className={`${
                                   favoriteMenus[menu.menu_id] ||
                                   menu.is_favourite
-                                    ? "ri-heart-3-fill text-danger"
-                                    : "ri-heart-3-line"
+                                    ? "fa-solid fa-heart text-danger"
+                                    : "fa-regular fa-heart"
                                 } fs-6`}
                               ></i>
                             </div>
@@ -1174,7 +1225,7 @@ const TrackOrder = () => {
                                   isWithinPlacedWindow && (
                                     <div className="col-2 text-end">
                                       <i
-                                        className="ri-close-line text-dark font_size_14 pe-3"
+                                        className="fa-solid fa-xmark text-dark font_size_14 pe-3"
                                         style={{ cursor: "pointer" }}
                                         onClick={(e) =>
                                           handleRemoveItem(menu, e)
@@ -1187,7 +1238,7 @@ const TrackOrder = () => {
                             <div className="row">
                               <div className="col-5 d-flex align-items-center">
                                 <span className="text-success font_size_10 fw-medium">
-                                  <i className="ri-restaurant-line mt-0 me-2"></i>
+                                  <i className="fa-solid fa-utensils mt-0 me-2"></i>
                                   {menu.category_name}
                                 </span>
                               </div>
@@ -1198,12 +1249,12 @@ const TrackOrder = () => {
                                       index < menu.spicy_index ? (
                                         <i
                                           key={index}
-                                          className="ri-fire-fill text-danger font_size_12 firefill offer-code"
+                                          className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
                                         ></i>
                                       ) : (
                                         <i
                                           key={index}
-                                          className="ri-fire-line gray-text font_size_12"
+                                          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                         ></i>
                                       )
                                     )}
@@ -1384,7 +1435,7 @@ const TrackOrder = () => {
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button className="btn mb-2 me-2 btn-sm rounded-pill light btn-info border-info">
+                    <button className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12">
                       Invoice &nbsp;
                       <i className="ri-download-2-line"></i>
                     </button>
@@ -1394,9 +1445,70 @@ const TrackOrder = () => {
                 )}
               </div>
             )}
-            <div className="divider border-success inner-divider transparent mt-5">
-              <span className="bg-body">End</span>
+
+            <div className="d-flex flex-column align-items-center mt-4">
+              <div className="d-flex justify-content-center gap-5 mb-2">
+                {/* Bad Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="bad-rating"
+                    value="bad"
+                  />
+                  <label htmlFor="bad-rating">
+                    <i
+                      className="fa-solid fa-face-frown text-danger"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1 ">Bad</span>
+                  </label>
+                </div>
+
+                {/* Okay Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="okay-rating"
+                    value="okay"
+                  />
+                  <label htmlFor="okay-rating">
+                    <i
+                      className="fa-solid fa-face-meh text-light"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1">Okay</span>
+                  </label>
+                </div>
+
+                {/* Good Rating */}
+                <div className="text-center">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="rating"
+                    id="good-rating"
+                    value="good"
+                  />
+                  <label htmlFor="good-rating">
+                    <i
+                      className="fa-solid fa-face-smile text-success"
+                      style={{ fontSize: "3em" }}
+                    ></i>
+                    <span className="d-block mt-1">Good</span>
+                  </label>
+                </div>
+              </div>
+              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
+                <i class="fa-solid fa-star me-2"></i>
+                Rate us on Google
+              </div>
             </div>
+
+            <RestaurantSocials />
           </div>
         )}
 

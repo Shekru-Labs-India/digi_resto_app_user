@@ -135,7 +135,7 @@ const AboutBody = () => {
             <i className="fa-regular fa-hand-peace" />
             <h2>
               <span className="odometer" data-count={25}>
-                00
+                2
               </span>
               +
             </h2>
@@ -147,11 +147,11 @@ const AboutBody = () => {
             <i className="fa fa-user-plus" />
             <h2>
               <span className="odometer" data-count={85}>
-                00
+                150
               </span>
               +
             </h2>
-            <p>Expart Member</p>
+            <p>Members</p>
           </div>
         </div>
         <div className="col-lg-3 col-md-6 col-sm-6">
@@ -159,7 +159,7 @@ const AboutBody = () => {
           <i class="fas fa-seedling"></i>
             <h2>
               <span className="odometer" data-count={90}>
-                00
+                5
               </span>
               +
             </h2>
@@ -171,7 +171,7 @@ const AboutBody = () => {
           <i class="fas fa-seedling"></i>
             <h2>
               <span className="odometer" data-count={270}>
-                00
+                3
               </span>
               +
             </h2>
@@ -191,12 +191,9 @@ const AboutBody = () => {
         <div className="col-lg-6">
           <div className="about-content">
             <span>About Us</span>
-            <h2>We Provide Fresh Food For Your Family</h2>
+            <h2>Revolutionizing Your Dining Experience</h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis
-              ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas
-              accumsan lacus
+              MenuMitra seamlessly integrates technology with dining, offering a contactless, efficient, and personalized experience. Our app ensures real-time menu updates, easy order customization, and multiple payment options, making dining out more enjoyable and hassle-free.
             </p>
             <div className="row">
               <div className="col-lg-6 col-sm-6">
@@ -278,9 +275,7 @@ const AboutBody = () => {
         <span>Subscribe Now</span>
         <h2>Subscribe Our Newsletter</h2>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum
-          suspendisse ultrices gravida.
+          Sign up for our newsletter to receive the latest updates and exclusive offers.
         </p>
       </div>
       <div className="row">

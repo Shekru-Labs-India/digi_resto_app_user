@@ -1,6 +1,7 @@
 import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
 import { Link } from 'react-router-dom';
+import "../assets/css/Tab.css";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -58,6 +59,15 @@ const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
     </div>
   );
 };
+
+ const titleCase = (str) => {
+  if (!str) return "";
+   return str
+     .toLowerCase()
+     .split(" ")
+     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+     .join(" ");
+ };
 
 // Define CircularCountdown component
 const CircularCountdown = ({
@@ -124,6 +134,7 @@ const CircularCountdown = ({
       const currentCustomerId =
         userData?.customer_id || localStorage.getItem("customer_id");
       const restaurantId = order.restaurant_id;
+      const sectionId = order.section_id;
 
       if (!currentCustomerId || !restaurantId) return;
 
@@ -137,6 +148,7 @@ const CircularCountdown = ({
           body: JSON.stringify({
             customer_id: currentCustomerId,
             restaurant_id: restaurantId,
+            section_id: sectionId,
           }),
         }
       );
@@ -297,158 +309,131 @@ const OrderCard = ({
   return (
     <div className="container pt-0 px-0">
       <Link to={`/user_app/TrackOrder/${order.order_number}`}>
-      <div className="custom-card my-2 rounded-4 shadow-sm">
-        <div
-          className="card-body py-2"
-          onClick={() => handleOrderClick(order.order_number)}
-        >
-          <div className="row align-items-center">
-            <div className="col-4">
-              <span className="fw-semibold fs-6">
-                <i className="ri-hashtag pe-2"></i>
-                {order.order_number}
-              </span>
-            </div>
-            <div className="col-8 text-end">
-              <span className="gray-text font_size_12">{order.time?.split(":").slice(0,2).join(":")+" "+ order.time?.slice(-2)}
-
-              </span>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-8 text-start">
-              <div className="restaurant">
-                <i className="ri-store-2-line pe-2"></i>
-                <span className="fw-medium font_size_14">
-                  {order.restaurant_name.toUpperCase()}
-                </span>
-              </div>
-            </div>
-            <div className="col-4 text-end">
-              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
-              <span className="font_size_12 gray-text">
-                {order.table_number}
-              </span>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-6">
-              <div className="menu-info">
-                <i className="ri-bowl-line pe-2 gray-text"></i>
-                <span className="gray-text font_size_14">
-                  {order.menu_count === 0
-                    ? "No orders"
-                    : `${order.menu_count} Menu`}
-                </span>
-              </div>
-            </div>
-            <div className="col-6 text-end">
-              <span className="text-info font_size_14 fw-semibold">
-                ₹{order.grand_total}
-              </span>
-              <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-          {status === "placed" && (
-            <div className="d-flex flex-column gap-2">
-              {!completedTimers.has(order.order_id) && (
-                <TimeRemaining
-                  orderId={order.order_id}
-                  completedTimers={completedTimers}
-                />
-              )}
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="text-center">
-                  <CircularCountdown
-                    orderId={order.order_id}
-                    setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
-                    order={order}
-                  />
-                </div>
-
-                {!completedTimers.has(order.order_id) &&
-                  localStorage.getItem(`timer_${order.order_id}`) && (
-                    <button
-                      className="btn btn-sm btn-outline-danger rounded-pill px-4"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCancelClick();
-                      }}
-                    >
-                      Cancel Order
-                    </button>
-                  )}
-              </div>
-            </div>
-          )}
-
-          {status === "ongoing" && (
-            <div className="d-flex justify-content-end">
-              <button
-                className="btn btn-sm btn-outline-success rounded-pill px-4"
-                onClick={handleCompleteOrder}
-              >
-                Complete Order
-              </button>
-            </div>
-          )}
-        </div> */}
-        {showCancelModal && (
+        <div className="custom-card my-2 rounded-4 shadow-sm">
           <div
-            className="modal fade show d-block"
-            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            className="card-body py-2"
+            onClick={() => handleOrderClick(order.order_number)}
           >
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Cancel Order</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowCancelModal(false)}
-                  ></button>
+            <div className="row align-items-center">
+              <div className="col-4">
+                <span className="fw-semibold font_size_14">
+                  <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
+                  {order.order_number}
+                </span>
+              </div>
+              <div className="col-8 text-end">
+                <span className="gray-text font_size_12">
+                  {order.time?.split(":").slice(0, 2).join(":") +
+                    " " +
+                    order.time?.slice(-2)}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-8 text-start">
+                <div className="restaurant">
+                  <i className="fa-solid fa-store pe-2 font_size_14"></i>
+                  <span className="fw-medium font_size_14">
+                    {order.restaurant_name.toUpperCase()}
+                  </span>
                 </div>
-                <div className="modal-body">
-                  <div className="form-group">
-                    <label htmlFor="cancelReason" className="form-label">
-                      Please provide a reason for cancellation
-                    </label>
-                    <textarea
-                      id="cancelReason"
-                      className="form-control border border-primary"
-                      rows="3"
-                      value={cancelReason}
-                      onChange={(e) => setCancelReason(e.target.value)}
-                      placeholder="Enter your reason here..."
-                    ></textarea>
+              </div>
+              <div className="col-4 text-end">
+                <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                <span className="font_size_12 gray-text font_size_12">
+                  {order.table_number}
+                </span>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-3 text-start pe-0">
+                {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                  Order Type: {order.order_type}
+                </span>
+              </div>
+              <div className="col-9 text-end">
+                <div className="font_size_12 gray-text font_size_12 text-nowrap">
+              <span className="fw-medium gray-text">
+                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                {titleCase(order.section_name)}
+                </span>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-6">
+                <div className="menu-info">
+                  <i className="fa-solid fa-bowl-rice me-3 gray-text font_size_12"></i>
+                  <span className="gray-text font_size_12">
+                    {order.menu_count === 0
+                      ? "No orders"
+                      : `${order.menu_count} Menu`}
+                  </span>
+                </div>
+              </div>
+              <div className="col-6 text-end">
+                <span className="text-info font_size_14 fw-semibold">
+                  ₹{order.grand_total}
+                </span>
+                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                  ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {showCancelModal && (
+            <div
+              className="modal fade show d-block"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Cancel Order</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => setShowCancelModal(false)}
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="form-group">
+                      <label htmlFor="cancelReason" className="form-label">
+                        Please provide a reason for cancellation
+                      </label>
+                      <textarea
+                        id="cancelReason"
+                        className="form-control border border-primary"
+                        rows="3"
+                        value={cancelReason}
+                        onChange={(e) => setCancelReason(e.target.value)}
+                        placeholder="Enter your reason here..."
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowCancelModal(false)}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handleConfirmCancel}
+                    >
+                      Confirm Cancel
+                    </button>
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setShowCancelModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleConfirmCancel}
-                  >
-                    Confirm Cancel
-                  </button>
-                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       </Link>
     </div>
   );
@@ -458,6 +443,10 @@ function OrdersPlacedOngoing() {
   const [orders, setOrders] = useState({ placed: [], ongoing: [] });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const sectionId =
+    JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+    localStorage.getItem("sectionId") ||
+    "";
 
   const fetchData = async () => {
     // Check if we have required data before making the API call
@@ -478,6 +467,7 @@ function OrdersPlacedOngoing() {
           body: JSON.stringify({
             customer_id: userData.customer_id,
             restaurant_id: userData.restaurantId,
+            section_id: sectionId,
           }),
           signal: controller.signal
         }
@@ -549,8 +539,8 @@ function OrdersPlacedOngoing() {
 
       {orders.ongoing.length > 0 && (
         <div>
-          <i className="ri-timer-flash-line pe-2 font_size_14 text-warning"></i>
-          <span className="font_size_14 fw-medium">Ongoing Orders</span>
+          <i className="fa-solid fa-hourglass-half pe-2 font_size_14 text-secondary opacity-25"></i>
+          <span className="font_size_14 fw-medium">Ongoing Order</span>
           {orders.ongoing.map((order, index) => (
             <OrderCard
               key={`ongoing-${order.order_id}-${index}`}

@@ -5,13 +5,15 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
-
+ import "../assets/css/toast.css";
+ 
 import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
-import { Toast } from "../assets/js/toast";
+
 import { usePopup } from "../context/PopupContext";
 import config from "./config";
+import AI_Loading from "../assets/gif/AI_Loading.gif";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -34,12 +36,16 @@ const renderStarRating = (rating) => {
 
   // 3 to 4.5: Show half star
   if (numRating >= 3 && numRating <= 4.5) {
-    return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+    );
   }
 
   // 5: Show full star
   if (numRating === 5) {
-    return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+    return (
+      <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+    );
   }
 
   // Default case (shouldn't reach here based on your ranges)
@@ -78,6 +84,14 @@ const ProductCard = ({ isVegOnly }) => {
 
   const restaurantStatus = localStorage.getItem("restaurantStatus");
 
+  // Add state for loading if not already present
+  const [isMagicLoading, setIsMagicLoading] = useState(false);
+
+  // Add state for modal
+  const [showAIModal, setShowAIModal] = useState(false);
+
+  const [countdown, setCountdown] = useState(null);
+
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -85,25 +99,27 @@ const ProductCard = ({ isVegOnly }) => {
     // Set total count before applying any filters
     setTotalMenuCount(menus.length);
 
-    // Count special items
-    const specialItemsCount = menus.filter(
-      (menu) => menu.is_special === true
-    ).length;
-
     // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
-        (menu) => menu.menu_veg_nonveg.toLowerCase() === "veg"
+        (menu) => menu.menu_veg_nonveg === "veg"
       );
     }
 
     // Handle category filtering
     if (categoryId === "special") {
       filteredMenus = menus.filter((menu) => menu.is_special === true);
+    } else if (categoryId === "offer") {
+      filteredMenus = menus.filter((menu) => menu.offer > 0);
     } else if (categoryId) {
       filteredMenus = filteredMenus.filter(
         (menu) => menu.menu_cat_id === categoryId
       );
+    }
+
+    // If categoryId is null, show all menus
+    if (categoryId === null) {
+      filteredMenus = menus;
     }
 
     // If no items found after filtering, set empty array
@@ -118,20 +134,45 @@ const ProductCard = ({ isVegOnly }) => {
     }, {});
 
     // Update special count in UI
-    if (specialItemsCount > 0) {
-      setMenuCategories((prevCategories) => [
-        ...prevCategories.map((category) => ({
-          ...category,
-          menu_count: categoryCounts[category.menu_cat_id] || 0,
-        })),
-      ]);
-    }
+    setMenuCategories((prevCategories) => [
+      ...prevCategories.map((category) => ({
+        ...category,
+        menu_count: categoryCounts[category.menu_cat_id] || 0,
+      })),
+    ]);
   }, []);
 
   // Optimized category selection handler
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategoryId(categoryId);
-    applyFilters(menuList, categoryId, isVegOnly);
+    if (categoryId === "special") {
+      setSelectedCategoryId("special");
+    } else if (categoryId === "offer") {
+      setSelectedCategoryId("offer");
+    } else {
+      setSelectedCategoryId(categoryId); // Will be null for "All" button
+    }
+
+    // Update filtered menu list based on selection
+    if (categoryId === null) {
+      setFilteredMenuList(menuList);
+    } else if (categoryId === "special") {
+      setFilteredMenuList(menuList.filter(menu => menu.is_special));
+    } else if (categoryId === "offer") {
+      setFilteredMenuList(menuList.filter(menu => menu.offer > 0));
+    } else {
+      setFilteredMenuList(menuList.filter(menu => menu.menu_cat_id === categoryId));
+    }
+
+    // Update swiper position if needed
+    if (swiperRef.current) {
+      const activeIndex = categoryId === null 
+        ? 0 
+        : menuCategories.findIndex(category => category.menu_cat_id === categoryId) + 1;
+      
+      if (activeIndex !== -1) {
+        swiperRef.current.slideTo(activeIndex);
+      }
+    }
   };
 
   // Fetch menu data with optimized updates
@@ -392,13 +433,17 @@ const ProductCard = ({ isVegOnly }) => {
       const userData = JSON.parse(localStorage.getItem("userData"));
       return (
         <div
-          className="border border-1 rounded-circle bg-white opacity-75"
+          className={`
+            d-flex 
+            align-items-center 
+            justify-content-center 
+            rounded-circle 
+            bg-white 
+            border-opacity-25 
+            border-secondary 
+            border
+          `}
           style={{
-            border: "1px solid gray",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             width: "25px",
             height: "25px",
             cursor: "pointer",
@@ -414,8 +459,10 @@ const ProductCard = ({ isVegOnly }) => {
           }}
         >
           <i
-            className={`ri-shopping-cart-${
-              isMenuItemInCart(menu.menu_id) ? "fill text-black" : "line"
+            className={`fa-solid ${
+              isMenuItemInCart(menu.menu_id)
+                ? "fa-solid fa-circle-check"
+                : "fa-solid fa-plus text-secondary"
             } fs-6`}
           ></i>
         </div>
@@ -424,66 +471,34 @@ const ProductCard = ({ isVegOnly }) => {
     [handleAddToCartClick, isMenuItemInCart]
   );
 
-  const handleConfirmAddToCart = async () => {
-    if (!selectedMenu) return;
-
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-      showLoginPopup();
-      return;
-    }
-
-    const currentRestaurantId =
-      restaurantId || localStorage.getItem("restaurantId");
-    if (!currentRestaurantId) {
-      console.clear();
-      window.showToast("error", "Restaurant information is missing.");
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
-      return;
-    }
-
+  const handleConfirmAddToCart = async (e) => {
+    e.preventDefault();  // Prevent event bubbling
+    e.stopPropagation(); // Stop event propagation
+    
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          restaurant_id: currentRestaurantId,
-        },
-        currentRestaurantId
-      );
+      const itemToAdd = {
+        ...selectedMenu,
+        half_or_full: portionSize,
+        notes: notes,
+        quantity: 1  // Explicitly set quantity to 1
+      };
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
-
+      await addToCart(itemToAdd, restaurantId);
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
-      setSelectedMenu(null);
+      
+      // Show success message or toast here if needed
+      
     } catch (error) {
-      if (error.message === "Item is already in the cart") {
-        window.showToast("info", "This item is already in your cart.");
-      } else {
-        console.clear();
-        window.showToast(
-          "error",
-          "Failed to add item to cart. Please try again."
-        );
-      }
+      // Handle error appropriately
+      console.error("Error adding to cart:", error);
     }
   };
 
   const handleModalClick = (e) => {
-    const restaurantStatus = localStorage.getItem("restaurantStatus");
-    // Close the modal if the click is outside the modal content
-    if (e.target.classList.contains("modal")) {
+    // Only close if clicking the backdrop
+    if (e.target.classList.contains('modal')) {
       setShowModal(false);
     }
   };
@@ -492,6 +507,74 @@ const ProductCard = ({ isVegOnly }) => {
     // Simply set the suggestion as the new note value
     setNotes(suggestion);
   };
+
+  // Add the magic handler function
+  const handleMagicClick = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    setIsMagicLoading(true);
+    setShowAIModal(true); // Show modal when starting
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/auto_create_cart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            customer_id: userData?.customer_id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (data.st === 1) {
+        localStorage.setItem("cartId", data.cart_id);
+        setTimeout(() => {
+          navigate("/user_app/Cart", { 
+            state: { 
+              cartId: data.cart_id,
+              magicMessage: "Your magic cart has been created!"
+            }
+          });
+        }, 5000);
+      } else {
+        window.showToast("error", data.msg || "Failed to create magic cart");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "Something went wrong. Please try again.");
+    } finally {
+      setTimeout(() => {
+        setIsMagicLoading(false);
+        setShowAIModal(false); // Hide modal when done
+      }, 5000);
+    }
+  };
+
+  useEffect(() => {
+    if (showAIModal) {
+      // Start countdown after 2s (5s total - 3s countdown)
+      setTimeout(() => {
+        setCountdown(3);
+        const interval = setInterval(() => {
+          setCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, 2000);
+    } else {
+      setCountdown(null);
+    }
+  }, [showAIModal]);
 
   if (isLoading || menuList.length === 0) {
     const restaurantStatus = localStorage.getItem("restaurantStatus");
@@ -579,13 +662,79 @@ const ProductCard = ({ isVegOnly }) => {
 
       <div className="mb-2">
         {menuCategories && menuCategories.length > 0 && (
-          <div className="title-bar">
-            <span className="font_size_14 fw-medium">Menu</span>
-            <Link to="/user_app/Menu">
-              <span>see all</span>
-              <i className="ri-arrow-right-line"></i>
-            </Link>
-          </div>
+          <>
+            <div className="title-bar">
+              <span className="font_size_14 fw-medium">Menu</span>
+              <Link to="/user_app/Menu">
+                <span>see all</span>
+                <i className="fa-solid fa-arrow-right ms-2"></i>
+              </Link>
+            </div>
+
+            <div className="d-flex justify-content-between mb-3 pt-1">
+              <div className="me-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                    selectedCategoryId === "special"
+                      ? "active bg-info text-white"
+                      : "bg-transparent"
+                  }`}
+                  onClick={() => handleCategorySelect("special")}
+                >
+                  <i
+                    className={`fa-solid fa-star me-2 ${
+                      selectedCategoryId === "special"
+                        ? "text-white"
+                        : "text-info"
+                    }`}
+                  ></i>
+                  Special
+                  <span className="ms-1 font_size_10">
+                    ({menuList.filter((menu) => menu.is_special).length})
+                  </span>
+                </div>
+              </div>
+
+              <div className="mx-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                    selectedCategoryId === "offer"
+                      ? "active bg-success text-white"
+                      : "bg-transparent text-success"
+                  }`}
+                  onClick={() => handleCategorySelect("offer")}
+                >
+                  <i
+                    className={`fa-solid fa-percent me-2 ${
+                      selectedCategoryId === "offer"
+                        ? "text-white"
+                        : "text-success"
+                    }`}
+                  ></i>
+                  Offer
+                  <span className="ms-1 font_size_10">
+                    ({menuList.filter((menu) => menu.offer > 0).length})
+                  </span>
+                </div>
+              </div>
+
+              <div className="ms-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
+                  onClick={handleMagicClick}
+                >
+                  <div className="position-relative z-1 magic-text">
+                    {isMagicLoading ? (
+                      <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                    ) : (
+                      <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+                    )}
+                    Magic
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* <div className="d-flex justify-content-center">
@@ -596,52 +745,33 @@ const ProductCard = ({ isVegOnly }) => {
               }`}
               onClick={() => handleCategorySelect("special")}
             >
-              <i className="ri-bard-line me-2"></i> Special{" "}
+              <i className="fa-regular fa-star me-2"></i> Special{" "}
             </div>
           )}
         </div> */}
 
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
-            {/* Special button - always first */}
-            <div className="swiper-slide">
-              <div
-                className={`category-btn font_size_14 rounded-5 ${
-                  selectedCategoryId === "special" ? "active" : ""
-                }`}
-                onClick={() => handleCategorySelect("special")}
-                style={{
-                  backgroundColor: "#0D9EDF", // Blue background
-                  color: "#ffffff", // White text
-                  border: "none",
-                }}
-              >
-                <i className="ri-bard-line me-2"></i>
-                Special
-                <span className="gray-text font_size_10">
-                  {" "}
-                  ({menuList.filter((menu) => menu.is_special).length})
-                </span>
-              </div>
-            </div>
-
             {/* All button */}
             <div className="swiper-slide">
               <div
-                className={`category-btn font_size_14 border border-2 rounded-5 ${
-                  selectedCategoryId === null ? "active" : ""
-                }`}
+                className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
-                  color: selectedCategoryId === null ? "#ffffff" : "",
+                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "#ffffff",
+                  color: selectedCategoryId === null ? "#ffffff" : "#000000",
+                  border: "1px solid #ddd",
+                  cursor: "pointer",
+                  padding: "8px 16px",
+                  transition: "all 0.3s ease"
                 }}
               >
                 All{" "}
-                <span className="font_size_12">
-                  <span className="gray-text font_size_10">
-                    ({totalMenuCount})
-                  </span>
+                <span style={{ 
+                  color: selectedCategoryId === null ? "#ffffff" : "#666",
+                  fontSize: "0.8em" 
+                }}>
+                  ({totalMenuCount})
                 </span>
               </div>
             </div>
@@ -650,27 +780,23 @@ const ProductCard = ({ isVegOnly }) => {
             {menuCategories.map((category) => (
               <div key={category.menu_cat_id} className="swiper-slide">
                 <div
-                  className={`category-btn font_size_14 border border-2 rounded-5 ${
-                    selectedCategoryId === category.menu_cat_id ? "active" : ""
-                  }`}
+                  className="category-btn font_size_14 rounded-5 py-1"
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
-                    backgroundColor:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#0D775E"
-                        : "",
-                    color:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
+                    backgroundColor: selectedCategoryId === category.menu_cat_id ? "#0D775E" : "#ffffff",
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#000000",
+                    border: "1px solid #ddd",
+                    cursor: "pointer",
+                    padding: "8px 16px",
+                    transition: "all 0.3s ease"
                   }}
                 >
                   {category.name}
-                  <span className="font_size_12 gray-text">
-                    {" "}
-                    <span className="gray-text font_size_10">
-                      ({category.menu_count})
-                    </span>
+                  <span style={{ 
+                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#666",
+                    fontSize: "0.8em" 
+                  }}>
+                    ({category.menu_count})
                   </span>
                 </div>
               </div>
@@ -698,7 +824,7 @@ const ProductCard = ({ isVegOnly }) => {
                     <img
                       src={menu.image || images}
                       alt={menu.name}
-                      className=""
+                      className="object-fit-cover"
                       style={{
                         height: "100%",
                         width: "100%",
@@ -712,7 +838,8 @@ const ProductCard = ({ isVegOnly }) => {
                     />
                     {menu.is_special && (
                       <i
-                        className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        // className="fa-solid fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info font_size_12"
                         style={{
                           position: "absolute",
                           top: 3,
@@ -723,8 +850,8 @@ const ProductCard = ({ isVegOnly }) => {
                       ></i>
                     )}
                     <div
-                      className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg.toLowerCase() === "veg"
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        menu.menu_veg_nonveg === "veg"
                           ? "border-success"
                           : "border-danger"
                       }`}
@@ -740,9 +867,9 @@ const ProductCard = ({ isVegOnly }) => {
                     >
                       <i
                         className={`${
-                          menu.menu_veg_nonveg.toLowerCase() === "veg"
-                            ? "ri-checkbox-blank-circle-fill text-success"
-                            : "ri-triangle-fill text-danger"
+                          menu.menu_veg_nonveg === "veg"
+                            ? "fa-solid fa-circle text-success"
+                            : "fa-solid fa-play fa-rotate-270 text-danger"
                         } font_size_12`}
                       ></i>
                     </div>
@@ -759,8 +886,8 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={` ${
                           menu.is_favourite
-                            ? "ri-heart-3-fill text-danger"
-                            : "ri-heart-3-line"
+                            ? "fa-solid fa-heart text-danger"
+                            : "fa-regular fa-heart"
                         } fs-6`}
                         onClick={(e) => handleLikeClick(e, menu.menu_id)}
                       ></i>
@@ -777,9 +904,17 @@ const ProductCard = ({ isVegOnly }) => {
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
                       <div className="font_size_12 ">
+                        {/* {menu.is_special && (
+                          <div className="row ">
+                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
+                              <i className="fa-regular fa-star me-2"></i>
+                              Special
+                            </div>
+                          </div>
+                        )} */}
                         <div className="row">
                           <div className="col-8 text-success">
-                            <i className="ri-restaurant-line pe-1"></i>
+                            <i className="fa-solid fa-utensils pe-1"></i>
                             <span className="font_size_10">
                               {menu.category}
                             </span>
@@ -807,12 +942,12 @@ const ProductCard = ({ isVegOnly }) => {
                             {Array.from({ length: 5 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
-                                  className="ri-fire-fill text-danger font_size_12"
+                                  className="fa-solid fa-pepper-hot text-danger font_size_12"
                                   key={index}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ri-fire-line font_size_12 gray-text"
+                                  className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                   key={index}
                                 ></i>
                               )
@@ -873,7 +1008,7 @@ const ProductCard = ({ isVegOnly }) => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -896,24 +1031,24 @@ const ProductCard = ({ isVegOnly }) => {
                     placeholder="Add any special instructions here..."
                   />
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
                       handleSuggestionClick("Make it more sweet 😋")
                     }
                     style={{ cursor: "pointer" }}
                   >
-                    <i className="fa fa-chevron-right me-2"></i> Make it more
-                    sweet 😋
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
                   </p>
                   <p
-                    className="font_size_12 text-muted mt-2 mb-0 ms-2 cursor-pointer"
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
                     onClick={() =>
-                      handleSuggestionClick("Make it more spicy 🥵")
+                      handleSuggestionClick("Make it more spicy ")
                     }
                     style={{ cursor: "pointer" }}
                   >
-                    <i className="fa fa-chevron-right me-2"></i> Make it more
-                    spicy 🥵
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy 
                   </p>
                 </div>
                 <hr className="my-4" />
@@ -962,21 +1097,22 @@ const ProductCard = ({ isVegOnly }) => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>
@@ -985,6 +1121,102 @@ const ProductCard = ({ isVegOnly }) => {
         </div>
       )}
       {showModal && <div className="modal-backdrop fade show"></div>}
+
+      {/* Add modal JSX */}
+      {showAIModal && (
+        <div
+          className="modal fade show d-block"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(5px)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div
+              className="modal-content border-0 shadow rounded-4"
+              style={{
+                position: "relative",
+                padding: "4px",
+                // background: "#fff",
+                "--angle": "0deg",
+                animation: "rotate 3s linear infinite",
+              }}
+            >
+              <i
+                className="fa-solid fa-xmark gray-text font_size_14"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  margin: "12px",
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
+                onClick={() => setShowAIModal(false)}
+              ></i>
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "-2px",
+                  zIndex: "-1",
+                  background:
+                    "linear-gradient(var(--angle), #ffbe0b, #fb5607, #ff006e, #8338ec, #3a86ff)",
+                  borderRadius: "1rem",
+                  animation: "rotate 3s linear infinite",
+                }}
+              />
+              <div
+                style={{
+                  content: '""',
+                  position: "absolute",
+                  inset: "1px",
+                  zIndex: "-2",
+                  background: "#fff",
+                  borderRadius: "1rem",
+                }}
+              />
+              <div className="modal-body bg-white text-center p-4">
+                <img
+                  src={AI_Loading}
+                  alt="AI Loading"
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    marginBottom: "20px",
+                  }}
+                />
+                <div className="mb-3">
+                  {countdown !== null ? (
+                    <div className="font_size_14">
+                      Magic starts in{" "}
+                      <span className="fw-bold">{countdown}</span>
+                    </div>
+                  ) : (
+                    "AI is generating menu for you"
+                  )}
+                </div>
+                {/* <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div> */}
+              </div>
+            </div>
+            <style>
+              {`
+                @property --angle {
+                  syntax: "<angle>";
+                  initial-value: 0deg;
+                  inherits: false;
+                }
+                @keyframes rotate {
+                  0%     { --angle: 0deg; }
+                  100%   { --angle: 360deg; }
+                }
+              `}
+            </style>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

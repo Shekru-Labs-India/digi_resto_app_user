@@ -4,7 +4,8 @@ import { Routes, Route, Navigate, useParams } from "react-router-dom";
 // Component imports (keeping only what's used in the Routes)
 import QRScreen from "./screens/QRScreen";
 import HomeScreen from "./screens/HomeScreen";
-
+import "./assets/css/style.css"
+import "./assets/css/custom.css"
 import Profile from "./screens/Profile";
 import Wishlist from "./screens/Wishlist";
 import Category from "./screens/Category";
@@ -35,7 +36,6 @@ function App() {
   }, []);
 
   return (
-    
     <PopupProvider>
       <ThemeProvider>
         <RestaurantIdProvider
@@ -47,7 +47,7 @@ function App() {
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
                 <Route
-                  path=":restaurantCode/:table_number"
+                  path=":restaurantCode/:table_number/:section_id"
                   element={<HomeScreen />}
                 />
                 <Route

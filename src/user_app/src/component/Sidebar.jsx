@@ -3,11 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
+import { useLocation } from "react-router-dom";
 
 export const SidebarToggler = () => {
-  const { restaurantCode, table_number } = useParams();
+  const location = useLocation();
+  const {  table_number } = useParams();
   const { showLoginPopup } = usePopup();
-  const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
+  const {  restaurantId, restaurantDetails, restaurantName } =
     useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(
@@ -21,6 +23,15 @@ export const SidebarToggler = () => {
   const [isVegOnly, setIsVegOnly] = useState(() => {
     return localStorage.getItem("isVegOnly") === "true" || false;
   });
+
+  const [restaurantCode, setRestaurantCode] = useState('');
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData?.restaurantCode) {
+      setRestaurantCode(userData.restaurantCode);
+    }
+  }, []);
 
   const toggleVegNonVeg = () => {
     const newValue = !isVegOnly;
@@ -81,8 +92,18 @@ export const SidebarToggler = () => {
   return (
     <>
       <div className="right-content gap-1">
-        <div className="menu-toggler toggler-icon" onClick={toggleSidebar}>
-          <i className="ri-menu-line fs-3"></i>
+        <span className=""> </span>
+        <div className="menu-toggler toggler-icon">
+          {
+             (
+              <Link to="/user_app/Search">
+                <i className="fa-solid fa-magnifying-glass me-3 fs-6 gray-text"></i>
+              </Link>
+            )}
+          <i
+            className="fa-solid fa-bars-staggered fs-3"
+            onClick={toggleSidebar}
+          ></i>
         </div>
       </div>
 
@@ -97,6 +118,14 @@ export const SidebarToggler = () => {
           <div className=" ">
             <Link to="/user_app/Profile">
               <span className="ms-3 pt-4    ">
+                <i
+                  className={
+                    userData?.customer_id
+                      ? "fa-solid fa-user me-2 font_size_14"
+                      : "fa-regular fa-user me-2 font_size_14"
+                  }
+                ></i>
+
                 {userData?.name ? (
                   `Hello, ${toTitleCase(getFirstName(userData.name))}`
                 ) : (
@@ -108,7 +137,7 @@ export const SidebarToggler = () => {
                         toggleSidebar(); // Closes the sidebar
                       }}
                     >
-                      <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                     </Link>
                   </>
                 )}
@@ -120,13 +149,13 @@ export const SidebarToggler = () => {
             <div className="dz-mode mt-3 me-4">
               <div className="theme-btn" onClick={toggleTheme}>
                 <i
-                  className={`ri ${
-                    isDarkMode ? "ri-sun-line" : "ri-moon-line"
+                  className={`fa-solid ${
+                    isDarkMode ? "fa-sun" : "fa-moon"
                   } sun`}
                 ></i>
                 <i
-                  className={`ri ${
-                    isDarkMode ? "ri-moon-line" : "ri-sun-line"
+                  className={`fa-solid ${
+                    isDarkMode ? "fa-moon" : "fa-sun"
                   } moon`}
                 ></i>
               </div>
@@ -136,37 +165,14 @@ export const SidebarToggler = () => {
         <ul className="nav navbar-nav">
           <li>
             <Link
-              className="nav-link active d-flex align-items-center justify-content-between"
-              to="/user_app/Menu"
+              className="nav-link active"
+              to={`/user_app/${restaurantCode}`}
             >
-              <div className="d-flex align-items-center">
-                <span className="dz-icon icon-sm">
-                  <i className="ri-bowl-line fs-4"></i>
-                </span>
-                <span className="font_size_16 fw-medium">Menu</span>
-              </div>
-              {/* <div className="veg-toggle ">
-                <div
-                  className={`toggle-switch ${isVegOnly ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleVegNonVeg();
-                  }}
-                >
-                  <div className="toggle-label">
-                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="ri-checkbox-blank-circle-fill text-danger me-1"></i>
-                      Non-Veg
-                    </span>
-                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="ri-checkbox-blank-circle-fill text-success me-1"></i>
-                      Veg
-                    </span>
-                  </div>
-                  <div className="toggle-button"></div>
-                </div>
-              </div> */}
-              <div className="">
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-house fs-3"></i>
+              </span>
+              <span className="font_size_16 fw-medium">Home</span>
+              <div className="ms-5 ps-5">
                 <div
                   className={`  border ${
                     isVegOnly ? "border-success" : "border-danger"
@@ -186,12 +192,12 @@ export const SidebarToggler = () => {
                 >
                   {isVegOnly ? (
                     <i
-                      className="ri-checkbox-blank-circle-fill text-success"
+                      className="fa-solid fa-circle text-success"
                       style={{ fontSize: "16px" }} // Adjust icon size
                     ></i>
                   ) : (
                     <i
-                      className="ri-triangle-fill text-danger"
+                      className="fa-solid fa-play fa-rotate-270 text-danger"
                       style={{ fontSize: "16px" }} // Adjust icon size
                     ></i>
                   )}
@@ -200,9 +206,43 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
+            <Link
+              className="nav-link active d-flex align-items-center justify-content-between"
+              to="/user_app/Menu"
+            >
+              <div className="d-flex align-items-center">
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-bowl-rice fs-4"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Menu</span>
+              </div>
+              {/* <div className="veg-toggle ">
+                <div
+                  className={`toggle-switch ${isVegOnly ? "active" : ""}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleVegNonVeg();
+                  }}
+                >
+                  <div className="toggle-label">
+                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
+                      <i className="fa-solid fa-circle text-danger me-1"></i>
+                      Non-Veg
+                    </span>
+                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
+                      <i className="fa-solid fa-circle text-success me-1"></i>
+                      Veg
+                    </span>
+                  </div>
+                  <div className="toggle-button"></div>
+                </div>
+              </div> */}
+            </Link>
+          </li>
+          <li>
             <Link className="nav-link active" to="/user_app/Category">
               <span className="dz-icon icon-sm">
-                <i className="ri-list-check-2 fs-4"></i>
+                <i className="fa-solid fa-layer-group fs-3"></i>
               </span>
               <span className="  font_size_16 fw-medium">Category</span>
             </Link>
@@ -210,7 +250,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/Wishlist">
               <span className="dz-icon icon-sm">
-                <i className="ri-heart-3-line fs-4"></i>
+                <i className="fa-regular fa-heart fs-4"></i>
               </span>
               <span className="  font_size_16  fw-medium">Favourite</span>
             </Link>
@@ -218,7 +258,7 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/MyOrder">
               <span className="dz-icon icon-sm">
-                <i className="ri-history-line fs-4"></i>
+                <i className="fa-solid fa-clock-rotate-left fs-4"></i>
               </span>
               <span className="  font_size_16 fw-medium ">My Orders</span>
             </Link>
@@ -226,9 +266,17 @@ export const SidebarToggler = () => {
           <li>
             <Link className="nav-link active" to="/user_app/Cart">
               <span className="dz-icon icon-sm">
-                <i className="ri-shopping-cart-line fs-4"></i>
+                <i className="fa-solid fa-cart-shopping fs-4"></i>
               </span>
               <span className=" font_size_16  fw-medium">Cart</span>
+            </Link>
+          </li>
+          <li>
+            <Link className="nav-link active" to="/user_app/Search">
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <span className=" font_size_16 fw-medium  ">Search</span>
             </Link>
           </li>
           <li>
@@ -236,9 +284,9 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i
                   className={
-                    userData && userData.customer_id
-                      ? "ri-user-3-fill fs-4"
-                      : "ri-user-3-line fs-4"
+                    userData?.customer_id
+                      ? "fa-solid fa-user"
+                      : "fa-regular fa-user"
                   }
                 ></i>
               </span>
@@ -260,49 +308,49 @@ export const SidebarToggler = () => {
             ></i>
           </div>
         </div> */}
-        <div className="sidebar-bottom">
+        {/* <div className="sidebar-bottom">
           <div className="text-center pt-3">
             <a
               href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-facebook-circle-fill ri-xl"></i>
+              <i className="fa-brands fa-facebook"></i>
             </a>
             <a
               href="https://www.instagram.com/menumitra/"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-instagram-line ri-xl"></i>
+              <i className="fa-brands fa-instagram"></i>
             </a>
             <a
               href="https://www.youtube.com/@menumitra"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-youtube-line ri-xl"></i>
+              <i className="fa-brands fa-youtube"></i>
             </a>
             <a
               href="https://www.linkedin.com/company/102429337/admin/dashboard/"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-linkedin-fill ri-xl"></i>
+              <i className="fa-brands fa-linkedin"></i>
             </a>
             <a
               href="https://x.com/MenuMitra"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-twitter-x-line ri-xl"></i>
+              <i className="fa-brands fa-x-twitter"></i>
             </a>
             <a
               href="https://t.me/MenuMitra"
               className="footer-link mx-2"
               target="_blank"
             >
-              <i className="ri-telegram-line ri-xl"></i>
+              <i className="fa-brands fa-telegram"></i>
             </a>
           </div>
           <div className="sidebar-logo text-center mt-5">
@@ -318,7 +366,7 @@ export const SidebarToggler = () => {
           </div>
 
           <div className="text-center text-md-center mt-2 gray-text font_size_12">
-            <i className="ri-flashlight-fill "></i> Powered by <br />
+            <i className="fa-solid fa-bolt "></i> Powered by <br />
           </div>
           <div className="text-center mb-5">
             <a
@@ -327,7 +375,67 @@ export const SidebarToggler = () => {
               target="_blank"
             >
               Shekru Labs India Pvt. Ltd.
-            
+            </a>
+          </div>
+        </div> */}
+        <div className="align-bottom border-top">
+          <div className="d-flex justify-content-center py-0">
+            <Link to="/">
+              {" "}
+              <div className="d-flex align-items-center mt-4 mb-0">
+                <img src={logo} alt="logo" width="40" height="40" />
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  MenuMitra
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="text-center text-md-center gray-text font_size_12 pb-5">
+            <div className="my-4">
+              <div className="text-center d-flex justify-content-center">
+                <a
+                  href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-facebook fs-4"></i>
+                </a>
+                <a
+                  href="https://www.instagram.com/menumitra/"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-instagram fs-4"></i>
+                </a>
+                <a
+                  href="https://www.youtube.com/@menumitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-youtube fs-4"></i>
+                </a>
+
+                <a
+                  href="https://x.com/MenuMitra"
+                  className="footer-link mx-3"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fa-brands fa-x-twitter fs-4"></i>
+                </a>
+              </div>
+            </div>
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
+            <a
+              className="text-success font_size_12"
+              href="https://www.shekruweb.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Shekru Labs India Pvt. Ltd.
             </a>
           </div>
         </div>

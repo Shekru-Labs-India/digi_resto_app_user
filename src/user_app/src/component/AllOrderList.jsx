@@ -66,7 +66,7 @@ const AllOrderList = () => {
                         </div>
                         <div className="row mt-1 pb-1">
                           <div className="col-1">
-                            <i className="ri-menu-line gray-text"></i>
+                            <i className="fa-solid fa-bars gray-text"></i>
                           </div>
                           <div className="col-10 d-flex align-items-center">
                             <span className="gray-text font_size_14">

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 // import '../assets/styles.css'
 // import '../assets/custom.css'
 import config from "../component/config";
+import logo from "../assets/logos/menumitra_logo_128.png";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
@@ -18,18 +19,18 @@ const HotelList = () => {
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {
-            const code =
-              hotel.code ||
-              (hotel.resto_url && hotel.resto_url.match(/\/(\d{6})\//)[1]);
-            return { ...hotel, code };
+            const sectionId = hotel.resto_url.split('/').pop();
+            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || '';
+            return { 
+              ...hotel, 
+              code,
+              section_id: sectionId
+            };
           });
           setHotels(formattedHotels);
           setFilteredHotels(formattedHotels);
 
-          // localStorage.removeItem("isRestaurantOpen");
-          // localStorage.removeItem("restaurantStatus");
           localStorage.removeItem("allOrderList");
-        } else {
         }
       } catch (error) {}
     };
@@ -76,7 +77,7 @@ const HotelList = () => {
           <div className="d-flex justify-content-between mb-3">
             <div className="btn-group btn-group-sm">
               <button
-                className={`btn fw-normal p-2 btn-outline-info ${
+                className={`btn fw-normal p-2 btn-outline-info shadow-lg ${
                   activeFilter === "all" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("all")}
@@ -84,7 +85,7 @@ const HotelList = () => {
                 All
               </button>
               <button
-                className={`btn fw-normal p-2 btn-outline-success ${
+                className={`btn fw-normal p-2 btn-outline-success shadow-lg ${
                   activeFilter === "veg" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("veg")}
@@ -92,7 +93,7 @@ const HotelList = () => {
                 Veg
               </button>
               <button
-                className={`btn fw-normal p-2 btn-outline-warning ${
+                className={`btn fw-normal p-2 btn-outline-warning shadow-lg ${
                   activeFilter === "nonveg" ? "active text-white" : ""
                 }`}
                 onClick={() => handleFilter("nonveg")}
@@ -102,7 +103,7 @@ const HotelList = () => {
             </div>
             <div className="btn-group btn-group-sm">
               <button
-                className={`btn p-2 btn-outline-info ${
+                className={`btn p-2 btn-outline-info shadow-lg ${
                   activeStatusFilter === "all" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("all")}
@@ -110,7 +111,7 @@ const HotelList = () => {
                 All
               </button>
               <button
-                className={`btn p-2 btn-outline-success ${
+                className={`btn p-2 btn-outline-success shadow-lg ${
                   activeStatusFilter === "open" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("open")}
@@ -118,7 +119,7 @@ const HotelList = () => {
                 Open
               </button>
               <button
-                className={`btn p-2 btn-outline-dark ${
+                className={`btn p-2 btn-outline-dark shadow-lg ${
                   activeStatusFilter === "closed" ? "active text-white" : ""
                 }`}
                 onClick={() => handleStatusFilter("closed")}
@@ -130,7 +131,14 @@ const HotelList = () => {
           {filteredHotels.length > 0 ? (
             filteredHotels.map((hotel) => (
               <div className="card rounded-4" key={hotel.restaurant_id}>
-                <Link to={`/user_app/${hotel.code}`}>
+                <Link 
+                  to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
+                  onClick={() => {
+                    localStorage.setItem('sectionId', hotel.section_id);
+                    // You can also store other relevant hotel data if needed
+                    localStorage.setItem('restaurantCode', hotel.code);
+                  }}
+                >
                   <div
                     className={`card-body py-0 ${
                       hotel.is_open === false ? "bg-light rounded-4" : ""
@@ -140,7 +148,7 @@ const HotelList = () => {
                       <div className="col-12">
                         <div className="row mt-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="ri-store-2-line font_size_14 fw-medium"></i>
+                            <i className="fa-solid fa-store font_size_14 "></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="font_size_14 fw-medium m-0">
@@ -159,9 +167,9 @@ const HotelList = () => {
                         </div>
                         <div className="row mt-1">
                           <div className="col-1 d-flex align-items-center">
-                            <i className="ri-phone-line text-primary"></i>
+                            <i className="fa-solid fa-phone text-primary font_size_12"></i>
                           </div>
-                          <div className="col-10 d-flex align-items-center">
+                          <div className="col-10 d-flex align-it  ems-center">
                             <span className="text-primary font_size_12">
                               {hotel.mobile}
                             </span>
@@ -169,7 +177,7 @@ const HotelList = () => {
                         </div>
                         <div className="row mb-2 d-flex justify-content-between">
                           <div className="col-1">
-                            <i className="ri-map-pin-line gray-text"></i>
+                            <i className="fa-solid fa-location-dot gray-text font_size_12"></i>
                           </div>
                           <div className="col-6 ps-0">
                             <span className="gray-text font_size_12">
@@ -198,8 +206,8 @@ const HotelList = () => {
                                       ["veg", "Veg", "VEG"].includes(
                                         hotel.veg_nonveg
                                       )
-                                        ? "ri-checkbox-blank-circle-fill text-success"
-                                        : "ri-triangle-fill text-danger"
+                                        ? "fa-solid fa-circle text-success"
+                                        : "fa-solid fa-play fa-rotate-270 text-danger"
                                     } font_size_12`}
                                   ></i>
                                 </div>
@@ -219,22 +227,31 @@ const HotelList = () => {
                 <i className="ri-restaurant-2-line font_size_24 mb-2 text-muted"></i>
                 <h5 className="text-muted mb-2">No Restaurants Found</h5>
                 <p className="text-muted font_size_14">
-                  {activeFilter !== 'all' && activeStatusFilter !== 'all' ? (
-                    `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
-                  ) : activeFilter !== 'all' ? (
-                    `No ${activeFilter} restaurants available`
-                  ) : activeStatusFilter !== 'all' ? (
-                    `No restaurants are currently ${activeStatusFilter}`
-                  ) : (
-                    'No restaurants available at the moment'
-                  )}
+                  {activeFilter !== "all" && activeStatusFilter !== "all"
+                    ? `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
+                    : activeFilter !== "all"
+                    ? `No ${activeFilter} restaurants available`
+                    : activeStatusFilter !== "all"
+                    ? `No restaurants are currently ${activeStatusFilter}`
+                    : "No restaurants available at the moment"}
                 </p>
               </div>
             </div>
           )}
         </div>
         <div className="align-bottom border-top">
-          <div className="text-center text-md-center mt-2 gray-text font_size_12 pb-5">
+          <div className="d-flex justify-content-center py-0">
+            <Link to="/">
+              {" "}
+            <div className="d-flex align-items-center mt-4 mb-0">
+              <img src={logo} alt="logo" width="40" height="40" />
+              <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                MenuMitra
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div className="text-center text-md-center gray-text font_size_12 pb-5">
             <div className="my-4">
               <div className="text-center d-flex justify-content-center">
                 <a
@@ -243,7 +260,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-facebook-circle-fill ri-xl"></i>
+                  <i className="fa-brands fa-facebook fs-4"></i>
                 </a>
                 <a
                   href="https://www.instagram.com/menumitra/"
@@ -251,7 +268,7 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-instagram-line ri-xl"></i>
+                  <i className="fa-brands fa-instagram fs-4"></i>
                 </a>
                 <a
                   href="https://www.youtube.com/@menumitra"
@@ -259,35 +276,21 @@ const HotelList = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-youtube-line ri-xl"></i>
+                  <i className="fa-brands fa-youtube fs-4"></i>
                 </a>
-                <a
-                  href="https://www.linkedin.com/company/102429337/admin/dashboard/"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-linkedin-fill ri-xl"></i>
-                </a>
+               
                 <a
                   href="https://x.com/MenuMitra"
                   className="footer-link mx-3"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <i className="ri-twitter-x-line ri-xl"></i>
+                  <i className="fa-brands fa-x-twitter fs-4"></i>
                 </a>
-                <a
-                  href="https://t.me/MenuMitra"
-                  className="footer-link mx-3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="ri-telegram-line ri-xl"></i>
-                </a>
+               
               </div>
             </div>
-            <i className="ri-flashlight-fill ri-lg"></i> Powered by <br />
+            <i className="fa-solid fa-bolt"></i> Powered by <br />
             <a
               className="text-success font_size_12"
               href="https://www.shekruweb.com"

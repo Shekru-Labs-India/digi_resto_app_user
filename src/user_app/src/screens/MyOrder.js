@@ -3,14 +3,24 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
-import "../assets/css/custom.css";
-import "../assets/css/Tab.css";
+ import "../assets/css/toast.css";
+ import "../assets/css/Tab.css"
 import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 
 import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
+import RestaurantSocials from "../components/RestaurantSocials";
+
+const titleCase = (str) => {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 const calculateOriginalPrice = (grandTotal) => {
   const numericTotal = parseFloat(grandTotal);
@@ -72,6 +82,7 @@ const MyOrder = () => {
   };
 
   useEffect(() => {
+    const sectionId = localStorage.getItem("sectionId");
     const fetchOngoingOrPlacedOrder = async () => {
       try {
         setLoading(true);
@@ -94,6 +105,7 @@ const MyOrder = () => {
             body: JSON.stringify({
               customer_id: currentCustomerId,
               restaurant_id: restaurantId,
+              section_id: sectionId,
             }),
           }
         );
@@ -139,7 +151,13 @@ const MyOrder = () => {
     }
   }, [customerId, restaurantId]);
 
+
+
   useEffect(() => {
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -166,6 +184,7 @@ const MyOrder = () => {
               order_status: activeTab === "cancelled" ? "cancle" : activeTab,
               customer_id: currentCustomerId,
               customer_type: currentCustomerType,
+              section_id: sectionId,
             }),
           }
         );
@@ -259,6 +278,8 @@ const MyOrder = () => {
     }
   };
 
+
+
   return (
     <div className="page-wrapper">
       <Header
@@ -273,7 +294,7 @@ const MyOrder = () => {
         }
       />
 
-      <main className="page-content space-top mb-5 pb-3">
+      <main className="page-content space-top p-b70">
         <div className="container px-1">
           {ongoingOrPlacedOrders.placed.map((order, index) => (
             <OrderCard
@@ -307,10 +328,10 @@ const MyOrder = () => {
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab === "completed" && (
-                    <i className="ri-checkbox-circle-line text-success me-2 fs-5"></i>
+                    <i className="far fa-check-circle text-success me-2 fs-5"></i>
                   )}
                   {tab === "cancelled" && (
-                    <i className="ri-close-circle-line text-danger me-2 fs-5"></i>
+                    <i className="far fa-times-circle text-danger me-2 fs-5"></i>
                   )}
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </div>
@@ -320,7 +341,7 @@ const MyOrder = () => {
           <Bottom />
         </div>
 
-        <div className="container">
+        <div className="container pt-0">
           {loading ? (
             <div id="">
               <div className="loader">{/* <LoaderGif /> */}</div>
@@ -337,7 +358,7 @@ const MyOrder = () => {
                       className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}
                     >
-                      <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                     </button>
                   </div>
                   <span className="mt-4">
@@ -415,6 +436,14 @@ export const OrderCard = ({
   const timeoutRef = useRef({});
 
   const [customerName, setCustomerName] = useState("");
+  const titleCase = (str) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
 
   useEffect(() => {
@@ -642,6 +671,7 @@ export const OrderCard = ({
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
 
       await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
     } catch (error) {
@@ -664,6 +694,7 @@ console.log(customerName);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
 
       await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
     } catch (error) {
@@ -688,7 +719,7 @@ console.log(customerName);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-
+      console.log(paymentUrl);
       await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
       console.error("Google Pay payment error:", error);
@@ -750,7 +781,9 @@ console.log(customerName);
       setIsProcessingPhonePe(false);
       setIsProcessingGPay(false);
     };
+    
   }, []);
+  
 
   const isDarkMode = localStorage.getItem("isDarkMode");
   // console.log("isDarkMode ->" + isDarkMode);
@@ -764,8 +797,8 @@ console.log(customerName);
         >
           <div className="row align-items-center">
             <div className="col-4">
-              <span className="fw-semibold fs-6">
-                <i className="ri-hashtag pe-2"></i>
+              <span className="fw-semibold font_size_14">
+                <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                 {order.order_number}
               </span>
             </div>
@@ -778,26 +811,43 @@ console.log(customerName);
             </div>
           </div>
           <div className="row">
-            <div className="col-8 text-start">
+            <div className="col-5 text-start">
               <div className="restaurant">
-                <i className="ri-store-2-line pe-2"></i>
+                <i className="fa-solid fa-store pe-2 font_size_14"></i>
                 <span className="fw-medium font_size_14">
                   {order.restaurant_name.toUpperCase()}
                 </span>
               </div>
             </div>
-            <div className="col-4 text-end">
-              <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
-              <span className="font_size_12 gray-text">
+
+            <div className="col-7 text-end">
+              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+              <span className="font_size_12 gray-text font_size_12">
                 {order.table_number}
               </span>
             </div>
           </div>
           <div className="row">
+            <div className="col-3 text-start pe-0">
+              {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+              <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                Order Type: {order.order_type}
+              </span>
+            </div>
+            <div className="col-9 text-end">
+              <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                <span className="fw-medium gray-text">
+                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                  {titleCase(order.section_name)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="row">
             <div className="col-6">
               <div className="menu-info">
-                <i className="ri-bowl-line pe-2 gray-text"></i>
-                <span className="gray-text font_size_14">
+                <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
+                <span className="gray-text font_size_12">
                   {order.menu_count === 0
                     ? "No orders"
                     : `${order.menu_count} Menu`}
@@ -886,7 +936,7 @@ console.log(customerName);
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                       </span>
                     </div>
                   </div>
@@ -905,11 +955,22 @@ console.log(customerName);
                       }}
                       disabled={isProcessingUPI}
                     >
-                      {isProcessingUPI ? "Processing..." : (
+                      {isProcessingUPI ? (
+                        "Processing..."
+                      ) : (
                         <>
-                          Pay <span className="fs-4 mx-1">₹{order.grand_total}</span> via
+                          Pay{" "}
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>{" "}
+                          via
                           <span className="ms-2">Other UPI Apps</span>
-                          <img className="text-white ms-1" src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
+                          <img
+                            className="text-white ms-1"
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
                         </>
                       )}
                     </button>
@@ -924,11 +985,20 @@ console.log(customerName);
                       }}
                       disabled={isProcessingPhonePe}
                     >
-                      {isProcessingPhonePe ? "Processing..." : (
+                      {isProcessingPhonePe ? (
+                        "Processing..."
+                      ) : (
                         <>
                           Pay with PhonePe
-                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
-                          <img className="ms-1" src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000" width={45} alt="PhonePe" />
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>
+                          <img
+                            className="ms-1"
+                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                            width={45}
+                            alt="PhonePe"
+                          />
                         </>
                       )}
                     </button>
@@ -943,11 +1013,20 @@ console.log(customerName);
                       }}
                       disabled={isProcessingGPay}
                     >
-                      {isProcessingGPay ? "Processing..." : (
+                      {isProcessingGPay ? (
+                        "Processing..."
+                      ) : (
                         <>
                           Pay with Google Pay
-                          <span className="fs-4 mx-1">₹{order.grand_total}</span>
-                          <img className="ms-1" src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png" width={45} alt="Google Pay" />
+                          <span className="fs-4 mx-1">
+                            ₹{order.grand_total}
+                          </span>
+                          <img
+                            className="ms-1"
+                            src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
                         </>
                       )}
                     </button>
@@ -1033,7 +1112,7 @@ console.log(customerName);
                       class="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i class="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                   <button
@@ -1188,6 +1267,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
+  
+
   useEffect(() => {
     if (orders && Object.keys(orders).length > 0) {
       // Get the first date (top-most order group)
@@ -1303,7 +1384,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 </span>
                 <span className="icon-circle">
                   <i
-                    className={`ri-arrow-down-s-line arrow-icon ${
+                    className={`fas fa-chevron-down arrow-icon ${
                       Object.values(checkedItems).every(Boolean)
                         ? "rotated"
                         : ""
@@ -1349,7 +1430,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   </span>
                   <span className="icon-circle">
                     <i
-                      className={`ri-arrow-down-s-line arrow-icon ${
+                      className={`fas fa-chevron-down arrow-icon ${
                         checkedItems[dateTypeKey] ? "rotated" : ""
                       }`}
                     ></i>
@@ -1377,8 +1458,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {/* Card body content remains the same */}
                       <div className="row align-items-center">
                         <div className="col-4">
-                          <span className="fw-semibold fs-6">
-                            <i className="ri-hashtag pe-2"></i>
+                          <span className="fw-semibold font_size_14">
+                            <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                             {order.order_number}
                           </span>
                         </div>
@@ -1388,27 +1469,45 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           </span>
                         </div>
                       </div>
+
                       <div className="row">
-                        <div className="col-8 text-start">
+                        <div className="col-5 text-start">
                           <div className="restaurant">
-                            <i className="ri-store-2-line pe-2"></i>
+                            <i className="fa-solid fa-store pe-2 font_size_14"></i>
                             <span className="fw-medium font_size_14">
                               {order.restaurant_name.toUpperCase()}
                             </span>
                           </div>
                         </div>
-                        <div className="col-4 text-end">
-                          <i className="ri-map-pin-user-fill ps-2 pe-1 font_size_12 gray-text"></i>
-                          <span className="font_size_12 gray-text">
+
+                        <div className="col-7 text-end">
+                          <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                          <span className="font_size_12 gray-text font_size_12">
                             {order.table_number}
                           </span>
                         </div>
                       </div>
                       <div className="row">
+                        <div className="col-3 text-start pe-0">
+                          {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
+                          <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                            Order Type: {order.order_type}
+                          </span>
+                        </div>
+                        <div className="col-9 text-end">
+                          <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                            <span className="fw-medium gray-text">
+                              <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
+                              {titleCase(order.section_name)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
                         <div className="col-6">
                           <div className="menu-info">
-                            <i className="ri-bowl-line pe-2 gray-text"></i>
-                            <span className="gray-text font_size_14">
+                            <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
+                            <span className="gray-text font_size_12">
                               {order.menu_count === 0
                                 ? "No Menus"
                                 : `${order.menu_count} Menu`}
@@ -1430,17 +1529,17 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {activeTab === "completed" && (
                         <div className="container py-0">
                           <div className="row">
-                            <div className="col-9 ps-0">
+                            <div className="col-7 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
-                                  <i className="ri-checkbox-circle-line me-1"></i>
+                                  <i className="far fa-check-circle me-1"></i>
                                   Completed
                                 </span>
                               </div>
                             </div>
-                            <div className="col-3 pe-0 font_size_14 text-end">
+                            <div className="col-5 pe-0 font_size_14 text-end">
                               {order.payment_method && (
-                                <div className="border border-success rounded-pill py-0 px-2 font_size_14 text-center text-nowrap text-success">
+                                <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">
                                   {order.payment_method}
                                 </div>
                               )}
@@ -1464,10 +1563,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-
-        <div className="divider border-success inner-divider transparent mb-3">
-          <span className="bg-body">End</span>
-        </div>
+<div className="container">
+  <RestaurantSocials/>
+</div>
       </>
     );
   };
@@ -1614,6 +1712,7 @@ export const CircularCountdown = ({
       const currentCustomerId =
         userData?.customer_id || localStorage.getItem("customer_id");
       const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
+      const sectionId = order.section_id;
 
       if (!currentCustomerId || !restaurantId) return;
 
@@ -1627,6 +1726,7 @@ export const CircularCountdown = ({
           body: JSON.stringify({
             customer_id: currentCustomerId,
             restaurant_id: restaurantId,
+            section_id: sectionId,
           }),
         }
       );

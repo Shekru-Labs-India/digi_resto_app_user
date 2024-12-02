@@ -4,6 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css";
+import "../assets/css/toast.css"
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
@@ -39,13 +40,13 @@ const NearbyArea = () => {
     }
   }, [restaurantId]);
 
-  const toTitleCase = (str) => {
-    if (!str) return "";
-    return str.replace(
-      /\w\S*/g,
-      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-    );
-  };
+  // const toTitleCase = (str) => {
+  //   if (!str) return "";
+  //   return str.replace(
+  //     /\w\S*/g,
+  //     (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  //   );
+  // };
 
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
@@ -99,8 +100,8 @@ const NearbyArea = () => {
       if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
         const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
           ...menu,
-          name: toTitleCase(menu.menu_name),
-          category_name: toTitleCase(menu.category_name),
+          name: (menu.menu_name),
+          category_name: (menu.category_name),
           oldPrice: menu.offer ? menu.price : null,
           price: menu.offer
             ? Math.floor(menu.price * (1 - menu.offer / 100))
@@ -207,9 +208,15 @@ const NearbyArea = () => {
   const renderSpiceIcons = (spicyIndex) => {
     return Array.from({ length: 5 }).map((_, index) =>
       index < spicyIndex ? (
-        <i className="ri-fire-fill font_size_12 text-danger" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-danger"
+          key={index}
+        ></i>
       ) : (
-        <i className="ri-fire-line font_size_12 gray-text" key={index}></i>
+        <i
+          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+          key={index}
+        ></i>
       )
     );
   };
@@ -296,6 +303,10 @@ const NearbyArea = () => {
     }
   };
 
+    const handleSuggestionClick = (suggestion) => {
+      // Simply set the suggestion as the new note value
+      setNotes(suggestion);
+    };
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
@@ -366,12 +377,16 @@ const NearbyArea = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -386,7 +401,7 @@ const NearbyArea = () => {
               <span className="font_size_14 fw-medium">Our Speciality</span>
               <Link to="/user_app/Menu">
                 <span>see all</span>
-                <i className="ri-arrow-right-line"></i>
+                <i className="fa-solid fa-arrow-right ms-2"></i>
               </Link>
             </div>
           )}
@@ -417,15 +432,28 @@ const NearbyArea = () => {
                           objectFit: "cover",
                           aspectRatio: 1,
                         }}
+                        className="object-fit-cover"
                         onError={(e) => {
                           e.target.src = images;
                         }}
                         alt={menuItem.name}
                         loading="lazy"
                       />
+                      {menuItem.is_special && (
+                        <i
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 5,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
                       <div
-                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          menuItem.menu_veg_nonveg.toLowerCase() === "veg"
+                        className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                          menuItem.menu_veg_nonveg === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -441,9 +469,9 @@ const NearbyArea = () => {
                       >
                         <i
                           className={`${
-                            menuItem.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
+                            menuItem.menu_veg_nonveg === "veg"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -460,8 +488,8 @@ const NearbyArea = () => {
                         <i
                           className={`${
                             menuItem.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -489,7 +517,7 @@ const NearbyArea = () => {
                         <div className="row d-flex align-items-center">
                           <div className="col-4 d-flex align-items-center">
                             <div className="text-success font_size_10 d-flex align-items-center">
-                              <i className="ri-restaurant-line pe-1"></i>
+                              <i className="fa-solid fa-utensils pe-1"></i>
                               {menuItem.category_name}
                             </div>
                           </div>
@@ -539,10 +567,10 @@ const NearbyArea = () => {
                               }}
                             >
                               <i
-                                className={`ri-shopping-cart-${
+                                className={`fa-solid ${
                                   isMenuItemInCart(menuItem.menu_id)
-                                    ? "fill text-black"
-                                    : "line"
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-solid fa-plus text-secondary"
                                 } fs-6`}
                               ></i>
                             </div>
@@ -564,7 +592,7 @@ const NearbyArea = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="ri-shopping-cart-line fs-6"></i>
+                              <i className="fa-solid fa-cart-shopping fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -600,12 +628,15 @@ const NearbyArea = () => {
                 </div>
 
                 <div className="col-2 text-end">
-                  <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => setShowModal(false)}
-                  >
-                    <i className="ri-close-line text-dark font_size_14 pe-3"></i>
-                  </button>
+                  <div className="d-flex justify-content-end">
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowModal(false)}
+                      aria-label="Close"
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="modal-body py-2 px-3">
@@ -616,14 +647,33 @@ const NearbyArea = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
-                    rows="3"
+                    rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
@@ -671,21 +721,22 @@ const NearbyArea = () => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

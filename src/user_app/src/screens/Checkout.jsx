@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import "../assets/css/custom.css";
+ import "../assets/css/toast.css";
 import OrderGif from "../assets/gif/cooking.gif";
 import { ThemeContext } from "../context/ThemeContext.js";
 import Header from "../components/Header";
@@ -21,6 +21,7 @@ const Checkout = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const storedRestaurantId = localStorage.getItem("restaurantId");
+  const [availableTables, setAvailableTables] = useState(0);
 
   const location = useLocation();
   // const [cartItems, setCartItems] = useState([]);
@@ -153,6 +154,11 @@ const Checkout = () => {
     }
   }, [isDarkMode]);
 
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [selectedOrderType, setSelectedOrderType] = useState('');
+
+  const [pendingOrderAction, setPendingOrderAction] = useState(null);
+
   const handlePlaceOrder = async () => {
     try {
       const response = await fetch(
@@ -171,35 +177,48 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        if (data.st === 1) {
-          if (data.order_number === null && data.order_status === null) {
-            // Show the modal for creating a new order
-            setShowNewOrderModal(true);
-          } else if (
-            data.order_status === "ongoing" ||
-            data.order_status === "placed"
-          ) {
-            // Store the order details, including order_id
-            setExistingOrderDetails({
-              orderNumber: data.order_number,
-              orderStatus: data.order_status,
-              orderId: data.order_id,
-            });
-            setShowExistingOrderModal(true);
-          }
-        } else if (data.st === 2) {
-        } else {
-          throw new Error("Failed to check order status");
+      if (response.ok && data.st === 1) {
+        setAvailableTables(data.available_tables);
+
+        // If no existing order, show order type selection
+        if (data.order_number === null && data.order_status === null) {
+          setShowOrderTypeModal(true);
+        } 
+        // If there's an ongoing or placed order, show modal with options
+        else if (
+          data.order_status === "ongoing" ||
+          data.order_status === "placed"
+        ) {
+          setExistingOrderDetails({
+            orderNumber: data.order_number,
+            orderStatus: data.order_status,
+            orderId: data.order_id,
+          });
+          setShowExistingOrderModal(true);
         }
       } else {
         throw new Error("Failed to check order status");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process order",
+        life: 3000,
+      });
+    }
   };
 
-  const handleCreateOrder = async () => {
-    if (!cartId || !customerId || !restaurantId) {
+  const handleOrderTypeSelection = (orderType) => {
+    if (pendingOrderAction) {
+      handleOrderAction(pendingOrderAction, orderType);
+    } else {
+      handleCreateOrder(orderType);
+    }
+  };
+
+  const handleCreateOrder = async (orderType) => {
+    if (!cartId || !customerId || !restaurantId || !orderType) {
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -209,11 +228,15 @@ const Checkout = () => {
       return;
     }
 
-    // Get table number from localStorage or userData
     const tableNumber =
       JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
       localStorage.getItem("tableNumber") ||
       "1";
+
+    const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
 
     try {
       const response = await fetch(
@@ -227,7 +250,9 @@ const Checkout = () => {
             cart_id: cartId,
             customer_id: customerId,
             restaurant_id: restaurantId,
-            table_number: tableNumber, // Added table number to the request
+            table_number: tableNumber,
+            order_type: orderType,
+            section_id: sectionId,
           }),
         }
       );
@@ -235,14 +260,22 @@ const Checkout = () => {
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
+        setNewOrderNumber(data.order_number);
         clearCartData();
-        setShowNewOrderModal(false);
+        setShowOrderTypeModal(false);
+        setShowPopup(true);
         await fetchCartDetails();
-        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to create order",
+        life: 3000,
+      });
+    }
   };
 
   const clearCartData = () => {
@@ -252,12 +285,13 @@ const Checkout = () => {
     setCartItems([]); // Clear cart items state if you're using it
   };
 
-  const handleOrderAction = async (orderStatus) => {
+  const handleOrderAction = async (orderStatus, orderType) => {
     if (
       !cartId ||
       !customerId ||
       !restaurantId ||
-      !existingOrderDetails.orderNumber
+      !existingOrderDetails.orderNumber ||
+      !orderType
     ) {
       toast.current.show({
         severity: "error",
@@ -269,6 +303,11 @@ const Checkout = () => {
     }
 
     try {
+      const sectionId =
+        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+        localStorage.getItem("sectionId") ||
+        "";
+
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
@@ -281,7 +320,9 @@ const Checkout = () => {
             customer_id: customerId,
             restaurant_id: restaurantId,
             order_number: existingOrderDetails.orderNumber,
-            order_status: orderStatus, // Pass the order status dynamically
+            order_status: orderStatus,
+            order_type: orderType,
+            section_id: sectionId,
           }),
         }
       );
@@ -289,21 +330,22 @@ const Checkout = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        // Store the new order number from the API response
-        const newOrderNumber = data.data.new_order_number;
-
-        // Show success popup
-        setShowPopup(true);
-        setShowExistingOrderModal(false);
+        setShowOrderTypeModal(false);
+        setPendingOrderAction(null);
         clearCartData();
-        setNewOrderNumber(newOrderNumber);
         await fetchCartDetails();
-        // Store the new order number in state or localStorage for navigation
-        setNewOrderNumber(newOrderNumber); // Assuming you have a state for this
+        navigate(`/user_app/MyOrder/`);
       } else {
         throw new Error(data.msg || "Failed to update order");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process order",
+        life: 3000,
+      });
+    }
   };
 
   const handleAddToExistingOrder = async () => {
@@ -354,6 +396,12 @@ const Checkout = () => {
     navigate(`/user_app/MyOrder/`);
   };
 
+  const handleOrderActionClick = (actionType) => {
+    setPendingOrderAction(actionType);
+    setShowExistingOrderModal(false);
+    setShowOrderTypeModal(true);
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -367,6 +415,107 @@ const Checkout = () => {
           />
         </div>
 
+        {showOrderTypeModal && (
+          <div className="popup-overlay">
+            <div className="modal-dialog w-75" role="document">
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                    Select Order Type
+                  </h5>
+                  {/* <button
+                    className="btn p-0 fs-3 gray-text"
+                    onClick={() => setShowOrderTypeModal(false)}
+                  >
+                    <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                  </button> */}
+                </div>
+                <div className="modal-body py-2 px-3">
+                  <div className="row g-3">
+                    {/* Parcel */}
+                    <div className="col-6">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer position-relative"
+                        onClick={() => handleOrderTypeSelection("Parcel")}
+                      >
+                        {/* Icons container */}
+                        {/* <div className="position-absolute top-0 end-0 p-2 pt-0">
+                          <div className="d-flex flex-column gap-1">
+                            <div
+                              className="rounded-circle p-1"
+                              style={{ width: "24px", height: "24px" }}
+                            >
+                              <img
+                                src="https://play-lh.googleusercontent.com/ymXDmYihTOzgPDddKSvZRKzXkboAapBF2yoFIeQBaWSAJmC9IUpSPKgvfaAgS5yFxQ=w240-h480-rw"
+                                className="img-fluid rounded-circle"
+                                alt=""
+                              />
+                            </div>
+                            <div
+                              className="rounded-circle p-1 pt-0"
+                              style={{ width: "24px", height: "24px" }}
+                            >
+                              <img
+                                src="https://play-lh.googleusercontent.com/HJdzprqlCwh_8YNyhMBU6rIaGBGwxHXflZuuqI3iR4US7Jb-bSYiJk_DKV2la9SoBM0K=w240-h480-rw"
+                                className="img-fluid rounded-circle"
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                        </div> */}
+
+                        <div className="card-body d-flex justify-content-center align-items-center py-3">
+                          <div className="text-center">
+                            <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
+                            <p className="mb-0 fw-medium">Parcel</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Drive-Through */}
+                    <div className="col-6">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer"
+                        onClick={() =>
+                          handleOrderTypeSelection("Drive-through")
+                        }
+                      >
+                        <div className="card-body d-flex justify-content-center align-items-center py-3">
+                          <div className="text-center">
+                            <i className="fa-solid fa-car-side fs-2 mb-2 text-primary"></i>
+                            <p className="mb-0 fw-medium">Drive-Through</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dine-in */}
+                    <div className="col-12 mb-3">
+                      <div
+                        className="card h-100 border rounded-4 cursor-pointer"
+                        onClick={() => handleOrderTypeSelection("Dine-in")}
+                      >
+                        <div className="card-body d-flex align-items-center py-3">
+                          <div className="text-center me-3">
+                            <i className="fa-solid fa-utensils fs-2 text-primary"></i>
+                          </div>
+                          <div>
+                            <p className="mb-0 fw-medium">Dine-In</p>
+                            <small className="text-dark">
+                              {availableTables} Tables Available
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showExistingOrderModal && (
           <div className="popup-overlay">
             <div
@@ -377,7 +526,7 @@ const Checkout = () => {
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
-                    <h5 className="modal-title font_size_16 fw-medium mb-0">
+                    <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
                       Existing Order Found
                     </h5>
                     <button
@@ -385,7 +534,7 @@ const Checkout = () => {
                       onClick={() => setShowExistingOrderModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -400,18 +549,18 @@ const Checkout = () => {
                   <div className="d-flex flex-column gap-2">
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderAction("cancle")}
+                      onClick={() => handleOrderActionClick("cancle")}
                     >
                       Cancel Existing & Create New Order
                     </button>
                     <button
                       className="btn btn-success rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderAction("completed")}
+                      onClick={() => handleOrderActionClick("completed")}
                     >
                       Complete Existing & Create New Order
                     </button>
                     <button
-                      className="btn btn-primary rounded-pill font_size_14"
+                      className="btn btn-info rounded-pill font_size_14"
                       onClick={handleAddToExistingOrder}
                     >
                       Add to Existing Order (#{existingOrderDetails.orderNumber}
@@ -419,7 +568,7 @@ const Checkout = () => {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary rounded-pill font_size_14 "
+                      className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowExistingOrderModal(false)}
                     >
                       Close
@@ -494,7 +643,7 @@ const Checkout = () => {
                         className="btn p-0 fs-3 text-dark"
                         onClick={() => setShowNewOrderModal(false)}
                       >
-                        <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                       </button>
                     </div>
                   </div>
@@ -561,7 +710,7 @@ const Checkout = () => {
                             <div className="col-8">
                               <div className="ps-2">
                                 <span className="text-success font_size_10">
-                                  <i className="ri-restaurant-line me-2"></i>
+                                  <i className="fa-solid fa-utensils me-2"></i>
                                   {item.menu_cat_name}
                                 </span>
                               </div>
@@ -576,8 +725,8 @@ const Checkout = () => {
                           </div>
 
                           <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
-                            <i className="fa fa-chevron-right me-2"></i> Make it
-                            more spicy 🥵{item.notes}
+                            <i className="fa-solid fa-comment-dots me-2"></i>{" "}
+                            Make it more spicy {item.notes}
                           </p>
                         </div>
                       </div>

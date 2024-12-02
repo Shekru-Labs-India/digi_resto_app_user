@@ -5,7 +5,8 @@ import Header from "./Components/Header";
 import About from "./Components/About";
 import Contact from "./Components/Contact";
 import Features from "./Components/Features";
-
+import "./Assets/Css/stylewebsite.css"
+import "./Assets/Css/responsive.css"
 import Client from "./Components/Client";
 // import PricingPage from "./Components/pricing/PricingPage";
 import FAQs from "./Components/FAQs";

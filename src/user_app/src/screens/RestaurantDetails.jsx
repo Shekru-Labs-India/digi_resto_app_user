@@ -9,6 +9,7 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import config from "../component/config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import img from "../assets/MenuDefault.png";
+import RestaurantSocials from "../components/RestaurantSocials";
 
 function RestaurantDetails() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -161,7 +162,7 @@ function RestaurantDetails() {
       <Sidebar />
       <Header title="Restaurant Details" />
 
-      <div className="container">
+      <div className="container pb-0">
         <div className="pt-5">
           <HotelNameAndTable
             restaurantName={restaurantDetails.name || ""}
@@ -181,20 +182,20 @@ function RestaurantDetails() {
               </div>
               <div className="card p-3">
                 <div className="my-1">
-                  <i className="ri-store-2-line font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-store font_size_14"></i>
                   {/* <span className="card-title ms-2 ">Jagdamb</span> */}
                   <span className="card-title ms-2 ">
                     {restaurantDetails.name}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="ri-phone-line text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-phone text-primary font_size_14"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.mobile}
                   </span>
                 </div>
                 <div className="my-1">
-                  <i className="ri-map-pin-line gray-text text-primary font_size_14 fw-medium"></i>
+                  <i className="fa-solid fa-location-dot gray-text text-primary font_size_14"></i>
                   <span className="card-title ms-2">
                     {restaurantDetails.address}
                   </span>
@@ -220,68 +221,67 @@ function RestaurantDetails() {
                 </div>
               )} */}
 
+              {restaurantDetails.upi_id && (
+                <div
+                  className="card"
+                  style={{
+                    border: "2px dashed silver",
+                  }}
+                >
+                  <div className="p-3 rounded-4 d-flex justify-content-center align-items-center">
+                    <span className="font_size_16">
+                      UPI : {restaurantDetails.upi_id}
+                    </span>
+                  </div>
 
-{restaurantDetails.upi_id && (
-              <div
-                className="card"
-                style={{
-                  border: "2px dashed silver",
-                }}
-              >
-                <div className="p-3 rounded-4 d-flex justify-content-center align-items-center">
-                  <span className="font_size_16">
-                    UPI : {restaurantDetails.upi_id}
-                  </span>
-                </div>
-                
-                <div className="px-3 pb-3">
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <button 
-                        className="btn w-100 btn-sm"
-                        onClick={handlePhonePe}
-                        disabled={isProcessingPhonePe}
-                        style={{
-                          backgroundColor: "#5f259f",
-                          color: "white",
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingPhonePe ? "Processing..." : "PhonePe"}
-                      </button>
-                    </div>
-                    
-                    <div className="col-6">
-                      <button 
-                        className="btn w-100 btn-sm"
-                        onClick={handleGooglePay}
-                        disabled={isProcessingGPay}
-                        style={{
-                          backgroundColor: "#1a73e8",
-                          color: "white",
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingGPay ? "Processing..." : "Google Pay"}
-                      </button>
-                    </div>
-                    
-                    <div className="col-12">
-                      <button 
-                        className="btn btn-primary w-100 btn-sm"
-                        onClick={handleGenericUPI}
-                        disabled={isProcessingUPI}
-                        style={{
-                          borderRadius: "8px"
-                        }}
-                      >
-                        {isProcessingUPI ? "Processing..." : "Other UPI Apps"}
-                      </button>
+                  <div className="px-3 pb-3">
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <button
+                          className="btn w-100 btn-sm"
+                          onClick={handlePhonePe}
+                          disabled={isProcessingPhonePe}
+                          style={{
+                            backgroundColor: "#5f259f",
+                            color: "white",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingPhonePe ? "Processing..." : "PhonePe"}
+                        </button>
+                      </div>
+
+                      <div className="col-6">
+                        <button
+                          className="btn w-100 btn-sm"
+                          onClick={handleGooglePay}
+                          disabled={isProcessingGPay}
+                          style={{
+                            backgroundColor: "#1a73e8",
+                            color: "white",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingGPay ? "Processing..." : "Google Pay"}
+                        </button>
+                      </div>
+
+                      <div className="col-12">
+                        <button
+                          className="btn btn-primary w-100 btn-sm"
+                          onClick={handleGenericUPI}
+                          disabled={isProcessingUPI}
+                          style={{
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isProcessingUPI ? "Processing..." : "Other UPI Apps"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@ function RestaurantDetails() {
                   cursor: "pointer",
                 }}
               >
-                <i className="ri-bard-line me-2"></i>
+                <i className="fa-regular fa-star me-2"></i>
                 Special
                 <span className="font_size_10">
                   {" "}
@@ -426,13 +426,14 @@ function RestaurantDetails() {
               disableOnInteraction: false,
             }}
             loop={filteredMenus.length > 3}
-            className="dz-category-swiper mb-5 pb-3"
+            className="dz-category-swiper"
           >
             {filteredMenus.map((menu) => (
               <SwiperSlide key={menu.menu_id}>
                 <div className="dz-category-items">
                   <a href="#" className="dz-media">
                     <img
+                      className="object-fit-cover"
                       src={menu.image || img}
                       alt={menu.menu_name}
                       style={{ height: 110 }}
@@ -441,7 +442,7 @@ function RestaurantDetails() {
                       }}
                     />
                     <div
-                      className="border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center border-success"
+                      className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center border-success"
                       style={{
                         position: "absolute",
                         bottom: 3,
@@ -450,7 +451,7 @@ function RestaurantDetails() {
                         width: 17,
                       }}
                     >
-                      <i className="ri-checkbox-blank-circle-fill text-success font_size_10" />
+                      <i className="fa-solid fa-circle text-success font_size_10" />
                     </div>
                   </a>
                   {menu.offer !== 0 && (
@@ -462,7 +463,7 @@ function RestaurantDetails() {
                   )}
                   {menu.is_special && (
                     <i
-                      className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                      className="fa-regular fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
                       style={{
                         position: "absolute",
                         top: 3,
@@ -481,6 +482,10 @@ function RestaurantDetails() {
             ))}
           </Swiper>
         </div>
+      </div>
+      <div className="container p-b65">
+
+      <RestaurantSocials />
       </div>
       <Bottom />
     </div>

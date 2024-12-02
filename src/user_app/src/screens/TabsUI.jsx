@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../assets/css/Tab.css"; 
+  import "../assets/css/toast.css";
 
 const Tabs = () => {
   const [isChecked1, setIsChecked1] = useState(false);

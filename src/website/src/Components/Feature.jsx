@@ -35,9 +35,7 @@ const Feature = () => {
               <span> Why Choose Us</span>
               <h2>Benefits of Menumitra for Your Restaurant</h2>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis
-                ipsum suspendisse ultrices gravida.
+                MenuMitra offers a comprehensive digital menu solution that enhances the dining experience. With features like contactless ordering, real-time menu updates, and easy payment options, it ensures a seamless and efficient service for both customers and restaurant staff.
               </p>
             </div>
             <div className="row align-items-center">
@@ -66,7 +64,7 @@ const Feature = () => {
                   </div>
                   <div className="col-lg-12 p-0 col-md-6 offset-md-3 offset-lg-0">
                     <div className="single-choose-three">
-                    <i className="fa-regular fa-circle-check"></i>
+                    <i className="fa-regular fa-circle"></i>
                       <h3>Order Status</h3>
                       <p>
                         Notifications for order confirmation, preparation, and
@@ -101,8 +99,8 @@ const Feature = () => {
                   <img src={choseus} alt="" />
                   <div className="choose-content-wrap">
                     <div className="choose-content-four">
-                      <h3>Farm Foods</h3>
-                      <span>Healthy Life with Organic Food</span>
+                      <h3>MenuMitra</h3>
+                      <span>Manage Contactless Order and Payment</span>
                     </div>
                   </div>
                 </div>

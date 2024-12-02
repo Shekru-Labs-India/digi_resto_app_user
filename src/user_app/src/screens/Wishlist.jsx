@@ -11,7 +11,8 @@ import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
-
+import RestaurantSocials from "../components/RestaurantSocials";
+ import "../assets/css/toast.css";
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
@@ -315,6 +316,10 @@ const Wishlist = () => {
       setShowModal(false);
     }
   };
+    const handleSuggestionClick = (suggestion) => {
+      // Simply set the suggestion as the new note value
+      setNotes(suggestion);
+    };
 
   const wishlistCount = Object.keys(menuList).reduce(
     (total, key) => total + menuList[key].length,
@@ -396,12 +401,16 @@ const Wishlist = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -419,8 +428,8 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-      <main className="page-content space-top mb-5 pb-5">
-        <div className="container ">
+      <main className="page-content space-top p-b70">
+        <div className="container px-3 py-0 mb-0">
           <Header title="Favourite" count={wishlistCount} />
 
           <HotelNameAndTable
@@ -433,20 +442,43 @@ const Wishlist = () => {
         ) : isLoggedIn ? (
           hasFavorites ? (
             <>
-              <div className="container d-flex justify-content-end mb-1 mt-0 ps-0 py-0 ">
-                <div
-                  className="d-flex align-items-center cursor-pointer ps-0 py-0 icon-border"
-                  onClick={toggleExpandAll}
-                  role="button"
-                  aria-label={expandAll ? "Collapse All" : "Expand All"}
-                >
-                  <span className="icon-circle">
-                    <i
-                      className={`ri-arrow-down-s-line arrow-icon ${
-                        expandAll ? "rotated" : "rotated-1"
-                      }`}
-                    ></i>
-                  </span>
+              <div className="d-flex justify-content-end mb-2 pe-0">
+                <div className="tab-label me-3">
+                  <button
+                    className="btn btn-link text-decoration-none pe-0 pb-0"
+                    onClick={() => {
+                      const allRestaurants = Object.keys(menuList);
+                      const newCheckedItems = {};
+
+                      // If any restaurant is collapsed, expand all. Otherwise, collapse all
+                      const shouldExpand = allRestaurants.some(
+                        (restaurant) => !checkedItems[restaurant]
+                      );
+
+                      allRestaurants.forEach((restaurant) => {
+                        newCheckedItems[restaurant] = shouldExpand;
+                      });
+
+                      setCheckedItems(newCheckedItems);
+                    }}
+                  >
+                    <span className="d-flex align-items-center">
+                      <span className="text-secondary opacity-25 pe-2 font_size_10">
+                        {Object.values(checkedItems).every(Boolean)
+                          ? "Collapse All"
+                          : "Expand All"}
+                      </span>
+                      <span className="icon-circle">
+                        <i
+                          className={`fas fa-chevron-down arrow-icon ${
+                            Object.values(checkedItems).every(Boolean)
+                              ? "rotated"
+                              : "rotated-1"
+                          }`}
+                        ></i>
+                      </span>
+                    </span>
+                  </button>
                 </div>
               </div>
               {Object.keys(wishlistItems).map((restaurantName) =>
@@ -466,7 +498,7 @@ const Wishlist = () => {
                       >
                         <span className="">
                           <span className="font_size_14 fw-medium">
-                            <i className="ri-store-2-line me-2"></i>
+                            {/* <i className="fa-solid fa-store me-2"></i> */}
                             {restaurantName.toUpperCase()}
                           </span>
                         </span>
@@ -476,7 +508,7 @@ const Wishlist = () => {
                           </span>
                           <span className="icon-circle">
                             <i
-                              className={`ri-arrow-down-s-line arrow-icon pt-0 ${
+                              className={`fas fa-chevron-down arrow-icon pt-0 ${
                                 checkedItems[restaurantName]
                                   ? "rotated"
                                   : "rotated-1"
@@ -509,7 +541,7 @@ const Wishlist = () => {
                                       <img
                                         src={menu.image || images}
                                         alt={menu.menu_name}
-                                        className="rounded-4 img-fluid"
+                                        className="rounded-4 img-fluid object-fit-cover"
                                         style={{
                                           width: "100%",
                                           height: "100%",
@@ -521,7 +553,19 @@ const Wishlist = () => {
                                           e.target.style.height = "100%";
                                           e.target.style.aspectRatio = "1/1";
                                         }}
-                                      />
+                                      />{" "}
+                                      {menu.is_special && (
+                                        <i
+                                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                          style={{
+                                            position: "absolute",
+                                            top: 3,
+                                            right: "76%",
+                                            height: 17,
+                                            width: 17,
+                                          }}
+                                        ></i>
+                                      )}
                                       <div
                                         className={`border border-1 rounded-circle ${
                                           isDarkMode ? "bg-dark" : "bg-white"
@@ -535,7 +579,7 @@ const Wishlist = () => {
                                         }}
                                       >
                                         <i
-                                          className={`ri-heart-3-fill text-danger fs-6`}
+                                          className={`fa-solid fa-heart text-danger fs-6`}
                                           onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -550,8 +594,8 @@ const Wishlist = () => {
                                       <div
                                         className={`border rounded-3 ${
                                           isDarkMode ? "bg-dark" : "bg-white"
-                                        } opacity-75 d-flex justify-content-center align-items-center ${
-                                          menu.menu_veg_nonveg.toLowerCase() ===
+                                        } opacity-100 d-flex justify-content-center align-items-center ${
+                                          menu.menu_veg_nonveg ===
                                           "veg"
                                             ? "border-success"
                                             : "border-danger"
@@ -568,10 +612,10 @@ const Wishlist = () => {
                                       >
                                         <i
                                           className={`${
-                                            menu.menu_veg_nonveg.toLowerCase() ===
+                                            menu.menu_veg_nonveg ===
                                             "veg"
-                                              ? "ri-checkbox-blank-circle-fill text-success"
-                                              : "ri-triangle-fill text-danger"
+                                              ? "fa-solid fa-circle text-success"
+                                              : "fa-solid fa-play fa-rotate-270 text-danger"
                                           } font_size_12`}
                                         ></i>
                                       </div>
@@ -601,14 +645,14 @@ const Wishlist = () => {
                                               );
                                             }}
                                           >
-                                            <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                                            <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                                           </div>
                                         </div>
                                       </div>
                                       <div className="row mt-1">
                                         <div className="col-4 text-start d-flex align-items-center pe-0">
                                           <span className="ps-2 font_size_10 text-success">
-                                            <i className="ri-restaurant-line mt-0 me-1"></i>
+                                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
@@ -619,12 +663,12 @@ const Wishlist = () => {
                                                 (_, index) =>
                                                   index < menu.spicy_index ? (
                                                     <i
-                                                      className="ri-fire-fill font_size_12 text-danger"
+                                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
                                                       key={index}
                                                     ></i>
                                                   ) : (
                                                     <i
-                                                      className="ri-fire-line font_size_12 gray-text"
+                                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                                       key={index}
                                                     ></i>
                                                   )
@@ -687,10 +731,10 @@ const Wishlist = () => {
                                               }}
                                             >
                                               <i
-                                                className={`ri-shopping-cart-${
+                                                className={`fa-solid ${
                                                   isMenuItemInCart(menu.menu_id)
-                                                    ? "fill text-black"
-                                                    : "line"
+                                                    ? "fa-solid fa-circle-check"
+                                                    : "fa-solid fa-plus text-secondary"
                                                 } fs-6`}
                                               ></i>
                                             </div>
@@ -710,9 +754,7 @@ const Wishlist = () => {
                 ) : null
               )}
               <div className="container">
-                <div className="divider border-success inner-divider transparent mb-0">
-                  <span className="bg-body">End</span>
-                </div>
+                <RestaurantSocials />
               </div>
             </>
           ) : (
@@ -746,7 +788,7 @@ const Wishlist = () => {
                     className="btn btn-outline-primary rounded-pill"
                     onClick={showLoginPopup}
                   >
-                    <i className="ri-lock-2-line me-2 fs-3"></i> Login
+                    <i className="fa-solid fa-lock me-2 fs-6"></i> Login
                   </button>
                 </div>
                 <span className="mt-4">
@@ -788,7 +830,7 @@ const Wishlist = () => {
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -801,14 +843,35 @@ const Wishlist = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
-                  ></textarea>
+                  />
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more spicy ")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy 
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
@@ -856,10 +919,10 @@ const Wishlist = () => {
                 </div>
               </div>
               <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
@@ -871,7 +934,7 @@ const Wishlist = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

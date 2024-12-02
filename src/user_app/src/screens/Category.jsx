@@ -8,6 +8,7 @@ import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import HotelNameAndTable from '../components/HotelNameAndTable';
 import config from "../component/config"
+import RestaurantSocials from "../components/RestaurantSocials";
 const Category = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +112,7 @@ const Category = () => {
   return (
     <div className="page-wrapper">
       <Header title="Categories" count={categories.length} />
-      
+
       {loading ? (
         <div id="preloader">
           <div className="loader">
@@ -121,18 +122,18 @@ const Category = () => {
       ) : (
         <main className="page-content space-top mb-5 pb-3">
           <div className="container px-3 py-0">
-            <HotelNameAndTable 
+            <HotelNameAndTable
               restaurantName={restaurantName}
               tableNumber={tableNumber}
             />
           </div>
-          
+
           {categories.length > 0 ? (
-            <div className="container pt-0">
+            <div className="container pt-0 p-b55">
               <div className="row g-3">
                 {categories.map((category, index) => (
                   <div className="col-6" key={index}>
-                    <div className="dz-category-items border overflow-hidden rounded-top-3 rounded-bottom-3 d-flex flex-column">
+                    <div className="dz-category-items border overflow-hidden rounded-4 rounded-bottom-3 d-flex flex-column">
                       <Link
                         to={`/user_app/Menu/${category.menu_cat_id}`}
                         className="d-block"
@@ -146,8 +147,9 @@ const Category = () => {
                             </span>
                           </span>
                         </div>
-                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-0">
+                        <div className="dz-media category-image flex-grow-1 rounded-top-0 rounded-bottom-4">
                           <img
+                            className="object-fit-cover"
                             style={{
                               width: "100%",
                               height: "180px",
@@ -165,8 +167,9 @@ const Category = () => {
                   </div>
                 ))}
               </div>
-              <div className="divider border-success inner-divider transparent mb-0" ><span className="bg-body">End</span></div>
-
+              <div className="container">
+                <RestaurantSocials />
+              </div>
             </div>
           ) : (
             <div className="container text-center mt-5">
@@ -174,14 +177,15 @@ const Category = () => {
               {!userData.restaurantId && (
                 <p>Please log in or scan a QR code to view categories.</p>
               )}
-              {window.showToast("warning", "Please log in or scan a QR code to view categories")}
-              
+              {window.showToast(
+                "warning",
+                "Please log in or scan a QR code to view categories"
+              )}
             </div>
           )}
-
         </main>
       )}
-      
+
       <Bottom />
     </div>
   );

@@ -1,48 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useCart } from "../context/CartContext";
 import UserAuthPopup from './UserAuthPopup';
+import config from "./config";
 
 const Bottom = () => {
   const location = useLocation();
   const { restaurantCode } = useRestaurantId();
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const { cartItems } = useCart();
+  const tableNumber = localStorage.getItem("tableNumber");
+  const sectionId = localStorage.getItem("sectionId");
   const [userData] = useState(
     JSON.parse(localStorage.getItem("userData")) || {}
   );
 
   const isHomePath = (pathname) => {
     const homePathPattern = new RegExp(
-      `^/user_app/${restaurantCode}(?:/\\d+)?$`
+      `^/user_app/${restaurantCode}(?:/\\d+)?(?:/\\d+)?$`
     );
     return homePathPattern.test(pathname);
   };
-
-  useEffect(() => {
-    const updateCartCount = () => {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-      setCartItemCount(cartItems.length);
-    };
-
-    updateCartCount();
-    window.addEventListener("cartUpdated", updateCartCount);
-
-    return () => {
-      window.removeEventListener("cartUpdated", updateCartCount);
-    };
-  }, []);
 
   return (
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/user_app/${restaurantCode}/${userData.tableNumber || ""}`}
+          to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
           className={`nav-link ${
             isHomePath(location.pathname) ? "active" : ""
           }`}
         >
-          <i className="ri-home-2-line"></i>
-          <span className="name">Home</span>
+          <i className="fa-solid fa-house me-2 font_size_14"></i>
+          <span className="name font_size_14">Home</span>
         </Link>
 
         <Link
@@ -51,8 +41,8 @@ const Bottom = () => {
             location.pathname === "/user_app/Wishlist" ? "active" : ""
           }`}
         >
-          <i className="ri-heart-3-line"></i>
-          <span className="name">Favourite</span>
+          <i className="fa-regular fa-heart me-2 font_size_14"></i>
+          <span className="name font_size_14">Favourite</span>
         </Link>
 
         <Link
@@ -61,32 +51,31 @@ const Bottom = () => {
             location.pathname === "/user_app/Cart" ? "active" : ""
           }`}
         >
-          <div className="position-relative">
-            <i className="ri-shopping-cart-line"></i>
-            {/* {cartItemCount > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {cartItemCount}
-              </span>
-            )} */}
+          <div className="position-relative d-inline-block">
+            <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
+            {cartItems.length > 0 && (
+              <span
+                className="position-absolute p-1 bg-danger rounded-circle"
+                style={{
+                  top: "-5px",
+                  right: "20px",
+                  width: "5px",
+                  height: "5px",
+                }}
+              />
+            )}
           </div>
-          <span className="name">Cart</span>
+          <span className="name font_size_14">Cart</span>
         </Link>
 
-        {/* <Link
-          to="/user_app/Search"
-          className={`nav-link ${location.pathname === "/user_app/Search" ? "active" : ""}`}
-        >
-          <i className="ri-search-line"></i>
-          <span className="name">Search</span>
-        </Link> */}
         <Link
           to="/user_app/MyOrder"
           className={`nav-link ${
             location.pathname === "/user_app/MyOrder" ? "active" : ""
           }`}
         >
-          <i className="ri-history-line"></i>
-          <span className="name">My Order</span>
+          <i className="fa-solid fa-clock-rotate-left me-2 font_size_14"></i>
+          <span className="name font_size_14">My Order</span>
         </Link>
 
         <Link
@@ -97,10 +86,12 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id ? "ri-user-3-fill" : "ri-user-3-line"
+              userData?.customer_id
+                ? "fa-solid fa-user me-2 font_size_14"
+                : "fa-regular fa-user me-2 font_size_14"
             }
           ></i>
-          <span className="name">Profile</span>
+          <span className="name font_size_14">Profile</span>
         </Link>
       </div>
 

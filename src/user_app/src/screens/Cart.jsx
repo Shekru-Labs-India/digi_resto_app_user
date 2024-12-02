@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
-import "../assets/css/custom.css";
+import "../assets/css/toast.css";
 import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
 import Bottom from "../component/bottom";
@@ -12,7 +12,10 @@ import { useCart } from "../context/CartContext";
 import NearbyArea from "../component/NearbyArea";
 import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
+import RestaurantSocials from "../components/RestaurantSocials";
 const Cart = () => {
+    const location = useLocation();
+    const magicMessage = location.state?.magicMessage;
   const { restaurantId, restaurantName } = useRestaurantId();
   const { cartItems, updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
@@ -32,7 +35,9 @@ const Cart = () => {
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
     const customerId = getCustomerId();
-    const cartId = getCartId();
+    // const cartId = getCartId();
+
+    const cartId = getCartId() || localStorage.getItem("cartId");
 
     if (!customerId || !cartId || !restaurantId) {
       setCartDetails({ order_items: [] });
@@ -220,17 +225,14 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         fetchCartDetails();
-        window.showToast("success", "Item quantity has been updated.");
+     
       } else {
         console.error("Failed to update cart quantity:", data.msg);
-        window.showToast("error", "Failed to update item quantity.");
+        
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
-      window.showToast(
-        "error",
-        "An error occurred while updating item quantity."
-      );
+    
     }
   };
 
@@ -347,14 +349,14 @@ const Cart = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
       return (
-        <i className="ri-star-fill font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
       );
     }
 
@@ -379,7 +381,7 @@ const Cart = () => {
       >
         <div className="m-b20 dz-flex-box text-center">
           <div className="dz-cart-about">
-            <h5>Your Cart is Empty</h5>
+            <div className="fs-4 fw-medium text-dark">Your Cart is Empty</div>
             <p>Add items to your cart from the product details page.</p>
 
             <div className="d-flex align-items-center justify-content-center mt-2">
@@ -410,6 +412,14 @@ const Cart = () => {
               tableNumber={userData?.tableNumber || "1"}
             />
           </div>
+          {magicMessage && (
+            <div className="container py-0">
+              <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                {magicMessage}
+              </div>
+            </div>
+          )}
           <div className="container scrollable-section pt-0">
             {cartDetails.order_items.map((item, index) => (
               <Link
@@ -427,7 +437,7 @@ const Cart = () => {
                       <img
                         src={item.image || images}
                         alt={item.menu_name}
-                        className="img-fluid rounded-4 "
+                        className="img-fluid rounded-4 object-fit-cover"
                         style={{
                           width: "100%",
                           height: "100%",
@@ -438,9 +448,21 @@ const Cart = () => {
                           e.target.src = images;
                         }}
                       />
+                      {item.is_special && (
+                        <i
+                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                          style={{
+                            position: "absolute",
+                            top: 3,
+                            right: 3,
+                            height: 17,
+                            width: 17,
+                          }}
+                        ></i>
+                      )}
                       <div
-                        className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                          item.menu_veg_nonveg.toLowerCase() === "veg"
+                        className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                          item.menu_veg_nonveg === "veg"
                             ? "border-success"
                             : "border-danger"
                         }`}
@@ -456,9 +478,9 @@ const Cart = () => {
                       >
                         <i
                           className={`${
-                            item.menu_veg_nonveg.toLowerCase() === "veg"
-                              ? "ri-checkbox-blank-circle-fill text-success"
-                              : "ri-triangle-fill text-danger"
+                            item.menu_veg_nonveg === "veg"
+                              ? "fa-solid fa-circle text-success"
+                              : "fa-solid fa-play fa-rotate-270 text-danger"
                           } font_size_12`}
                         ></i>
                       </div>
@@ -482,8 +504,8 @@ const Cart = () => {
                         <i
                           className={`${
                             item.is_favourite
-                              ? "ri-heart-3-fill text-danger"
-                              : "ri-heart-3-line"
+                              ? "fa-solid fa-heart text-danger"
+                              : "fa-regular fa-heart"
                           } fs-6`}
                           onClick={(e) => {
                             e.preventDefault();
@@ -509,14 +531,14 @@ const Cart = () => {
                               handleRemoveFromCart(item, index);
                             }}
                           >
-                            <i className="ri-close-line text-dark font_size_14"></i>
+                            <i className="fa-solid fa-xmark gray-text font_size_14"></i>
                           </div>
                         </div>
                       </div>
                       <div className="row">
                         <div className="col-5 px-0">
                           <span className="ps-3 text-success mt-1 font_size_10">
-                            <i className="ri-restaurant-line me-1 text-success"></i>
+                            <i className="fa-solid fa-utensils me-1 text-success"></i>
                             {item.menu_cat_name}
                           </span>
                         </div>
@@ -627,7 +649,7 @@ const Cart = () => {
                                     decrementQuantity(item);
                                   }}
                                 >
-                                  <i className="ri-subtract-line fs-6"></i>
+                                  <i className="fa-solid fa-minus fs-6"></i>
                                 </button>
                               </span>
                               <span className="text-dark font_size_14 px-2">
@@ -643,7 +665,7 @@ const Cart = () => {
                                     incrementQuantity(item);
                                   }}
                                 >
-                                  <i className="ri-add-line fs-6"></i>
+                                  <i className="fa-solid fa-plus fs-6"></i>
                                 </button>
                               </span>
                             </div>
@@ -655,6 +677,12 @@ const Cart = () => {
                 </div>
               </Link>
             ))}
+          </div>
+          <div className="container py-0">
+            <div className="d-flex justify-content-end align-items-center gray-text font_size_14">
+              <i class="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
+              Clear Cart
+            </div>
           </div>
           {cartDetails && cartDetails.order_items.length > 0 && (
             <div
@@ -758,9 +786,7 @@ const Cart = () => {
           )}
           <div className="container py-0">
             <NearbyArea />
-            <div className="divider border-success inner-divider transparent mb-0">
-              <span className="bg-body">End</span>
-            </div>
+            <RestaurantSocials />
           </div>
         </main>
       )}

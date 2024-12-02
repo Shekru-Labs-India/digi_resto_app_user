@@ -14,33 +14,72 @@ export const RestaurantIdProvider = ({ children }) => {
   const [tableNumber, setTableNumber] = useState("");
   const [restaurantStatus, setRestaurantStatus] = useState(null)
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
+  const [sectionName, setSectionName] = useState("")
+  const [socials, setSocials] = useState([]);
+  const sectionId = localStorage.getItem("sectionId")
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    // Get table number from URL path
-    const pathParts = location.pathname.split('/');
-    const lastPart = pathParts[pathParts.length - 1];
-    
-    // Validate table number: must be numeric and between 1 and 100
-    if (lastPart && !isNaN(lastPart) && lastPart > 0 && lastPart <= 10) {
-      // Make sure it's not the restaurant code
-      const secondLastPart = pathParts[pathParts.length - 2];
-      if (secondLastPart && secondLastPart !== lastPart) { // Ensure it's not the same as restaurant code
-        setTableNumber(lastPart);
-        localStorage.setItem("tableNumber", lastPart);
-        
-        // Update userData if it exists
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        if (Object.keys(userData).length > 0) {
-          const updatedUserData = {
-            ...userData,
-            tableNumber: lastPart
-          };
-          localStorage.setItem("userData", JSON.stringify(updatedUserData));
-        }
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/);
+
+    if (match) {
+      const [, code, table, section] = match;
+      setRestaurantCode(code);
+      
+      // Store table number if present
+      if (table) {
+        setTableNumber(table);
+        localStorage.setItem("tableNumber", table);
       }
+
+      // Store section ID if present and valid (not more than 10)
+      if (section && parseInt(section) <= 10) {
+        localStorage.setItem("sectionId", section);
+        
+        // Fetch restaurant details to get section name
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ restaurant_code: code, section_id: sectionId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const sectionDetails = data.sections.find(
+                (s) => s.section_id.toString() === section
+              );
+              if (sectionDetails) {
+                const sectionName = sectionDetails.section_name;
+                localStorage.setItem("sectionName", sectionName);
+
+                const userData = JSON.parse(
+                  localStorage.getItem("userData") || "{}"
+                );
+                if (Object.keys(userData).length > 0) {
+                  const updatedUserData = {
+                    ...userData,
+                    sectionId: section,
+                    section_name: sectionName,
+                  };
+                  localStorage.setItem(
+                    "userData",
+                    JSON.stringify(updatedUserData)
+                  );
+                }
+              }
+            }
+          })
+          .catch((error) => {
+            console.clear();
+          });
+      }
+
+      // ... rest of the code
     }
   }, [location]);
 
@@ -58,48 +97,93 @@ export const RestaurantIdProvider = ({ children }) => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ restaurant_code: restaurantCode }),
+            body: JSON.stringify({ 
+              restaurant_code: restaurantCode,
+              section_id: sectionId
+            }),
           }
         );
 
         const data = await response.json();
         if (data.st === 1) {
-          const { restaurant_id, name, account_status, is_open } = data.restaurant_details;
+          const { restaurant_id, name, account_status, is_open, section_name } = data.restaurant_details;
           setRestaurantId(restaurant_id);
           setRestaurantName(name);
           setRestaurantStatus(account_status)
           setIsRestaurantOpen(is_open)
+          setSectionName(section_name)
 
-          // Update restaurant data in localStorage
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", restaurantCode);
           localStorage.setItem("restaurantStatus", account_status)
           localStorage.setItem("isRestaurantOpen", is_open)
+          localStorage.setItem("sectionName", section_name)
 
-          // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: restaurant_id,
               restaurantName: name,
-              restaurantCode: restaurantCode
+              restaurantCode: restaurantCode,
+              sectionId: sectionId
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
+
+          const socialsArray = [
+            {
+              id: 'whatsapp',
+              icon: 'ri-whatsapp-line',
+              name: 'WhatsApp',
+              link: data.restaurant_details.whatsapp || '',
+            },
+            {
+              id: 'facebook',
+              icon: 'ri-facebook-line',
+              name: 'Facebook',
+              link: data.restaurant_details.facebook || '',
+            },
+            {
+              id: 'instagram',
+              icon: 'ri-instagram-line',
+              name: 'Instagram',
+              link: data.restaurant_details.instagram || '',
+            },
+            {
+              id: 'website',
+              icon: 'ri-global-line',
+              name: 'Website',
+              link: data.restaurant_details.website || '',
+            },
+            {
+              id: 'google_review',
+              icon: 'ri-google-line',
+              name: 'Review',
+              link: data.restaurant_details.google_review || '',
+            },
+            {
+              id: 'google_business',
+              icon: 'ri-store-2-line',
+              name: 'Business',
+              link: data.restaurant_details.google_business_link || '',
+            }
+          ].filter(item => item.link);
+
+          localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
+          
+          setSocials(socialsArray);
         } else if (data.st === 2) {
-          // Invalid restaurant code
           setRestaurantId(null);
           setRestaurantName("");
           
-          // Clear restaurant data from localStorage
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
+          localStorage.removeItem("restaurantSocial");
           
           
-          // Update userData if it exists
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -123,17 +207,18 @@ export const RestaurantIdProvider = ({ children }) => {
     };
 
     fetchRestaurantDetails();
-  }, [restaurantCode, navigate]);
+  }, [restaurantCode, sectionId, navigate]);
 
   useEffect(() => {
-    // Load restaurant data from localStorage on initial render
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
+    const storedSectionId = localStorage.getItem("sectionId");
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
     if (storedRestaurantCode) setRestaurantCode(storedRestaurantCode);
+    // if (storedSectionId) setSectionId(storedSectionId);
   }, []);
 
   const updateRestaurantCode = (code) => {
@@ -146,6 +231,11 @@ export const RestaurantIdProvider = ({ children }) => {
     localStorage.setItem("tableNumber", number);
   };
 
+  const updateSectionId = (id) => {
+    // setSectionId(id);
+    localStorage.setItem("sectionId", id);
+  };
+
   return (
     <RestaurantIdContext.Provider
       value={{
@@ -153,9 +243,12 @@ export const RestaurantIdProvider = ({ children }) => {
         restaurantName,
         restaurantCode,
         tableNumber,
+        sectionId,
         updateRestaurantCode,
         updateTableNumber,
-        setRestaurantCode, 
+        updateSectionId,
+        setRestaurantCode,
+        socials,
       }}
     >
       {children}

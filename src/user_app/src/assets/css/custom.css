@@ -27,10 +27,6 @@ input::placeholder {
 
 
 
-
-
-
-
 .addOrder-btn{
   margin-top: -3px;
 }
@@ -888,22 +884,24 @@ hr.dashed {
 .date_margin{
   margin-top: -18px;
 }
+.font_size_10{
+  font-size: 10px !important;
+}
+.font_size_12{
+  font-size: 12px !important;
+}
 
 .font_size_14{
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
-.font_size_12{
-  font-size: 12px;
-}
-.font_size_10{
-  font-size: 10px;
-}
+
+
 .font_size_16{
-  font-size: 16px;
+  font-size: 16px !important;
 }
 .font_size_18{
-  font-size: 18px;
+  font-size: 18px !important;
 }
 .increment-decrement{
   margin-top: -6px;
@@ -1039,12 +1037,154 @@ hr.dashed {
 }
 
 
-
-.gradient_bg_offer {
+.gradient_bg_offer{
   position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 15px;
-  width: 55px;
-  border-radius: 13px 0px;
+    top: 0px;
+    left: 0px;
+    height: 15px;
+    width: 55px;
+    border-radius: 13px 0px;
+}
+
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.magic-btn {
+  position: relative;
+  background: white;
+  border: none !important;
+  z-index: 1;
+}
+
+.magic-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(var(--angle), #ffbe0b, #fb5607, #ff006e, #8338ec, #3a86ff);
+  border-radius: 50px;
+  z-index: -1;
+  animation: rotate 3s linear infinite;
+}
+
+.magic-btn::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: white;
+  border-radius: 50px;
+  z-index: -1;
+}
+
+.theme-dark .magic-btn {
+  background: #253e35;
+}
+
+.theme-dark .magic-btn::after {
+  background: #333;
+}
+
+@keyframes rotate {
+  0% {
+    --angle: 0deg;
+  }
+
+  100% {
+    --angle: 360deg;
+  }
+}
+
+
+.magic-button {
+  height: 40px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: white;
+  border: none;
+}
+
+.theme-dark .magic-button {
+  background: #253e35;
+}
+
+
+
+
+
+
+
+
+.custom-menu-btn {
+  background-color: #0D775E;
+  border: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Dark theme variant if needed */
+.theme-dark .custom-menu-btn {
+  background-color: #0D775E;
+}
+
+
+
+
+
+
+
+.offer-menu-btn {
+  background-color: #0D9EDF;
+  border: none;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  color: #ffffff;
+}
+
+/* Dark theme variant if needed */
+.theme-dark .offer-menu-btn {
+  background-color: #0D9EDF;
+}
+
+
+
+
+
+
+@keyframes textShine {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.magic-text {
+  font-weight: bold;
+  background: linear-gradient(to right,
+      #7953cd 20%,
+      #00affa 30%,
+      #0190cd 70%,
+      #764ada 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  background-size: 500% auto;
+  animation: textShine 5s ease-in-out infinite alternate;
 }

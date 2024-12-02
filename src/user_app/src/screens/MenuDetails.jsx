@@ -10,6 +10,7 @@ import LoaderGif from "./LoaderGIF";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
+import RestaurantSocials from "../components/RestaurantSocials";
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -426,6 +427,11 @@ const MenuDetails = () => {
     }
   };
 
+    const handleSuggestionClick = (suggestion) => {
+      // Simply set the suggestion as the new note value
+      setNotes(suggestion);
+    };
+
   // Helper function to check if menu is veg
   const isVegMenu = (menuType) => {
     return menuType?.toLowerCase() === "veg";
@@ -472,12 +478,16 @@ const MenuDetails = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -515,7 +525,7 @@ const MenuDetails = () => {
           title={toTitleCase(productDetails.name)}
         />
 
-        <main className="page-content ">
+        <main className="page-content p-b85">
           <div className="mt-5 pt-1">
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
@@ -537,6 +547,7 @@ const MenuDetails = () => {
               }}
             >
               <img
+                className="object-fit-cover"
                 src={images}
                 alt={productDetails.name}
                 style={{
@@ -547,7 +558,7 @@ const MenuDetails = () => {
               />
               {productDetails.is_special && (
                 <i
-                  className="ri-bard-line border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                   style={{
                     position: "absolute",
                     top: 10,
@@ -561,6 +572,7 @@ const MenuDetails = () => {
               {productDetails?.images?.length > 0 ? (
                 <>
                   <img
+                    className="object-fit-cover"
                     src={productDetails.images[currentSlide]}
                     alt={productDetails.name}
                     onError={(e) => {
@@ -592,7 +604,7 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        <i className="ri-arrow-left-s-line fs-4"></i>
+                        <i className="fa-solid fa-angle-left fs-4"></i>
                       </div>
 
                       <div
@@ -609,7 +621,7 @@ const MenuDetails = () => {
                           zIndex: 2,
                         }}
                       >
-                        <i className="ri-arrow-right-s-line fs-4"></i>
+                        <i className="fa-solid fa-chevron-right fs-4"></i>
                       </div>
 
                       {/* Pagination Dots */}
@@ -661,7 +673,7 @@ const MenuDetails = () => {
 
                   {/* Veg/Non-veg indicator */}
                   <div
-                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                       productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                         ? "border-success"
                         : "border-danger"
@@ -680,8 +692,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "ri-checkbox-blank-circle-fill text-success"
-                          : "ri-triangle-fill text-danger"
+                          ? "fa-solid fa-circle text-success"
+                          : "fa-solid fa-play fa-rotate-270 text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -701,8 +713,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         isFavorite
-                          ? "ri-heart-3-fill text-danger"
-                          : "ri-heart-3-line"
+                          ? "fa-solid fa-heart text-danger"
+                          : "fa-regular fa-heart"
                       } fs-6`}
                       onClick={handleLikeClick}
                       style={{ cursor: "pointer" }}
@@ -721,6 +733,7 @@ const MenuDetails = () => {
               ) : (
                 <>
                   <img
+                    className="object-fit-cover"
                     src={images}
                     alt={productDetails.name}
                     style={{
@@ -730,7 +743,7 @@ const MenuDetails = () => {
                     }}
                   />
                   <div
-                    className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                       productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
                         ? "border-success"
                         : "border-danger"
@@ -749,8 +762,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "ri-checkbox-blank-circle-fill text-success"
-                          : "ri-triangle-fill text-danger"
+                          ? "fa-solid fa-circle text-success"
+                          : "fa-solid fa-play fa-rotate-270 text-danger"
                       } font_size_12`}
                     ></i>
                   </div>
@@ -770,8 +783,8 @@ const MenuDetails = () => {
                     <i
                       className={`${
                         isFavorite
-                          ? "ri-heart-3-fill text-danger"
-                          : "ri-heart-3-line"
+                          ? "fa-solid fa-heart text-danger"
+                          : "fa-regular fa-heart"
                       } fs-6`}
                       onClick={handleLikeClick}
                       style={{ cursor: "pointer" }}
@@ -802,6 +815,12 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
+              {productDetails.is_special && (
+                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
+                  <i className="fa-regular fa-star me-2"></i> Special
+                  <hr className="mt-2 mb-0" />
+                </div>
+              )}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -821,24 +840,24 @@ const MenuDetails = () => {
                 <div className="row me-1">
                   <div className="col-5 px-0 pt-2">
                     <div className="ps-3 text-success font_size_10 ">
-                      <i className="ri-restaurant-line  me-1 text-success "></i>
+                      <i className="fa-solid fa-utensils  me-1 text-success "></i>
                       {productDetails.menu_cat_name || "Category Name"}
                     </div>
                   </div>
 
-                  <div className="col-3 ps-4 pt-1 text-center">
+                  <div className="col-3 ps-4 pt-1 text-center px-0">
                     {productDetails.spicy_index && (
                       <div className="spicy-index">
                         {Array.from({ length: 5 }).map((_, index) =>
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
-                              className="ri-fire-fill text-danger font_size_12 firefill offer-code"
+                              className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
                             ></i>
                           ) : (
                             <i
                               key={index}
-                              className="ri-fire-line  gray-text font_size_12"
+                              className="fa-solid fa-pepper-hot  gray-text font_size_12 text-secondary opacity-25"
                             ></i>
                           )
                         )}
@@ -908,7 +927,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <i className="ri-restaurant-2-line me-2"></i>
+                    <i className="fa-solid fa-spoon me-2"></i>
                     <span className="text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
@@ -926,9 +945,7 @@ const MenuDetails = () => {
                 </div>
 
                 {/* Add end border */}
-                <div className="divider border-success inner-divider transparent mb-5 pb-5">
-                  <span className="bg-body bg-white">End</span>
-                </div>
+                <RestaurantSocials />
               </div>
             </div>
           </div>
@@ -993,7 +1010,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleRemoveFromCart}
                     >
-                      <i className="ri-close-fill pe-1 text-white"></i>
+                      <i className="fa-solid fa-xmark pe-1 text-white"></i>
                       <div className="font-poppins text-nowrap text-white">
                         Remove from Cart
                       </div>
@@ -1003,7 +1020,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleAddToCart}
                     >
-                      <i className="ri-shopping-cart-line pe-1 text-white"></i>
+                      <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                       <div className="text-nowrap text-white">Add to Cart</div>
                     </button>
                   )}
@@ -1040,11 +1057,11 @@ const MenuDetails = () => {
                 <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
                     <button
-                      className="btn p-0 fs-3 text-muted"
+                      className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
                   </div>
                 </div>
@@ -1057,16 +1074,37 @@ const MenuDetails = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
-                    rows="3"
+                    rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more spicy ")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy 
+                  </p>
                 </div>
-                <hr />
+                <hr className="my-4" />
                 <div className="mb-2">
                   <label className="form-label d-flex justify-content-center">
                     Select Portion Size
@@ -1115,7 +1153,7 @@ const MenuDetails = () => {
               <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14 rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
@@ -1126,7 +1164,7 @@ const MenuDetails = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

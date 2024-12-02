@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
-
+ import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
+import RestaurantSocials from "../components/RestaurantSocials";
+import HotelNameAndTable from "../components/HotelNameAndTable";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -34,6 +36,7 @@ const Search = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
+    const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -286,6 +289,11 @@ const Search = () => {
     }
   };
 
+    const handleSuggestionClick = (suggestion) => {
+      // Simply set the suggestion as the new note value
+      setNotes(suggestion);
+    };
+
   const handleUnauthorizedFavorite = () => {
     showLoginPopup();
   };
@@ -419,7 +427,7 @@ const Search = () => {
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
   const isVegMenu = (menu_veg_nonveg) => {
-    return menu_veg_nonveg.toLowerCase() === "veg";
+    return menu_veg_nonveg === "veg";
   };
 
   useEffect(() => {
@@ -454,12 +462,16 @@ const Search = () => {
 
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
-      return <i className="ri-star-half-line font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+      );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="ri-star-fill font_size_10 ratingStar me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
+      );
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -472,18 +484,18 @@ const Search = () => {
 
       {/* Main Content Start */}
       <main className="page-content p-t80 p-b40">
-        <div className="container py-0">
+        {/* <div className="container py-0">
           <div className="d-flex justify-content-between align-items-center  my-2">
             <Link to={`/user_app/restaurant/`}>
               <div className="d-flex align-items-center">
-                <i className="ri-store-2-line me-2"></i>
+                <i className="fa-solid fa-store me-2"></i>
                 <span className="fw-medium font_size_14">
                   {restaurantName.toUpperCase() || "Restaurant Name"}
                 </span>
               </div>
             </Link>
             <div className="d-flex align-items-center">
-              <i className="ri-map-pin-user-fill font_size_12 me-2 gray-text"></i>
+              <i className="fa-solid fa-location-dot font_size_12 me-2 gray-text"></i>
               <span className="fw-medium font_size_12 gray-text">
                 {`Table ${
                   JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
@@ -493,33 +505,38 @@ const Search = () => {
               </span>
             </div>
           </div>
+        </div> */}
+        <div className="container py-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={customerType?.tableNumber || "1"}
+          />
         </div>
 
         <div className="container pt-0">
-          <div className="input-group w-100 my-2 border border-muted rounded-3">
-            <span className="input-group-text py-0">
-              <i className="ri-search-line fs-3 text-primary"></i>
-            </span>
-            <input
-              type="search"
-              className="form-control  ps-2     "
-              placeholder="Search Best items for You"
-              onChange={handleSearch}
-              value={searchTerm}
-            />
-          </div>
-          {/* {searchHistory.length > 0 && (
-            <div className="search-history">
-              <h6 className="gray-text">Search History</h6>
-              <ul>
-                {searchHistory.map((term, index) => (
-                  <li className="h6" key={index} onClick={() => handleHistoryClick(term)}>
-                    {term}
-                  </li>
-                ))}
-              </ul>
+          <div className="input-group w-100 my-2">
+            <div className="position-relative w-100">
+              <input
+                id="searchInput"
+                type="search"
+                className="form-control ps-5 border border-success rounded-5"
+                placeholder="Search Best items for You"
+                onChange={handleSearch}
+                value={searchTerm}
+              />
+              <i
+                className="fa-solid fa-magnifying-glass position-absolute text-primary"
+                style={{
+                  left: "15px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                }}
+                onClick={() => document.getElementById("searchInput").focus()}
+              ></i>
             </div>
-          )} */}
+          </div>
 
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
@@ -527,6 +544,7 @@ const Search = () => {
               <div className="    gray-text" onClick={handleClearAll}>
                 Clear All
               </div>
+              ``
             </div>
           )}
 
@@ -546,7 +564,7 @@ const Search = () => {
                         <img
                           src={menu.image || images}
                           alt={menu.menu_name}
-                          className="rounded-4 img-fluid"
+                          className="rounded-4 img-fluid object-fit-cover"
                           style={{
                             width: "100%",
                             height: "100%",
@@ -572,8 +590,8 @@ const Search = () => {
                           <i
                             className={`${
                               menu.is_favourite
-                                ? "ri-heart-3-fill text-danger"
-                                : "ri-heart-3-line"
+                                ? "fa-solid fa-heart text-danger"
+                                : "fa-regular fa-heart"
                             } fs-6`}
                             onClick={(e) => {
                               e.preventDefault();
@@ -583,8 +601,8 @@ const Search = () => {
                           ></i>
                         </div>
                         <div
-                          className={`border rounded-3 bg-white opacity-75 d-flex justify-content-center align-items-center ${
-                            menu.menu_veg_nonveg.toLowerCase() === "veg"
+                          className={`border rounded-3 bg-white opacity-100  d-flex justify-content-center align-items-center ${
+                            menu.menu_veg_nonveg === "veg"
                               ? "border-success"
                               : "border-danger"
                           }`}
@@ -600,9 +618,9 @@ const Search = () => {
                         >
                           <i
                             className={`${
-                              menu.menu_veg_nonveg.toLowerCase() === "veg"
-                                ? "ri-checkbox-blank-circle-fill text-success"
-                                : "ri-triangle-fill text-danger"
+                              menu.menu_veg_nonveg === "veg"
+                                ? "fa-solid fa-circle text-success"
+                                : "fa-solid fa-play fa-rotate-270 text-danger"
                             } font_size_12`}
                           ></i>
                         </div>
@@ -629,18 +647,18 @@ const Search = () => {
                               {menu.category_name}
                             </span>
                           </div>
-                          <div className="col-3 d-flex aign-items-center">
+                          <div className="col-3 d-flex aign-items-center px-0">
                             {menu.spicy_index && (
                               <div className="">
                                 {Array.from({ length: 5 }).map((_, index) =>
                                   index < menu.spicy_index ? (
                                     <i
-                                      className="ri-fire-fill font_size_12 text-danger"
+                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
                                       key={index}
                                     ></i>
                                   ) : (
                                     <i
-                                      className="ri-fire-line font_size_12 gray-text"
+                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
                                       key={index}
                                     ></i>
                                   )
@@ -698,10 +716,10 @@ const Search = () => {
                                 }}
                               >
                                 <i
-                                  className={`ri-shopping-cart-${
+                                  className={`fa-solid ${
                                     isMenuItemInCart(menu.menu_id)
-                                      ? "fill text-black"
-                                      : "line"
+                                      ? "fa-circle-check "
+                                      : "fa-solid fa-plus text-secondary"
                                   } fs-6`}
                                 ></i>
                               </div>
@@ -715,9 +733,9 @@ const Search = () => {
               </div>
             </>
           ))}
-        <div className="divider border-success inner-divider transparent mt-5">
-          <span className="bg-body">End</span>
         </div>
+        <div className="container">
+          <RestaurantSocials />
         </div>
       </main>
 
@@ -735,7 +753,6 @@ const Search = () => {
                 margin: "auto",
               }}
             >
-              {/* Updated Header */}
               <div className="modal-header ps-3 pe-2">
                 <div className="col-10 text-start">
                   <div className="modal-title font_size_16 fw-medium">
@@ -745,18 +762,16 @@ const Search = () => {
 
                 <div className="col-2 text-end">
                   <div className="d-flex justify-content-end">
-                    <span
-                      className="btn-close m-2 font_size_12"
+                    <button
+                      className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowModal(false)}
                       aria-label="Close"
                     >
-                      <i className="ri-close-line"></i>
-                    </span>
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Updated Body */}
               <div className="modal-body py-2 px-3">
                 <div className="mb-3 mt-0">
                   <label
@@ -765,14 +780,33 @@ const Search = () => {
                   >
                     Special Instructions
                   </label>
-                  <textarea
-                    className="form-control font_size_16 border border-primary rounded-4"
+                  <input
+                    type="text"
+                    className="form-control font_size_16 border border-dark rounded-4"
                     id="notes"
                     rows="2"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any special instructions here..."
                   />
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() =>
+                      handleSuggestionClick("Make it more sweet 😋")
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more sweet 😋
+                  </p>
+                  <p
+                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
+                    more spicy
+                  </p>
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
@@ -820,22 +854,22 @@ const Search = () => {
                 </div>
               </div>
               <hr className="my-4" />
-              {/* Updated Footer */}
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
+              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
                 <button
                   type="button"
-                  className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
                   onClick={() => setShowModal(false)}
                 >
                   Close
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill"
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="ri-shopping-cart-line pe-2 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

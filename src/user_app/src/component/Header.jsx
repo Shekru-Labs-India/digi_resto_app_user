@@ -47,7 +47,7 @@ const Header = ({ userData, isLoggedIn, handleLogout, currentPage }) => {
           <div className="header-content ">
             <div className="left-content">
               <Link className="back-btn fs-3" onClick={() => navigate(-1)}>
-                <i className="ri-arrow-left-line "></i>
+                <i className="fa-solid fa-arrow-left"></i>
               </Link>
             </div>
             <div className="mid-content">
@@ -58,7 +58,7 @@ const Header = ({ userData, isLoggedIn, handleLogout, currentPage }) => {
 
             <div className="right-content gap-1">
               <div className="menu-toggler " onClick={toggleSidebar}>
-                <i className="ri-menu-line fs-3"></i>
+                <i className="fa-solid fa-layer-group fs-3"></i>
               </div>
             </div>
           </div>
