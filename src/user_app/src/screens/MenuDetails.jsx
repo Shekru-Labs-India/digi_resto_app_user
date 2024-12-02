@@ -427,10 +427,10 @@ const MenuDetails = () => {
     }
   };
 
-    const handleSuggestionClick = (suggestion) => {
-      // Simply set the suggestion as the new note value
-      setNotes(suggestion);
-    };
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
 
   // Helper function to check if menu is veg
   const isVegMenu = (menuType) => {
@@ -485,9 +485,7 @@ const MenuDetails = () => {
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -1020,7 +1018,7 @@ const MenuDetails = () => {
                       className="btn btn-success rounded-pill"
                       onClick={handleAddToCart}
                     >
-                      <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                      <i className="fa-solid fa-plus  pe-2 text-white"></i>
                       <div className="text-nowrap text-white">Add to Cart</div>
                     </button>
                   )}
@@ -1095,13 +1093,11 @@ const MenuDetails = () => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy ")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />
@@ -1164,7 +1160,7 @@ const MenuDetails = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-plus pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

@@ -6,7 +6,7 @@ import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { usePopup } from "../context/PopupContext";
- import "../assets/css/toast.css";
+import "../assets/css/toast.css";
 import Bottom from "../component/bottom";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
@@ -276,20 +276,22 @@ const Product = () => {
   useEffect(() => {
     if (menuList.length > 0) {
       if (selectedCategory === "special") {
-        setFilteredMenuList(menuList.filter(menu => menu.is_special));
+        setFilteredMenuList(menuList.filter((menu) => menu.is_special));
       } else if (selectedCategory === "offer") {
-        setFilteredMenuList(menuList.filter(menu => menu.offer > 0));
+        setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
       } else if (selectedCategory === null) {
         setFilteredMenuList(menuList);
       } else {
-        setFilteredMenuList(menuList.filter(menu => menu.menu_cat_id === selectedCategory));
+        setFilteredMenuList(
+          menuList.filter((menu) => menu.menu_cat_id === selectedCategory)
+        );
       }
     }
   }, [selectedCategory, menuList]);
 
   const handleCategorySelect = useCallback((categoryId) => {
     // Force immediate state update
-    setSelectedCategory(prevCategory => {
+    setSelectedCategory((prevCategory) => {
       if (prevCategory === categoryId) {
         return null; // Reset to show all items if clicking the same category
       }
@@ -420,10 +422,10 @@ const Product = () => {
     }
   };
 
-    const handleSuggestionClick = (suggestion) => {
-      // Simply set the suggestion as the new note value
-      setNotes(suggestion);
-    };
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
@@ -473,9 +475,7 @@ const Product = () => {
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -556,7 +556,7 @@ const Product = () => {
       setTimeout(() => {
         setCountdown(3);
         const interval = setInterval(() => {
-          setCountdown(prev => {
+          setCountdown((prev) => {
             if (prev <= 1) {
               clearInterval(interval);
               return 0;
@@ -957,7 +957,7 @@ const Product = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="fa-solid fa-plus text-secondary"></i>
+                              <i className="fa-solid fa-plus text-secondary fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -1104,7 +1104,7 @@ const Product = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-plus pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

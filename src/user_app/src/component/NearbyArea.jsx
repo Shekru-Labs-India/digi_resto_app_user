@@ -4,7 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
 import "swiper/swiper-bundle.css";
-import "../assets/css/toast.css"
+import "../assets/css/toast.css";
 import LoaderGif from "../screens/LoaderGIF";
 import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
@@ -100,8 +100,8 @@ const NearbyArea = () => {
       if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
         const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
           ...menu,
-          name: (menu.menu_name),
-          category_name: (menu.category_name),
+          name: menu.menu_name,
+          category_name: menu.category_name,
           oldPrice: menu.offer ? menu.price : null,
           price: menu.offer
             ? Math.floor(menu.price * (1 - menu.offer / 100))
@@ -303,10 +303,10 @@ const NearbyArea = () => {
     }
   };
 
-    const handleSuggestionClick = (suggestion) => {
-      // Simply set the suggestion as the new note value
-      setNotes(suggestion);
-    };
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
@@ -384,9 +384,7 @@ const NearbyArea = () => {
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -592,7 +590,7 @@ const NearbyArea = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="fa-solid fa-plus text-secondary"></i>
+                              <i className="fa-solid fa-plus text-secondary fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -736,7 +734,7 @@ const NearbyArea = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-cart-shopping  pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

@@ -19,12 +19,12 @@ const HotelList = () => {
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {
-            const sectionId = hotel.resto_url.split('/').pop();
-            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || '';
-            return { 
-              ...hotel, 
+            const sectionId = hotel.resto_url.split("/").pop();
+            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || "";
+            return {
+              ...hotel,
               code,
-              section_id: sectionId
+              section_id: sectionId,
             };
           });
           setHotels(formattedHotels);
@@ -131,94 +131,19 @@ const HotelList = () => {
           {filteredHotels.length > 0 ? (
             filteredHotels.map((hotel) => (
               <div className="card rounded-4" key={hotel.restaurant_id}>
-                <Link 
-                  to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
-                  onClick={() => {
-                    localStorage.setItem('sectionId', hotel.section_id);
-                    // You can also store other relevant hotel data if needed
-                    localStorage.setItem('restaurantCode', hotel.code);
-                  }}
-                >
-                  <div
-                    className={`card-body py-0 ${
-                      hotel.is_open === false ? "bg-light rounded-4" : ""
-                    }`}
+                {hotel.is_open ? (
+                  <Link
+                    to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
+                    onClick={() => {
+                      localStorage.setItem("sectionId", hotel.section_id);
+                      localStorage.setItem("restaurantCode", hotel.code);
+                    }}
                   >
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="row mt-2 d-flex justify-content-between">
-                          <div className="col-1">
-                            <i className="fa-solid fa-store font_size_14 "></i>
-                          </div>
-                          <div className="col-6 ps-0">
-                            <span className="font_size_14 fw-medium m-0">
-                              {hotel.restaurant_name.toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="col-4">
-                            <div className="d-flex justify-content-end">
-                              {hotel.is_open === false && (
-                                <span className="badge btn-dark light small ">
-                                  Closed
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row mt-1">
-                          <div className="col-1 d-flex align-items-center">
-                            <i className="fa-solid fa-phone text-primary font_size_12"></i>
-                          </div>
-                          <div className="col-10 d-flex align-it  ems-center">
-                            <span className="text-primary font_size_12">
-                              {hotel.mobile}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="row mb-2 d-flex justify-content-between">
-                          <div className="col-1">
-                            <i className="fa-solid fa-location-dot gray-text font_size_12"></i>
-                          </div>
-                          <div className="col-6 ps-0">
-                            <span className="gray-text font_size_12">
-                              {hotel.address}
-                            </span>
-                          </div>
-                          <div className="col-4">
-                            <div className="d-flex justify-content-end">
-                              {hotel.veg_nonveg && (
-                                <div
-                                  className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-                                    ["veg", "Veg", "VEG"].includes(
-                                      hotel.veg_nonveg
-                                    )
-                                      ? "border-success"
-                                      : "border-danger"
-                                  }`}
-                                  style={{
-                                    height: "20px",
-                                    width: "20px",
-                                    borderWidth: "2px",
-                                  }}
-                                >
-                                  <i
-                                    className={`${
-                                      ["veg", "Veg", "VEG"].includes(
-                                        hotel.veg_nonveg
-                                      )
-                                        ? "fa-solid fa-circle text-success"
-                                        : "fa-solid fa-play fa-rotate-270 text-danger"
-                                    } font_size_12`}
-                                  ></i>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                    <CardContent hotel={hotel} />
+                  </Link>
+                ) : (
+                  <CardContent hotel={hotel} />
+                )}
               </div>
             ))
           ) : (
@@ -243,10 +168,10 @@ const HotelList = () => {
           <div className="d-flex justify-content-center py-0">
             <Link to="/">
               {" "}
-            <div className="d-flex align-items-center mt-4 mb-0">
-              <img src={logo} alt="logo" width="40" height="40" />
-              <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
-                MenuMitra
+              <div className="d-flex align-items-center mt-4 mb-0">
+                <img src={logo} alt="logo" width="40" height="40" />
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  MenuMitra
                 </div>
               </div>
             </Link>
@@ -278,7 +203,7 @@ const HotelList = () => {
                 >
                   <i className="fa-brands fa-youtube fs-4"></i>
                 </a>
-               
+
                 <a
                   href="https://x.com/MenuMitra"
                   className="footer-link mx-3"
@@ -287,7 +212,6 @@ const HotelList = () => {
                 >
                   <i className="fa-brands fa-x-twitter fs-4"></i>
                 </a>
-               
               </div>
             </div>
             <i className="fa-solid fa-bolt"></i> Powered by <br />
@@ -305,5 +229,71 @@ const HotelList = () => {
     </div>
   );
 };
+
+const CardContent = ({ hotel }) => (
+  <div
+    className={`card-body py-2 ${
+      hotel.is_open === false ? "bg-light rounded-4" : ""
+    }`}
+  >
+    <div className="d-flex justify-content-between align-items-center mb-2">
+      <div className="d-flex align-items-center">
+        <i className="fa-solid fa-store font_size_14"></i>
+        <span className="font_size_14 fw-medium ms-2">
+          {hotel.restaurant_name.toUpperCase()}
+        </span>
+      </div>
+
+      <div className="d-flex align-items-center gap-2">
+        {hotel.is_open === false && (
+          <span className="badge badge-light rounded-pill">Closed</span>
+        )}
+        {hotel.veg_nonveg && (
+          <div
+            className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
+              ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+                ? "border-success"
+                : "border-danger"
+            }`}
+            style={{
+              height: "20px",
+              width: "20px",
+              borderWidth: "2px",
+            }}
+          >
+            <i
+              className={`${
+                ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+                  ? "fa-solid fa-circle text-success"
+                  : "fa-solid fa-play fa-rotate-270 text-danger"
+              } font_size_12`}
+            ></i>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div className="d-flex justify-content-end gap-2">
+      <a
+        href={`tel:${hotel.mobile}`}
+        className="btn btn-outline-primary btn-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <i className="fa-solid fa-phone me-1"></i>
+        Call
+      </a>
+      <a
+        href={`https://maps.google.com/?q=${encodeURIComponent(hotel.address)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn btn-outline-secondary btn-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <i className="fa-solid fa-location-dot me-1"></i>
+        Map
+      </a>
+    </div>
+  </div>
+);
 
 export default HotelList;
