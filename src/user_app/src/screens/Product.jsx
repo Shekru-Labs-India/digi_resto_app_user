@@ -653,19 +653,22 @@ const Product = () => {
                   className={`category-btn font_size_14 rounded-5 py-1`}
                   onClick={() => handleCategorySelect(null)}
                   style={{
-                    backgroundColor: selectedCategory === null ? "#0D775E" : "#ffffff",
+                    backgroundColor:
+                      selectedCategory === null ? "#0D775E" : "#ffffff",
                     color: selectedCategory === null ? "#ffffff" : "#000000",
                     border: "1px solid #ddd",
                     cursor: "pointer",
                     padding: "8px 16px",
-                    transition: "all 0.3s ease"
+                    transition: "all 0.3s ease",
                   }}
                 >
                   All{" "}
-                  <span style={{ 
-                    color: selectedCategory === null ? "#ffffff" : "#666",
-                    fontSize: "0.8em" 
-                  }}>
+                  <span
+                    style={{
+                      color: selectedCategory === null ? "#ffffff" : "#666",
+                      fontSize: "0.8em",
+                    }}
+                  >
                     ({menuList.length})
                   </span>
                 </div>
@@ -678,21 +681,32 @@ const Product = () => {
                     className={`category-btn font_size_14 rounded-5 py-1`}
                     onClick={() => handleCategorySelect(category.menu_cat_id)}
                     style={{
-                      backgroundColor: selectedCategory === category.menu_cat_id ? "#0D775E" : "#ffffff",
-                      color: selectedCategory === category.menu_cat_id ? "#ffffff" : "#000000",
+                      backgroundColor:
+                        selectedCategory === category.menu_cat_id
+                          ? "#0D775E"
+                          : "#ffffff",
+                      color:
+                        selectedCategory === category.menu_cat_id
+                          ? "#ffffff"
+                          : "#000000",
                       border: "1px solid #ddd",
                       cursor: "pointer",
                       padding: "8px 16px",
-                      transition: "all 0.3s ease"
+                      transition: "all 0.3s ease",
                     }}
                   >
                     {category.menu_cat_id === "special"
                       ? category.category_name
                       : category.name || category.category_name}{" "}
-                    <span style={{ 
-                      color: selectedCategory === category.menu_cat_id ? "#ffffff" : "#666",
-                      fontSize: "0.8em" 
-                    }}>
+                    <span
+                      style={{
+                        color:
+                          selectedCategory === category.menu_cat_id
+                            ? "#ffffff"
+                            : "#666",
+                        fontSize: "0.8em",
+                      }}
+                    >
                       ({category.menu_count})
                     </span>
                   </div>
@@ -943,7 +957,7 @@ const Product = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="fa-solid fa-cart-shopping fs-6"></i>
+                              <i className="fa-solid fa-plus text-secondary"></i>
                             </div>
                           )}
                         </div>

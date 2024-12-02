@@ -730,7 +730,7 @@ const OfferBanner = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="fa-solid fa-cart-shopping fs-6"></i>
+                              <i className="fa-solid fa-plus text-secondary"></i>
                             </div>
                           )}
                         </div>
