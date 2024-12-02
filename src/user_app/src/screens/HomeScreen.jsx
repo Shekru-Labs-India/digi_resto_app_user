@@ -192,7 +192,7 @@ const HomeScreen = () => {
                   <i className="fa-solid fa-house fs-3"></i>
                 </span>
                 <span className="font_size_16 fw-medium">Home</span>
-                <div className="ms-5 ps-5">
+                {/* <div className="ms-5 ps-5">
                   <div
                     className={`  border ${
                       isVegOnly ? "border-success" : "border-danger"
@@ -222,7 +222,7 @@ const HomeScreen = () => {
                       ></i>
                     )}
                   </div>
-                </div>
+                </div> */}
               </Link>
             </li>
             <li>
