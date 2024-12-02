@@ -363,6 +363,39 @@ const Cart = () => {
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
   };
 
+  
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-warning",
+          border: "border-warning",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
+  
+  
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -415,7 +448,7 @@ const Cart = () => {
           {magicMessage && (
             <div className="container py-0">
               <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">
-              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
                 {magicMessage}
               </div>
             </div>
@@ -460,11 +493,10 @@ const Cart = () => {
                           }}
                         ></i>
                       )}
+
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          item.menu_veg_nonveg === "veg"
-                            ? "border-success"
-                            : "border-danger"
+                          getFoodTypeStyles(item.menu_food_type).border
                         }`}
                         style={{
                           position: "absolute",
@@ -478,9 +510,7 @@ const Cart = () => {
                       >
                         <i
                           className={`${
-                            item.menu_veg_nonveg === "veg"
-                              ? "fa-solid fa-circle text-success"
-                              : "fa-solid fa-play fa-rotate-270 text-danger"
+                            getFoodTypeStyles(item.menu_food_type).icon
                           } font_size_12`}
                         ></i>
                       </div>

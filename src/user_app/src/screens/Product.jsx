@@ -551,6 +551,38 @@ const Product = () => {
     setCountdown(null);
   };
 
+    
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-warning",
+          border: "border-warning",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
+  
+
   useEffect(() => {
     if (showAIModal) {
       setTimeout(() => {
@@ -792,11 +824,10 @@ const Product = () => {
                           }}
                         ></i>
                       </div>
+
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          menuItem.menu_veg_nonveg === "veg"
-                            ? "border-success"
-                            : "border-danger"
+                          getFoodTypeStyles(menuItem.menu_food_type).border
                         }`}
                         style={{
                           position: "absolute",
@@ -810,9 +841,7 @@ const Product = () => {
                       >
                         <i
                           className={`${
-                            menuItem.menu_veg_nonveg === "veg"
-                              ? "fa-solid fa-circle text-success"
-                              : "fa-solid fa-play fa-rotate-270 text-danger"
+                            getFoodTypeStyles(menuItem.menu_food_type).icon
                           } font_size_12`}
                         ></i>
                       </div>

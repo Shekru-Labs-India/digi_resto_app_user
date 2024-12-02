@@ -482,6 +482,36 @@ const OfferBanner = () => {
     }
   }, []);
 
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-warning",
+          border: "border-warning",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
+
   const handleCartIconClick = (e, menu) => {
     e.preventDefault();
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -580,9 +610,7 @@ const OfferBanner = () => {
                       )}
                       <div
                         className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          menu.menu_veg_nonveg === "veg"
-                            ? "border-success"
-                            : "border-danger"
+                          getFoodTypeStyles(menu.menu_food_type).border
                         }`}
                         style={{
                           position: "absolute",
@@ -596,9 +624,7 @@ const OfferBanner = () => {
                       >
                         <i
                           className={`${
-                            menu.menu_veg_nonveg === "veg"
-                              ? "fa-solid fa-circle text-success"
-                              : "fa-solid fa-play fa-rotate-270 text-danger"
+                            getFoodTypeStyles(menu.menu_food_type).icon
                           } font_size_12`}
                         ></i>
                       </div>

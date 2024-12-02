@@ -173,6 +173,7 @@ const MenuDetails = () => {
             rating,
             is_special,
             is_favorite,
+            menu_food_type,
             restaurant_id: fetchedRestaurantId,
           } = data.details;
 
@@ -212,6 +213,7 @@ const MenuDetails = () => {
             rating,
             is_special,
             is_favorite,
+            menu_food_type,
             restaurant_id: fetchedRestaurantId,
           });
 
@@ -454,6 +456,37 @@ const MenuDetails = () => {
     }
   };
 
+  // Add getFoodTypeStyles at component level
+  const getFoodTypeStyles = (foodType) => {
+    switch(foodType?.toLowerCase()) {
+      case 'veg':
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success"
+        };
+      case 'nonveg':
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger"
+        };
+      case 'egg':
+        return {
+          icon: "fa-solid fa-egg text-warning",
+          border: "border-warning"
+        };
+      case 'vegan':
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success"
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success"
+        };
+    }
+  };
+
   // Auto slide every 3 seconds
   useEffect(() => {
     if (productDetails?.images?.length > 1) {
@@ -670,28 +703,24 @@ const MenuDetails = () => {
                   )}
 
                   {/* Veg/Non-veg indicator */}
+
                   <div
                     className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                      productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                        ? "border-success"
-                        : "border-danger"
+                      getFoodTypeStyles(productDetails.menu_food_type).border
                     }`}
                     style={{
                       position: "absolute",
-                      bottom: "10px",
-                      left: "10px",
+                      bottom: "3px",
+                      left: "3px",
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
                       borderRadius: "3px",
-                      zIndex: 2,
                     }}
                   >
                     <i
                       className={`${
-                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "fa-solid fa-circle text-success"
-                          : "fa-solid fa-play fa-rotate-270 text-danger"
+                        getFoodTypeStyles(productDetails.menu_food_type).icon
                       } font_size_12`}
                     ></i>
                   </div>
@@ -740,28 +769,24 @@ const MenuDetails = () => {
                       objectFit: "cover",
                     }}
                   />
+
                   <div
                     className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                      productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                        ? "border-success"
-                        : "border-danger"
+                      getFoodTypeStyles(productDetails.menu_food_type).border
                     }`}
                     style={{
                       position: "absolute",
-                      bottom: "10px",
-                      left: "10px",
+                      bottom: "3px",
+                      left: "3px",
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
                       borderRadius: "3px",
-                      zIndex: 2,
                     }}
                   >
                     <i
                       className={`${
-                        productDetails.menu_veg_nonveg?.toLowerCase() === "veg"
-                          ? "fa-solid fa-circle text-success"
-                          : "fa-solid fa-play fa-rotate-270 text-danger"
+                        getFoodTypeStyles(productDetails.menu_food_type).icon
                       } font_size_12`}
                     ></i>
                   </div>
