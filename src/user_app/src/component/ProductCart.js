@@ -5,8 +5,8 @@ import images from "../assets/MenuDefault.png";
 import Swiper from "swiper";
 import { debounce } from "lodash";
 import NearbyArea from "./NearbyArea";
- import "../assets/css/toast.css";
- 
+import "../assets/css/toast.css";
+
 import LoaderGif from "../screens/LoaderGIF";
 import { useCart } from "../context/CartContext";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
@@ -43,9 +43,7 @@ const renderStarRating = (rating) => {
 
   // 5: Show full star
   if (numRating === 5) {
-    return (
-      <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-    );
+    return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
   }
 
   // Default case (shouldn't reach here based on your ranges)
@@ -156,19 +154,24 @@ const ProductCard = ({ isVegOnly }) => {
     if (categoryId === null) {
       setFilteredMenuList(menuList);
     } else if (categoryId === "special") {
-      setFilteredMenuList(menuList.filter(menu => menu.is_special));
+      setFilteredMenuList(menuList.filter((menu) => menu.is_special));
     } else if (categoryId === "offer") {
-      setFilteredMenuList(menuList.filter(menu => menu.offer > 0));
+      setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
     } else {
-      setFilteredMenuList(menuList.filter(menu => menu.menu_cat_id === categoryId));
+      setFilteredMenuList(
+        menuList.filter((menu) => menu.menu_cat_id === categoryId)
+      );
     }
 
     // Update swiper position if needed
     if (swiperRef.current) {
-      const activeIndex = categoryId === null 
-        ? 0 
-        : menuCategories.findIndex(category => category.menu_cat_id === categoryId) + 1;
-      
+      const activeIndex =
+        categoryId === null
+          ? 0
+          : menuCategories.findIndex(
+              (category) => category.menu_cat_id === categoryId
+            ) + 1;
+
       if (activeIndex !== -1) {
         swiperRef.current.slideTo(activeIndex);
       }
@@ -472,24 +475,23 @@ const ProductCard = ({ isVegOnly }) => {
   );
 
   const handleConfirmAddToCart = async (e) => {
-    e.preventDefault();  // Prevent event bubbling
+    e.preventDefault(); // Prevent event bubbling
     e.stopPropagation(); // Stop event propagation
-    
+
     try {
       const itemToAdd = {
         ...selectedMenu,
         half_or_full: portionSize,
         notes: notes,
-        quantity: 1  // Explicitly set quantity to 1
+        quantity: 1, // Explicitly set quantity to 1
       };
 
       await addToCart(itemToAdd, restaurantId);
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
-      
+
       // Show success message or toast here if needed
-      
     } catch (error) {
       // Handle error appropriately
       console.error("Error adding to cart:", error);
@@ -498,7 +500,7 @@ const ProductCard = ({ isVegOnly }) => {
 
   const handleModalClick = (e) => {
     // Only close if clicking the backdrop
-    if (e.target.classList.contains('modal')) {
+    if (e.target.classList.contains("modal")) {
       setShowModal(false);
     }
   };
@@ -529,15 +531,15 @@ const ProductCard = ({ isVegOnly }) => {
       );
 
       const data = await response.json();
-      
+
       if (data.st === 1) {
         localStorage.setItem("cartId", data.cart_id);
         setTimeout(() => {
-          navigate("/user_app/Cart", { 
-            state: { 
+          navigate("/user_app/Cart", {
+            state: {
               cartId: data.cart_id,
-              magicMessage: "Your magic cart has been created!"
-            }
+              magicMessage: "Your magic cart has been created!",
+            },
           });
         }, 5000);
       } else {
@@ -560,7 +562,7 @@ const ProductCard = ({ isVegOnly }) => {
       setTimeout(() => {
         setCountdown(3);
         const interval = setInterval(() => {
-          setCountdown(prev => {
+          setCountdown((prev) => {
             if (prev <= 1) {
               clearInterval(interval);
               return 0;
@@ -758,19 +760,22 @@ const ProductCard = ({ isVegOnly }) => {
                 className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "#ffffff",
+                  backgroundColor:
+                    selectedCategoryId === null ? "#0D775E" : "#ffffff",
                   color: selectedCategoryId === null ? "#ffffff" : "#000000",
                   border: "1px solid #ddd",
                   cursor: "pointer",
                   padding: "8px 16px",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
                 }}
               >
                 All{" "}
-                <span style={{ 
-                  color: selectedCategoryId === null ? "#ffffff" : "#666",
-                  fontSize: "0.8em" 
-                }}>
+                <span
+                  style={{
+                    color: selectedCategoryId === null ? "#ffffff" : "#666",
+                    fontSize: "0.8em",
+                  }}
+                >
                   ({totalMenuCount})
                 </span>
               </div>
@@ -783,19 +788,30 @@ const ProductCard = ({ isVegOnly }) => {
                   className="category-btn font_size_14 rounded-5 py-1"
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
-                    backgroundColor: selectedCategoryId === category.menu_cat_id ? "#0D775E" : "#ffffff",
-                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#000000",
+                    backgroundColor:
+                      selectedCategoryId === category.menu_cat_id
+                        ? "#0D775E"
+                        : "#ffffff",
+                    color:
+                      selectedCategoryId === category.menu_cat_id
+                        ? "#ffffff"
+                        : "#000000",
                     border: "1px solid #ddd",
                     cursor: "pointer",
                     padding: "8px 16px",
-                    transition: "all 0.3s ease"
+                    transition: "all 0.3s ease",
                   }}
                 >
                   {category.name}
-                  <span style={{ 
-                    color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#666",
-                    fontSize: "0.8em" 
-                  }}>
+                  <span
+                    style={{
+                      color:
+                        selectedCategoryId === category.menu_cat_id
+                          ? "#ffffff"
+                          : "#666",
+                      fontSize: "0.8em",
+                    }}
+                  >
                     ({category.menu_count})
                   </span>
                 </div>
@@ -1042,13 +1058,11 @@ const ProductCard = ({ isVegOnly }) => {
                   </p>
                   <p
                     className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more spicy ")
-                    }
+                    onClick={() => handleSuggestionClick("Make it more spicy ")}
                     style={{ cursor: "pointer" }}
                   >
                     <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy 
+                    more spicy
                   </p>
                 </div>
                 <hr className="my-4" />
@@ -1112,7 +1126,7 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-plus pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

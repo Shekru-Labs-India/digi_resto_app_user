@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
- import "../assets/css/toast.css";
+import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
@@ -36,7 +36,7 @@ const Search = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
-    const [customerType, setCustomerType] = useState(null);
+  const [customerType, setCustomerType] = useState(null);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -289,10 +289,10 @@ const Search = () => {
     }
   };
 
-    const handleSuggestionClick = (suggestion) => {
-      // Simply set the suggestion as the new note value
-      setNotes(suggestion);
-    };
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
 
   const handleUnauthorizedFavorite = () => {
     showLoginPopup();
@@ -469,9 +469,7 @@ const Search = () => {
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -869,7 +867,7 @@ const Search = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-plus pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

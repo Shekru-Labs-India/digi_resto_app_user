@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import OrderGif from "../screens/OrderGif";
 import LoaderGif from "../screens/LoaderGIF";
- import "../assets/css/toast.css"
+import "../assets/css/toast.css";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import styled, { keyframes } from "styled-components";
 import { useCart } from "../context/CartContext"; // Add this import
@@ -325,10 +325,10 @@ const OfferBanner = () => {
       setShowModal(false);
     }
   };
-   const handleSuggestionClick = (suggestion) => {
-     // Simply set the suggestion as the new note value
-     setNotes(suggestion);
-   };
+  const handleSuggestionClick = (suggestion) => {
+    // Simply set the suggestion as the new note value
+    setNotes(suggestion);
+  };
 
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -515,9 +515,7 @@ const OfferBanner = () => {
 
     // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
     }
 
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
@@ -730,7 +728,7 @@ const OfferBanner = () => {
                                 showLoginPopup();
                               }}
                             >
-                              <i className="fa-solid fa-cart-shopping fs-6"></i>
+                              <i className="fa-solid fa-plus text-secondary fs-6"></i>
                             </div>
                           )}
                         </div>
@@ -876,7 +874,7 @@ const OfferBanner = () => {
                   onClick={handleConfirmAddToCart}
                   disabled={isPriceFetching || (!halfPrice && !fullPrice)}
                 >
-                  <i className="fa-solid fa-cart-shopping pe-1 text-white"></i>
+                  <i className="fa-solid fa-plus pe-1 text-white"></i>
                   Add to Cart
                 </button>
               </div>

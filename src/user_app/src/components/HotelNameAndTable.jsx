@@ -1,21 +1,24 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useRestaurantId } from '../context/RestaurantIdContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
+import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useNavigate } from "react-router-dom";
 
 const HotelNameAndTable = ({ restaurantName }) => {
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
   const tableNumber = localStorage.getItem("tableNumber");
   // Get table number from context, localStorage, or userData
-  const displayTableNumber = tableNumber || 
-    JSON.parse(localStorage.getItem("userData"))?.tableNumber || 
+  const displayTableNumber =
+    tableNumber ||
+    JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
     localStorage.getItem("tableNumber");
 
   // Get both sectionId and sectionName
-  const sectionId = JSON.parse(localStorage.getItem("userData"))?.sectionId || 
+  const sectionId =
+    JSON.parse(localStorage.getItem("userData"))?.sectionId ||
     localStorage.getItem("sectionId");
-  const sectionName = JSON.parse(localStorage.getItem("userData"))?.sectionName || 
+  const sectionName =
+    JSON.parse(localStorage.getItem("userData"))?.sectionName ||
     localStorage.getItem("sectionName");
   useEffect(() => {
     // Store both sectionId and sectionName in localStorage
@@ -32,22 +35,22 @@ const HotelNameAndTable = ({ restaurantName }) => {
       const updatedUserData = {
         ...userData,
         sectionId,
-        section_name: sectionName
+        section_name: sectionName,
       };
       localStorage.setItem("userData", JSON.stringify(updatedUserData));
     }
   }, [sectionId, sectionName]);
 
-  const titleCase = (str) =>{
+  const titleCase = (str) => {
     return str
       .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-  }
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const handleRestaurantClick = () => {
-    navigate('/user_app/restaurant');
+    navigate("/user_app/restaurant");
   };
 
   return (
@@ -64,25 +67,12 @@ const HotelNameAndTable = ({ restaurantName }) => {
           </span>
         </div>
 
-        <div className="d-flex align-items-center gap-3">
-          {sectionName && (
-            <div className="d-flex align-items-center font_size_12">
-              {/* <i className="fa-solid fa-map-marker-alt me-2 gray-text font_size_12"></i> */}
-              <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
-              <span className="fw-medium gray-text">
-                {titleCase(sectionName)}
-              </span>
-            </div>
-          )}
-
-          {displayTableNumber && (
-            <div className="d-flex align-items-center font_size_12">
-              <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
-              <span className="fw-medium gray-text">
-                Table {tableNumber}
-              </span>
-            </div>
-          )}
+        <div className="d-flex align-items-center font_size_12">
+          <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
+          <span className="fw-medium gray-text">
+            {titleCase(sectionName)}
+            {displayTableNumber && <> - {tableNumber}</>}
+          </span>
         </div>
       </div>
     </div>
