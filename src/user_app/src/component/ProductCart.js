@@ -15,6 +15,8 @@ import { usePopup } from "../context/PopupContext";
 import config from "./config";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
 
+
+
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -56,6 +58,7 @@ const ProductCard = ({ isVegOnly }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [totalMenuCount, setTotalMenuCount] = useState(0);
   const [filteredMenuList, setFilteredMenuList] = useState([]);
+  
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
@@ -100,7 +103,7 @@ const ProductCard = ({ isVegOnly }) => {
     // Apply veg filter if needed
     if (vegOnly) {
       filteredMenus = filteredMenus.filter(
-        (menu) => menu.menu_veg_nonveg === "veg"
+        (menu) => menu.menu_food_type === "veg"
       );
     }
 
@@ -229,6 +232,9 @@ const ProductCard = ({ isVegOnly }) => {
       console.clear();
     }
   }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
+
+
+  
 
   // Initial data fetch
   useEffect(() => {
@@ -602,6 +608,39 @@ const ProductCard = ({ isVegOnly }) => {
     }, 3000);
   }
 
+
+
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-warning",
+          border: "border-warning",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
+  
+
   return (
     <div>
       {restaurantStatus === "false" && (
@@ -867,9 +906,7 @@ const ProductCard = ({ isVegOnly }) => {
                     )}
                     <div
                       className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        menu.menu_veg_nonveg === "veg"
-                          ? "border-success"
-                          : "border-danger"
+                        getFoodTypeStyles(menu.menu_food_type).border
                       }`}
                       style={{
                         position: "absolute",
@@ -883,12 +920,11 @@ const ProductCard = ({ isVegOnly }) => {
                     >
                       <i
                         className={`${
-                          menu.menu_veg_nonveg === "veg"
-                            ? "fa-solid fa-circle text-success"
-                            : "fa-solid fa-play fa-rotate-270 text-danger"
+                          getFoodTypeStyles(menu.menu_food_type).icon
                         } font_size_12`}
                       ></i>
                     </div>
+
                     <div
                       className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
