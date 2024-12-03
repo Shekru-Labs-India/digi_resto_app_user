@@ -29,7 +29,7 @@ function RestaurantSocials() {
           <div className="col-6 mt-0">
             <button
               type="button"
-              className="btn fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-white btn-info font_size_14"
+              className="border border-info bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-info btn-info font_size_14"
               onClick={() => {
                 const websiteUrl = allSocialLinks.find(
                   (link) => link.id === "website"
@@ -49,7 +49,7 @@ function RestaurantSocials() {
           <div className="col-6 mt-0">
             <button
               type="button"
-              className="btn fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-white btn-success font_size_14"
+              className="border border-success bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-success font_size_14"
               onClick={() => {
                 const businessUrl = allSocialLinks.find(
                   (link) => link.id === "google_business"

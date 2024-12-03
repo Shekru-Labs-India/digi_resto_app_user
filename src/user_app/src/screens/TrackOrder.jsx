@@ -14,6 +14,31 @@ import config from "../component/config"
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const TrackOrder = () => {
 
+  // Add these helper functions at the top of your component
+  const getFoodTypeTextStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          textColor: "text-success",
+          icon: "fa-solid fa-leaf",
+        };
+      case "non-veg":
+        return {
+          textColor: "text-danger",
+          icon: "fa-solid fa-drumstick-bite",
+        };
+      case "egg":
+        return {
+          textColor: "text-light",
+          icon: "fa-solid fa-egg",
+        };
+      default:
+        return {
+          textColor: "text-success",
+          icon: "fa-solid fa-leaf",
+        };
+    }
+  };
 
   const titleCase = (str) => {
     if (!str) return "";
@@ -702,7 +727,7 @@ const TrackOrder = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
+          icon: "fa-solid fa-egg text-light",
           border: "border-muted",
         };
       case "vegan":
@@ -1152,215 +1177,215 @@ const TrackOrder = () => {
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
               )}
-              <div className="row mt-2">
-                {menu_details.map((menu) => (
-                  <div key={menu.menu_id} className="col-12">
-                    <div
-                      className="card mb-3 rounded-4"
-                      onClick={() => handleMenuItemClick(menu)}
-                    >
-                      <div className="card-body py-0">
-                        <div className="row">
-                          <div className="col-3 px-0 position-relative">
-                            <img
-                              src={menu.image || images}
-                              alt={menu.menu_name}
-                              className="img-fluid rounded-start-4 object-fit-cover"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                aspectRatio: "1/1",
-                              }}
-                              onError={(e) => {
-                                e.target.src = images;
-                              }}
-                            />
-                            {menu.is_special && (
-                              <i
-                                className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+              <div className="container py-0">
+                <div className="row">
+                  {menu_details.map((menu) => (
+                    <div key={menu.menu_id} className="py-2 px-0">
+                      <div
+                        className="custom-card rounded-4 shadow-sm"
+                        onClick={() => handleMenuItemClick(menu)}
+                      >
+                        <div className="card-body py-0">
+                          <div className="row">
+                            <div className="col-3 px-0 position-relative">
+                              <img
+                                src={menu.image || images}
+                                alt={menu.menu_name}
+                                className="rounded-4 img-fluid object-fit-cover"
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  aspectRatio: "1/1",
+                                }}
+                                onError={(e) => {
+                                  e.target.src = images;
+                                }}
+                              />
+                              {/* Special icon */}
+                              {menu.is_special && (
+                                <i
+                                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                  style={{
+                                    position: "absolute",
+                                    top: 3,
+                                    right: "76%",
+                                    height: 17,
+                                    width: 17,
+                                  }}
+                                ></i>
+                              )}
+                              {/* Veg/Non-veg indicator */}
+                              <div
+                                className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                                  getFoodTypeStyles(menu.menu_food_type).border
+                                }`}
                                 style={{
                                   position: "absolute",
-                                  top: 3,
-                                  right: 3,
+                                  bottom: "3px",
+                                  left: "3px",
+                                  height: "20px",
+                                  width: "20px",
+                                  borderWidth: "2px",
+                                  borderRadius: "3px",
                                 }}
-                              ></i>
-                            )}
-
-                            {/* Veg/Non-veg indicator */}
-
-                            <div
-                              className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                                getFoodTypeStyles(menu.menu_food_type).border
-                              }`}
-                              style={{
-                                position: "absolute",
-                                bottom: "3px",
-                                left: "3px",
-                                height: "20px",
-                                width: "20px",
-                                borderWidth: "2px",
-                                borderRadius: "3px",
-                              }}
-                            >
-                              <i
-                                className={`${
-                                  getFoodTypeStyles(menu.menu_food_type).icon
-                                } font_size_12`}
-                              ></i>
-                            </div>
-
-                            {/* Heart icon */}
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                position: "absolute",
-                                bottom: "3px",
-                                right: "3px",
-                                height: "20px",
-                                width: "20px",
-                              }}
-                              onClick={(e) => handleLikeClick(menu, e)}
-                            >
-                              <i
-                                className={`${
-                                  favoriteMenus[menu.menu_id] ||
-                                  menu.is_favourite
-                                    ? "fa-solid fa-heart text-danger"
-                                    : "fa-regular fa-heart"
-                                } fs-6`}
-                              ></i>
-                            </div>
-
-                            {/* Offer badge */}
-                            {menu.offer !== 0 && (
-                              <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                                <span className="font_size_10 text-white">
-                                  {menu.offer || "No"}% Off
-                                </span>
+                              >
+                                <i
+                                  className={`${
+                                    getFoodTypeStyles(menu.menu_food_type).icon
+                                  } font_size_12`}
+                                ></i>
                               </div>
-                            )}
-                          </div>
-
-                          <div className="col-8 ps-2 pt-1 pe-0">
-                            <div className="row">
-                              <div className="col-12">
-                                {/* Menu Name with Delete Icon for placed orders */}
-                                <div className="d-flex justify-content-between align-items-start">
-                                  <span className="fw-medium font_size_14 mb-1 d-block">
-                                    {menu.menu_name}
+                              {/* Offer badge */}
+                              {menu.offer !== 0 && (
+                                <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                                  <span className="font_size_10 text-white">
+                                    {menu.offer || "No"}% Off
                                   </span>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="col-9 pt-1 p-0 pe-2">
+                              {/* Menu name and remove button */}
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-10">
+                                  <div className="ps-2 font_size_14 fw-medium">
+                                    {menu.menu_name}
+                                  </div>
                                 </div>
                                 {orderStatus === "placed" &&
                                   isWithinPlacedWindow && (
-                                    <div className="col-2 text-end">
-                                      <i
-                                        className="fa-solid fa-xmark text-dark font_size_14 pe-3"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={(e) =>
-                                          handleRemoveItem(menu, e)
-                                        }
-                                      ></i>
+                                    <div className="col-2 text-end font_size_10">
+                                      <div className="d-flex align-items-center justify-content-end">
+                                        <i
+                                          className="fa-solid fa-xmark gray-text font_size_14"
+                                          onClick={(e) =>
+                                            handleRemoveItem(menu, e)
+                                          }
+                                        ></i>
+                                      </div>
                                     </div>
                                   )}
                               </div>
-                            </div>
-                            <div className="row">
-                              <div className="col-5 d-flex align-items-center">
-                                <span className="text-success font_size_10 fw-medium">
-                                  <i className="fa-solid fa-utensils mt-0 me-2"></i>
-                                  {menu.category_name}
-                                </span>
-                              </div>
-                              <div className="col-4 px-0 d-flex align-items-center">
-                                {menu.spicy_index && (
-                                  <span className="ms-2 spicy-index ">
-                                    {Array.from({ length: 5 }).map((_, index) =>
-                                      index < menu.spicy_index ? (
-                                        <i
-                                          key={index}
-                                          className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
-                                        ></i>
-                                      ) : (
-                                        <i
-                                          key={index}
-                                          className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
-                                        ></i>
-                                      )
-                                    )}
+
+                              {/* Category, Spicy level, and Rating */}
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-6 d-flex align-items-center">
+                                  <span
+                                    className={`ps-2 font_size_10 ${
+                                      getFoodTypeTextStyles(menu.menu_food_type).textColor
+                                    }`}
+                                  >
+                                    <i
+                                      className={`${
+                                        getFoodTypeTextStyles(menu.menu_food_type).icon
+                                      } ${
+                                        getFoodTypeTextStyles(menu.menu_food_type).textColor
+                                      } font_size_10 mt-0 me-1`}
+                                    ></i>
+                                    {menu.category_name}
                                   </span>
-                                )}
-                              </div>
-
-                              <div className="col-3 text-end px-0">
-                                {menu.rating > 0 && (
-                                  <>
-                                    {renderStarRating(menu.rating)}
-                                    <span className="gray-text font_size_10 fw-medium">
-                                      {menu.rating}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Rating */}
-
-                            <div className="row mt-2">
-                              <div className="col-9 px-0">
-                                <span className="mt-0 mb-2 text-start">
-                                  <span className="ms-3 me-1 font_size_14 fw-semibold text-info">
-                                    ₹{menu.price}
-                                  </span>
-                                  {menu.offer > 0 && (
-                                    <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                      ₹
-                                      {(
-                                        menu.price /
-                                        (1 - menu.offer / 100)
-                                      ).toFixed(2)}
-                                    </span>
+                                </div>
+                                <div className="col-4 d-flex align-items-center ps-4 pe-3">
+                                  {menu.spicy_index && (
+                                    <div className="">
+                                      {Array.from({ length: 3 }).map(
+                                        (_, index) => {
+                                          const spicyIndex = parseInt(
+                                            menu.spicy_index,
+                                            10
+                                          ); // Parse spicy_index as an integer
+                                          return index < spicyIndex ? (
+                                            <i
+                                              className={`fa-solid fa-pepper-hot font_size_10 ${
+                                                spicyIndex === 1
+                                                  ? "text-success" // Green for level 1
+                                                  : spicyIndex === 2
+                                                  ? "text-warning" // Yellow for level 2
+                                                  : "text-danger" // Red for level 3
+                                              }`}
+                                              key={index}
+                                            ></i>
+                                          ) : (
+                                            <i
+                                              className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
+                                              key={index}
+                                            ></i>
+                                          );
+                                        }
+                                      )}
+                                    </div>
                                   )}
-                                </span>
+                                </div>
+                                <div className="col-2 d-flex align-items-center justify-content-end">
+                                  {menu.rating > 0 && (
+                                    <>
+                                      {renderStarRating(menu.rating)}
+                                      <span className="font_size_10 fw-normal gray-text">
+                                        {menu.rating}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                              <div className="col-3 text-end p-0">
-                                <span className="font_size_14 gray-text">
-                                  x {menu.quantity}
-                                </span>
+
+                              {/* Price and Quantity */}
+                              <div className="row">
+                                <div className="col-9 mt-2">
+                                  <p className="ms-2 mb-0 fw-medium">
+                                    <span className="font_size_14 fw-semibold text-info">
+                                      ₹{menu.price}
+                                    </span>
+                                    {menu.offer > 0 && (
+                                      <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                        ₹
+                                        {(
+                                          menu.price /
+                                          (1 - menu.offer / 100)
+                                        ).toFixed(2)}
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                                <div className="col-3 text-end">
+                                  <span className="font_size_14 gray-text">
+                                    x {menu.quantity}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {/* Add Order More button outside the card, but only for placed and ongoing orders */}
-                {(orderStatus === "placed" || orderStatus === "ongoing") &&
-                  !isCompleted &&
-                  orderStatus !== "canceled" && (
-                    <div className="col-12 mt-3 mb-4">
-                      <div className="d-flex justify-content-center">
-                        <button
-                          className="btn btn-outline-primary rounded-pill px-3"
-                          onClick={() => {
-                            navigate("/user_app/Menu", {
-                              state: {
-                                existingOrderId:
-                                  orderDetails?.order_details?.order_id,
-                                isAddingToOrder: true,
-                                orderStatus: orderStatus,
-                              },
-                            });
-                          }}
-                        >
-                          <i className="ri-add-circle-line me-1 fs-4"></i>
-                          Order More Items
-                        </button>
+                  {/* Add Order More button outside the card, but only for placed and ongoing orders */}
+                  {(orderStatus === "placed" || orderStatus === "ongoing") &&
+                    !isCompleted &&
+                    orderStatus !== "canceled" && (
+                      <div className="col-12 mt-3 mb-4">
+                        <div className="d-flex justify-content-center">
+                          <button
+                            className="btn btn-outline-primary rounded-pill px-3"
+                            onClick={() => {
+                              navigate("/user_app/Menu", {
+                                state: {
+                                  existingOrderId:
+                                    orderDetails?.order_details?.order_id,
+                                  isAddingToOrder: true,
+                                  orderStatus: orderStatus,
+                                },
+                              });
+                            }}
+                          >
+                            <i className="ri-add-circle-line me-1 fs-4"></i>
+                            Order More Items
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                </div>
               </div>
             </section>
           ) : (
