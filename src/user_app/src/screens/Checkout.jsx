@@ -40,7 +40,6 @@ const Checkout = () => {
   const [cartId, setCartId] = useState(null);
 
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
 
   const [newOrderNumber, setNewOrderNumber] = useState(null);
   const [existingOrderDetails, setExistingOrderDetails] = useState({
@@ -154,13 +153,22 @@ const Checkout = () => {
     }
   }, [isDarkMode]);
 
-  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
-  const [selectedOrderType, setSelectedOrderType] = useState('');
+  const [selectedOrderType, setSelectedOrderType] = useState("Dine-in");
 
   const [pendingOrderAction, setPendingOrderAction] = useState(null);
 
   const handlePlaceOrder = async () => {
     try {
+      if (!selectedOrderType) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please select an order type",
+          life: 3000,
+        });
+        return;
+      }
+
       const response = await fetch(
         `${config.apiDomain}/user_api/check_order_exist`,
         {
@@ -180,9 +188,9 @@ const Checkout = () => {
       if (response.ok && data.st === 1) {
         setAvailableTables(data.available_tables);
 
-        // If no existing order, show order type selection
+        // If no existing order, create new order directly
         if (data.order_number === null && data.order_status === null) {
-          setShowOrderTypeModal(true);
+          await handleCreateOrder(selectedOrderType);
         } 
         // If there's an ongoing or placed order, show modal with options
         else if (
@@ -209,12 +217,8 @@ const Checkout = () => {
     }
   };
 
-  const handleOrderTypeSelection = (orderType) => {
-    if (pendingOrderAction) {
-      handleOrderAction(pendingOrderAction, orderType);
-    } else {
-      handleCreateOrder(orderType);
-    }
+  const handleOrderTypeSelection = (type) => {
+    setSelectedOrderType(type);
   };
 
   const handleCreateOrder = async (orderType) => {
@@ -262,7 +266,6 @@ const Checkout = () => {
       if (response.ok && data.st === 1) {
         setNewOrderNumber(data.order_number);
         clearCartData();
-        setShowOrderTypeModal(false);
         setShowPopup(true);
         await fetchCartDetails();
       } else {
@@ -330,7 +333,7 @@ const Checkout = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        setShowOrderTypeModal(false);
+        setShowExistingOrderModal(false);
         setPendingOrderAction(null);
         clearCartData();
         await fetchCartDetails();
@@ -348,16 +351,49 @@ const Checkout = () => {
     }
   };
 
-  const handleAddToExistingOrder = async () => {
+  const handleOrderActionClick = async (actionType) => {
+    if (!selectedOrderType) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please select an order type",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
-      // Construct the order items array
+      if (actionType === "cancle" || actionType === "completed") {
+        await handleOrderAction(actionType, selectedOrderType);
+      }
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process order",
+        life: 3000,
+      });
+    }
+  };
+
+  const handleAddToExistingOrder = async () => {
+    if (!selectedOrderType) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please select an order type",
+        life: 3000,
+      });
+      return;
+    }
+
+    try {
       const orderItems = cartItems.map((item) => ({
         menu_id: item.menu_id,
         quantity: item.quantity,
         half_or_full: item.half_or_full || "full",
       }));
 
-      // Make the API call
       const response = await fetch(
         `${config.apiDomain}/user_api/add_to_existing_order`,
         {
@@ -366,11 +402,12 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
+            order_id: existingOrderDetails.orderId,
             customer_id: customerId,
             restaurant_id: restaurantId,
             cart_id: cartId,
             order_items: orderItems,
+            order_type: selectedOrderType,
           }),
         }
       );
@@ -381,25 +418,24 @@ const Checkout = () => {
         setShowPopup(true);
         await fetchCartDetails();
         clearCartData();
-        setShowExistingOrderModal(false); // Close the modal
+        setShowExistingOrderModal(false);
       } else {
-        throw new Error(
-          data.msg || "Failed to add items to the existing order"
-        );
+        throw new Error(data.msg || "Failed to add items to the existing order");
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to add items to existing order",
+        life: 3000,
+      });
+    }
   };
 
   const closePopup = () => {
     setShowPopup(false);
 
     navigate(`/user_app/MyOrder/`);
-  };
-
-  const handleOrderActionClick = (actionType) => {
-    setPendingOrderAction(actionType);
-    setShowExistingOrderModal(false);
-    setShowOrderTypeModal(true);
   };
 
   return (
@@ -414,107 +450,6 @@ const Checkout = () => {
             tableNumber={userData?.tableNumber || "1"}
           />
         </div>
-
-        {showOrderTypeModal && (
-          <div className="popup-overlay">
-            <div className="modal-dialog w-75" role="document">
-              <div className="modal-content">
-                <div className="modal-header ps-3 pe-2">
-                  <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
-                    Select Order Type
-                  </h5>
-                  {/* <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => setShowOrderTypeModal(false)}
-                  >
-                    <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
-                  </button> */}
-                </div>
-                <div className="modal-body py-2 px-3">
-                  <div className="row g-3">
-                    {/* Parcel */}
-                    <div className="col-6">
-                      <div
-                        className="card h-100 border rounded-4 cursor-pointer position-relative"
-                        onClick={() => handleOrderTypeSelection("Parcel")}
-                      >
-                        {/* Icons container */}
-                        {/* <div className="position-absolute top-0 end-0 p-2 pt-0">
-                          <div className="d-flex flex-column gap-1">
-                            <div
-                              className="rounded-circle p-1"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/ymXDmYihTOzgPDddKSvZRKzXkboAapBF2yoFIeQBaWSAJmC9IUpSPKgvfaAgS5yFxQ=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                            <div
-                              className="rounded-circle p-1 pt-0"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/HJdzprqlCwh_8YNyhMBU6rIaGBGwxHXflZuuqI3iR4US7Jb-bSYiJk_DKV2la9SoBM0K=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div> */}
-
-                        <div className="card-body d-flex justify-content-center align-items-center py-3">
-                          <div className="text-center">
-                            <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
-                            <p className="mb-0 fw-medium">Parcel</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Drive-Through */}
-                    <div className="col-6">
-                      <div
-                        className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() =>
-                          handleOrderTypeSelection("Drive-through")
-                        }
-                      >
-                        <div className="card-body d-flex justify-content-center align-items-center py-3">
-                          <div className="text-center">
-                            <i className="fa-solid fa-car-side fs-2 mb-2 text-primary"></i>
-                            <p className="mb-0 fw-medium">Drive-Through</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Dine-in */}
-                    <div className="col-12 mb-3">
-                      <div
-                        className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("Dine-in")}
-                      >
-                        <div className="card-body d-flex align-items-center py-3">
-                          <div className="text-center me-3">
-                            <i className="fa-solid fa-utensils fs-2 text-primary"></i>
-                          </div>
-                          <div>
-                            <p className="mb-0 fw-medium">Dine-In</p>
-                            <small className="text-dark">
-                              {availableTables} Tables Available
-                            </small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {showExistingOrderModal && (
           <div className="popup-overlay">
@@ -550,18 +485,21 @@ const Checkout = () => {
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
                       onClick={() => handleOrderActionClick("cancle")}
+                      disabled={!selectedOrderType}
                     >
                       Cancel Existing & Create New Order
                     </button>
                     <button
                       className="btn btn-success rounded-pill font_size_14 text-white"
                       onClick={() => handleOrderActionClick("completed")}
+                      disabled={!selectedOrderType}
                     >
                       Complete Existing & Create New Order
                     </button>
                     <button
                       className="btn btn-info rounded-pill font_size_14"
                       onClick={handleAddToExistingOrder}
+                      disabled={!selectedOrderType}
                     >
                       Add to Existing Order (#{existingOrderDetails.orderNumber}
                       )
@@ -621,44 +559,6 @@ const Checkout = () => {
                       onClick={closePopup}
                     >
                       View Order
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showNewOrderModal && (
-          <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div className="container">
-                <div className="modal-content">
-                  <div className="p-3 border-bottom">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0 fw-semibold text-dark">
-                        Create New Order
-                      </h5>
-                      <button
-                        className="btn p-0 fs-3 text-dark"
-                        onClick={() => setShowNewOrderModal(false)}
-                      >
-                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-3">
-                    <p className="text-center mb-4 text-dark">
-                      No ongoing order found. <br />
-                      Would you like to create a new order?
-                    </p>
-
-                    <button
-                      className="btn btn-success rounded-pill w-100 py-2 text-white"
-                      onClick={handleCreateOrder}
-                    >
-                      Create Order
                     </button>
                   </div>
                 </div>
@@ -798,10 +698,77 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
+            <div className="text-center mb-3">
+              <div className="d-flex justify-content-center gap-3">
+                <button
+                  className={`btn px-3 py-1 ${
+                    selectedOrderType === "Parcel"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  } rounded-pill`}
+                  onClick={() => handleOrderTypeSelection("Parcel")}
+                >
+                  <i
+                    className={`fa-solid fa-hand-holding-heart fs-6 me-2 ${
+                      selectedOrderType === "Parcel"
+                        ? "text-white"
+                        : "text-primary"
+                    }`}
+                  ></i>
+                  Parcel
+                </button>
+                <button
+                  className={`btn px-3 py-1 ${
+                    selectedOrderType === "Drive-through"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  } rounded-pill`}
+                  onClick={() => handleOrderTypeSelection("Drive-through")}
+                >
+                  <i
+                    className={`fa-solid fa-car-side fs-6 me-2 ${
+                      selectedOrderType === "Drive-through"
+                        ? "text-white"
+                        : "text-primary"
+                    }`}
+                  ></i>
+                  Drive-Through
+                </button>
+                <button
+                  className={`btn px-3 py-1 ${
+                    selectedOrderType === "Dine-in"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  } rounded-pill`}
+                  onClick={() => handleOrderTypeSelection("Dine-in")}
+                >
+                  <i
+                    className={`fa-solid fa-utensils fs-6 me-2 ${
+                      selectedOrderType === "Dine-in"
+                        ? "text-white"
+                        : "text-primary"
+                    }`}
+                  ></i>
+                  Dine-In
+                  {/* {availableTables && (
+                    <span
+                      className={`ms-1 small ${
+                        selectedOrderType === "Dine-in"
+                          ? "text-white"
+                          : "text-muted"
+                      }`}
+                    >
+                      ({availableTables} Tables)
+                    </span>
+                  )} */}
+                </button>
+              </div>
+            </div>
             <div className="text-center">
               <button
                 onClick={handlePlaceOrder}
                 className="btn btn-success rounded-pill text-white"
+                disabled={!selectedOrderType}
               >
                 Place Order
                 <span className="small-number gray-text ps-1">
