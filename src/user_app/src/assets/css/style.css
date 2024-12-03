@@ -6866,7 +6866,7 @@ hr.dotted {
   
   .text-warning {
     --bs-text-opacity: 1;
-    color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important; }
+    color: #f8a500 !important; }
   
   .text-danger {
     --bs-text-opacity: 1;

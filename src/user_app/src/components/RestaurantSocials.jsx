@@ -29,7 +29,7 @@ function RestaurantSocials() {
           <div className="col-6 mt-0">
             <button
               type="button"
-              className="border border-info bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-info btn-info font_size_14"
+              className="border border-1 bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 font_size_14 text-dark"
               onClick={() => {
                 const websiteUrl = allSocialLinks.find(
                   (link) => link.id === "website"
@@ -42,14 +42,15 @@ function RestaurantSocials() {
                 }
               }}
             >
-              <i class="fa-solid fa-globe me-2"></i>
+              <i class="fa-solid fa-globe me-2 text-success"></i>
               Website
             </button>
           </div>
           <div className="col-6 mt-0">
             <button
               type="button"
-              className="border border-dark bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-dark font_size_14"
+              style={{ color: "#4285F4", borderColor: "#4285F4" }}
+              className="border border-1  bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-dark font_size_14"
               onClick={() => {
                 const businessUrl = allSocialLinks.find(
                   (link) => link.id === "google_business"
@@ -62,7 +63,10 @@ function RestaurantSocials() {
                 }
               }}
             >
-              <i class="fa-brands fa-google me-2"></i>
+              <i
+                class="fa-brands fa-google me-2"
+                style={{ color: "#4285F4" }}
+              ></i>
               Business
             </button>
           </div>
@@ -71,6 +75,32 @@ function RestaurantSocials() {
 
       {/* Bottom square social buttons */}
       <div className="d-flex justify-content-between my-1">
+        {/* YouTube Button */}
+        <div style={{ height: "30px" }} className="me-2 w-100">
+          <button
+            type="button"
+            style={{ color: "#FF0000", borderColor: "#FF0000" }}
+            className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
+            onClick={() => {
+              const youtubeUrl = allSocialLinks.find(
+                (link) => link.id === "youtube"
+              )?.link;
+              if (youtubeUrl) {
+                const url = youtubeUrl.startsWith("http")
+                  ? youtubeUrl
+                  : `https://${youtubeUrl}`;
+                window.open(url, "_blank");
+              }
+            }}
+            title="YouTube"
+          >
+            <i
+              class="fa-brands fa-youtube fs-4"
+              style={{ color: "#FF0000" }}
+            ></i>
+          </button>
+        </div>
+
         {/* Facebook Button */}
         <div style={{ height: "30px" }} className=" w-100">
           <button
@@ -122,6 +152,7 @@ function RestaurantSocials() {
             ></i>
           </button>
         </div>
+
         {/* WhatsApp Button */}
         <div style={{ height: "30px" }} className=" w-100">
           <button

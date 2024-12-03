@@ -37,6 +37,12 @@ const Search = () => {
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
   const [customerType, setCustomerType] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [originalMenu, setOriginalMenu] = useState([]); // Store original menu items
+  const [foodTypes, setFoodTypes] = useState([]);
+  const [selectedFoodType, setSelectedFoodType] = useState(null);
+  const [priceFilter, setPriceFilter] = useState('low');
+  const [spicyFilter, setSpicyFilter] = useState(null); // Add this state
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -49,6 +55,25 @@ const Search = () => {
     JSON.parse(localStorage.getItem("userData"))
   );
 
+  // Fetch food types from the API
+  const fetchFoodTypes = async () => {
+    try {
+      const response = await fetch(`${config.apiDomain}/user_api/get_food_type_list`);
+      const data = await response.json();
+      
+      if (data.st === 1) {
+        setFoodTypes(Object.values(data.food_type_list));
+      }
+    } catch (error) {
+      console.error('Error fetching food types:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFoodTypes();
+  }, []);
+
+  // Debounce search term
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -59,34 +84,12 @@ const Search = () => {
     };
   }, [searchTerm]);
 
-  const handleSearch = (event) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-    setShowHistory(term.length > 0); // Show history only when there's input
-  };
-
-  const toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-  };
-
-  useEffect(() => {
-    const storedHistory =
-      JSON.parse(localStorage.getItem("searchHistory")) || [];
-    setSearchHistory(storedHistory);
-  }, []);
-
+  // Combined search and filter effect
   useEffect(() => {
     const fetchSearchedMenu = async () => {
-      if (!restaurantId) {
-        return;
-      }
+      if (!restaurantId) return;
 
-      if (
-        debouncedSearchTerm.trim().length < 3 ||
-        debouncedSearchTerm.trim().length > 10
-      ) {
+      if (debouncedSearchTerm.trim().length < 3 || debouncedSearchTerm.trim().length > 10) {
         setSearchedMenu([]);
         return;
       }
@@ -100,16 +103,11 @@ const Search = () => {
           customer_id: customerId || null,
         };
 
-        const response = await fetch(
-          `${config.apiDomain}/user_api/search_menu`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
+        const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -379,12 +377,7 @@ const Search = () => {
     );
   };
 
-  const handleClearAll = () => {
-    setSearchedMenu([]);
-    setSearchTerm("");
-    setSearchHistory([]);
-    localStorage.removeItem("searchHistory");
-  };
+
 
   const handleMenuClick = (menuId) => {
     const menu = searchedMenu.find((item) => item.menu_id === menuId);
@@ -514,7 +507,7 @@ const Search = () => {
 
     // 0 to 0.4: Show no star & value
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 ratingStar me-1"></i>;
+      return <i className="font_size_10 text-warning me-1"></i>;
     }
 
     // 0.5 to 2.5: Show blank star (grey color)
@@ -525,16 +518,210 @@ const Search = () => {
     // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
     // 5: Show full star
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>;
+      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+  };
+
+  const handleFilter = (filterType) => {
+    if (!filterType) {
+      setSelectedFoodType(null);
+      setSearchedMenu(originalMenu);
+      return;
+    }
+
+    const safeFilterType = String(filterType).toLowerCase();
+    
+    if (selectedFoodType === filterType) {
+      setSelectedFoodType(null);
+      setSearchedMenu(originalMenu);
+    } else {
+      setSelectedFoodType(filterType);
+      const filteredMenu = originalMenu.filter(menu => {
+        const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+        return menuFoodType === safeFilterType;
+      });
+      setSearchedMenu(filteredMenu);
+    }
+  };
+
+  // Update originalMenu when searchedMenu is initially loaded
+  useEffect(() => {
+    setOriginalMenu(searchedMenu);
+  }, []); // Empty dependency array means this runs once on mount
+
+  const handleSearch = async (e) => {
+    const searchValue = e.target.value;
+    setSearchTerm(searchValue);
+    setDebouncedSearchTerm(searchValue);
+    setShowHistory(searchValue.length > 0);
+
+    if (searchValue.trim().length < 3 || searchValue.trim().length > 10) {
+      setSearchedMenu([]);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const requestBody = {
+        restaurant_id: parseInt(restaurantId, 10),
+        keyword: searchValue.trim(),
+        customer_id: customerId || null,
+      };
+
+      const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && Array.isArray(data.menu_list)) {
+          const formattedMenu = data.menu_list.map((menu) => ({
+            ...menu,
+            menu_name: toTitleCase(menu.menu_name),
+            is_favourite: menu.is_favourite === 1,
+            oldPrice: Math.floor(menu.price * 1.1),
+          }));
+
+          // Apply food type filter if selected
+          let filteredMenu = formattedMenu;
+          if (selectedFoodType) {
+            const safeSelectedType = String(selectedFoodType).toLowerCase();
+            filteredMenu = formattedMenu.filter(menu => {
+              const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+              return menuFoodType === safeSelectedType;
+            });
+          }
+
+          setSearchedMenu(filteredMenu);
+          setOriginalMenu(formattedMenu);
+        }
+      } else {
+        handleError();
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      handleError();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== debouncedSearchTerm) {
+        setDebouncedSearchTerm(searchTerm);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Handle search results
+  useEffect(() => {
+    if (debouncedSearchTerm.trim().length >= 3 && debouncedSearchTerm.trim().length <= 10) {
+      handleSearch({ target: { value: debouncedSearchTerm } });
+    }
+  }, [debouncedSearchTerm]);
+
+  // Utility function to convert a string to title case
+  const toTitleCase = (str) => {
+    if (!str || typeof str !== 'string') return "";
+
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const handlePriceFilter = (filterType) => {
+    if (priceFilter === filterType) {
+      setPriceFilter(null);
+      setSearchedMenu(originalMenu);
+      return;
+    }
+
+    setPriceFilter(filterType);
+    let sortedMenu = [...searchedMenu];
+
+    switch (filterType) {
+      case 'under50':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice <= 50;
+        });
+        break;
+
+      case 'under100':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice <= 100;
+        });
+        break;
+
+      case 'under200':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice <= 200;
+        });
+        break;
+
+      case 'under500':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice <= 500;
+        });
+        break;
+
+      case 'under1000':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice <= 1000;
+        });
+        break;
+
+      case 'above1000':
+        sortedMenu = originalMenu.filter(item => {
+          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+          return finalPrice > 1000;
+        });
+        break;
+
+      default:
+        // Reset to original order
+        sortedMenu = [...originalMenu];
+    }
+
+    setSearchedMenu(sortedMenu);
+  };
+
+  const handleSpicyFilter = (filterLevel) => {
+    if (spicyFilter === filterLevel) {
+      setSpicyFilter(null);
+      setSearchedMenu(originalMenu);
+      return;
+    }
+
+    setSpicyFilter(filterLevel);
+    let filteredMenu = [...originalMenu];
+
+    if (filterLevel !== null) {
+      filteredMenu = originalMenu.filter(item => parseInt(item.spicy_index, 10) === filterLevel);
+    }
+
+    setSearchedMenu(filteredMenu);
   };
 
   return (
@@ -583,6 +770,7 @@ const Search = () => {
                 placeholder="Search Best items for You"
                 onChange={handleSearch}
                 value={searchTerm}
+                autoFocus="autofocus"
               />
               <i
                 className="fa-solid fa-magnifying-glass position-absolute text-primary"
@@ -596,16 +784,212 @@ const Search = () => {
                 onClick={() => document.getElementById("searchInput").focus()}
               ></i>
             </div>
+            
+            {debouncedSearchTerm.trim().length >= 3 && debouncedSearchTerm.trim().length <= 10 && (
+              <div className="d-flex align-items-center mt-2 gap-2">
+                {/* Food Type Filter */}
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{height: "38px"}}
+                  >
+                    {selectedFoodType ? (
+                      <div className="d-flex align-items-center">
+                        <i className={`${getFoodTypeStyles(selectedFoodType).icon} me-2`}></i>
+                        <span>{selectedFoodType.charAt(0).toUpperCase() + selectedFoodType.slice(1)}</span>
+                      </div>
+                    ) : (
+                      <div className="d-flex align-items-center">
+                        <i className="fa-solid fa-filter me-2"></i>
+                        <span>Type</span>
+                      </div>
+                    )}
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center" 
+                        onClick={() => handleFilter(null)}
+                      >
+                        <i className="fa-solid fa-utensils me-2"></i>
+                        <span>All</span>
+                      </button>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    {foodTypes.map((type) => (
+                      <li key={type}>
+                        <button 
+                          className="dropdown-item d-flex align-items-center" 
+                          onClick={() => handleFilter(type)}
+                        >
+                          <i className={`${getFoodTypeStyles(type).icon} me-2`}></i>
+                          <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Price Filter */}
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{height: "38px"}}
+                  >
+                    <div className="d-flex align-items-center">
+                      <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                      <span>
+                        {priceFilter === 'under50' ? 'Under ₹50' :
+                         priceFilter === 'under100' ? 'Under ₹100' :
+                         priceFilter === 'under200' ? 'Under ₹200' :
+                         priceFilter === 'under500' ? 'Under ₹500' :
+                         priceFilter === 'under1000' ? 'Under ₹1000' :
+                         priceFilter === 'above1000' ? 'Above ₹1000' :
+                         'Price'}
+                      </span>
+                    </div>
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter(null)}
+                      >
+                        <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                        <span>All Prices</span>
+                      </button>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('under50')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Under ₹50</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('under100')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Under ₹100</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('under200')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Under ₹200</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('under500')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Under ₹500</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('under1000')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Under ₹1000</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handlePriceFilter('above1000')}
+                      >
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>Above ₹1000</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Spicy Filter */}
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{height: "38px"}}
+                  >
+                    <div className="d-flex align-items-center">
+                      <i className="fa-solid fa-pepper-hot me-2"></i>
+                      <span>
+                        {spicyFilter === 1 ? 'Spicy Level 1' :
+                         spicyFilter === 2 ? 'Spicy Level 2' :
+                         spicyFilter === 3 ? 'Spicy Level 3' :
+                         'Spicy'}
+                      </span>
+                    </div>
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handleSpicyFilter(null)}
+                      >
+                        <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                        <span>All</span>
+                      </button>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handleSpicyFilter(1)}
+                      >
+                        <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                        <span>Low</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handleSpicyFilter(2)}
+                      >
+                        <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
+                        <span>Medium</span>
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handleSpicyFilter(3)}
+                      >
+                        <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
+                        <span>High</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            
+
+            
           </div>
 
-          {debouncedSearchTerm && (
-            <div className="title-bar my-3 ">
-              <div className="fw-normal fs-6 gray-text"></div>
-              <div className="gray-text" onClick={handleClearAll}>
-                Clear
-              </div>
-            </div>
-          )}
 
           {isLoading && <p>Loading...</p>}
 

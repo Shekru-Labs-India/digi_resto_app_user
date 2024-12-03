@@ -94,7 +94,7 @@ const UserAuthPopup = () => {
     setMobile(value);
   
     if (value.length < 10) {
-      setMobileError("Mobile number must be 10 digits");
+      setMobileError("Mobile must be 10 digits");
       setIsMobileValid(false);
     } else {
       setMobileError("");
@@ -356,7 +356,7 @@ const UserAuthPopup = () => {
       case 'verify':
         return (
           <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head"></div>
+            {/* <div className="section-head"></div> */}
             <form onSubmit={(e) => e.preventDefault()}>
               <div
                 className="header-content d-flex justify-content-center"
@@ -431,14 +431,17 @@ const UserAuthPopup = () => {
       case 'signup':
         return (
           <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head"></div>
+            {/* <div className="section-head"></div> */}
             <form onSubmit={(e) => e.preventDefault()}>
               <div
                 className="header-content d-flex justify-content-center"
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                  <Link to="/" className="d-flex align-items-center text-decoration-none">
+                  <Link
+                    to="/"
+                    className="d-flex align-items-center text-decoration-none"
+                  >
                     <img src={logo} alt="logo" width="40" height="40" />
                     <span className="text-dark mb-0 ms-2 fw-bolder">
                       MenuMitra
@@ -451,38 +454,67 @@ const UserAuthPopup = () => {
                   <span className="required-star">*</span>Name
                 </label>
                 <input
-        ref={nameInputRef}
-        type="text"
-        className={`form-control border border-black ${
-          nameError ? 'is-invalid' : ''
-        }`}
-        placeholder="Enter your name"
-        value={name}
-        onChange={handleNameChange}
-        autoFocus
-      />
-      {nameError && <div className="invalid-feedback">{nameError}</div>}
+                  ref={nameInputRef}
+                  type="text"
+                  className={`form-control border border-success rounded-5 ${
+                    nameError ? "is-invalid" : ""
+                  }`}
+                  placeholder="Enter name"
+                  value={name}
+                  onChange={handleNameChange}
+                  autoFocus
+                />
+                {nameError && (
+                  <div className="invalid-feedback">{nameError}</div>
+                )}
               </div>
 
               <div className="form-group mb-3">
-                <label className="form-label d-flex justify-content-start">
-                  <span className="required-star">*</span>Mobile Number
+                <label className=" d-flex justify-content-between align-items-center text-dark">
+                  <div>
+                    <span className="required-star">*</span>Mobile
+                  </div>
+                  {mobileError && (
+                    <small className="text-danger">{mobileError}</small>
+                  )}
                 </label>
-                <input
-                  ref={mobileInputRef}
-                  type="tel"
-                  className={`form-control border border-black ${
-                    mobileError ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter mobile number"
-                  value={mobile}
-                  onChange={handleMobileChange}
-                  maxLength="10"
-                  autoFocus
-                />
-                {mobileError && (
-                  <div className="invalid-feedback">{mobileError}</div>
-                )}
+                <div className="position-relative w-100">
+                  <div
+                    className="position-absolute d-flex align-items-center justify-content-center"
+                    style={{
+                      left: "0",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: "45px",
+                      pointerEvents: "none",
+                      padding: "0 12px",
+                    }}
+                  >
+                    <i
+                      className="fa-solid fa-phone text-primary"
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: 1,
+                        display: "block",
+                      }}
+                    ></i>
+                  </div>
+                  <input
+                    ref={mobileInputRef}
+                    type="tel"
+                    className={`form-control ps-5 border border-success rounded-5 ${
+                      mobileError ? "is-invalid" : ""
+                    }`}
+                    placeholder="Enter mobile"
+                    value={mobile}
+                    onChange={handleMobileChange}
+                    maxLength="10"
+                    autoFocus
+                    style={{
+                      paddingLeft: "45px",
+                    }}
+                  />
+                </div>
               </div>
 
               <div className="form-group mb-3">
@@ -514,11 +546,12 @@ const UserAuthPopup = () => {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-success rounded-pill w-100 mx-auto"
+                  className="btn btn-success rounded-pill w-100 mx-auto text-dark"
                   onClick={handleSignUp}
-                  disabled={!isNameValid  || !isMobileValid || !agreed}
+                  disabled={!isNameValid || !isMobileValid || !agreed}
                 >
                   Create Account
+                  <i class="bx bx-check-circle ms-2"></i>
                 </button>
               )}
             </form>
@@ -532,44 +565,70 @@ const UserAuthPopup = () => {
 
       default: // login view
         return (
-          <div className="account-section mt-1 px-2 py-1">
-            <div className="section-head"></div>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div
-                className="header-content d-flex justify-content-center"
-                style={{ zIndex: 1040, position: "relative" }}
-              >
-                <div className="mb-3">
-                  <Link
-                    to="/"
-                    className="d-flex align-items-center justify-content-center"
-                  >
-                    <img src={logo} alt="logo" width="40" height="40" />
-                    <span className="text-dark mb-0 ms-2 fw-bolder">
-                      MenuMitra
-                    </span>
-                  </Link>
-                </div>
+          <div className=" mt-1 px-2 py-1">
+            <div
+              className="header-content d-flex justify-content-center"
+              style={{ zIndex: 1040, position: "relative" }}
+            >
+              <div className="mb-3">
+                <Link
+                  to="/"
+                  className="d-flex align-items-center justify-content-center"
+                >
+                  <img src={logo} alt="logo" width="40" height="40" />
+                  <span className="text-dark mb-0 ms-2 fw-bolder">
+                    MenuMitra
+                  </span>
+                </Link>
               </div>
+            </div>
+            <form onSubmit={(e) => e.preventDefault()}>
               <div className="form-group mb-3">
-                <label className="form-label d-flex justify-content-start">
-                  <span className="required-star">*</span>Mobile Number
-                </label>
-                <input
-                  ref={mobileInputRef}
-                  type="tel"
-                  className={`form-control  text-center d-flex mx-auto border border-black ${
-                    mobileError ? "is-invalid" : ""
-                  }`}
-                  placeholder="Enter mobile number"
-                  value={mobile}
-                  onChange={handleMobileChange}
-                  maxLength="10"
-                  autoFocus
-                />
-                {mobileError && (
-                  <div className="invalid-feedback">{mobileError}</div>
-                )}
+                <div className="form-label d-flex justify-content-between align-items-center text-dark">
+                  <div className="text-dark">
+                    <span className="required-star">*</span>Mobile
+                  </div>
+                  {mobileError && (
+                    <small className="text-danger">{mobileError}</small>
+                  )}
+                </div>
+                <div className="position-relative w-100">
+                  <div
+                    className="position-absolute d-flex align-items-center justify-content-center"
+                    style={{
+                      left: "0",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: "45px",
+                      pointerEvents: "none",
+                      padding: "0 12px",
+                    }}
+                  >
+                    <i
+                      className="fa-solid fa-phone text-primary"
+                      style={{
+                        fontSize: "18px",
+                        lineHeight: 1,
+                        display: "block",
+                      }}
+                    ></i>
+                  </div>
+                  <input
+                    ref={mobileInputRef}
+                    type="tel"
+                    className={`form-control ps-5 border border-success rounded-5 bg-white ${
+                      mobileError ? "is-invalid" : ""
+                    }`}
+                    placeholder="Enter mobile"
+                    value={mobile}
+                    onChange={handleMobileChange}
+                    maxLength="10"
+                    autoFocus
+                    style={{
+                      paddingLeft: "45px",
+                    }}
+                  />
+                </div>
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
               {loading ? (
@@ -577,31 +636,31 @@ const UserAuthPopup = () => {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-success rounded-pill w-100 mx-auto"
+                  className="btn btn-success rounded-pill w-100 mx-auto text-dark"
                   onClick={handleSignIn}
                   disabled={!isMobileValid}
                 >
                   Send OTP
+                  <i class="bx bx-paper-plane ms-2"></i>
                 </button>
               )}
             </form>
-            <div className="text-center  mt-3">
+            <div className="text-center  mt-4">
               Not a member?{" "}
               <a
                 className="text-underline text-primary"
                 style={{ textDecoration: "none", cursor: "pointer" }}
                 onClick={() => setView("signup")}
               >
-                Create an account
+                Create new account
               </a>
-              <div className="d-flex justify-content-center">
-                <button
-                  className="btn btn-outline-primary rounded-pill btn-sm mt-4 text-lowercase"
+              <div className="d-flex justify-content-center mt-">
+                <span
+                  className="mt-4 text-lowercase gray-text "
                   onClick={handleGuestLogin}
                 >
                   continue as guest
-                  <i className="ri-spy-fill ms-1"></i>
-                </button>
+                </span>
               </div>
             </div>
           </div>
@@ -612,6 +671,7 @@ const UserAuthPopup = () => {
   return (
     <>
       <div
+        
         className={`offcanvas offcanvas-bottom pwa-offcanvas border border-bottom-0 ${
           showPWAPopup ? "show" : ""
         }`}
@@ -622,7 +682,12 @@ const UserAuthPopup = () => {
               <main className="page-content">
                 <div className="container pt-0 overflow-hidden">
                   <div className="dz-authentication-area dz-flex-box">
-                    {renderContent()}
+                    <div
+                      className="account-section mt-1 px-2 py-1"
+                      
+                    >
+                      {renderContent()}
+                    </div>
                   </div>
                 </div>
               </main>
@@ -639,6 +704,21 @@ const UserAuthPopup = () => {
           ></div>
         )}
       </div>
+      <style>
+        {`
+          @keyframes gradient {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+        `}
+      </style>
     </>
   );
 };

@@ -338,33 +338,25 @@ const Cart = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
-    // 0 to 0.4: Show no star & value
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 ratingStar me-1"></i>;
+      return <i className="font_size_10 text-warning me-1"></i>;
     }
 
-    // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="ri-star-line font_size_10 gray-text me-1"></i>
-      );
+      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
     }
 
-    // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 ratingStar me-1"></i>
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
-    // 5: Show full star
     if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 ratingStar me-1"></i>
-      );
+      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
+    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
   };
 
   

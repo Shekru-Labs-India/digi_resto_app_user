@@ -120,8 +120,8 @@ const Profile = () => {
                       to="/user_app/Menu"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-solid fa-bowl-rice me-2 fs-3"></i>
-                      <span className="font_size_16">Menu</span>
+                      <i className="fa-solid fa-bowl-rice me-2 fs-5"></i>
+                      <span className="font_size_14">Menu</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -129,8 +129,8 @@ const Profile = () => {
                       to="/user_app/MyOrder"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-solid fa-clock-rotate-left me-2 fs-3"></i>
-                      <span className="font_size_16">My Order</span>
+                      <i className="fa-solid fa-clock-rotate-left me-2 fs-5"></i>
+                      <span className="font_size_14">My Order</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -138,8 +138,8 @@ const Profile = () => {
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-solid fa-cart-shopping me-2 fs-3"></i>
-                      <span className="font_size_16">Cart</span>
+                      <i className="fa-solid fa-cart-shopping me-2 fs-5"></i>
+                      <span className="font_size_14">Cart</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -147,8 +147,8 @@ const Profile = () => {
                       to="/user_app/Wishlist"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-regular fa-heart me-2 fs-3"></i>
-                      <span className="font_size_16">Favourite</span>
+                      <i className="fa-regular fa-heart me-2 fs-5"></i>
+                      <span className="font_size_14">Favourite</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -156,8 +156,8 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i class="fa-solid fa-magnifying-glass me-2 fs-3"></i>
-                      <span className="font_size_16">Search</span>
+                      <i class="fa-solid fa-magnifying-glass me-2 fs-5"></i>
+                      <span className="font_size_14">Search</span>
                     </Link>
                   </li>
                   <li className="col-6">
@@ -165,35 +165,40 @@ const Profile = () => {
                       to="/user_app/Category"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i className="fa-solid fa-layer-group me-2 fs-3"></i>
-                      <span className="font_size_16">Category</span>
+                      <i className="fa-solid fa-layer-group me-2 fs-5"></i>
+                      <span className="font_size_14">Category</span>
                     </Link>
                   </li>
                 </ul>
               </div>
               {isLoggedIn && (
-                <div className="container p-0">
-                  <div className="title-bar">
-                    <span className="mb-0 fw-bold">Account</span>
-                  </div>
-                  <Link
-                    to="/user_app/EditProfile"
-                    className="item-content item-link"
-                  >
-                    <div className="row align-items-center ms-0">
-                      <div className="col-auto px-0">
-                        {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "fa-solid fa-user fs-3"}></i> */}
-                        <i className="fa-solid fa-user font_size_14 me-2"></i>
-                      </div>
-                      <div className="col text-start px-1 font_size_14">
-                        Edit Profile
-                      </div>
-                      <div className="col-auto text-end ms-auto">
-                        <i className="ri-arrow-right-s-line fs-4"></i>
-                      </div>
+                <>
+                  <div className="container p-0" style={{ height: "100px" }}>
+                    <div className="title-bar">
+                      <span className="mb-0 fw-bold">Account</span>
                     </div>
-                  </Link>
-                </div>
+                    <Link
+                      to="/user_app/EditProfile"
+                      className="item-content item-link"
+                    >
+                      <div className="row align-items-center ms-0">
+                        <div className="col-auto px-0">
+                          {/* <i className={localStorage.getItem("userData") ? "ri-user-3-fill fs-3" : "fa-solid fa-user fs-3"}></i> */}
+                          <i className="fa-solid fa-user font_size_14 me-2"></i>
+                        </div>
+                        <div className="col text-start px-1 font_size_14">
+                          Edit Profile
+                        </div>
+
+                        <div className="col-auto text-end ms-auto">
+                          <i className="ri-arrow-right-s-line fs-4"></i>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+
+                  <div class="divider border-light"></div>
+                </>
               )}
             </div>
           </div>
