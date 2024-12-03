@@ -93,6 +93,13 @@ const ProductCard = ({ isVegOnly }) => {
 
   const [countdown, setCountdown] = useState(null);
 
+  // Add state for special and offer filters
+  const [activeFilters, setActiveFilters] = useState({
+    special: false,
+    offer: false,
+    categoryId: null
+  });
+
   // Optimized applyFilters function
   const applyFilters = useCallback((menus, categoryId, vegOnly) => {
     let filteredMenus = [...menus];
@@ -145,40 +152,66 @@ const ProductCard = ({ isVegOnly }) => {
 
   // Optimized category selection handler
   const handleCategorySelect = (categoryId) => {
-    if (categoryId === "special") {
-      setSelectedCategoryId("special");
-    } else if (categoryId === "offer") {
-      setSelectedCategoryId("offer");
-    } else {
-      setSelectedCategoryId(categoryId); // Will be null for "All" button
+    setActiveFilters(prev => ({
+      ...prev,
+      categoryId: categoryId
+    }));
+  };
+
+  // Update the special/offer selection handlers
+  const handleSpecialSelect = () => {
+    setActiveFilters(prev => ({
+      ...prev,
+      special: !prev.special,
+      offer: false // Turn off offer when special is selected
+    }));
+  };
+
+  const handleOfferSelect = () => {
+    setActiveFilters(prev => ({
+      ...prev,
+      offer: !prev.offer,
+      special: false // Turn off special when offer is selected
+    }));
+  };
+
+  // Updated filtering logic
+  const getFilteredMenuList = () => {
+    let filteredList = [...menuList];
+
+    // Apply category filter if selected
+    if (activeFilters.categoryId) {
+      filteredList = filteredList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
     }
 
-    // Update filtered menu list based on selection
-    if (categoryId === null) {
-      setFilteredMenuList(menuList);
-    } else if (categoryId === "special") {
-      setFilteredMenuList(menuList.filter((menu) => menu.is_special));
-    } else if (categoryId === "offer") {
-      setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
-    } else {
-      setFilteredMenuList(
-        menuList.filter((menu) => menu.menu_cat_id === categoryId)
-      );
+    // Apply special filter if active
+    if (activeFilters.special) {
+      filteredList = filteredList.filter(menu => menu.is_special === true);
     }
 
-    // Update swiper position if needed
-    if (swiperRef.current) {
-      const activeIndex =
-        categoryId === null
-          ? 0
-          : menuCategories.findIndex(
-              (category) => category.menu_cat_id === categoryId
-            ) + 1;
-
-      if (activeIndex !== -1) {
-        swiperRef.current.slideTo(activeIndex);
-      }
+    // Apply offer filter if active
+    if (activeFilters.offer) {
+      filteredList = filteredList.filter(menu => menu.offer > 0);
     }
+
+    return filteredList;
+  };
+
+  // Update the counts for special and offer buttons
+  const getSpecialCount = () => {
+    let specialList = menuList.filter(menu => menu.is_special);
+    if (activeFilters.categoryId) {
+      specialList = specialList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+    }
+    return specialList.length;
+  };
+
+  const getOfferCount = () => {
+    let offerList = menuList.filter(menu => menu.offer > 0);
+    if (activeFilters.categoryId) {
+      offerList = offerList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+    }
+    return offerList.length;
   };
 
   // Fetch menu data with optimized updates
@@ -716,46 +749,42 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="me-2 w-100" style={{ height: "40px" }}>
                 <div
                   className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    selectedCategoryId === "special"
-                      ? "active bg-info text-white"
-                      : "bg-transparent"
+                    activeFilters.special ? "active bg-info text-white" : "bg-transparent"
                   }`}
-                  onClick={() => handleCategorySelect("special")}
+                  onClick={handleSpecialSelect}
                 >
                   <i
                     className={`fa-solid fa-star me-2 ${
-                      selectedCategoryId === "special"
-                        ? "text-white"
-                        : "text-info"
+                      activeFilters.special ? "text-white" : "text-info"
                     }`}
                   ></i>
                   Special
-                  <span className="ms-1 font_size_10">
-                    ({menuList.filter((menu) => menu.is_special).length})
-                  </span>
+                  {getSpecialCount() > 0 && (
+                    <span className="ms-1 font_size_10">
+                      ({getSpecialCount()})
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div className="mx-2 w-100" style={{ height: "40px" }}>
                 <div
                   className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    selectedCategoryId === "offer"
-                      ? "active bg-success text-white"
-                      : "bg-transparent text-success"
+                    activeFilters.offer ? "active bg-success text-white" : "bg-transparent text-success"
                   }`}
-                  onClick={() => handleCategorySelect("offer")}
+                  onClick={handleOfferSelect}
                 >
                   <i
                     className={`fa-solid fa-percent me-2 ${
-                      selectedCategoryId === "offer"
-                        ? "text-white"
-                        : "text-success"
+                      activeFilters.offer ? "text-white" : "text-success"
                     }`}
                   ></i>
                   Offer
-                  <span className="ms-1 font_size_10">
-                    ({menuList.filter((menu) => menu.offer > 0).length})
-                  </span>
+                  {getOfferCount() > 0 && (
+                    <span className="ms-1 font_size_10">
+                      ({getOfferCount()})
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -777,20 +806,6 @@ const ProductCard = ({ isVegOnly }) => {
             </div>
           </>
         )}
-
-        {/* <div className="d-flex justify-content-center">
-          {totalMenuCount > 0 && menuCategories.length > 0 && (
-            <div
-              className={`btn mb-2 rounded-xl bg-info text-white py-1 px-3 font_size_14 ${
-                selectedCategoryId === "special" ? "active " : ""
-              }`}
-              onClick={() => handleCategorySelect("special")}
-            >
-              <i className="fa-regular fa-star me-2"></i> Special{" "}
-            </div>
-          )}
-        </div> */}
-
         <div className="swiper category-slide">
           <div className="swiper-wrapper">
             {/* All button */}
@@ -799,9 +814,8 @@ const ProductCard = ({ isVegOnly }) => {
                 className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor:
-                    selectedCategoryId === null ? "#0D775E" : "#ffffff",
-                  color: selectedCategoryId === null ? "#ffffff" : "#000000",
+                  backgroundColor: activeFilters.categoryId === null ? "#0D775E" : "#ffffff",
+                  color: activeFilters.categoryId === null ? "#ffffff" : "#000000",
                   border: "1px solid #ddd",
                   cursor: "pointer",
                   padding: "8px 16px",
@@ -809,12 +823,10 @@ const ProductCard = ({ isVegOnly }) => {
                 }}
               >
                 All{" "}
-                <span
-                  style={{
-                    color: selectedCategoryId === null ? "#ffffff" : "#666",
-                    fontSize: "0.8em",
-                  }}
-                >
+                <span style={{
+                  color: activeFilters.categoryId === null ? "#ffffff" : "#666",
+                  fontSize: "0.8em",
+                }}>
                   ({totalMenuCount})
                 </span>
               </div>
@@ -828,11 +840,11 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={() => handleCategorySelect(category.menu_cat_id)}
                   style={{
                     backgroundColor:
-                      selectedCategoryId === category.menu_cat_id
+                      activeFilters.categoryId === category.menu_cat_id
                         ? "#0D775E"
                         : "#ffffff",
                     color:
-                      selectedCategoryId === category.menu_cat_id
+                      activeFilters.categoryId === category.menu_cat_id
                         ? "#ffffff"
                         : "#000000",
                     border: "1px solid #ddd",
@@ -845,7 +857,7 @@ const ProductCard = ({ isVegOnly }) => {
                   <span
                     style={{
                       color:
-                        selectedCategoryId === category.menu_cat_id
+                        activeFilters.categoryId === category.menu_cat_id
                           ? "#ffffff"
                           : "#666",
                       fontSize: "0.8em",
@@ -861,8 +873,8 @@ const ProductCard = ({ isVegOnly }) => {
       </div>
 
       <div className="row g-3 grid-style-1">
-        {filteredMenuList.length > 0 ? (
-          filteredMenuList.map((menu) => (
+        {getFilteredMenuList().length > 0 ? (
+          getFilteredMenuList().map((menu) => (
             <div key={menu.menu_id} className="col-6">
               <div className="card-item style-6 rounded-4">
                 <Link
@@ -1028,7 +1040,7 @@ const ProductCard = ({ isVegOnly }) => {
             </div>
           ))
         ) : (
-          <p>No items available in this category.</p>
+          <p>No items available with selected filters.</p>
         )}
       </div>
 
