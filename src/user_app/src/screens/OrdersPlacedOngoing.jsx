@@ -60,14 +60,17 @@ const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   );
 };
 
- const titleCase = (str) => {
+const titleCase = (str) => {
+  // Return empty string if str is null, undefined, or empty
   if (!str) return "";
-   return str
-     .toLowerCase()
-     .split(" ")
-     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-     .join(" ");
- };
+
+  // Convert to string in case a number is passed
+  return String(str)
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
 
 // Define CircularCountdown component
 const CircularCountdown = ({
@@ -324,12 +327,12 @@ const OrderCard = ({
 
   return (
     <div className="container pt-0 px-0">
-      <Link 
-        to={`/user_app/TrackOrder/${order.order_number}`} 
+      <Link
+        to={`/user_app/TrackOrder/${order.order_number}`}
         className="text-decoration-none"
-        state={{ 
+        state={{
           orderDetails: order,
-          orderNumber: order.order_number 
+          orderNumber: order.order_number,
         }}
       >
         <div className="custom-card my-2 rounded-4 shadow-sm">
@@ -339,8 +342,8 @@ const OrderCard = ({
           >
             <div className="row align-items-center">
               <div className="col-4">
+                <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                 <span className="fw-semibold font_size_14">
-                  <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                   {order.order_number}
                 </span>
               </div>
@@ -382,13 +385,13 @@ const OrderCard = ({
                     <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                     {titleCase(order.section_name)} - {order.table_number}
                   </span>
-                </div>
+              </div>
               </div>
             </div>
             <div className="row">
               <div className="col-6">
-                <div className="menu-info">
-                  <i className="fa-solid fa-bowl-rice me-3 gray-text font_size_12"></i>
+                <div className="">
+                  <i className="fa-solid fa-bowl-rice me-2 gray-text font_size_12"></i>
                   <span className="gray-text font_size_12">
                     {order.menu_count === 0
                       ? "No orders"

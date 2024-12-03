@@ -19,7 +19,7 @@ function RestaurantSocials() {
 
   return (
     <div className="mb-0">
-      <div className="divider border-secondary opacity-75 inner-divider mb-0 pb-0">
+      <div className="divider border-success opacity-50 inner-divider mb-0 pb-0">
         <span className="bg-body text-muted">Follow {restaurantName}</span>
       </div>
 
@@ -49,7 +49,7 @@ function RestaurantSocials() {
           <div className="col-6 mt-0">
             <button
               type="button"
-              className="border border-success bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-success font_size_14"
+              className="border border-dark bg-transparent fw-regular w-100 text-nowrap px-4 py-1 rounded-1 text-dark font_size_14"
               onClick={() => {
                 const businessUrl = allSocialLinks.find(
                   (link) => link.id === "google_business"
@@ -75,6 +75,7 @@ function RestaurantSocials() {
         <div style={{ height: "30px" }} className=" w-100">
           <button
             type="button"
+            style={{ color: "#1877F2", borderColor: "#1877F2" }}
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
             onClick={() => {
               const facebookUrl = allSocialLinks.find(
@@ -89,7 +90,10 @@ function RestaurantSocials() {
             }}
             title="Facebook"
           >
-            <i class="fa-brands fa-facebook fs-4"></i>
+            <i
+              class="fa-brands fa-facebook fs-4"
+              style={{ color: "#1877F2" }}
+            ></i>
           </button>
         </div>
 
@@ -97,6 +101,7 @@ function RestaurantSocials() {
         <div style={{ height: "30px" }} className="mx-2 w-100">
           <button
             type="button"
+            style={{ color: "#E4405F", borderColor: "#E4405F" }}
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
             onClick={() => {
               const instagramUrl = allSocialLinks.find(
@@ -111,13 +116,17 @@ function RestaurantSocials() {
             }}
             title="Instagram"
           >
-            <i class="fa-brands fa-instagram fs-4"></i>
+            <i
+              class="fa-brands fa-instagram fs-4"
+              style={{ color: "#E4405F" }}
+            ></i>
           </button>
         </div>
         {/* WhatsApp Button */}
         <div style={{ height: "30px" }} className=" w-100">
           <button
             type="button"
+            style={{ color: "#25D366", borderColor: "#25D366" }}
             className="btn btn-outline-primary d-flex align-items-center justify-content-center p-0 rounded-3 text-primary w-100 h-100"
             onClick={() => {
               const whatsappUrl = allSocialLinks.find(
@@ -132,7 +141,10 @@ function RestaurantSocials() {
             }}
             title="WhatsApp"
           >
-            <i class="fa-brands fa-whatsapp fs-4"></i>
+            <i
+              class="fa-brands fa-whatsapp fs-4"
+              style={{ color: "#25D366" }}
+            ></i>
           </button>
         </div>
       </div>

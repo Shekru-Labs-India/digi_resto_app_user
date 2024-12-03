@@ -1033,20 +1033,20 @@ const getOrderTypeIcon = (orderType) => {
           <div className="card rounded-4">
             <div className="card-body p-2">
               <div className="row align-items-center mb-0">
-                <div className="col-4">
+                <div className="col-6">
                   <span className="fs-6 fw-semibold mb-0">
                     <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                     {order_details.order_number}
                   </span>
                 </div>
-                <div className="col-8 text-end">
+                <div className="col-6 text-end">
                   <span className="font_size_12 gray-text  ">
                     {order_details.time}
                   </span>
                 </div>
               </div>
               <div className="row">
-                <div className="col-8 text-start">
+                <div className="col-12 text-start">
                   <div className="restaurant">
                     <i className="fa-solid fa-store pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
@@ -1054,26 +1054,26 @@ const getOrderTypeIcon = (orderType) => {
                     </span>
                   </div>
                 </div>
-                <div className="col-4 text-end">
+                {/* <div className="col-4 text-end">
                   <i className="fa-solid fa-location-dot ps-0 pe-1 font_size_12 gray-text"></i>
                   <span className="gray-text font_size_12">
                     {order_details.table_number}
                   </span>
-                </div>
+                </div> */}
               </div>
               <div className="row">
-                <div className="col-3 text-start pe-0">
+                <div className="col-6 text-start pe-0">
                   {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                   <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                    {getOrderTypeIcon(order_details.order_type)}
-                    <span className="ms-2">{order_details.order_type}</span>
+                    {getOrderTypeIcon(order_details.order_type) || <i className="fa-solid fa-utensils"></i>}
+                    <span className="ms-2">{order_details.order_type || "Dine In"}</span>
                   </span>
                 </div>
-                <div className="col-9 text-end">
+                <div className="col-6 text-end">
                   <div className="font_size_12 gray-text font_size_12 text-nowrap">
                     <span className="fw-medium gray-text">
-                      <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
-                      {titleCase(order_details.section_name)}
+                      <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                      {titleCase(order_details.section_name)} - {order_details.table_number}
                     </span>
                   </div>
                 </div>

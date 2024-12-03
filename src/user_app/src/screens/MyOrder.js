@@ -826,7 +826,7 @@ console.log(customerName);
             </div>
           </div>
           <div className="row">
-            <div className="col-5 text-start">
+            <div className="col-12 text-start">
               <div className="restaurant">
                 <i className="fa-solid fa-store pe-2 font_size_14"></i>
                 <span className="fw-medium font_size_14">
@@ -835,25 +835,27 @@ console.log(customerName);
               </div>
             </div>
 
-            <div className="col-7 text-end">
+            {/* <div className="col-7 text-end">
               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
               <span className="font_size_12 gray-text font_size_12">
                 {order.table_number}
               </span>
-            </div>
+            </div> */}
           </div>
           <div className="row">
             <div className="col-3 text-start pe-0">
               <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                {getOrderTypeIcon(order.order_type)}
-                <span className="ms-2">{order.order_type}</span>
+                {getOrderTypeIcon(order.order_type) || (
+                  <i className="fa-solid fa-utensils"></i>
+                )}
+                <span className="ms-2">{order.order_type || "Dine In"}</span>
               </span>
             </div>
             <div className="col-9 text-end">
               <div className="font_size_12 gray-text font_size_12 text-nowrap">
                 <span className="fw-medium gray-text">
-                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
-                  {titleCase(order.section_name)}
+                  <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                  {titleCase(order.section_name)} - {order.table_number}
                 </span>
               </div>
             </div>
@@ -874,9 +876,9 @@ console.log(customerName);
                 ₹{order.grand_total}
               </span>
               <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                ₹{(
-                  order.grand_total /
-                    (1 - order.discount_percent / 100) ||
+                ₹
+                {(
+                  order.grand_total / (1 - order.discount_percent / 100) ||
                   order.grand_total
                 ).toFixed(2)}
               </span>
@@ -1489,13 +1491,13 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                     >
                       {/* Card body content remains the same */}
                       <div className="row align-items-center">
-                        <div className="col-4">
+                        <div className="col-6">
                           <span className="fw-semibold font_size_14">
                             <i className="fa-solid fa-hashtag pe-2 font_size_14"></i>
                             {order.order_number}
                           </span>
                         </div>
-                        <div className="col-8 text-end">
+                        <div className="col-6 text-end">
                           <span className="gray-text font_size_12">
                             {order.time}
                           </span>
@@ -1503,7 +1505,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       </div>
 
                       <div className="row">
-                        <div className="col-5 text-start">
+                        <div className="col-12 text-start">
                           <div className="restaurant">
                             <i className="fa-solid fa-store pe-2 font_size_14"></i>
                             <span className="fw-medium font_size_14">
@@ -1511,27 +1513,28 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             </span>
                           </div>
                         </div>
-
-                        <div className="col-7 text-end">
-                          <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                          <span className="font_size_12 gray-text font_size_12">
-                            {order.table_number}
-                          </span>
-                        </div>
                       </div>
                       <div className="row">
-                        <div className="col-3 text-start pe-0">
+                        <div className="col-6 text-start pe-0">
                           {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                           <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                            {getOrderTypeIcon(order.order_type)}
-                            <span className="ms-2">{order.order_type}</span>
+                            {getOrderTypeIcon(order.order_type) || (
+                              <i className="fa-solid fa-utensils"></i>
+                            )}
+                            <span className="ms-2">
+                              {order.order_type || "Dine In"}
+                            </span>
                           </span>
                         </div>
-                        <div className="col-9 text-end">
+                        <div className="col-6 text-end">
                           <div className="font_size_12 gray-text font_size_12 text-nowrap">
                             <span className="fw-medium gray-text">
-                              <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
-                              {titleCase(order.section_name)}
+                              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                              {order.section_name
+                                ? `${titleCase(order.section_name)} - ${
+                                    order.table_number
+                                  }`
+                                : "Dine In"}
                             </span>
                           </div>
                         </div>

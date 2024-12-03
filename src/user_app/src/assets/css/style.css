@@ -19382,19 +19382,3 @@ input:checked ~ .tab-content {
       }
 
       
-
-
-i.bx {
-
-  font-size: 1em;
-}
-
-i[class^="bx"] {
-
-  font-size: 1em;
-}
-
-i[class^="bxs"] {
-
-  font-size: 1em;
-}

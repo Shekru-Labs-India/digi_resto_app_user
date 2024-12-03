@@ -779,7 +779,7 @@ const ProductCard = ({ isVegOnly }) => {
                   onClick={handleOfferSelect}
                 >
                   <i
-                    className={`bx bxs-offer me-2 fs-6 ${
+                    className={`bx bxs-offer me-2 fs-3 ${
                       activeFilters.offer ? "text-white" : "text-success"
                     }`}
                   ></i>

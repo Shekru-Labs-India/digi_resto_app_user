@@ -601,8 +601,8 @@ const Search = () => {
           {debouncedSearchTerm && (
             <div className="title-bar my-3 ">
               <div className="fw-normal fs-6 gray-text"></div>
-              <div className="    gray-text" onClick={handleClearAll}>
-                Clear All
+              <div className="gray-text" onClick={handleClearAll}>
+                Clear
               </div>
             </div>
           )}
