@@ -705,51 +705,51 @@ const Checkout = () => {
                     selectedOrderType === "Parcel"
                       ? "btn-primary"
                       : "btn-outline-primary"
-                  } rounded-pill`}
+                  } rounded-pill d-flex flex-column align-items-center`}
                   onClick={() => handleOrderTypeSelection("Parcel")}
                 >
                   <i
-                    className={`fa-solid fa-hand-holding-heart fs-6 me-2 ${
+                    className={`fa-solid fa-hand-holding-heart fs-6 ${
                       selectedOrderType === "Parcel"
                         ? "text-white"
                         : "text-primary"
                     }`}
                   ></i>
-                  Parcel
+                  <span>Parcel</span>
                 </button>
                 <button
                   className={`btn px-3 py-1 ${
                     selectedOrderType === "Drive-through"
                       ? "btn-primary"
                       : "btn-outline-primary"
-                  } rounded-pill`}
+                  } rounded-pill d-flex flex-column align-items-center`}
                   onClick={() => handleOrderTypeSelection("Drive-through")}
                 >
                   <i
-                    className={`fa-solid fa-car-side fs-6 me-2 ${
+                    className={`fa-solid fa-car-side fs-6 ${
                       selectedOrderType === "Drive-through"
                         ? "text-white"
                         : "text-primary"
                     }`}
                   ></i>
-                  Drive-Through
+                  <span>Drive-Through</span>
                 </button>
                 <button
                   className={`btn px-3 py-1 ${
                     selectedOrderType === "Dine-in"
                       ? "btn-primary"
                       : "btn-outline-primary"
-                  } rounded-pill`}
+                  } rounded-pill d-flex flex-column align-items-center`}
                   onClick={() => handleOrderTypeSelection("Dine-in")}
                 >
                   <i
-                    className={`fa-solid fa-utensils fs-6 me-2 ${
+                    className={`fa-solid fa-utensils fs-6 ${
                       selectedOrderType === "Dine-in"
                         ? "text-white"
                         : "text-primary"
                     }`}
                   ></i>
-                  Dine-In
+                  <span>Dine-In</span>
                   {/* {availableTables && (
                     <span
                       className={`ms-1 small ${
@@ -779,9 +779,9 @@ const Checkout = () => {
             <div className="d-flex align-items-center justify-content-center mt-3">
               <Link
                 to="/user_app/Menu"
-                className="btn btn-outline-primary rounded-pill px-3"
+                className="btn btn-sm btn-outline-primary rounded-pill px-3"
               >
-                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+                <i class="bx bx-plus me-2"></i> Order More
               </Link>
             </div>
           </div>

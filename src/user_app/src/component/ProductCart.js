@@ -644,7 +644,7 @@ const ProductCard = ({ isVegOnly }) => {
 
 
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    switch (foodType) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
@@ -749,12 +749,14 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="me-2 w-100" style={{ height: "40px" }}>
                 <div
                   className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    activeFilters.special ? "active bg-info text-white" : "bg-transparent"
+                    activeFilters.special
+                      ? "active bg-info text-white"
+                      : "bg-transparent"
                   }`}
                   onClick={handleSpecialSelect}
                 >
                   <i
-                    className={`fa-solid fa-star me-2 ${
+                    className={`fa-solid fa-star me-2 fs-6 ${
                       activeFilters.special ? "text-white" : "text-info"
                     }`}
                   ></i>
@@ -770,12 +772,14 @@ const ProductCard = ({ isVegOnly }) => {
               <div className="mx-2 w-100" style={{ height: "40px" }}>
                 <div
                   className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    activeFilters.offer ? "active bg-success text-white" : "bg-transparent text-success"
+                    activeFilters.offer
+                      ? "active bg-success text-white"
+                      : "bg-transparent text-success"
                   }`}
                   onClick={handleOfferSelect}
                 >
                   <i
-                    className={`fa-solid fa-percent me-2 ${
+                    className={`bx bxs-offer me-2 fs-6 ${
                       activeFilters.offer ? "text-white" : "text-success"
                     }`}
                   ></i>
@@ -814,8 +818,10 @@ const ProductCard = ({ isVegOnly }) => {
                 className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor: activeFilters.categoryId === null ? "#0D775E" : "#ffffff",
-                  color: activeFilters.categoryId === null ? "#ffffff" : "#000000",
+                  backgroundColor:
+                    activeFilters.categoryId === null ? "#0D775E" : "#ffffff",
+                  color:
+                    activeFilters.categoryId === null ? "#ffffff" : "#000000",
                   border: "1px solid #ddd",
                   cursor: "pointer",
                   padding: "8px 16px",
@@ -823,10 +829,13 @@ const ProductCard = ({ isVegOnly }) => {
                 }}
               >
                 All{" "}
-                <span style={{
-                  color: activeFilters.categoryId === null ? "#ffffff" : "#666",
-                  fontSize: "0.8em",
-                }}>
+                <span
+                  style={{
+                    color:
+                      activeFilters.categoryId === null ? "#ffffff" : "#666",
+                    fontSize: "0.8em",
+                  }}
+                >
                   ({totalMenuCount})
                 </span>
               </div>

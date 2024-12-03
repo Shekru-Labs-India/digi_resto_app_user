@@ -455,10 +455,10 @@ const Cart = () => {
 
             <div className="d-flex align-items-center justify-content-center mt-2">
               <Link
-                className="btn btn-outline-primary  rounded-pill  px-3"
+                className="btn btn-sm btn-outline-primary  rounded-pill  px-3"
                 to="/user_app/Menu"
               >
-                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+                <i className="bx bx-plus me-1 fs-4"></i> Order More
               </Link>
             </div>
           </div>
@@ -845,9 +845,9 @@ const Cart = () => {
               <div className="d-flex align-items-center justify-content-center mt-2">
                 <Link
                   to="/user_app/Menu"
-                  className="btn btn-outline-primary  rounded-pill  px-3"
+                  className="btn btn-sm btn-outline-primary  rounded-pill  px-3"
                 >
-                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+                  <i className="bx bx-plus me-1 fs-4"></i> Order More
                 </Link>
               </div>
             </div>

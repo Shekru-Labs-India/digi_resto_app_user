@@ -771,6 +771,8 @@ console.log(customerName);
     }
   };
 
+
+
   // Clean up timeouts when component unmounts
   useEffect(() => {
     return () => {
@@ -787,6 +789,19 @@ console.log(customerName);
 
   const isDarkMode = localStorage.getItem("isDarkMode");
   // console.log("isDarkMode ->" + isDarkMode);
+
+  const getOrderTypeIcon = (orderType) => {
+    switch (orderType?.toLowerCase()) {
+      case "parcel":
+        return <i className="fa-solid fa-hand-holding-heart"></i>;
+      case "drive-through":
+        return <i className="fa-solid fa-car-side"></i>;
+      case "dine-in":
+        return <i className="fa-solid fa-utensils"></i>;
+      default:
+        return null; // or a default icon if needed
+    }
+  };
 
   return (
     <div className="container pt-0">
@@ -829,9 +844,9 @@ console.log(customerName);
           </div>
           <div className="row">
             <div className="col-3 text-start pe-0">
-              {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
               <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                Order Type: {order.order_type}
+                {getOrderTypeIcon(order.order_type)}
+                <span className="ms-2">{order.order_type}</span>
               </span>
             </div>
             <div className="col-9 text-end">
@@ -1343,9 +1358,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
           <p>No menus available</p>
           <Link
             to="/user_app/Menu"
-            className="btn btn-outline-primary rounded-pill px-3 mt-3"
+            className="btn btn-sm btn-outline-primary rounded-pill px-3 mt-3"
           >
-            <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+            <i className="bx bx-plus me-1 fs-4"></i> Order More
           </Link>
         </div>
       );
@@ -1356,6 +1371,19 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     if (type === "cancelled" && orders.cancle) {
       ordersToRender = orders.cancle;
     }
+
+      const getOrderTypeIcon = (orderType) => {
+        switch (orderType?.toLowerCase()) {
+          case "parcel":
+            return <i className="fa-solid fa-hand-holding-heart"></i>;
+          case "drive-through":
+            return <i className="fa-solid fa-car-side"></i>;
+          case "dine-in":
+            return <i className="fa-solid fa-utensils"></i>;
+          default:
+            return null;
+        }
+      };
 
     return (
       <>
@@ -1495,7 +1523,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         <div className="col-3 text-start pe-0">
                           {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                           <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                            Order Type: {order.order_type}
+                            {getOrderTypeIcon(order.order_type)}
+                            <span className="ms-2">{order.order_type}</span>
                           </span>
                         </div>
                         <div className="col-9 text-end">
@@ -1523,7 +1552,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                             ₹{order.grand_total}
                           </span>
                           <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                            ₹{(
+                            ₹
+                            {(
                               order.grand_total /
                                 (1 - order.discount_percent / 100) ||
                               order.grand_total

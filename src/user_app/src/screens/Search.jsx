@@ -419,35 +419,65 @@ const Search = () => {
 
 
     
-  const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf text-success",
-          border: "border-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
-        };
-    }
-  };
+   const getFoodTypeTextStyles = (foodType) => {
+     switch (foodType?.toLowerCase()) {
+       case "veg":
+         return {
+           icon: "fa-solid fa-circle",
+           textColor: "text-primary",
+         };
+       case "nonveg":
+         return {
+           icon: "fa-solid fa-play fa-rotate-270",
+           textColor: "text-danger",
+         };
+       case "egg":
+         return {
+           icon: "fa-solid fa-egg",
+           textColor: "text-light",
+         };
+       case "vegan":
+         return {
+           icon: "fa-solid fa-leaf",
+           textColor: "text-success",
+         };
+       default:
+         return {
+           icon: "fa-solid fa-circle",
+           textColor: "text-primary",
+         };
+     }
+   };
+
+   const getFoodTypeStyles = (foodType) => {
+     switch (foodType?.toLowerCase()) {
+       case "veg":
+         return {
+           icon: "fa-solid fa-circle text-primary",
+           border: "border-primary",
+         };
+       case "nonveg":
+         return {
+           icon: "fa-solid fa-play fa-rotate-270 text-danger",
+           border: "border-danger",
+         };
+       case "egg":
+         return {
+           icon: "fa-solid fa-egg text-light",
+           border: "border-light",
+         };
+       case "vegan":
+         return {
+           icon: "fa-solid fa-leaf text-success",
+           border: "border-success",
+         };
+       default:
+         return {
+           icon: "fa-solid fa-circle text-success",
+           border: "border-success",
+         };
+     }
+   };
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -579,13 +609,17 @@ const Search = () => {
 
           {isLoading && <p>Loading...</p>}
 
-          {searchedMenu.map((menu) => (
-            <>
-              <div key={menu.menu_id} className="col-12">
-                <div
-                  className="card mb-3 rounded-4"
-                  onClick={() => handleMenuClick(menu.menu_id)}
-                  style={{ cursor: "pointer" }}
+          {searchedMenu.map((menu, index) => (
+            <div className="py-1 px-0" key={index}>
+              <div className="custom-card rounded-4 shadow-sm">
+                <Link
+                  to={`/user_app/ProductDetails/${menu.menu_id}`}
+                  state={{
+                    restaurant_id: menu.restaurant_id,
+                    menu_cat_id: menu.menu_cat_id,
+                  }}
+                  className="text-decoration-none text-reset"
+                  onClick={() => handleMenuClick(menu)}
                 >
                   <div className="card-body py-0">
                     <div className="row">
@@ -606,14 +640,22 @@ const Search = () => {
                             e.target.style.aspectRatio = "1/1";
                           }}
                         />
+                        {/* Like Button */}
                         <div
-                          className={`border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center`}
+                          className={`border border-1 rounded-circle ${
+                            isDarkMode ? "bg-dark" : "bg-white"
+                          } opacity-75 d-flex justify-content-center align-items-center`}
                           style={{
                             position: "absolute",
                             bottom: "3px",
                             right: "76%",
                             height: "20px",
                             width: "20px",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleLikeClick(menu.menu_id);
                           }}
                         >
                           <i
@@ -622,14 +664,22 @@ const Search = () => {
                                 ? "fa-solid fa-heart text-danger"
                                 : "fa-regular fa-heart"
                             } fs-6`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleLikeClick(menu.menu_id);
-                            }}
                           ></i>
                         </div>
-
+                        {/* Special Star */}
+                        {menu.is_special && (
+                          <i
+                            className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                            style={{
+                              position: "absolute",
+                              top: 3,
+                              right: "76%",
+                              height: 17,
+                              width: 17,
+                            }}
+                          ></i>
+                        )}
+                        {/* Food Type Indicator */}
                         <div
                           className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                             getFoodTypeStyles(menu.menu_food_type).border
@@ -650,49 +700,73 @@ const Search = () => {
                             } font_size_12`}
                           ></i>
                         </div>
+                        {/* Offer Tag */}
                         {menu.offer !== 0 && (
                           <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                             <span className="font_size_10 text-white">
-                              {menu.offer}% Off
+                              {menu.offer || "No"}% Off
                             </span>
                           </div>
                         )}
                       </div>
-                      <div className="col-9 pt-1 p-0">
-                        <div className="row">
+                      <div className="col-9 pt-1 p-0 pe-2">
+                        <div className="row d-flex align-items-center mt-1">
                           <div className="col-10">
                             <div className="ps-2 font_size_14 fw-medium">
                               {menu.menu_name}
                             </div>
                           </div>
                         </div>
-                        <div className="row mt-1">
-                          <div className="col-5 text-start d-flex align-items-center">
-                            <span className="ps-2 font_size_10 text-success">
-                              <i className="ri-restaurant-line mt-0 me-1"></i>
+                        <div className="row d-flex align-items-center mt-1">
+                          <div className="col-6 d-flex align-items-center">
+                            <span
+                              className={`ps-2 font_size_10 ${
+                                getFoodTypeTextStyles(menu.category_food_type)
+                                  .textColor
+                              }`}
+                            >
+                              <i
+                                className={`${
+                                  getFoodTypeTextStyles(menu.category_food_type)
+                                    .icon
+                                } ${
+                                  getFoodTypeTextStyles(menu.category_food_type)
+                                    .textColor
+                                } font_size_10 mt-0 me-1`}
+                              ></i>
                               {menu.category_name}
                             </span>
                           </div>
-                          <div className="col-3 d-flex aign-items-center px-0">
+                          <div className="col-4 d-flex align-items-center ps-4 pe-3">
                             {menu.spicy_index && (
                               <div className="">
-                                {Array.from({ length: 5 }).map((_, index) =>
-                                  index < menu.spicy_index ? (
+                                {Array.from({ length: 3 }).map((_, index) => {
+                                  const spicyIndex = parseInt(
+                                    menu.spicy_index,
+                                    10
+                                  );
+                                  return index < spicyIndex ? (
                                     <i
-                                      className="fa-solid fa-pepper-hot font_size_12 text-danger"
+                                      className={`fa-solid fa-pepper-hot font_size_10 ${
+                                        spicyIndex === 1
+                                          ? "text-success"
+                                          : spicyIndex === 2
+                                          ? "text-warning"
+                                          : "text-danger"
+                                      }`}
                                       key={index}
                                     ></i>
                                   ) : (
                                     <i
-                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
+                                      className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
                                       key={index}
                                     ></i>
-                                  )
-                                )}
+                                  );
+                                })}
                               </div>
                             )}
                           </div>
-                          <div className="col-4 d-flex align-items-center justify-content-end text-start">
+                          <div className="col-2 d-flex align-items-center justify-content-end">
                             {menu.rating > 0 && (
                               <>
                                 {renderStarRating(menu.rating)}
@@ -703,9 +777,8 @@ const Search = () => {
                             )}
                           </div>
                         </div>
-
-                        <div className="row mt-1">
-                          <div className="col-6">
+                        <div className="row">
+                          <div className="col-5 mt-2">
                             <p className="ms-2 mb-0 fw-medium">
                               {menu.offer ? (
                                 <>
@@ -726,38 +799,49 @@ const Search = () => {
                               )}
                             </p>
                           </div>
-
-                          <div className="col-6 d-flex justify-content-end">
-                            {customerId && (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                                style={{
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
+                          <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
+                            <div
+                              className={`
+                                d-flex 
+                                align-items-center 
+                                justify-content-center 
+                                rounded-circle 
+                                bg-white 
+                                border-opacity-25 
+                                border-secondary 
+                                border
+                              `}
+                              style={{
+                                width: "25px",
+                                height: "25px",
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (userData?.customer_id) {
                                   handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i
-                                  className={`fa-solid ${
-                                    isMenuItemInCart(menu.menu_id)
-                                      ? "fa-circle-check "
-                                      : "fa-solid fa-plus text-secondary"
-                                  } fs-6`}
-                                ></i>
-                              </div>
-                            )}
+                                } else {
+                                  showLoginPopup();
+                                }
+                              }}
+                            >
+                              <i
+                                className={`fa-solid ${
+                                  isMenuItemInCart(menu.menu_id)
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-solid fa-plus text-secondary"
+                                } fs-6`}
+                              ></i>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
-            </>
+            </div>
           ))}
         </div>
         <div className="container">

@@ -683,49 +683,51 @@ const Product = () => {
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
           <div className="d-flex justify-content-between mb-3 pt-1">
-              <div className="me-2 w-100" style={{ height: "40px" }}>
-                <div
-                  className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    activeFilters.special ? "active bg-info text-white" : "bg-transparent"
+            <div className="me-2 w-100" style={{ height: "40px" }}>
+              <div
+                className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                  activeFilters.special
+                    ? "active bg-info text-white"
+                    : "bg-transparent"
+                }`}
+                onClick={handleSpecialSelect}
+              >
+                <i
+                  className={`fa-solid fa-star me-2 ${
+                    activeFilters.special ? "text-white" : "text-info"
                   }`}
-                  onClick={handleSpecialSelect}
-                >
-                  <i
-                    className={`fa-solid fa-star me-2 ${
-                      activeFilters.special ? "text-white" : "text-info"
-                    }`}
-                  ></i>
-                  Special
-                  {getSpecialCount() > 0 && (
-                    <span className="ms-1 font_size_10">
-                      ({getSpecialCount()})
-                    </span>
-                  )}
-                </div>
+                ></i>
+                Special
+                {getSpecialCount() > 0 && (
+                  <span className="ms-1 font_size_10">
+                    ({getSpecialCount()})
+                  </span>
+                )}
               </div>
+            </div>
 
-              <div className="mx-2 w-100" style={{ height: "40px" }}>
-                <div
-                  className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                    activeFilters.offer ? "active bg-success text-white" : "bg-transparent text-success"
+            <div className="mx-2 w-100" style={{ height: "40px" }}>
+              <div
+                className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                  activeFilters.offer
+                    ? "active bg-success text-white"
+                    : "bg-transparent text-success"
+                }`}
+                onClick={handleOfferSelect}
+              >
+                <i
+                  className={`bx bxs-offer me-2 ${
+                    activeFilters.offer ? "text-white" : "text-success"
                   }`}
-                  onClick={handleOfferSelect}
-                >
-                  <i
-                    className={`fa-solid fa-percent me-2 ${
-                      activeFilters.offer ? "text-white" : "text-success"
-                    }`}
-                  ></i>
-                  Offer
-                  {getOfferCount() > 0 && (
-                    <span className="ms-1 font_size_10">
-                      ({getOfferCount()})
-                    </span>
-                  )}
-                </div>
+                ></i>
+                Offer
+                {getOfferCount() > 0 && (
+                  <span className="ms-1 font_size_10">({getOfferCount()})</span>
+                )}
               </div>
+            </div>
 
-              {/* <div className="ms-2 w-100" style={{ height: "40px" }}>
+            {/* <div className="ms-2 w-100" style={{ height: "40px" }}>
                 <div
                   className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
                   onClick={handleMagicClick}
@@ -740,7 +742,7 @@ const Product = () => {
                   </div>
                 </div>
               </div> */}
-            </div>
+          </div>
 
           {/* Category slider */}
           <div className="swiper category-slide">
@@ -753,7 +755,8 @@ const Product = () => {
                   style={{
                     backgroundColor:
                       activeFilters.categoryId === null ? "#0D775E" : "#ffffff",
-                    color: activeFilters.categoryId === null ? "#ffffff" : "#000000",
+                    color:
+                      activeFilters.categoryId === null ? "#ffffff" : "#000000",
                     border: "1px solid #ddd",
                     cursor: "pointer",
                     padding: "8px 16px",
@@ -763,7 +766,8 @@ const Product = () => {
                   All{" "}
                   <span
                     style={{
-                      color: activeFilters.categoryId === null ? "#ffffff" : "#666",
+                      color:
+                        activeFilters.categoryId === null ? "#ffffff" : "#666",
                       fontSize: "0.8em",
                     }}
                   >
@@ -989,8 +993,7 @@ const Product = () => {
                                     <span className="font_size_14 me-2 text-info fw-semibold">
                                       ₹
                                       {Math.floor(
-                                        menu.price *
-                                          (1 - menu.offer / 100)
+                                        menu.price * (1 - menu.offer / 100)
                                       )}
                                     </span>
                                     <span className="gray-text text-decoration-line-through font_size_12 fw-normal">

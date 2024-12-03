@@ -1,6 +1,6 @@
 import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
 
 // Define TimeRemaining component
@@ -212,6 +212,8 @@ const OrderCard = ({
   completedTimers = new Set(),
   setCompletedTimers = () => {},
 }) => {
+  const navigate = useNavigate();
+  console.log('Order Number:', order.order_number);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -301,18 +303,39 @@ const OrderCard = ({
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
+    
+  
+  const getOrderTypeIcon = (orderType) => {
+      switch (orderType?.toLowerCase()) {
+        case "parcel":
+          return <i className="fa-solid fa-hand-holding-heart"></i>;
+        case "drive-through":
+          return <i className="fa-solid fa-car-side"></i>;
+        case "dine-in":
+          return <i className="fa-solid fa-utensils"></i>;
+        default:
+          return null;
+      }
+    };
 
-  const handleOrderClick = (orderNumber) => {
-    // Navigation or other logic without console.log
+  const handleOrderClick = (order) => {
+    navigate(`/user_app/TrackOrder/${order.order_number}`);
   };
 
   return (
     <div className="container pt-0 px-0">
-      <Link to={`/user_app/TrackOrder/${order.order_number}`}>
+      <Link 
+        to={`/user_app/TrackOrder/${order.order_number}`} 
+        className="text-decoration-none"
+        state={{ 
+          orderDetails: order,
+          orderNumber: order.order_number 
+        }}
+      >
         <div className="custom-card my-2 rounded-4 shadow-sm">
           <div
             className="card-body py-2"
-            onClick={() => handleOrderClick(order.order_number)}
+            onClick={() => handleOrderClick(order)}
           >
             <div className="row align-items-center">
               <div className="col-4">
@@ -338,26 +361,27 @@ const OrderCard = ({
                   </span>
                 </div>
               </div>
-              <div className="col-4 text-end">
+              {/* <div className="col-4 text-end">
                 <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                 <span className="font_size_12 gray-text font_size_12">
                   {order.table_number}
                 </span>
-              </div>
+              </div> */}
             </div>
             <div className="row">
               <div className="col-3 text-start pe-0">
                 {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                 <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                  Order Type: {order.order_type}
+                  {getOrderTypeIcon(order.order_type)}
+                  <span className="ms-2">{order.order_type}</span>
                 </span>
               </div>
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
-              <span className="fw-medium gray-text">
-                  <i class="fa-solid fa-chair me-2 gray-text font_size_12"></i>
-                {titleCase(order.section_name)}
-                </span>
+                  <span className="fw-medium gray-text">
+                    <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                    {titleCase(order.section_name)} - {order.table_number}
+                  </span>
                 </div>
               </div>
             </div>
@@ -439,7 +463,7 @@ const OrderCard = ({
   );
 };
 
-function OrdersPlacedOngoing() {
+const OrdersPlacedOngoing = () => {
   const [orders, setOrders] = useState({ placed: [], ongoing: [] });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -517,6 +541,8 @@ function OrdersPlacedOngoing() {
     };
   }, []);
 
+
+
   return (
     <div>
       {orders.placed.length > 0 && (
@@ -561,6 +587,6 @@ function OrdersPlacedOngoing() {
         )} */}
     </div>
   );
-}
+};
 
 export default OrdersPlacedOngoing;

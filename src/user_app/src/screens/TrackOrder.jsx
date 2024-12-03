@@ -54,7 +54,6 @@ const TrackOrder = () => {
   const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
   const navigate = useNavigate();
   const { order_number } = useParams();
-  const { orderId } = useParams();
 
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
 
@@ -996,6 +995,20 @@ const TrackOrder = () => {
     return <i className="ri-star-line font_size_10 ratingStar me-1"></i>;
   };
 
+  // Define getOrderTypeIcon function inside the TrackOrder component
+const getOrderTypeIcon = (orderType) => {
+  switch (orderType?.toLowerCase()) {
+    case "parcel":
+      return <i className="fa-solid fa-hand-holding-heart"></i>;
+    case "drive-through":
+      return <i className="fa-solid fa-car-side"></i>;
+    case "dine-in":
+      return <i className="fa-solid fa-utensils"></i>;
+    default:
+      return null;
+  }
+};
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1052,7 +1065,8 @@ const TrackOrder = () => {
                 <div className="col-3 text-start pe-0">
                   {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                   <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                    Order Type: {order_details.order_type}
+                    {getOrderTypeIcon(order_details.order_type)}
+                    <span className="ms-2">{order_details.order_type}</span>
                   </span>
                 </div>
                 <div className="col-9 text-end">
@@ -1273,14 +1287,19 @@ const TrackOrder = () => {
                                 <div className="col-6 d-flex align-items-center">
                                   <span
                                     className={`ps-2 font_size_10 ${
-                                      getFoodTypeTextStyles(menu.menu_food_type).textColor
+                                      getFoodTypeTextStyles(menu.menu_food_type)
+                                        .textColor
                                     }`}
                                   >
                                     <i
                                       className={`${
-                                        getFoodTypeTextStyles(menu.menu_food_type).icon
+                                        getFoodTypeTextStyles(
+                                          menu.menu_food_type
+                                        ).icon
                                       } ${
-                                        getFoodTypeTextStyles(menu.menu_food_type).textColor
+                                        getFoodTypeTextStyles(
+                                          menu.menu_food_type
+                                        ).textColor
                                       } font_size_10 mt-0 me-1`}
                                     ></i>
                                     {menu.category_name}
@@ -1367,7 +1386,7 @@ const TrackOrder = () => {
                       <div className="col-12 mt-3 mb-4">
                         <div className="d-flex justify-content-center">
                           <button
-                            className="btn btn-outline-primary rounded-pill px-3"
+                            className="btn btn-sm btn-outline-primary rounded-pill px-3"
                             onClick={() => {
                               navigate("/user_app/Menu", {
                                 state: {
@@ -1379,7 +1398,7 @@ const TrackOrder = () => {
                               });
                             }}
                           >
-                            <i className="ri-add-circle-line me-1 fs-4"></i>
+                            <i className="bx bx-plus me-1 fs-4"></i>
                             Order More Items
                           </button>
                         </div>

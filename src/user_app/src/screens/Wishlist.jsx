@@ -420,7 +420,7 @@ const Wishlist = () => {
 
 
   const getFoodTypeTextStyles = (foodType) => {
-    switch(foodType?.toLowerCase()) {
+    switch(foodType) {
       case 'veg':
         return {
           icon: "fa-solid fa-circle",
@@ -452,7 +452,7 @@ const Wishlist = () => {
 
     
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    switch (foodType) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-primary",
