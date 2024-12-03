@@ -160,37 +160,7 @@ const Wishlist = () => {
   };
 
 
-  
-  const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle text-primary",
-          border: "border-primary"
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger"
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg text-light",
-          border: "border-light"
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf text-success",
-          border: "border-success"
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success"
-        };
-    }
-  };
-  
+
 
 
   // Keep the favorite update listener
@@ -479,6 +449,38 @@ const Wishlist = () => {
     }
   };
 
+
+    
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-primary",
+          border: "border-primary",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-light",
+          border: "border-light",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
+  
   if (isLoading) {
     return (
       <div id="preloader">
@@ -713,18 +715,18 @@ const Wishlist = () => {
                                           <span
                                             className={`ps-2 font_size_10 ${
                                               getFoodTypeTextStyles(
-                                                menu.menu_food_type
+                                                menu.category_food_type
                                               ).textColor
                                             }`}
                                           >
                                             <i
                                               className={`${
                                                 getFoodTypeTextStyles(
-                                                  menu.menu_food_type
+                                                  menu.category_food_type
                                                 ).icon
                                               } ${
                                                 getFoodTypeTextStyles(
-                                                  menu.menu_food_type
+                                                  menu.category_food_type
                                                 ).textColor
                                               } font_size_10 mt-0 me-1`}
                                             ></i>

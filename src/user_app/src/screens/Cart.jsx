@@ -31,6 +31,10 @@ const Cart = () => {
   const getStoredRestaurantId = useCallback(() => {
     return localStorage.getItem("restaurantId") || restaurantId;
   }, [restaurantId]);
+  
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("isDarkMode") === "true";
+  });
 
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
@@ -369,7 +373,7 @@ const Cart = () => {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
-          border: "border-success",
+          border: "border-primary",
         };
       case "nonveg":
         return {
@@ -393,6 +397,38 @@ const Cart = () => {
         };
     }
   };
+
+  
+  const getFoodTypeTextStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "gray-text",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+        };
+    }
+  };
+
   
   
 
@@ -455,257 +491,259 @@ const Cart = () => {
           )}
           <div className="container scrollable-section pt-0">
             {cartDetails.order_items.map((item, index) => (
-              <Link
-                key={index}
-                to={`/user_app/ProductDetails/${item.menu_id}`}
-                state={{
-                  restaurant_id: userData.restaurantId,
-                  menu_cat_id: item.menu_cat_id,
-                }}
-                className="text-decoration-none text-reset"
-              >
-                <div className="card mb-3 rounded-4">
-                  <div className="row my-auto ps-3">
-                    <div className="col-3 px-0 position-relative">
-                      <img
-                        src={item.image || images}
-                        alt={item.menu_name}
-                        className="img-fluid rounded-4 object-fit-cover"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "fill",
-                          aspectRatio: "1/1",
-                        }}
-                        onError={(e) => {
-                          e.target.src = images;
-                        }}
-                      />
-                      {item.is_special && (
-                        <i
-                          className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                          style={{
-                            position: "absolute",
-                            top: 3,
-                            right: 3,
-                            height: 17,
-                            width: 17,
-                          }}
-                        ></i>
-                      )}
-
-                      <div
-                        className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                          getFoodTypeStyles(item.menu_food_type).border
-                        }`}
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          left: "3px",
-                          height: "20px",
-                          width: "20px",
-                          borderWidth: "2px",
-                          borderRadius: "3px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            getFoodTypeStyles(item.menu_food_type).icon
-                          } font_size_12`}
-                        ></i>
-                      </div>
-                      {item.offer && item.offer !== 0 ? (
-                        <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                          <span className="font_size_10 text-white">
-                            {item.offer}% Off
-                          </span>
-                        </div>
-                      ) : null}
-                      <div
-                        className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                        style={{
-                          position: "absolute",
-                          bottom: "3px",
-                          right: "3px",
-                          height: "20px",
-                          width: "20px",
-                        }}
-                      >
-                        <i
-                          className={`${
-                            item.is_favourite
-                              ? "fa-solid fa-heart text-danger"
-                              : "fa-regular fa-heart"
-                          } fs-6`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(item.menu_id);
-                          }}
-                        ></i>
-                      </div>
-                    </div>
-                    <div className="col-9 pt-1 pb-0">
+              <div className="py-1 px-0" key={index}>
+                <div className="custom-card rounded-4 shadow-sm">
+                  <Link
+                    to={`/user_app/ProductDetails/${item.menu_id}`}
+                    state={{
+                      restaurant_id: userData.restaurantId,
+                      menu_cat_id: item.menu_cat_id,
+                    }}
+                    className="text-decoration-none text-reset"
+                  >
+                    <div className="card-body py-0">
                       <div className="row">
-                        <div className="col-9 ">
-                          <span className="font_size_14 fw-semibold">
-                            {item.menu_name}
-                          </span>
-                        </div>
-
-                        <div className="col-3 text-end pe-4">
+                        {/* Image Column */}
+                        <div className="col-3 px-0 position-relative">
+                          <img
+                            src={item.image || images}
+                            alt={item.menu_name}
+                            className="rounded-4 img-fluid object-fit-cover"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              aspectRatio: "1/1",
+                            }}
+                            onError={(e) => {
+                              e.target.src = images;
+                              e.target.style.width = "100%";
+                              e.target.style.height = "100%";
+                              e.target.style.aspectRatio = "1/1";
+                            }}
+                          />
+                          {/* Like Button */}
                           <div
+                            className={`border border-1 rounded-circle ${
+                              isDarkMode ? "bg-dark" : "bg-white"
+                            } opacity-75 d-flex justify-content-center align-items-center`}
+                            style={{
+                              position: "absolute",
+                              bottom: "3px",
+                              right: "3px",
+                              height: "20px",
+                              width: "20px",
+                            }}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              handleRemoveFromCart(item, index);
+                              handleLikeClick(item.menu_id);
                             }}
                           >
-                            <i className="fa-solid fa-xmark gray-text font_size_14"></i>
+                            <i
+                              className={`${
+                                item.is_favourite
+                                  ? "fa-solid fa-heart text-danger"
+                                  : "fa-regular fa-heart"
+                              } fs-6`}
+                            ></i>
                           </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-5 px-0">
-                          <span className="ps-3 text-success mt-1 font_size_10">
-                            <i className="fa-solid fa-utensils me-1 text-success"></i>
-                            {item.menu_cat_name}
-                          </span>
-                        </div>
-                        <div className="col-3 px-0">
-                          <div className="offer-code my-auto">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                              <i
-                                key={index}
-                                className={`ri-fire-${
-                                  index < (item.spicy_index || 0)
-                                    ? "fill font_size_12 text-danger"
-                                    : "line font_size_12 gray-text"
-                                }`}
-                                style={{
-                                  color:
-                                    index < (item.spicy_index || 0)
-                                      ? "#eb8e57"
-                                      : "#bbbaba",
-                                }}
-                              ></i>
-                            ))}
+                          {/* Special Star */}
+                          {item.is_special && (
+                            <i
+                              className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                              style={{
+                                position: "absolute",
+                                top: 3,
+                                right: 3,
+                                height: 17,
+                                width: 17,
+                              }}
+                            ></i>
+                          )}
+                          {/* Food Type Icon */}
+                          <div
+                            className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                              getFoodTypeStyles(item.menu_food_type).border
+                            }`}
+                            style={{
+                              position: "absolute",
+                              bottom: "3px",
+                              left: "3px",
+                              height: "20px",
+                              width: "20px",
+                              borderWidth: "2px",
+                              borderRadius: "3px",
+                            }}
+                          >
+                            <i
+                              className={`${
+                                getFoodTypeStyles(item.menu_food_type).icon
+                              } font_size_12`}
+                            ></i>
                           </div>
-                        </div>
-                        <div className="col-4 ps-0 text-end">
-                          {item.rating > 0 && (
-                            <span className="font_size_10 fw-normal gray-text me-2">
-                              {renderStarRating(item.rating)}
-                              {item.rating}
-                            </span>
+                          {/* Offer Tag */}
+                          {item.offer !== 0 && (
+                            <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                              <span className="font_size_10 text-white">
+                                {item.offer || "No"}% Off
+                              </span>
+                            </div>
                           )}
                         </div>
-                      </div>
-                      <div className="row"></div>
-                      <div className="row pe-2">
-                        <div className="col-7 mx-0 my-auto px-0">
-                          <p className="mb-0 fw-medium">
-                            <span className="ms-3 font_size_14 fw-semibold text-info">
-                              ₹
-                              {item.offer
-                                ? Math.floor(
-                                    item.price * (1 - item.offer / 100)
-                                  )
-                                : item.price}
-                            </span>
-                            {item.offer && item.offer !== 0 ? (
-                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                ₹{item.price}
-                              </span>
-                            ) : null}
-                          </p>
-                        </div>
 
-                        {/* OLD STEPPER CODE */}
-                        {/* <div className="col-4 ps-2">
-                          <div className="d-flex justify-content-center align-items-center mt-1 bg-light rounded-pill py-1 ">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center "
-                              style={{
-                                height: "25px",
-                                width: "25px",
-                              }}
-                            >
-                              <i
-                                className="ri-subtract-line fs-6"
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  decrementQuantity(item);
-                                }}
-                              ></i>
+                        {/* Content Column */}
+                        <div className="col-9 pt-1 p-0 pe-2">
+                          {/* Title Row */}
+                          <div className="row d-flex align-items-center mt-1">
+                            <div className="col-10">
+                              <div className="ps-2 font_size_14 fw-medium">
+                                {item.menu_name}
+                              </div>
                             </div>
-                            <span className="text-light  px-2">
-                              {item.quantity}
-                            </span>
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{
-                                height: "25px",
-                                width: "25px",
-                              }}
-                            >
-                              <i
-                                className="ri-add-line  fs-6"
-                                style={{ cursor: "pointer" }}
+                            <div className="col-2 text-end font_size_10">
+                              <div
+                                className="d-flex align-items-center justify-content-end"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  incrementQuantity(item);
+                                  handleRemoveFromCart(item);
                                 }}
-                              ></i>
+                              >
+                                <i className="fa-solid fa-xmark gray-text font_size_14"></i>
+                              </div>
                             </div>
                           </div>
-                        </div> */}
 
-                        {/* NEW STEPPER CODE */}
+                          {/* Category & Spicy Row */}
+                          <div className="row d-flex align-items-center mt-1">
+                            <div className="col-6 d-flex align-items-center">
+                              <span
+                                className={`ps-2 font_size_10 ${
+                                  getFoodTypeTextStyles(item.category_food_type)
+                                    .textColor
+                                }`}
+                              >
+                                <i
+                                  className={`${
+                                    getFoodTypeTextStyles(
+                                      item.category_food_type
+                                    ).icon
+                                  } ${
+                                    getFoodTypeTextStyles(
+                                      item.category_food_type
+                                    ).textColor
+                                  } font_size_10 mt-0 me-1`}
+                                ></i>
+                                {item.menu_cat_name || item.category_name}
+                              </span>
+                            </div>
+                            <div className="col-4 d-flex align-items-center ps-4 pe-3">
+                              {item.spicy_index && (
+                                <div className="">
+                                  {Array.from({ length: 3 }).map((_, index) => {
+                                    const spicyIndex = parseInt(
+                                      item.spicy_index,
+                                      10
+                                    );
+                                    return index < spicyIndex ? (
+                                      <i
+                                        key={index}
+                                        className={`fa-solid fa-pepper-hot font_size_10 ${
+                                          spicyIndex === 1
+                                            ? "text-success"
+                                            : spicyIndex === 2
+                                            ? "text-warning"
+                                            : "text-danger"
+                                        }`}
+                                      ></i>
+                                    ) : (
+                                      <i
+                                        key={index}
+                                        className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
+                                      ></i>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                            <div className="col-2 d-flex align-items-center justify-content-end">
+                              {item.rating > 0 && (
+                                <>
+                                  {renderStarRating(item.rating)}
+                                  <span className="font_size_10 fw-normal gray-text">
+                                    {item.rating}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
 
-                        <div className="col-5 ps-2 my-1">
-                          <div className="dz-stepper style-3 d-flex justify-content-end">
-                            <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
-                              <span className="input-group-btn input-group-prepend">
-                                <button
-                                  className="btn btn-primary bootstrap-touchspin-down"
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    decrementQuantity(item);
-                                  }}
-                                >
-                                  <i className="fa-solid fa-minus fs-6"></i>
-                                </button>
-                              </span>
-                              <span className="text-dark font_size_14 px-2">
-                                {item.quantity}
-                              </span>
-                              <span className="input-group-btn input-group-append">
-                                <button
-                                  className="btn btn-primary bootstrap-touchspin-up"
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    incrementQuantity(item);
-                                  }}
-                                >
-                                  <i className="fa-solid fa-plus fs-6"></i>
-                                </button>
-                              </span>
+                          {/* Price & Quantity Row */}
+                          <div className="row">
+                            <div className="col-7 mt-2">
+                              <p className="ms-2 mb-0 fw-medium">
+                                {item.offer ? (
+                                  <>
+                                    <span className="font_size_14 fw-semibold text-info">
+                                      ₹
+                                      {Math.floor(
+                                        item.price * (1 - item.offer / 100)
+                                      )}
+                                    </span>
+                                    <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                      ₹{item.price}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="font_size_14 fw-semibold text-info">
+                                    ₹{item.price}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+
+                            <div className="col-5 ps-2 my-1">
+                              <div className="dz-stepper style-3 d-flex justify-content-end">
+                                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
+                                  <span className="input-group-btn input-group-prepend">
+                                    <button
+                                      className="btn btn-primary bootstrap-touchspin-down"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        decrementQuantity(item);
+                                      }}
+                                    >
+                                      <i className="fa-solid fa-minus fs-6"></i>
+                                    </button>
+                                  </span>
+                                  <span className="text-dark font_size_14 px-2">
+                                    {item.quantity}
+                                  </span>
+                                  <span className="input-group-btn input-group-append">
+                                    <button
+                                      className="btn btn-primary bootstrap-touchspin-up"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        incrementQuantity(item);
+                                      }}
+                                    >
+                                      <i className="fa-solid fa-plus fs-6"></i>
+                                    </button>
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
           <div className="container py-0">
