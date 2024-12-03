@@ -618,63 +618,67 @@ const Product = () => {
 
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
-          <div className="d-flex justify-content-between gap-2 my-3">
-            <div
-              className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn ${
-                selectedCategory === "special"
-                  ? "active bg-info text-white"
-                  : "bg-transparent"
-              }`}
-              onClick={() => handleCategorySelect("special")}
-            >
-              <i
-                className={`fa-solid fa-star me-2 ${
-                  selectedCategory === "special" ? "text-white" : "text-info"
-                }`}
-              ></i>
-              Special
-              <span className="ms-1 font_size_10">
-                ({menuList.filter((menu) => menu.is_special).length})
-              </span>
-            </div>
-
-            <div className="mx-2 w-100" style={{ height: "40px" }}>
-              <div
-                className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
-                  selectedCategory === "offer"
-                    ? "active bg-success text-white"
-                    : "bg-transparent text-success"
-                }`}
-                onClick={() => handleCategorySelect("offer")}
-              >
-                <i
-                  className={`fa-solid fa-percent me-2 ${
-                    selectedCategory === "offer" ? "text-white" : "text-success"
+          <div className="d-flex justify-content-between mb-3 pt-1">
+              <div className="me-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className={`category-btn font_size_14 rounded-pill border border-1 border-info text-info offer-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                    selectedCategory === "special"
+                      ? "active bg-info text-white"
+                      : "bg-transparent"
                   }`}
-                ></i>
-                Offer
-                <span className="ms-1 font_size_10">
-                  ({menuList.filter((menu) => menu.offer > 0).length})
-                </span>
-              </div>
-            </div>
-
-            <div className="ms-2 w-100" style={{ height: "40px" }}>
-              <div
-                className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
-                onClick={handleMagicClick}
-              >
-                <div className="position-relative z-1 magic-text">
-                  {isMagicLoading ? (
-                    <i className="fa-solid fa-spinner fa-spin me-2"></i>
-                  ) : (
-                    <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
-                  )}
-                  Magic
+                  onClick={() => handleCategorySelect("special")}
+                >
+                  <i
+                    className={`fa-solid fa-star me-2 ${
+                      selectedCategory === "special"
+                        ? "text-white"
+                        : "text-info"
+                    }`}
+                  ></i>
+                  Special
+                  <span className="ms-1 font_size_10">
+                    ({menuList.filter((menu) => menu.is_special).length})
+                  </span>
                 </div>
               </div>
+
+              <div className="mx-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className={`category-btn font_size_14 rounded-pill border border-1 border-success custom-menu-btn w-100 h-100 d-flex align-items-center justify-content-center ${
+                    selectedCategory === "offer"
+                      ? "active bg-success text-white"
+                      : "bg-transparent text-success"
+                  }`}
+                  onClick={() => handleCategorySelect("offer")}
+                >
+                  <i
+                    className={`fa-solid fa-percent me-2 ${
+                      selectedCategory === "offer" ? "text-white" : "text-success"
+                    }`}
+                  ></i>
+                  Offer
+                  <span className="ms-1 font_size_10">
+                    ({menuList.filter((menu) => menu.offer > 0).length})
+                  </span>
+                </div>
+              </div>
+
+              {/* <div className="ms-2 w-100" style={{ height: "40px" }}>
+                <div
+                  className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
+                  onClick={handleMagicClick}
+                >
+                  <div className="position-relative z-1 magic-text">
+                    {isMagicLoading ? (
+                      <i className="fa-solid fa-spinner fa-spin me-2"></i>
+                    ) : (
+                      <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
+                    )}
+                    Magic
+                  </div>
+                </div>
+              </div> */}
             </div>
-          </div>
 
           {/* Category slider */}
           <div className="swiper category-slide">

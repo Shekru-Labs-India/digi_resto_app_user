@@ -759,7 +759,7 @@ const ProductCard = ({ isVegOnly }) => {
                 </div>
               </div>
 
-              <div className="ms-2 w-100" style={{ height: "40px" }}>
+              {/* <div className="ms-2 w-100" style={{ height: "40px" }}>
                 <div
                   className="category-btn font_size_14 rounded-pill btn magic-btn magic-button w-100 h-100 d-flex align-items-center justify-content-center"
                   onClick={handleMagicClick}
@@ -773,7 +773,7 @@ const ProductCard = ({ isVegOnly }) => {
                     Magic
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </>
         )}
