@@ -98,7 +98,6 @@ const HomeScreen = () => {
 
   return (
     <div>
-         
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
           <div
@@ -128,6 +127,10 @@ const HomeScreen = () => {
             </div>
           </div>
         </header>
+        <div className="container mt-5">
+
+        <Notice />
+        </div>
 
         {/* Dark overlay for sidebar */}
         <div
@@ -531,7 +534,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content space-top mb-5 p-b70">
+        <main className="page-content mb-5 p-b70">
           <div className="container overflow-hidden pt-0">
             <OfferBanner />
             <OrdersPlacedOngoing />

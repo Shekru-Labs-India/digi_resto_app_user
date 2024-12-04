@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { SidebarToggler } from '../component/Sidebar';
+import Notice from '../component/Notice';
 
 const Header = ({ title, showBack = true, showSidebar = true, count }) => {
     const navigate = useNavigate();
@@ -12,34 +13,43 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
   };
 
   return (
-    <header className="header header-fixed style-3 ">
-      <div className="header-content">
-        <div className="container p-0">
-          <div className="row align-items-center">
-            <div className="col-auto">
-              {showBack && (
-                <Link
-                  to="#"
-                  className="back-btn dz-icon icon-sm"
-                  onClick={() => navigate(-1)}
-                >
-                  <i className="fa-solid fa-arrow-left fs-2 gray-text"></i>
-                </Link>
-              )}
-            </div>
-            <div className="col text-center">
-              <span className="me-3 title font_size_16">
-                {title || getScreenName()}
-                {count !== undefined && count > 0 && (
-                  <span className="gray-text small-number ms-1">({count})</span>
+    <>
+      <header className="header header-fixed style-3 ">
+        <div className="header-content">
+          <div className="container p-0">
+            <div className="row align-items-center">
+              <div className="col-auto">
+                {showBack && (
+                  <Link
+                    to="#"
+                    className="back-btn dz-icon icon-sm"
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="fa-solid fa-arrow-left fs-2 gray-text"></i>
+                  </Link>
                 )}
-              </span>
+              </div>
+              <div className="col text-center">
+                <span className="me-3 title font_size_16">
+                  {title || getScreenName()}
+                  {count !== undefined && count > 0 && (
+                    <span className="gray-text small-number ms-1">
+                      ({count})
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="col-auto">
+                {showSidebar && <SidebarToggler />}
+              </div>
             </div>
-            <div className="col-auto">{showSidebar && <SidebarToggler />}</div>
           </div>
         </div>
+      </header>
+      <div className="container mt-5">
+        <Notice />
       </div>
-    </header>
+    </>
   );
 };
 

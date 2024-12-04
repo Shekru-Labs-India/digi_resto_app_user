@@ -83,9 +83,8 @@ const Profile = () => {
           </div>
         </header> */}
 
-        <Header title="Profile" />
-
-        <main className="page-content space-top">
+        <main className="page-content">
+          <Header title="Profile" />
           <div className="container">
             <div className="profile-area">
               <div className="main-profile">

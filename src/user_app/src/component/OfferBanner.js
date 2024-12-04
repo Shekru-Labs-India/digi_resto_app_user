@@ -457,7 +457,7 @@ const OfferBanner = () => {
   return (
     <div className="dz-box style-2 py-2">
       <div className="m-0">
-        <Notice />
+        
         <HotelNameAndTable
           restaurantName={restaurantName}
           tableNumber={userData?.tableNumber || "1"}
