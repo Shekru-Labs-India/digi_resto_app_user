@@ -12,6 +12,7 @@ import { usePopup } from '../context/PopupContext';
 import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
+import { APP_VERSION } from "../component/config";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -128,8 +129,7 @@ const HomeScreen = () => {
           </div>
         </header>
         <div className="container mt-5">
-
-        <Notice />
+          <Notice />
         </div>
 
         {/* Dark overlay for sidebar */}
@@ -530,6 +530,7 @@ const HomeScreen = () => {
               >
                 Shekru Labs India Pvt. Ltd.
               </a>
+              <p className="text-center font_size_12">version {APP_VERSION}</p>
             </div>
           </div>
         </div>

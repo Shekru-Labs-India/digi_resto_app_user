@@ -6,6 +6,7 @@ import logo from "../assets/logos/menumitra_logo_128.png";
 import Sidebar, { SidebarToggler } from "../component/Sidebar";
 import { usePopup } from '../context/PopupContext';
 import Header from "../components/Header";
+import { APP_VERSION } from "../component/config";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -353,6 +354,7 @@ const Profile = () => {
             >
               Shekru Labs India Pvt. Ltd.
             </a>
+            <p className="text-center font_size_12">v {APP_VERSION}</p>
           </div>
         </div>
       </>
