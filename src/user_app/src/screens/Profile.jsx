@@ -7,6 +7,9 @@ import Sidebar, { SidebarToggler } from "../component/Sidebar";
 import { usePopup } from '../context/PopupContext';
 import Header from "../components/Header";
 import { APP_VERSION } from "../component/config";
+import { isNonProductionDomain } from "../component/config";
+import Notice from "../component/Notice";
+
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -84,8 +87,9 @@ const Profile = () => {
           </div>
         </header> */}
 
-        <main className="page-content">
+        <main className="page-content space-top">
           <Header title="Profile" />
+          {isNonProductionDomain() && <Notice />}
           <div className="container">
             <div className="profile-area">
               <div className="main-profile">
@@ -354,7 +358,7 @@ const Profile = () => {
             >
               Shekru Labs India Pvt. Ltd.
             </a>
-            <p className="text-center font_size_12">v {APP_VERSION}</p>
+            <p className="text-center font_size_12">version {APP_VERSION}</p>
           </div>
         </div>
       </>

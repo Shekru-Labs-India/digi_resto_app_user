@@ -12,6 +12,9 @@ import Header from "../components/Header";
 import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
 import RestaurantSocials from "../components/RestaurantSocials";
+import { isNonProductionDomain } from "../component/config";
+import Notice from "../component/Notice";
+
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -295,6 +298,7 @@ const MyOrder = () => {
       />
 
       <main className="page-content space-top p-b70">
+        {isNonProductionDomain() && <Notice />}
         <div className="container px-1">
           {ongoingOrPlacedOrders.placed.map((order, index) => (
             <OrderCard

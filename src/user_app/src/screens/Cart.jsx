@@ -13,6 +13,7 @@ import NearbyArea from "../component/NearbyArea";
 import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
+import { renderSpicyLevel } from "../component/config";
 const Cart = () => {
     const location = useLocation();
     const magicMessage = location.state?.magicMessage;
@@ -343,7 +344,9 @@ const Cart = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -356,7 +359,9 @@ const Cart = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   
@@ -632,29 +637,7 @@ const Cart = () => {
                             <div className="col-4 d-flex align-items-center ps-4 pe-3">
                               {item.spicy_index && (
                                 <div className="">
-                                  {Array.from({ length: 3 }).map((_, index) => {
-                                    const spicyIndex = parseInt(
-                                      item.spicy_index,
-                                      10
-                                    );
-                                    return index < spicyIndex ? (
-                                      <i
-                                        key={index}
-                                        className={`fa-solid fa-pepper-hot font_size_10 ${
-                                          spicyIndex === 1
-                                            ? "text-success"
-                                            : spicyIndex === 2
-                                            ? "text-warning"
-                                            : "text-danger"
-                                        }`}
-                                      ></i>
-                                    ) : (
-                                      <i
-                                        key={index}
-                                        className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                      ></i>
-                                    );
-                                  })}
+                                  {renderSpicyLevel(item.spicy_index)}
                                 </div>
                               )}
                             </div>

@@ -10,6 +10,7 @@ import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import { renderSpicyLevel } from "../component/config";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -505,29 +506,29 @@ const Search = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
-    // 0 to 0.4: Show no star & value
     if (!numRating || numRating < 0.5) {
       return <i className="font_size_10 text-warning me-1"></i>;
     }
 
-    // 0.5 to 2.5: Show blank star (grey color)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
-    // 3 to 4.5: Show half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
-    // 5: Show full star
     if (numRating === 5) {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   const handleFilter = (filterType) => {
@@ -784,212 +785,234 @@ const Search = () => {
                 onClick={() => document.getElementById("searchInput").focus()}
               ></i>
             </div>
-            
-            {debouncedSearchTerm.trim().length >= 3 && debouncedSearchTerm.trim().length <= 10 && (
-              <div className="d-flex align-items-center mt-2 gap-2">
-                {/* Food Type Filter */}
-                <div className="dropdown">
-                  <button
-                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    style={{height: "38px"}}
-                  >
-                    {selectedFoodType ? (
-                      <div className="d-flex align-items-center">
-                        <i className={`${getFoodTypeStyles(selectedFoodType).icon} me-2`}></i>
-                        <span>{selectedFoodType.charAt(0).toUpperCase() + selectedFoodType.slice(1)}</span>
-                      </div>
-                    ) : (
-                      <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-filter me-2"></i>
-                        <span>Type</span>
-                      </div>
-                    )}
-                  </button>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center" 
-                        onClick={() => handleFilter(null)}
-                      >
-                        <i className="fa-solid fa-utensils me-2"></i>
-                        <span>All</span>
-                      </button>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
-                    {foodTypes.map((type) => (
-                      <li key={type}>
-                        <button 
-                          className="dropdown-item d-flex align-items-center" 
-                          onClick={() => handleFilter(type)}
+
+            {debouncedSearchTerm.trim().length >= 3 &&
+              debouncedSearchTerm.trim().length <= 10 && (
+                <div className="d-flex align-items-center mt-2 gap-2">
+                  {/* Food Type Filter */}
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ height: "38px" }}
+                    >
+                      {selectedFoodType ? (
+                        <div className="d-flex align-items-center">
+                          <i
+                            className={`${
+                              getFoodTypeStyles(selectedFoodType).icon
+                            } me-2`}
+                          ></i>
+                          <span>
+                            {selectedFoodType.charAt(0).toUpperCase() +
+                              selectedFoodType.slice(1)}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="d-flex align-items-center">
+                          <i className="fa-solid fa-filter me-2"></i>
+                          <span>Type</span>
+                        </div>
+                      )}
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handleFilter(null)}
                         >
-                          <i className={`${getFoodTypeStyles(type).icon} me-2`}></i>
-                          <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                          <i className="fa-solid fa-utensils me-2"></i>
+                          <span>All</span>
                         </button>
                       </li>
-                    ))}
-                  </ul>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      {foodTypes.map((type) => (
+                        <li key={type}>
+                          <button
+                            className="dropdown-item d-flex align-items-center"
+                            onClick={() => handleFilter(type)}
+                          >
+                            <i
+                              className={`${getFoodTypeStyles(type).icon} me-2`}
+                            ></i>
+                            <span>
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Price Filter */}
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ height: "38px" }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                        <span>
+                          {priceFilter === "under50"
+                            ? "Under ₹50"
+                            : priceFilter === "under100"
+                            ? "Under ₹100"
+                            : priceFilter === "under200"
+                            ? "Under ₹200"
+                            : priceFilter === "under500"
+                            ? "Under ₹500"
+                            : priceFilter === "under1000"
+                            ? "Under ₹1000"
+                            : priceFilter === "above1000"
+                            ? "Above ₹1000"
+                            : "Price"}
+                        </span>
+                      </div>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter(null)}
+                        >
+                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                          <span>All Prices</span>
+                        </button>
+                      </li>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("under50")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Under ₹50</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("under100")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Under ₹100</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("under200")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Under ₹200</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("under500")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Under ₹500</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("under1000")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Under ₹1000</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handlePriceFilter("above1000")}
+                        >
+                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <span>Above ₹1000</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Spicy Filter */}
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ height: "38px" }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <i className="fa-solid fa-pepper-hot me-2"></i>
+                        <span>
+                          {spicyFilter === 1
+                            ? "Spicy Level 1"
+                            : spicyFilter === 2
+                            ? "Spicy Level 2"
+                            : spicyFilter === 3
+                            ? "Spicy Level 3"
+                            : "Spicy"}
+                        </span>
+                      </div>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handleSpicyFilter(null)}
+                        >
+                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                          <span>All</span>
+                        </button>
+                      </li>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handleSpicyFilter(1)}
+                        >
+                          <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                          <span>Low</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handleSpicyFilter(2)}
+                        >
+                          <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
+                          <span>Medium</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item d-flex align-items-center"
+                          onClick={() => handleSpicyFilter(3)}
+                        >
+                          <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
+                          <span>High</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-
-                {/* Price Filter */}
-                <div className="dropdown">
-                  <button
-                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    style={{height: "38px"}}
-                  >
-                    <div className="d-flex align-items-center">
-                      <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                      <span>
-                        {priceFilter === 'under50' ? 'Under ₹50' :
-                         priceFilter === 'under100' ? 'Under ₹100' :
-                         priceFilter === 'under200' ? 'Under ₹200' :
-                         priceFilter === 'under500' ? 'Under ₹500' :
-                         priceFilter === 'under1000' ? 'Under ₹1000' :
-                         priceFilter === 'above1000' ? 'Above ₹1000' :
-                         'Price'}
-                      </span>
-                    </div>
-                  </button>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter(null)}
-                      >
-                        <i className="fa-solid fa-filter-circle-xmark me-2"></i>
-                        <span>All Prices</span>
-                      </button>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('under50')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Under ₹50</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('under100')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Under ₹100</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('under200')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Under ₹200</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('under500')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Under ₹500</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('under1000')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Under ₹1000</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handlePriceFilter('above1000')}
-                      >
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>Above ₹1000</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Spicy Filter */}
-                <div className="dropdown">
-                  <button
-                    className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    style={{height: "38px"}}
-                  >
-                    <div className="d-flex align-items-center">
-                      <i className="fa-solid fa-pepper-hot me-2"></i>
-                      <span>
-                        {spicyFilter === 1 ? 'Spicy Level 1' :
-                         spicyFilter === 2 ? 'Spicy Level 2' :
-                         spicyFilter === 3 ? 'Spicy Level 3' :
-                         'Spicy'}
-                      </span>
-                    </div>
-                  </button>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handleSpicyFilter(null)}
-                      >
-                        <i className="fa-solid fa-filter-circle-xmark me-2"></i>
-                        <span>All</span>
-                      </button>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handleSpicyFilter(1)}
-                      >
-                        <i className="fa-solid fa-pepper-hot text-success me-2"></i>
-                        <span>Low</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handleSpicyFilter(2)}
-                      >
-                        <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
-                        <span>Medium</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button 
-                        className="dropdown-item d-flex align-items-center"
-                        onClick={() => handleSpicyFilter(3)}
-                      >
-                        <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
-                        <span>High</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            
-
-            
+              )}
           </div>
-
 
           {isLoading && <p>Loading...</p>}
 
@@ -1124,29 +1147,7 @@ const Search = () => {
                           <div className="col-4 d-flex align-items-center ps-4 pe-3">
                             {menu.spicy_index && (
                               <div className="">
-                                {Array.from({ length: 3 }).map((_, index) => {
-                                  const spicyIndex = parseInt(
-                                    menu.spicy_index,
-                                    10
-                                  );
-                                  return index < spicyIndex ? (
-                                    <i
-                                      className={`fa-solid fa-pepper-hot font_size_10 ${
-                                        spicyIndex === 1
-                                          ? "text-success"
-                                          : spicyIndex === 2
-                                          ? "text-warning"
-                                          : "text-danger"
-                                      }`}
-                                      key={index}
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                      key={index}
-                                    ></i>
-                                  );
-                                })}
+                                {renderSpicyLevel(menu.spicy_index)}
                               </div>
                             )}
                           </div>

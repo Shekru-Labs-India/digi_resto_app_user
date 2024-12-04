@@ -13,6 +13,7 @@ import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
+import { isNonProductionDomain } from "../component/config";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -102,7 +103,7 @@ const HomeScreen = () => {
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
           <div
-            className="header-content d-flex justify-content-between"
+            className="header-content space-top d-flex justify-content-between"
             style={{ zIndex: 1040, position: "relative" }}
           >
             <div className="d-flex align-items-center">
@@ -128,9 +129,6 @@ const HomeScreen = () => {
             </div>
           </div>
         </header>
-        <div className="container mt-5">
-          <Notice />
-        </div>
 
         {/* Dark overlay for sidebar */}
         <div
@@ -535,8 +533,9 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content mb-5 p-b70">
+        <main className="page-content space-top mb-5 p-b70">
           <div className="container overflow-hidden pt-0">
+            {/* {isNonProductionDomain() && <Notice />} */}
             <OfferBanner />
             <OrdersPlacedOngoing />
             <ProductCart isVegOnly={isVegOnly} />

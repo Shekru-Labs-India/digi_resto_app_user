@@ -10,6 +10,8 @@ import debounce from "lodash/debounce";
 import { useCart } from "../context/CartContext";
 import { usePopup } from "../context/PopupContext";
 import config from "./config";
+import { renderSpicyLevel } from "./config";
+
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -440,7 +442,9 @@ const getFoodTypeStyles = (foodType) => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 gray-text me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -453,7 +457,9 @@ const getFoodTypeStyles = (foodType) => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
 
@@ -526,7 +532,9 @@ const getFoodTypeStyles = (foodType) => {
                             >
                               <i
                                 className={`${
-                                  menuItem.is_favourite ? "fa-solid fa-heart text-danger" : "fa-regular fa-heart"
+                                  menuItem.is_favourite
+                                    ? "fa-solid fa-heart text-danger"
+                                    : "fa-regular fa-heart"
                                 } fs-6`}
                               ></i>
                             </div>
@@ -546,7 +554,8 @@ const getFoodTypeStyles = (foodType) => {
                             {/* Food Type Indicator */}
                             <div
                               className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                                getFoodTypeStyles(menuItem.menu_food_type).border
+                                getFoodTypeStyles(menuItem.menu_food_type)
+                                  .border
                               }`}
                               style={{
                                 position: "absolute",
@@ -560,7 +569,8 @@ const getFoodTypeStyles = (foodType) => {
                             >
                               <i
                                 className={`${
-                                  getFoodTypeStyles(menuItem.menu_food_type).icon
+                                  getFoodTypeStyles(menuItem.menu_food_type)
+                                    .icon
                                 } font_size_12`}
                               ></i>
                             </div>
@@ -585,14 +595,20 @@ const getFoodTypeStyles = (foodType) => {
                               <div className="col-6 d-flex align-items-center">
                                 <span
                                   className={`ps-2 font_size_10 ${
-                                    getFoodTypeTextStyles(menuItem.category_food_type).textColor
+                                    getFoodTypeTextStyles(
+                                      menuItem.category_food_type
+                                    ).textColor
                                   }`}
                                 >
                                   <i
                                     className={`${
-                                      getFoodTypeTextStyles(menuItem.category_food_type).icon
+                                      getFoodTypeTextStyles(
+                                        menuItem.category_food_type
+                                      ).icon
                                     } ${
-                                      getFoodTypeTextStyles(menuItem.category_food_type).textColor
+                                      getFoodTypeTextStyles(
+                                        menuItem.category_food_type
+                                      ).textColor
                                     } font_size_10 mt-0 me-1`}
                                   ></i>
                                   {menuItem.category_name}
@@ -601,26 +617,7 @@ const getFoodTypeStyles = (foodType) => {
                               <div className="col-4 d-flex align-items-center ps-4 pe-3">
                                 {menuItem.spicy_index && (
                                   <div className="">
-                                    {Array.from({ length: 3 }).map((_, index) => {
-                                      const spicyIndex = parseInt(menuItem.spicy_index, 10);
-                                      return index < spicyIndex ? (
-                                        <i
-                                          className={`fa-solid fa-pepper-hot font_size_10 ${
-                                            spicyIndex === 1
-                                              ? "text-success"
-                                              : spicyIndex === 2
-                                              ? "text-warning"
-                                              : "text-danger"
-                                          }`}
-                                          key={index}
-                                        ></i>
-                                      ) : (
-                                        <i
-                                          className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                          key={index}
-                                        ></i>
-                                      );
-                                    })}
+                                    {renderSpicyLevel(menuItem.spicy_index)}
                                   </div>
                                 )}
                               </div>
@@ -641,7 +638,11 @@ const getFoodTypeStyles = (foodType) => {
                                   {menuItem.offer ? (
                                     <>
                                       <span className="font_size_14 fw-semibold text-info">
-                                        ₹{Math.floor(menuItem.price * (1 - menuItem.offer / 100))}
+                                        ₹
+                                        {Math.floor(
+                                          menuItem.price *
+                                            (1 - menuItem.offer / 100)
+                                        )}
                                       </span>
                                       <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                         ₹{menuItem.price}
