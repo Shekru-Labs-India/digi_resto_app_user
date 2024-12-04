@@ -2,8 +2,12 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useNavigate } from "react-router-dom";
+import Notice from "../component/Notice";
+import config from "../component/config";
+import { isNonProductionDomain } from "../component/config";
 
 const HotelNameAndTable = ({ restaurantName }) => {
+
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
   const tableNumber = localStorage.getItem("tableNumber");
@@ -42,6 +46,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
   }, [sectionId, sectionName]);
 
   const titleCase = (str) => {
+    if (!str) return "";
     return str
       .toLowerCase()
       .split(" ")
@@ -53,9 +58,13 @@ const HotelNameAndTable = ({ restaurantName }) => {
     navigate("/user_app/restaurant");
   };
 
+  const displayName = restaurantName ? titleCase(restaurantName) : "";
+
   return (
-    <div className="container p-0">
-      <div className="d-flex justify-content-between align-items-center my-2">
+    <>
+      {isNonProductionDomain() && <Notice />}
+      <div className="container p-0">
+        <div className="d-flex justify-content-between align-items-center my-2">
         <div className="d-flex align-items-center font_size_14">
           <span
             className="fw-medium"
@@ -63,7 +72,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
             style={{ cursor: "pointer" }}
           >
             <i className="fa-solid fa-store me-2 font_size_12"></i>
-            {restaurantName?.toUpperCase() || ""}
+            {displayName}
           </span>
         </div>
 
@@ -74,8 +83,9 @@ const HotelNameAndTable = ({ restaurantName }) => {
             {displayTableNumber && <> - {tableNumber}</>}
           </span>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

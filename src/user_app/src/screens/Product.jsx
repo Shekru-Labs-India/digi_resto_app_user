@@ -12,10 +12,14 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useCart } from "../context/CartContext";
 import config from "../component/config";
+import { isNonProductionDomain } from "../component/config";
+import Notice from "../component/Notice";
 
 import RestaurantSocials from "../components/RestaurantSocials";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
 import CategorySlider from "./CategorySlider";
+
+import { renderSpicyLevel } from "../component/config";
 // Convert strings to Title Case
 const toTitleCase = (text) => {
   if (!text) return "";
@@ -487,7 +491,9 @@ const Product = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -500,7 +506,9 @@ const Product = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   // Modify the handleMagicClick function
@@ -668,14 +676,14 @@ const Product = () => {
     <div>
       <Header title="Menu" count={menuList.length} />
 
-      <main className={`page-content space-top`}>
+      <main className={`page-content`}>
         <div className="container px-3 py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
           />
         </div>
-
+        {isNonProductionDomain() && <Notice />}
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
           <div className="d-flex justify-content-between mb-3 pt-1">
@@ -962,20 +970,7 @@ const Product = () => {
                           <div className="row">
                             <div className="col-6">
                               <div className="offer-code mt-2">
-                                {Array.from({ length: 3 }).map((_, index) =>
-                                  index < menu.spicy_index ? (
-                                    <i
-                                      className="fa-solid fa-pepper-hot text-danger font_size_12"
-                                      key={index}
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
-                                      style={{ color: "#bbbaba" }}
-                                      key={index}
-                                    ></i>
-                                  )
-                                )}
+                                {renderSpicyLevel(menu.spicy_index)}
                               </div>
                             </div>
                           </div>

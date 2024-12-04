@@ -12,6 +12,8 @@ import { usePopup } from "../context/PopupContext";
 import config from "./config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import Notice from "./Notice";
+import { renderSpicyLevel } from "./config";
+
 const OfferBanner = () => {
   const [userData, setUserData] = useState(null);
   const { restaurantName } = useRestaurantId();
@@ -438,7 +440,9 @@ const OfferBanner = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -451,13 +455,14 @@ const OfferBanner = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   return (
     <div className="dz-box style-2 py-2">
       <div className="m-0">
-        
         <HotelNameAndTable
           restaurantName={restaurantName}
           tableNumber={userData?.tableNumber || "1"}
@@ -599,31 +604,7 @@ const OfferBanner = () => {
                               <div className="col-4 d-flex align-items-center ps-4 pe-3">
                                 {menuItem.spicy_index && (
                                   <div className="">
-                                    {Array.from({ length: 3 }).map(
-                                      (_, index) => {
-                                        const spicyIndex = parseInt(
-                                          menuItem.spicy_index,
-                                          10
-                                        );
-                                        return index < spicyIndex ? (
-                                          <i
-                                            className={`fa-solid fa-pepper-hot font_size_10 ${
-                                              spicyIndex === 1
-                                                ? "text-success"
-                                                : spicyIndex === 2
-                                                ? "text-warning"
-                                                : "text-danger"
-                                            }`}
-                                            key={index}
-                                          ></i>
-                                        ) : (
-                                          <i
-                                            className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                            key={index}
-                                          ></i>
-                                        );
-                                      }
-                                    )}
+                                    {renderSpicyLevel(menuItem.spicy_index)}
                                   </div>
                                 )}
                               </div>

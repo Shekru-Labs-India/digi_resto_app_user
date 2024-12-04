@@ -12,6 +12,7 @@ import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 import config from "../component/config"
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
+import { renderSpicyLevel } from "../component/config";
 const TrackOrder = () => {
 
   // Add these helper functions at the top of your component
@@ -971,7 +972,9 @@ const TrackOrder = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -984,7 +987,9 @@ const TrackOrder = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   // Define getOrderTypeIcon function inside the TrackOrder component
@@ -1057,15 +1062,20 @@ const getOrderTypeIcon = (orderType) => {
                 <div className="col-6 text-start pe-0">
                   {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                   <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                    {getOrderTypeIcon(order_details.order_type) || <i className="fa-solid fa-utensils"></i>}
-                    <span className="ms-2">{order_details.order_type || "Dine In"}</span>
+                    {getOrderTypeIcon(order_details.order_type) || (
+                      <i className="fa-solid fa-utensils"></i>
+                    )}
+                    <span className="ms-2">
+                      {order_details.order_type || "Dine In"}
+                    </span>
                   </span>
                 </div>
                 <div className="col-6 text-end">
                   <div className="font_size_12 gray-text font_size_12 text-nowrap">
                     <span className="fw-medium gray-text">
                       <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                      {titleCase(order_details.section_name)} - {order_details.table_number}
+                      {titleCase(order_details.section_name)} -{" "}
+                      {order_details.table_number}
                     </span>
                   </div>
                 </div>
@@ -1300,31 +1310,7 @@ const getOrderTypeIcon = (orderType) => {
                                 <div className="col-4 d-flex align-items-center ps-4 pe-3">
                                   {menu.spicy_index && (
                                     <div className="">
-                                      {Array.from({ length: 3 }).map(
-                                        (_, index) => {
-                                          const spicyIndex = parseInt(
-                                            menu.spicy_index,
-                                            10
-                                          ); // Parse spicy_index as an integer
-                                          return index < spicyIndex ? (
-                                            <i
-                                              className={`fa-solid fa-pepper-hot font_size_10 ${
-                                                spicyIndex === 1
-                                                  ? "text-success" // Green for level 1
-                                                  : spicyIndex === 2
-                                                  ? "text-warning" // Yellow for level 2
-                                                  : "text-danger" // Red for level 3
-                                              }`}
-                                              key={index}
-                                            ></i>
-                                          ) : (
-                                            <i
-                                              className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                              key={index}
-                                            ></i>
-                                          );
-                                        }
-                                      )}
+                                      {renderSpicyLevel(menu.spicy_index)}
                                     </div>
                                   )}
                                 </div>

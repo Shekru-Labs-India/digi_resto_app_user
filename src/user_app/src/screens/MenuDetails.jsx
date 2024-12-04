@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -11,6 +11,44 @@ import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { usePopup } from "../context/PopupContext";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
+import { renderSpicyLevel } from "../component/config";
+
+// Add this function before your MenuDetails component
+const getFoodTypeStyles = (foodType) => {
+  switch (foodType?.toLowerCase()) {
+    case "veg":
+      return {
+        icon: "fa-solid fa-circle",
+        textColor: "text-success",
+        border: "border-success"
+      };
+    case "nonveg":
+      return {
+        icon: "fa-solid fa-play fa-rotate-270",
+        textColor: "text-danger",
+        border: "border-danger"
+      };
+    case "egg":
+      return {
+        icon: "fa-solid fa-egg",
+        textColor: "gray-text",
+        border: "border-muted"
+      };
+    case "vegan":
+      return {
+        icon: "fa-solid fa-leaf",
+        textColor: "text-success",
+        border: "border-success"
+      };
+    default:
+      return {
+        icon: "fa-solid fa-circle",
+        textColor: "text-success",
+        border: "border-success"
+      };
+  }
+};
+
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -52,13 +90,20 @@ const MenuDetails = () => {
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const storedRestaurantId = localStorage.getItem("restaurantId");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [customerType, setCustomerType] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     return userData?.customer_type || null;
+
+    
   });
 
   const { showLoginPopup } = usePopup();
+
+
+
+  
 
   useEffect(() => {
     // Get user data
@@ -88,6 +133,10 @@ const MenuDetails = () => {
     setCustomerId(storedCustomerId);
     setCustomerType(storedCustomerType);
     setCurrentRestaurantId(initialRestaurantId);
+
+
+
+    
 
     // Clean up function
     return () => {
@@ -206,7 +255,7 @@ const MenuDetails = () => {
             oldPrice,
             description,
             ingredients,
-            images,
+            images: data.details.images,
             menu_cat_name: category_name,
             menu_id: menuId,
             offer,
@@ -439,61 +488,33 @@ const MenuDetails = () => {
     return menuType?.toLowerCase() === "veg";
   };
 
-  // Add slider controls
-  const nextSlide = () => {
-    if (productDetails?.images) {
-      setCurrentSlide((prev) =>
+  // Navigation functions
+  const handleNextSlide = useCallback(() => {
+    if (productDetails?.images?.length) {
+      setCurrentImageIndex((prev) =>
         prev === productDetails.images.length - 1 ? 0 : prev + 1
       );
     }
-  };
+  }, [productDetails?.images]);
 
-  const prevSlide = () => {
-    if (productDetails?.images) {
-      setCurrentSlide((prev) =>
+  const handlePrevSlide = useCallback(() => {
+    if (productDetails?.images?.length) {
+      setCurrentImageIndex((prev) =>
         prev === 0 ? productDetails.images.length - 1 : prev - 1
       );
     }
-  };
+  }, [productDetails?.images]);
 
-  // Add getFoodTypeStyles at component level
-  const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-        };
-    }
-  };
-
-  // Auto slide every 3 seconds
+  // Auto-slide effect
   useEffect(() => {
-    if (productDetails?.images?.length > 1) {
-      const timer = setInterval(nextSlide, 3000);
-      return () => clearInterval(timer);
-    }
-  }, [productDetails]);
+    const timer = setInterval(() => {
+      if (productDetails?.images?.length > 0) {
+        handleNextSlide();
+      }
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [productDetails, handleNextSlide]);
 
   // Add the standardized rating function
   const renderStarRating = (rating) => {
@@ -504,7 +525,9 @@ const MenuDetails = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -517,7 +540,9 @@ const MenuDetails = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
   if (isLoading) {
@@ -543,6 +568,9 @@ const MenuDetails = () => {
       </div>
     );
   }
+
+  console.log("Product Details:", productDetails);
+  console.log("Images Array:", productDetails?.images);
 
   return (
     <>
@@ -573,52 +601,28 @@ const MenuDetails = () => {
                 backgroundColor: "#f6f6f6",
               }}
             >
-              <img
-                className="object-fit-cover"
-                src={images}
-                alt={productDetails.name}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-              {productDetails.is_special && (
-                <i
-                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    height: 17,
-                    width: 17,
-                    zIndex: 2,
-                  }}
-                ></i>
-              )}
-              {productDetails?.images?.length > 0 ? (
+              {console.log("Checking images:", productDetails?.images)}
+              {productDetails?.images && productDetails.images.length > 0 ? (
                 <>
                   <img
                     className="object-fit-cover"
-                    src={productDetails.images[currentSlide]}
+                    src={productDetails.images[currentImageIndex]}
                     alt={productDetails.name}
-                    onError={(e) => {
-                      e.target.src = images;
-                    }}
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       transition: "opacity 0.3s ease",
-                      aspectRatio: "16/9",
+                    }}
+                    onError={(e) => {
+                      e.target.src = images;
                     }}
                   />
 
-                  {/* Navigation Arrows */}
                   {productDetails.images.length > 1 && (
                     <>
                       <div
-                        onClick={prevSlide}
+                        onClick={handlePrevSlide}
                         className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                         style={{
                           position: "absolute",
@@ -635,7 +639,7 @@ const MenuDetails = () => {
                       </div>
 
                       <div
-                        onClick={nextSlide}
+                        onClick={handleNextSlide}
                         className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                         style={{
                           position: "absolute",
@@ -671,14 +675,14 @@ const MenuDetails = () => {
                           <div
                             className=""
                             key={index}
-                            onClick={() => setCurrentSlide(index)}
+                            onClick={() => setCurrentImageIndex(index)}
                             style={{
                               width: "7px",
                               height: "7px",
                               borderRadius: "50%",
                               cursor: "pointer",
                               backgroundColor:
-                                currentSlide === index
+                                currentImageIndex === index
                                   ? "var(--primary)"
                                   : "rgba(128, 128, 128, .6)",
                               // border:
@@ -686,9 +690,9 @@ const MenuDetails = () => {
                               //     ? "none"
                               //     : "1px solid rgba(255, 255, 255, 0.8)",
                               transition: "all 0.3s ease",
-                              opacity: currentSlide === index ? 1 : 0.8,
+                              opacity: currentImageIndex === index ? 1 : 0.8,
                               transform:
-                                currentSlide === index
+                                currentImageIndex === index
                                   ? "scale(1.2)"
                                   : "scale(1)",
                             }}
@@ -709,10 +713,21 @@ const MenuDetails = () => {
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
-                      borderColor: productDetails.menu_food_type?.toLowerCase() === "nonveg" ? "#dc3545" : "#198754"
+                      borderColor:
+                        productDetails.menu_food_type?.toLowerCase() ===
+                        "nonveg"
+                          ? "#dc3545"
+                          : "#198754",
                     }}
                   >
-                    <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_12`}></i>
+                    <i
+                      className={`${
+                        getFoodTypeStyles(productDetails.menu_food_type).icon
+                      } ${
+                        getFoodTypeStyles(productDetails.menu_food_type)
+                          .textColor
+                      } font_size_12`}
+                    ></i>
                   </div>
 
                   {/* Like button */}
@@ -769,10 +784,21 @@ const MenuDetails = () => {
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
-                      borderColor: productDetails.menu_food_type?.toLowerCase() === "nonveg" ? "#dc3545" : "#198754"
+                      borderColor:
+                        productDetails.menu_food_type?.toLowerCase() ===
+                        "nonveg"
+                          ? "#dc3545"
+                          : "#198754",
                     }}
                   >
-                    <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_12`}></i>
+                    <i
+                      className={`${
+                        getFoodTypeStyles(productDetails.menu_food_type).icon
+                      } ${
+                        getFoodTypeStyles(productDetails.menu_food_type)
+                          .textColor
+                      } font_size_12`}
+                    ></i>
                   </div>
 
                   {/* Like button */}
@@ -846,28 +872,28 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0 pt-2">
-                    <div className={`ps-3 ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_10`}>
-                      <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} me-1 ${getFoodTypeStyles(productDetails.menu_food_type).textColor}`}></i>
+                    <div
+                      className={`ps-3 ${
+                        getFoodTypeStyles(productDetails.menu_food_type)
+                          .textColor
+                      } font_size_10`}
+                    >
+                      <i
+                        className={`${
+                          getFoodTypeStyles(productDetails.menu_food_type).icon
+                        } me-1 ${
+                          getFoodTypeStyles(productDetails.menu_food_type)
+                            .textColor
+                        }`}
+                      ></i>
                       {productDetails.menu_cat_name || ""}
                     </div>
                   </div>
 
                   <div className="col-3 ps-4 pt-1 text-center px-0">
                     {productDetails.spicy_index && (
-                      <div className="spicy-index">
-                        {Array.from({ length: 3 }).map((_, index) =>
-                          index < productDetails.spicy_index ? (
-                            <i
-                              key={index}
-                              className="fa-solid fa-pepper-hot text-danger font_size_12 firefill offer-code"
-                            ></i>
-                          ) : (
-                            <i
-                              key={index}
-                              className="fa-solid fa-pepper-hot  gray-text font_size_12 text-secondary opacity-25"
-                            ></i>
-                          )
-                        )}
+                      <div className="">
+                        {renderSpicyLevel(productDetails.spicy_index)}
                       </div>
                     )}
                   </div>

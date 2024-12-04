@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { SidebarToggler } from '../component/Sidebar';
 import Notice from '../component/Notice';
+import { isNonProductionDomain } from "../component/config";
 
 const Header = ({ title, showBack = true, showSidebar = true, count }) => {
     const navigate = useNavigate();
@@ -46,9 +47,7 @@ const Header = ({ title, showBack = true, showSidebar = true, count }) => {
           </div>
         </div>
       </header>
-      <div className="container mt-5">
-        <Notice />
-      </div>
+      
     </>
   );
 };

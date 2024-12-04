@@ -14,6 +14,8 @@ import { getUserData, getRestaurantData } from "../utils/userUtils";
 import { usePopup } from "../context/PopupContext";
 import config from "./config";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
+import { renderSpicyLevel } from "./config";
+
 
 
 
@@ -31,7 +33,9 @@ const renderStarRating = (rating) => {
   }
 
   if (numRating >= 0.5 && numRating <= 2.5) {
-    return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   }
 
   if (numRating >= 3 && numRating <= 4.5) {
@@ -44,7 +48,9 @@ const renderStarRating = (rating) => {
     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
   }
 
-  return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+  return (
+    <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+  );
 };
 
 const ProductCard = ({ isVegOnly }) => {
@@ -942,7 +948,9 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={`${
                           getFoodTypeStyles(menu.menu_food_type).icon
-                        } font_size_12 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}
+                        } font_size_12 ${
+                          getFoodTypeStyles(menu.menu_food_type).textColor
+                        }`}
                       ></i>
                     </div>
 
@@ -986,8 +994,18 @@ const ProductCard = ({ isVegOnly }) => {
                           </div>
                         )} */}
                         <div className="row">
-                          <div className={`col-8 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}>
-                            <i className={`${getFoodTypeStyles(menu.menu_food_type).icon} pe-1 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}></i>
+                          <div
+                            className={`col-8 ${
+                              getFoodTypeStyles(menu.menu_food_type).textColor
+                            }`}
+                          >
+                            <i
+                              className={`${
+                                getFoodTypeStyles(menu.menu_food_type).icon
+                              } pe-1 ${
+                                getFoodTypeStyles(menu.menu_food_type).textColor
+                              }`}
+                            ></i>
                             <span className="font_size_10">
                               {menu.category}
                             </span>
@@ -1012,19 +1030,7 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="row mt-1">
                         <div className="col-9 pe-1">
                           <div>
-                            {Array.from({ length: 3 }).map((_, index) =>
-                              index < menu.spicy_index ? (
-                                <i
-                                  className="fa-solid fa-pepper-hot text-danger font_size_12"
-                                  key={index}
-                                ></i>
-                              ) : (
-                                <i
-                                  className="fa-solid fa-pepper-hot font_size_12 text-secondary opacity-25"
-                                  key={index}
-                                ></i>
-                              )
-                            )}
+                            {renderSpicyLevel(menu.spicy_index)}
                             <div className="price-wrapper d-flex align-items-baseline mt-1">
                               <span className="font_size_14 me-2 text-info fw-semibold">
                                 ₹{menu.price}

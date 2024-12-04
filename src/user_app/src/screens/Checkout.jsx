@@ -407,7 +407,7 @@ const Checkout = () => {
       <Header title="Checkout" count={cartItems.length} />
       <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
-      <main className="page-content space-top mb-5 pb-3">
+      <main className="page-content mb-5 pb-3">
         <div className="container py-0 my-0">
           <HotelNameAndTable
             restaurantName={restaurantName}

@@ -13,6 +13,7 @@ import config from "../component/config";
 import { getUserData, getRestaurantData } from "../utils/userUtils";
 import RestaurantSocials from "../components/RestaurantSocials";
 import "../assets/css/toast.css";
+import { renderSpicyLevel } from "../component/config";
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
@@ -398,7 +399,9 @@ const Wishlist = () => {
     }
 
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return <i className="ri-star-line font_size_10 gray-text me-1"></i>;
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
     }
 
     if (numRating >= 3 && numRating <= 4.5) {
@@ -411,7 +414,9 @@ const Wishlist = () => {
       return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
     }
 
-    return <i className="ri-star-line font_size_10 text-warning me-1"></i>;
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
   };
 
 
@@ -489,10 +494,9 @@ const Wishlist = () => {
 
   return (
     <div className="page-wrapper full-height">
-          <Header title="Favourite" count={wishlistCount} />
+      <Header title="Favourite" count={wishlistCount} />
       <main className="page-content space-top p-b70">
         <div className="container px-3 py-0 mb-0">
-
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={customerType?.tableNumber || "1"}
@@ -732,30 +736,8 @@ const Wishlist = () => {
                                         <div className="col-4 d-flex aign-items-center ps-4 pe-3">
                                           {menu.spicy_index && (
                                             <div className="">
-                                              {Array.from({ length: 3 }).map(
-                                                (_, index) => {
-                                                  const spicyIndex = parseInt(
-                                                    menu.spicy_index,
-                                                    10
-                                                  ); // Parse spicy_index as an integer
-                                                  return index < spicyIndex ? (
-                                                    <i
-                                                      className={`fa-solid fa-pepper-hot font_size_10 ${
-                                                        spicyIndex === 1
-                                                          ? "text-success" // Green for level 1
-                                                          : spicyIndex === 2
-                                                          ? "text-warning" // Yellow for level 2
-                                                          : "text-danger" // Red for level 3
-                                                      }`}
-                                                      key={index}
-                                                    ></i>
-                                                  ) : (
-                                                    <i
-                                                      className="fa-solid fa-pepper-hot font_size_10 text-secondary opacity-25"
-                                                      key={index}
-                                                    ></i>
-                                                  );
-                                                }
+                                              {renderSpicyLevel(
+                                                menu.spicy_index
                                               )}
                                             </div>
                                           )}
