@@ -4,6 +4,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
 import { useLocation } from "react-router-dom";
+import { APP_VERSION } from "../component/config";
 
 export const SidebarToggler = () => {
   const location = useLocation();
@@ -95,11 +96,10 @@ export const SidebarToggler = () => {
         <span className=""> </span>
         <div className="menu-toggler toggler-icon">
           {
-             (
-              <Link to="/user_app/Search">
-                <i className="fa-solid fa-magnifying-glass me-3 fs-6 gray-text"></i>
-              </Link>
-            )}
+            <Link to="/user_app/Search">
+              <i className="fa-solid fa-magnifying-glass me-3 fs-6 gray-text"></i>
+            </Link>
+          }
           <i
             className="fa-solid fa-bars-staggered fs-3"
             onClick={toggleSidebar}
@@ -437,6 +437,7 @@ export const SidebarToggler = () => {
             >
               Shekru Labs India Pvt. Ltd.
             </a>
+            <p className="text-center font_size_12">version {APP_VERSION}</p>
           </div>
         </div>
       </div>

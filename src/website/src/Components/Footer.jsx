@@ -211,6 +211,7 @@ const Footer = () => {
                     >
                       Shekru Labs India Pvt. Ltd.
                     </a>
+                    <p className="text-center font_size_12">version 1.0</p>
                   </span>
                 </p>
               </div>

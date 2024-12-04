@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 // import '../assets/styles.css'
 // import '../assets/custom.css'
-import config from "../component/config";
+import config, { APP_VERSION } from "../component/config";
 import logo from "../assets/logos/menumitra_logo_128.png";
+import Notice from "../component/Notice";
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
@@ -72,6 +73,7 @@ const HotelList = () => {
 
   return (
     <div className="page-wrapper">
+      
       <main className="page-content pt-0">
         <div className="container py-1 px-0">
           <div className="d-flex justify-content-between mb-3">
@@ -223,6 +225,7 @@ const HotelList = () => {
             >
               Shekru Labs India Pvt. Ltd.
             </a>
+            <p className="text-center font_size_12">version {APP_VERSION}</p>
           </div>
         </div>
       </main>

@@ -5,6 +5,7 @@ import HotelList from "./HotelList";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import CompanyVersion from "../constants/CompanyVersion";
 import { Link } from "react-router-dom";
+import Notice from "../component/Notice";
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
@@ -65,6 +66,7 @@ const QRScanner = () => {
 
   return (
     <div>
+      <Notice />
       <div className="container-fluid  d-flex flex-column align-items-center vh-100 ">
         <Link to="/">
           {" "}
@@ -75,6 +77,7 @@ const QRScanner = () => {
             </div>
           </div>
         </Link>
+
         {/* {!showCamera && (
         <button
           className="btn btn-primary my-3 rounded-pill"
