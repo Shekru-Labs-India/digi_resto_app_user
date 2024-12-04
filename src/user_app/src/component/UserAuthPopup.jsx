@@ -636,7 +636,7 @@ const UserAuthPopup = () => {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-success rounded-pill w-100 mx-auto text-dark"
+                  className="btn btn-success rounded-pill w-100 mx-auto text-white"
                   onClick={handleSignIn}
                   disabled={!isMobileValid}
                 >

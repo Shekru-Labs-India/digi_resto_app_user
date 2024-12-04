@@ -11,6 +11,7 @@ import NearbyArea from "../component/NearbyArea";
 import { usePopup } from '../context/PopupContext';
 import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 import RestaurantSocials from "../components/RestaurantSocials";
+import Notice from "../component/Notice";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -97,6 +98,7 @@ const HomeScreen = () => {
 
   return (
     <div>
+         
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
           <div

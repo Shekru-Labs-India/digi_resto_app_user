@@ -962,7 +962,7 @@ const Product = () => {
                           <div className="row">
                             <div className="col-6">
                               <div className="offer-code mt-2">
-                                {Array.from({ length: 5 }).map((_, index) =>
+                                {Array.from({ length: 3 }).map((_, index) =>
                                   index < menu.spicy_index ? (
                                     <i
                                       className="fa-solid fa-pepper-hot text-danger font_size_12"

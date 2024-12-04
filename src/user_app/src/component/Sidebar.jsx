@@ -118,13 +118,13 @@ export const SidebarToggler = () => {
           <div className=" ">
             <Link to="/user_app/Profile">
               <span className="ms-3 pt-4    ">
-                <i
+                {/* <i
                   className={
                     userData?.customer_id
                       ? "fa-solid fa-user me-2 font_size_14"
                       : "fa-regular fa-user me-2 font_size_14"
                   }
-                ></i>
+                ></i> */}
 
                 {userData?.name ? (
                   `Hello, ${toTitleCase(getFirstName(userData.name))}`

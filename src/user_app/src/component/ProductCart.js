@@ -498,8 +498,8 @@ const ProductCard = ({ isVegOnly }) => {
           <i
             className={`fa-solid ${
               isMenuItemInCart(menu.menu_id)
-                ? "fa-solid fa-circle-check"
-                : "fa-solid fa-plus text-secondary"
+                ? "fa-circle-check text-success"
+                : "fa-plus text-secondary"
             } fs-6`}
           ></i>
         </div>
@@ -639,31 +639,36 @@ const ProductCard = ({ isVegOnly }) => {
 
 
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType) {
+    switch (foodType?.toLowerCase()) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+          border: "border-success"
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger",
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+          border: "border-danger"
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg",
+          textColor: "gray-text",
+          border: "border-muted"
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
-          border: "border-success",
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+          border: "border-success"
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+          border: "border-success"
         };
     }
   };
@@ -937,7 +942,7 @@ const ProductCard = ({ isVegOnly }) => {
                       <i
                         className={`${
                           getFoodTypeStyles(menu.menu_food_type).icon
-                        } font_size_12`}
+                        } font_size_12 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}
                       ></i>
                     </div>
 
@@ -981,8 +986,8 @@ const ProductCard = ({ isVegOnly }) => {
                           </div>
                         )} */}
                         <div className="row">
-                          <div className="col-8 text-success">
-                            <i className="fa-solid fa-utensils pe-1"></i>
+                          <div className={`col-8 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}>
+                            <i className={`${getFoodTypeStyles(menu.menu_food_type).icon} pe-1 ${getFoodTypeStyles(menu.menu_food_type).textColor}`}></i>
                             <span className="font_size_10">
                               {menu.category}
                             </span>
@@ -1007,7 +1012,7 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="row mt-1">
                         <div className="col-9 pe-1">
                           <div>
-                            {Array.from({ length: 5 }).map((_, index) =>
+                            {Array.from({ length: 3 }).map((_, index) =>
                               index < menu.spicy_index ? (
                                 <i
                                   className="fa-solid fa-pepper-hot text-danger font_size_12"

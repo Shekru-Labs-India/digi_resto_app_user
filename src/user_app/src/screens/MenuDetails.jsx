@@ -458,31 +458,31 @@ const MenuDetails = () => {
 
   // Add getFoodTypeStyles at component level
   const getFoodTypeStyles = (foodType) => {
-    switch(foodType?.toLowerCase()) {
-      case 'veg':
+    switch (foodType?.toLowerCase()) {
+      case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success"
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
         };
-      case 'nonveg':
+      case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger"
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
         };
-      case 'egg':
+      case "egg":
         return {
-          icon: "fa-solid fa-egg text-warning",
-          border: "border-warning"
+          icon: "fa-solid fa-egg",
+          textColor: "gray-text",
         };
-      case 'vegan':
+      case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
-          border: "border-success"
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success"
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
         };
     }
   };
@@ -701,9 +701,7 @@ const MenuDetails = () => {
                   {/* Veg/Non-veg indicator */}
 
                   <div
-                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                      getFoodTypeStyles(productDetails.menu_food_type).border
-                    }`}
+                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
                     style={{
                       position: "absolute",
                       bottom: "3px",
@@ -711,14 +709,10 @@ const MenuDetails = () => {
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
-                      borderRadius: "3px",
+                      borderColor: productDetails.menu_food_type?.toLowerCase() === "nonveg" ? "#dc3545" : "#198754"
                     }}
                   >
-                    <i
-                      className={`${
-                        getFoodTypeStyles(productDetails.menu_food_type).icon
-                      } font_size_12`}
-                    ></i>
+                    <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_12`}></i>
                   </div>
 
                   {/* Like button */}
@@ -767,9 +761,7 @@ const MenuDetails = () => {
                   />
 
                   <div
-                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                      getFoodTypeStyles(productDetails.menu_food_type).border
-                    }`}
+                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
                     style={{
                       position: "absolute",
                       bottom: "3px",
@@ -777,14 +769,10 @@ const MenuDetails = () => {
                       height: "20px",
                       width: "20px",
                       borderWidth: "2px",
-                      borderRadius: "3px",
+                      borderColor: productDetails.menu_food_type?.toLowerCase() === "nonveg" ? "#dc3545" : "#198754"
                     }}
                   >
-                    <i
-                      className={`${
-                        getFoodTypeStyles(productDetails.menu_food_type).icon
-                      } font_size_12`}
-                    ></i>
+                    <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_12`}></i>
                   </div>
 
                   {/* Like button */}
@@ -834,12 +822,12 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-              {productDetails.is_special && (
+              {/* {productDetails.is_special && (
                 <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
                   <i className="fa-regular fa-star me-2"></i> Special
                   <hr className="mt-2 mb-0" />
                 </div>
-              )}
+              )} */}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -858,16 +846,16 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-5 px-0 pt-2">
-                    <div className="ps-3 text-success font_size_10 ">
-                      <i className="fa-solid fa-utensils  me-1 text-success "></i>
-                      {productDetails.menu_cat_name || "Category Name"}
+                    <div className={`ps-3 ${getFoodTypeStyles(productDetails.menu_food_type).textColor} font_size_10`}>
+                      <i className={`${getFoodTypeStyles(productDetails.menu_food_type).icon} me-1 ${getFoodTypeStyles(productDetails.menu_food_type).textColor}`}></i>
+                      {productDetails.menu_cat_name || ""}
                     </div>
                   </div>
 
                   <div className="col-3 ps-4 pt-1 text-center px-0">
                     {productDetails.spicy_index && (
                       <div className="spicy-index">
-                        {Array.from({ length: 5 }).map((_, index) =>
+                        {Array.from({ length: 3 }).map((_, index) =>
                           index < productDetails.spicy_index ? (
                             <i
                               key={index}
@@ -946,7 +934,7 @@ const MenuDetails = () => {
               <div className="container ps-0 pt-1">
                 <div className="product-info menu_details-description">
                   <div>
-                    <i className="fa-solid fa-spoon me-2"></i>
+                    <i className="fa-solid fa-spoon me-2 mt-4"></i>
                     <span className="text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
