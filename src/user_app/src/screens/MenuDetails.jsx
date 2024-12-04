@@ -101,9 +101,8 @@ const MenuDetails = () => {
 
   const { showLoginPopup } = usePopup();
 
-
-
-  
+  const [originalHalfPrice, setOriginalHalfPrice] = useState(null);
+  const [originalFullPrice, setOriginalFullPrice] = useState(null);
 
   useEffect(() => {
     // Get user data
@@ -291,7 +290,7 @@ const MenuDetails = () => {
     }
   }, [menuId, currentRestaurantId]); // Remove customerId from dependencies
 
-  const fetchHalfFullPrices = async () => {
+  const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
       const response = await fetch(
@@ -300,7 +299,7 @@ const MenuDetails = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: storedRestaurantId,
+            restaurant_id: restaurantId,
             menu_id: menuId,
           }),
         }
@@ -308,18 +307,28 @@ const MenuDetails = () => {
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
-        setHalfPrice(data.menu_detail.half_price);
-        setFullPrice(data.menu_detail.full_price);
-        if (data.menu_detail.half_price === null) {
-          setPortionSize("full");
-        }
-      } else {
-        console.error("API Error:", data.msg);
-        window.showToast("error", "Failed to fetch price information");
+        // Calculate discounted prices if there's an offer
+        const halfPriceWithOffer = data.menu_detail.half_price 
+          ? productDetails.offer 
+            ? Math.floor(data.menu_detail.half_price * (1 - productDetails.offer / 100))
+            : data.menu_detail.half_price
+          : null;
+
+        const fullPriceWithOffer = data.menu_detail.full_price
+          ? productDetails.offer
+            ? Math.floor(data.menu_detail.full_price * (1 - productDetails.offer / 100))
+            : data.menu_detail.full_price
+          : null;
+
+        setHalfPrice(halfPriceWithOffer);
+        setFullPrice(fullPriceWithOffer);
+
+        // Store original prices for display
+        setOriginalHalfPrice(data.menu_detail.half_price);
+        setOriginalFullPrice(data.menu_detail.full_price);
       }
     } catch (error) {
-      console.error("Error fetching half/full prices:", error);
-      window.showToast("error", "Failed to fetch price information");
+      console.clear();
     } finally {
       setIsPriceFetching(false);
     }
@@ -334,7 +343,7 @@ const MenuDetails = () => {
       return;
     }
 
-    fetchHalfFullPrices();
+    fetchHalfFullPrices(menuId);
     setShowModal(true);
   };
 
@@ -1137,45 +1146,71 @@ const MenuDetails = () => {
                 </div>
                 <hr className="my-4" />
                 <div className="mb-2">
-                  <label className="form-label d-flex justify-content-center">
+                  <label className="form-label d-flex justify-content-center my-4">
                     Select Portion Size
                   </label>
-                  <div
-                    className={`d-flex ${
-                      halfPrice !== null
-                        ? "justify-content-between"
-                        : "justify-content-center"
-                    }`}
-                  >
+                  <div className="d-flex justify-content-center">
                     {isPriceFetching ? (
                       <p>Loading prices...</p>
                     ) : (
-                      <>
+                      <div className="w-100">
                         {halfPrice !== null && (
-                          <button
-                            type="button"
-                            className={`btn px-4 font_size_14 ${
-                              portionSize === "half"
-                                ? "btn-primary"
-                                : "btn-outline-primary"
-                            }`}
+                          <div 
+                            className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3 cursor-pointer"
                             onClick={() => setPortionSize("half")}
+                            style={{ cursor: 'pointer' }}
                           >
-                            Half (₹{halfPrice})
-                          </button>
+                            <div className="form-check">
+                              <input
+                                type="radio"
+                                className="form-check-input"
+                                id="halfPortion"
+                                name="portionSize"
+                                checked={portionSize === "half"}
+                                onChange={() => setPortionSize("half")}
+                              />
+                              <label className="form-check-label font_size_14" htmlFor="halfPortion">
+                                Half
+                              </label>
+                            </div>
+                            <div>
+                              <span className="font_size_14 fw-semibold text-info">₹{halfPrice}</span>
+                              {productDetails.offer > 0 && (
+                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                  ₹{originalHalfPrice}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         )}
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
+                        <div 
+                          className="d-flex justify-content-between align-items-center border-bottom pb-3"
                           onClick={() => setPortionSize("full")}
+                          style={{ cursor: 'pointer' }}
                         >
-                          Full (₹{fullPrice})
-                        </button>
-                      </>
+                          <div className="form-check">
+                            <input
+                              type="radio"
+                              className="form-check-input"
+                              id="fullPortion"
+                              name="portionSize"
+                              checked={portionSize === "full"}
+                              onChange={() => setPortionSize("full")}
+                            />
+                            <label className="form-check-label font_size_14" htmlFor="fullPortion">
+                              Full
+                            </label>
+                          </div>
+                          <div>
+                            <span className="font_size_14 fw-semibold text-info">₹{fullPrice}</span>
+                            {productDetails.offer > 0 && (
+                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                ₹{originalFullPrice}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
