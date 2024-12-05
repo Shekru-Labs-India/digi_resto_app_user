@@ -260,6 +260,13 @@ const ProductCard = ({ isVegOnly }) => {
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
       }
+      if (data.st === 2){
+           showLoginPopup();
+          //  let userData = JSON.parse(localStorage.getItem("userData"));
+          //  delete userData.customer_id;
+          localStorage.removeItem("userData");
+          navigate("/user_app/Profile");
+      }
     } catch (error) {
       console.clear();
     }
