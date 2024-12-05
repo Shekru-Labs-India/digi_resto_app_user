@@ -15,9 +15,7 @@ import { usePopup } from "../context/PopupContext";
 import config from "./config";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
 import { renderSpicyLevel } from "./config";
-
-
-
+import AddToCartUI from "../components/AddToCartUI";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -1060,142 +1058,27 @@ const ProductCard = ({ isVegOnly }) => {
       </div>
 
       {showModal && (
-        <div
-          className="modal fade show d-flex align-items-center justify-content-center"
-          style={{ display: "block" }}
-          onClick={handleModalClick}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div
-              className="modal-content"
-              style={{
-                width: "350px",
-                margin: "auto",
-              }}
-            >
-              <div className="modal-header ps-3 pe-2">
-                <div className="col-10 text-start">
-                  <div className="modal-title font_size_16 fw-medium">
-                    Add {selectedMenu.name} to Cart
-                  </div>
-                </div>
-
-                <div className="col-2 text-end">
-                  <div className="d-flex justify-content-end">
-                    <button
-                      className="btn p-0 fs-3 gray-text"
-                      onClick={() => setShowModal(false)}
-                      aria-label="Close"
-                    >
-                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-body py-2 px-3">
-                <div className="mb-3 mt-0">
-                  <label
-                    htmlFor="notes"
-                    className="form-label d-flex justify-content-start font_size_14 fw-normal"
-                  >
-                    Special Instructions
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control font_size_16 border border-dark rounded-4"
-                    id="notes"
-                    rows="2"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Add any special instructions here..."
-                  />
-                  <p
-                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() =>
-                      handleSuggestionClick("Make it more sweet 😋")
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more sweet 😋
-                  </p>
-                  <p
-                    className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                    onClick={() => handleSuggestionClick("Make it more spicy ")}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <i className="fa-solid fa-comment-dots me-2"></i> Make it
-                    more spicy
-                  </p>
-                </div>
-                <hr className="my-4" />
-                <div className="mb-2">
-                  <label className="form-label d-flex justify-content-center">
-                    Select Portion Size
-                  </label>
-                  <div
-                    className={`d-flex ${
-                      halfPrice !== null
-                        ? "justify-content-between"
-                        : "justify-content-center"
-                    }`}
-                  >
-                    {isPriceFetching ? (
-                      <p>Loading prices...</p>
-                    ) : (
-                      <>
-                        {halfPrice !== null && (
-                          <button
-                            type="button"
-                            className={`btn px-4 font_size_14 ${
-                              portionSize === "half"
-                                ? "btn-primary"
-                                : "btn-outline-primary"
-                            }`}
-                            onClick={() => setPortionSize("half")}
-                          >
-                            Half (₹{halfPrice})
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className={`btn px-4 font_size_14 ${
-                            portionSize === "full"
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
-                          onClick={() => setPortionSize("full")}
-                        >
-                          Full (₹{fullPrice})
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <hr className="my-4" />
-              <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3 ">
-                <button
-                  type="button"
-                  className="border border-1 border-muted bg-transparent px-4 font_size_14  rounded-pill text-dark"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-primary rounded-pill"
-                  onClick={handleConfirmAddToCart}
-                  disabled={isPriceFetching || (!halfPrice && !fullPrice)}
-                >
-                  <i className="fa-solid fa-plus pe-1 text-white"></i>
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddToCartUI
+          showModal={showModal}
+          setShowModal={setShowModal}
+          productDetails={selectedMenu || {}}
+          notes={notes}
+          setNotes={setNotes}
+          portionSize={portionSize}
+          setPortionSize={setPortionSize}
+          halfPrice={halfPrice}
+          fullPrice={fullPrice}
+          originalHalfPrice={selectedMenu?.half_price}
+          originalFullPrice={selectedMenu?.full_price}
+          isPriceFetching={isPriceFetching}
+          handleConfirmAddToCart={handleConfirmAddToCart}
+          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleModalClick={(e) => {
+            if (e.target.classList.contains('modal')) {
+              setShowModal(false);
+            }
+          }}
+        />
       )}
       {showModal && <div className="modal-backdrop fade show"></div>}
 
