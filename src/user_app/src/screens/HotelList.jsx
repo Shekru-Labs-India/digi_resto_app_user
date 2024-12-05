@@ -73,98 +73,110 @@ const HotelList = () => {
 
   return (
     <div className="page-wrapper">
-      
       <main className="page-content pt-0">
-        <div className="container py-1 px-0">
-          <div className="d-flex justify-content-between mb-3">
-            <div className="btn-group btn-group-sm">
-              <button
-                className={`btn fw-normal p-2 btn-outline-info shadow-lg ${
-                  activeFilter === "all" ? "active text-white" : ""
-                }`}
-                onClick={() => handleFilter("all")}
-              >
-                All
-              </button>
-              <button
-                className={`btn fw-normal p-2 btn-outline-success shadow-lg ${
-                  activeFilter === "veg" ? "active text-white" : ""
-                }`}
-                onClick={() => handleFilter("veg")}
-              >
-                Veg
-              </button>
-              <button
-                className={`btn fw-normal p-2 btn-outline-warning shadow-lg ${
-                  activeFilter === "nonveg" ? "active text-white" : ""
-                }`}
-                onClick={() => handleFilter("nonveg")}
-              >
-                Non-Veg
-              </button>
-            </div>
-            <div className="btn-group btn-group-sm">
-              <button
-                className={`btn p-2 btn-outline-info shadow-lg ${
-                  activeStatusFilter === "all" ? "active text-white" : ""
-                }`}
-                onClick={() => handleStatusFilter("all")}
-              >
-                All
-              </button>
-              <button
-                className={`btn p-2 btn-outline-success shadow-lg ${
-                  activeStatusFilter === "open" ? "active text-white" : ""
-                }`}
-                onClick={() => handleStatusFilter("open")}
-              >
-                Open
-              </button>
-              <button
-                className={`btn p-2 btn-outline-dark shadow-lg ${
-                  activeStatusFilter === "closed" ? "active text-white" : ""
-                }`}
-                onClick={() => handleStatusFilter("closed")}
-              >
-                Closed
-              </button>
+        <div className="d-flex flex-column">
+          {/* Fixed Header with Filters */}
+          <div className="container py-1 px-0">
+            <div className="d-flex justify-content-between mb-3">
+              <div className="btn-group btn-group-sm">
+                <button
+                  className={`btn fw-normal p-2 btn-outline-info shadow-lg ${
+                    activeFilter === "all" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleFilter("all")}
+                >
+                  All
+                </button>
+                <button
+                  className={`btn fw-normal p-2 btn-outline-success shadow-lg ${
+                    activeFilter === "veg" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleFilter("veg")}
+                >
+                  Veg
+                </button>
+                <button
+                  className={`btn fw-normal p-2 btn-outline-warning shadow-lg ${
+                    activeFilter === "nonveg" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleFilter("nonveg")}
+                >
+                  Non-Veg
+                </button>
+              </div>
+              <div className="btn-group btn-group-sm">
+                <button
+                  className={`btn p-2 btn-outline-info shadow-lg ${
+                    activeStatusFilter === "all" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleStatusFilter("all")}
+                >
+                  All
+                </button>
+                <button
+                  className={`btn p-2 btn-outline-success shadow-lg ${
+                    activeStatusFilter === "open" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleStatusFilter("open")}
+                >
+                  Open
+                </button>
+                <button
+                  className={`btn p-2 btn-outline-dark shadow-lg ${
+                    activeStatusFilter === "closed" ? "active text-white" : ""
+                  }`}
+                  onClick={() => handleStatusFilter("closed")}
+                >
+                  Closed
+                </button>
+              </div>
             </div>
           </div>
-          {filteredHotels.length > 0 ? (
-            filteredHotels.map((hotel) => (
-              <div className="card rounded-4" key={hotel.restaurant_id}>
-                {hotel.is_open ? (
-                  <Link
-                    to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
-                    onClick={() => {
-                      localStorage.setItem("sectionId", hotel.section_id);
-                      localStorage.setItem("restaurantCode", hotel.code);
-                    }}
-                  >
+
+          {/* Scrollable Hotel List */}
+          <div
+            className="container py-1 px-0 flex-grow-1 scrollable-container"
+            // style={{
+            //   overflowY: 'auto',
+            //   maxHeight: 'calc(85vh - 250px)' // Adjust based on your header and footer height
+            // }}
+          >
+            {filteredHotels.length > 0 ? (
+              filteredHotels.map((hotel) => (
+                <div className="card rounded-4" key={hotel.restaurant_id}>
+                  {hotel.is_open ? (
+                    <Link
+                      to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
+                      onClick={() => {
+                        localStorage.setItem("sectionId", hotel.section_id);
+                        localStorage.setItem("restaurantCode", hotel.code);
+                      }}
+                    >
+                      <CardContent hotel={hotel} />
+                    </Link>
+                  ) : (
                     <CardContent hotel={hotel} />
-                  </Link>
-                ) : (
-                  <CardContent hotel={hotel} />
-                )}
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="card rounded-4 p-0 text-center">
+                <div className="card-body">
+                  <i className="ri-restaurant-2-line font_size_24 mb-2 text-muted"></i>
+                  <h5 className="text-muted mb-2">No Restaurants Found</h5>
+                  <p className="text-muted font_size_14">
+                    {activeFilter !== "all" && activeStatusFilter !== "all"
+                      ? `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
+                      : activeFilter !== "all"
+                      ? `No ${activeFilter} restaurants available`
+                      : activeStatusFilter !== "all"
+                      ? `No restaurants are currently ${activeStatusFilter}`
+                      : "No restaurants available at the moment"}
+                  </p>
+                </div>
               </div>
-            ))
-          ) : (
-            <div className="card rounded-4 p-0 text-center">
-              <div className="card-body">
-                <i className="ri-restaurant-2-line font_size_24 mb-2 text-muted"></i>
-                <h5 className="text-muted mb-2">No Restaurants Found</h5>
-                <p className="text-muted font_size_14">
-                  {activeFilter !== "all" && activeStatusFilter !== "all"
-                    ? `No ${activeFilter} restaurants are currently ${activeStatusFilter}`
-                    : activeFilter !== "all"
-                    ? `No ${activeFilter} restaurants available`
-                    : activeStatusFilter !== "all"
-                    ? `No restaurants are currently ${activeStatusFilter}`
-                    : "No restaurants available at the moment"}
-                </p>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <div className="align-bottom border-top">
           <div className="d-flex justify-content-center py-0">

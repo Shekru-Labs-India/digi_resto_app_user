@@ -1184,3 +1184,41 @@ hr.dashed {
   background-size: 500% auto;
   animation: textShine 5s ease-in-out infinite alternate;
 }
+
+
+
+
+
+
+
+
+
+.scrollable-container {
+  overflow-y: auto;
+  max-height: calc(85vh - 250px);
+  -webkit-overflow-scrolling: touch;
+  /* For smooth scrolling on iOS */
+  scrollbar-width: thin;
+  /* For Firefox */
+  scrollbar-color: #888 #f1f1f1;
+  /* For Firefox */
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+.scrollable-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
