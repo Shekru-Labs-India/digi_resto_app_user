@@ -788,7 +788,8 @@ const Search = () => {
             </div>
 
             {debouncedSearchTerm.trim().length >= 3 &&
-              debouncedSearchTerm.trim().length <= 10 && (
+              debouncedSearchTerm.trim().length <= 10 &&
+              searchedMenu.length > 0 && (
                 <div className="d-flex align-items-center mt-2 gap-2">
                   {/* Food Type Filter */}
                   <div className="dropdown">
@@ -1013,9 +1014,17 @@ const Search = () => {
                   </div>
                 </div>
               )}
+
+            {debouncedSearchTerm.trim().length >= 3 &&
+              debouncedSearchTerm.trim().length <= 10 &&
+              searchedMenu.length === 0 && (
+                <div className="d-flex justify-content-center align-items-center mt-3">
+                  <p className="text-muted text-center">No menu items found</p>
+                </div>
+              )}
           </div>
 
-          {isLoading && <p>Loading...</p>}
+          {/* {isLoading && <p>Loading...</p>} */}
 
           {searchedMenu.map((menu, index) => (
             <div className="py-1 px-0" key={index}>
@@ -1252,7 +1261,7 @@ const Search = () => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

@@ -1757,7 +1757,7 @@ export const CircularCountdown = ({
       const currentCustomerId =
         userData?.customer_id || localStorage.getItem("customer_id");
       const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
-      const sectionId = order.section_id;
+ const sectionId = userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
 
