@@ -121,14 +121,17 @@ const AddToCartUI = ({
                             </label>
                           </div>
                           <div>
-                            <span className="font_size_14 fw-semibold text-info">
-                              ₹{halfPrice}
-                            </span>
-                            {productDetails.offer > 0 && (
-                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                ₹{originalHalfPrice}
+                           
+                            <div className="d-flex align-items-center">
+                              <span className="font_size_14 fw-semibold text-info">
+                                ₹{Math.floor(halfPrice * (1 - productDetails.offer / 100))}
                               </span>
-                            )}
+                              {productDetails.offer > 0 && (
+                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                  ₹{halfPrice}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -154,14 +157,17 @@ const AddToCartUI = ({
                           </label>
                         </div>
                         <div>
-                          <span className="font_size_14 fw-semibold text-info">
-                            ₹{fullPrice}
-                          </span>
-                          {productDetails.offer > 0 && (
-                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                              ₹{originalFullPrice}
+                          
+                          <div className="d-flex align-items-center">
+                            <span className="font_size_14 fw-semibold text-info">
+                              ₹{Math.floor(fullPrice * (1 - productDetails.offer / 100))}
                             </span>
-                          )}
+                            {productDetails.offer > 0 && (
+                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                ₹{fullPrice}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
