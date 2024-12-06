@@ -1029,8 +1029,7 @@ console.log(customerName);
                     </button>
 
                     <button
-                      className="btn text-dark w-100"
-                      style={{ background: "white", border: "1px solid #ccc" }}
+                      className="btn text-dark w-100 bg-white border"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1265,7 +1264,7 @@ console.log(customerName);
                         className="btn btn-danger rounded-pill text-nowrap text-white px-3"
                         onClick={handleConfirmCancel}
                       >
-                        <i class="ri-close-circle-line text-white me-2 fs-5"></i>
+                        <i class="fa-regular fa-circle-xmark text-white me-2 fs-5"></i>
                         Confirm Cancel
                       </button>
                     </span>
@@ -1596,7 +1595,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                       {activeTab === "cancelled" && (
                         <div className="text-center">
                           <span className="text-danger">
-                            <i className="ri-close-circle-line me-1"></i>
+                            <i className="fa-regular fa-circle-xmark me-1"></i>
                             Order cancelled
                           </span>
                         </div>

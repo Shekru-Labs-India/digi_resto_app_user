@@ -698,7 +698,7 @@ const Wishlist = () => {
                                         </div>
                                         <div className="col-2 text-end font_size_10 ">
                                           <div
-                                            className="d-flex align-items-center justify-content-end"
+                                            className="d-flex align-items-center ps-1"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               handleRemoveItemClick(
@@ -775,7 +775,7 @@ const Wishlist = () => {
                                             )}
                                           </p>
                                         </div>
-                                        <div className="col-7 d-flex justify-content-end pe-3 pb-2">
+                                        <div className="col-7 d-flex justify-content-end pe-3 pt-2 pb-2">
                                           {customerId && 
                                            menu.restaurant_id === restaurantId && 
                                            !isCartFromDifferentRestaurant(menu.restaurant_id) && (

@@ -1224,7 +1224,7 @@ const Search = () => {
                               <i
                                 className={`fa-solid ${
                                   isMenuItemInCart(menu.menu_id)
-                                    ? "fa-solid fa-circle-check"
+                                    ? "fa-solid fa-circle-check text-success"
                                     : "fa-solid fa-plus text-secondary"
                                 } fs-6`}
                               ></i>

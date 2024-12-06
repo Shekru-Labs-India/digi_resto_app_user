@@ -1024,7 +1024,7 @@ const Product = () => {
                                 <i
                                   className={`fa-solid ${
                                     isMenuItemInCart(menu.menu_id)
-                                      ? "fa-circle-check "
+                                      ? "fa-circle-check text-success"
                                       : "fa-solid fa-plus text-secondary"
                                   } fs-6 `}
                                 ></i>

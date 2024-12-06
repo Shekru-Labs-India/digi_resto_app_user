@@ -683,7 +683,7 @@ const getFoodTypeStyles = (foodType) => {
                                     <i
                                       className={`fa-solid ${
                                         isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check"
+                                          ? "fa-solid fa-circle-check text-success"
                                           : "fa-solid fa-plus text-secondary"
                                       } fs-6`}
                                     ></i>
@@ -745,7 +745,7 @@ const getFoodTypeStyles = (foodType) => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

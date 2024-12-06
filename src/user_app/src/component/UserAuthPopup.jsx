@@ -385,7 +385,7 @@ const UserAuthPopup = () => {
                     key={index}
                     ref={(el) => (otpInputRefs.current[index] = el)}
                     type="number" 
-                    className="form-control text-center d-flex align-items-center border border-1"
+                    className="form-control text-center d-flex align-items-center border border-1 rounded-3 p-0"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}

@@ -28,19 +28,19 @@ window.showToast = function(type, message) {
   let title;
   switch (type) {
     case "success":
-      iconClass = "ri-check-line";
+      iconClass = "fa-solid fa-check text-success";
       title = "Success";
       break;
     case "error":
-      iconClass = "ri-close-circle-line";
+      iconClass = "fa-regular fa-circle-xmark text-danger";
       title = "Error";
       break;
     case "info":
-      iconClass = "ri-information-line";
+      iconClass = "fa-solid fa-circle-info text-info";
       title = "Info";
       break;
     case "warning":
-      iconClass = "ri-alert-line";
+      iconClass = "fa-solid fa-triangle-exclamation text-warning";
       title = "Warning";
       break;
     default:
@@ -50,14 +50,14 @@ window.showToast = function(type, message) {
 
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <div class="toast-content">
+    <div class="toast-content ">
       <i class="toast-icon ${iconClass}"></i>
-      <div class="message">
-        <span class="text-title">${title}</span>
-        <span class="text-body text-dark">${message}</span>
+      <div class="message ">
+        <span class="text-title text-success">${title}</span>
+        <span class="text-body text-success">${message}</span>
       </div>
     </div>
-    <span class="close" onclick="window.hideToast()">    <i class="fa-solid fa-xmark"></i></span>
+    <span class="close" onclick="window.hideToast()">    <i class="fa-solid fa-xmark gray-text"></i></span>
     <div class="progress-bar"></div>`;
 
   toast.classList.add("show");

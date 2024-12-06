@@ -337,7 +337,8 @@ const ProductCard = ({ isVegOnly }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === "guest") {
-      handleUnauthorizedFavorite();
+      window.showToast("info", "Please login to use favourite functionality");
+      showLoginPopup();
       return;
     }
 
@@ -387,17 +388,20 @@ const ProductCard = ({ isVegOnly }) => {
           window.showToast(
             "success",
             updatedFavoriteStatus
-              ? "Item has been added to your favourite."
-              : "Item has been removed from your favourite."
+              ? "Item has been removed from your favourites."
+              : "Item has been added to your favourites."
           );
-        } else {
+          
+        } 
+        
+        else {
           console.clear();
-          window.showToast("error", "Failed to update favorite status");
+          window.showToast("error", "Failed to update favourite status");
         }
       }
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to update favorite status");
+      window.showToast("error", "Failed to update favourite status");
     }
   };
 
@@ -471,7 +475,6 @@ const ProductCard = ({ isVegOnly }) => {
     }
 
     setSelectedMenu(menu);
-    fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
 
@@ -519,27 +522,31 @@ const ProductCard = ({ isVegOnly }) => {
     [handleAddToCartClick, isMenuItemInCart]
   );
 
-  const handleConfirmAddToCart = async (e) => {
-    e.preventDefault(); // Prevent event bubbling
-    e.stopPropagation(); // Stop event propagation
+  const handleConfirmAddToCart = async () => {
+    if (!selectedMenu) return;
 
     try {
-      const itemToAdd = {
-        ...selectedMenu,
-        half_or_full: portionSize,
-        notes: notes,
-        quantity: 1, // Explicitly set quantity to 1
-      };
+      await addToCart(
+        {
+          ...selectedMenu,
+          quantity: 1,
+          notes,
+          half_or_full: portionSize,
+          price: portionSize === "half" ? halfPrice : fullPrice,
+          restaurant_id: restaurantId,
+        },
+        restaurantId
+      );
 
-      await addToCart(itemToAdd, restaurantId);
+      window.showToast("success", `${selectedMenu.name} added to cart`);
+
       setShowModal(false);
       setNotes("");
       setPortionSize("full");
-
-      // Show success message or toast here if needed
+      setSelectedMenu(null);
     } catch (error) {
-      // Handle error appropriately
-      console.error("Error adding to cart:", error);
+      console.clear();
+      window.showToast("error", "Failed to add item to cart. Please try again.");
     }
   };
 

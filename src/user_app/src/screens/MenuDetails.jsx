@@ -1045,7 +1045,7 @@ const MenuDetails = () => {
                       className="btn btn-outline-primary rounded-pill"
                       disabled
                     >
-                      <i className="ri-check-line pe-1"></i>
+                      <i className="fa-solid fa-check pe-1"></i>
                       <div className="font-poppins text-nowrap">Ordered</div>
                     </button>
                   ) : isMenuItemInCart(menuId) ? (

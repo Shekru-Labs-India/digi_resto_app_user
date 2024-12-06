@@ -312,7 +312,7 @@ const OfferBanner = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {
@@ -670,7 +670,7 @@ const OfferBanner = () => {
                                     <i
                                       className={`fa-solid ${
                                         isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check"
+                                          ? "fa-solid fa-circle-check text-success  "
                                           : "fa-solid fa-plus text-secondary"
                                       } fs-6`}
                                     ></i>
@@ -732,7 +732,7 @@ const OfferBanner = () => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

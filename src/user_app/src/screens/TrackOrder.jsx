@@ -645,7 +645,7 @@ const TrackOrder = () => {
     switch (status?.toLowerCase()) {
       case "canceled":
       case "cancle":
-        return "ri-close-circle-line text-danger";
+        return "fa-regular fa-circle-xmark text-danger";
       case "ongoing":
         return "fa-solid fa-hourglass-half text-secondary opacity-25 font_size_14";
       case "placed":

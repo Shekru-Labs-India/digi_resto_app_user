@@ -38,7 +38,7 @@ const Checkout = () => {
   const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [cartId, setCartId] = useState(null);
-
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
 
@@ -129,6 +129,7 @@ const Checkout = () => {
         setDiscount(parseFloat(data.discount_amount));
         setGrandTotal(parseFloat(data.grand_total));
         setCartId(data.cart_id);
+        setTotalAfterDiscount(parseFloat(data.total_after_discount));
       } else {
         console.error("Failed to fetch cart details:", response.data.msg);
       }
@@ -748,6 +749,32 @@ const Checkout = () => {
                   </div>
                   <hr className="me-0 p-0 m-0 text-primary" />
                 </div>
+
+                <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="ps-2 font_size_14 gray-text">
+                      Discount{" "}
+                      <span className="gray-text small-number">
+                        ({discountPercent}%)
+                      </span>
+                    </span>
+                    <span className="pe-2 font_size_14 gray-text">
+                      -₹{discount.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="col-12 pt-0">
+                  <div className="d-flex justify-content-between align-items-center py-0">
+                    <span className="font_size_14 gray-text">
+                      Total after discount
+                    </span>
+                    <span className="font_size_14 gray-text">
+                      ₹{totalAfterDiscount.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="col-12 pt-0 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
                     <span className="ps-2 font_size_14 gray-text">
@@ -761,6 +788,7 @@ const Checkout = () => {
                     </span>
                   </div>
                 </div>
+
                 <div className="col-12 mb-0 py-1 px-2">
                   <div className="d-flex justify-content-between align-items-center py-0">
                     <span className="ps-2 font_size_14 gray-text">
@@ -774,20 +802,9 @@ const Checkout = () => {
                     </span>
                   </div>
                 </div>
-                <div className="col-12 mb-0 pt-0 pb-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0 pb-2">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Discount{" "}
-                      <span className="gray-text small-number">
-                        ({discountPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      -₹{discount.toFixed(2)}
-                    </span>
-                  </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
-                </div>
+
+                <hr className="me-0 p-0 m-0 text-primary" />
+
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
                     <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
