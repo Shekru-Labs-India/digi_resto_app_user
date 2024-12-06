@@ -417,13 +417,21 @@ const Checkout = () => {
         </div>
 
         {showOrderTypeModal && (
-          <div className="popup-overlay">
+          <div 
+            className="popup-overlay"
+            onClick={(e) => {
+              // Close modal only if the overlay itself is clicked
+              if (e.target.className === 'popup-overlay') {
+                setShowOrderTypeModal(false);
+              }
+            }}
+          >
             <div className="modal-dialog w-75" role="document">
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
-                  <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                  <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
                     Select Order Type
-                  </h5>
+                  </div>
                   {/* <button
                     className="btn p-0 fs-3 gray-text"
                     onClick={() => setShowOrderTypeModal(false)}
@@ -527,9 +535,9 @@ const Checkout = () => {
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
-                    <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
                       Existing Order Found
-                    </h5>
+                    </div>
                     <button
                       className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowExistingOrderModal(false)}
@@ -589,7 +597,7 @@ const Checkout = () => {
                 role="document"
               >
                 <div className="modal-content">
-                  <h5 className="modal-title border-bottom py-2 text-center">
+                  <h5 className="modal-title border-bottom py-2 text-center text-dark">
                     Success
                   </h5>
                   <div className="modal-header py-0">

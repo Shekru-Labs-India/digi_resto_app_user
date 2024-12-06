@@ -443,15 +443,15 @@ const ProductCard = ({ isVegOnly }) => {
       );
 
       const data = await response.json();
-      if (response.ok && data.st === 1) {
+      if (data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
+        if (data.menu_detail.half_price === null) {
+          setPortionSize("full");
+        }
       } else {
         console.clear();
-        window.showToast(
-          "error",
-          data.msg || "Failed to fetch price information"
-        );
+        window.showToast("error", data.msg || "Failed to fetch price information");
       }
     } catch (error) {
       console.clear();
@@ -470,11 +470,12 @@ const ProductCard = ({ isVegOnly }) => {
     }
 
     if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
+      window.showToast("info", "This item is already in your cart");
       return;
     }
 
     setSelectedMenu(menu);
+    fetchHalfFullPrices(menu.menu_id);
     setShowModal(true);
   };
 

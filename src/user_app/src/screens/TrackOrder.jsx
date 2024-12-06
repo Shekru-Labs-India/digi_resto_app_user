@@ -13,6 +13,7 @@ import { useCart } from "../context/CartContext";
 import config from "../component/config"
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
+import { usePopup } from "../context/PopupContext";
 const TrackOrder = () => {
 
   // Add these helper functions at the top of your component
@@ -491,18 +492,20 @@ const TrackOrder = () => {
     };
   }, []);
 
-  const handleUnauthorizedFavorite = () => {
+  const { showLoginPopup } = usePopup();
+
+  const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favourite functionality");
-   
+    showLoginPopup();
   };
 
   const handleLikeClick = async (menu, e) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === "guest") {
-      handleUnauthorizedFavorite();
+      handleUnauthorizedFavorite(navigate);
       return;
     }
 

@@ -92,7 +92,7 @@ const OfferBanner = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_special_menu_list`,
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,16 +109,22 @@ const OfferBanner = () => {
 
       const data = await response.json();
 
-      if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
-        const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
+      if (data.st === 1) {
+        // Format all menu items without filtering for is_special
+        const formattedMenuItems = data.data.menus.map((menu) => ({
           ...menu,
           name: menu.menu_name,
           category_name: menu.category_name,
+          image: menu.image || images,
           oldPrice: menu.offer ? menu.price : null,
           price: menu.offer
             ? Math.floor(menu.price * (1 - menu.offer / 100))
             : menu.price,
           is_favourite: menu.is_favourite === 1,
+          menu_food_type: menu.menu_food_type?.toLowerCase(),
+          category_food_type: menu.category_food_type?.toLowerCase(),
+          rating: parseFloat(menu.rating) || 0,
+          spicy_index: parseInt(menu.spicy_index) || 0
         }));
 
         setMenuItems(formattedMenuItems);

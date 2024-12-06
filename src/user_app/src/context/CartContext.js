@@ -71,7 +71,6 @@ export const CartProvider = ({ children }) => {
   const addToCart = async (item, restaurantId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id) {
-     
       throw new Error("User not logged in");
     }
   
@@ -102,26 +101,24 @@ export const CartProvider = ({ children }) => {
             menu_id: item.menu_id,
             quantity: item.quantity || 1,
             half_or_full: item.half_or_full,
-            notes: item.notes,
+            comment: item.comment,
           }),
         }
       );
-  
+
       const data = await response.json();
       if (data.st === 1) {
         setCartItems((prevItems) => [...prevItems, { 
-          ...item, 
-          quantity: 1,
-          restaurant_id: restaurantId // Add restaurant_id to cart item
+          ...item,
+          quantity: item.quantity || 1,
+          restaurant_id: restaurantId
         }]);
         setCartId(data.cart_id);
         
-        // Store restaurant ID in localStorage if not already stored
         if (!localStorage.getItem("restaurantId")) {
           localStorage.setItem("restaurantId", restaurantId);
         }
       } else {
-        console.error("Failed to add item to cart:", data.msg);
         throw new Error(data.msg || "Failed to add item to cart");
       }
     } catch (error) {
