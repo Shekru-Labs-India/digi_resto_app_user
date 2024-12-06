@@ -748,6 +748,32 @@ const Cart = () => {
                         </div>
                         <hr className=" me-3 p-0 m-0  text-primary" />
                       </div>
+                      <div className="col-12 mb-0 pt-0 pb-1">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Discount{" "}
+                            <span className="gray-text small-number">
+                              ({cartDetails?.discount_percent || 0}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            -₹{cartDetails?.discount_amount || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Total after discount
+                            {/* <span className="gray-text small-number">
+                              ({cartDetails.service_charges_percent}%)
+                            </span> */}
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            ₹{cartDetails?.total_after_discount || ""}
+                          </span>
+                        </div>
+                      </div>
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 pt-1 gray-text">
@@ -774,19 +800,7 @@ const Cart = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="col-12 mb-0 pt-0 pb-1">
-                        <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 font_size_14 gray-text">
-                            Discount{" "}
-                            <span className="gray-text small-number">
-                              ({cartDetails?.discount_percent || 0}%)
-                            </span>
-                          </span>
-                          <span className="pe-2 font_size_14 gray-text">
-                            -₹{cartDetails?.discount_amount || 0}
-                          </span>
-                        </div>
-                      </div>
+
                       <div>
                         <hr className=" me-3 p-0 m-0 text-primary" />
                       </div>
