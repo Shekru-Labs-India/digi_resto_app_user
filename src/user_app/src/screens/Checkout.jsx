@@ -403,6 +403,130 @@ const Checkout = () => {
     setShowOrderTypeModal(true);
   };
 
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+  const timeoutRef = useRef({});
+
+  const handleGenericUPI = async () => {
+    if (isProcessingUPI) return;
+    
+    try {
+      setIsProcessingUPI(true);
+      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+      
+      const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
+    } catch (error) {
+      console.error("UPI payment error:", error);
+      window.showToast("error", "UPI payment initiation failed");
+      setIsProcessingUPI(false);
+    }
+  };
+
+  const handlePhonePe = async () => {
+    if (isProcessingPhonePe) return;
+
+    try {
+      setIsProcessingPhonePe(true);
+      if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+      
+      const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
+    } catch (error) {
+      console.error("PhonePe payment error:", error);
+      window.showToast("error", "PhonePe payment initiation failed");
+      setIsProcessingPhonePe(false);
+    }
+  };
+
+  const handleGooglePay = async () => {
+    if (isProcessingGPay) return;
+
+    try {
+      setIsProcessingGPay(true);
+      if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+      
+      const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
+    } catch (error) {
+      console.error("Google Pay payment error:", error);
+      window.showToast("error", "Google Pay payment initiation failed");
+      setIsProcessingGPay(false);
+    }
+  };
+
+  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+    const response = await fetch(`${config.apiDomain}/user_api/complete_order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        order_id: existingOrderDetails.orderNumber,
+        restaurant_id: restaurantId,
+        payment_method: method,
+      }),
+    });
+
+    if (response.ok) {
+      if (/android/i.test(navigator.userAgent)) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
+          }
+          setProcessing(false);
+        }, 3000);
+      } 
+      else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            setProcessing(false);
+          }
+        }, 2000);
+      } 
+      else {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
+          }
+          setProcessing(false);
+        }, 3000);
+      }
+    }
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -417,11 +541,11 @@ const Checkout = () => {
         </div>
 
         {showOrderTypeModal && (
-          <div 
+          <div
             className="popup-overlay"
             onClick={(e) => {
               // Close modal only if the overlay itself is clicked
-              if (e.target.className === 'popup-overlay') {
+              if (e.target.className === "popup-overlay") {
                 setShowOrderTypeModal(false);
               }
             }}
@@ -525,13 +649,104 @@ const Checkout = () => {
           </div>
         )}
 
+        {showPaymentOptions && (
+          <div className="popup-overlay">
+            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                      Complete Payment
+                    </div>
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowPaymentOptions(false)}
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="modal-body py-2 px-3">
+                  <p className="text-center mb-4">
+                    Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
+                  </p>
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleGenericUPI}
+                      disabled={isProcessingUPI}
+                    >
+                      {isProcessingUPI ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Other UPI Apps
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={handlePhonePe}
+                      disabled={isProcessingPhonePe}
+                    >
+                      {isProcessingPhonePe ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via PhonePe
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
+                            width={45}
+                            alt="PhonePe"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#1565c0" }}
+                      onClick={handleGooglePay}
+                      disabled={isProcessingGPay}
+                    >
+                      {isProcessingGPay ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Google Pay
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      className="btn btn-outline-secondary rounded-pill w-100"
+                      onClick={() => setShowPaymentOptions(false)}
+                    >
+                      Back
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showExistingOrderModal && (
           <div className="popup-overlay">
-            <div
-              className="modal-dialog modal-dialog-centered"
-              role="document"
-              style={{ maxWidth: "350px", margin: "auto" }}
-            >
+            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -541,7 +756,6 @@ const Checkout = () => {
                     <button
                       className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowExistingOrderModal(false)}
-                      aria-label="Close"
                     >
                       <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
@@ -550,12 +764,9 @@ const Checkout = () => {
 
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
-                    You have an ongoing order (#
-                    {existingOrderDetails.orderNumber}). Would you like to add
-                    to this order or create a new one?
+                    You have an ongoing order (#{existingOrderDetails.orderNumber}). Would you like to add to this order or create a new one?
                   </p>
-
-                  <div className="d-flex flex-column gap-2">
+                  <div className="d-grid gap-2">
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
                       onClick={() => handleOrderActionClick("cancle")}
@@ -564,7 +775,10 @@ const Checkout = () => {
                     </button>
                     <button
                       className="btn btn-success rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("completed")}
+                      onClick={() => {
+                        setShowExistingOrderModal(false);
+                        setShowPaymentOptions(true);
+                      }}
                     >
                       Complete Existing & Create New Order
                     </button>
@@ -572,8 +786,7 @@ const Checkout = () => {
                       className="btn btn-info rounded-pill font_size_14"
                       onClick={handleAddToExistingOrder}
                     >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber}
-                      )
+                      Add to Existing Order (#{existingOrderDetails.orderNumber})
                     </button>
                     <button
                       type="button"
