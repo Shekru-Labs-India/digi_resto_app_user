@@ -10,8 +10,12 @@ import config from "../component/config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import img from "../assets/MenuDefault.png";
 import RestaurantSocials from "../components/RestaurantSocials";
+import { useRestaurantId } from "../context/RestaurantIdContext";
+import { usePopup } from "../context/PopupContext";
+import { useNavigate, Link } from "react-router-dom";
 
 function RestaurantDetails() {
+  const { restaurantId } = useRestaurantId();
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [restaurantDetails, setRestaurantDetails] = useState({
     name: "",
@@ -28,7 +32,10 @@ function RestaurantDetails() {
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
+  const [isLikeProcessing, setIsLikeProcessing] = useState(false);
   const timeoutRef = useRef({});
+  const { showLoginPopup } = usePopup();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -156,6 +163,113 @@ function RestaurantDetails() {
       setIsProcessingGPay(false);
     };
   }, []);
+
+  const getFoodTypeStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case 'veg':
+        return {
+          border: 'border-success',
+          icon: 'fa-solid fa-circle',
+          textColor: 'text-success'
+        };
+      case 'non-veg':
+        return {
+          border: 'border-danger',
+          icon: 'fa-solid fa-circle',
+          textColor: 'text-danger'
+        };
+      default:
+        return {
+          border: 'border-success',
+          icon: 'fa-solid fa-circle',
+          textColor: 'text-success'
+        };
+    }
+  };
+
+  const handleLikeClick = async (e, menuId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check for user login and type
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.customer_id || userData.customer_type === "guest") {
+      window.showToast("info", "Please login to use favourite functionality");
+      showLoginPopup();
+      return;
+    }
+
+    // Find current menu item and its favorite status
+    const menuItem = menuList.find((item) => item.menu_id === menuId);
+    const isFavorite = menuItem.is_favourite;
+
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            menu_id: menuId,
+            customer_id: userData.customer_id,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1) {
+          const updatedFavoriteStatus = !isFavorite;
+          
+          // Update menuList state
+          const updatedMenuList = menuList.map((item) =>
+            item.menu_id === menuId
+              ? { ...item, is_favourite: updatedFavoriteStatus }
+              : item
+          );
+          setMenuList(updatedMenuList);
+
+          // Update filteredMenuList based on current category
+          setFilteredMenus(
+            updatedMenuList.filter(
+              (item) =>
+                item.menu_cat_id === selectedCategoryId ||
+                selectedCategoryId === null
+            )
+          );
+
+          // Dispatch event for other components
+          window.dispatchEvent(
+            new CustomEvent("favoriteUpdated", {
+              detail: { menuId, isFavorite: updatedFavoriteStatus },
+            })
+          );
+
+          // Show success toast
+          window.showToast(
+            "success",
+            updatedFavoriteStatus
+              ? "Item has been removed from your favourites."
+              : "Item has been added to your favourites."
+          );
+        } else {
+          console.clear();
+          window.showToast("error", "Failed to update favourite status");
+        }
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "Failed to update favourite status");
+    }
+  };
+
+  const handleMenuClick = (e, menuId) => {
+    e.preventDefault();
+    navigate(`/menu-details/${menuId}`);
+  };
 
   return (
     <div>
@@ -289,7 +403,7 @@ function RestaurantDetails() {
         <div class="col-12">
           <div class="card">
             <div class="card-header d-block">
-              <h5 class="card-title">Analytics</h5>
+              <div class="card-title fw-semibold">Analytics</div>
             </div>
             <div class="card-body">
               <ul class="list-group">
@@ -330,7 +444,7 @@ function RestaurantDetails() {
 
         <div className="dz-category">
           <div className="title-bar">
-            <h5 className="font_size_14 fw-medium">Categories</h5>
+            <div className="font_size_14 fw-medium">Categories</div>
           </div>
 
           {/* Category Buttons Slider */}
@@ -339,25 +453,30 @@ function RestaurantDetails() {
             spaceBetween={10}
             slidesPerView="auto"
             className="category-slide mb-3"
+            style={{ padding: "0 5px" }}
           >
             {/* Special button */}
             <SwiperSlide style={{ width: "auto" }}>
               <div
-                className={`category-btn font_size_14 rounded-5 px-3 py-2 ${
-                  selectedCategoryId === "special" ? "active" : ""
-                }`}
+                className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect("special")}
                 style={{
-                  backgroundColor: "#0D9EDF",
-                  color: "#ffffff",
-                  border: "none",
+                  backgroundColor: selectedCategoryId === "special" ? "#0D775E" : "#ffffff",
+                  color: selectedCategoryId === "special" ? "#ffffff" : "#000000",
+                  border: "1px solid #ddd",
                   cursor: "pointer",
+                  padding: "8px 16px",
+                  transition: "all 0.3s ease",
                 }}
               >
                 <i className="fa-regular fa-star me-2"></i>
                 Special
-                <span className="font_size_10">
-                  {" "}
+                <span
+                  style={{
+                    color: selectedCategoryId === "special" ? "#ffffff" : "#666",
+                    fontSize: "0.8em",
+                  }}
+                >
                   ({menuList.filter((menu) => menu.is_special)?.length || 0})
                 </span>
               </div>
@@ -366,18 +485,24 @@ function RestaurantDetails() {
             {/* All button */}
             <SwiperSlide style={{ width: "auto" }}>
               <div
-                className={`category-btn font_size_14 border border-2 rounded-5 px-3 py-2 ${
-                  selectedCategoryId === null ? "active" : ""
-                }`}
+                className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "",
-                  color: selectedCategoryId === null ? "#ffffff" : "",
+                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "#ffffff",
+                  color: selectedCategoryId === null ? "#ffffff" : "#000000",
+                  border: "1px solid #ddd",
                   cursor: "pointer",
+                  padding: "8px 16px",
+                  transition: "all 0.3s ease",
                 }}
               >
                 All{" "}
-                <span className="gray-text font_size_10">
+                <span
+                  style={{
+                    color: selectedCategoryId === null ? "#ffffff" : "#666",
+                    fontSize: "0.8em",
+                  }}
+                >
                   ({countDetails?.total_menu || 0})
                 </span>
               </div>
@@ -385,36 +510,38 @@ function RestaurantDetails() {
 
             {/* Regular category buttons */}
             {categoryList.map((category) => (
-              <SwiperSlide key={category.menu_cat_id} style={{ width: "auto" }}>
-                <div
-                  className={`category-btn font_size_14 border border-2 rounded-5 px-3 py-2 ${
-                    selectedCategoryId === category.menu_cat_id ? "active" : ""
-                  }`}
-                  onClick={() => handleCategorySelect(category.menu_cat_id)}
-                  style={{
-                    backgroundColor:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#0D775E"
-                        : "",
-                    color:
-                      selectedCategoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "",
-                    cursor: "pointer",
-                  }}
-                >
-                  {category.category_name}{" "}
-                  <span className=" gray-text font_size_10">
-                    ({category.menu_count})
-                  </span>
-                </div>
-              </SwiperSlide>
+              category.menu_count > 0 && (
+                <SwiperSlide key={category.menu_cat_id} style={{ width: "auto" }}>
+                  <div
+                    className="category-btn font_size_14 rounded-5 py-1"
+                    onClick={() => handleCategorySelect(category.menu_cat_id)}
+                    style={{
+                      backgroundColor: selectedCategoryId === category.menu_cat_id ? "#0D775E" : "#ffffff",
+                      color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#000000",
+                      border: "1px solid #ddd",
+                      cursor: "pointer",
+                      padding: "8px 16px",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    {category.category_name}
+                    <span
+                      style={{
+                        color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#666",
+                        fontSize: "0.8em",
+                      }}
+                    >
+                      ({category.menu_count})
+                    </span>
+                  </div>
+                </SwiperSlide>
+              )
             ))}
           </Swiper>
 
           {/* Image Categories Slider */}
           <div className="title-bar mt-4">
-            <h5 className="font_size_14 fw-medium">Menus</h5>
+            <div className="font_size_14 fw-medium">Menus</div>
           </div>
 
           <Swiper
@@ -431,51 +558,97 @@ function RestaurantDetails() {
             {filteredMenus.map((menu) => (
               <SwiperSlide key={menu.menu_id}>
                 <div className="dz-category-items">
-                  <a href="#" className="dz-media">
+                  <Link 
+                    to={`/user_app/ProductDetails/${menu.menu_id}`}
+                    className="dz-media position-relative"
+                  >
                     <img
-                      className="object-fit-cover"
+                      className="object-fit-cover rounded-4"
                       src={menu.image || img}
                       alt={menu.menu_name}
-                      style={{ height: 110 }}
+                      style={{ height: 110, width: "100%" }}
                       onError={(e) => {
                         e.target.src = img;
                       }}
                     />
+                    
+                    {/* Special Star Icon */}
+                    {menu.is_special && (
+                      <i
+                        className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info font_size_12"
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 5,
+                          height: 17,
+                          width: 17,
+                        }}
+                      ></i>
+                    )}
+
+                    {/* Veg/Non-veg Indicator */}
                     <div
-                      className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center border-success"
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        getFoodTypeStyles(menu.menu_food_type).border
+                      }`}
                       style={{
                         position: "absolute",
-                        bottom: 3,
-                        left: 3,
-                        height: 17,
-                        width: 17,
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
                       }}
                     >
-                      <i className="fa-solid fa-circle text-success font_size_10" />
+                      <i
+                        className={`${
+                          getFoodTypeStyles(menu.menu_food_type).icon
+                        } font_size_12 ${
+                          getFoodTypeStyles(menu.menu_food_type).textColor
+                        }`}
+                      ></i>
                     </div>
-                  </a>
-                  {menu.offer !== 0 && (
-                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                      <span className="font_size_10 text-white">
-                        {menu.offer}% Off
-                      </span>
-                    </div>
-                  )}
-                  {menu.is_special && (
-                    <i
-                      className="fa-regular fa-star border rounded-4 text-info bg-white opacity-75 d-flex justify-content-center align-items-center border-info"
+
+                    {/* Favorite Heart Icon */}
+                    <div
+                      className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
                         position: "absolute",
-                        top: 3,
-                        right: 5,
-                        height: 17,
-                        width: 17,
+                        bottom: "3px",
+                        right: "3px",
+                        height: "20px",
+                        width: "20px",
                       }}
-                    ></i>
-                  )}
+                    >
+                      <i
+                        className={`${
+                          menu.is_favourite
+                            ? "fa-solid fa-heart text-danger"
+                            : "fa-regular fa-heart"
+                        } fs-6`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleLikeClick(e, menu.menu_id);
+                        }}
+                      ></i>
+                    </div>
 
-                  <div className="font_size_14 fw-medium text-wrap text-center">
-                    <a href="#">{menu.menu_name}</a>
+                    {/* Offer Badge */}
+                    {menu.offer !== 0 && (
+                      <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                        <span className="font_size_10 text-white">
+                          {menu.offer}% Off
+                        </span>
+                      </div>
+                    )}
+                  </Link>
+
+                  <div className="font_size_14 fw-medium text-wrap text-center mt-2">
+                    <Link to={`/user_app/ProductDetails/${menu.menu_id}`}>
+                      {menu.menu_name}
+                    </Link>
                   </div>
                 </div>
               </SwiperSlide>

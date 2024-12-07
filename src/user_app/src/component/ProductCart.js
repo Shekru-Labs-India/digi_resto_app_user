@@ -862,39 +862,41 @@ const ProductCard = ({ isVegOnly }) => {
 
             {/* Regular category buttons */}
             {menuCategories.map((category) => (
-              <div key={category.menu_cat_id} className="swiper-slide">
-                <div
-                  className="category-btn font_size_14 rounded-5 py-1"
-                  onClick={() => handleCategorySelect(category.menu_cat_id)}
-                  style={{
-                    backgroundColor:
-                      activeFilters.categoryId === category.menu_cat_id
-                        ? "#0D775E"
-                        : "#ffffff",
-                    color:
-                      activeFilters.categoryId === category.menu_cat_id
-                        ? "#ffffff"
-                        : "#000000",
-                    border: "1px solid #ddd",
-                    cursor: "pointer",
-                    padding: "8px 16px",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {category.name}
-                  <span
+              category.menu_count > 0 && (
+                <div key={category.menu_cat_id} className="swiper-slide">
+                  <div
+                    className="category-btn font_size_14 rounded-5 py-1"
+                    onClick={() => handleCategorySelect(category.menu_cat_id)}
                     style={{
+                      backgroundColor:
+                        activeFilters.categoryId === category.menu_cat_id
+                          ? "#0D775E"
+                          : "#ffffff",
                       color:
                         activeFilters.categoryId === category.menu_cat_id
                           ? "#ffffff"
-                          : "#666",
-                      fontSize: "0.8em",
+                          : "#000000",
+                      border: "1px solid #ddd",
+                      cursor: "pointer",
+                      padding: "8px 16px",
+                      transition: "all 0.3s ease",
                     }}
                   >
-                    ({category.menu_count})
-                  </span>
+                    {category.name}
+                    <span
+                      style={{
+                        color:
+                          activeFilters.categoryId === category.menu_cat_id
+                            ? "#ffffff"
+                            : "#666",
+                        fontSize: "0.8em",
+                      }}
+                    >
+                      ({category.menu_count})
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )
             ))}
           </div>
         </div>
