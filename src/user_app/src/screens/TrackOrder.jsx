@@ -505,19 +505,17 @@ const TrackOrder = () => {
     
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === "guest") {
-      handleUnauthorizedFavorite(navigate);
+      window.showToast("info", "Please login to use favourite functionality");
+      showLoginPopup();
       return;
     }
 
-    const currentRestaurantId =
-      menu.restaurant_id || localStorage.getItem("restaurantId");
+    const currentRestaurantId = menu.restaurant_id || localStorage.getItem("restaurantId");
     const isFavorite = favoriteMenus[menu.menu_id] || false;
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/${
-          isFavorite ? "remove" : "save"
-        }_favourite_menu`,
+        `${config.apiDomain}/user_api/${isFavorite ? "remove" : "save"}_favourite_menu`,
         {
           method: "POST",
           headers: {
@@ -544,10 +542,10 @@ const TrackOrder = () => {
 
         // Update order details
         setOrderDetails((prevDetails) => {
-          if (!prevDetails?.order_items) return prevDetails;
+          if (!prevDetails?.menu_details) return prevDetails;
           return {
             ...prevDetails,
-            order_items: prevDetails.order_items.map((item) =>
+            menu_details: prevDetails.menu_details.map((item) =>
               item.menu_id === menu.menu_id
                 ? { ...item, is_favourite: newFavoriteStatus }
                 : item
@@ -555,7 +553,7 @@ const TrackOrder = () => {
           };
         });
 
-        // Dispatch global event with consistent name
+        // Dispatch global event
         window.dispatchEvent(
           new CustomEvent("favoriteUpdated", {
             detail: {
@@ -572,7 +570,7 @@ const TrackOrder = () => {
         );
       }
     } catch (error) {
-     
+      console.error("Error updating favorite status:", error);
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -1009,6 +1007,33 @@ const getOrderTypeIcon = (orderType) => {
   }
 };
 
+  // Add this calculation function
+  const calculateTotals = (orderDetails) => {
+    if (!orderDetails) return {};
+
+    const totalBill = parseFloat(orderDetails.total_bill || 0);
+    const discountPercent = parseFloat(orderDetails.discount_percent || 0);
+    const discountAmount = parseFloat(orderDetails.discount_amount || 0);
+    const totalAfterDiscount = parseFloat(orderDetails.total_after_discount || 0);
+    const serviceChargesPercent = parseFloat(orderDetails.service_charges_percent || 0);
+    const serviceChargesAmount = parseFloat(orderDetails.service_charges_amount || 0);
+    const gstPercent = parseFloat(orderDetails.gst_percent || 0);
+    const gstAmount = parseFloat(orderDetails.gst_amount || 0);
+    const grandTotal = parseFloat(orderDetails.grand_total || 0);
+
+    return {
+      totalBill,
+      discountPercent,
+      discountAmount,
+      totalAfterDiscount,
+      serviceChargesPercent,
+      serviceChargesAmount,
+      gstPercent,
+      gstAmount,
+      grandTotal
+    };
+  };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1220,6 +1245,27 @@ const getOrderTypeIcon = (orderType) => {
                                   e.target.src = images;
                                 }}
                               />
+                              <div
+                                className={`border border-1 rounded-circle ${
+                                  isDarkMode ? "bg-dark" : "bg-white"
+                                } opacity-75 d-flex justify-content-center align-items-center`}
+                                style={{
+                                  position: "absolute",
+                                  bottom: "3px",
+                                  right: "3px",
+                                  height: "20px",
+                                  width: "20px",
+                                }}
+                                onClick={(e) => handleLikeClick(menu, e)}
+                              >
+                                <i
+                                  className={`${
+                                    favoriteMenus[menu.menu_id]
+                                      ? "fa-solid fa-heart text-danger"
+                                      : "fa-regular fa-heart"
+                                  } fs-6`}
+                                ></i>
+                              </div>
                               {/* Special icon */}
                               {menu.is_special && (
                                 <i
@@ -1411,6 +1457,24 @@ const getOrderTypeIcon = (orderType) => {
                       </span>
                     </div>
                     <hr className="p-0 m-0 text-primary" />
+                  </div>
+                  <div className="col-12 pt-0">
+                    {orderDetails.order_details.discount_amount > 0 && (
+                      <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
+                        <span className="font_size_14 gray-text">
+                          Total after discount
+                        </span>
+                        <span className="font_size_14 gray-text">
+                          ₹
+                          {(
+                            parseFloat(orderDetails.order_details.total_total) -
+                            parseFloat(
+                              orderDetails.order_details.discount_amount
+                            )
+                          ).toFixed(2)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="col-12 pt-0">
                     <div className="d-flex justify-content-between align-items-center py-0">

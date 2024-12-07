@@ -748,7 +748,7 @@ const Cart = () => {
                         </div>
                         <hr className=" me-3 p-0 m-0  text-primary" />
                       </div>
-                      <div className="col-12 mb-0 pt-0 pb-1">
+                      <div className="col-12 mb-0 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 gray-text">
                             Discount{" "}
