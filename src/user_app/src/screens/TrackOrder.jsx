@@ -1380,15 +1380,13 @@ const getOrderTypeIcon = (orderType) => {
                                 <div className="col-9 mt-2">
                                   <p className="ms-2 mb-0 fw-medium">
                                     <span className="font_size_14 fw-semibold text-info">
-                                      ₹{menu.price}
+                                      ₹{menu.offer > 0 
+                                        ? Math.floor(menu.price * (1 - menu.offer / 100)) 
+                                        : menu.price}
                                     </span>
                                     {menu.offer > 0 && (
                                       <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                        ₹
-                                        {(
-                                          menu.price /
-                                          (1 - menu.offer / 100)
-                                        ).toFixed(2)}
+                                        ₹{menu.price}
                                       </span>
                                     )}
                                   </p>
