@@ -756,6 +756,17 @@ console.log(customerName);
     });
 
     if (response.ok) {
+      setOngoingOrPlacedOrders((prevOrders) => {
+        const updatedOngoing = prevOrders.ongoing.filter(
+          (o) => o.order_id !== order.order_id
+        );
+
+        return {
+          placed: prevOrders.placed,
+          ongoing: updatedOngoing,
+        };
+      });
+
      fetchOrders();
       if (/android/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
