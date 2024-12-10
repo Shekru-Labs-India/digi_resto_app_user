@@ -14,6 +14,17 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 
+
+const storeToLocalStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+// Get data from localStorage
+const getFromLocalStorage = (key) => {
+  const value = localStorage.getItem(key);
+  return value ? JSON.parse(value) : null;
+};
+
 // Add this function before your MenuDetails component
 const getFoodTypeStyles = (foodType) => {
   switch (foodType?.toLowerCase()) {
@@ -99,6 +110,13 @@ const MenuDetails = () => {
 
     
   });
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(() => {
+    return location.state?.fromDifferentRestaurant || getFromLocalStorage('fromDifferentRestaurant') || false;
+  });
+  
+  const [orderedItems, setOrderedItems] = useState(() => {
+    return location.state?.orderedItems || getFromLocalStorage('orderedItems') || [];
+  });
 
   const { showLoginPopup } = usePopup();
 
@@ -161,10 +179,21 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
-    useState(false);
+  // const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
+  //   useState(false);
 
-  const orderedItems = location.state?.orderedItems || [];
+  // const orderedItems = location.state?.orderedItems || [];
+
+  useEffect(() => {
+    if (location.state) {
+      if (location.state.fromDifferentRestaurant) {
+        storeToLocalStorage('fromDifferentRestaurant', location.state.fromDifferentRestaurant);
+      }
+      if (location.state.orderedItems) {
+        storeToLocalStorage('orderedItems', location.state.orderedItems);
+      }
+    }
+  }, [location.state]);
   const [previousRestaurantId, setPreviousRestaurantId] = useState(null);
 
   const isItemOrdered = (menuId) => {

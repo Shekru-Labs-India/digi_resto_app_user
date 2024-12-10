@@ -1251,7 +1251,7 @@ const getOrderTypeIcon = (orderType) => {
                                   e.target.src = images;
                                 }}
                               />
-                              <div
+                              {/* <div
                                 className={`border border-1 rounded-circle ${
                                   isDarkMode ? "bg-dark" : "bg-white"
                                 } opacity-75 d-flex justify-content-center align-items-center`}
@@ -1271,9 +1271,9 @@ const getOrderTypeIcon = (orderType) => {
                                       : "fa-regular fa-heart"
                                   } fs-6`}
                                 ></i>
-                              </div>
+                              </div> */}
                               {/* Special icon */}
-                              {menu.is_special && (
+                              {/* {menu.is_special && (
                                 <i
                                   className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                                   style={{
@@ -1284,7 +1284,7 @@ const getOrderTypeIcon = (orderType) => {
                                     width: 17,
                                   }}
                                 ></i>
-                              )}
+                              )} */}
                               {/* Veg/Non-veg indicator */}
                               <div
                                 className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${

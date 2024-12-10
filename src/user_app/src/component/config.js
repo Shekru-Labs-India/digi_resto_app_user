@@ -38,36 +38,31 @@ export const isNonProductionDomain = () => {
 
 // Helper function to get spicy level styles
 export const getSpicyLevelStyle = (spicyIndex) => {
-  // Convert spicyIndex (1-5) to display level (1-3)
-  const displayLevel = Math.ceil(spicyIndex / 2);
-  
-  switch (displayLevel) {
-    case 1: // spicyIndex 1-2
-      return "text-success"; // Green for mild
-    case 2: // spicyIndex 3-4
-      return "text-warning"; // Yellow for medium
-    case 3: // spicyIndex 5
-      return "text-danger";  // Red for hot
-    default:
-      return "gray-text opacity-25"; // Default/inactive state
+  const index = parseInt(spicyIndex, 10);
+  if (index === 1) {
+    return "text-success"; // Green for level 1
+  } else if (index === 2) {
+    return "text-warning"; // Yellow for level 2
+  } else {
+    return "text-danger";  // Red for level 3 and above
   }
 };
 
 // Reusable spicy level renderer
 export const renderSpicyLevel = (spicyIndex) => {
-  // If spicyIndex is 0 or null/undefined, don't render anything
-  if (!spicyIndex || spicyIndex === "0") return null;
+  if (!spicyIndex || spicyIndex === "0") return null; // No spicy indicator for 0 or null
   
-  // Convert 5-level scale to 3-level display
-  const displayLevel = Math.ceil(parseInt(spicyIndex, 10) / 2);
+  const index = parseInt(spicyIndex, 10);
   
-  return Array.from({ length: 3 }).map((_, index) => (
+  // Determine how many peppers to display (max 3)
+  const totalSpicyIcons = 3;
+  const displayLevel = index === 1 ? 1 : index === 2 ? 2 : 3; // 1 🫑, 2 🫑🫑, 3+ 🫑🫑🫑
+  
+  return Array.from({ length: totalSpicyIcons }).map((_, i) => (
     <i
-      key={index}
+      key={i}
       className={`fa-solid fa-pepper-hot font_size_10 ${
-        index < displayLevel 
-          ? getSpicyLevelStyle(spicyIndex) 
-          : "gray-text opacity-25"
+        i < displayLevel ? getSpicyLevelStyle(index) : "gray-text opacity-25"
       }`}
     ></i>
   ));
