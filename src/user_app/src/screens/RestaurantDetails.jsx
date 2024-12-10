@@ -55,7 +55,7 @@ function RestaurantDetails() {
           }
         );
         const data = await response.json();
-        console.log("API Response:", data);
+      
         
         if (data.st === 1) {
           setRestaurantDetails(data.restaurant_details);
@@ -65,7 +65,7 @@ function RestaurantDetails() {
           localStorage.setItem("restoUPI", data.restaurant_details.upi_id);
         }
       } catch (error) {
-        console.error('Error fetching restaurant details:', error);
+        console.clear();
       }
     };
 
@@ -106,7 +106,7 @@ function RestaurantDetails() {
         setIsProcessingUPI(false);
       }, 3000);
     } catch (error) {
-      console.error("UPI payment error:", error);
+      console.clear();
       setIsProcessingUPI(false);
     }
   };
@@ -127,7 +127,7 @@ function RestaurantDetails() {
         setIsProcessingPhonePe(false);
       }, 3000);
     } catch (error) {
-      console.error("PhonePe payment error:", error);
+      console.clear();
       setIsProcessingPhonePe(false);
     }
   };
@@ -148,7 +148,7 @@ function RestaurantDetails() {
         setIsProcessingGPay(false);
       }, 3000);
     } catch (error) {
-      console.error("Google Pay payment error:", error);
+      console.clear();
       setIsProcessingGPay(false);
     }
   };
@@ -284,8 +284,8 @@ function RestaurantDetails() {
           />
         </div>
 
-        <div class="col-12">
-          <div class="">
+        <div className="col-12">
+          <div className="">
             <div>
               <div className="card rounded-4">
                 <img
@@ -400,40 +400,40 @@ function RestaurantDetails() {
           </div>
         </div>
 
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header d-block">
-              <div class="card-title fw-semibold">Analytics</div>
+        <div className="col-12">
+          <div className="card">
+            <div className="card-header d-block">
+              <div className="card-title fw-semibold">Analytics</div>
             </div>
-            <div class="card-body">
-              <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div className="card-body">
+              <ul className="list-group">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   Total Menus
-                  <span class="badge bg-primary rounded-pill">
+                  <span className="badge bg-primary rounded-pill">
                     {totalMenuCount}
                   </span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   Total Categories
-                  <span class="badge bg-primary rounded-pill">
+                  <span className="badge bg-primary rounded-pill">
                     {categoryList.length}
                   </span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   Total Tables
-                  <span class="badge bg-primary rounded-pill">
+                  <span className="badge bg-primary rounded-pill">
                     {countDetails?.total_tables}
                   </span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   Total Offer Menus
-                  <span class="badge bg-primary rounded-pill">
+                  <span className="badge bg-primary rounded-pill">
                     {countDetails?.total_offer_menu}
                   </span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   Total Special Menus
-                  <span class="badge bg-primary rounded-pill">
+                  <span className="badge bg-primary rounded-pill">
                     {countDetails?.total_special_menu}
                   </span>
                 </li>

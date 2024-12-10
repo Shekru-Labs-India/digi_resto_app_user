@@ -67,7 +67,7 @@ const Search = () => {
         setFoodTypes(Object.values(data.food_type_list));
       }
     } catch (error) {
-      console.error('Error fetching food types:', error);
+      console.clear();
     }
   };
 
@@ -345,7 +345,7 @@ const Search = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {
@@ -612,7 +612,7 @@ const Search = () => {
         handleError();
       }
     } catch (error) {
-      console.error("Search error:", error);
+      console.clear();
       handleError();
     } finally {
       setIsLoading(false);

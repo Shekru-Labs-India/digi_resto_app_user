@@ -52,11 +52,12 @@ const Category = () => {
             console.error("Invalid data format:", data);
           }
         } else {
+          console.clear();
           window.showToast("error", "Failed to fetch categories");
-          console.error("Network response was not ok.");
+        
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.clear();
         window.showToast("error", "Error loading categories. Please try again.");
       } finally {
         setLoading(false);
@@ -83,7 +84,7 @@ const Category = () => {
       });
       window.showToast("info", `Viewing ${category.category_name} menu items`);
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.clear();
       window.showToast("error", "Failed to load category menu");
     }
   };

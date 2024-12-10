@@ -26,7 +26,7 @@ export const FavoritesProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error("Error fetching favourite:", error);
+      console.clear();
     }
   }, []);
 
@@ -51,7 +51,7 @@ export const FavoritesProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Error adding favorite:', error);
+      console.clear();
     }
   };
 
@@ -76,7 +76,7 @@ export const FavoritesProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Error removing favorite:', error);
+      console.clear();
     }
   };
 

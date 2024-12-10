@@ -73,11 +73,12 @@ const EditProfile = () => {
           navigate("/user_app/Profile");
         }, 2000);
       } else {
+        console.clear();
         setError("Profile update failed. Please try again.");
         window.showToast("error", "Profile update failed. Please try again.");
       }
     } catch (error) {
-      
+      console.clear();
       setError("Profile update failed. Please try again.");
       window.showToast("error", "Profile update failed. Please try again.");
     } finally {

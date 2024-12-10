@@ -17,7 +17,7 @@ import Notice from "../component/Notice";
 
 import RestaurantSocials from "../components/RestaurantSocials";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
-import CategorySlider from "./CategorySlider";
+
 
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from '../components/AddToCartUI';
@@ -76,6 +76,9 @@ const Product = () => {
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [countdown, setCountdown] = useState(null);
+  // const [activeFilters, setActiveFilters] = useState({
+  //   categoryId: location.state?.selectedCategory || null, // Get selected category from state
+  // });
 
   // Add a ref to track if the process should continue
   const magicProcessRef = useRef(true);
@@ -83,9 +86,36 @@ const Product = () => {
   const [activeFilters, setActiveFilters] = useState({
     special: false,
     offer: false,
-    categoryId: null
+    categoryId: null,
+    categoryId: location.state?.selectedCategory || null, // Get selected category from state
+
   });
 
+  useEffect(() => {
+    if (location.state && location.state.selectedCategory) {
+      setActiveFilters((prevFilters) => ({
+        ...prevFilters,
+        categoryId: location.state.selectedCategory,
+      }));
+    } else {
+      setActiveFilters((prevFilters) => ({
+        ...prevFilters,
+        categoryId: null, // Default to "All"
+      }));
+    }
+  }, [location.state]);
+  
+
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters({ categoryId });
+  // };
+  const handleCategorySelect = (categoryId) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      categoryId,
+    }));
+  };
+  
   const [totalMenuCount, setTotalMenuCount] = useState(0);
 
   // Add this useEffect to update totalMenuCount whenever menuList changes
@@ -171,9 +201,11 @@ const Product = () => {
         );
         setFilteredMenuList(formattedMenuList);
       } else {
+        console.clear();
         throw new Error("API request unsuccessful");
       }
     } catch (error) {
+      console.clear();
     } finally {
       setIsLoading(false);
     }
@@ -265,6 +297,7 @@ const Product = () => {
         }
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to update favourite status");
     }
   };
@@ -292,28 +325,45 @@ const Product = () => {
     }
   }, [categories, selectedCategory]);
 
+
   useEffect(() => {
     if (menuList.length > 0) {
-      if (selectedCategory === "special") {
+      if (activeFilters.categoryId === "special") {
         setFilteredMenuList(menuList.filter((menu) => menu.is_special));
-      } else if (selectedCategory === "offer") {
+      } else if (activeFilters.categoryId === "offer") {
         setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
-      } else if (selectedCategory === null) {
-        setFilteredMenuList(menuList);
+      } else if (activeFilters.categoryId === null) {
+        setFilteredMenuList(menuList); // Show all items
       } else {
         setFilteredMenuList(
-          menuList.filter((menu) => menu.menu_cat_id === selectedCategory)
+          menuList.filter((menu) => menu.menu_cat_id === activeFilters.categoryId)
         );
       }
     }
-  }, [selectedCategory, menuList]);
+  }, [menuList, activeFilters.categoryId]);
+  
+  // useEffect(() => {
+  //   if (menuList.length > 0) {
+  //     if (selectedCategory === "special") {
+  //       setFilteredMenuList(menuList.filter((menu) => menu.is_special));
+  //     } else if (selectedCategory === "offer") {
+  //       setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
+  //     } else if (selectedCategory === null) {
+  //       setFilteredMenuList(menuList);
+  //     } else {
+  //       setFilteredMenuList(
+  //         menuList.filter((menu) => menu.menu_cat_id === selectedCategory)
+  //       );
+  //     }
+  //   }
+  // }, [selectedCategory, menuList]);
 
-  const handleCategorySelect = (categoryId) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      categoryId: categoryId
-    }));
-  };
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters(prev => ({
+  //     ...prev,
+  //     categoryId: categoryId
+  //   }));
+  // };
 
   const handleSpecialSelect = () => {
     setActiveFilters(prev => ({
@@ -360,9 +410,11 @@ const Product = () => {
           setPortionSize("full");
         }
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to fetch price information");
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -441,6 +493,7 @@ const Product = () => {
 
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
+      console.clear();
       window.showToast(
         "error",
         error.message || "Failed to add item to cart. Please try again."
@@ -552,10 +605,12 @@ const Product = () => {
             }
           }, 5000);
         } else if (magicProcessRef.current) {
+          console.clear();
           window.showToast("error", data.msg || "Failed to create magic cart");
         }
       }
     } catch (error) {
+      console.clear();
       if (magicProcessRef.current) {
         console.clear();
         window.showToast("error", "Something went wrong. Please try again.");
@@ -808,6 +863,7 @@ const Product = () => {
                       style={{
                         color:
                           activeFilters.categoryId === category.menu_cat_id
+                          
                             ? "#ffffff"
                             : "#666",
                         fontSize: "0.8em",

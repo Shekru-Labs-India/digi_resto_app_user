@@ -199,10 +199,10 @@ export const RestaurantIdProvider = ({ children }) => {
 
           localStorage.setItem("restaurantStatus", false);
         } else {
-          console.error("Failed to fetch restaurant details:", data.msg);
+          console.clear();
         }
       } catch (error) {
-        console.error("Error fetching restaurant details:", error);
+        console.clear();
       }
     };
 

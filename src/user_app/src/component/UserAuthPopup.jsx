@@ -143,13 +143,14 @@ const UserAuthPopup = () => {
           setError(data.msg || "Sign in failed. Please try again.");
         }
       } else {
+        console.clear();
         setError(data.msg || `HTTP error! Status: ${response.status}`);
         if (data.st === 2) {
           setView("signup");
         }
       }
     } catch (error) {
-      console.error("Error signing in:", error);
+      console.clear();
       setError("Sign in failed. Please try again.");
     } finally {
       setLoading(false);
@@ -192,10 +193,12 @@ const UserAuthPopup = () => {
         
         window.location.reload();
       } else {
+        console.clear();
+        
         setError(data.msg || "Guest login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error during guest login:", error);
+      console.clear();
       setError("Guest login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -282,10 +285,11 @@ const UserAuthPopup = () => {
         
         window.location.reload();
       } else {
+        console.clear();
         setError("Incorrect OTP. Please try again.");
       }
     } catch (error) {
-      console.error("Error verifying OTP:", error);
+      console.clear();
       setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
@@ -330,11 +334,12 @@ const UserAuthPopup = () => {
 
         setView('verify');
       } else {
+        console.clear();
         setError(data.msg || "Failed to create account");
         setView('login');
       }
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.clear();
       setError(error.message || "Failed to create account");
     } finally {
       setLoading(false);
@@ -641,7 +646,7 @@ const UserAuthPopup = () => {
                   disabled={!isMobileValid}
                 >
                   Send OTP
-                  <i class="bx bx-paper-plane ms-2"></i>
+                  <i className="bx bx-paper-plane ms-2"></i>
                 </button>
               )}
             </form>

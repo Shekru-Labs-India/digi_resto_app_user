@@ -278,7 +278,7 @@ const MenuDetails = () => {
         }
       }
     } catch (error) {
-      console.error("Error fetching product details:", error);
+      console.clear();
     } finally {
       setIsLoading(false);
     }
@@ -383,8 +383,9 @@ const MenuDetails = () => {
       setTimeout(() => {
         navigate("/user_app/Cart");
       }, 2000);
-    } catch (error) {
-      console.error("Error adding item to cart:", error);
+    } catch (error) {    
+       console.clear();
+
       window.showToast("error", "Failed to add item to cart");
     }
   };
@@ -406,7 +407,7 @@ const MenuDetails = () => {
       );
       window.showToast("success", "Item has been removed from your cart");
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.clear();
       window.showToast("error", "Failed to remove item from cart");
     }
   };
@@ -454,18 +455,18 @@ const MenuDetails = () => {
           window.showToast(
             updatedFavoriteStatus ? "success" : "success",
             updatedFavoriteStatus
-              ? "Item has been added to your favourite"
-              : "Item has been removed from your favourite"
+              ? "Item has been added to your favourites"
+              : "Item has been removed from your favourites"
           );
 
           window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
-          console.error("Failed to update favorite status:", data.msg);
+          console.clear();
           window.showToast("error", "Failed to update favorite status");
         }
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -579,8 +580,6 @@ const MenuDetails = () => {
     );
   }
 
-  console.log("Product Details:", productDetails);
-  console.log("Images Array:", productDetails?.images);
 
   return (
     <>
@@ -611,7 +610,6 @@ const MenuDetails = () => {
                 backgroundColor: "#f6f6f6",
               }}
             >
-              {console.log("Checking images:", productDetails?.images)}
               {productDetails?.images && productDetails.images.length > 0 ? (
                 <>
                   <img

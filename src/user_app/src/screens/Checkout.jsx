@@ -131,10 +131,10 @@ const Checkout = () => {
         setCartId(data.cart_id);
         setTotalAfterDiscount(parseFloat(data.total_after_discount));
       } else {
-        console.error("Failed to fetch cart details:", response.data.msg);
+        console.clear();
       }
     } catch (error) {
-      console.error("Error fetching cart details:", error);
+      console.clear();
     }
   };
 
@@ -198,15 +198,18 @@ const Checkout = () => {
           setShowExistingOrderModal(true);
         }
       } else {
+        console.clear();
         throw new Error("Failed to check order status");
       }
     } catch (error) {
+      
       toast.current.show({
         severity: "error",
         summary: "Error",
         detail: "Failed to process order",
         life: 3000,
       });
+      console.clear();
     }
   };
 
@@ -267,6 +270,7 @@ const Checkout = () => {
         setShowPopup(true);
         await fetchCartDetails();
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to create order");
       }
     } catch (error) {
@@ -276,6 +280,7 @@ const Checkout = () => {
         detail: "Failed to create order",
         life: 3000,
       });
+      console.clear();
     }
   };
 
@@ -337,6 +342,7 @@ const Checkout = () => {
         await fetchCartDetails();
         navigate(`/user_app/MyOrder/`);
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
@@ -346,6 +352,7 @@ const Checkout = () => {
         detail: "Failed to process order",
         life: 3000,
       });
+      console.clear();
     }
   };
 
@@ -384,6 +391,7 @@ const Checkout = () => {
         clearCartData();
         setShowExistingOrderModal(false); // Close the modal
       } else {
+        console.clear();
         throw new Error(
           data.msg || "Failed to add items to the existing order"
         );
@@ -407,82 +415,81 @@ const Checkout = () => {
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+ 
+
   const timeoutRef = useRef({});
 
-  const handleGenericUPI = async () => {
-    if (isProcessingUPI) return;
-    
-    try {
-      setIsProcessingUPI(true);
-      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+  const [processingPaymentMethod, setProcessingPaymentMethod] = useState(''); // tracks which method is being processed
 
+  const handleGenericUPI = async () => {
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
+    try {
+      setProcessingPaymentMethod('upi');
+      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+  
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-      
+  
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-
-      await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
+  
+      await initiatePayment("UPI", paymentUrl, () => setProcessingPaymentMethod(''), "upi");
     } catch (error) {
-      console.error("UPI payment error:", error);
       window.showToast("error", "UPI payment initiation failed");
-      setIsProcessingUPI(false);
+      setProcessingPaymentMethod('');
     }
   };
-
+  
   const handlePhonePe = async () => {
-    if (isProcessingPhonePe) return;
-
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
-      setIsProcessingPhonePe(true);
+      setProcessingPaymentMethod('phonepe');
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
-
+  
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-      
+  
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-
-      await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
+  
+      await initiatePayment("PhonePe", paymentUrl, () => setProcessingPaymentMethod(''), "phonepe");
     } catch (error) {
-      console.error("PhonePe payment error:", error);
       window.showToast("error", "PhonePe payment initiation failed");
-      setIsProcessingPhonePe(false);
+      setProcessingPaymentMethod('');
     }
   };
-
+  
   const handleGooglePay = async () => {
-    if (isProcessingGPay) return;
-
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
-      setIsProcessingGPay(true);
+      setProcessingPaymentMethod('gpay');
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
-
+  
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-      
+  
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-
-      await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
+  
+      await initiatePayment("GooglePay", paymentUrl, () => setProcessingPaymentMethod(''), "gpay");
     } catch (error) {
-      console.error("Google Pay payment error:", error);
       window.showToast("error", "Google Pay payment initiation failed");
-      setIsProcessingGPay(false);
+      setProcessingPaymentMethod('');
     }
   };
+  
 
   const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
     const response = await fetch(`${config.apiDomain}/user_api/complete_order`, {
@@ -635,9 +642,9 @@ const Checkout = () => {
                           </div>
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>
-                            <small className="text-dark">
+                            {/* <small className="text-dark">
                               {availableTables} Tables Available
-                            </small>
+                            </small> */}
                           </div>
                         </div>
                       </div>
@@ -672,64 +679,65 @@ const Checkout = () => {
                     Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
                   </p>
                   <div className="d-grid gap-2">
-                    <button
-                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      onClick={handleGenericUPI}
-                      disabled={isProcessingUPI}
-                    >
-                      {isProcessingUPI ? (
-                        "Processing..."
-                      ) : (
-                        <>
-                          Pay via Other UPI Apps
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                            width={45}
-                            alt="UPI"
-                          />
-                        </>
-                      )}
-                    </button>
+                  <button
+  className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
+  onClick={handleGenericUPI}
+  disabled={processingPaymentMethod && processingPaymentMethod !== 'upi'}
+>
+  {processingPaymentMethod === 'upi' ? (
+    "Processing..."
+  ) : (
+    <>
+      Pay via Other UPI Apps
+      <img
+        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+        width={45}
+        alt="UPI"
+      />
+    </>
+  )}
+</button>
 
-                    <button
-                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: "#5f259f" }}
-                      onClick={handlePhonePe}
-                      disabled={isProcessingPhonePe}
-                    >
-                      {isProcessingPhonePe ? (
-                        "Processing..."
-                      ) : (
-                        <>
-                          Pay via PhonePe
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
-                            width={45}
-                            alt="PhonePe"
-                          />
-                        </>
-                      )}
-                    </button>
+<button
+  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+  style={{ backgroundColor: "#5f259f" }}
+  onClick={handlePhonePe}
+  disabled={processingPaymentMethod && processingPaymentMethod !== 'phonepe'}
+>
+  {processingPaymentMethod === 'phonepe' ? (
+    "Processing..."
+  ) : (
+    <>
+      Pay via PhonePe
+      <img
+        src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
+        width={45}
+        alt="PhonePe"
+      />
+    </>
+  )}
+</button>
 
-                    <button
-                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: "#1565c0" }}
-                      onClick={handleGooglePay}
-                      disabled={isProcessingGPay}
-                    >
-                      {isProcessingGPay ? (
-                        "Processing..."
-                      ) : (
-                        <>
-                          Pay via Google Pay
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
-                            width={45}
-                            alt="Google Pay"
-                          />
-                        </>
-                      )}
-                    </button>
+<button
+  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+  style={{ backgroundColor: "#1565c0" }}
+  onClick={handleGooglePay}
+  disabled={processingPaymentMethod && processingPaymentMethod !== 'gpay'}
+>
+  {processingPaymentMethod === 'gpay' ? (
+    "Processing..."
+  ) : (
+    <>
+      Pay via Google Pay
+      <img
+        src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
+        width={45}
+        alt="Google Pay"
+      />
+    </>
+  )}
+</button>
+
 
                     <button
                       className="btn btn-outline-secondary rounded-pill w-100"

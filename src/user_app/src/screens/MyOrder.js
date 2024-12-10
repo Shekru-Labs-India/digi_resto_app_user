@@ -130,10 +130,11 @@ const MyOrder = () => {
             setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
           }
         } else {
+          console.clear();
           setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
         }
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.clear();
         setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
       } finally {
         setLoading(false);
@@ -161,81 +162,83 @@ const MyOrder = () => {
       JSON.parse(localStorage.getItem("userData"))?.sectionId ||
       localStorage.getItem("sectionId") ||
       "";
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentCustomerId =
-          userData?.customer_id || localStorage.getItem("customer_id");
-        const currentCustomerType =
-          userData?.customer_type || localStorage.getItem("customer_type");
+  
+    if (customerId && restaurantId) {
+      fetchOrders(sectionId); // Pass sectionId to the fetchOrders function
+    }
+  }, [activeTab, customerId, restaurantId]);
 
-        if (!currentCustomerId || !restaurantId) {
-          setLoading(false);
-          return;
+  const fetchOrders = async (sectionId) => {
+    try {
+      setLoading(true);
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const currentCustomerId =
+        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentCustomerType =
+        userData?.customer_type || localStorage.getItem("customer_type");
+        const sectionId = localStorage.getItem("sectionId");
+      if (!currentCustomerId || !restaurantId) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            order_status: activeTab === "cancelled" ? "cancle" : activeTab,
+            customer_id: currentCustomerId,
+            customer_type: currentCustomerType,
+            section_id: sectionId,
+          }),
         }
+      );
 
-        const response = await fetch(
-          `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              restaurant_id: restaurantId,
-              order_status: activeTab === "cancelled" ? "cancle" : activeTab,
-              customer_id: currentCustomerId,
-              customer_type: currentCustomerType,
-              section_id: sectionId,
-            }),
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.st === 1 && data.lists) {
+          const mappedData = {};
+          if (activeTab === "cancelled" && data.lists.cancle) {
+            mappedData.cancelled = data.lists.cancle;
+          } else if (data.lists[activeTab]) {
+            mappedData[activeTab] = data.lists[activeTab];
           }
-        );
 
-        if (response.ok) {
-          const data = await response.json();
+          // Get existing data from localStorage
+          const existingOrders = JSON.parse(
+            localStorage.getItem("allOrderList") || "{}"
+          );
 
-          if (data.st === 1 && data.lists) {
-            const mappedData = {};
-            if (activeTab === "cancelled" && data.lists.cancle) {
-              mappedData.cancelled = data.lists.cancle;
-            } else if (data.lists[activeTab]) {
-              mappedData[activeTab] = data.lists[activeTab];
-            }
+          // Merge existing data with new data
+          const updatedOrders = {
+            ...existingOrders,
+            ...mappedData,
+          };
 
-            // Get existing data from localStorage
-            const existingOrders = JSON.parse(
-              localStorage.getItem("allOrderList") || "{}"
-            );
+          // Update localStorage with merged data
+          localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
 
-            // Merge existing data with new data
-            const updatedOrders = {
-              ...existingOrders,
-              ...mappedData,
-            };
-
-            // Update localStorage with merged data
-            localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-
-            setOrders(mappedData);
-          } else {
-            setOrders({});
-          }
+          setOrders(mappedData);
         } else {
           setOrders({});
         }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
+      } else {
+        console.clear();
         setOrders({});
-      } finally {
-        setLoading(false);
       }
-    };
-
-    if (customerId && restaurantId) {
-      fetchOrders();
+    } catch (error) {
+      console.clear();
+      setOrders({});
+    } finally {
+      setLoading(false);
     }
-  }, [activeTab, customerId, restaurantId]);
+  };
 
   useEffect(() => {
     if (isDarkMode) {
@@ -309,6 +312,7 @@ const MyOrder = () => {
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}
               setActiveTab={setActiveTab}
+              fetchOrders={fetchOrders} 
             />
           ))}
 
@@ -318,6 +322,7 @@ const MyOrder = () => {
               order={order}
               status="ongoing"
               setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
+              fetchOrders={fetchOrders} 
             />
           ))}
 
@@ -422,6 +427,7 @@ const MyOrder = () => {
 export const OrderCard = ({
   order,
   status,
+  fetchOrders ,
   setOngoingOrPlacedOrders,
   completedTimers = new Set(),
   setActiveTab,
@@ -453,7 +459,7 @@ export const OrderCard = ({
   useEffect(() => {
     const customerName = localStorage.getItem("customerName");
     setCustomerName(customerName);
-    console.log(customerName);
+   
   }, []);
 
   const handleCancelClick = () => {
@@ -504,13 +510,13 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
-
+        fetchOrders();
         setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+     console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -552,13 +558,13 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
-
+ fetchOrders();
         setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -600,13 +606,15 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
+         fetchOrders();
 
         setShowCompleteModal(false); // Close the modal
       } else {
+        console.clear();
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-      console.error("Error completing order:", error);
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -628,19 +636,18 @@ export const OrderCard = ({
         }
       );
 
-      console.log("Response:", response); // Log the full response
+      
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Response Data:", data); // Log the parsed response data
 
       if (data.st === 1) {
         window.showToast("success", data.msg);
         setShowCancelModal(false);
-
+fetchOrders();
         // Update the state to remove the canceled order
         setOngoingOrPlacedOrders((prevOrders) => ({
           placed: prevOrders.placed.filter(
@@ -649,11 +656,13 @@ export const OrderCard = ({
           ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
         }));
         setActiveTab("cancelled");
+        
       } else {
+        console.clear();
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
-      console.error("Error cancelling order:", error);
+     console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -675,11 +684,12 @@ export const OrderCard = ({
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-      console.log(paymentUrl);
+     
 
       await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
     } catch (error) {
-      console.error("UPI payment error:", error);
+    console.clear();
+     
       window.showToast("error", "UPI payment initiation failed. Please try again.");
       setIsProcessingUPI(false);
     }
@@ -698,11 +708,11 @@ console.log(customerName);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-      console.log(paymentUrl);
+     
 
       await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
     } catch (error) {
-      console.error("PhonePe payment error:", error);
+     console.clear();
       window.showToast("error", "PhonePe payment initiation failed. Please try again.");
       setIsProcessingPhonePe(false);
     }
@@ -716,17 +726,17 @@ console.log(customerName);
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      console.log(customerName+"gpay");
+      
       
       const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
       
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-      console.log(paymentUrl);
+     
       await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
-      console.error("Google Pay payment error:", error);
+      console.clear();
       window.showToast("error", "Google Pay payment initiation failed. Please try again.");
       setIsProcessingGPay(false);
     }
@@ -746,6 +756,7 @@ console.log(customerName);
     });
 
     if (response.ok) {
+     fetchOrders();
       if (/android/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
@@ -1063,7 +1074,7 @@ console.log(customerName);
                 <div className="d-flex justify-content-center pt-2 mb-4">
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
+                    className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
                       paymentMethod === "Card"
                         ? "bg-success text-white"
                         : "border "
@@ -1074,12 +1085,12 @@ console.log(customerName);
                       handleCardPayment();
                     }}
                   >
-                    <i class="ri-bank-card-line me-1"></i>
+                    <i className="ri-bank-card-line me-1"></i>
                     Card
                   </button>
                   <button
                     type="button"
-                    class={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
+                    className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
                       paymentMethod === "Cash"
                         ? "bg-success text-white"
                         : "border border-muted"
@@ -1090,7 +1101,7 @@ console.log(customerName);
                       handleCashPayment();
                     }}
                   >
-                    <i class="ri-wallet-3-fill me-1"></i>
+                    <i className="ri-wallet-3-fill me-1"></i>
                     Cash
                   </button>
                 </div>
@@ -1131,12 +1142,12 @@ console.log(customerName);
                       Cancel Order
                     </div>
                   </div>
-                  <div class="col-6 text-end">
+                  <div className="col-6 text-end">
                     <button
-                      class="btn p-0 fs-3 text-muted"
+                      className="btn p-0 fs-3 text-muted"
                       onClick={() => setShowCancelModal(false)}
                     >
-                      <i class="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                      <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
                     </button>
                   </div>
                   <button
@@ -1264,7 +1275,7 @@ console.log(customerName);
                         className="btn btn-danger rounded-pill text-nowrap text-white px-3"
                         onClick={handleConfirmCancel}
                       >
-                        <i class="fa-regular fa-circle-xmark text-white me-2 fs-5"></i>
+                        <i className="fa-regular fa-circle-xmark text-white me-2 fs-5"></i>
                         Confirm Cancel
                       </button>
                     </span>
@@ -1789,9 +1800,11 @@ export const CircularCountdown = ({
           setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
         }
       } else {
+        console.clear();
         setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
+      console.clear();
       console.error("Error fetching orders after timer complete:", error);
     }
 

@@ -312,7 +312,7 @@ const getFoodTypeStyles = (foodType) => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {

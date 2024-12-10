@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import CompanyVersion from "../constants/CompanyVersion";
+
 import config from "./config"
 
 const AllOrderList = () => {

@@ -425,9 +425,11 @@ const TrackOrder = () => {
             
           }
         } else {
+          console.clear();
          
         }
       } catch (error) {
+        console.clear();
         
       }
 
@@ -570,7 +572,7 @@ const TrackOrder = () => {
         );
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -612,6 +614,7 @@ const TrackOrder = () => {
             setOrderStatus("completed");
             setIsCompleted(true);
           } else {
+            console.clear();
             setOrderStatus(status);
             setIsCompleted(false);
           }
@@ -619,6 +622,7 @@ const TrackOrder = () => {
       }
       
     } catch (error) {
+      console.clear();
       
     } finally {
       setLoading(false);
@@ -706,6 +710,7 @@ const TrackOrder = () => {
 
       window.showToast("success", `${menu.menu_name} removed from order`);
     } catch (error) {
+      console.clear();
      
       window.showToast("error", "Failed to remove item. Please try again.");
     }
@@ -866,7 +871,8 @@ const TrackOrder = () => {
         return false;
 
       } catch (error) {
-        console.error("Error checking order:", error);
+        console.clear();
+   
       }
     };
 
@@ -938,7 +944,7 @@ const TrackOrder = () => {
 
         return true;
       } catch (error) {
-        console.error("Error validating order:", error);
+        console.clear();
         setLoading(false);
         window.showToast("error", "Something went wrong");
         navigate("/user_app/Index");

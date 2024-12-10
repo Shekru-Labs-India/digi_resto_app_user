@@ -216,7 +216,7 @@ const OrderCard = ({
   setCompletedTimers = () => {},
 }) => {
   const navigate = useNavigate();
-  console.log('Order Number:', order.order_number);
+
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -303,6 +303,7 @@ const OrderCard = ({
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };

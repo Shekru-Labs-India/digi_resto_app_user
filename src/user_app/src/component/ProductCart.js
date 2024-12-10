@@ -337,7 +337,7 @@ const ProductCard = ({ isVegOnly }) => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === "guest") {
-      window.showToast("info", "Please login to use favourite functionality");
+      // window.showToast("info", "Please login to use favourite functionality");
       showLoginPopup();
       return;
     }
@@ -388,8 +388,8 @@ const ProductCard = ({ isVegOnly }) => {
           window.showToast(
             "success",
             updatedFavoriteStatus
-              ? "Item has been removed from your favourites."
-              : "Item has been added to your favourites."
+              ? "Item has been added from your favourites."
+              : "Item has been removed  to your favourites."
           );
           
         } 

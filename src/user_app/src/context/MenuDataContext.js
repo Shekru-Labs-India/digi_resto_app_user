@@ -36,7 +36,7 @@ export const MenuDataProvider = ({ children }) => {
                     setMenuData(prev => ({ ...prev, featured: featuredData.data.offer_menu_list }));
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.clear();
             } finally {
                 setLoading(false);
             }

@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
       }
     } catch (error) {
-      console.error("Error fetching cart details:", error);
+      console.clear();
       setCartItems([]);
     }
   }, [cartId]);
@@ -119,10 +119,11 @@ export const CartProvider = ({ children }) => {
           localStorage.setItem("restaurantId", restaurantId);
         }
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to add item to cart");
       }
     } catch (error) {
-      console.error("Error adding item to cart:", error);
+      console.clear();
       throw error;
     }
   };
@@ -156,7 +157,7 @@ export const CartProvider = ({ children }) => {
       }
       return false;
     } catch (error) {
-      console.error("Error removing from cart:", error);
+      console.clear();
       return false;
     }
   };

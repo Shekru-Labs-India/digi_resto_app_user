@@ -62,30 +62,7 @@ const Profile = () => {
 
     return (
       <>
-        {/* <header className="header header-fixed style-3 shadow-sm">
-          <div className="header-content ">
-            <div className="left-content">
-              <Link
-                to={`/user_app/${userData?.restaurantId || ""}/${userData?.tableNumber || ""}`}
-                className="back-btn fs-3"
-                onClick={() => navigate(-1)}
-              >
-                <i className="fa-solid fa-arrow-left "></i>
-              </Link>
-            </div>
-            <div className="mid-content">
-              <span className="me-2 title">Profile</span>
-            </div>
-            <div className="right-content gap-1">
-              <div
-                className="menu-toggler toggler-icon"
-                onClick={toggleSidebar}
-              >
-                <i className="fa-solid fa-bars-staggered"></i>
-              </div>
-            </div>
-          </div>
-        </header> */}
+       
 
         <main className="page-content space-top">
           <Header title="Profile" />
@@ -160,7 +137,7 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i class="fa-solid fa-magnifying-glass me-2 fs-5"></i>
+                      <i className="fa-solid fa-magnifying-glass me-2 fs-5"></i>
                       <span className="font_size_14">Search</span>
                     </Link>
                   </li>
@@ -201,7 +178,7 @@ const Profile = () => {
                     </Link>
                   </div>
 
-                  <div class="divider border-light"></div>
+                  <div className="divider border-light"></div>
                 </>
               )}
             </div>

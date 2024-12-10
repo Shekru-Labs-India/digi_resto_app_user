@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-// import '../assets/styles.css'
-// import '../assets/custom.css'
+import { Link ,useNavigate} from "react-router-dom";
+
 import config, { APP_VERSION } from "../component/config";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import Notice from "../component/Notice";
@@ -10,7 +9,7 @@ const HotelList = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeStatusFilter, setActiveStatusFilter] = useState("all");
-
+const navigate = useNavigate();
   useEffect(() => {
     const fetchHotels = async () => {
       try {
@@ -145,15 +144,15 @@ const HotelList = () => {
               filteredHotels.map((hotel) => (
                 <div className="card rounded-4" key={hotel.restaurant_id}>
                   {hotel.is_open ? (
-                    <Link
-                      to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
-                      onClick={() => {
-                        localStorage.setItem("sectionId", hotel.section_id);
-                        localStorage.setItem("restaurantCode", hotel.code);
-                      }}
+                    <div
+                    onClick={() => {
+                      localStorage.setItem("sectionId", hotel.section_id);
+                      localStorage.setItem("restaurantCode", hotel.code);
+                      navigate(`/user_app/${hotel.code}/1/${hotel.section_id}`); // Use navigate here
+                    }}
                     >
                       <CardContent hotel={hotel} />
-                    </Link>
+                    </div>
                   ) : (
                     <CardContent hotel={hotel} />
                   )}

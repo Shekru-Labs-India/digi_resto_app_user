@@ -149,11 +149,13 @@ const Wishlist = () => {
           setHasFavorites(false);
         }
       } else {
+        console.clear();
         setWishlistItems({});
         setMenuList({});
         setHasFavorites(false);
       }
     } catch (error) {
+      console.clear();
       setWishlistItems({});
       setMenuList({});
       setHasFavorites(false);
@@ -234,12 +236,14 @@ const Wishlist = () => {
           setPortionSize("full");
         }
       } else {
+        console.clear();
         window.showToast(
           "error",
           data.msg || "Failed to fetch price information"
         );
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -311,6 +315,7 @@ const Wishlist = () => {
       // Dispatch cart update event
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
+      console.clear();
       window.showToast(
         "error",
         "Failed to add item to cart. Please try again."
@@ -377,9 +382,11 @@ const Wishlist = () => {
 
         window.showToast("success", "Item has been removed from favourite");
       } else {
+        console.clear();
         window.showToast("error", "Failed to remove item from favourite");
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "An error occurred while removing the item");
     }
   };

@@ -83,10 +83,11 @@ const Cart = () => {
           setCartDetails({ order_items: [] });
         }
       } else {
+        console.clear();
         setCartDetails({ order_items: [] });
       }
     } catch (error) {
-      console.error("Error fetching cart:", error);
+      console.clear();
       setCartDetails({ order_items: [] });
     } finally {
       setIsLoading(false);
@@ -203,7 +204,7 @@ const Cart = () => {
       );
       fetchCartDetails();
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.clear();
       window.showToast("error", "Failed to remove item from cart.");
     }
   };
@@ -232,11 +233,11 @@ const Cart = () => {
         fetchCartDetails();
      
       } else {
-        console.error("Failed to update cart quantity:", data.msg);
+        console.clear();
         
       }
     } catch (error) {
-      console.error("Error updating cart quantity:", error);
+      console.clear();
     
     }
   };
@@ -279,7 +280,7 @@ const Cart = () => {
       (item) => item.menu_id === menuId
     );
     if (!menuItem) {
-      console.error("Menu item not found:", menuId);
+     
       return;
     }
 
@@ -321,13 +322,14 @@ const Cart = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to update favorite status");
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast(
         "error",
         error.message || "Failed to update favorite status"
@@ -481,7 +483,7 @@ const Cart = () => {
           {magicMessage && (
             <div className="container py-0">
               <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">
-                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
                 {magicMessage}
               </div>
             </div>
@@ -721,12 +723,12 @@ const Cart = () => {
               </div>
             ))}
           </div>
-          <div className="container py-0">
+          {/* <div className="container py-0">
             <div className="d-flex justify-content-end align-items-center gray-text font_size_14">
-              <i class="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
+              <i className="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
               Clear Cart
             </div>
-          </div>
+          </div> */}
           {cartDetails && cartDetails.order_items.length > 0 && (
             <div
               className=""
