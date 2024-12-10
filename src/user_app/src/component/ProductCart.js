@@ -388,8 +388,8 @@ const ProductCard = ({ isVegOnly }) => {
           window.showToast(
             "success",
             updatedFavoriteStatus
-              ? "Item has been added from your favourites."
-              : "Item has been removed  to your favourites."
+              ? "Item has been added to your favourites."
+              : "Item has been removed  from your favourites."
           );
           
         } 

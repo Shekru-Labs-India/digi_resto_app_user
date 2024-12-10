@@ -252,8 +252,8 @@ function RestaurantDetails() {
           window.showToast(
             "success",
             updatedFavoriteStatus
-              ? "Item has been removed from your favourites."
-              : "Item has been added to your favourites."
+              ? "Item has been added to your favourites."
+              : "Item has been removed from your favourites."
           );
         } else {
           console.clear();

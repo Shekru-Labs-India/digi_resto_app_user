@@ -39,7 +39,7 @@ const Product = () => {
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
-
+ 
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [sortByOpen, setSortByOpen] = useState(false);
@@ -91,30 +91,48 @@ const Product = () => {
 
   });
 
-  useEffect(() => {
-    if (location.state && location.state.selectedCategory) {
-      setActiveFilters((prevFilters) => ({
-        ...prevFilters,
-        categoryId: location.state.selectedCategory,
-      }));
-    } else {
-      setActiveFilters((prevFilters) => ({
-        ...prevFilters,
-        categoryId: null, // Default to "All"
-      }));
-    }
-  }, [location.state]);
+  // useEffect(() => {
+  //   if (location.state && location.state.selectedCategory) {
+  //     setActiveFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       categoryId: location.state.selectedCategory,
+  //     }));
+  //   } else {
+  //     setActiveFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       categoryId: null, // Default to "All"
+  //     }));
+  //   }
+  // }, [location.state]);
   
 
   // const handleCategorySelect = (categoryId) => {
   //   setActiveFilters({ categoryId });
   // };
+
+  useEffect(() => {
+    setActiveFilters((prevFilters) => ({
+      ...prevFilters,
+      categoryId: categoryId ? parseInt(categoryId, 10) : null, // Parse categoryId from URL or default to null ("All")
+    }));
+  }, [categoryId]);
+  
+
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters((prev) => ({
+  //     ...prev,
+  //     categoryId,
+  //   }));
+  // };
+
   const handleCategorySelect = (categoryId) => {
-    setActiveFilters((prev) => ({
-      ...prev,
+    navigate(`/user_app/Menu/${categoryId || ""}`); // Update URL with selected categoryId or empty for "All"
+    setActiveFilters((prevFilters) => ({
+      ...prevFilters,
       categoryId,
     }));
   };
+  
   
   const [totalMenuCount, setTotalMenuCount] = useState(0);
 
@@ -185,6 +203,7 @@ const Product = () => {
         }));
 
         setMenuList(formattedMenuList);
+        setFilteredMenuList(formattedMenuList);
         localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
 
         // Format categories without adding Special category to slider
@@ -199,7 +218,7 @@ const Product = () => {
         const specialItems = formattedMenuList.filter(
           (item) => item.is_special
         );
-        setFilteredMenuList(formattedMenuList);
+        // setFilteredMenuList(formattedMenuList);
       } else {
         console.clear();
         throw new Error("API request unsuccessful");
@@ -328,12 +347,8 @@ const Product = () => {
 
   useEffect(() => {
     if (menuList.length > 0) {
-      if (activeFilters.categoryId === "special") {
-        setFilteredMenuList(menuList.filter((menu) => menu.is_special));
-      } else if (activeFilters.categoryId === "offer") {
-        setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
-      } else if (activeFilters.categoryId === null) {
-        setFilteredMenuList(menuList); // Show all items
+      if (activeFilters.categoryId === null) {
+        setFilteredMenuList(menuList); // Show all items if no category selected
       } else {
         setFilteredMenuList(
           menuList.filter((menu) => menu.menu_cat_id === activeFilters.categoryId)
@@ -341,6 +356,7 @@ const Product = () => {
       }
     }
   }, [menuList, activeFilters.categoryId]);
+  
   
   // useEffect(() => {
   //   if (menuList.length > 0) {
@@ -838,7 +854,9 @@ const Product = () => {
               </div>
 
               {/* Regular category buttons */}
-              {categories.map((category) => (
+              {categories
+  .filter((category) => category.menu_count > 0) // Filter out categories with menu_count 0
+  .map((category) => (
                 <div key={category.menu_cat_id} className="swiper-slide">
                   <div
                     className="category-btn font_size_14 rounded-5 py-1"
