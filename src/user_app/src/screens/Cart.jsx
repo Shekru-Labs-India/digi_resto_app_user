@@ -14,11 +14,12 @@ import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
+// import { useCart } from "../context/CartContext";
 const Cart = () => {
     const location = useLocation();
     const magicMessage = location.state?.magicMessage;
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { cartItems, updateCart, removeFromCart } = useCart();
+  const {  updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const Cart = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
+  const { clearCart } = useCart();
+  const [cartItems, setCartItems] = useState([]);
   const { showLoginPopup } = usePopup();
   // Helper function to get stored restaurant ID
   const getStoredRestaurantId = useCallback(() => {
@@ -130,6 +133,51 @@ const Cart = () => {
     return () => window.removeEventListener("cartUpdated", handleCartUpdate);
   }, [fetchCartDetails, restaurantId]);
 
+  const handleClearCart = async () => {
+    const customerId = getCustomerId();
+    const cartId = getCartId() || localStorage.getItem("cartId");
+  
+    if (!customerId || !cartId || !restaurantId) {
+      window.showToast("error", "Required information is missing.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        'https://men4u.xyz/user_api/delete_entire_cart',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+  
+      if (data.st === 1) {
+        clearCartData();
+        window.showToast("success", data.msg || "Cart cleared successfully.");
+        setCartDetails({ order_items: [] }); // Clear cart details in state
+        localStorage.removeItem("cartId"); // Optionally remove cartId from localStorage
+      } else {
+        window.showToast("error", data.msg || "Failed to clear the cart.");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  };
+
+  const clearCartData = () => {
+    clearCart(); // Clear cart context
+    localStorage.removeItem("cartItems"); // Clear cart items from localStorage
+    localStorage.removeItem("cartId"); // Clear cart ID from localStorage
+    setCartItems([]); // Clear cart items state if you're using it
+  };
   // Window focus handler with restaurant ID check
   useEffect(() => {
     if (userData && restaurantId) {
@@ -723,12 +771,15 @@ const Cart = () => {
               </div>
             ))}
           </div>
-          {/* <div className="container py-0">
-            <div className="d-flex justify-content-end align-items-center gray-text font_size_14">
+          <div className="container py-0">
+            <div className="d-flex justify-content-end align-items-center gray-text font_size_14"
+              onClick={handleClearCart} // Attach the event handler
+              style={{ cursor: 'pointer' }}
+            >
               <i className="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
               Clear Cart
             </div>
-          </div> */}
+          </div>
           {cartDetails && cartDetails.order_items.length > 0 && (
             <div
               className=""

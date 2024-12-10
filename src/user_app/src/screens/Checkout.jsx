@@ -12,6 +12,7 @@ import { useCart } from "../context/CartContext";
 import { Toast } from "primereact/toast";
 import config from "../component/config";
 import axios from "axios";
+import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
@@ -1068,10 +1069,9 @@ const Checkout = () => {
         </div>
 
         <div className="container py-0">
-          <NearbyArea />
-          <div className="divider border-success inner-divider transparent mb-0">
-            <span className="bg-body">End</span>
-          </div>
+          {/* <NearbyArea /> */}
+          {/* <RestaurantSocials /> */}
+          <RestaurantSocials/>
         </div>
       </main>
 
