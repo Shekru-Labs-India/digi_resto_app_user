@@ -519,36 +519,56 @@ const Checkout = () => {
   
     try {
       const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
-      const response = await fetch(`${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cart_id: cartId,
-          customer_id: customerId,
-          restaurant_id: restaurantId,
-          order_number: existingOrderDetails.orderNumber,
-          order_status: "completed",
-          payment_method: method, // Include payment method
-          order_type: existingOrderDetails.orderType, // Pass the order_type here
-          section_id:sectionId,
-        }),
-      });
+        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+        localStorage.getItem("sectionId") ||
+        "";
+      
+      const response = await fetch(
+        `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cart_id: cartId,
+            customer_id: customerId,
+            restaurant_id: restaurantId,
+            order_number: existingOrderDetails.orderNumber,
+            order_status: "completed",
+            payment_method: method, // Include payment method
+            order_type: existingOrderDetails.orderType, // Pass the order_type here
+            section_id: sectionId,
+          }),
+        }
+      );
   
       const data = await response.json();
   
       if (data.st === 1) {
-        window.location.href = paymentUrl;
-        timeoutRef.current[timeoutKey] = setTimeout(() => {
-          if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
-          }
+        if (paymentUrl) {
+          // Redirect if paymentUrl is provided
+          window.location.href = paymentUrl;
+          timeoutRef.current[timeoutKey] = setTimeout(() => {
+            if (!document.hidden) {
+              window.showToast("error", `No ${method} app found. Please install the app.`);
+            }
+            setProcessing(false);
+          }, 3000);
+          navigate("/user_app/MyOrder")
+          clearCartData();
+        } else {
+          // Handle successful API response without redirection
+          toast.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: `Payment via ${method} initiated successfully.`,
+            life: 3000,
+          });
           setProcessing(false);
-        }, 3000);
+          navigate("/user_app/MyOrder")
+          clearCartData();
+        }
       } else {
         throw new Error(data.msg || "Failed to process payment");
       }
@@ -563,6 +583,7 @@ const Checkout = () => {
       setProcessing(false);
     }
   };
+  
   
   
 
@@ -781,6 +802,7 @@ const Checkout = () => {
     type="button"
     className="px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark border"
     onClick={() => {
+      setProcessingPaymentMethod("card"); // Set processing state
       initiatePayment("card", null, setProcessingPaymentMethod, "card");
     }}
   >
@@ -791,6 +813,7 @@ const Checkout = () => {
     type="button"
     className="px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark border"
     onClick={() => {
+      setProcessingPaymentMethod("cash"); // Set processing state
       initiatePayment("cash", null, setProcessingPaymentMethod, "cash");
     }}
   >
@@ -798,6 +821,7 @@ const Checkout = () => {
     Cash
   </button>
 </div>
+
 
                     <button
                       className="btn btn-outline-secondary rounded-pill w-100"
