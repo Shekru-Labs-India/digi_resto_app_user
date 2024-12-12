@@ -414,13 +414,18 @@ const Cart = () => {
     );
   };
 
-  
+
+
+
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+  
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
-          border: "border-primary",
+          border: "border-success",
         };
       case "nonveg":
         return {
@@ -444,37 +449,41 @@ const Cart = () => {
         };
     }
   };
-
   
+
   const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+  
+    switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text",
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
         };
       default:
         return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
     }
   };
+  
 
   
   

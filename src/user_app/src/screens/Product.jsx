@@ -66,7 +66,7 @@ const Product = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -492,7 +492,7 @@ const Product = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
           restaurant_id: restaurantId,
@@ -503,7 +503,7 @@ const Product = () => {
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
@@ -525,7 +525,7 @@ const Product = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   const toggleSidebar = () => {
@@ -1146,8 +1146,8 @@ const Product = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -1156,7 +1156,7 @@ const Product = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
             if (e.target.classList.contains('modal')) {
               setShowModal(false);

@@ -164,28 +164,41 @@ function RestaurantDetails() {
     };
   }, []);
 
+
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case 'veg':
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+  
+    switch (type) {
+      case "veg":
         return {
-          border: 'border-success',
-          icon: 'fa-solid fa-circle',
-          textColor: 'text-success'
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
-      case 'non-veg':
+      case "nonveg":
         return {
-          border: 'border-danger',
-          icon: 'fa-solid fa-circle',
-          textColor: 'text-danger'
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
         };
       default:
         return {
-          border: 'border-success',
-          icon: 'fa-solid fa-circle',
-          textColor: 'text-success'
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
     }
   };
+  
+
 
   const handleLikeClick = async (e, menuId) => {
     e.preventDefault();
@@ -560,6 +573,7 @@ function RestaurantDetails() {
                 <div className="dz-category-items">
                   <Link 
                     to={`/user_app/ProductDetails/${menu.menu_id}`}
+                    state={{ menu_cat_id: menu.menu_cat_id }}
                     className="dz-media position-relative"
                   >
                     <img
@@ -611,7 +625,7 @@ function RestaurantDetails() {
                     </div>
 
                     {/* Favorite Heart Icon */}
-                    <div
+                    {/* <div
                       className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
                       style={{
                         position: "absolute",
@@ -633,7 +647,7 @@ function RestaurantDetails() {
                           handleLikeClick(e, menu.menu_id);
                         }}
                       ></i>
-                    </div>
+                    </div> */}
 
                     {/* Offer Badge */}
                     {menu.offer !== 0 && (
@@ -646,7 +660,8 @@ function RestaurantDetails() {
                   </Link>
 
                   <div className="font_size_14 fw-medium text-wrap text-center mt-2">
-                    <Link to={`/user_app/ProductDetails/${menu.menu_id}`}>
+                    <Link to={`/user_app/ProductDetails/${menu.menu_id}`}
+                       state={{ menu_cat_id: menu.menu_cat_id }}>
                       {menu.menu_name}
                     </Link>
                   </div>

@@ -6,8 +6,8 @@ const AddToCartUI = ({
   showModal,
   setShowModal,
   productDetails,
-  notes,
-  setNotes,
+  comment,
+  setComment,
   portionSize,
   setPortionSize,
   halfPrice,
@@ -58,7 +58,7 @@ const AddToCartUI = ({
             <div className="modal-body py-2 px-3">
               <div className="mb-3 mt-0">
                 <label
-                  htmlFor="notes"
+                  htmlFor="comment"
                   className="form-label d-flex justify-content-start font_size_14 fw-normal"
                 >
                   Special Instructions
@@ -66,18 +66,18 @@ const AddToCartUI = ({
                 <input
                   type="text"
                   className="form-control font_size_16 border border-light rounded-4"
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  id="comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
                   placeholder="Add any special instructions here..."
                 />
                 <p
                   className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                  onClick={() => handleSuggestionClick("Make it more sweet 😋")}
+                  onClick={() => handleSuggestionClick("Make it more sweet")}
                   style={{ cursor: "pointer" }}
                 >
                   <i className="fa-solid fa-comment-dots me-2"></i> Make it more
-                  sweet 😋
+                  sweet 
                 </p>
                 <p
                   className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"

@@ -67,7 +67,7 @@ const ProductCard = ({ isVegOnly }) => {
   const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
@@ -531,7 +531,7 @@ const ProductCard = ({ isVegOnly }) => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: portionSize === "half" ? halfPrice : fullPrice,
           restaurant_id: restaurantId,
@@ -542,7 +542,7 @@ const ProductCard = ({ isVegOnly }) => {
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
     } catch (error) {
@@ -560,7 +560,7 @@ const ProductCard = ({ isVegOnly }) => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   // Add the magic handler function
@@ -1079,8 +1079,8 @@ const ProductCard = ({ isVegOnly }) => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -1089,7 +1089,7 @@ const ProductCard = ({ isVegOnly }) => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
             if (e.target.classList.contains('modal')) {
               setShowModal(false);
