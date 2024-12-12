@@ -189,39 +189,38 @@ const NearbyArea = () => {
   //   };
   // }, [fetchMenuData]);
 
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
 
-const getFoodTypeStyles = (foodType) => {
-  switch (foodType) {
-    case "veg":
-      return {
-        icon: "fa-solid fa-circle text-success",
-        border: "border-success",
-      };
-    case "non-veg":
-      return {
-        icon: "fa-solid fa-play fa-rotate-270 text-danger",
-        border: "border-danger",
-      };
-    case "egg":
-      return {
-        icon: "fa-solid fa-egg gray-text",
-        border: "border-muted",
-      };
-    case "vegan":
-      return {
-        icon: "fa-solid fa-leaf text-success",
-        border: "border-success",
-      };
-    default:
-      return {
-        icon: "fa-solid fa-circle text-success",
-        border: "border-success",
-      };
-  }
-};
-
-
-
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+        };
+    }
+  };
 
   useEffect(() => {
     if (menuItems.length > 0) {
@@ -344,37 +343,38 @@ const getFoodTypeStyles = (foodType) => {
       setShowModal(false);
     }
   };
-     const getFoodTypeTextStyles = (foodType) => {
-       switch (foodType) {
-         case "veg":
-           return {
-             icon: "fa-solid fa-circle",
-             textColor: "text-primary",
-           };
-         case "nonveg":
-           return {
-             icon: "fa-solid fa-play fa-rotate-270",
-             textColor: "text-danger",
-           };
-         case "egg":
-           return {
-             icon: "fa-solid fa-egg",
-             textColor: "text-light",
-           };
-         case "vegan":
-           return {
-             icon: "fa-solid fa-leaf",
-             textColor: "text-success",
-           };
-         default:
-           return {
-             icon: "fa-solid fa-circle",
-             textColor: "text-primary",
-           };
-       }
-     };
+  const getFoodTypeTextStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
 
- 
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "text-light",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary",
+        };
+    }
+  };
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
@@ -455,17 +455,15 @@ const getFoodTypeStyles = (foodType) => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
     );
   };
-
-
-
-  
 
   return (
     <div className="dz-box style-2 nearby-area pb-3">

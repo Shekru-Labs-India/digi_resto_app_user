@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Bottom from "../component/bottom";
 import Sidebar from "../../../website/src/Components/Sidebar";
 import Header from "../components/Header";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation, Autoplay } from "swiper/modules";
 import config from "../component/config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import img from "../assets/MenuDefault.png";
@@ -23,7 +23,7 @@ function RestaurantDetails() {
     address: "",
     upi_id: null,
     veg_nonveg: "",
-    image: null
+    image: null,
   });
   const [countDetails, setCountDetails] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
@@ -40,7 +40,6 @@ function RestaurantDetails() {
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       try {
-
         const restaurantId = localStorage.getItem("restaurantId");
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details`,
@@ -55,8 +54,7 @@ function RestaurantDetails() {
           }
         );
         const data = await response.json();
-      
-        
+
         if (data.st === 1) {
           setRestaurantDetails(data.restaurant_details);
           setCountDetails(data.count);
@@ -80,13 +78,15 @@ function RestaurantDetails() {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
-    
+
     if (categoryId === "special") {
-      setFilteredMenus(menuList.filter(menu => menu.is_special));
+      setFilteredMenus(menuList.filter((menu) => menu.is_special));
     } else if (categoryId === null) {
       setFilteredMenus(menuList);
     } else {
-      setFilteredMenus(menuList.filter(menu => menu.menu_cat_id === categoryId));
+      setFilteredMenus(
+        menuList.filter((menu) => menu.menu_cat_id === categoryId)
+      );
     }
   };
 
@@ -96,12 +96,19 @@ function RestaurantDetails() {
       setIsProcessingUPI(true);
       if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
 
-      const upiUrl = `upi://pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      const upiUrl = `upi://pay?pa=${
+        restaurantDetails.upi_id
+      }&pn=${encodeURIComponent(
+        restaurantDetails.name
+      )}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
       window.location.href = upiUrl;
 
       timeoutRef.current.upi = setTimeout(() => {
         if (!document.hidden) {
-          window.showToast?.("error", "No UPI app found. Please install a UPI payment app.");
+          window.showToast?.(
+            "error",
+            "No UPI app found. Please install a UPI payment app."
+          );
         }
         setIsProcessingUPI(false);
       }, 3000);
@@ -117,12 +124,19 @@ function RestaurantDetails() {
       setIsProcessingPhonePe(true);
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
 
-      const phonePeUrl = `phonepe://pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      const phonePeUrl = `phonepe://pay?pa=${
+        restaurantDetails.upi_id
+      }&pn=${encodeURIComponent(
+        restaurantDetails.name
+      )}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
       window.location.href = phonePeUrl;
 
       timeoutRef.current.phonepe = setTimeout(() => {
         if (!document.hidden) {
-          window.showToast?.("error", "PhonePe app not found. Please install PhonePe.");
+          window.showToast?.(
+            "error",
+            "PhonePe app not found. Please install PhonePe."
+          );
         }
         setIsProcessingPhonePe(false);
       }, 3000);
@@ -138,12 +152,19 @@ function RestaurantDetails() {
       setIsProcessingGPay(true);
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
 
-      const googlePayUrl = `gpay://upi/pay?pa=${restaurantDetails.upi_id}&pn=${encodeURIComponent(restaurantDetails.name)}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
+      const googlePayUrl = `gpay://upi/pay?pa=${
+        restaurantDetails.upi_id
+      }&pn=${encodeURIComponent(
+        restaurantDetails.name
+      )}&mc=1234&tid=TEST123&tr=TEST123&tn=Test payment&am=1&cu=INR`;
       window.location.href = googlePayUrl;
 
       timeoutRef.current.gpay = setTimeout(() => {
         if (!document.hidden) {
-          window.showToast?.("error", "Google Pay app not found. Please install Google Pay.");
+          window.showToast?.(
+            "error",
+            "Google Pay app not found. Please install Google Pay."
+          );
         }
         setIsProcessingGPay(false);
       }, 3000);
@@ -155,7 +176,7 @@ function RestaurantDetails() {
 
   useEffect(() => {
     return () => {
-      Object.values(timeoutRef.current).forEach(timeout => {
+      Object.values(timeoutRef.current).forEach((timeout) => {
         if (timeout) clearTimeout(timeout);
       });
       setIsProcessingUPI(false);
@@ -164,11 +185,10 @@ function RestaurantDetails() {
     };
   }, []);
 
-
   const getFoodTypeStyles = (foodType) => {
     // Convert foodType to lowercase for case-insensitive comparison
     const type = (foodType || "").toLowerCase();
-  
+
     switch (type) {
       case "veg":
         return {
@@ -197,8 +217,6 @@ function RestaurantDetails() {
         };
     }
   };
-  
-
 
   const handleLikeClick = async (e, menuId) => {
     e.preventDefault();
@@ -236,7 +254,7 @@ function RestaurantDetails() {
         const data = await response.json();
         if (data.st === 1) {
           const updatedFavoriteStatus = !isFavorite;
-          
+
           // Update menuList state
           const updatedMenuList = menuList.map((item) =>
             item.menu_id === menuId
@@ -474,8 +492,10 @@ function RestaurantDetails() {
                 className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect("special")}
                 style={{
-                  backgroundColor: selectedCategoryId === "special" ? "#0D775E" : "#ffffff",
-                  color: selectedCategoryId === "special" ? "#ffffff" : "#000000",
+                  backgroundColor:
+                    selectedCategoryId === "special" ? "#0D775E" : "#ffffff",
+                  color:
+                    selectedCategoryId === "special" ? "#ffffff" : "#000000",
                   border: "1px solid #ddd",
                   cursor: "pointer",
                   padding: "8px 16px",
@@ -486,7 +506,8 @@ function RestaurantDetails() {
                 Special
                 <span
                   style={{
-                    color: selectedCategoryId === "special" ? "#ffffff" : "#666",
+                    color:
+                      selectedCategoryId === "special" ? "#ffffff" : "#666",
                     fontSize: "0.8em",
                   }}
                 >
@@ -501,7 +522,8 @@ function RestaurantDetails() {
                 className="category-btn font_size_14 rounded-5 py-1"
                 onClick={() => handleCategorySelect(null)}
                 style={{
-                  backgroundColor: selectedCategoryId === null ? "#0D775E" : "#ffffff",
+                  backgroundColor:
+                    selectedCategoryId === null ? "#0D775E" : "#ffffff",
                   color: selectedCategoryId === null ? "#ffffff" : "#000000",
                   border: "1px solid #ddd",
                   cursor: "pointer",
@@ -522,34 +544,47 @@ function RestaurantDetails() {
             </SwiperSlide>
 
             {/* Regular category buttons */}
-            {categoryList.map((category) => (
-              category.menu_count > 0 && (
-                <SwiperSlide key={category.menu_cat_id} style={{ width: "auto" }}>
-                  <div
-                    className="category-btn font_size_14 rounded-5 py-1"
-                    onClick={() => handleCategorySelect(category.menu_cat_id)}
-                    style={{
-                      backgroundColor: selectedCategoryId === category.menu_cat_id ? "#0D775E" : "#ffffff",
-                      color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#000000",
-                      border: "1px solid #ddd",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      transition: "all 0.3s ease",
-                    }}
+            {categoryList.map(
+              (category) =>
+                category.menu_count > 0 && (
+                  <SwiperSlide
+                    key={category.menu_cat_id}
+                    style={{ width: "auto" }}
                   >
-                    {category.category_name}
-                    <span
+                    <div
+                      className="category-btn font_size_14 rounded-5 py-1"
+                      onClick={() => handleCategorySelect(category.menu_cat_id)}
                       style={{
-                        color: selectedCategoryId === category.menu_cat_id ? "#ffffff" : "#666",
-                        fontSize: "0.8em",
+                        backgroundColor:
+                          selectedCategoryId === category.menu_cat_id
+                            ? "#0D775E"
+                            : "#ffffff",
+                        color:
+                          selectedCategoryId === category.menu_cat_id
+                            ? "#ffffff"
+                            : "#000000",
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        padding: "8px 16px",
+                        transition: "all 0.3s ease",
                       }}
                     >
-                      ({category.menu_count})
-                    </span>
-                  </div>
-                </SwiperSlide>
-              )
-            ))}
+                      {category.category_name}
+                      <span
+                        style={{
+                          color:
+                            selectedCategoryId === category.menu_cat_id
+                              ? "#ffffff"
+                              : "#666",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        ({category.menu_count})
+                      </span>
+                    </div>
+                  </SwiperSlide>
+                )
+            )}
           </Swiper>
 
           {/* Image Categories Slider */}
@@ -571,7 +606,7 @@ function RestaurantDetails() {
             {filteredMenus.map((menu) => (
               <SwiperSlide key={menu.menu_id}>
                 <div className="dz-category-items">
-                  <Link 
+                  <Link
                     to={`/user_app/ProductDetails/${menu.menu_id}`}
                     state={{ menu_cat_id: menu.menu_cat_id }}
                     className="dz-media position-relative"
@@ -585,7 +620,7 @@ function RestaurantDetails() {
                         e.target.src = img;
                       }}
                     />
-                    
+
                     {/* Special Star Icon */}
                     {menu.is_special && (
                       <i
@@ -660,8 +695,10 @@ function RestaurantDetails() {
                   </Link>
 
                   <div className="font_size_14 fw-medium text-wrap text-center mt-2">
-                    <Link to={`/user_app/ProductDetails/${menu.menu_id}`}
-                       state={{ menu_cat_id: menu.menu_cat_id }}>
+                    <Link
+                      to={`/user_app/ProductDetails/${menu.menu_id}`}
+                      state={{ menu_cat_id: menu.menu_cat_id }}
+                    >
                       {menu.menu_name}
                     </Link>
                   </div>
@@ -672,8 +709,7 @@ function RestaurantDetails() {
         </div>
       </div>
       <div className="container p-b65">
-
-      <RestaurantSocials />
+        <RestaurantSocials />
       </div>
       <Bottom />
     </div>

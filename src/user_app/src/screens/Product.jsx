@@ -18,9 +18,8 @@ import Notice from "../component/Notice";
 import RestaurantSocials from "../components/RestaurantSocials";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
 
-
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -39,7 +38,7 @@ const Product = () => {
   const [menuList, setMenuList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [categories, setCategories] = useState([]);
- 
+
   const [filteredMenuList, setFilteredMenuList] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [sortByOpen, setSortByOpen] = useState(false);
@@ -88,7 +87,6 @@ const Product = () => {
     offer: false,
     categoryId: null,
     categoryId: location.state?.selectedCategory || null, // Get selected category from state
-
   });
 
   // useEffect(() => {
@@ -104,7 +102,6 @@ const Product = () => {
   //     }));
   //   }
   // }, [location.state]);
-  
 
   // const handleCategorySelect = (categoryId) => {
   //   setActiveFilters({ categoryId });
@@ -116,7 +113,6 @@ const Product = () => {
       categoryId: categoryId ? parseInt(categoryId, 10) : null, // Parse categoryId from URL or default to null ("All")
     }));
   }, [categoryId]);
-  
 
   // const handleCategorySelect = (categoryId) => {
   //   setActiveFilters((prev) => ({
@@ -132,8 +128,7 @@ const Product = () => {
       categoryId,
     }));
   };
-  
-  
+
   const [totalMenuCount, setTotalMenuCount] = useState(0);
 
   // Add this useEffect to update totalMenuCount whenever menuList changes
@@ -344,20 +339,20 @@ const Product = () => {
     }
   }, [categories, selectedCategory]);
 
-
   useEffect(() => {
     if (menuList.length > 0) {
       if (activeFilters.categoryId === null) {
         setFilteredMenuList(menuList); // Show all items if no category selected
       } else {
         setFilteredMenuList(
-          menuList.filter((menu) => menu.menu_cat_id === activeFilters.categoryId)
+          menuList.filter(
+            (menu) => menu.menu_cat_id === activeFilters.categoryId
+          )
         );
       }
     }
   }, [menuList, activeFilters.categoryId]);
-  
-  
+
   // useEffect(() => {
   //   if (menuList.length > 0) {
   //     if (selectedCategory === "special") {
@@ -382,18 +377,18 @@ const Product = () => {
   // };
 
   const handleSpecialSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       special: !prev.special,
-      offer: false // Turn off offer when special is selected
+      offer: false, // Turn off offer when special is selected
     }));
   };
 
   const handleOfferSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       offer: !prev.offer,
-      special: false // Turn off special when offer is selected
+      special: false, // Turn off special when offer is selected
     }));
   };
 
@@ -574,7 +569,9 @@ const Product = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -654,9 +651,11 @@ const Product = () => {
     setCountdown(null);
   };
 
-    
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
@@ -684,7 +683,39 @@ const Product = () => {
         };
     }
   };
-  
+
+  const getFoodTypeTextStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "gray-text",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+        };
+    }
+  };
 
   useEffect(() => {
     if (showAIModal) {
@@ -712,17 +743,19 @@ const Product = () => {
 
     // Apply category filter if selected
     if (activeFilters.categoryId) {
-      filteredList = filteredList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      filteredList = filteredList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
 
     // Apply special filter if active
     if (activeFilters.special) {
-      filteredList = filteredList.filter(menu => menu.is_special === true);
+      filteredList = filteredList.filter((menu) => menu.is_special === true);
     }
 
     // Apply offer filter if active
     if (activeFilters.offer) {
-      filteredList = filteredList.filter(menu => menu.offer > 0);
+      filteredList = filteredList.filter((menu) => menu.offer > 0);
     }
 
     return filteredList;
@@ -730,17 +763,21 @@ const Product = () => {
 
   // Add these count functions
   const getSpecialCount = () => {
-    let specialList = menuList.filter(menu => menu.is_special);
+    let specialList = menuList.filter((menu) => menu.is_special);
     if (activeFilters.categoryId) {
-      specialList = specialList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      specialList = specialList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return specialList.length;
   };
 
   const getOfferCount = () => {
-    let offerList = menuList.filter(menu => menu.offer > 0);
+    let offerList = menuList.filter((menu) => menu.offer > 0);
     if (activeFilters.categoryId) {
-      offerList = offerList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      offerList = offerList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return offerList.length;
   };
@@ -855,43 +892,42 @@ const Product = () => {
 
               {/* Regular category buttons */}
               {categories
-  .filter((category) => category.menu_count > 0) // Filter out categories with menu_count 0
-  .map((category) => (
-                <div key={category.menu_cat_id} className="swiper-slide">
-                  <div
-                    className="category-btn font_size_14 rounded-5 py-1"
-                    onClick={() => handleCategorySelect(category.menu_cat_id)}
-                    style={{
-                      backgroundColor:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#0D775E"
-                          : "#ffffff",
-                      color:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#ffffff"
-                          : "#000000",
-                      border: "1px solid #ddd",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    {category.category_name}
-                    <span
+                .filter((category) => category.menu_count > 0) // Filter out categories with menu_count 0
+                .map((category) => (
+                  <div key={category.menu_cat_id} className="swiper-slide">
+                    <div
+                      className="category-btn font_size_14 rounded-5 py-1"
+                      onClick={() => handleCategorySelect(category.menu_cat_id)}
                       style={{
+                        backgroundColor:
+                          activeFilters.categoryId === category.menu_cat_id
+                            ? "#0D775E"
+                            : "#ffffff",
                         color:
                           activeFilters.categoryId === category.menu_cat_id
-                          
                             ? "#ffffff"
-                            : "#666",
-                        fontSize: "0.8em",
+                            : "#000000",
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        padding: "8px 16px",
+                        transition: "all 0.3s ease",
                       }}
                     >
-                      ({category.menu_count})
-                    </span>
+                      {category.category_name}
+                      <span
+                        style={{
+                          color:
+                            activeFilters.categoryId === category.menu_cat_id
+                              ? "#ffffff"
+                              : "#666",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        ({category.menu_count})
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>
@@ -1017,12 +1053,22 @@ const Product = () => {
                             </div>
                           )} */}
                           <div className="d-flex justify-content-between align-items-center">
-                            <div className="fw-medium text-success font_size_10 d-flex align-items-center">
-                              <i className="fa-solid fa-utensils pe-1"></i>
-                              {categories.find(
-                                (category) =>
-                                  category.menu_cat_id === menu.menu_cat_id
-                              )?.name || menu.category}
+                            <div
+                              className={`fw-medium font_size_10 d-flex align-items-center ${
+                                getFoodTypeTextStyles(menu.category_food_type)
+                                  .textColor
+                              }`}
+                            >
+                              <i
+                                className={`${
+                                  getFoodTypeTextStyles(menu.category_food_type)
+                                    .icon
+                                } ${
+                                  getFoodTypeTextStyles(menu.category_food_type)
+                                    .textColor
+                                } pe-1`}
+                              ></i>
+                              {menu.category_name}
                             </div>
                             <div className="text-end">
                               {menu.rating > 0 && (
@@ -1158,7 +1204,7 @@ const Product = () => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

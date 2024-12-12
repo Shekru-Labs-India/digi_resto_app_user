@@ -13,7 +13,7 @@ import config from "./config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import Notice from "./Notice";
 import { renderSpicyLevel } from "./config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 const OfferBanner = () => {
   const [userData, setUserData] = useState(null);
@@ -124,7 +124,7 @@ const OfferBanner = () => {
           menu_food_type: menu.menu_food_type?.toLowerCase(),
           category_food_type: menu.category_food_type?.toLowerCase(),
           rating: parseFloat(menu.rating) || 0,
-          spicy_index: parseInt(menu.spicy_index) || 0
+          spicy_index: parseInt(menu.spicy_index) || 0,
         }));
 
         setMenuItems(formattedMenuItems);
@@ -206,7 +206,7 @@ const OfferBanner = () => {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
         };
-      case "non-veg":
+      case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
@@ -231,15 +231,42 @@ const OfferBanner = () => {
 
   useEffect(() => {
     if (menuItems.length > 0) {
-      swiperRef.current = new Swiper(".nearby-swiper", {
-        slidesPerView: "auto",
-        spaceBetween: 20,
-        loop: true,
-        autoplay: {
-          delay: 2500,
-          disableOnInteraction: false,
-        },
-      });
+      // Destroy existing swiper instance if it exists
+      if (
+        swiperRef.current &&
+        typeof swiperRef.current.destroy === "function"
+      ) {
+        swiperRef.current.destroy(true, true);
+      }
+
+      // Initialize new swiper with a small delay to ensure DOM is ready
+      setTimeout(() => {
+        swiperRef.current = new Swiper(".nearby-swiper", {
+          slidesPerView: "auto",
+          spaceBetween: 20,
+          loop: true,
+          autoplay: {
+            delay: 2500,
+            disableOnInteraction: true,
+          },
+          speed: 600,
+          touchRatio: 1,
+          preventClicks: false,
+          preventClicksPropagation: false,
+          grabCursor: true,
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          observer: true, // Enable observer
+          observeParents: true, // Watch for parent element changes
+          observeSlideChildren: true, // Watch for slide children changes
+        });
+      }, 100);
 
       return () => {
         if (
@@ -351,7 +378,10 @@ const OfferBanner = () => {
     }
   };
   const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle",
@@ -459,7 +489,9 @@ const OfferBanner = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
