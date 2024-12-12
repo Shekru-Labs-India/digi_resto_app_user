@@ -195,6 +195,8 @@ const Checkout = () => {
             orderNumber: data.order_number,
             orderStatus: data.order_status,
             orderId: data.order_id,
+            orderType: data.order_type, // Store order_type here
+
           });
           setShowExistingOrderModal(true);
         }
@@ -203,7 +205,7 @@ const Checkout = () => {
         throw new Error("Failed to check order status");
       }
     } catch (error) {
-      
+
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -273,13 +275,13 @@ const Checkout = () => {
       }
       if (response.ok && data.st === 2) {
         // console.log("table is occupied")
-          // toast.current.show({
-          //   severity: "error",
-          //   summary: "Error",
-          //   detail: "Table is occupied",
-          //   life: 3000,
-          // });
-           window.showToast("error", "Table is occupied");
+        // toast.current.show({
+        //   severity: "error",
+        //   summary: "Error",
+        //   detail: "Table is occupied",
+        //   life: 3000,
+        // });
+        window.showToast("error", "Table is occupied");
       }
       else {
         console.clear();
@@ -408,7 +410,7 @@ const Checkout = () => {
           data.msg || "Failed to add items to the existing order"
         );
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const closePopup = () => {
@@ -427,7 +429,7 @@ const Checkout = () => {
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
- 
+
 
   const timeoutRef = useRef({});
 
@@ -438,137 +440,132 @@ const Checkout = () => {
     try {
       setProcessingPaymentMethod('upi');
       if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
+
       await initiatePayment("UPI", paymentUrl, () => setProcessingPaymentMethod(''), "upi");
     } catch (error) {
       window.showToast("error", "UPI payment initiation failed");
       setProcessingPaymentMethod('');
     }
   };
-  
+
   const handlePhonePe = async () => {
     if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
       setProcessingPaymentMethod('phonepe');
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
+
       await initiatePayment("PhonePe", paymentUrl, () => setProcessingPaymentMethod(''), "phonepe");
     } catch (error) {
       window.showToast("error", "PhonePe payment initiation failed");
       setProcessingPaymentMethod('');
     }
   };
-  
+
   const handleGooglePay = async () => {
     if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
       setProcessingPaymentMethod('gpay');
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
         `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
+
       await initiatePayment("GooglePay", paymentUrl, () => setProcessingPaymentMethod(''), "gpay");
     } catch (error) {
       window.showToast("error", "Google Pay payment initiation failed");
       setProcessingPaymentMethod('');
     }
   };
-  
+
 
   const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
-    // Ensure that the required data (like order number, restaurantId, etc.) is available
-    if (!existingOrderDetails.orderNumber || !restaurantId) {
-      console.error("Missing order number or restaurant ID");
+    if (!cartId || !customerId || !restaurantId || !existingOrderDetails.orderNumber) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Missing required data to proceed",
+        life: 3000,
+      });
       setProcessing(false);
       return;
     }
   
     try {
-      // Make a call to the 'complete_or_cancle_existing_order_create_new_order' API
+      const sectionId =
+      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
+      localStorage.getItem("sectionId") ||
+      "";
       const response = await fetch(`${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          order_number: existingOrderDetails.orderNumber,
+          cart_id: cartId,
+          customer_id: customerId,
           restaurant_id: restaurantId,
-          order_status: "completed", // Pass "completed" as the order status
+          order_number: existingOrderDetails.orderNumber,
+          order_status: "completed",
+          payment_method: method, // Include payment method
+          order_type: existingOrderDetails.orderType, // Pass the order_type here
+          section_id:sectionId,
         }),
       });
   
-      if (response.ok) {
-        // If the request was successful, proceed with payment URL handling
-        const data = await response.json();
+      const data = await response.json();
   
-        if (data.st === 1) {
-          if (/android/i.test(navigator.userAgent)) {
-            window.location.href = paymentUrl;
-            timeoutRef.current[timeoutKey] = setTimeout(() => {
-              if (!document.hidden) {
-                window.showToast("error", `No ${method} app found. Please install the app.`);
-              }
-              setProcessing(false);
-            }, 3000);
-          } 
-          else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-            window.location.href = paymentUrl;
-            timeoutRef.current[timeoutKey] = setTimeout(() => {
-              if (!document.hidden) {
-                setProcessing(false);
-              }
-            }, 2000);
-          } 
-          else {
-            window.location.href = paymentUrl;
-            timeoutRef.current[timeoutKey] = setTimeout(() => {
-              if (!document.hidden) {
-                window.showToast("error", `No ${method} app found. Please install the app.`);
-              }
-              setProcessing(false);
-            }, 3000);
+      if (data.st === 1) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
           }
-        } else {
-          throw new Error(data.msg || "Failed to update order");
-        }
+          setProcessing(false);
+        }, 3000);
       } else {
-        throw new Error("Failed to complete the order");
+        throw new Error(data.msg || "Failed to process payment");
       }
     } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to process payment or order",
+        life: 3000,
+      });
       console.error("Error initiating payment:", error);
-      window.showToast("error", "Failed to process payment or order");
       setProcessing(false);
     }
   };
   
+  
+
 
   return (
     <div className="page-wrapper full-height">
@@ -715,65 +712,92 @@ const Checkout = () => {
                     Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
                   </p>
                   <div className="d-grid gap-2">
-                  <button
-  className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  onClick={handleGenericUPI}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'upi'}
->
-  {processingPaymentMethod === 'upi' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via Other UPI Apps
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-        width={45}
-        alt="UPI"
-      />
-    </>
-  )}
-</button>
+                    <button
+                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleGenericUPI}
+                      disabled={processingPaymentMethod && processingPaymentMethod !== 'upi'}
+                    >
+                      {processingPaymentMethod === 'upi' ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Other UPI Apps
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
+                        </>
+                      )}
+                    </button>
 
-<button
-  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  style={{ backgroundColor: "#5f259f" }}
-  onClick={handlePhonePe}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'phonepe'}
->
-  {processingPaymentMethod === 'phonepe' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via PhonePe
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
-        width={45}
-        alt="PhonePe"
-      />
-    </>
-  )}
-</button>
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={handlePhonePe}
+                      disabled={processingPaymentMethod && processingPaymentMethod !== 'phonepe'}
+                    >
+                      {processingPaymentMethod === 'phonepe' ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via PhonePe
+                          <img
+                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                            width={45}
+                            alt="PhonePe"
+                          />
+                        </>
+                      )}
+                    </button>
 
-<button
-  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  style={{ backgroundColor: "#1565c0" }}
-  onClick={handleGooglePay}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'gpay'}
->
-  {processingPaymentMethod === 'gpay' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via Google Pay
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
-        width={45}
-        alt="Google Pay"
-      />
-    </>
-  )}
-</button>
+                    <button
+                      className="btn text-dark w-100 bg-white border "
+                      style={{ backgroundColor: "#1565c0" }}
+                      onClick={handleGooglePay}
+                      disabled={processingPaymentMethod && processingPaymentMethod !== 'gpay'}
+                    >
+                      {processingPaymentMethod === 'gpay' ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Google Pay
+                          <img
+                            className="ms-2"
+                            src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
+                        </>
+                      )}
+                    </button>
 
+
+                    <div className="text-center mt-3">
+                      <div>or make payment via:</div>
+                    </div>
+                    <div className="d-flex justify-content-center pt-2">
+  <button
+    type="button"
+    className="px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark border"
+    onClick={() => {
+      initiatePayment("card", null, setProcessingPaymentMethod, "card");
+    }}
+  >
+    <i className="ri-bank-card-line me-1"></i>
+    Card
+  </button>
+  <button
+    type="button"
+    className="px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark border"
+    onClick={() => {
+      initiatePayment("cash", null, setProcessingPaymentMethod, "cash");
+    }}
+  >
+    <i className="ri-wallet-3-fill me-1"></i>
+    Cash
+  </button>
+</div>
 
                     <button
                       className="btn btn-outline-secondary rounded-pill w-100"
@@ -1106,7 +1130,7 @@ const Checkout = () => {
         <div className="container py-0">
           {/* <NearbyArea /> */}
           {/* <RestaurantSocials /> */}
-          <RestaurantSocials/>
+          <RestaurantSocials />
         </div>
       </main>
 
