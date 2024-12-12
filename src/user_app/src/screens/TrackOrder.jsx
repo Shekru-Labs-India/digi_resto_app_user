@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import images from "../assets/chiken.jpg";
+import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct

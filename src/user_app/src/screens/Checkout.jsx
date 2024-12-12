@@ -272,7 +272,7 @@ const Checkout = () => {
         await fetchCartDetails();
       }
       if (response.ok && data.st === 2) {
-        console.log("table is occupied")
+        // console.log("table is occupied")
           // toast.current.show({
           //   severity: "error",
           //   summary: "Error",
