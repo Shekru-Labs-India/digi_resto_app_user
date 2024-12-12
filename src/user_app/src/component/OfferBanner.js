@@ -25,7 +25,7 @@ const OfferBanner = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [comment, setComment] = useState("");
+  const [notes, setNotes] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
@@ -158,7 +158,7 @@ const OfferBanner = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          comment,
+          notes,
           half_or_full: portionSize,
           price: selectedPrice,
           restaurant_id: restaurantId,
@@ -169,7 +169,7 @@ const OfferBanner = () => {
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setComment("");
+      setNotes("");
       setPortionSize("full");
       setSelectedMenu(null);
 
@@ -231,42 +231,21 @@ const OfferBanner = () => {
 
   useEffect(() => {
     if (menuItems.length > 0) {
-      // Destroy existing swiper instance if it exists
-      if (
-        swiperRef.current &&
-        typeof swiperRef.current.destroy === "function"
-      ) {
-        swiperRef.current.destroy(true, true);
-      }
-
-      // Initialize new swiper with a small delay to ensure DOM is ready
-      setTimeout(() => {
-        swiperRef.current = new Swiper(".nearby-swiper", {
-          slidesPerView: "auto",
-          spaceBetween: 20,
-          loop: true,
-          autoplay: {
-            delay: 2500,
-            disableOnInteraction: true,
-          },
-          speed: 600,
-          touchRatio: 1,
-          preventClicks: false,
-          preventClicksPropagation: false,
-          grabCursor: true,
-          navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-          },
-          pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-          },
-          observer: true, // Enable observer
-          observeParents: true, // Watch for parent element changes
-          observeSlideChildren: true, // Watch for slide children changes
-        });
-      }, 100);
+      swiperRef.current = new Swiper(".nearby-swiper", {
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: true, // Changed to true
+          pauseOnMouseEnter: true, // Added this
+        },
+        speed: 1000, // Added controlled speed
+        touchRatio: 1, // Normal touch ratio
+        preventClicks: false, // Allow clicks without stopping swiper
+        preventClicksPropagation: false, // Allow click events to propagate
+        grabCursor: true, // Shows grab cursor on hover
+      });
 
       return () => {
         if (
@@ -412,7 +391,7 @@ const OfferBanner = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setComment(suggestion);
+    setNotes(suggestion);
   };
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -622,21 +601,10 @@ const OfferBanner = () => {
                                 <span
                                   className={`ps-2 font_size_10 ${
                                     getFoodTypeTextStyles(
-                                      menuItem.category_food_type
+                                      menuItem.menu_food_type
                                     ).textColor
                                   }`}
                                 >
-                                  <i
-                                    className={`${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).icon
-                                    } ${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).textColor
-                                    } font_size_10 mt-0 me-1`}
-                                  ></i>
                                   {menuItem.category_name}
                                 </span>
                               </div>
@@ -758,8 +726,8 @@ const OfferBanner = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          comment={comment}
-          setComment={setComment}
+          notes={notes}
+          setNotes={setNotes}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -768,7 +736,7 @@ const OfferBanner = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setComment(suggestion)}
+          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
             if (e.target.classList.contains("modal")) {
               setShowModal(false);

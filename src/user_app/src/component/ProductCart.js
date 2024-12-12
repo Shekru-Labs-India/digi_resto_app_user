@@ -57,7 +57,6 @@ const ProductCard = ({ isVegOnly }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [totalMenuCount, setTotalMenuCount] = useState(0);
   const [filteredMenuList, setFilteredMenuList] = useState([]);
-  
 
   const navigate = useNavigate();
   const { restaurantId } = useRestaurantId();
@@ -96,7 +95,7 @@ const ProductCard = ({ isVegOnly }) => {
   const [activeFilters, setActiveFilters] = useState({
     special: false,
     offer: false,
-    categoryId: null
+    categoryId: null,
   });
 
   // Optimized applyFilters function
@@ -151,26 +150,26 @@ const ProductCard = ({ isVegOnly }) => {
 
   // Optimized category selection handler
   const handleCategorySelect = (categoryId) => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
-      categoryId: categoryId
+      categoryId: categoryId,
     }));
   };
 
   // Update the special/offer selection handlers
   const handleSpecialSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       special: !prev.special,
-      offer: false // Turn off offer when special is selected
+      offer: false, // Turn off offer when special is selected
     }));
   };
 
   const handleOfferSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       offer: !prev.offer,
-      special: false // Turn off special when offer is selected
+      special: false, // Turn off special when offer is selected
     }));
   };
 
@@ -180,17 +179,19 @@ const ProductCard = ({ isVegOnly }) => {
 
     // Apply category filter if selected
     if (activeFilters.categoryId) {
-      filteredList = filteredList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      filteredList = filteredList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
 
     // Apply special filter if active
     if (activeFilters.special) {
-      filteredList = filteredList.filter(menu => menu.is_special === true);
+      filteredList = filteredList.filter((menu) => menu.is_special === true);
     }
 
     // Apply offer filter if active
     if (activeFilters.offer) {
-      filteredList = filteredList.filter(menu => menu.offer > 0);
+      filteredList = filteredList.filter((menu) => menu.offer > 0);
     }
 
     return filteredList;
@@ -198,17 +199,21 @@ const ProductCard = ({ isVegOnly }) => {
 
   // Update the counts for special and offer buttons
   const getSpecialCount = () => {
-    let specialList = menuList.filter(menu => menu.is_special);
+    let specialList = menuList.filter((menu) => menu.is_special);
     if (activeFilters.categoryId) {
-      specialList = specialList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      specialList = specialList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return specialList.length;
   };
 
   const getOfferCount = () => {
-    let offerList = menuList.filter(menu => menu.offer > 0);
+    let offerList = menuList.filter((menu) => menu.offer > 0);
     if (activeFilters.categoryId) {
-      offerList = offerList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      offerList = offerList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return offerList.length;
   };
@@ -260,20 +265,17 @@ const ProductCard = ({ isVegOnly }) => {
         // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
       }
-      if (data.st === 2){
-           showLoginPopup();
-          //  let userData = JSON.parse(localStorage.getItem("userData"));
-          //  delete userData.customer_id;
-          localStorage.removeItem("userData");
-          navigate("/user_app/Profile");
+      if (data.st === 2) {
+        showLoginPopup();
+        //  let userData = JSON.parse(localStorage.getItem("userData"));
+        //  delete userData.customer_id;
+        localStorage.removeItem("userData");
+        navigate("/user_app/Profile");
       }
     } catch (error) {
       console.clear();
     }
   }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
-
-
-  
 
   // Initial data fetch
   useEffect(() => {
@@ -391,10 +393,7 @@ const ProductCard = ({ isVegOnly }) => {
               ? "Item has been added to your favourites."
               : "Item has been removed  from your favourites."
           );
-          
-        } 
-        
-        else {
+        } else {
           console.clear();
           window.showToast("error", "Failed to update favourite status");
         }
@@ -451,7 +450,10 @@ const ProductCard = ({ isVegOnly }) => {
         }
       } else {
         console.clear();
-        window.showToast("error", data.msg || "Failed to fetch price information");
+        window.showToast(
+          "error",
+          data.msg || "Failed to fetch price information"
+        );
       }
     } catch (error) {
       console.clear();
@@ -547,7 +549,10 @@ const ProductCard = ({ isVegOnly }) => {
       setSelectedMenu(null);
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to add item to cart. Please try again.");
+      window.showToast(
+        "error",
+        "Failed to add item to cart. Please try again."
+      );
     }
   };
 
@@ -655,43 +660,43 @@ const ProductCard = ({ isVegOnly }) => {
     }, 3000);
   }
 
-
-
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase and handle null/undefined
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle",
           textColor: "text-success",
-          border: "border-success"
+          border: "border-success",
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270",
           textColor: "text-danger",
-          border: "border-danger"
+          border: "border-danger",
         };
       case "egg":
         return {
           icon: "fa-solid fa-egg",
           textColor: "gray-text",
-          border: "border-muted"
+          border: "border-muted",
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf",
           textColor: "text-success",
-          border: "border-success"
+          border: "border-success",
         };
       default:
         return {
           icon: "fa-solid fa-circle",
           textColor: "text-success",
-          border: "border-success"
+          border: "border-success",
         };
     }
   };
-  
 
   return (
     <div>
@@ -861,43 +866,44 @@ const ProductCard = ({ isVegOnly }) => {
             </div>
 
             {/* Regular category buttons */}
-            {menuCategories.map((category) => (
-              category.menu_count > 0 && (
-                <div key={category.menu_cat_id} className="swiper-slide">
-                  <div
-                    className="category-btn font_size_14 rounded-5 py-1"
-                    onClick={() => handleCategorySelect(category.menu_cat_id)}
-                    style={{
-                      backgroundColor:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#0D775E"
-                          : "#ffffff",
-                      color:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#ffffff"
-                          : "#000000",
-                      border: "1px solid #ddd",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    {category.name}
-                    <span
+            {menuCategories.map(
+              (category) =>
+                category.menu_count > 0 && (
+                  <div key={category.menu_cat_id} className="swiper-slide">
+                    <div
+                      className="category-btn font_size_14 rounded-5 py-1"
+                      onClick={() => handleCategorySelect(category.menu_cat_id)}
                       style={{
+                        backgroundColor:
+                          activeFilters.categoryId === category.menu_cat_id
+                            ? "#0D775E"
+                            : "#ffffff",
                         color:
                           activeFilters.categoryId === category.menu_cat_id
                             ? "#ffffff"
-                            : "#666",
-                        fontSize: "0.8em",
+                            : "#000000",
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        padding: "8px 16px",
+                        transition: "all 0.3s ease",
                       }}
                     >
-                      ({category.menu_count})
-                    </span>
+                      {category.name}
+                      <span
+                        style={{
+                          color:
+                            activeFilters.categoryId === category.menu_cat_id
+                              ? "#ffffff"
+                              : "#666",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        ({category.menu_count})
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )
-            ))}
+                )
+            )}
           </div>
         </div>
       </div>
@@ -999,29 +1005,14 @@ const ProductCard = ({ isVegOnly }) => {
                   </div>
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
-                      <div className="font_size_12 ">
-                        {/* {menu.is_special && (
-                          <div className="row ">
-                            <div className="col-12 text-info text-center font_size_12 fw-medium border-bottom pb-2 mb-2">
-                              <i className="fa-regular fa-star me-2"></i>
-                              Special
-                            </div>
-                          </div>
-                        )} */}
+                      <div className="font_size_12">
                         <div className="row">
-                          <div
-                            className={`col-8 ${
-                              getFoodTypeStyles(menu.menu_food_type).textColor
-                            }`}
-                          >
-                            <i
+                          <div className="col-8">
+                            <span
                               className={`${
-                                getFoodTypeStyles(menu.menu_food_type).icon
-                              } pe-1 ${
                                 getFoodTypeStyles(menu.menu_food_type).textColor
                               }`}
-                            ></i>
-                            <span className="font_size_10">
+                            >
                               {menu.category}
                             </span>
                           </div>
@@ -1091,7 +1082,7 @@ const ProductCard = ({ isVegOnly }) => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

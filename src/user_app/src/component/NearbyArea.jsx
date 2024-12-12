@@ -198,26 +198,31 @@ const NearbyArea = () => {
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-danger",
         };
       case "egg":
         return {
           icon: "fa-solid fa-egg gray-text",
           border: "border-muted",
+          textColor: "gray-text",
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
         };
     }
   };
@@ -570,7 +575,10 @@ const NearbyArea = () => {
                                 className={`${
                                   getFoodTypeStyles(menuItem.menu_food_type)
                                     .icon
-                                } font_size_12`}
+                                } font_size_12 ${
+                                  getFoodTypeStyles(menuItem.menu_food_type)
+                                    .textColor
+                                }`}
                               ></i>
                             </div>
                             {/* Offer Tag */}
@@ -594,22 +602,10 @@ const NearbyArea = () => {
                               <div className="col-6 d-flex align-items-center">
                                 <span
                                   className={`ps-2 font_size_10 ${
-                                    getFoodTypeTextStyles(
-                                      menuItem.category_food_type
-                                    ).textColor
+                                    getFoodTypeStyles(menuItem.menu_food_type)
+                                      .textColor
                                   }`}
                                 >
-                                  <i
-                                    className={`${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).icon
-                                    } ${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).textColor
-                                    } font_size_10 mt-0 me-1`}
-                                  ></i>
                                   {menuItem.category_name}
                                 </span>
                               </div>

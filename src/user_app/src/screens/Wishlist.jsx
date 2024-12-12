@@ -376,10 +376,10 @@ const Wishlist = () => {
           return updatedMenuList;
         });
 
-        window.showToast("success", "Item has been removed from favourite");
+        window.showToast("success", "Item has been removed from favourites");
       } else {
         console.clear();
-        window.showToast("error", "Failed to remove item from favourite");
+        window.showToast("error", "Failed to remove item from favourites");
       }
     } catch (error) {
       console.clear();
@@ -434,7 +434,7 @@ const Wishlist = () => {
       case "veg":
         return {
           icon: "fa-solid fa-circle",
-          textColor: "text-primary",
+          textColor: "text-success",
         };
       case "nonveg":
         return {
@@ -444,7 +444,7 @@ const Wishlist = () => {
       case "egg":
         return {
           icon: "fa-solid fa-egg",
-          textColor: "text-light",
+          textColor: "text-secondary",
         };
       case "vegan":
         return {
@@ -452,9 +452,17 @@ const Wishlist = () => {
           textColor: "text-success",
         };
       default:
+        // Check if it's a known type with different casing
+        const lowerType = type.toLowerCase();
+        if (lowerType === "nonveg") {
+          return {
+            icon: "fa-solid fa-play fa-rotate-270",
+            textColor: "text-danger",
+          };
+        }
         return {
           icon: "fa-solid fa-circle",
-          textColor: "text-primary",
+          textColor: "text-success",
         };
     }
   };

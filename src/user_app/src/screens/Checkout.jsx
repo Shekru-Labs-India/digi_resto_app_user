@@ -203,7 +203,6 @@ const Checkout = () => {
         throw new Error("Failed to check order status");
       }
     } catch (error) {
-      
       toast.current.show({
         severity: "error",
         summary: "Error",
@@ -273,15 +272,14 @@ const Checkout = () => {
       }
       if (response.ok && data.st === 2) {
         // console.log("table is occupied")
-          // toast.current.show({
-          //   severity: "error",
-          //   summary: "Error",
-          //   detail: "Table is occupied",
-          //   life: 3000,
-          // });
-           window.showToast("error", "Table is occupied");
-      }
-      else {
+        // toast.current.show({
+        //   severity: "error",
+        //   summary: "Error",
+        //   detail: "Table is occupied",
+        //   life: 3000,
+        // });
+        window.showToast("error", "Table is occupied");
+      } else {
         console.clear();
         throw new Error(data.msg || "Failed to create order");
       }
@@ -427,131 +425,168 @@ const Checkout = () => {
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
- 
 
   const timeoutRef = useRef({});
 
-  const [processingPaymentMethod, setProcessingPaymentMethod] = useState(''); // tracks which method is being processed
+  const [processingPaymentMethod, setProcessingPaymentMethod] = useState(""); // tracks which method is being processed
 
   const handleGenericUPI = async () => {
     if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
-      setProcessingPaymentMethod('upi');
+      setProcessingPaymentMethod("upi");
       if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
-        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
-      await initiatePayment("UPI", paymentUrl, () => setProcessingPaymentMethod(''), "upi");
+
+      await initiatePayment(
+        "UPI",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "upi"
+      );
     } catch (error) {
       window.showToast("error", "UPI payment initiation failed");
-      setProcessingPaymentMethod('');
+      setProcessingPaymentMethod("");
     }
   };
-  
+
   const handlePhonePe = async () => {
     if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
-      setProcessingPaymentMethod('phonepe');
+      setProcessingPaymentMethod("phonepe");
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
-        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
-      await initiatePayment("PhonePe", paymentUrl, () => setProcessingPaymentMethod(''), "phonepe");
+
+      await initiatePayment(
+        "PhonePe",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "phonepe"
+      );
     } catch (error) {
       window.showToast("error", "PhonePe payment initiation failed");
-      setProcessingPaymentMethod('');
+      setProcessingPaymentMethod("");
     }
   };
-  
+
   const handleGooglePay = async () => {
     if (processingPaymentMethod) return; // Prevents multiple payments at once
     try {
-      setProcessingPaymentMethod('gpay');
+      setProcessingPaymentMethod("gpay");
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
-  
+
       const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
       const transactionNote = encodeURIComponent(
-        `${userData?.name || "Customer"} is paying Rs. ${amount} to ${restaurantName} for order no. #${existingOrderDetails.orderNumber}`
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
       );
       const encodedRestaurantName = encodeURIComponent(restaurantName);
       const upiId = "hivirajkadam@okhdfcbank";
-  
+
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
-  
-      await initiatePayment("GooglePay", paymentUrl, () => setProcessingPaymentMethod(''), "gpay");
+
+      await initiatePayment(
+        "GooglePay",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "gpay"
+      );
     } catch (error) {
       window.showToast("error", "Google Pay payment initiation failed");
-      setProcessingPaymentMethod('');
+      setProcessingPaymentMethod("");
     }
   };
-  
 
-  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
     // Ensure that the required data (like order number, restaurantId, etc.) is available
     if (!existingOrderDetails.orderNumber || !restaurantId) {
       console.error("Missing order number or restaurant ID");
       setProcessing(false);
       return;
     }
-  
+
     try {
       // Make a call to the 'complete_or_cancle_existing_order_create_new_order' API
-      const response = await fetch(`${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_number: existingOrderDetails.orderNumber,
-          restaurant_id: restaurantId,
-          order_status: "completed", // Pass "completed" as the order status
-        }),
-      });
-  
+      const response = await fetch(
+        `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_number: existingOrderDetails.orderNumber,
+            restaurant_id: restaurantId,
+            order_status: "completed", // Pass "completed" as the order status
+          }),
+        }
+      );
+
       if (response.ok) {
         // If the request was successful, proceed with payment URL handling
         const data = await response.json();
-  
+
         if (data.st === 1) {
           if (/android/i.test(navigator.userAgent)) {
             window.location.href = paymentUrl;
             timeoutRef.current[timeoutKey] = setTimeout(() => {
               if (!document.hidden) {
-                window.showToast("error", `No ${method} app found. Please install the app.`);
+                window.showToast(
+                  "error",
+                  `No ${method} app found. Please install the app.`
+                );
               }
               setProcessing(false);
             }, 3000);
-          } 
-          else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+          } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
             window.location.href = paymentUrl;
             timeoutRef.current[timeoutKey] = setTimeout(() => {
               if (!document.hidden) {
                 setProcessing(false);
               }
             }, 2000);
-          } 
-          else {
+          } else {
             window.location.href = paymentUrl;
             timeoutRef.current[timeoutKey] = setTimeout(() => {
               if (!document.hidden) {
-                window.showToast("error", `No ${method} app found. Please install the app.`);
+                window.showToast(
+                  "error",
+                  `No ${method} app found. Please install the app.`
+                );
               }
               setProcessing(false);
             }, 3000);
@@ -568,7 +603,54 @@ const Checkout = () => {
       setProcessing(false);
     }
   };
-  
+
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase and handle null/undefined
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+          border: "border-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+          border: "border-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "text-secondary",
+          border: "border-secondary",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+          border: "border-success",
+        };
+      default:
+        // Check if it's a known type with different casing
+        const lowerType = type.toLowerCase();
+        if (lowerType === "nonveg") {
+          return {
+            icon: "fa-solid fa-play fa-rotate-270",
+            textColor: "text-danger",
+            border: "border-danger",
+          };
+        }
+        // Default to veg if unknown
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
+          border: "border-success",
+        };
+    }
+  };
 
   return (
     <div className="page-wrapper full-height">
@@ -694,7 +776,10 @@ const Checkout = () => {
 
         {showPaymentOptions && (
           <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px", margin: "auto" }}
+            >
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -712,68 +797,77 @@ const Checkout = () => {
 
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
-                    Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
+                    Please select a payment method to complete your order #
+                    {existingOrderDetails.orderNumber}
                   </p>
                   <div className="d-grid gap-2">
-                  <button
-  className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  onClick={handleGenericUPI}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'upi'}
->
-  {processingPaymentMethod === 'upi' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via Other UPI Apps
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-        width={45}
-        alt="UPI"
-      />
-    </>
-  )}
-</button>
+                    <button
+                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleGenericUPI}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "upi"
+                      }
+                    >
+                      {processingPaymentMethod === "upi" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Other UPI Apps
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
+                        </>
+                      )}
+                    </button>
 
-<button
-  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  style={{ backgroundColor: "#5f259f" }}
-  onClick={handlePhonePe}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'phonepe'}
->
-  {processingPaymentMethod === 'phonepe' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via PhonePe
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
-        width={45}
-        alt="PhonePe"
-      />
-    </>
-  )}
-</button>
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={handlePhonePe}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "phonepe"
+                      }
+                    >
+                      {processingPaymentMethod === "phonepe" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via PhonePe
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/phonepe.png"
+                            width={45}
+                            alt="PhonePe"
+                          />
+                        </>
+                      )}
+                    </button>
 
-<button
-  className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-  style={{ backgroundColor: "#1565c0" }}
-  onClick={handleGooglePay}
-  disabled={processingPaymentMethod && processingPaymentMethod !== 'gpay'}
->
-  {processingPaymentMethod === 'gpay' ? (
-    "Processing..."
-  ) : (
-    <>
-      Pay via Google Pay
-      <img
-        src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
-        width={45}
-        alt="Google Pay"
-      />
-    </>
-  )}
-</button>
-
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#1565c0" }}
+                      onClick={handleGooglePay}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "gpay"
+                      }
+                    >
+                      {processingPaymentMethod === "gpay" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay via Google Pay
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
+                        </>
+                      )}
+                    </button>
 
                     <button
                       className="btn btn-outline-secondary rounded-pill w-100"
@@ -790,7 +884,10 @@ const Checkout = () => {
 
         {showExistingOrderModal && (
           <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px", margin: "auto" }}
+            >
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -808,7 +905,9 @@ const Checkout = () => {
 
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
-                    You have an ongoing order (#{existingOrderDetails.orderNumber}). Would you like to add to this order or create a new one?
+                    You have an ongoing order (#
+                    {existingOrderDetails.orderNumber}). Would you like to add
+                    to this order or create a new one?
                   </p>
                   <div className="d-grid gap-2">
                     <button
@@ -830,7 +929,8 @@ const Checkout = () => {
                       className="btn btn-info rounded-pill font_size_14"
                       onClick={handleAddToExistingOrder}
                     >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber})
+                      Add to Existing Order (#{existingOrderDetails.orderNumber}
+                      )
                     </button>
                     <button
                       type="button"
@@ -975,8 +1075,21 @@ const Checkout = () => {
                           <div className="row">
                             <div className="col-8">
                               <div className="ps-2">
-                                <span className="text-success font_size_10">
-                                  <i className="fa-solid fa-utensils me-2"></i>
+                                <span
+                                  className={`font_size_10 ${
+                                    getFoodTypeStyles(item.menu_food_type)
+                                      .textColor
+                                  }`}
+                                >
+                                  <i
+                                    className={`${
+                                      getFoodTypeStyles(item.menu_food_type)
+                                        .icon
+                                    } me-2 ${
+                                      getFoodTypeStyles(item.menu_food_type)
+                                        .textColor
+                                    }`}
+                                  ></i>
                                   {item.menu_cat_name}
                                 </span>
                               </div>
@@ -1013,7 +1126,7 @@ const Checkout = () => {
                       ₹{total.toFixed(2)}
                     </span>
                   </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
+                  <hr className=" p-0 m-0 text-primary" />
                 </div>
 
                 <div className="col-12 mb-0 pt-0 pb-1 px-2">
@@ -1069,7 +1182,7 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <hr className="me-0 p-0 m-0 text-primary" />
+                <hr className=" p-0 m-0 text-primary" />
 
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
@@ -1106,7 +1219,7 @@ const Checkout = () => {
         <div className="container py-0">
           {/* <NearbyArea /> */}
           {/* <RestaurantSocials /> */}
-          <RestaurantSocials/>
+          <RestaurantSocials />
         </div>
       </main>
 

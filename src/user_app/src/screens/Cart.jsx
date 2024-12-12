@@ -16,10 +16,10 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
 // import { useCart } from "../context/CartContext";
 const Cart = () => {
-    const location = useLocation();
-    const magicMessage = location.state?.magicMessage;
+  const location = useLocation();
+  const magicMessage = location.state?.magicMessage;
   const { restaurantId, restaurantName } = useRestaurantId();
-  const {  updateCart, removeFromCart } = useCart();
+  const { updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const Cart = () => {
   const getStoredRestaurantId = useCallback(() => {
     return localStorage.getItem("restaurantId") || restaurantId;
   }, [restaurantId]);
-  
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
@@ -136,18 +136,18 @@ const Cart = () => {
   const handleClearCart = async () => {
     const customerId = getCustomerId();
     const cartId = getCartId() || localStorage.getItem("cartId");
-  
+
     if (!customerId || !cartId || !restaurantId) {
       window.showToast("error", "Required information is missing.");
       return;
     }
-  
+
     try {
       const response = await fetch(
-        'https://men4u.xyz/user_api/delete_entire_cart',
+        "https://men4u.xyz/user_api/delete_entire_cart",
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
             customer_id: customerId,
@@ -155,9 +155,9 @@ const Cart = () => {
           }),
         }
       );
-  
+
       const data = await response.json();
-  
+
       if (data.st === 1) {
         clearCartData();
         window.showToast("success", data.msg || "Cart cleared successfully.");
@@ -279,14 +279,11 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         fetchCartDetails();
-     
       } else {
         console.clear();
-        
       }
     } catch (error) {
       console.clear();
-    
     }
   };
 
@@ -328,7 +325,6 @@ const Cart = () => {
       (item) => item.menu_id === menuId
     );
     if (!menuItem) {
-     
       return;
     }
 
@@ -406,7 +402,9 @@ const Cart = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -414,13 +412,10 @@ const Cart = () => {
     );
   };
 
-
-
-
   const getFoodTypeStyles = (foodType) => {
     // Convert foodType to lowercase for case-insensitive comparison
     const type = (foodType || "").toLowerCase();
-  
+
     switch (type) {
       case "veg":
         return {
@@ -449,44 +444,53 @@ const Cart = () => {
         };
     }
   };
-  
 
   const getFoodTypeTextStyles = (foodType) => {
     // Convert foodType to lowercase for case-insensitive comparison
     const type = (foodType || "").toLowerCase();
-  
+
     switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
           border: "border-success",
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
           border: "border-danger",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg",
+          textColor: "text-secondary",
+          border: "border-secondary",
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
           border: "border-success",
         };
       default:
+        // Check if it's a known type with different casing
+        const lowerType = type.toLowerCase();
+        if (lowerType === "nonveg") {
+          return {
+            icon: "fa-solid fa-play fa-rotate-270",
+            textColor: "text-danger",
+            border: "border-danger",
+          };
+        }
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle",
+          textColor: "text-success",
           border: "border-success",
         };
     }
   };
-  
-
-  
-  
 
   if (isLoading) {
     return (
@@ -781,9 +785,10 @@ const Cart = () => {
             ))}
           </div>
           <div className="container py-0">
-            <div className="d-flex justify-content-end align-items-center gray-text font_size_14"
+            <div
+              className="d-flex justify-content-end align-items-center gray-text font_size_14"
               onClick={handleClearCart} // Attach the event handler
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: "pointer" }}
             >
               <i className="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
               Clear Cart
