@@ -1010,11 +1010,20 @@ const ProductCard = ({ isVegOnly }) => {
                   </div>
                   <div className="dz-content pb-1">
                     <div className="detail-content category-text">
-                      <div className="font_size_12">
+                      <div className="font_size_10">
                         <div className="row">
-                          <div className="col-8">
-                            <span className={`${getFoodTypeStyles(menu.menu_food_type).textColor}`}>
-                              <i className={getFoodTypeStyles(menu.menu_food_type).categoryIcon}></i>
+                          <div className="col-8 pe-0">
+                            <span
+                              className={`${
+                                getFoodTypeStyles(menu.menu_food_type).textColor
+                              }`}
+                            >
+                              <i
+                                className={
+                                  getFoodTypeStyles(menu.menu_food_type)
+                                    .categoryIcon
+                                }
+                              ></i>
                               {menu.category}
                             </span>
                           </div>
