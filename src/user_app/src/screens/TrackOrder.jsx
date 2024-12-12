@@ -4,27 +4,28 @@ import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
- import "../assets/css/toast.css";
+import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
-import config from "../component/config"
+import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 const TrackOrder = () => {
-
   // Add these helper functions at the top of your component
   const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           textColor: "text-success",
           icon: "fa-solid fa-leaf",
         };
-      case "non-veg":
+      case "nonveg":
         return {
           textColor: "text-danger",
           icon: "fa-solid fa-drumstick-bite",
@@ -69,7 +70,7 @@ const TrackOrder = () => {
   const toast = useRef(null);
 
   const isLoggedIn = !!localStorage.getItem("userData");
- 
+
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
@@ -103,9 +104,6 @@ const TrackOrder = () => {
     });
   };
 
- 
-
- 
   const isItemAdded = (menuId) => {
     return (
       removedItems.has(menuId) ||
@@ -325,8 +323,6 @@ const TrackOrder = () => {
     }
   }, [orderDetails, removedItems]);
 
-  
-
   const handleRemovePendingItem = (menuId) => {
     setPendingItems((prev) => prev.filter((item) => item.menu_id !== menuId));
     setRemovedItems((prev) => {
@@ -367,7 +363,6 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) {
-        
         return;
       }
 
@@ -389,7 +384,6 @@ const TrackOrder = () => {
           userData?.customer_type || localStorage.getItem("customer_type");
 
         if (!currentCustomerId) {
-     
           return;
         }
 
@@ -401,7 +395,7 @@ const TrackOrder = () => {
         };
 
         const response = await fetch(
-           `${config.apiDomain}/user_api/search_menu`,
+          `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
@@ -422,15 +416,12 @@ const TrackOrder = () => {
             }));
             setSearchedMenu(formattedMenu);
           } else {
-            
           }
         } else {
           console.clear();
-         
         }
       } catch (error) {
         console.clear();
-        
       }
 
       setIsLoading(false);
@@ -444,8 +435,6 @@ const TrackOrder = () => {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
-
-  
 
   // Update the handleLikeClick function
   useEffect(() => {
@@ -504,7 +493,7 @@ const TrackOrder = () => {
   const handleLikeClick = async (menu, e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.customer_id || userData.customer_type === "guest") {
       window.showToast("info", "Please login to use favourite functionality");
@@ -512,12 +501,15 @@ const TrackOrder = () => {
       return;
     }
 
-    const currentRestaurantId = menu.restaurant_id || localStorage.getItem("restaurantId");
+    const currentRestaurantId =
+      menu.restaurant_id || localStorage.getItem("restaurantId");
     const isFavorite = favoriteMenus[menu.menu_id] || false;
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/${isFavorite ? "remove" : "save"}_favourite_menu`,
+        `${config.apiDomain}/user_api/${
+          isFavorite ? "remove" : "save"
+        }_favourite_menu`,
         {
           method: "POST",
           headers: {
@@ -585,7 +577,7 @@ const TrackOrder = () => {
     try {
       setLoading(true);
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_order_details`,
+        `${config.apiDomain}/user_api/get_order_details`,
         {
           method: "POST",
           headers: {
@@ -620,10 +612,8 @@ const TrackOrder = () => {
           }
         }
       }
-      
     } catch (error) {
       console.clear();
-      
     } finally {
       setLoading(false);
     }
@@ -711,14 +701,11 @@ const TrackOrder = () => {
       window.showToast("success", `${menu.menu_name} removed from order`);
     } catch (error) {
       console.clear();
-     
+
       window.showToast("error", "Failed to remove item. Please try again.");
     }
   };
 
-
-
-    
   const getFoodTypeStyles = (foodType) => {
     switch (foodType?.toLowerCase()) {
       case "veg":
@@ -748,10 +735,6 @@ const TrackOrder = () => {
         };
     }
   };
-  
- 
-
- 
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
@@ -823,7 +806,7 @@ const TrackOrder = () => {
 
   const handleCategoryClick = (categoryId, categoryName) => {
     navigate(`/user_app/Category/${categoryId}`, {
-      state: { categoryName }
+      state: { categoryName },
     });
   };
 
@@ -838,30 +821,44 @@ const TrackOrder = () => {
   useEffect(() => {
     const checkOrderExists = () => {
       try {
-        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-        
+        const allOrders = JSON.parse(
+          localStorage.getItem("allOrderList") || "{}"
+        );
+
         // Check placed orders
-        if (allOrders.placed?.some(order => order.order_number === order_number)) {
+        if (
+          allOrders.placed?.some((order) => order.order_number === order_number)
+        ) {
           return true;
         }
 
         // Check ongoing orders
-        if (allOrders.ongoing?.some(order => order.order_number === order_number)) {
+        if (
+          allOrders.ongoing?.some(
+            (order) => order.order_number === order_number
+          )
+        ) {
           return true;
         }
 
         // Check completed orders (date-wise grouping)
         if (allOrders.completed) {
-          const exists = Object.values(allOrders.completed).some(dateOrders => 
-            dateOrders.some(order => order.order_number === order_number)
+          const exists = Object.values(allOrders.completed).some((dateOrders) =>
+            dateOrders.some((order) => order.order_number === order_number)
           );
           if (exists) return true;
         }
 
         // Check cancelled orders (handle both spellings and structures)
-        if (allOrders.cancelled?.some(order => order.order_number === order_number) || 
-            allOrders.canceled?.some(order => order.order_number === order_number) ||
-            allOrders.cancle?.some(order => order.order_number === order_number)) {
+        if (
+          allOrders.cancelled?.some(
+            (order) => order.order_number === order_number
+          ) ||
+          allOrders.canceled?.some(
+            (order) => order.order_number === order_number
+          ) ||
+          allOrders.cancle?.some((order) => order.order_number === order_number)
+        ) {
           return true;
         }
 
@@ -869,10 +866,8 @@ const TrackOrder = () => {
         window.showToast("error", "Order not found");
         navigate("/user_app/Index");
         return false;
-
       } catch (error) {
         console.clear();
-   
       }
     };
 
@@ -885,48 +880,52 @@ const TrackOrder = () => {
   useEffect(() => {
     const validateOrder = () => {
       try {
-        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+        const allOrders = JSON.parse(
+          localStorage.getItem("allOrderList") || "{}"
+        );
         let orderFound = false;
 
         // Check ongoing orders
         if (allOrders.ongoing?.length > 0) {
           orderFound = allOrders.ongoing.some(
-            order => order.order_number === order_number
+            (order) => order.order_number === order_number
           );
         }
 
         // Check completed orders (date-wise grouping)
         if (!orderFound && allOrders.completed) {
-          orderFound = Object.values(allOrders.completed).some(dateOrders => 
-            dateOrders.some(order => order.order_number === order_number)
+          orderFound = Object.values(allOrders.completed).some((dateOrders) =>
+            dateOrders.some((order) => order.order_number === order_number)
           );
         }
 
         // Check placed orders
         if (!orderFound && allOrders.placed?.length > 0) {
           orderFound = allOrders.placed.some(
-            order => order.order_number === order_number
+            (order) => order.order_number === order_number
           );
         }
 
         // Check cancelled orders - handle both date-wise and array formats
         if (!orderFound) {
           // First check if cancelled orders are date-wise grouped
-          const cancelTypes = ['cancelled', 'canceled', 'cancle'];
+          const cancelTypes = ["cancelled", "canceled", "cancle"];
           for (const type of cancelTypes) {
             if (allOrders[type]) {
               // If it's an array, check directly
               if (Array.isArray(allOrders[type])) {
                 orderFound = allOrders[type].some(
-                  order => order.order_number === order_number
+                  (order) => order.order_number === order_number
                 );
-              } 
+              }
               // If it's date-wise grouped, check each date group
               else {
-                orderFound = Object.values(allOrders[type]).some(dateOrders =>
-                  Array.isArray(dateOrders) && dateOrders.some(
-                    order => order.order_number === order_number
-                  )
+                orderFound = Object.values(allOrders[type]).some(
+                  (dateOrders) =>
+                    Array.isArray(dateOrders) &&
+                    dateOrders.some(
+                      (order) => order.order_number === order_number
+                    )
                 );
               }
               if (orderFound) break;
@@ -991,7 +990,9 @@ const TrackOrder = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -1000,18 +1001,18 @@ const TrackOrder = () => {
   };
 
   // Define getOrderTypeIcon function inside the TrackOrder component
-const getOrderTypeIcon = (orderType) => {
-  switch (orderType?.toLowerCase()) {
-    case "parcel":
-      return <i className="fa-solid fa-hand-holding-heart"></i>;
-    case "drive-through":
-      return <i className="fa-solid fa-car-side"></i>;
-    case "dine-in":
-      return <i className="fa-solid fa-utensils"></i>;
-    default:
-      return null;
-  }
-};
+  const getOrderTypeIcon = (orderType) => {
+    switch (orderType?.toLowerCase()) {
+      case "parcel":
+        return <i className="fa-solid fa-hand-holding-heart"></i>;
+      case "drive-through":
+        return <i className="fa-solid fa-car-side"></i>;
+      case "dine-in":
+        return <i className="fa-solid fa-utensils"></i>;
+      default:
+        return null;
+    }
+  };
 
   // Add this calculation function
   const calculateTotals = (orderDetails) => {
@@ -1020,9 +1021,15 @@ const getOrderTypeIcon = (orderType) => {
     const totalBill = parseFloat(orderDetails.total_bill || 0);
     const discountPercent = parseFloat(orderDetails.discount_percent || 0);
     const discountAmount = parseFloat(orderDetails.discount_amount || 0);
-    const totalAfterDiscount = parseFloat(orderDetails.total_after_discount || 0);
-    const serviceChargesPercent = parseFloat(orderDetails.service_charges_percent || 0);
-    const serviceChargesAmount = parseFloat(orderDetails.service_charges_amount || 0);
+    const totalAfterDiscount = parseFloat(
+      orderDetails.total_after_discount || 0
+    );
+    const serviceChargesPercent = parseFloat(
+      orderDetails.service_charges_percent || 0
+    );
+    const serviceChargesAmount = parseFloat(
+      orderDetails.service_charges_amount || 0
+    );
     const gstPercent = parseFloat(orderDetails.gst_percent || 0);
     const gstAmount = parseFloat(orderDetails.gst_amount || 0);
     const grandTotal = parseFloat(orderDetails.grand_total || 0);
@@ -1036,7 +1043,7 @@ const getOrderTypeIcon = (orderType) => {
       serviceChargesAmount,
       gstPercent,
       gstAmount,
-      grandTotal
+      grandTotal,
     };
   };
 
@@ -1386,8 +1393,11 @@ const getOrderTypeIcon = (orderType) => {
                                 <div className="col-9 mt-2">
                                   <p className="ms-2 mb-0 fw-medium">
                                     <span className="font_size_14 fw-semibold text-info">
-                                      ₹{menu.offer > 0 
-                                        ? Math.floor(menu.price * (1 - menu.offer / 100)) 
+                                      ₹
+                                      {menu.offer > 0
+                                        ? Math.floor(
+                                            menu.price * (1 - menu.offer / 100)
+                                          )
                                         : menu.price}
                                     </span>
                                     {menu.offer > 0 && (

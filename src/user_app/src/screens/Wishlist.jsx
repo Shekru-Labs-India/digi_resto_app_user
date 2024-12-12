@@ -14,7 +14,7 @@ import { getUserData, getRestaurantData } from "../utils/userUtils";
 import RestaurantSocials from "../components/RestaurantSocials";
 import "../assets/css/toast.css";
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -163,10 +163,6 @@ const Wishlist = () => {
       setIsLoading(false);
     }
   };
-
-
-
-
 
   // Keep the favorite update listener
   useEffect(() => {
@@ -420,7 +416,9 @@ const Wishlist = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -428,45 +426,48 @@ const Wishlist = () => {
     );
   };
 
-
   const getFoodTypeTextStyles = (foodType) => {
-    switch(foodType) {
-      case 'veg':
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
+      case "veg":
         return {
           icon: "fa-solid fa-circle",
-          textColor: "text-primary"
+          textColor: "text-primary",
         };
-      case 'nonveg':
+      case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger"
+          textColor: "text-danger",
         };
-      case 'egg':
+      case "egg":
         return {
           icon: "fa-solid fa-egg",
-          textColor: "text-light"
+          textColor: "text-light",
         };
-      case 'vegan':
+      case "vegan":
         return {
           icon: "fa-solid fa-leaf",
-          textColor: "text-success"
+          textColor: "text-success",
         };
       default:
         return {
           icon: "fa-solid fa-circle",
-          textColor: "text-primary"
+          textColor: "text-primary",
         };
     }
   };
 
-
-    
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-primary",
-          border: "border-primary",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
       case "nonveg":
         return {
@@ -475,8 +476,8 @@ const Wishlist = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-light",
-          border: "border-light",
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
         };
       case "vegan":
         return {
@@ -490,7 +491,7 @@ const Wishlist = () => {
         };
     }
   };
-  
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -769,7 +770,11 @@ const Wishlist = () => {
                                             {menu.offer ? (
                                               <>
                                                 <span className="font_size_14 fw-semibold text-info">
-                                                  ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
+                                                  ₹
+                                                  {Math.floor(
+                                                    menu.price *
+                                                      (1 - menu.offer / 100)
+                                                  )}
                                                 </span>
                                                 <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
                                                   ₹{menu.price}
@@ -783,31 +788,33 @@ const Wishlist = () => {
                                           </p>
                                         </div>
                                         <div className="col-7 d-flex justify-content-end pe-3 pt-2 pb-2">
-                                          {customerId && 
-                                           menu.restaurant_id === restaurantId && 
-                                           !isCartFromDifferentRestaurant(menu.restaurant_id) && (
-                                            <div
-                                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                                              style={{
-                                                width: "25px",
-                                                height: "25px",
-                                                cursor: "pointer"
-                                              }}
-                                              onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleAddToCartClick(menu);
-                                              }}
-                                            >
-                                              <i
-                                                className={`fa-solid ${
-                                                  isMenuItemInCart(menu.menu_id)
-                                                    ? "fa-circle-check text-success"
-                                                    : "fa-plus text-secondary"
-                                                } fs-6`}
-                                              ></i>
-                                            </div>
-                                          )}
+                                          {customerId &&
+                                            menu.restaurant_id ===
+                                              restaurantId && (
+                                              <div
+                                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                                                style={{
+                                                  width: "25px",
+                                                  height: "25px",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  e.stopPropagation();
+                                                  handleAddToCartClick(menu);
+                                                }}
+                                              >
+                                                <i
+                                                  className={`fa-solid ${
+                                                    isMenuItemInCart(
+                                                      menu.menu_id
+                                                    )
+                                                      ? "fa-circle-check text-success"
+                                                      : "fa-plus text-secondary"
+                                                  } fs-6`}
+                                                ></i>
+                                              </div>
+                                            )}
                                         </div>
                                       </div>
 
@@ -949,7 +956,7 @@ const Wishlist = () => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}
