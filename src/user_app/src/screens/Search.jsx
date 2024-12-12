@@ -11,7 +11,7 @@ import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -43,7 +43,7 @@ const Search = () => {
   const [originalMenu, setOriginalMenu] = useState([]); // Store original menu items
   const [foodTypes, setFoodTypes] = useState([]);
   const [selectedFoodType, setSelectedFoodType] = useState(null);
-  const [priceFilter, setPriceFilter] = useState('low');
+  const [priceFilter, setPriceFilter] = useState("low");
   const [spicyFilter, setSpicyFilter] = useState(null); // Add this state
 
   useEffect(() => {
@@ -60,9 +60,11 @@ const Search = () => {
   // Fetch food types from the API
   const fetchFoodTypes = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/get_food_type_list`);
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_food_type_list`
+      );
       const data = await response.json();
-      
+
       if (data.st === 1) {
         setFoodTypes(Object.values(data.food_type_list));
       }
@@ -91,7 +93,10 @@ const Search = () => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) return;
 
-      if (debouncedSearchTerm.trim().length < 3 || debouncedSearchTerm.trim().length > 10) {
+      if (
+        debouncedSearchTerm.trim().length < 3 ||
+        debouncedSearchTerm.trim().length > 10
+      ) {
         setSearchedMenu([]);
         return;
       }
@@ -105,11 +110,14 @@ const Search = () => {
           customer_id: customerId || null,
         };
 
-        const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        });
+        const response = await fetch(
+          `${config.apiDomain}/user_api/search_menu`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -379,8 +387,6 @@ const Search = () => {
     );
   };
 
-
-
   const handleMenuClick = (menuId) => {
     const menu = searchedMenu.find((item) => item.menu_id === menuId);
     if (menu) {
@@ -412,67 +418,73 @@ const Search = () => {
     localStorage.setItem("isDarkMode", newIsDarkMode);
   };
 
+  const getFoodTypeTextStyles = (foodType) => {
+    switch (foodType?.toLowerCase()) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          textColor: "text-light",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle",
+          textColor: "text-primary",
+        };
+    }
+  };
 
-    
-   const getFoodTypeTextStyles = (foodType) => {
-     switch (foodType?.toLowerCase()) {
-       case "veg":
-         return {
-           icon: "fa-solid fa-circle",
-           textColor: "text-primary",
-         };
-       case "nonveg":
-         return {
-           icon: "fa-solid fa-play fa-rotate-270",
-           textColor: "text-danger",
-         };
-       case "egg":
-         return {
-           icon: "fa-solid fa-egg",
-           textColor: "text-light",
-         };
-       case "vegan":
-         return {
-           icon: "fa-solid fa-leaf",
-           textColor: "text-success",
-         };
-       default:
-         return {
-           icon: "fa-solid fa-circle",
-           textColor: "text-primary",
-         };
-     }
-   };
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
 
-   const getFoodTypeStyles = (foodType) => {
-     switch (foodType?.toLowerCase()) {
-       case "veg":
-         return {
-           icon: "fa-solid fa-circle text-primary",
-           border: "border-primary",
-         };
-       case "nonveg":
-         return {
-           icon: "fa-solid fa-play fa-rotate-270 text-danger",
-           border: "border-danger",
-         };
-       case "egg":
-         return {
-           icon: "fa-solid fa-egg text-light",
-           border: "border-light",
-         };
-       case "vegan":
-         return {
-           icon: "fa-solid fa-leaf text-success",
-           border: "border-success",
-         };
-       default:
-         return {
-           icon: "fa-solid fa-circle text-success",
-           border: "border-success",
-         };
-     }
-   };
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
+          textColor: "text-secondary",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+    }
+  };
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -524,7 +536,9 @@ const Search = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -540,14 +554,16 @@ const Search = () => {
     }
 
     const safeFilterType = String(filterType).toLowerCase();
-    
+
     if (selectedFoodType === filterType) {
       setSelectedFoodType(null);
       setSearchedMenu(originalMenu);
     } else {
       setSelectedFoodType(filterType);
-      const filteredMenu = originalMenu.filter(menu => {
-        const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+      const filteredMenu = originalMenu.filter((menu) => {
+        const menuFoodType = menu.menu_food_type
+          ? String(menu.menu_food_type).toLowerCase()
+          : "";
         return menuFoodType === safeFilterType;
       });
       setSearchedMenu(filteredMenu);
@@ -599,8 +615,10 @@ const Search = () => {
           let filteredMenu = formattedMenu;
           if (selectedFoodType) {
             const safeSelectedType = String(selectedFoodType).toLowerCase();
-            filteredMenu = formattedMenu.filter(menu => {
-              const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+            filteredMenu = formattedMenu.filter((menu) => {
+              const menuFoodType = menu.menu_food_type
+                ? String(menu.menu_food_type).toLowerCase()
+                : "";
               return menuFoodType === safeSelectedType;
             });
           }
@@ -632,19 +650,22 @@ const Search = () => {
 
   // Handle search results
   useEffect(() => {
-    if (debouncedSearchTerm.trim().length >= 3 && debouncedSearchTerm.trim().length <= 10) {
+    if (
+      debouncedSearchTerm.trim().length >= 3 &&
+      debouncedSearchTerm.trim().length <= 10
+    ) {
       handleSearch({ target: { value: debouncedSearchTerm } });
     }
   }, [debouncedSearchTerm]);
 
   // Utility function to convert a string to title case
   const toTitleCase = (str) => {
-    if (!str || typeof str !== 'string') return "";
+    if (!str || typeof str !== "string") return "";
 
     return str
       .toLowerCase()
       .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -659,44 +680,56 @@ const Search = () => {
     let sortedMenu = [...searchedMenu];
 
     switch (filterType) {
-      case 'under50':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under50":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 50;
         });
         break;
 
-      case 'under100':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under100":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 100;
         });
         break;
 
-      case 'under200':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under200":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 200;
         });
         break;
 
-      case 'under500':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under500":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 500;
         });
         break;
 
-      case 'under1000':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under1000":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 1000;
         });
         break;
 
-      case 'above1000':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "above1000":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice > 1000;
         });
         break;
@@ -720,7 +753,9 @@ const Search = () => {
     let filteredMenu = [...originalMenu];
 
     if (filterLevel !== null) {
-      filteredMenu = originalMenu.filter(item => parseInt(item.spicy_index, 10) === filterLevel);
+      filteredMenu = originalMenu.filter(
+        (item) => parseInt(item.spicy_index, 10) === filterLevel
+      );
     }
 
     setSearchedMenu(filteredMenu);
@@ -794,7 +829,7 @@ const Search = () => {
                   {/* Food Type Filter */}
                   <div className="dropdown">
                     <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
@@ -805,17 +840,23 @@ const Search = () => {
                           <i
                             className={`${
                               getFoodTypeStyles(selectedFoodType).icon
+                            } ${
+                              getFoodTypeStyles(selectedFoodType).textColor
                             } me-2`}
                           ></i>
-                          <span>
+                          <span
+                            className={
+                              getFoodTypeStyles(selectedFoodType).textColor
+                            }
+                          >
                             {selectedFoodType.charAt(0).toUpperCase() +
                               selectedFoodType.slice(1)}
                           </span>
                         </div>
                       ) : (
                         <div className="d-flex align-items-center">
-                          <i className="fa-solid fa-filter me-2"></i>
-                          <span>Type</span>
+                          <i className="fa-solid fa-filter text-success me-2"></i>
+                          <span className="text-success">Type</span>
                         </div>
                       )}
                     </button>
@@ -825,7 +866,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handleFilter(null)}
                         >
-                          <i className="fa-solid fa-utensils me-2"></i>
+                          <i className="fa-solid fa-utensils text-success me-2"></i>
                           <span>All</span>
                         </button>
                       </li>
@@ -839,9 +880,11 @@ const Search = () => {
                             onClick={() => handleFilter(type)}
                           >
                             <i
-                              className={`${getFoodTypeStyles(type).icon} me-2`}
+                              className={`${getFoodTypeStyles(type).icon} ${
+                                getFoodTypeStyles(type).textColor
+                              } me-2`}
                             ></i>
-                            <span>
+                            <span className={getFoodTypeStyles(type).textColor}>
                               {type.charAt(0).toUpperCase() + type.slice(1)}
                             </span>
                           </button>
@@ -853,15 +896,15 @@ const Search = () => {
                   {/* Price Filter */}
                   <div className="dropdown">
                     <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                       style={{ height: "38px" }}
                     >
                       <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>
+                        <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                        <span className="text-success">
                           {priceFilter === "under50"
                             ? "Under ₹50"
                             : priceFilter === "under100"
@@ -884,7 +927,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter(null)}
                         >
-                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                          <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
                           <span>All Prices</span>
                         </button>
                       </li>
@@ -896,7 +939,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("under50")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Under ₹50</span>
                         </button>
                       </li>
@@ -905,7 +948,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("under100")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Under ₹100</span>
                         </button>
                       </li>
@@ -914,7 +957,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("under200")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Under ₹200</span>
                         </button>
                       </li>
@@ -923,7 +966,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("under500")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Under ₹500</span>
                         </button>
                       </li>
@@ -932,7 +975,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("under1000")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Under ₹1000</span>
                         </button>
                       </li>
@@ -941,7 +984,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handlePriceFilter("above1000")}
                         >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
+                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
                           <span>Above ₹1000</span>
                         </button>
                       </li>
@@ -951,15 +994,15 @@ const Search = () => {
                   {/* Spicy Filter */}
                   <div className="dropdown">
                     <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
+                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
                       type="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                       style={{ height: "38px" }}
                     >
                       <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-pepper-hot me-2"></i>
-                        <span>
+                        <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                        <span className="text-success">
                           {spicyFilter === 1
                             ? "Spicy Level 1"
                             : spicyFilter === 2
@@ -976,7 +1019,7 @@ const Search = () => {
                           className="dropdown-item d-flex align-items-center"
                           onClick={() => handleSpicyFilter(null)}
                         >
-                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
+                          <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
                           <span>All</span>
                         </button>
                       </li>
@@ -1019,7 +1062,7 @@ const Search = () => {
               debouncedSearchTerm.trim().length <= 10 &&
               searchedMenu.length === 0 && (
                 <div className="d-flex justify-content-center align-items-center mt-3">
-                  <p className="text-muted text-center">No menu items found</p>
+                  <p className="gray-text text-center">No menu items found</p>
                 </div>
               )}
           </div>
@@ -1138,19 +1181,10 @@ const Search = () => {
                           <div className="col-6 d-flex align-items-center">
                             <span
                               className={`ps-2 font_size_10 ${
-                                getFoodTypeTextStyles(menu.category_food_type)
+                                getFoodTypeStyles(menu.category_food_type)
                                   .textColor
                               }`}
                             >
-                              <i
-                                className={`${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .icon
-                                } ${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .textColor
-                                } font_size_10 mt-0 me-1`}
-                              ></i>
                               {menu.category_name}
                             </span>
                           </div>

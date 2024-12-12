@@ -14,7 +14,6 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 
-
 const storeToLocalStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
@@ -32,31 +31,31 @@ const getFoodTypeStyles = (foodType) => {
       return {
         icon: "fa-solid fa-circle",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
       };
     case "nonveg":
       return {
         icon: "fa-solid fa-play fa-rotate-270",
         textColor: "text-danger",
-        border: "border-danger"
+        border: "border-danger",
       };
     case "egg":
       return {
         icon: "fa-solid fa-egg",
         textColor: "gray-text",
-        border: "border-muted"
+        border: "border-muted",
       };
     case "vegan":
       return {
         icon: "fa-solid fa-leaf",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
       };
     default:
       return {
         icon: "fa-solid fa-circle",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
       };
   }
 };
@@ -107,15 +106,21 @@ const MenuDetails = () => {
   const [customerType, setCustomerType] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     return userData?.customer_type || null;
+  });
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(
+    () => {
+      return (
+        location.state?.fromDifferentRestaurant ||
+        getFromLocalStorage("fromDifferentRestaurant") ||
+        false
+      );
+    }
+  );
 
-    
-  });
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(() => {
-    return location.state?.fromDifferentRestaurant || getFromLocalStorage('fromDifferentRestaurant') || false;
-  });
-  
   const [orderedItems, setOrderedItems] = useState(() => {
-    return location.state?.orderedItems || getFromLocalStorage('orderedItems') || [];
+    return (
+      location.state?.orderedItems || getFromLocalStorage("orderedItems") || []
+    );
   });
 
   const { showLoginPopup } = usePopup();
@@ -152,10 +157,6 @@ const MenuDetails = () => {
     setCustomerType(storedCustomerType);
     setCurrentRestaurantId(initialRestaurantId);
 
-
-
-    
-
     // Clean up function
     return () => {
       if (!locationState?.fromDifferentRestaurant) {
@@ -187,10 +188,13 @@ const MenuDetails = () => {
   useEffect(() => {
     if (location.state) {
       if (location.state.fromDifferentRestaurant) {
-        storeToLocalStorage('fromDifferentRestaurant', location.state.fromDifferentRestaurant);
+        storeToLocalStorage(
+          "fromDifferentRestaurant",
+          location.state.fromDifferentRestaurant
+        );
       }
       if (location.state.orderedItems) {
-        storeToLocalStorage('orderedItems', location.state.orderedItems);
+        storeToLocalStorage("orderedItems", location.state.orderedItems);
       }
     }
   }, [location.state]);
@@ -338,15 +342,19 @@ const MenuDetails = () => {
       const data = await response.json();
       if (response.ok && data.st === 1) {
         // Calculate discounted prices if there's an offer
-        const halfPriceWithOffer = data.menu_detail.half_price 
-          ? productDetails.offer 
-            ? Math.floor(data.menu_detail.half_price * (1 - productDetails.offer / 100))
+        const halfPriceWithOffer = data.menu_detail.half_price
+          ? productDetails.offer
+            ? Math.floor(
+                data.menu_detail.half_price * (1 - productDetails.offer / 100)
+              )
             : data.menu_detail.half_price
           : null;
 
         const fullPriceWithOffer = data.menu_detail.full_price
           ? productDetails.offer
-            ? Math.floor(data.menu_detail.full_price * (1 - productDetails.offer / 100))
+            ? Math.floor(
+                data.menu_detail.full_price * (1 - productDetails.offer / 100)
+              )
             : data.menu_detail.full_price
           : null;
 
@@ -412,8 +420,8 @@ const MenuDetails = () => {
       setTimeout(() => {
         navigate("/user_app/Cart");
       }, 2000);
-    } catch (error) {    
-       console.clear();
+    } catch (error) {
+      console.clear();
 
       window.showToast("error", "Failed to add item to cart");
     }
@@ -577,7 +585,9 @@ const MenuDetails = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -608,7 +618,6 @@ const MenuDetails = () => {
       </div>
     );
   }
-
 
   return (
     <>
@@ -908,42 +917,25 @@ const MenuDetails = () => {
 
               <div className="product-meta ">
                 <div className="row me-1">
-                  <div className="col-5 px-0 pt-2">
-                    <div
-                      className={`ps-3 ${
-                        getFoodTypeStyles(productDetails.menu_food_type)
-                          .textColor
-                      } font_size_10`}
-                    >
-                      <i
-                        className={`${
-                          getFoodTypeStyles(productDetails.menu_food_type).icon
-                        } me-1 ${
+                  <div className="col-8">
+                    <div className="ps-2">
+                      <span
+                        className={`font_size_10 ${
                           getFoodTypeStyles(productDetails.menu_food_type)
                             .textColor
                         }`}
-                      ></i>
-                      {productDetails.menu_cat_name || ""}
+                      >
+                        {productDetails.menu_cat_name}
+                      </span>
                     </div>
                   </div>
-
-                  <div className="col-3 ps-4 pt-1 text-center px-0">
-                    {productDetails.spicy_index && (
-                      <div className="">
-                        {renderSpicyLevel(productDetails.spicy_index)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-4 text-end px-0">
-                    {productDetails.rating > 0 && (
-                      <>
-                        {renderStarRating(productDetails.rating)}
-                        <span className="font_size_10 fw-normal gray-text">
-                          {productDetails.rating}
-                        </span>
-                      </>
-                    )}
-                  </div>
+                  {productDetails.offer > 0 && (
+                    <div className="col-4 text-end px-0">
+                      <span className="ps-2 text-success font_size_10">
+                        {productDetails.offer}% Off
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* <div className="container ps-2 pt-1">

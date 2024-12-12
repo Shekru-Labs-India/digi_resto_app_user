@@ -274,7 +274,7 @@ const Checkout = () => {
         window.showToast("error", "Table is occupied");
       } else {
         console.clear();
-        throw new Error(data.msg || "Failed to create order");
+        throw new Error(data.msg);
       }
     } catch (error) {
       toast.current.show({
@@ -632,6 +632,44 @@ const Checkout = () => {
     }
   };
 
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+          textColor: "text-danger",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
+          textColor: "text-secondary",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+        };
+    }
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -802,27 +840,6 @@ const Checkout = () => {
                         </>
                       )}
                     </button>
-                    <button
-                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      onClick={handleGenericUPI}
-                      disabled={
-                        processingPaymentMethod &&
-                        processingPaymentMethod !== "upi"
-                      }
-                    >
-                      {processingPaymentMethod === "upi" ? (
-                        "Processing..."
-                      ) : (
-                        <>
-                          Pay via Other UPI Apps
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                            width={45}
-                            alt="UPI"
-                          />
-                        </>
-                      )}
-                    </button>
 
                     <button
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
@@ -849,29 +866,7 @@ const Checkout = () => {
 
                     <button
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: "#1565c0" }}
-                      onClick={handleGooglePay}
-                      disabled={
-                        processingPaymentMethod &&
-                        processingPaymentMethod !== "gpay"
-                      }
-                    >
-                      {processingPaymentMethod === "gpay" ? (
-                        "Processing..."
-                      ) : (
-                        <>
-                          Pay via Google Pay
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/google-pay-india.png"
-                            width={45}
-                            alt="Google Pay"
-                          />
-                        </>
-                      )}
-                    </button>
-                    <button
-                      className="btn text-dark w-100 bg-white border "
-                      style={{ backgroundColor: "#1565c0" }}
+                      style={{ backgroundColor: "#1a73e8" }} // Updated to Google Pay's brand color
                       onClick={handleGooglePay}
                       disabled={
                         processingPaymentMethod &&
@@ -932,7 +927,7 @@ const Checkout = () => {
                     </div>
 
                     <button
-                      className="btn btn-outline-secondary rounded-pill w-100"
+                      className="btn btn-md border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowPaymentOptions(false)}
                     >
                       Back
@@ -988,7 +983,7 @@ const Checkout = () => {
                       Complete Existing & Create New Order
                     </button>
                     <button
-                      className="btn btn-info rounded-pill font_size_14"
+                      className="btn btn-info rounded-pill font_size_14 text-white"
                       onClick={handleAddToExistingOrder}
                     >
                       Add to Existing Order (#{existingOrderDetails.orderNumber}
@@ -1143,15 +1138,6 @@ const Checkout = () => {
                                       .textColor
                                   }`}
                                 >
-                                  <i
-                                    className={`${
-                                      getFoodTypeStyles(item.menu_food_type)
-                                        .icon
-                                    } me-2 ${
-                                      getFoodTypeStyles(item.menu_food_type)
-                                        .textColor
-                                    }`}
-                                  ></i>
                                   {item.menu_cat_name}
                                 </span>
                               </div>

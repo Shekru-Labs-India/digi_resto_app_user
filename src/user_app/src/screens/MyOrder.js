@@ -3,8 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
- import "../assets/css/toast.css";
- import "../assets/css/Tab.css"
+import "../assets/css/toast.css";
+import "../assets/css/Tab.css";
 import OrderGif from "./OrderGif";
 // import LoaderGif from "./LoaderGIF";
 import Header from "../components/Header";
@@ -14,7 +14,6 @@ import { usePopup } from "../context/PopupContext";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { isNonProductionDomain } from "../component/config";
 import Notice from "../component/Notice";
-
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -54,7 +53,6 @@ const MyOrder = () => {
   const { showLoginPopup } = usePopup();
 
   // const [customerName, setCustomerName] = useState(null);
-
 
   // useEffect(() => {
   //   const customerName = localStorage.getItem("customerName");
@@ -155,14 +153,12 @@ const MyOrder = () => {
     }
   }, [customerId, restaurantId]);
 
-
-
   useEffect(() => {
     const sectionId =
       JSON.parse(localStorage.getItem("userData"))?.sectionId ||
       localStorage.getItem("sectionId") ||
       "";
-  
+
     if (customerId && restaurantId) {
       fetchOrders(sectionId); // Pass sectionId to the fetchOrders function
     }
@@ -176,7 +172,7 @@ const MyOrder = () => {
         userData?.customer_id || localStorage.getItem("customer_id");
       const currentCustomerType =
         userData?.customer_type || localStorage.getItem("customer_type");
-        const sectionId = localStorage.getItem("sectionId");
+      const sectionId = localStorage.getItem("sectionId");
       if (!currentCustomerId || !restaurantId) {
         setLoading(false);
         return;
@@ -284,8 +280,6 @@ const MyOrder = () => {
     }
   };
 
-
-
   return (
     <div className="page-wrapper">
       <Header
@@ -312,7 +306,7 @@ const MyOrder = () => {
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}
               setActiveTab={setActiveTab}
-              fetchOrders={fetchOrders} 
+              fetchOrders={fetchOrders}
             />
           ))}
 
@@ -322,7 +316,7 @@ const MyOrder = () => {
               order={order}
               status="ongoing"
               setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
-              fetchOrders={fetchOrders} 
+              fetchOrders={fetchOrders}
             />
           ))}
 
@@ -427,7 +421,7 @@ const MyOrder = () => {
 export const OrderCard = ({
   order,
   status,
-  fetchOrders ,
+  fetchOrders,
   setOngoingOrPlacedOrders,
   completedTimers = new Set(),
   setActiveTab,
@@ -455,11 +449,9 @@ export const OrderCard = ({
       .join(" ");
   };
 
-
   useEffect(() => {
     const customerName = localStorage.getItem("customerName");
     setCustomerName(customerName);
-   
   }, []);
 
   const handleCancelClick = () => {
@@ -516,7 +508,7 @@ export const OrderCard = ({
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-     console.clear();
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -558,7 +550,7 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
- fetchOrders();
+        fetchOrders();
         setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
@@ -606,7 +598,7 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
-         fetchOrders();
+        fetchOrders();
 
         setShowCompleteModal(false); // Close the modal
       } else {
@@ -620,6 +612,15 @@ export const OrderCard = ({
   };
 
   const handleConfirmCancel = async () => {
+    // Check if the cancel reason is provided
+    if (!cancelReason.trim()) {
+      window.showToast(
+        "warning",
+        "Please select a reason to cancel the order."
+      );
+      return;
+    }
+
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/cancle_order`,
@@ -636,8 +637,6 @@ export const OrderCard = ({
         }
       );
 
-      
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -647,7 +646,7 @@ export const OrderCard = ({
       if (data.st === 1) {
         window.showToast("success", data.msg);
         setShowCancelModal(false);
-fetchOrders();
+        fetchOrders();
         // Update the state to remove the canceled order
         setOngoingOrPlacedOrders((prevOrders) => ({
           placed: prevOrders.placed.filter(
@@ -656,13 +655,12 @@ fetchOrders();
           ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
         }));
         setActiveTab("cancelled");
-        
       } else {
         console.clear();
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
-     console.clear();
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -673,47 +671,60 @@ fetchOrders();
 
   const handleGenericUPI = async () => {
     if (isProcessingUPI) return;
-    
+
     try {
       setIsProcessingUPI(true);
       if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const transactionNote = encodeURIComponent(
+        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+      );
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
-      
+
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-     
 
       await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
     } catch (error) {
-    console.clear();
-     
-      window.showToast("error", "UPI payment initiation failed. Please try again.");
+      console.clear();
+
+      window.showToast(
+        "error",
+        "UPI payment initiation failed. Please try again."
+      );
       setIsProcessingUPI(false);
     }
   };
 
   const handlePhonePe = async () => {
     if (isProcessingPhonePe) return;
-console.log(customerName);
+    console.log(customerName);
     try {
       setIsProcessingPhonePe(true);
       if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+      const transactionNote = encodeURIComponent(
+        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+      );
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
-      
-      const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-     
 
-      await initiatePayment("PhonePe", paymentUrl, setIsProcessingPhonePe, "phonepe");
+      const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+      await initiatePayment(
+        "PhonePe",
+        paymentUrl,
+        setIsProcessingPhonePe,
+        "phonepe"
+      );
     } catch (error) {
-     console.clear();
-      window.showToast("error", "PhonePe payment initiation failed. Please try again.");
+      console.clear();
+      window.showToast(
+        "error",
+        "PhonePe payment initiation failed. Please try again."
+      );
       setIsProcessingPhonePe(false);
     }
   };
@@ -726,34 +737,51 @@ console.log(customerName);
       if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
 
       const amount = Math.round(parseFloat(order.grand_total));
-      
-      
-      const transactionNote = encodeURIComponent(`${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`);
+
+      const transactionNote = encodeURIComponent(
+        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+      );
       const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
       const upiId = "hivirajkadam@okhdfcbank";
-      
+
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
-     
-      await initiatePayment("GooglePay", paymentUrl, setIsProcessingGPay, "gpay");
+
+      await initiatePayment(
+        "GooglePay",
+        paymentUrl,
+        setIsProcessingGPay,
+        "gpay"
+      );
     } catch (error) {
       console.clear();
-      window.showToast("error", "Google Pay payment initiation failed. Please try again.");
+      window.showToast(
+        "error",
+        "Google Pay payment initiation failed. Please try again."
+      );
       setIsProcessingGPay(false);
     }
   };
 
-  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
-    const response = await fetch(`${config.apiDomain}/user_api/complete_order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        order_id: order.order_id,
-        restaurant_id: order.restaurant_id,
-        payment_method: method,
-      }),
-    });
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
+    const response = await fetch(
+      `${config.apiDomain}/user_api/complete_order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: order.order_id,
+          restaurant_id: order.restaurant_id,
+          payment_method: method,
+        }),
+      }
+    );
 
     if (response.ok) {
       setOngoingOrPlacedOrders((prevOrders) => {
@@ -767,29 +795,33 @@ console.log(customerName);
         };
       });
 
-     fetchOrders();
+      fetchOrders();
       if (/android/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
           if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
+            window.showToast(
+              "error",
+              `No ${method} app found. Please install the app.`
+            );
           }
           setProcessing(false);
         }, 3000);
-      } 
-      else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+      } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
           if (!document.hidden) {
             setProcessing(false);
           }
         }, 2000);
-      } 
-      else {
+      } else {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
           if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
+            window.showToast(
+              "error",
+              `No ${method} app found. Please install the app.`
+            );
           }
           setProcessing(false);
         }, 3000);
@@ -797,21 +829,17 @@ console.log(customerName);
     }
   };
 
-
-
   // Clean up timeouts when component unmounts
   useEffect(() => {
     return () => {
-      Object.values(timeoutRef.current).forEach(timeout => {
+      Object.values(timeoutRef.current).forEach((timeout) => {
         if (timeout) clearTimeout(timeout);
       });
       setIsProcessingUPI(false);
       setIsProcessingPhonePe(false);
       setIsProcessingGPay(false);
     };
-    
   }, []);
-  
 
   const isDarkMode = localStorage.getItem("isDarkMode");
   // console.log("isDarkMode ->" + isDarkMode);
@@ -983,7 +1011,7 @@ console.log(customerName);
                         onClick={() => setShowCompleteModal(false)}
                         aria-label="Close"
                       >
-                        <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
+                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                       </span>
                     </div>
                   </div>
@@ -1051,7 +1079,8 @@ console.log(customerName);
                     </button>
 
                     <button
-                      className="btn text-dark w-100 bg-white border"
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#1a73e8" }} // Updated to Google Pay's brand color
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -1273,7 +1302,7 @@ console.log(customerName);
                     <span className="col-3">
                       <button
                         type="button"
-                        className="btn px-4 font_size_14 btn-outline-dark rounded-pill"
+                        className="btn px-4 font_size_14 rounded-pill border border-1 border-muted bg-transparent text-dark"
                         onClick={() => setShowCancelModal(false)}
                       >
                         Close
@@ -1312,8 +1341,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-
-  
 
   useEffect(() => {
     if (orders && Object.keys(orders).length > 0) {
@@ -1399,18 +1426,18 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
       ordersToRender = orders.cancle;
     }
 
-      const getOrderTypeIcon = (orderType) => {
-        switch (orderType?.toLowerCase()) {
-          case "parcel":
-            return <i className="fa-solid fa-hand-holding-heart"></i>;
-          case "drive-through":
-            return <i className="fa-solid fa-car-side"></i>;
-          case "dine-in":
-            return <i className="fa-solid fa-utensils"></i>;
-          default:
-            return null;
-        }
-      };
+    const getOrderTypeIcon = (orderType) => {
+      switch (orderType?.toLowerCase()) {
+        case "parcel":
+          return <i className="fa-solid fa-hand-holding-heart"></i>;
+        case "drive-through":
+          return <i className="fa-solid fa-car-side"></i>;
+        case "dine-in":
+          return <i className="fa-solid fa-utensils"></i>;
+        default:
+          return null;
+      }
+    };
 
     return (
       <>
@@ -1629,9 +1656,9 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-<div className="container">
-  <RestaurantSocials/>
-</div>
+        <div className="container">
+          <RestaurantSocials />
+        </div>
       </>
     );
   };
@@ -1778,7 +1805,8 @@ export const CircularCountdown = ({
       const currentCustomerId =
         userData?.customer_id || localStorage.getItem("customer_id");
       const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
- const sectionId = userData?.sectionId || localStorage.getItem("sectionId");
+      const sectionId =
+        userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
 
