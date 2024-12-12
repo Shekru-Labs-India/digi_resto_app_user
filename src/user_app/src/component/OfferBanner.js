@@ -25,7 +25,7 @@ const OfferBanner = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
@@ -158,7 +158,7 @@ const OfferBanner = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
           restaurant_id: restaurantId,
@@ -169,7 +169,7 @@ const OfferBanner = () => {
       window.showToast("success", `${selectedMenu.name} added to cart`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
@@ -412,7 +412,7 @@ const OfferBanner = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -758,8 +758,8 @@ const OfferBanner = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -768,7 +768,7 @@ const OfferBanner = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
             if (e.target.classList.contains("modal")) {
               setShowModal(false);

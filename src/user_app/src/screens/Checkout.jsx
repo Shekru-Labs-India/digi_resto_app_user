@@ -504,47 +504,71 @@ const Checkout = () => {
   
 
   const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
-    const response = await fetch(`${config.apiDomain}/user_api/complete_order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        order_id: existingOrderDetails.orderNumber,
-        restaurant_id: restaurantId,
-        payment_method: method,
-      }),
-    });
-
-    if (response.ok) {
-      if (/android/i.test(navigator.userAgent)) {
-        window.location.href = paymentUrl;
-        timeoutRef.current[timeoutKey] = setTimeout(() => {
-          if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
+    // Ensure that the required data (like order number, restaurantId, etc.) is available
+    if (!existingOrderDetails.orderNumber || !restaurantId) {
+      console.error("Missing order number or restaurant ID");
+      setProcessing(false);
+      return;
+    }
+  
+    try {
+      // Make a call to the 'complete_or_cancle_existing_order_create_new_order' API
+      const response = await fetch(`${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_number: existingOrderDetails.orderNumber,
+          restaurant_id: restaurantId,
+          order_status: "completed", // Pass "completed" as the order status
+        }),
+      });
+  
+      if (response.ok) {
+        // If the request was successful, proceed with payment URL handling
+        const data = await response.json();
+  
+        if (data.st === 1) {
+          if (/android/i.test(navigator.userAgent)) {
+            window.location.href = paymentUrl;
+            timeoutRef.current[timeoutKey] = setTimeout(() => {
+              if (!document.hidden) {
+                window.showToast("error", `No ${method} app found. Please install the app.`);
+              }
+              setProcessing(false);
+            }, 3000);
+          } 
+          else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+            window.location.href = paymentUrl;
+            timeoutRef.current[timeoutKey] = setTimeout(() => {
+              if (!document.hidden) {
+                setProcessing(false);
+              }
+            }, 2000);
+          } 
+          else {
+            window.location.href = paymentUrl;
+            timeoutRef.current[timeoutKey] = setTimeout(() => {
+              if (!document.hidden) {
+                window.showToast("error", `No ${method} app found. Please install the app.`);
+              }
+              setProcessing(false);
+            }, 3000);
           }
-          setProcessing(false);
-        }, 3000);
-      } 
-      else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        window.location.href = paymentUrl;
-        timeoutRef.current[timeoutKey] = setTimeout(() => {
-          if (!document.hidden) {
-            setProcessing(false);
-          }
-        }, 2000);
-      } 
-      else {
-        window.location.href = paymentUrl;
-        timeoutRef.current[timeoutKey] = setTimeout(() => {
-          if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
-          }
-          setProcessing(false);
-        }, 3000);
+        } else {
+          throw new Error(data.msg || "Failed to update order");
+        }
+      } else {
+        throw new Error("Failed to complete the order");
       }
+    } catch (error) {
+      console.error("Error initiating payment:", error);
+      window.showToast("error", "Failed to process payment or order");
+      setProcessing(false);
     }
   };
+  
 
   return (
     <div className="page-wrapper full-height">

@@ -90,7 +90,7 @@ const MenuDetails = () => {
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
@@ -398,7 +398,7 @@ const MenuDetails = () => {
         {
           ...productDetails,
           quantity,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
           restaurant_id: restaurantId,
@@ -520,7 +520,7 @@ const MenuDetails = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   // Helper function to check if menu is veg
@@ -1107,8 +1107,8 @@ const MenuDetails = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         productDetails={productDetails || {}}
-        notes={notes}
-        setNotes={setNotes}
+        comment={comment}
+        setComment={setComment}
         portionSize={portionSize}
         setPortionSize={setPortionSize}
         halfPrice={halfPrice}

@@ -15,30 +15,35 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 const TrackOrder = () => {
-  // Add these helper functions at the top of your component
   const getFoodTypeTextStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
     const type = (foodType || "").toLowerCase();
 
     switch (type) {
       case "veg":
         return {
-          textColor: "text-success",
-          icon: "fa-solid fa-leaf",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
       case "nonveg":
         return {
-          textColor: "text-danger",
-          icon: "fa-solid fa-drumstick-bite",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
         };
       case "egg":
         return {
-          textColor: "text-light",
-          icon: "fa-solid fa-egg",
+          icon: "fa-solid fa-egg gray-text",
+          border: "border-muted",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
         };
       default:
         return {
-          textColor: "text-success",
-          icon: "fa-solid fa-leaf",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
     }
   };
@@ -75,7 +80,7 @@ const TrackOrder = () => {
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem("userData");
@@ -707,7 +712,10 @@ const TrackOrder = () => {
   };
 
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
@@ -720,7 +728,7 @@ const TrackOrder = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-light",
+          icon: "fa-solid fa-egg gray-text",
           border: "border-muted",
         };
       case "vegan":
@@ -1258,41 +1266,7 @@ const TrackOrder = () => {
                                   e.target.src = images;
                                 }}
                               />
-                              {/* <div
-                                className={`border border-1 rounded-circle ${
-                                  isDarkMode ? "bg-dark" : "bg-white"
-                                } opacity-75 d-flex justify-content-center align-items-center`}
-                                style={{
-                                  position: "absolute",
-                                  bottom: "3px",
-                                  right: "3px",
-                                  height: "20px",
-                                  width: "20px",
-                                }}
-                                onClick={(e) => handleLikeClick(menu, e)}
-                              >
-                                <i
-                                  className={`${
-                                    favoriteMenus[menu.menu_id]
-                                      ? "fa-solid fa-heart text-danger"
-                                      : "fa-regular fa-heart"
-                                  } fs-6`}
-                                ></i>
-                              </div> */}
-                              {/* Special icon */}
-                              {/* {menu.is_special && (
-                                <i
-                                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                                  style={{
-                                    position: "absolute",
-                                    top: 3,
-                                    right: "76%",
-                                    height: 17,
-                                    width: 17,
-                                  }}
-                                ></i>
-                              )} */}
-                              {/* Veg/Non-veg indicator */}
+
                               <div
                                 className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                                   getFoodTypeStyles(menu.menu_food_type).border
@@ -1358,11 +1332,11 @@ const TrackOrder = () => {
                                     <i
                                       className={`${
                                         getFoodTypeTextStyles(
-                                          menu.menu_food_type
+                                          menu.category_food_type
                                         ).icon
                                       } ${
                                         getFoodTypeTextStyles(
-                                          menu.menu_food_type
+                                          menu.category_food_type
                                         ).textColor
                                       } font_size_10 mt-0 me-1`}
                                     ></i>
