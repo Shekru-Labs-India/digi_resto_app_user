@@ -660,26 +660,36 @@ const Product = () => {
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
           icon: "fa-solid fa-egg gray-text",
           border: "border-muted",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
@@ -1054,20 +1064,9 @@ const Product = () => {
                           )} */}
                           <div className="d-flex justify-content-between align-items-center">
                             <div
-                              className={`fw-medium font_size_10 d-flex align-items-center ${
-                                getFoodTypeTextStyles(menu.category_food_type)
-                                  .textColor
-                              }`}
+                              className={`fw-medium font_size_10 text-success`}
                             >
-                              <i
-                                className={`${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .icon
-                                } ${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .textColor
-                                } pe-1`}
-                              ></i>
+                              <i className="fa-solid fa-utensils text-success me-1"></i>
                               {menu.category_name}
                             </div>
                             <div className="text-end">

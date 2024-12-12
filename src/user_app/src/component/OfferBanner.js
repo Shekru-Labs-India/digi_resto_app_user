@@ -200,31 +200,44 @@ const OfferBanner = () => {
   // }, [fetchMenuData]);
 
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg text-secondary",
+          border: "border-secondary",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
     }
   };
@@ -600,11 +613,18 @@ const OfferBanner = () => {
                               <div className="col-6 d-flex align-items-center">
                                 <span
                                   className={`ps-2 font_size_10 ${
-                                    getFoodTypeTextStyles(
-                                      menuItem.menu_food_type
+                                    getFoodTypeStyles(
+                                      menuItem.category_food_type
                                     ).textColor
                                   }`}
                                 >
+                                  <i
+                                    className={
+                                      getFoodTypeStyles(
+                                        menuItem.category_food_type
+                                      ).categoryIcon
+                                    }
+                                  ></i>
                                   {menuItem.category_name}
                                 </span>
                               </div>

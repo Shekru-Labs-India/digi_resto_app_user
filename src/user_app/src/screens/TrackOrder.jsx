@@ -718,28 +718,38 @@ const TrackOrder = () => {
     switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Food type indicator color
           border: "border-danger",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
+          icon: "fa-solid fa-egg gray-text", // Food type indicator color
           border: "border-muted",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
+          icon: "fa-solid fa-leaf text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
@@ -1323,23 +1333,8 @@ const TrackOrder = () => {
                               {/* Category, Spicy level, and Rating */}
                               <div className="row d-flex align-items-center mt-1">
                                 <div className="col-6 d-flex align-items-center">
-                                  <span
-                                    className={`ps-2 font_size_10 ${
-                                      getFoodTypeTextStyles(menu.menu_food_type)
-                                        .textColor
-                                    }`}
-                                  >
-                                    <i
-                                      className={`${
-                                        getFoodTypeTextStyles(
-                                          menu.category_food_type
-                                        ).icon
-                                      } ${
-                                        getFoodTypeTextStyles(
-                                          menu.category_food_type
-                                        ).textColor
-                                      } font_size_10 mt-0 me-1`}
-                                    ></i>
+                                  <span className="ps-2 font_size_10 text-success">
+                                    <i className="fa-solid fa-utensils text-success me-1"></i>
                                     {menu.category_name}
                                   </span>
                                 </div>

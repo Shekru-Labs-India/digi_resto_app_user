@@ -199,30 +199,35 @@ const NearbyArea = () => {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
           textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
-          textColor: "text-danger",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-          textColor: "gray-text",
+          icon: "fa-solid fa-egg text-secondary",
+          border: "border-secondary",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
           textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
           textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
     }
   };
@@ -606,6 +611,12 @@ const NearbyArea = () => {
                                       .textColor
                                   }`}
                                 >
+                                  <i
+                                    className={
+                                      getFoodTypeStyles(menuItem.menu_food_type)
+                                        .categoryIcon
+                                    }
+                                  ></i>
                                   {menuItem.category_name}
                                 </span>
                               </div>

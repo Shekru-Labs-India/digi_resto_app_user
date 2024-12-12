@@ -392,9 +392,9 @@ const UserAuthPopup = () => {
                   </Link>
                 </div>
               </div>
-              <div className="text-center text-white mb-4">
-                <h4>Verify OTP</h4>
-                <span>Enter OTP sent to {mobile}</span>
+              <div className="text-center mb-4">
+                <h4 className="text-dark">Verify OTP</h4>
+                <span className="text-dark">Enter OTP sent to {mobile}</span>
               </div>
               <div
                 id="otp"

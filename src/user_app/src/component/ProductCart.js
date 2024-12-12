@@ -667,33 +667,38 @@ const ProductCard = ({ isVegOnly }) => {
     switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle",
+          icon: "fa-solid fa-circle text-success",
           textColor: "text-success",
           border: "border-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          textColor: "text-success", // Changed to green for category text
           border: "border-danger",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg text-secondary",
+          textColor: "text-success", // Changed to green for category text
+          border: "border-secondary",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf",
+          icon: "fa-solid fa-leaf text-success",
           textColor: "text-success",
           border: "border-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       default:
         return {
-          icon: "fa-solid fa-circle",
+          icon: "fa-solid fa-circle text-success",
           textColor: "text-success",
           border: "border-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
     }
   };
@@ -1008,11 +1013,8 @@ const ProductCard = ({ isVegOnly }) => {
                       <div className="font_size_12">
                         <div className="row">
                           <div className="col-8">
-                            <span
-                              className={`${
-                                getFoodTypeStyles(menu.menu_food_type).textColor
-                              }`}
-                            >
+                            <span className={`${getFoodTypeStyles(menu.menu_food_type).textColor}`}>
+                              <i className={getFoodTypeStyles(menu.menu_food_type).categoryIcon}></i>
                               {menu.category}
                             </span>
                           </div>

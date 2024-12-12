@@ -419,31 +419,34 @@ const Search = () => {
   };
 
   const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
+          icon: "fa-solid fa-circle text-success", // Icon color
+          textColor: "text-success", // Category text color
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Icon color
+          textColor: "text-success", // Category text color
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-light",
+          icon: "fa-solid fa-egg text-secondary", // Icon color
+          textColor: "text-success", // Category text color
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
+          icon: "fa-solid fa-leaf text-success", // Icon color
+          textColor: "text-success", // Category text color
         };
       default:
         return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
+          icon: "fa-solid fa-circle text-success", // Icon color
+          textColor: "text-success", // Category text color
         };
     }
   };
@@ -455,33 +458,38 @@ const Search = () => {
     switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
-          textColor: "text-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Food type indicator color
           border: "border-danger",
-          textColor: "text-danger",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-          textColor: "text-secondary",
+          icon: "fa-solid fa-egg text-secondary", // Food type indicator color
+          border: "border-secondary",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
+          icon: "fa-solid fa-leaf text-success", // Food type indicator color
           border: "border-success",
-          textColor: "text-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
-          textColor: "text-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
@@ -1179,14 +1187,10 @@ const Search = () => {
                         </div>
                         <div className="row d-flex align-items-center mt-1">
                           <div className="col-6 d-flex align-items-center">
-                            <span
-                              className={`ps-2 font_size_10 ${
-                                getFoodTypeStyles(menu.category_food_type)
-                                  .textColor
-                              }`}
-                            >
+                            <div className="font_size_10 text-success">
+                              <i className="fa-solid fa-utensils text-success me-1"></i>
                               {menu.category_name}
-                            </span>
+                            </div>
                           </div>
                           <div className="col-4 d-flex align-items-center ps-4 pe-3">
                             {menu.spicy_index && (

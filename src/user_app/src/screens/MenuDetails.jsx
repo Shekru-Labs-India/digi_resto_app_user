@@ -29,33 +29,38 @@ const getFoodTypeStyles = (foodType) => {
   switch (foodType?.toLowerCase()) {
     case "veg":
       return {
-        icon: "fa-solid fa-circle",
+        icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
         border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
       };
     case "nonveg":
       return {
-        icon: "fa-solid fa-play fa-rotate-270",
-        textColor: "text-danger",
+        icon: "fa-solid fa-play fa-rotate-270 text-danger",
+        textColor: "text-success", // Changed to green for category name
         border: "border-danger",
+        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
       };
     case "egg":
       return {
-        icon: "fa-solid fa-egg",
-        textColor: "gray-text",
+        icon: "fa-solid fa-egg gray-text",
+        textColor: "text-success", // Changed to green for category name
         border: "border-muted",
+        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
       };
     case "vegan":
       return {
-        icon: "fa-solid fa-leaf",
+        icon: "fa-solid fa-leaf text-success",
         textColor: "text-success",
         border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
       };
     default:
       return {
-        icon: "fa-solid fa-circle",
+        icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
         border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
       };
   }
 };
@@ -919,12 +924,8 @@ const MenuDetails = () => {
                 <div className="row me-1">
                   <div className="col-8">
                     <div className="ps-2">
-                      <span
-                        className={`font_size_10 ${
-                          getFoodTypeStyles(productDetails.menu_food_type)
-                            .textColor
-                        }`}
-                      >
+                      <span className="font_size_10 text-success">
+                        <i className="fa-solid fa-utensils text-success me-1"></i>
                         {productDetails.menu_cat_name}
                       </span>
                     </div>
