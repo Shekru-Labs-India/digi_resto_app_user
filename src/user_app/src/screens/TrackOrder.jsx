@@ -1439,7 +1439,7 @@ const TrackOrder = () => {
                         ).toFixed(2)}
                       </span>
                     </div>
-                    <hr className="p-0 m-0 text-primary" />
+                    <hr className="p-0 m-0 text-primary w-100" />
                   </div>
                   <div className="col-12 pt-0">
                     {orderDetails.order_details.discount_amount > 0 && (
@@ -1512,7 +1512,7 @@ const TrackOrder = () => {
                     </div>
                   </div>
                   <div>
-                    <hr className=" p-0 m-0 text-primary" />
+                    <hr className=" p-0 m-0 text-primary w-100" />
                   </div>
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">

@@ -1229,9 +1229,8 @@ const Checkout = () => {
                       ₹{tax.toFixed(2)}
                     </span>
                   </div>
+                  <hr className="p-0  text-primary mb-2 mt-1" />
                 </div>
-
-                <hr className=" p-0 m-0 text-primary" />
 
                 <div className="col-12 px-2">
                   <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
