@@ -270,7 +270,18 @@ const Checkout = () => {
         setShowOrderTypeModal(false);
         setShowPopup(true);
         await fetchCartDetails();
-      } else {
+      }
+      if (response.ok && data.st === 2) {
+        console.log("table is occupied")
+          // toast.current.show({
+          //   severity: "error",
+          //   summary: "Error",
+          //   detail: "Table is occupied",
+          //   life: 3000,
+          // });
+           window.showToast("error", "Table is occupied");
+      }
+      else {
         console.clear();
         throw new Error(data.msg || "Failed to create order");
       }

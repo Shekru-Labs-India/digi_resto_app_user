@@ -16,36 +16,34 @@ export const RestaurantIdProvider = ({ children }) => {
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
   const [sectionName, setSectionName] = useState("")
   const [socials, setSocials] = useState([]);
-  const sectionId = localStorage.getItem("sectionId")
+  const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
     const path = location.pathname;
-    const match = path.match(/\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/);
+    const match = path.match(/\/user_app\/(\d{6})(?:\/([^\/]+))(?:\/(\d+))?/);
 
     if (match) {
       const [, code, table, section] = match;
       setRestaurantCode(code);
       
-      // Store table number if present
       if (table) {
         setTableNumber(table);
         localStorage.setItem("tableNumber", table);
       }
 
-      // Store section ID if present and valid (not more than 10)
-      if (section && parseInt(section) <= 10) {
+      if (section) {
+        setSectionId(section);
         localStorage.setItem("sectionId", section);
         
-        // Fetch restaurant details to get section name
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ restaurant_code: code, section_id: sectionId }),
+          body: JSON.stringify({ restaurant_code: code, section_id: section }),
         })
           .then((response) => response.json())
           .then((data) => {
@@ -78,8 +76,6 @@ export const RestaurantIdProvider = ({ children }) => {
             console.clear();
           });
       }
-
-      // ... rest of the code
     }
   }, [location]);
 
@@ -232,7 +228,7 @@ export const RestaurantIdProvider = ({ children }) => {
   };
 
   const updateSectionId = (id) => {
-    // setSectionId(id);
+    setSectionId(id);
     localStorage.setItem("sectionId", id);
   };
 
