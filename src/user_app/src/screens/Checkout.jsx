@@ -675,6 +675,103 @@ const Checkout = () => {
     }
   };
 
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      // API call will go here
+      // const response = await fetch(`${config.apiDomain}/user_api/apply_coupon`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     coupon_code: couponCode,
+      //     cart_id: cartId,
+      //     restaurant_id: restaurantId,
+      //     customer_id: customerId
+      //   })
+      // });
+      // const data = await response.json();
+
+      // Temporary success simulation
+      setAppliedCoupon({
+        code: couponCode,
+        discount: "10%"
+      });
+      setCouponError("");
+      setShowCouponModal(false);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Coupon applied successfully!",
+        life: 3000,
+      });
+    } catch (error) {
+      setCouponError("Failed to apply coupon");
+      console.error("Error applying coupon:", error);
+    }
+  };
+
+  const [showScanner, setShowScanner] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  const videoRef = useRef(null);
+
+  const validateCouponInput = (value) => {
+    // Allow only alphanumeric, max 10 characters
+    const regex = /^[a-zA-Z0-9]*$/;
+    if (value.length <= 10 && regex.test(value)) {
+      return value.toUpperCase();
+    }
+    return couponCode; // Return existing value if invalid
+  };
+
+  const handleScanQR = async () => {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Camera not supported on this device",
+          life: 3000,
+        });
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' } // Prefer back camera
+      });
+      
+      setShowScanner(true);
+      setHasPermission(true);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      setHasPermission(false);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Camera permission denied",
+        life: 3000,
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current?.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    }
+    setShowScanner(false);
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -1095,6 +1192,135 @@ const Checkout = () => {
           </div>
         )}
 
+        {showCouponModal && (
+          <div className="popup-overlay">
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px" }}
+            >
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                    Apply Coupon
+                  </div>
+                  <button
+                    className="btn p-0 fs-3 gray-text"
+                    onClick={() => {
+                      setShowCouponModal(false);
+                      setCouponError("");
+                      setCouponCode("");
+                    }}
+                  >
+                    {/* <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i> */}
+                  </button>
+                </div>
+
+                <div className="modal-body py-3 px-3">
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className={`form-control rounded-pill ${
+                        couponError ? "is-invalid" : ""
+                      }`}
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                    />
+                    {couponError && (
+                      <div className="invalid-feedback">{couponError}</div>
+                    )}
+                  </div>
+
+                  <div className="d-grid gap-2 mt-3">
+                    <button
+                      className="btn btn-primary rounded-pill"
+                      onClick={handleApplyCoupon}
+                    >
+                      Apply
+                    </button>
+                    {appliedCoupon && (
+                      <button
+                        className="btn btn-outline-danger rounded-pill"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponCode("");
+                          setShowCouponModal(false);
+                        }}
+                      >
+                        Remove Applied Coupon
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showScanner && (
+          <div className="modal fade show d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header border-bottom">
+                  <h5 className="modal-title h6">Scan QR Code</h5>
+                  <button 
+                    type="button" 
+                    className="btn-close"
+                    onClick={stopCamera}
+                    aria-label="Close"
+                  ></button>
+                </div>
+                
+                <div className="modal-body p-0 bg-dark position-relative">
+                  <video
+                    ref={videoRef}
+                    className="w-100"
+                    style={{ height: '300px', objectFit: 'cover' }}
+                    autoPlay
+                    playsInline
+                  />
+                  {/* Scanning overlay */}
+                  <div className="position-absolute top-50 start-50 translate-middle">
+                    <div 
+                      className="border border-2 border-primary"
+                      style={{
+                        width: '200px',
+                        height: '200px',
+                        backgroundColor: 'rgba(255,255,255,0.1)'
+                      }}
+                    >
+                      <div className="w-100 h-100 position-relative">
+                        {/* Corner markers */}
+                        <div className="position-absolute top-0 start-0 border-primary" 
+                             style={{ width: '20px', height: '20px', borderLeft: '3px solid', borderTop: '3px solid' }}></div>
+                        <div className="position-absolute top-0 end-0 border-primary" 
+                             style={{ width: '20px', height: '20px', borderRight: '3px solid', borderTop: '3px solid' }}></div>
+                        <div className="position-absolute bottom-0 start-0 border-primary" 
+                             style={{ width: '20px', height: '20px', borderLeft: '3px solid', borderBottom: '3px solid' }}></div>
+                        <div className="position-absolute bottom-0 end-0 border-primary" 
+                             style={{ width: '20px', height: '20px', borderRight: '3px solid', borderBottom: '3px solid' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="modal-footer border-top">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary rounded-pill px-4"
+                    onClick={stopCamera}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="m-3">
           <div className="dz-flex-box">
             <div className="dz-flex-box mt-2">
@@ -1229,6 +1455,68 @@ const Checkout = () => {
                       ₹{tax.toFixed(2)}
                     </span>
                   </div>
+
+                  <div className="col-12 mb-0 py-1">
+                    <div className="d-flex justify-content-between">
+                      <div
+                        className="col-1 d-flex align-items-center cursor-pointer"
+                        onClick={handleScanQR}
+                      >
+                        <i className="bx bx-qr-scan fs-1"></i>
+                      </div>
+                      <div className="col-11">
+                        <div className="my-2 w-100">
+                          <div className="input-group">
+                            <input
+                              type="text"
+                              style={{ height: "40px" }}
+                              className={`form-control rounded-pill border border-2 border-light me-2 ${
+                                couponError ? "is-invalid" : ""
+                              }`}
+                              placeholder="coupon"
+                              value={couponCode}
+                              onChange={(e) => {
+                                const validatedValue = validateCouponInput(e.target.value);
+                                setCouponCode(validatedValue);
+                                setCouponError("");
+                              }}
+                              maxLength={10}
+                            />
+                            <button
+                              className="btn btn-primary rounded-pill px-4 btn-sm"
+                              style={{ height: "40px" }}
+                              onClick={handleApplyCoupon}
+                            >
+                              {appliedCoupon ? "Applied" : "Apply"}
+                            </button>
+                          </div>
+                          {couponError && (
+                            <div className="text-danger small mt-1">
+                              {couponError}
+                            </div>
+                          )}
+                          {appliedCoupon && (
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              <span className="text-success">
+                                <i className="fa-solid fa-check-circle me-1"></i>
+                                Coupon {appliedCoupon.code} applied
+                              </span>
+                              <button
+                                className="btn btn-link text-danger p-0 small"
+                                onClick={() => {
+                                  setAppliedCoupon(null);
+                                  setCouponCode("");
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <hr className="p-0  text-primary mb-2 mt-1" />
                 </div>
 
@@ -1253,13 +1541,15 @@ const Checkout = () => {
                 </span>
               </button>
             </div>
-            <div className="d-flex align-items-center justify-content-center mt-3">
-              <Link
-                to="/user_app/Menu"
-                className="btn btn-outline-primary rounded-pill px-3"
-              >
-                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-              </Link>
+            <div className="d-flex flex-column align-items-center justify-content-center mt-3">
+              <div className="d-flex align-items-center justify-content-center">
+                <Link
+                  to="/user_app/Menu"
+                  className="btn btn-outline-primary rounded-pill px-3"
+                >
+                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+                </Link>
+              </div>
             </div>
           </div>
         </div>
