@@ -679,43 +679,114 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponError, setCouponError] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [selectedCoupon, setSelectedCoupon] = useState("");
+  const [coupons, setCoupons] = useState([]);
+
+  const fetchCoupons = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_all_coupons_by_restaurant_id`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+        setCoupons(data.coupons);
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to fetch coupons",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching coupons:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error fetching coupons",
+      });
+    }
+  };
+
+  const [cartDetails, setCartDetails] = useState({
+    total_bill: 0,
+    discount_percent: 0,
+    discount_amount: 0,
+    grand_total: 0,
+    service_charges_amount: 0,
+    service_charges_percent: 0,
+    gst_amount: 0,
+    gst_percent: 0,
+    total_after_discount: 0,
+    order_items: [],
+  });
 
   const handleApplyCoupon = async () => {
-    if (!couponCode.trim()) {
-      setCouponError("Please enter a coupon code");
+    if (!selectedCoupon) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Please enter a coupon code",
+      });
       return;
     }
 
     try {
-      // API call will go here
-      // const response = await fetch(`${config.apiDomain}/user_api/apply_coupon`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     coupon_code: couponCode,
-      //     cart_id: cartId,
-      //     restaurant_id: restaurantId,
-      //     customer_id: customerId
-      //   })
-      // });
-      // const data = await response.json();
+      const response = await fetch(
+        `${config.apiDomain}/user_api/verify_coupon`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            coupon_name: selectedCoupon,
+            total_price: cartDetails.total_bill.toString(),
+          }),
+        }
+      );
 
-      // Temporary success simulation
-      setAppliedCoupon({
-        code: couponCode,
-        discount: "10%"
-      });
-      setCouponError("");
-      setShowCouponModal(false);
-      toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Coupon applied successfully!",
-        life: 3000,
-      });
+      const data = await response.json();
+
+      if (data.st === 1) {
+        setCartDetails((prevCart) => ({
+          ...prevCart,
+          discount_percent: data.discount_percent,
+          discount_amount: prevCart.total_bill - data.discounted_price,
+          grand_total: data.discounted_price,
+          total_after_discount: data.discounted_price,
+        }));
+
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: data.msg || "Coupon applied successfully",
+        });
+        setShowCouponModal(false);
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: data.msg || "Invalid coupon code",
+        });
+      }
     } catch (error) {
-      setCouponError("Failed to apply coupon");
-      console.error("Error applying coupon:", error);
+      console.error("Error verifying coupon:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to verify coupon",
+      });
     }
   };
 
@@ -730,46 +801,6 @@ const Checkout = () => {
       return value.toUpperCase();
     }
     return couponCode; // Return existing value if invalid
-  };
-
-  const handleScanQR = async () => {
-    try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Camera not supported on this device",
-          life: 3000,
-        });
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Prefer back camera
-      });
-      
-      setShowScanner(true);
-      setHasPermission(true);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (error) {
-      setHasPermission(false);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Camera permission denied",
-        life: 3000,
-      });
-    }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-    }
-    setShowScanner(false);
   };
 
   return (
@@ -1193,128 +1224,61 @@ const Checkout = () => {
         )}
 
         {showCouponModal && (
-          <div className="popup-overlay">
+          <div
+            className="modal fade show"
+            style={{
+              display: "block",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1050,
+            }}
+            onClick={() => setShowCouponModal(false)}
+          >
             <div
               className="modal-dialog modal-dialog-centered"
-              style={{ maxWidth: "350px" }}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="modal-content">
-                <div className="modal-header ps-3 pe-2">
-                  <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
-                    Apply Coupon
-                  </div>
+                <div className="modal-header">
+                  <h5 className="modal-title">Available Coupons</h5>
                   <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => {
-                      setShowCouponModal(false);
-                      setCouponError("");
-                      setCouponCode("");
-                    }}
-                  >
-                    {/* <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i> */}
-                  </button>
-                </div>
-
-                <div className="modal-body py-3 px-3">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className={`form-control rounded-pill ${
-                        couponError ? "is-invalid" : ""
-                      }`}
-                      placeholder="Enter coupon code"
-                      value={couponCode}
-                      onChange={(e) => {
-                        setCouponCode(e.target.value.toUpperCase());
-                        setCouponError("");
-                      }}
-                    />
-                    {couponError && (
-                      <div className="invalid-feedback">{couponError}</div>
-                    )}
-                  </div>
-
-                  <div className="d-grid gap-2 mt-3">
-                    <button
-                      className="btn btn-primary rounded-pill"
-                      onClick={handleApplyCoupon}
-                    >
-                      Apply
-                    </button>
-                    {appliedCoupon && (
-                      <button
-                        className="btn btn-outline-danger rounded-pill"
-                        onClick={() => {
-                          setAppliedCoupon(null);
-                          setCouponCode("");
-                          setShowCouponModal(false);
-                        }}
-                      >
-                        Remove Applied Coupon
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showScanner && (
-          <div className="modal fade show d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
-            <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header border-bottom">
-                  <h5 className="modal-title h6">Scan QR Code</h5>
-                  <button 
-                    type="button" 
+                    type="button"
                     className="btn-close"
-                    onClick={stopCamera}
-                    aria-label="Close"
+                    onClick={() => setShowCouponModal(false)}
                   ></button>
                 </div>
-                
-                <div className="modal-body p-0 bg-dark position-relative">
-                  <video
-                    ref={videoRef}
-                    className="w-100"
-                    style={{ height: '300px', objectFit: 'cover' }}
-                    autoPlay
-                    playsInline
-                  />
-                  {/* Scanning overlay */}
-                  <div className="position-absolute top-50 start-50 translate-middle">
-                    <div 
-                      className="border border-2 border-primary"
-                      style={{
-                        width: '200px',
-                        height: '200px',
-                        backgroundColor: 'rgba(255,255,255,0.1)'
-                      }}
-                    >
-                      <div className="w-100 h-100 position-relative">
-                        {/* Corner markers */}
-                        <div className="position-absolute top-0 start-0 border-primary" 
-                             style={{ width: '20px', height: '20px', borderLeft: '3px solid', borderTop: '3px solid' }}></div>
-                        <div className="position-absolute top-0 end-0 border-primary" 
-                             style={{ width: '20px', height: '20px', borderRight: '3px solid', borderTop: '3px solid' }}></div>
-                        <div className="position-absolute bottom-0 start-0 border-primary" 
-                             style={{ width: '20px', height: '20px', borderLeft: '3px solid', borderBottom: '3px solid' }}></div>
-                        <div className="position-absolute bottom-0 end-0 border-primary" 
-                             style={{ width: '20px', height: '20px', borderRight: '3px solid', borderBottom: '3px solid' }}></div>
+                <div className="modal-body">
+                  {coupons.length > 0 ? (
+                    coupons.map((coupon, index) => (
+                      <div
+                        key={index}
+                        className="d-flex justify-content-between align-items-center p-2 border-bottom"
+                      >
+                        <div>
+                          <span className="font_size_14 fw-medium">
+                            {coupon.coupon_name}
+                          </span>
+                        </div>
+                        <button
+                          className="btn btn-sm btn-outline-primary rounded-pill"
+                          onClick={() => {
+                            setSelectedCoupon(coupon.coupon_name);
+                            setShowCouponModal(false);
+                          }}
+                        >
+                          Apply
+                        </button>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-3">
+                      <p className="mb-0">No coupons available</p>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="modal-footer border-top">
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary rounded-pill px-4"
-                    onClick={stopCamera}
-                  >
-                    Close
-                  </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -1456,63 +1420,57 @@ const Checkout = () => {
                     </span>
                   </div>
 
-                  <div className="col-12 mb-0 py-1">
+                  <div className="col-12 mb-0 py-1 px-2">
                     <div className="d-flex justify-content-between">
-                      <div
-                        className="col-1 d-flex align-items-center cursor-pointer"
-                        onClick={handleScanQR}
-                      >
-                        <i className="bx bx-qr-scan fs-1"></i>
-                      </div>
-                      <div className="col-11">
-                        <div className="my-2 w-100">
-                          <div className="input-group">
+                      <div className="my-2 w-100">
+                        <div className="d-flex justify-content-between align-items-center py-0 ">
+                          <i
+                            className="fa-solid fa-list font_size_14 cursor-pointer"
+                            onClick={() => {
+                              setShowCouponModal(true);
+                              fetchCoupons();
+                            }}
+                          ></i>
+                          <div className="d-flex align-items-center ">
                             <input
                               type="text"
-                              style={{ height: "40px" }}
-                              className={`form-control rounded-pill border border-2 border-light me-2 ${
-                                couponError ? "is-invalid" : ""
-                              }`}
-                              placeholder="coupon"
-                              value={couponCode}
-                              onChange={(e) => {
-                                const validatedValue = validateCouponInput(e.target.value);
-                                setCouponCode(validatedValue);
-                                setCouponError("");
-                              }}
-                              maxLength={10}
+                              className="form-control form-control-sm ms-2 rounded-pill"
+                              placeholder="Enter coupon code"
+                              value={selectedCoupon}
+                              onChange={(e) =>
+                                setSelectedCoupon(e.target.value)
+                              }
                             />
+                          </div>
+                          <button
+                            className="btn btn-sm btn-primary rounded-pill ms-2 text-end"
+                            onClick={handleApplyCoupon}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {couponError && (
+                          <div className="text-danger small mt-1">
+                            {couponError}
+                          </div>
+                        )}
+                        {appliedCoupon && (
+                          <div className="d-flex justify-content-between align-items-center mt-2">
+                            <span className="text-success">
+                              <i className="fa-solid fa-check-circle me-1"></i>
+                              Coupon {appliedCoupon.code} applied
+                            </span>
                             <button
-                              className="btn btn-primary rounded-pill px-4 btn-sm"
-                              style={{ height: "40px" }}
-                              onClick={handleApplyCoupon}
+                              className="btn btn-link text-danger p-0 small"
+                              onClick={() => {
+                                setAppliedCoupon(null);
+                                setCouponCode("");
+                              }}
                             >
-                              {appliedCoupon ? "Applied" : "Apply"}
+                              Remove
                             </button>
                           </div>
-                          {couponError && (
-                            <div className="text-danger small mt-1">
-                              {couponError}
-                            </div>
-                          )}
-                          {appliedCoupon && (
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              <span className="text-success">
-                                <i className="fa-solid fa-check-circle me-1"></i>
-                                Coupon {appliedCoupon.code} applied
-                              </span>
-                              <button
-                                className="btn btn-link text-danger p-0 small"
-                                onClick={() => {
-                                  setAppliedCoupon(null);
-                                  setCouponCode("");
-                                }}
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
