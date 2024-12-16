@@ -9,7 +9,6 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
-import { Toast } from "primereact/toast";
 import config from "../component/config";
 import axios from "axios";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
@@ -17,7 +16,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart } = useCart();
-  const toast = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
@@ -204,12 +202,7 @@ const Checkout = () => {
         throw new Error("Failed to check order status");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process order",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to process order");
       console.clear();
     }
   };
@@ -224,12 +217,7 @@ const Checkout = () => {
 
   const handleCreateOrder = async (orderType) => {
     if (!cartId || !customerId || !restaurantId || !orderType) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Missing required data to create an order",
-        life: 3000,
-      });
+      window.showToast("error", "Missing required data to create an order");
       return;
     }
 
@@ -277,12 +265,7 @@ const Checkout = () => {
         throw new Error(data.msg);
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to create order",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to create order");
       console.clear();
     }
   };
@@ -302,12 +285,7 @@ const Checkout = () => {
       !existingOrderDetails.orderNumber ||
       !orderType
     ) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Missing required data to proceed",
-        life: 3000,
-      });
+      window.showToast("error", "Missing required data to proceed");
       return;
     }
 
@@ -349,12 +327,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to update order");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process order",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to process order");
       console.clear();
     }
   };
@@ -552,12 +525,7 @@ const Checkout = () => {
       !restaurantId ||
       !existingOrderDetails.orderNumber
     ) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Missing required data to proceed",
-        life: 3000,
-      });
+      window.showToast("error", "Missing required data to proceed");
       setProcessing(false);
       return;
     }
@@ -607,12 +575,7 @@ const Checkout = () => {
           clearCartData();
         } else {
           // Handle successful API response without redirection
-          toast.current.show({
-            severity: "success",
-            summary: "Success",
-            detail: `Payment via ${method} initiated successfully.`,
-            life: 3000,
-          });
+          window.showToast("success", `Payment via ${method} initiated successfully.`);
           setProcessing(false);
           navigate("/user_app/MyOrder");
           clearCartData();
@@ -621,12 +584,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to process payment");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process payment or order",
-        life: 3000,
-      });
+      window.showToast("error", "Failed to process payment or order");
       console.error("Error initiating payment:", error);
       setProcessing(false);
     }
@@ -701,19 +659,11 @@ const Checkout = () => {
       if (data.st === 1) {
         setCoupons(data.coupons);
       } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Failed to fetch coupons",
-        });
+        window.showToast("error", "Failed to fetch coupons");
       }
     } catch (error) {
       console.error("Error fetching coupons:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Error fetching coupons",
-      });
+      window.showToast("error", "Error fetching coupons");
     }
   };
 
@@ -732,11 +682,7 @@ const Checkout = () => {
 
   const handleApplyCoupon = async () => {
     if (!selectedCoupon) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Please enter a coupon code",
-      });
+      window.showToast("error", "Please enter a coupon code");
       return;
     }
 
@@ -767,26 +713,14 @@ const Checkout = () => {
           total_after_discount: data.discounted_price,
         }));
 
-        toast.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: data.msg || "Coupon applied successfully",
-        });
+        window.showToast("success", data.msg || "Coupon applied successfully");
         setShowCouponModal(false);
       } else {
-        toast.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: data.msg || "Invalid coupon code",
-        });
+        window.showToast("error", data.msg || "Invalid coupon code");
       }
     } catch (error) {
       console.error("Error verifying coupon:", error);
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to verify coupon",
-      });
+      window.showToast("error", "Failed to verify coupon");
     }
   };
 
@@ -806,7 +740,6 @@ const Checkout = () => {
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
       <main className="page-content mb-5 pb-3">
         <div className="container py-0 my-0">
@@ -1421,9 +1354,9 @@ const Checkout = () => {
                   </div>
 
                   <div className="col-12 mb-0 py-1 px-2">
-                    <div className="d-flex justify-content-between">
-                      <div className="my-2 w-100">
-                        <div className="d-flex justify-content-between align-items-center py-0 ">
+                    <div className="row align-items-center justify-content-center">
+                      <div className="col-1 text-center">
+                        <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center" style={{height: "25px", width: "25px"}}>
                           <i
                             className="fa-solid fa-list font_size_14 cursor-pointer"
                             onClick={() => {
@@ -1431,30 +1364,36 @@ const Checkout = () => {
                               fetchCoupons();
                             }}
                           ></i>
-                          <div className="d-flex align-items-center ">
-                            <input
-                              type="text"
-                              className="form-control form-control-sm ms-2 rounded-pill"
-                              placeholder="Enter coupon code"
-                              value={selectedCoupon}
-                              onChange={(e) =>
-                                setSelectedCoupon(e.target.value)
-                              }
-                            />
-                          </div>
-                          <button
-                            className="btn btn-sm btn-primary rounded-pill ms-2 text-end"
-                            onClick={handleApplyCoupon}
-                          >
-                            Apply
-                          </button>
                         </div>
-                        {couponError && (
+                      </div>
+                      <div className="col-8 d-flex align-items-center px-3">
+                        <input
+                          type="text"
+                          className="form-control form-control-sm rounded-pill"
+                          placeholder="Enter coupon code"
+                          value={selectedCoupon}
+                          onChange={(e) =>
+                            setSelectedCoupon(e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="col-3 d-flex align-items-center ps-1">
+                        <button
+                          className="btn btn-sm btn-primary rounded-pill w-100"
+                          onClick={handleApplyCoupon}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {couponError && (
+                        <div className="col-12 text-center">
                           <div className="text-danger small mt-1">
                             {couponError}
                           </div>
-                        )}
-                        {appliedCoupon && (
+                        </div>
+                      )}
+                      {appliedCoupon && (
+                        <div className="col-12">
                           <div className="d-flex justify-content-between align-items-center mt-2">
                             <span className="text-success">
                               <i className="fa-solid fa-check-circle me-1"></i>
@@ -1470,8 +1409,8 @@ const Checkout = () => {
                               Remove
                             </button>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
