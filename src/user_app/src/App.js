@@ -47,6 +47,7 @@ function App() {
             <div className="user-app-root">
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
+                
                 <Route
                   path=":restaurantCode/:table_number/:section_id"
                   element={<HomeScreen />}
