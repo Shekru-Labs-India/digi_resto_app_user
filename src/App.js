@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import UserApp from './user_app/src/App';
-import Website from './website/src/App';
+
+import QRScanner from './user_app/src/screens/QRScreen';
 
 // Toast functionality (keeping this in main App.js since it's used globally)
 window.hideToast = function() {
@@ -139,8 +140,8 @@ const AppContent = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Website />}>
-        <Route index element={<Website currentPath="/" />} />
+      {/* <Route path="/" element={<Website />}> */}
+        {/* <Route index element={<Website currentPath="/" />} />
         <Route path="features" element={<Website currentPath="/features" />} />
         <Route path="about" element={<Website currentPath="/about" />} />
         <Route path="privacy_policy" element={<Website currentPath="/privacy_policy" />} />
@@ -150,8 +151,10 @@ const AppContent = () => {
         <Route path="pricing" element={<Website currentPath="/pricing" />} />
         <Route path="faqs" element={<Website currentPath="/faqs" />} />
         <Route path="request_data_removal" element={<Website currentPath="/request_data_removal" />} />
-       
-      </Route>
+        */}
+      {/* </Route> */}
+      <Route path="/" element={<QRScanner />} />
+
       <Route path="/user_app/*" element={<UserApp />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

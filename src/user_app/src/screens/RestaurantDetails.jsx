@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import Bottom from "../component/bottom";
-import Sidebar from "../../../website/src/Components/Sidebar";
 import Header from "../components/Header";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -314,7 +313,7 @@ function RestaurantDetails() {
 
   return (
     <div>
-      <Sidebar />
+     
       <Header title="Restaurant Details" />
 
       <div className="container pb-0">
