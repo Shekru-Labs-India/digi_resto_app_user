@@ -150,6 +150,15 @@ const Profile = () => {
                       <span className="font_size_14">Category</span>
                     </Link>
                   </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/savings"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="fa-solid fa-wallet me-2 fs-5"></i>
+                      <span className="font_size_14">Savings</span>
+                    </Link>
+                  </li>
                 </ul>
               </div>
               {isLoggedIn && (
