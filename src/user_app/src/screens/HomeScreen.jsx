@@ -144,7 +144,7 @@ const HomeScreen = () => {
                 <span className="ms-3 pt-4    ">
                   <i
                     className={
-                      userData?.customer_id
+                      userData?.user_id
                         ? "fa-solid fa-user me-2 font_size_14"
                         : "fa-regular fa-user me-2 font_size_14"
                     }
@@ -371,7 +371,7 @@ const HomeScreen = () => {
                 <span className="dz-icon icon-sm">
                   <i
                     className={
-                      userData?.customer_id
+                      userData?.user_id
                         ? "fa-solid fa-user"
                         : "fa-regular fa-user"
                     }

@@ -5,7 +5,7 @@ const FavoritesContext = createContext();
 export const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
 
-  const fetchFavorites = useCallback(async (customerId, restaurantId) => {
+  const fetchFavorites = useCallback(async (user_id, restaurantId) => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
         method: 'POST',
@@ -13,7 +13,7 @@ export const FavoritesProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customer_id: customerId,
+          user_id: user_id,
           restaurant_id: restaurantId,
         }),
       });
@@ -30,7 +30,7 @@ export const FavoritesProvider = ({ children }) => {
     }
   }, []);
 
-  const addFavorite = async (item, customerId, restaurantId) => {
+  const addFavorite = async (item, user_id, restaurantId) => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/save_favourite_menu`, {
         method: 'POST',
@@ -38,7 +38,7 @@ export const FavoritesProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customer_id: customerId,
+          user_id: user_id,
           restaurant_id: restaurantId,
           menu_id: item.menu_id,
         }),
@@ -55,7 +55,7 @@ export const FavoritesProvider = ({ children }) => {
     }
   };
 
-  const removeFavorite = async (itemId, customerId, restaurantId) => {
+  const removeFavorite = async (itemId, user_id, restaurantId) => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
         method: 'POST',
@@ -63,7 +63,7 @@ export const FavoritesProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customer_id: customerId,
+          user_id: user_id,
           restaurant_id: restaurantId,
           menu_id: itemId,
         }),

@@ -83,9 +83,14 @@ const MenuDetails = () => {
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
 
   // At the top with other state declarations
-  const [customerId, setCustomerId] = useState(() => {
+  const [userId, setUserId] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_id || null;
+    return userData?.user_id || null;
+  });
+
+  const [role, setRole] = useState(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.role || null;
   });
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
@@ -108,10 +113,6 @@ const MenuDetails = () => {
   const storedRestaurantId = localStorage.getItem("restaurantId");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const [customerType, setCustomerType] = useState(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_type || null;
-  });
   const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(
     () => {
       return (
@@ -136,8 +137,8 @@ const MenuDetails = () => {
   useEffect(() => {
     // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const storedCustomerId = storedUserData?.customer_id;
-    const storedCustomerType = storedUserData?.customer_type;
+    const storedUserId = storedUserData?.user_id;
+    const storedRole = storedUserData?.role;
 
     // Get restaurant data from location state or localStorage
     const locationState = location.state;
@@ -158,8 +159,8 @@ const MenuDetails = () => {
         localStorage.getItem("restaurantId");
     }
 
-    setCustomerId(storedCustomerId);
-    setCustomerType(storedCustomerType);
+    setUserId(storedUserId);
+    setRole(storedRole);
     setCurrentRestaurantId(initialRestaurantId);
 
     // Clean up function
@@ -239,7 +240,7 @@ const MenuDetails = () => {
             restaurant_id: currentRestaurantId,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
-            customer_id: customerId || null,
+            user_id: userId || null,
           }),
         }
       );
@@ -379,9 +380,9 @@ const MenuDetails = () => {
 
   const handleAddToCart = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
+    const currentUserId = userData?.user_id;
 
-    if (!currentCustomerId) {
+    if (!currentUserId) {
       showLoginPopup();
       return;
     }
@@ -392,10 +393,10 @@ const MenuDetails = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
-    const currentCustomerType = userData?.customer_type;
+    const currentUserId = userData?.user_id;
+    const currentRole = userData?.role;
 
-    if (!currentCustomerId || !restaurantId) {
+    if (!currentUserId || !restaurantId) {
       return;
     }
 
@@ -434,9 +435,9 @@ const MenuDetails = () => {
 
   const handleRemoveFromCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
+    const currentUserId = userData?.user_id;
 
-    if (!currentCustomerId) {
+    if (!currentUserId) {
       showLoginPopup();
       return;
     }
@@ -444,7 +445,7 @@ const MenuDetails = () => {
     try {
       await removeFromCart(
         productDetails.menu_id,
-        currentCustomerId,
+        currentUserId,
         currentRestaurantId
       );
       window.showToast("success", "Item has been removed from your cart");
@@ -461,7 +462,7 @@ const MenuDetails = () => {
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -480,7 +481,7 @@ const MenuDetails = () => {
         body: JSON.stringify({
           restaurant_id: restaurantIdToUse,
           menu_id: menuId,
-          customer_id: userData.customer_id,
+          user_id: userData.user_id,
         }),
       });
 
@@ -1043,7 +1044,7 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-8 px-0 text-center">
-                  {!customerId ? (
+                  {!userId ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}

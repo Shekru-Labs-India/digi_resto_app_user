@@ -22,7 +22,7 @@ const Profile = () => {
     const restaurantCode = localStorage.getItem("restaurantCode");
     const tableNumber = localStorage.getItem("tableNumber");
     
-    localStorage.removeItem("customer_id");
+    localStorage.removeItem("user_id");
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
     
@@ -58,7 +58,7 @@ const Profile = () => {
   };
 
   const renderContent = () => {
-    const isLoggedIn = userData && userData.customer_id;
+    const isLoggedIn = userData && userData.user_id;
 
     return (
       <>

@@ -87,11 +87,9 @@ const TrackOrder = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Get customer ID and type
-  const customerId =
-    userData?.customer_id || localStorage.getItem("customer_id");
-  const customerType =
-    userData?.customer_type || localStorage.getItem("customer_type");
+  // Get user ID and role
+  const userId = userData?.user_id || localStorage.getItem("user_id");
+  const role = userData?.role || localStorage.getItem("role");
 
   const [orderStatus, setOrderStatus] = useState(null);
 
@@ -383,20 +381,18 @@ const TrackOrder = () => {
 
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentCustomerId =
-          userData?.customer_id || localStorage.getItem("customer_id");
-        const currentCustomerType =
-          userData?.customer_type || localStorage.getItem("customer_type");
+        const currentUserId = userData?.user_id || localStorage.getItem("user_id");
+        const currentRole = userData?.role || localStorage.getItem("role");
 
-        if (!currentCustomerId) {
+        if (!currentUserId) {
           return;
         }
 
         const requestBody = {
           restaurant_id: parseInt(restaurantId, 10),
           keyword: debouncedSearchTerm.trim(),
-          customer_id: currentCustomerId,
-          customer_type: currentCustomerType,
+          user_id: currentUserId,
+          role: currentRole,
         };
 
         const response = await fetch(
@@ -433,7 +429,7 @@ const TrackOrder = () => {
     };
 
     fetchSearchedMenu();
-  }, [debouncedSearchTerm, restaurantId, customerId]);
+  }, [debouncedSearchTerm, restaurantId, userId]);
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
@@ -500,7 +496,7 @@ const TrackOrder = () => {
     e.stopPropagation();
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       window.showToast("info", "Please login to use favourite functionality");
       showLoginPopup();
       return;
@@ -523,8 +519,8 @@ const TrackOrder = () => {
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -590,8 +586,8 @@ const TrackOrder = () => {
           },
           body: JSON.stringify({
             order_number: orderNumber,
-            customer_id: customerId,
-            customer_type: customerType,
+            user_id: userId,
+            role: role,
             section_id: sectionId,
           }),
         }
@@ -829,12 +825,12 @@ const TrackOrder = () => {
   };
 
   useEffect(() => {
-    if (order_number && restaurantId && customerId) {
+    if (order_number && restaurantId && userId) {
       fetchOrderDetails(order_number);
       // fetchOrderStatus();
       // handleSubmitOrder();
     }
-  }, [order_number, restaurantId, customerId]);
+  }, [order_number, restaurantId, userId]);
 
   useEffect(() => {
     const checkOrderExists = () => {
@@ -1247,7 +1243,7 @@ const TrackOrder = () => {
             <RemainingTimeDisplay />
           )}
 
-          {customerId ? (
+          {userId ? (
             <section className="container mt-1 py-1">
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
@@ -1422,7 +1418,7 @@ const TrackOrder = () => {
           )}
         </main>
 
-        {customerId && orderDetails && (
+        {userId && orderDetails && (
           <div className="container mb-4 pt-0 z-3">
             <div className="card mt-2 p-0 mb-3 ">
               <div className="card-body mx-auto rounded-4 p-0">

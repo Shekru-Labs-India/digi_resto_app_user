@@ -43,8 +43,8 @@ const MyOrder = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  const [user_id, setUser_id] = useState(null);
+  const [role, setRole] = useState(null);
   const [ongoingOrPlacedOrders, setOngoingOrPlacedOrders] = useState({
     placed: [],
     ongoing: [],
@@ -68,17 +68,12 @@ const MyOrder = () => {
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
-
-    setIsLoggedIn(!!currentCustomerId);
-    setCustomerId(currentCustomerId);
-    setCustomerType(currentCustomerType);
+    setIsLoggedIn(!!userData?.user_id);
+    setUser_id(userData?.user_id);
+    setRole(userData?.role);
   }, []);
 
-  const handleTabChange = (tab) => {
+  const handleTabChange = (tab) => {  
     setActiveTab(tab);
   };
 
@@ -88,10 +83,8 @@ const MyOrder = () => {
       try {
         setLoading(true);
         const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentCustomerId =
-          userData?.customer_id || localStorage.getItem("customer_id");
-
-        if (!currentCustomerId || !restaurantId) {
+        
+        if (!userData?.user_id || !restaurantId) {
           setLoading(false);
           return;
         }
@@ -100,11 +93,9 @@ const MyOrder = () => {
           `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              customer_id: currentCustomerId,
+              user_id: userData.user_id,
               restaurant_id: restaurantId,
               section_id: sectionId,
             }),
@@ -139,19 +130,10 @@ const MyOrder = () => {
       }
     };
 
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-
-    if (!currentCustomerId) {
-      setLoading(false);
-      return;
-    }
-
-    if (customerId && restaurantId) {
+    if (user_id && restaurantId) {
       fetchOngoingOrPlacedOrder();
     }
-  }, [customerId, restaurantId]);
+  }, [user_id, restaurantId]);
 
   useEffect(() => {
     const sectionId =
@@ -159,21 +141,17 @@ const MyOrder = () => {
       localStorage.getItem("sectionId") ||
       "";
 
-    if (customerId && restaurantId) {
+    if (user_id && restaurantId) {
       fetchOrders(sectionId); // Pass sectionId to the fetchOrders function
     }
-  }, [activeTab, customerId, restaurantId]);
+  }, [activeTab, user_id, restaurantId]);
 
   const fetchOrders = async (sectionId) => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
-      const currentCustomerType =
-        userData?.customer_type || localStorage.getItem("customer_type");
-      const sectionId = localStorage.getItem("sectionId");
-      if (!currentCustomerId || !restaurantId) {
+      
+      if (!userData?.user_id || !restaurantId) {
         setLoading(false);
         return;
       }
@@ -182,14 +160,12 @@ const MyOrder = () => {
         `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             order_status: activeTab === "cancelled" ? "cancle" : activeTab,
-            customer_id: currentCustomerId,
-            customer_type: currentCustomerType,
+            user_id: userData.user_id,
+            role: userData.role,
             section_id: sectionId,
           }),
         }
@@ -349,7 +325,7 @@ const MyOrder = () => {
             <div id="">
               <div className="loader">{/* <LoaderGif /> */}</div>
             </div>
-          ) : !customerId ? (
+          ) : !user_id ? (
             <div
               className="container overflow-hidden d-flex justify-content-center align-items-center"
               style={{ height: "80vh" }}
@@ -372,7 +348,7 @@ const MyOrder = () => {
             </div>
           ) : (
             <>
-              {customerId && customerId ? (
+              {user_id && user_id ? (
                 <div className="default-tab style-2 pb-5 mb-3">
                   <div className="tab-content">
                     <div
@@ -1803,7 +1779,7 @@ export const CircularCountdown = ({
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
+        userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
       const sectionId =
         userData?.sectionId || localStorage.getItem("sectionId");
@@ -1818,7 +1794,7 @@ export const CircularCountdown = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
+            user_id: currentCustomerId,
             restaurant_id: restaurantId,
             section_id: sectionId,
           }),

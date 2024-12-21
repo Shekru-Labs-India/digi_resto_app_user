@@ -15,7 +15,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
-    if (!storedUserData.customer_id) {
+    if (!storedUserData.user_id) {
       window.showToast("error", "Please login to edit profile");
      
       return;
@@ -43,7 +43,7 @@ const EditProfile = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          customer_id: userData?.customer_id || "",
+          user_id: userData?.user_id || "",
           name: newName,
           mobile: newMobile,
         }),

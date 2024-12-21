@@ -284,7 +284,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i
                   className={
-                    userData?.customer_id
+                    userData?.user_id
                       ? "fa-solid fa-user"
                       : "fa-regular fa-user"
                   }

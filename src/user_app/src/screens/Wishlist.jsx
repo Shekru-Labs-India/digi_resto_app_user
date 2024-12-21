@@ -24,8 +24,8 @@ const Wishlist = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  const [user_id, setUser_id] = useState(null);
+  const [role, setRole] = useState(null);
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -72,14 +72,12 @@ const Wishlist = () => {
   // Single useEffect for initial data fetch
   useEffect(() => {
     const initializeData = async () => {
-      const { customerId, customerType } = getUserData();
-      const { restaurantId } = getRestaurantData();
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      setIsLoggedIn(!!userData?.user_id);
+      setUser_id(userData?.user_id);
+      setRole(userData?.role);
 
-      setIsLoggedIn(!!customerId);
-      setCustomerId(customerId);
-      setCustomerType(customerType);
-
-      if (customerId) {
+      if (userData?.user_id) {
         await fetchFavoriteItems();
       } else {
         setIsLoading(false);
@@ -114,7 +112,7 @@ const Wishlist = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const storedRestaurantId = localStorage.getItem("restaurantId"); // Get current restaurant ID
 
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       setIsLoading(false);
       return;
     }
@@ -129,7 +127,7 @@ const Wishlist = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
           }),
         }
       );
@@ -191,10 +189,10 @@ const Wishlist = () => {
 
   // 3. Update cart restaurant ID when needed
   useEffect(() => {
-    if (customerId && restaurantId) {
+    if (user_id && restaurantId) {
       updateCartRestaurantId();
     }
-  }, [customerId, restaurantId]);
+  }, [user_id, restaurantId]);
 
   const updateCartRestaurantId = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -248,7 +246,7 @@ const Wishlist = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -273,7 +271,7 @@ const Wishlist = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -340,7 +338,7 @@ const Wishlist = () => {
     restaurantId
   ) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !menuId || !restaurantId) {
+    if (!userData?.user_id || !menuId || !restaurantId) {
       window.showToast("error", "Missing required information");
       return;
     }
@@ -354,7 +352,7 @@ const Wishlist = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
           }),
         }
       );
@@ -519,7 +517,7 @@ const Wishlist = () => {
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={customerType?.tableNumber || "1"}
+            tableNumber={role?.tableNumber || "1"}
           />
         </div>
         {isLoading ? (
@@ -782,7 +780,7 @@ const Wishlist = () => {
                                           </p>
                                         </div>
                                         <div className="col-7 d-flex justify-content-end pe-3 pt-2 pb-2">
-                                          {customerId &&
+                                          {user_id &&
                                             menu.restaurant_id ===
                                               restaurantId && (
                                               <div

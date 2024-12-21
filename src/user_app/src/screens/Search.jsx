@@ -28,7 +28,7 @@ const Search = () => {
   const navigate = useNavigate();
   const { restaurantName } = useRestaurantId();
   const { restaurantId } = useRestaurantId();
-  const [customerId, setCustomerId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
@@ -38,7 +38,7 @@ const Search = () => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
-  const [customerType, setCustomerType] = useState(null);
+  const [role, setRole] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [originalMenu, setOriginalMenu] = useState([]); // Store original menu items
   const [foodTypes, setFoodTypes] = useState([]);
@@ -49,7 +49,7 @@ const Search = () => {
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
-      setCustomerId(storedUserData.customer_id);
+      setUserId(storedUserData.user_id);
     }
   }, []);
 
@@ -107,7 +107,7 @@ const Search = () => {
         const requestBody = {
           restaurant_id: parseInt(restaurantId, 10),
           keyword: debouncedSearchTerm.trim(),
-          customer_id: customerId || null,
+          user_id: userId || null,
         };
 
         const response = await fetch(
@@ -153,7 +153,7 @@ const Search = () => {
 
   const fetchCartItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) return [];
+    if (!userData?.user_id) return [];
 
     try {
       const response = await fetch(
@@ -165,7 +165,7 @@ const Search = () => {
           },
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId") || "",
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -201,7 +201,7 @@ const Search = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    // if (!userData?.user_id || userData.role === 'guest') {
     //   showLoginPopup();
     //   return;
     // }
@@ -252,7 +252,7 @@ const Search = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    // if (!userData?.user_id || userData.role === 'guest') {
     //   showLoginPopup();
     //   return;
     // }
@@ -308,7 +308,7 @@ const Search = () => {
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -329,8 +329,8 @@ const Search = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -600,7 +600,7 @@ const Search = () => {
       const requestBody = {
         restaurant_id: parseInt(restaurantId, 10),
         keyword: searchValue.trim(),
-        customer_id: customerId || null,
+        user_id: userId || null,
       };
 
       const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
@@ -801,7 +801,7 @@ const Search = () => {
         <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={customerType?.tableNumber || "1"}
+            tableNumber={role?.tableNumber || "1"}
           />
         </div>
 
@@ -1252,7 +1252,7 @@ const Search = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                if (userData?.customer_id) {
+                                if (userData?.user_id) {
                                   handleAddToCartClick(menu);
                                 } else {
                                   showLoginPopup();

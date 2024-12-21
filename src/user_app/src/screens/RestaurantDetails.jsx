@@ -233,7 +233,7 @@ function RestaurantDetails() {
 
     // Check for user login and type
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       window.showToast("info", "Please login to use favourite functionality");
       showLoginPopup();
       return;
@@ -254,7 +254,8 @@ function RestaurantDetails() {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
+            role: userData.role
           }),
         }
       );

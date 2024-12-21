@@ -176,7 +176,7 @@ const Product = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: userData ? userData.customer_id : null,
+            user_id: userData ? userData.user_id : null,
             restaurant_id: restaurantId,
           }),
         }
@@ -257,7 +257,7 @@ const Product = () => {
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -280,7 +280,7 @@ const Product = () => {
         body: JSON.stringify({
           restaurant_id: restaurantId,
           menu_id: menuId,
-          customer_id: userData.customer_id,
+          user_id: userData.user_id,
         }),
       });
 
@@ -587,18 +587,15 @@ const Product = () => {
     magicProcessRef.current = true;
 
     try {
-      // Only proceed if the process hasn't been cancelled
       if (magicProcessRef.current) {
         const response = await fetch(
           `${config.apiDomain}/user_api/auto_create_cart`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              customer_id: userData?.customer_id,
+              user_id: userData?.user_id,
             }),
           }
         );

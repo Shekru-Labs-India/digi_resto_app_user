@@ -86,7 +86,7 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id
+              userData?.user_id
                 ? "fa-solid fa-user me-2 font_size_14"
                 : "fa-regular fa-user me-2 font_size_14"
             }

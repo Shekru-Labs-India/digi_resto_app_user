@@ -42,7 +42,7 @@ const Cart = () => {
 
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
-    const customerId = getCustomerId();
+    const user_id = getCustomerId();
     // const cartId = getCartId();
 
     const cartId = getCartId() || localStorage.getItem("cartId");
@@ -61,7 +61,7 @@ const Cart = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -100,14 +100,14 @@ const Cart = () => {
   // Initial load effect with restaurant ID check
   useEffect(() => {
     const initializeCart = async () => {
-      const { customerId, customerType } = getUserData();
+      const { user_id, role } = getUserData();
       const currentRestaurantId = getStoredRestaurantId();
 
-      if (customerId && currentRestaurantId) {
+      if (user_id && currentRestaurantId) {
         setIsLoggedIn(true);
-        setCustomerId(customerId);
-        setCustomerType(customerType);
-        setUserData({ customer_id: customerId, customer_type: customerType });
+        setCustomerId(user_id);
+        setCustomerType(role);
+        setUserData({ user_id: user_id, role: role });
         await fetchCartDetails();
       } else {
         setIsLoggedIn(false);
@@ -134,10 +134,10 @@ const Cart = () => {
   }, [fetchCartDetails, restaurantId]);
 
   const handleClearCart = async () => {
-    const customerId = getCustomerId();
+    const user_id = getCustomerId();
     const cartId = getCartId() || localStorage.getItem("cartId");
 
-    if (!customerId || !cartId || !restaurantId) {
+    if (!user_id || !cartId || !restaurantId) {
       window.showToast("error", "Required information is missing.");
       return;
     }
@@ -150,7 +150,7 @@ const Cart = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -192,7 +192,7 @@ const Cart = () => {
 
   const getCustomerId = useCallback(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_id || localStorage.getItem("customer_id") || null;
+    return userData?.user_id || localStorage.getItem("user_id") || null;
   }, []);
 
   const getCartId = useCallback(() => {
@@ -258,7 +258,7 @@ const Cart = () => {
   };
 
   const updateCartQuantity = async (menuId, quantity) => {
-    const customerId = getCustomerId();
+    const user_id = getCustomerId();
     const cartId = getCartId();
 
     try {
@@ -269,7 +269,7 @@ const Cart = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             menu_id: menuId,
             quantity: quantity,
@@ -310,7 +310,7 @@ const Cart = () => {
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -341,8 +341,8 @@ const Cart = () => {
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );

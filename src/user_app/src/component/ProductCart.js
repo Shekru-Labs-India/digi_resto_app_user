@@ -233,7 +233,7 @@ const ProductCard = ({ isVegOnly }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: storedUserData?.customer_id || null,
+            user_id: storedUserData?.user_id || null,
             restaurant_id: storedRestaurantId,
           }),
         }
@@ -338,7 +338,7 @@ const ProductCard = ({ isVegOnly }) => {
     // }
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       // window.showToast("info", "Please login to use favourite functionality");
       showLoginPopup();
       return;
@@ -358,7 +358,7 @@ const ProductCard = ({ isVegOnly }) => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
           }),
         }
       );
@@ -466,7 +466,7 @@ const ProductCard = ({ isVegOnly }) => {
   // Updated handleAddToCartClick
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       showLoginPopup();
       return;
     }
@@ -505,7 +505,7 @@ const ProductCard = ({ isVegOnly }) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (userData?.customer_id) {
+            if (userData?.user_id) {
               handleAddToCartClick(menu);
             } else {
               showLoginPopup();
@@ -583,7 +583,7 @@ const ProductCard = ({ isVegOnly }) => {
           },
           body: JSON.stringify({
             restaurant_id: restaurantId,
-            customer_id: userData?.customer_id,
+            user_id: userData?.user_id,
           }),
         }
       );

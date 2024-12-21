@@ -134,22 +134,19 @@ const CircularCountdown = ({
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentUserId = userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
       const sectionId = order.section_id;
 
-      if (!currentCustomerId || !restaurantId) return;
+      if (!currentUserId || !restaurantId) return;
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
+            user_id: currentUserId,
             restaurant_id: restaurantId,
             section_id: sectionId,
           }),
@@ -478,7 +475,7 @@ const OrdersPlacedOngoing = () => {
 
   const fetchData = async () => {
     // Check if we have required data before making the API call
-    if (!userData?.customer_id || !userData?.restaurantId) {
+    if (!userData?.user_id || !userData?.restaurantId) {
       setOrders({ placed: [], ongoing: [] });
       return;
     }
@@ -493,7 +490,7 @@ const OrdersPlacedOngoing = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
             restaurant_id: userData.restaurantId,
             section_id: sectionId,
           }),

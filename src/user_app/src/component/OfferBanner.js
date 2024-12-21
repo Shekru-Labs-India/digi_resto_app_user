@@ -43,7 +43,7 @@ const OfferBanner = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
-      setCustomerId(userData.customer_id);
+      setCustomerId(userData.user_id);
     }
 
     // Only fetch if we have a restaurantId
@@ -87,7 +87,7 @@ const OfferBanner = () => {
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
     const currentCustomerId =
-      customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+      customerId || JSON.parse(localStorage.getItem("userData"))?.user_id;
 
     setIsLoading(true);
     try {
@@ -97,7 +97,7 @@ const OfferBanner = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
+            user_id: currentCustomerId,
             restaurant_id: restaurantId,
           }),
         }
@@ -142,7 +142,7 @@ const OfferBanner = () => {
     if (!selectedMenu) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       return;
     }
 
@@ -294,7 +294,7 @@ const OfferBanner = () => {
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -313,8 +313,8 @@ const OfferBanner = () => {
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -445,7 +445,7 @@ const OfferBanner = () => {
   // Update handleAddToCartClick function
   const handleAddToCartClick = async (menuItem) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
+    if (!userData?.user_id || !restaurantId) {
       showLoginPopup();
       return;
     }

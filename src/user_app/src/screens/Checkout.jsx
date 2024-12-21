@@ -17,8 +17,8 @@ const Checkout = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  const [user_id, setUser_id] = useState(null);
+  const [role, setRole] = useState(null);
   const storedRestaurantId = localStorage.getItem("restaurantId");
   const [availableTables, setAvailableTables] = useState(0);
 
@@ -68,19 +68,19 @@ const Checkout = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
+      userData?.user_id || localStorage.getItem("user_id");
     const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
+      userData?.role || localStorage.getItem("role");
 
     setIsLoggedIn(!!currentCustomerId);
-    setCustomerId(currentCustomerId);
-    setCustomerType(currentCustomerType);
+    setUser_id(currentCustomerId);
+    setRole(currentCustomerType);
   }, []);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
+      userData?.user_id || localStorage.getItem("user_id");
     const cartId = getCartId();
 
     // if (!cartId || !currentCustomerId || !restaurantId) {
@@ -93,7 +93,7 @@ const Checkout = () => {
   const fetchCartDetails = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
+      userData?.user_id || localStorage.getItem("user_id");
     const cartId = getCartId();
 
     try {
@@ -101,7 +101,7 @@ const Checkout = () => {
         `${config.apiDomain}/user_api/get_cart_detail`,
         {
           cart_id: cartId,
-          customer_id: currentCustomerId,
+          user_id: currentCustomerId,
           restaurant_id: storedRestaurantId,
         }
       );
@@ -143,7 +143,7 @@ const Checkout = () => {
       setRestaurantCode(storedRestaurantCode);
     }
     // fetchCartDetails();
-  }, [restaurantId, customerId]);
+  }, [restaurantId, user_id]);
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -169,7 +169,7 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -216,7 +216,7 @@ const Checkout = () => {
   };
 
   const handleCreateOrder = async (orderType) => {
-    if (!cartId || !customerId || !restaurantId || !orderType) {
+    if (!cartId || !user_id || !restaurantId || !orderType) {
       window.showToast("error", "Missing required data to create an order");
       return;
     }
@@ -241,7 +241,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             table_number: tableNumber,
             order_type: orderType,
@@ -280,7 +280,7 @@ const Checkout = () => {
   const handleOrderAction = async (orderStatus, orderType) => {
     if (
       !cartId ||
-      !customerId ||
+      !user_id ||
       !restaurantId ||
       !existingOrderDetails.orderNumber ||
       !orderType
@@ -304,7 +304,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             order_number: existingOrderDetails.orderNumber,
             order_status: orderStatus,
@@ -351,7 +351,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             cart_id: cartId,
             order_items: orderItems,
@@ -521,7 +521,7 @@ const Checkout = () => {
   ) => {
     if (
       !cartId ||
-      !customerId ||
+      !user_id ||
       !restaurantId ||
       !existingOrderDetails.orderNumber
     ) {
@@ -545,7 +545,7 @@ const Checkout = () => {
           },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             order_number: existingOrderDetails.orderNumber,
             order_status: "completed",

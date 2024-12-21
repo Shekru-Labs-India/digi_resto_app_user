@@ -27,8 +27,8 @@ export const CartProvider = ({ children }) => {
     }
   }, [cartId]);
 
-  const updateCart = useCallback(async (customerId, restaurantId) => {
-    if (!customerId || !restaurantId || !cartId) return;
+  const updateCart = useCallback(async (user_id, restaurantId) => {
+    if (!user_id || !restaurantId || !cartId) return;
 
     try {
       const response = await fetch(
@@ -40,7 +40,7 @@ export const CartProvider = ({ children }) => {
           },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -70,7 +70,7 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (item, restaurantId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       throw new Error("User not logged in");
     }
   
@@ -95,8 +95,8 @@ export const CartProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
             restaurant_id: restaurantId,
             menu_id: item.menu_id,
             quantity: item.quantity || 1,
@@ -128,7 +128,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = async (menuId, customerId, restaurantId) => {
+  const removeFromCart = async (menuId, user_id, restaurantId) => {
     try {
       const cartId = localStorage.getItem("cartId");
       
@@ -141,7 +141,7 @@ export const CartProvider = ({ children }) => {
           },
           body: JSON.stringify({
             menu_id: menuId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             cart_id: cartId
           }),

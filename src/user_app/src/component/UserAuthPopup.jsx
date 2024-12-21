@@ -128,7 +128,7 @@ const UserAuthPopup = () => {
       if (response.ok) {
         if (data.st === 1) {
           localStorage.setItem("mobile", mobile);
-          localStorage.setItem("customer_id", data.customer_id);
+          localStorage.setItem("user_id", data.user_id);
           setView("verify");
 
           // Try to extract OTP if present in the message
@@ -138,7 +138,7 @@ const UserAuthPopup = () => {
             localStorage.setItem("otp", otp);
           }
 
-          localStorage.setItem("customer_type", "registered");
+          localStorage.setItem("role", "customer");
           localStorage.setItem("isGuest", "false");
         } else {
           setError(data.msg || "Sign in failed. Please try again.");
@@ -172,15 +172,15 @@ const UserAuthPopup = () => {
 
       if (response.ok && data.st === 1) {
         const userData = {
-          customer_id: data.customer_details.customer_id,
-          customer_type: data.customer_details.customer_type,
+          user_id: data.customer_details.user_id,
+          role: data.customer_details.role,
           name: data.customer_details.name,
           isGuest: true,
         };
 
         localStorage.setItem("userData", JSON.stringify(userData));
-        setCustomerId(data.customer_details.customer_id);
-        setCustomerType(data.customer_details.customer_type);
+        setCustomerId(data.customer_details.user_id);
+        setCustomerType(data.customer_details.role);
         hideLoginPopup();
 
         const isDefaultRoute =
@@ -267,15 +267,15 @@ const UserAuthPopup = () => {
 
       if (data.st === 1) {
         const userData = {
-          customer_id: data.customer_details.customer_id,
+          user_id: data.customer_details.user_id,
           name: data.customer_details.name,
           mobile: data.customer_details.mobile,
-          customer_type: data.customer_details.customer_type,
+          role: data.customer_details.role,
         };
         localStorage.setItem("customerName", data.customer_details.name);
         localStorage.setItem("userData", JSON.stringify(userData));
-        setCustomerId(data.customer_details.customer_id);
-        setCustomerType(data.customer_details.customer_type);
+        setCustomerId(data.customer_details.user_id);
+        setCustomerType(data.customer_details.role);
         hideLoginPopup();
 
         const isDefaultRoute =
