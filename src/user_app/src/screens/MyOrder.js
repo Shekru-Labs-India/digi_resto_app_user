@@ -175,10 +175,10 @@ const MyOrder = () => {
 
         if (data.st === 1 && data.lists) {
           const mappedData = {};
-          if (activeTab === "cancelled" && data.lists.cancle) {
-            mappedData.cancelled = data.lists.cancle;
-          } else if (data.lists[activeTab]) {
-            mappedData[activeTab] = data.lists[activeTab];
+          if (activeTab === "cancelled" && data.lists.cancelled) {
+            mappedData.cancelled = data.lists.cancelled;
+          } else if (activeTab === "completed" && data.lists.paid) {
+            mappedData.completed = data.lists.paid;
           }
 
           // Get existing data from localStorage
@@ -1397,8 +1397,8 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     // Special handling for cancelled orders which might be nested differently
     let ordersToRender = orders;
-    if (type === "cancelled" && orders.cancle) {
-      ordersToRender = orders.cancle;
+    if (type === "cancelled" && orders.cancelled) {
+      ordersToRender = orders.cancelled;
     }
 
     const getOrderTypeIcon = (orderType) => {
