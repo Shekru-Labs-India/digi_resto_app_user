@@ -571,46 +571,42 @@ const TrackOrder = () => {
   };
 
   const fetchOrderDetails = async (orderNumber) => {
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
+    const sectionId = localStorage.getItem("sectionId") || "";
+    
     try {
       setLoading(true);
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_order_details`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_number: orderNumber,
-            user_id: userId,
-            role: role,
-            section_id: sectionId,
-          }),
-        }
-      );
+      const response = await fetch(`${config.apiDomain}/user_api/get_order_details`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_number: orderNumber,
+          user_id: userId,
+          role: role,
+          section_id: sectionId
+        })
+      });
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1 && data.lists) {
-          setOrderDetails(data.lists);
-          const status = data.lists.order_details.order_status.toLowerCase();
+        const { lists } = await response.json();
+        if (lists) {
+          // Format menu items
+          const formattedMenu = lists.menu_details.map(item => ({
+            ...item,
+            menu_name: toTitleCase(item.menu_name),
+            is_favourite: item.is_favourite === 1,
+            discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer/100)) : item.price
+          }));
 
-          // Normalize cancelled status variations
-          if (["cancle", "cancelled", "canceled"].includes(status)) {
-            setOrderStatus("canceled");
-            setIsCompleted(true); // Treat cancelled orders like completed ones
-          } else if (status === "completed") {
-            setOrderStatus("completed");
-            setIsCompleted(true);
-          } else {
-            console.clear();
-            setOrderStatus(status);
-            setIsCompleted(false);
-          }
+          // Update order details with formatted menu
+          setOrderDetails({
+            ...lists,
+            menu_details: formattedMenu
+          });
+
+          // Handle order status
+          const status = lists.order_details.order_status.toLowerCase();
+          setOrderStatus(["cancle", "cancelled", "canceled"].includes(status) ? "canceled" : status);
+          setIsCompleted(status === "completed" || ["cancle", "cancelled", "canceled"].includes(status));
         }
       }
     } catch (error) {
@@ -1072,8 +1068,8 @@ const TrackOrder = () => {
               <div className="order-status d-flex align-items-center">
                 <span className="d-flex align-items-center">
                   <i className={`${getStatusIcon(orderStatus)} me-2 fs-5`}></i>
-                  <span className="font_size_14">
-                    {getDisplayStatus(orderStatus)}
+                  <span className="font_size_14 fw-medium">
+                    {getDisplayStatus(orderStatus).toUpperCase()}
                   </span>
                 </span>
               </div>
@@ -1431,7 +1427,7 @@ const TrackOrder = () => {
                       <span className="pe-2 font_size_14 fw-semibold">
                         ₹
                         {parseFloat(
-                          orderDetails.order_details.total_total || 0
+                          orderDetails.order_details.total_bill_amount || 0
                         ).toFixed(2)}
                       </span>
                     </div>
@@ -1446,9 +1442,12 @@ const TrackOrder = () => {
                         <span className="font_size_14 gray-text">
                           ₹
                           {(
-                            parseFloat(orderDetails.order_details.total_total) -
                             parseFloat(
-                              orderDetails.order_details.discount_amount
+                              orderDetails.order_details.total_bill_amount
+                            ) -
+                            parseFloat(
+                              orderDetails.order_details
+                                .total_bill_with_discount
                             )
                           ).toFixed(2)}
                         </span>

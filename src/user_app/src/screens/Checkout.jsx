@@ -1409,7 +1409,9 @@ const Checkout = () => {
                   <div className="row px-2 py-1">
                     <div className="col-12 px-2">
                       <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 font_size_14 fw-semibold">Total</span>
+                        <span className="ps-2 font_size_14 fw-semibold">
+                          Total
+                        </span>
                         <span className="pe-2 font_size_14 fw-semibold">
                           ₹{total.toFixed(2)}
                         </span>
@@ -1491,7 +1493,9 @@ const Checkout = () => {
                               className="form-control form-control-sm rounded-pill"
                               placeholder="Enter coupon code"
                               value={selectedCoupon}
-                              onChange={(e) => setSelectedCoupon(e.target.value)}
+                              onChange={(e) =>
+                                setSelectedCoupon(e.target.value)
+                              }
                             />
                           </div>
                           <div className="col-3 d-flex align-items-center ps-1">
@@ -1536,7 +1540,9 @@ const Checkout = () => {
 
                     <div className="col-12 px-2">
                       <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                        <span className="ps-2 fs-6 fw-semibold">
+                          Grand Total
+                        </span>
                         <span className="pe-2 fs-6 fw-semibold">
                           ₹{grandTotal.toFixed(2)}
                         </span>
@@ -1558,10 +1564,12 @@ const Checkout = () => {
                 </div>
               </>
             ) : (
-              
               <div className="text-center mt-4 d-flex flex-column justify-content-center align-items-center h-100">
                 <p className="text-muted">Your cart is empty</p>
-                <Link to="/user_app/Menu" className="btn btn-primary rounded-pill">
+                <Link
+                  to="/user_app/Menu"
+                  className="btn btn-primary rounded-pill"
+                >
                   <i className="ri-add-circle-line me-1"></i> Browse Menu
                 </Link>
               </div>

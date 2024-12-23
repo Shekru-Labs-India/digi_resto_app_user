@@ -46,9 +46,9 @@ const Bottom = () => {
         </Link>
 
         <Link
-          to="/user_app/Cart"
+          to="/user_app/Checkout"
           className={`nav-link ${
-            location.pathname === "/user_app/Cart" ? "active" : ""
+            location.pathname === "/user_app/Checkout" ? "active" : ""
           }`}
         >
           <div className="position-relative d-inline-block">
