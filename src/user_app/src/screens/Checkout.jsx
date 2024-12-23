@@ -15,7 +15,7 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { clearCart, removeFromCart, updateCartItemQuantity } = useCart();
+  const { clearCart, removeFromCart } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user_id, setUser_id] = useState(null);
   const [role, setRole] = useState(null);
@@ -95,45 +95,48 @@ const Checkout = () => {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        setCartItems(cartData.order_items || []);
         
-        // Calculate totals based on current quantities
-        const total = cartData.order_items.reduce((sum, item) => {
-          const itemPrice = item.offer ? item.discountedPrice : item.price;
-          return sum + (itemPrice * item.quantity);
-        }, 0);
+        // Calculate totals
+        const total = cartData.order_items.reduce((sum, item) => 
+          sum + (item.price * item.quantity), 0
+        );
 
-        // Set total and calculate other charges
-        setTotal(total);
-        
-        // Calculate service charges (5%)
+        const serviceChargesPercent = 5;
+        const gstPercent = 5;
         const serviceCharges = (total * serviceChargesPercent) / 100;
-        setServiceCharges(serviceCharges);
-        
-        // Calculate GST (5%)
         const tax = (total * gstPercent) / 100;
-        setTax(tax);
-        
-        // Calculate discount if any
-        const discount = (total * discountPercent) / 100;
-        setDiscount(discount);
-        
-        // Calculate total after discount
+        const discount = 0;
         const totalAfterDiscount = total - discount;
-        setTotalAfterDiscount(totalAfterDiscount);
-        
-        // Calculate grand total
         const grandTotal = totalAfterDiscount + serviceCharges + tax;
+
+        // Map items to match API structure
+        const mappedItems = cartData.order_items.map(item => ({
+          ...item,
+          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
+          menu_cat_name: item.category_name || "Food",
+          menu_id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+          offer: item.offer || 0
+        }));
+
+        // Update all states
+        setCartItems(mappedItems);
+        setTotal(total);
+        setServiceChargesPercent(serviceChargesPercent);
+        setServiceCharges(serviceCharges);
+        setGstPercent(gstPercent);
+        setTax(tax);
+        setDiscountPercent(0);
+        setDiscount(discount);
         setGrandTotal(grandTotal);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
       }
     } catch (error) {
       console.error('Error fetching cart details:', error);
     }
   };
-
-  useEffect(() => {
-    fetchCartDetails();
-  }, [cartItems]);
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -167,22 +170,20 @@ const Checkout = () => {
         return;
       }
 
-      // First check if user has any existing order
-      const response = await fetch(
-        `${config.apiDomain}/user_api/check_order_exist`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            restaurant_id: restaurantId,
-          }),
-        }
-      );
+      setIsProcessing(true); // Show loading state
+
+      // Check for existing order
+      const response = await fetch(`${config.apiDomain}/user_api/check_order_exist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          restaurant_id: restaurantId,
+        }),
+      });
 
       const data = await response.json();
+      setIsProcessing(false);
 
       if (data.st === 1) {
         if (data.order_number) {
@@ -203,6 +204,7 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
+      setIsProcessing(false);
       window.showToast("error", "Failed to process order");
       console.error('Error:', error);
     }
@@ -219,11 +221,13 @@ const Checkout = () => {
 
   const handleCreateOrder = async (orderType) => {
     try {
+      setIsProcessing(true); // Add loading state
       const userData = JSON.parse(localStorage.getItem("userData"));
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
       if (!storedCart?.order_items) {
         window.showToast("error", "No items in cart");
+        setIsProcessing(false);
         return;
       }
 
@@ -253,16 +257,23 @@ const Checkout = () => {
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
+        window.showToast("success", "Order placed successfully");
         setNewOrderNumber(data.order_number);
         clearCartData();
         setShowOrderTypeModal(false);
-        setShowPopup(true);
+        
+        // Small delay to ensure toast is visible
+        setTimeout(() => {
+          navigate("/user_app/MyOrder/");
+        }, 500);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
     } catch (error) {
       window.showToast("error", error.message || "Failed to create order");
       console.error('Error:', error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -277,19 +288,17 @@ const Checkout = () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
-      const existingOrder = JSON.parse(localStorage.getItem('existing_order'));
       
       if (!existingOrderDetails.orderNumber) {
-        window.showToast("error", "Invalid order number");
-        return;
+        throw new Error("Invalid order number");
       }
 
       const requestBody = {
-        order_number: existingOrderDetails.orderNumber, // Using order number from API response
+        order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
         order_status: orderStatus,
         restaurant_id: restaurantId,
-        table_number: localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
+        table_number: userData?.tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map(item => ({
@@ -322,8 +331,8 @@ const Checkout = () => {
         if (data.data?.new_order_number) {
           setNewOrderNumber(data.data.new_order_number);
           setShowPopup(true);
-        } else {
           navigate(`/user_app/MyOrder/`);
+        } else {
         }
       } else {
         throw new Error(data.msg);
@@ -334,25 +343,51 @@ const Checkout = () => {
     }
   };
 
-  const handleAddToExistingOrder = () => {
+  const handleAddToExistingOrder = async () => {
     try {
-      const existingOrder = JSON.parse(localStorage.getItem('existing_order'));
+      const userData = JSON.parse(localStorage.getItem("userData"));
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
-      if (!existingOrder || !storedCart) {
+      if (!storedCart?.order_items || !existingOrderDetails.orderId) {
         window.showToast("error", "Failed to add items to order");
         return;
       }
 
-      // Merge cart items with existing order
-      existingOrder.items = [...existingOrder.items, ...storedCart.order_items];
-      localStorage.setItem('existing_order', JSON.stringify(existingOrder));
+      // Prepare request body with exact structure needed by the API
+      const requestBody = {
+        order_id: existingOrderDetails.orderId,
+        user_id: userData.user_id,
+        restaurant_id: restaurantId,
+        order_items: storedCart.order_items.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          half_or_full: item.half_or_full || "full",
+          comment: item.comment || ""
+        }))
+      };
 
-      setShowPopup(true);
-      clearCartData();
-      setShowExistingOrderModal(false);
+      // Make API call to add items to existing order
+      const response = await fetch(
+        `${config.apiDomain}/user_api/add_to_existing_order`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody)
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        window.showToast("success", "Items added to order successfully");
+        clearCartData();
+        setShowExistingOrderModal(false);
+        navigate('/user_app/MyOrder');
+      } else {
+        throw new Error(data.msg || "Failed to add items to order");
+      }
     } catch (error) {
-      window.showToast("error", "Failed to add items to order");
+      window.showToast("error", error.message || "Failed to add items to order");
       console.error('Error:', error);
     }
   };
@@ -503,17 +538,16 @@ const Checkout = () => {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
           if (!document.hidden) {
-            window.showToast("error", `No ${method} app found. Please install the app.`);
+            window.showToast("error", `No ${method} app found`);
           }
           setProcessing(false);
         }, 3000);
       } else {
-        window.showToast("success", `Payment via ${method} initiated successfully.`);
+        window.showToast("success", `Payment initiated successfully`);
         setProcessing(false);
       }
     } catch (error) {
-      window.showToast("error", "Failed to process payment or order");
-      console.error("Error initiating payment:", error);
+      window.showToast("error", "Payment processing failed");
       setProcessing(false);
     }
   };
@@ -680,122 +714,138 @@ const Checkout = () => {
     }
   }, []);
 
-  const incrementQuantity = (item) => {
-    const storedCart = localStorage.getItem('restaurant_cart_data');
-    if (storedCart) {
+  const fetchCheckoutDetails = async () => {
+    try {
+      setLoading(true);
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) {
+        setError("Add menus to order first");
+        return;
+      }
+
       const cartData = JSON.parse(storedCart);
-      const updatedItems = cartData.order_items.map(cartItem => 
-        cartItem.menu_id === item.menu_id 
-          ? { ...cartItem, quantity: cartItem.quantity + 1 }
-          : cartItem
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/get_checkout_detail`,
+        {
+          order_items: cartData.order_items,
+          restaurant_id: userData.restaurantId
+        }
       );
-      
-      const updatedCart = {
-        ...cartData,
-        order_items: updatedItems
-      };
-      
-      localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-      setCartItems(updatedItems);
+
+      if (response.data.st === 1) {
+        setCheckoutDetails(response.data);
+        setCartItems(cartData.order_items);
+      }
+    } catch (err) {
+      console.error('Error fetching checkout details:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const decrementQuantity = (item) => {
-    if (item.quantity > 1) {
+  // Call API on mount
+  useEffect(() => {
+    fetchCheckoutDetails();
+  }, []);
+
+  const incrementQuantity = async (menuItem) => {
+    try {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.map(cartItem => 
-          cartItem.menu_id === item.menu_id 
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
+        const updatedItems = cartData.order_items.map(item => 
+          item.menu_id === menuItem.menu_id 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
         
-        const updatedCart = {
-          ...cartData,
-          order_items: updatedItems
-        };
-        
+        const updatedCart = { ...cartData, order_items: updatedItems };
         localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-        setCartItems(updatedItems);
+        await fetchCheckoutDetails(); // Fetch updated totals
       }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  const decrementQuantity = async (menuItem) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        let updatedItems = cartData.order_items.map(item => 
+          item.menu_id === menuItem.menu_id && item.quantity > 1
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        ).filter(item => item.quantity > 0);
+        
+        const updatedCart = { ...cartData, order_items: updatedItems };
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        await fetchCheckoutDetails(); // Fetch updated totals
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
     }
   };
 
   const handleRemoveItem = async (e, menuId) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Prevent event bubbling
-    
+    e.preventDefault();
+    e.stopPropagation();
     try {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
-        
-        const updatedCart = {
-          ...cartData,
-          order_items: updatedItems
-        };
-        
+        const updatedCart = { ...cartData, order_items: updatedItems };
         localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-        setCartItems(updatedItems); // Update state immediately
+        await fetchCheckoutDetails(); // Fetch updated totals
       }
     } catch (error) {
       console.error('Error removing item:', error);
     }
   };
 
-  const calculateTotals = () => {
+  const [checkoutDetails, setCheckoutDetails] = useState({
+    total_bill_amount: 0,
+    total_bill_with_discount: 0,
+    service_charges_percent: 0,
+    service_charges_amount: 0,
+    gst_percent: 0,
+    gst_amount: 0,
+    discount_percent: 0,
+    discount_amount: 0,
+    grand_total: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const handleCheckout = async () => {
     try {
+      setLoading(true);
       const storedCart = localStorage.getItem('restaurant_cart_data');
-      if (storedCart) {
-        const cartData = JSON.parse(storedCart);
-        
-        // 1. Calculate base total with discounted prices
-        const mappedItems = cartData.order_items.map(item => ({
-          ...item,
-          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price
-        }));
+      if (!storedCart) return;
 
-        // 2. Calculate base total
-        const baseTotal = mappedItems.reduce((sum, item) => {
-          const itemPrice = item.offer ? item.discountedPrice : item.price;
-          return sum + (itemPrice * item.quantity);
-        }, 0);
+      const cartData = JSON.parse(storedCart);
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/get_checkout_detail`,
+        {
+          order_items: cartData.order_items,
+          restaurant_id: restaurantId
+        }
+      );
 
-        // 3. Set percentages (you can store these in localStorage if they vary by restaurant)
-        const serviceChargesPercent = 5; // Example: 5%
-        const gstPercent = 5;           // Example: 5%
-        const discountPercent = cartData.discount_percent || 0;
-
-        // 4. Calculate amounts
-        const discountAmount = (baseTotal * discountPercent) / 100;
-        const totalAfterDiscount = baseTotal - discountAmount;
-        const serviceCharges = (totalAfterDiscount * serviceChargesPercent) / 100;
-        const gst = (totalAfterDiscount * gstPercent) / 100;
-        const grandTotal = totalAfterDiscount + serviceCharges + gst;
-
-        // 5. Update all states
-        setCartItems(mappedItems);
-        setTotal(baseTotal);
-        setServiceChargesPercent(serviceChargesPercent);
-        setServiceCharges(serviceCharges);
-        setGstPercent(gstPercent);
-        setTax(gst);
-        setDiscountPercent(discountPercent);
-        setDiscount(discountAmount);
-        setTotalAfterDiscount(totalAfterDiscount);
-        setGrandTotal(grandTotal);
+      if (response.data.st === 1) {
+        setCheckoutDetails(response.data);
+        // Proceed with checkout process
+        handlePlaceOrder();
       }
     } catch (error) {
-      console.error('Error calculating totals:', error);
+      console.error('Error during checkout:', error);
+      window.showToast("error", "Failed to process checkout");
+    } finally {
+      setLoading(false);
     }
   };
-
-  // Add useEffect to recalculate when cart items change
-  useEffect(() => {
-    calculateTotals();
-  }, [cartItems]); // This will trigger whenever cartItems changes
 
   return (
     <div className="page-wrapper full-height">
@@ -810,62 +860,31 @@ const Checkout = () => {
         </div>
 
         {showOrderTypeModal && (
-          <div
-            className="popup-overlay"
-            onClick={(e) => {
-              // Close modal only if the overlay itself is clicked
-              if (e.target.className === "popup-overlay") {
-                setShowOrderTypeModal(false);
-              }
-            }}
-          >
-            <div className="modal-dialog w-75" role="document">
+          <div className="popup-overlay">
+            <div className="modal-dialog w-75">
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
-                  <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
-                    Select Order Type
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                      Select Order Type
+                    </div>
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowOrderTypeModal(false)}
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
                   </div>
-                  {/* <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => setShowOrderTypeModal(false)}
-                  >
-                    <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
-                  </button> */}
                 </div>
+                
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
-                    {/* Parcel */}
+                    {/* Parcel Option */}
                     <div className="col-6">
-                      <div
-                        className="card h-100 border rounded-4 cursor-pointer position-relative"
+                      <div 
+                        className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() => handleOrderTypeSelection("Parcel")}
                       >
-                        {/* Icons container */}
-                        {/* <div className="position-absolute top-0 end-0 p-2 pt-0">
-                          <div className="d-flex flex-column gap-1">
-                            <div
-                              className="rounded-circle p-1"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/ymXDmYihTOzgPDddKSvZRKzXkboAapBF2yoFIeQBaWSAJmC9IUpSPKgvfaAgS5yFxQ=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                            <div
-                              className="rounded-circle p-1 pt-0"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/HJdzprqlCwh_8YNyhMBU6rIaGBGwxHXflZuuqI3iR4US7Jb-bSYiJk_DKV2la9SoBM0K=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div> */}
-
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
                             <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
@@ -875,13 +894,11 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* Drive-Through */}
+                    {/* Drive-Through Option */}
                     <div className="col-6">
-                      <div
+                      <div 
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() =>
-                          handleOrderTypeSelection("Drive-through")
-                        }
+                        onClick={() => handleOrderTypeSelection("Drive-through")}
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
@@ -892,9 +909,9 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* Dine-in */}
+                    {/* Dine-in Option */}
                     <div className="col-12 mb-3">
-                      <div
+                      <div 
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() => handleOrderTypeSelection("Dine-in")}
                       >
@@ -904,9 +921,11 @@ const Checkout = () => {
                           </div>
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>
-                            {/* <small className="text-dark">
-                              {availableTables} Tables Available
-                            </small> */}
+                            {availableTables > 0 && (
+                              <small className="text-dark">
+                                {availableTables} Tables Available
+                              </small>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -920,10 +939,7 @@ const Checkout = () => {
 
         {showPaymentOptions && (
           <div className="popup-overlay">
-            <div
-              className="modal-dialog modal-dialog-centered"
-              style={{ maxWidth: "350px", margin: "auto" }}
-            >
+            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -941,63 +957,48 @@ const Checkout = () => {
 
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
-                    Please select a payment method to complete your order #
-                    {existingOrderDetails.orderNumber}
+                    Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
                   </p>
                   <div className="d-grid gap-2">
+                    {/* UPI Payment Button */}
                     <button
                       className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
                       onClick={handleGenericUPI}
-                      disabled={
-                        processingPaymentMethod &&
-                        processingPaymentMethod !== "upi"
-                      }
+                      disabled={processingPaymentMethod && processingPaymentMethod !== "upi"}
                     >
                       {processingPaymentMethod === "upi" ? (
                         "Processing..."
                       ) : (
                         <>
                           Pay via Other UPI Apps
-                          <img
-                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                            width={45}
-                            alt="UPI"
-                          />
+                          <img src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
                         </>
                       )}
                     </button>
 
+                    {/* PhonePe Button */}
                     <button
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
                       style={{ backgroundColor: "#5f259f" }}
                       onClick={handlePhonePe}
-                      disabled={
-                        processingPaymentMethod &&
-                        processingPaymentMethod !== "phonepe"
-                      }
+                      disabled={processingPaymentMethod && processingPaymentMethod !== "phonepe"}
                     >
                       {processingPaymentMethod === "phonepe" ? (
                         "Processing..."
                       ) : (
                         <>
                           Pay via PhonePe
-                          <img
-                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
-                            width={45}
-                            alt="PhonePe"
-                          />
+                          <img src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000" width={45} alt="PhonePe" />
                         </>
                       )}
                     </button>
 
+                    {/* Google Pay Button */}
                     <button
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: "#1a73e8" }} // Updated to Google Pay's brand color
+                      style={{ backgroundColor: "#1a73e8" }}
                       onClick={handleGooglePay}
-                      disabled={
-                        processingPaymentMethod &&
-                        processingPaymentMethod !== "gpay"
-                      }
+                      disabled={processingPaymentMethod && processingPaymentMethod !== "gpay"}
                     >
                       {processingPaymentMethod === "gpay" ? (
                         "Processing..."
@@ -1014,6 +1015,7 @@ const Checkout = () => {
                       )}
                     </button>
 
+                    {/* Alternative Payment Methods */}
                     <div className="text-center mt-3">
                       <div>or make payment via:</div>
                     </div>
@@ -1022,13 +1024,8 @@ const Checkout = () => {
                         type="button"
                         className="px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark border"
                         onClick={() => {
-                          setProcessingPaymentMethod("card"); // Set processing state
-                          initiatePayment(
-                            "card",
-                            null,
-                            setProcessingPaymentMethod,
-                            "card"
-                          );
+                          setProcessingPaymentMethod("card");
+                          initiatePayment("card", null, setProcessingPaymentMethod, "card");
                         }}
                       >
                         <i className="ri-bank-card-line me-1"></i>
@@ -1038,13 +1035,8 @@ const Checkout = () => {
                         type="button"
                         className="px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark border"
                         onClick={() => {
-                          setProcessingPaymentMethod("cash"); // Set processing state
-                          initiatePayment(
-                            "cash",
-                            null,
-                            setProcessingPaymentMethod,
-                            "cash"
-                          );
+                          setProcessingPaymentMethod("cash");
+                          initiatePayment("cash", null, setProcessingPaymentMethod, "cash");
                         }}
                       >
                         <i className="ri-wallet-3-fill me-1"></i>
@@ -1066,11 +1058,8 @@ const Checkout = () => {
         )}
 
         {showExistingOrderModal && (
-          <div className="popup-overlay">
-            <div
-              className="modal-dialog modal-dialog-centered"
-              style={{ maxWidth: "350px", margin: "auto" }}
-            >
+          <div className="popup-overlay d-flex align-items-center justify-content-center min-vh-100">
+            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px" }}>
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -1095,7 +1084,7 @@ const Checkout = () => {
                   <div className="d-grid gap-2">
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("cancle")}
+                      onClick={() => handleOrderActionClick("cancel")}
                     >
                       Cancel Existing & Create New Order
                     </button>
@@ -1112,166 +1101,15 @@ const Checkout = () => {
                       className="btn btn-info rounded-pill font_size_14 text-white"
                       onClick={handleAddToExistingOrder}
                     >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber}
-                      )
+                      Add to Existing Order (#{existingOrderDetails.orderNumber})
                     </button>
                     <button
-                      type="button"
                       className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowExistingOrderModal(false)}
                     >
                       Close
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showPopup && (
-          <div className="popup-overlay">
-            <div className="container d-flex align-items-center justify-content-center">
-              <div
-                className="modal-dialog modal-dialog-centered"
-                role="document"
-              >
-                <div className="modal-content">
-                  <h5 className="modal-title border-bottom py-2 text-center text-dark">
-                    Success
-                  </h5>
-                  <div className="modal-header py-0">
-                    <button
-                      className="btn-close"
-                      onClick={() => setShowPopup(false)}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="d-flex justify-content-center bg-light rounded-circle w-25 h-25 mx-auto">
-                      <img
-                        src={OrderGif}
-                        alt="Order Success"
-                        className="popup-gif"
-                        height={100}
-                        width={100}
-                      />
-                    </div>
-                    <span className="text-dark my-2 d-block text-center">
-                      Order placed successfully
-                    </span>
-                    <div className="fs-6 fw-semibold text-center">
-                      #{newOrderNumber || existingOrderDetails.orderNumber}
-                    </div>
-                    <p className="text-dark text-center mb-4">
-                      You have successfully made payment and placed your order.
-                    </p>
-                    <button
-                      className="btn btn-success rounded-pill text-white w-100"
-                      onClick={closePopup}
-                    >
-                      View Order
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showNewOrderModal && (
-          <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div className="container">
-                <div className="modal-content">
-                  <div className="p-3 border-bottom">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0 fw-semibold text-dark">
-                        Create New Order
-                      </h5>
-                      <button
-                        className="btn p-0 fs-3 text-dark"
-                        onClick={() => setShowNewOrderModal(false)}
-                      >
-                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-3">
-                    <p className="text-center mb-4 text-dark">
-                      No ongoing order found. <br />
-                      Would you like to create a new order?
-                    </p>
-
-                    <button
-                      className="btn btn-success rounded-pill w-100 py-2 text-white"
-                      onClick={handleCreateOrder}
-                    >
-                      Create Order
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showCouponModal && (
-          <div
-            className="modal fade show"
-            style={{
-              display: "block",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 1050,
-            }}
-            onClick={() => setShowCouponModal(false)}
-          >
-            <div
-              className="modal-dialog modal-dialog-centered"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Available Coupons</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowCouponModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  {coupons.length > 0 ? (
-                    coupons.map((coupon, index) => (
-                      <div
-                        key={index}
-                        className="d-flex justify-content-between align-items-center p-2 border-bottom"
-                      >
-                        <div>
-                          <span className="font_size_14 fw-medium">
-                            {coupon.coupon_name}
-                          </span>
-                        </div>
-                        <button
-                          className="btn btn-sm btn-outline-primary rounded-pill"
-                          onClick={() => {
-                            setSelectedCoupon(coupon.coupon_name);
-                            setShowCouponModal(false);
-                          }}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-3">
-                      <p className="mb-0">No coupons available</p>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -1403,175 +1241,179 @@ const Checkout = () => {
                 <div></div>
               )}
             </div>
-            {cartItems.length > 0 ? (
-              <>
-                <div className="card mx-auto rounded-4 mt-2">
-                  <div className="row px-2 py-1">
-                    <div className="col-12 px-2">
-                      <div className="d-flex justify-content-between align-items-center py-1">
-                        <span className="ps-2 font_size_14 fw-semibold">
-                          Total
-                        </span>
-                        <span className="pe-2 font_size_14 fw-semibold">
-                          ₹{total.toFixed(2)}
-                        </span>
-                      </div>
-                      <hr className=" p-0 m-0 text-primary" />
+            {cartItems.length > 0 && !loading ? (
+              <div className="card mx-auto rounded-4 mt-2">
+                <div className="row px-2 py-1">
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14 fw-semibold">
+                        Total
+                      </span>
+                      <span className="pe-2 font_size_14 fw-semibold">
+                        ₹{checkoutDetails.total_bill_amount}
+                      </span>
                     </div>
+                    <hr className="p-0 m-0 text-primary" />
+                  </div>
 
-                    <div className="col-12 mb-0 pt-0 pb-1 px-2">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span className="ps-2 font_size_14 gray-text">
-                          Discount{" "}
-                          <span className="gray-text small-number">
-                            ({discountPercent}%)
-                          </span>
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Discount{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.discount_percent}%)
                         </span>
-                        <span className="pe-2 font_size_14 gray-text">
-                          -₹{discount.toFixed(2)}
-                        </span>
-                      </div>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        -₹{checkoutDetails.discount_amount}
+                      </span>
                     </div>
+                  </div>
 
-                    <div className="col-12 pt-0">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span className="font_size_14 gray-text">
-                          Total after discount
-                        </span>
-                        <span className="font_size_14 gray-text">
-                          ₹{totalAfterDiscount.toFixed(2)}
-                        </span>
-                      </div>
+                  <div className="col-12 pt-0">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="font_size_14 gray-text">
+                        Total after discount
+                      </span>
+                      <span className="font_size_14 gray-text">
+                        ₹{checkoutDetails.total_bill_with_discount}
+                      </span>
                     </div>
+                  </div>
 
-                    <div className="col-12 pt-0 px-2">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span className="ps-2 font_size_14 gray-text">
-                          Service Charges{" "}
-                          <span className="gray-text small-number">
-                            ({serviceChargesPercent}%)
-                          </span>
+                  <div className="col-12 pt-0 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Service Charges{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.service_charges_percent}%)
                         </span>
-                        <span className="pe-2 font_size_14 gray-text">
-                          ₹{serviceCharges.toFixed(2)}
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        ₹{checkoutDetails.service_charges_amount}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-12 mb-0 py-1 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        GST{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.gst_percent}%)
                         </span>
-                      </div>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        ₹{checkoutDetails.gst_amount}
+                      </span>
                     </div>
 
                     <div className="col-12 mb-0 py-1 px-2">
-                      <div className="d-flex justify-content-between align-items-center py-0">
-                        <span className="ps-2 font_size_14 gray-text">
-                          GST{" "}
-                          <span className="gray-text small-number">
-                            ({gstPercent}%)
-                          </span>
-                        </span>
-                        <span className="pe-2 font_size_14 gray-text">
-                          ₹{tax.toFixed(2)}
-                        </span>
-                      </div>
-
-                      <div className="col-12 mb-0 py-1 px-2">
-                        <div className="row align-items-center justify-content-center">
-                          <div className="col-1 text-center">
-                            <div
-                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                              style={{ height: "25px", width: "25px" }}
-                            >
-                              <i
-                                className="fa-solid fa-list font_size_14 cursor-pointer"
-                                onClick={() => {
-                                  setShowCouponModal(true);
-                                  fetchCoupons();
-                                }}
-                              ></i>
-                            </div>
+                      <div className="row align-items-center justify-content-center">
+                        <div className="col-1 text-center">
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{ height: "25px", width: "25px" }}
+                          >
+                            <i
+                              className="fa-solid fa-list font_size_14 cursor-pointer"
+                              onClick={() => {
+                                setShowCouponModal(true);
+                                fetchCoupons();
+                              }}
+                            ></i>
                           </div>
-                          <div className="col-8 d-flex align-items-center px-3">
-                            <input
-                              type="text"
-                              className="form-control form-control-sm rounded-pill"
-                              placeholder="Enter coupon code"
-                              value={selectedCoupon}
-                              onChange={(e) =>
-                                setSelectedCoupon(e.target.value)
-                              }
-                            />
-                          </div>
-                          <div className="col-3 d-flex align-items-center ps-1">
-                            <button
-                              className="btn btn-sm btn-primary rounded-pill w-100"
-                              onClick={handleApplyCoupon}
-                            >
-                              Apply
-                            </button>
-                          </div>
-                          {couponError && (
-                            <div className="col-12 text-center">
-                              <div className="text-danger small mt-1">
-                                {couponError}
-                              </div>
-                            </div>
-                          )}
-                          {appliedCoupon && (
-                            <div className="col-12">
-                              <div className="d-flex justify-content-between align-items-center mt-2">
-                                <span className="text-success">
-                                  <i className="fa-solid fa-check-circle me-1"></i>
-                                  Coupon {appliedCoupon.code} applied
-                                </span>
-                                <button
-                                  className="btn btn-link text-danger p-0 small"
-                                  onClick={() => {
-                                    setAppliedCoupon(null);
-                                    setCouponCode("");
-                                  }}
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            </div>
-                          )}
                         </div>
+                        <div className="col-8 d-flex align-items-center px-3">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-pill"
+                            placeholder="Enter coupon code"
+                            value={selectedCoupon}
+                            onChange={(e) => setSelectedCoupon(e.target.value)}
+                          />
+                        </div>
+                        <div className="col-3 d-flex align-items-center ps-1">
+                          <button
+                            className="btn btn-sm btn-primary rounded-pill w-100"
+                            onClick={handleApplyCoupon}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {couponError && (
+                          <div className="col-12 text-center">
+                            <div className="text-danger small mt-1">
+                              {couponError}
+                            </div>
+                          </div>
+                        )}
+                        {appliedCoupon && (
+                          <div className="col-12">
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              <span className="text-success">
+                                <i className="fa-solid fa-check-circle me-1"></i>
+                                Coupon {appliedCoupon.code} applied
+                              </span>
+                              <button
+                                className="btn btn-link text-danger p-0 small"
+                                onClick={() => {
+                                  setAppliedCoupon(null);
+                                  setCouponCode("");
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
-
-                      <hr className="p-0  text-primary mb-2 mt-1" />
                     </div>
 
-                    <div className="col-12 px-2">
-                      <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                        <span className="ps-2 fs-6 fw-semibold">
-                          Grand Total
-                        </span>
-                        <span className="pe-2 fs-6 fw-semibold">
-                          ₹{grandTotal.toFixed(2)}
-                        </span>
-                      </div>
+                    <hr className="p-0  text-primary mb-2 mt-1" />
+                  </div>
+
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                      <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                      <span className="pe-2 fs-6 fw-semibold">
+                        ₹{checkoutDetails.grand_total}
+                      </span>
                     </div>
                   </div>
                 </div>
-                <div className="text-center">
-                  <button
-                    onClick={handlePlaceOrder}
-                    className="btn btn-success rounded-pill text-white"
-                    disabled={isProcessing || cartItems.length === 0}
-                  >
-                    Place Order
-                    <span className="small-number gray-text ps-1">
-                      ({cartItems.length} Items)
-                    </span>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center mt-4 d-flex flex-column justify-content-center align-items-center h-100">
-                <p className="text-muted">Your cart is empty</p>
-                <Link
-                  to="/user_app/Menu"
-                  className="btn btn-primary rounded-pill"
+              </div>
+            ) : error ? (
+              <div className="text-danger text-center mt-3">{error}</div>
+            ) : loading ? (
+              <div className="text-center mt-3">Calculating total...</div>
+            ) : null}
+
+            {cartItems.length > 0 && (
+              <div className="text-center mt-3">
+                <button
+                  onClick={handlePlaceOrder}
+                  className="btn btn-success rounded-pill text-white px-4 py-2"
+                  disabled={isProcessing}
                 >
-                  <i className="ri-add-circle-line me-1"></i> Browse Menu
-                </Link>
+                  {isProcessing ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Processing...
+                    </div>
+                  ) : (
+                    <>
+                      Place Order
+                      <span className="small-number gray-text ps-1">
+                        ({cartItems.length} Items)
+                      </span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
             <div className="d-flex flex-column align-items-center justify-content-center mt-3">
