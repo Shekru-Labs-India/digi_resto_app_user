@@ -65,6 +65,35 @@ const getFoodTypeStyles = (foodType) => {
   }
 };
 
+// Add this function near the top with other utility functions
+const renderStarRating = (rating) => {
+  const numRating = parseFloat(rating);
+
+  if (!numRating || numRating < 0.5) {
+    return <i className="font_size_10 text-warning me-1"></i>;
+  }
+
+  if (numRating >= 0.5 && numRating <= 2.5) {
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
+  }
+
+  if (numRating >= 3 && numRating <= 4.5) {
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
+  }
+
+  if (numRating === 5) {
+    return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+  }
+
+  return (
+    <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+  );
+};
+
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -570,37 +599,6 @@ const MenuDetails = () => {
     return () => clearInterval(timer);
   }, [productDetails, handleNextSlide]);
 
-  // Add the standardized rating function
-  const renderStarRating = (rating) => {
-    const numRating = parseFloat(rating);
-
-    if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
-    }
-
-    if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
-
-    if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
-
-    if (numRating === 5) {
-      return (
-        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
-      );
-    }
-
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  };
-
   if (isLoading) {
     return (
       <div id="preloader">
@@ -931,10 +929,11 @@ const MenuDetails = () => {
                       </span>
                     </div>
                   </div>
-                  {productDetails.offer > 0 && (
+                  {productDetails.rating && (
                     <div className="col-4 text-end px-0">
-                      <span className="ps-2 text-success font_size_10">
-                        {productDetails.offer}% Off
+                      <span className="ps-2 font_size_10">
+                        {renderStarRating(productDetails.rating)}
+                        {productDetails.rating}
                       </span>
                     </div>
                   )}
