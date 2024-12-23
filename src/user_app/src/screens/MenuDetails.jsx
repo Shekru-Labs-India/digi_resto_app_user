@@ -424,7 +424,7 @@ const MenuDetails = () => {
 
       setShowModal(false);
       setTimeout(() => {
-        navigate("/user_app/Cart");
+        navigate("/user_app/Checkout");
       }, 2000);
     } catch (error) {
       console.clear();

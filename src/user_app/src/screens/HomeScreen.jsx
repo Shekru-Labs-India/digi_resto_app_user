@@ -533,7 +533,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content space-top mb-5 p-b70">
+        <main className="page-content space-top mb-5 p-b10">
           <div className="container overflow-hidden pt-0">
             {/* {isNonProductionDomain() && <Notice />} */}
             <OfferBanner />

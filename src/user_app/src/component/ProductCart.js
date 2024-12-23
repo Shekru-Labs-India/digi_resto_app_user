@@ -482,48 +482,46 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   // Updated renderCartIcon
-  const renderCartIcon = useCallback(
-    (menu) => {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      return (
-        <div
-          className={`
-            d-flex 
-            align-items-center 
-            justify-content-center 
-            rounded-circle 
-            bg-white 
-            border-opacity-25 
-            border-secondary 
-            border
-          `}
-          style={{
-            width: "25px",
-            height: "25px",
-            cursor: "pointer",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (userData?.user_id) {
-              handleAddToCartClick(menu);
-            } else {
-              showLoginPopup();
-            }
-          }}
-        >
-          <i
-            className={`fa-solid ${
-              isMenuItemInCart(menu.menu_id)
-                ? "fa-circle-check text-success"
-                : "fa-plus text-secondary"
-            } fs-6`}
-          ></i>
-        </div>
-      );
-    },
-    [handleAddToCartClick, isMenuItemInCart]
-  );
+  const renderCartIcon = useCallback((menu) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    
+    // Check if menu item exists in cart
+    const isInCart = () => {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return false;
+      
+      const cartData = JSON.parse(storedCart);
+      return cartData.order_items?.some(item => item.menu_id === menu.menu_id);
+    };
+
+    return (
+      <div
+        className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border"
+        style={{
+          width: "25px",
+          height: "25px",
+          cursor: "pointer",
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (userData?.user_id) {
+            handleAddToCartClick(menu);
+          } else {
+            showLoginPopup();
+          }
+        }}
+      >
+        <i
+          className={`fa-solid ${
+            isInCart() 
+              ? "fa-circle-check text-success" 
+              : "fa-plus text-secondary"
+          } fs-6`}
+        ></i>
+      </div>
+    );
+  }, [handleAddToCartClick]);
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
@@ -768,7 +766,7 @@ const ProductCard = ({ isVegOnly }) => {
           <>
             <div className="title-bar">
               <span className="font_size_14 fw-medium">Menu</span>
-              <Link to="/user_app/Menu">
+              <Link to="/user_app/Category">
                 <span>see all</span>
                 <i className="fa-solid fa-arrow-right ms-2"></i>
               </Link>

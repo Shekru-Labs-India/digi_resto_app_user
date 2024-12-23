@@ -83,7 +83,6 @@ const MyOrder = () => {
       try {
         setLoading(true);
         const userData = JSON.parse(localStorage.getItem("userData"));
-        
         if (!userData?.user_id || !restaurantId) {
           setLoading(false);
           return;

@@ -128,6 +128,7 @@ const Wishlist = () => {
           },
           body: JSON.stringify({
             user_id: userData.user_id,
+            restaurant_id: localStorage.getItem("restaurantId"),
           }),
         }
       );

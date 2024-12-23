@@ -688,8 +688,8 @@ const NearbyArea = () => {
                                     <i
                                       className={`fa-solid ${
                                         isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check text-success"
-                                          : "fa-solid fa-plus text-secondary"
+                                          ? "fa-circle-check text-success"
+                                          : "fa-plus text-secondary"
                                       } fs-6`}
                                     ></i>
                                   </div>
