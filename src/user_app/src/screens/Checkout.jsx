@@ -1262,28 +1262,15 @@ const Checkout = () => {
                                 {item.menu_name}
                               </span>
                             </div>
-                            <div className="col-4 p-0 text-end">
-                              {item.offer ? (
-                                <>
-                                  <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                    ₹{item.discountedPrice}
-                                  </span>
-                                  <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                    ₹{item.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.price}
-                                </span>
-                              )}
-                            </div>
-                            <div className="col-1 text-end px-0">
+
+                            <div className="col-5 text-end px-0">
                               <button
                                 className="btn"
-                                onClick={(e) => handleRemoveItem(e, item.menu_id)}
-                                style={{ 
-                                  padding: '4px 8px',
+                                onClick={(e) =>
+                                  handleRemoveItem(e, item.menu_id)
+                                }
+                                style={{
+                                  padding: "4px 8px",
                                   // backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                   // borderRadius: '50%',
                                   // border: '1px solid #dee2e6'
@@ -1322,9 +1309,25 @@ const Checkout = () => {
                           {/* Quantity buttons at bottom right */}
                           <div className="row mt-2"></div>
                         </div>
-                        <div className="row justify-content-end pe-3">
-                          <div className="col-4 d-flex  pe-3">
-                            <div className="dz-stepper style-3 d-flex justify-content-end">
+                        <div className="row">
+                          <div className="col-8 text-start">
+                            {item.offer ? (
+                              <>
+                                <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+                                  ₹{item.discountedPrice}
+                                </span>
+                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                  ₹{item.price}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+                                ₹{item.price}
+                              </span>
+                            )}
+                          </div>
+                          <div className="col-4 d-flex justify-content-end pe-3">
+                            <div className="dz-stepper style-3">
                               <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
                                 <span className="input-group-btn input-group-prepend">
                                   <button
