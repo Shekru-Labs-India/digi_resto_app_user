@@ -15,7 +15,7 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { clearCart, removeFromCart } = useCart();
+  const { clearCart, removeFromCart, updateCartItemQuantity } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user_id, setUser_id] = useState(null);
   const [role, setRole] = useState(null);
@@ -95,48 +95,45 @@ const Checkout = () => {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
+        setCartItems(cartData.order_items || []);
         
-        // Calculate totals
-        const total = cartData.order_items.reduce((sum, item) => 
-          sum + (item.price * item.quantity), 0
-        );
+        // Calculate totals based on current quantities
+        const total = cartData.order_items.reduce((sum, item) => {
+          const itemPrice = item.offer ? item.discountedPrice : item.price;
+          return sum + (itemPrice * item.quantity);
+        }, 0);
 
-        const serviceChargesPercent = 5;
-        const gstPercent = 5;
-        const serviceCharges = (total * serviceChargesPercent) / 100;
-        const tax = (total * gstPercent) / 100;
-        const discount = 0;
-        const totalAfterDiscount = total - discount;
-        const grandTotal = totalAfterDiscount + serviceCharges + tax;
-
-        // Map items to match API structure
-        const mappedItems = cartData.order_items.map(item => ({
-          ...item,
-          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
-          menu_cat_name: item.category_name || "Food",
-          menu_id: item.id,
-          quantity: item.quantity,
-          price: item.price,
-          offer: item.offer || 0
-        }));
-
-        // Update all states
-        setCartItems(mappedItems);
+        // Set total and calculate other charges
         setTotal(total);
-        setServiceChargesPercent(serviceChargesPercent);
+        
+        // Calculate service charges (5%)
+        const serviceCharges = (total * serviceChargesPercent) / 100;
         setServiceCharges(serviceCharges);
-        setGstPercent(gstPercent);
+        
+        // Calculate GST (5%)
+        const tax = (total * gstPercent) / 100;
         setTax(tax);
-        setDiscountPercent(0);
+        
+        // Calculate discount if any
+        const discount = (total * discountPercent) / 100;
         setDiscount(discount);
-        setGrandTotal(grandTotal);
+        
+        // Calculate total after discount
+        const totalAfterDiscount = total - discount;
         setTotalAfterDiscount(totalAfterDiscount);
-        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
+        
+        // Calculate grand total
+        const grandTotal = totalAfterDiscount + serviceCharges + tax;
+        setGrandTotal(grandTotal);
       }
     } catch (error) {
       console.error('Error fetching cart details:', error);
     }
   };
+
+  useEffect(() => {
+    fetchCartDetails();
+  }, [cartItems]);
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -233,7 +230,7 @@ const Checkout = () => {
       const requestBody = {
         user_id: userData.user_id,
         restaurant_id: restaurantId,
-        table_number: userData?.tableNumber || "1",
+        table_number: localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map(item => ({
@@ -292,7 +289,7 @@ const Checkout = () => {
         user_id: userData.user_id,
         order_status: orderStatus,
         restaurant_id: restaurantId,
-        table_number: userData?.tableNumber || "1",
+        table_number: localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map(item => ({
@@ -683,46 +680,36 @@ const Checkout = () => {
     }
   }, []);
 
-  const incrementQuantity = (menuItem) => {
-    try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
-      if (storedCart) {
-        const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.map(item => {
-          if (item.menu_id === menuItem.menu_id) {
-            return { ...item, quantity: item.quantity + 1 };
-          }
-          return item;
-        });
-        
-        const updatedCart = {
-          ...cartData,
-          order_items: updatedItems
-        };
-        
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-        setCartItems(updatedItems); // Update state
-        // calculateTotals(updatedItems); // Recalculate totals
-      }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
+  const incrementQuantity = (item) => {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      const cartData = JSON.parse(storedCart);
+      const updatedItems = cartData.order_items.map(cartItem => 
+        cartItem.menu_id === item.menu_id 
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      );
+      
+      const updatedCart = {
+        ...cartData,
+        order_items: updatedItems
+      };
+      
+      localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+      setCartItems(updatedItems);
     }
   };
 
-  const decrementQuantity = (menuItem) => {
-    try {
+  const decrementQuantity = (item) => {
+    if (item.quantity > 1) {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        let updatedItems = cartData.order_items.map(item => {
-          if (item.menu_id === menuItem.menu_id && item.quantity > 1) {
-            return { ...item, quantity: item.quantity - 1 };
-          }
-          return item;
-        });
-        
-        // Remove item if quantity becomes 0
-        updatedItems = updatedItems.filter(item => item.quantity > 0);
+        const updatedItems = cartData.order_items.map(cartItem => 
+          cartItem.menu_id === item.menu_id 
+            ? { ...cartItem, quantity: cartItem.quantity - 1 }
+            : cartItem
+        );
         
         const updatedCart = {
           ...cartData,
@@ -730,11 +717,8 @@ const Checkout = () => {
         };
         
         localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-        setCartItems(updatedItems); // Update state
-        // calculateTotals(updatedItems); // Recalculate totals
+        setCartItems(updatedItems);
       }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
     }
   };
 
@@ -760,6 +744,58 @@ const Checkout = () => {
       console.error('Error removing item:', error);
     }
   };
+
+  const calculateTotals = () => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        
+        // 1. Calculate base total with discounted prices
+        const mappedItems = cartData.order_items.map(item => ({
+          ...item,
+          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price
+        }));
+
+        // 2. Calculate base total
+        const baseTotal = mappedItems.reduce((sum, item) => {
+          const itemPrice = item.offer ? item.discountedPrice : item.price;
+          return sum + (itemPrice * item.quantity);
+        }, 0);
+
+        // 3. Set percentages (you can store these in localStorage if they vary by restaurant)
+        const serviceChargesPercent = 5; // Example: 5%
+        const gstPercent = 5;           // Example: 5%
+        const discountPercent = cartData.discount_percent || 0;
+
+        // 4. Calculate amounts
+        const discountAmount = (baseTotal * discountPercent) / 100;
+        const totalAfterDiscount = baseTotal - discountAmount;
+        const serviceCharges = (totalAfterDiscount * serviceChargesPercent) / 100;
+        const gst = (totalAfterDiscount * gstPercent) / 100;
+        const grandTotal = totalAfterDiscount + serviceCharges + gst;
+
+        // 5. Update all states
+        setCartItems(mappedItems);
+        setTotal(baseTotal);
+        setServiceChargesPercent(serviceChargesPercent);
+        setServiceCharges(serviceCharges);
+        setGstPercent(gstPercent);
+        setTax(gst);
+        setDiscountPercent(discountPercent);
+        setDiscount(discountAmount);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setGrandTotal(grandTotal);
+      }
+    } catch (error) {
+      console.error('Error calculating totals:', error);
+    }
+  };
+
+  // Add useEffect to recalculate when cart items change
+  useEffect(() => {
+    calculateTotals();
+  }, [cartItems]); // This will trigger whenever cartItems changes
 
   return (
     <div className="page-wrapper full-height">
@@ -1271,9 +1307,6 @@ const Checkout = () => {
                                 }
                                 style={{
                                   padding: "4px 8px",
-                                  // backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                  // borderRadius: '50%',
-                                  // border: '1px solid #dee2e6'
                                 }}
                               >
                                 <i className="fa-solid fa-times text-danger font_size_14"></i>
@@ -1367,160 +1400,172 @@ const Checkout = () => {
                   </Link>
                 ))
               ) : (
-                <div>No items in the cart.</div>
+                <div></div>
               )}
             </div>
-            <div className="card mx-auto rounded-4 mt-2">
-              <div className="row px-2 py-1">
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 font_size_14 fw-semibold">Total</span>
-                    <span className="pe-2 font_size_14 fw-semibold">
-                      ₹{total.toFixed(2)}
-                    </span>
-                  </div>
-                  <hr className=" p-0 m-0 text-primary" />
-                </div>
-
-                <div className="col-12 mb-0 pt-0 pb-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Discount{" "}
-                      <span className="gray-text small-number">
-                        ({discountPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      -₹{discount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="col-12 pt-0">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="font_size_14 gray-text">
-                      Total after discount
-                    </span>
-                    <span className="font_size_14 gray-text">
-                      ₹{totalAfterDiscount.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="col-12 pt-0 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Service Charges{" "}
-                      <span className="gray-text small-number">
-                        ({serviceChargesPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      ₹{serviceCharges.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="col-12 mb-0 py-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      GST{" "}
-                      <span className="gray-text small-number">
-                        ({gstPercent}%)
-                      </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      ₹{tax.toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div className="col-12 mb-0 py-1 px-2">
-                    <div className="row align-items-center justify-content-center">
-                      <div className="col-1 text-center">
-                        <div
-                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                          style={{ height: "25px", width: "25px" }}
-                        >
-                          <i
-                            className="fa-solid fa-list font_size_14 cursor-pointer"
-                            onClick={() => {
-                              setShowCouponModal(true);
-                              fetchCoupons();
-                            }}
-                          ></i>
-                        </div>
+            {cartItems.length > 0 ? (
+              <>
+                <div className="card mx-auto rounded-4 mt-2">
+                  <div className="row px-2 py-1">
+                    <div className="col-12 px-2">
+                      <div className="d-flex justify-content-between align-items-center py-1">
+                        <span className="ps-2 font_size_14 fw-semibold">Total</span>
+                        <span className="pe-2 font_size_14 fw-semibold">
+                          ₹{total.toFixed(2)}
+                        </span>
                       </div>
-                      <div className="col-8 d-flex align-items-center px-3">
-                        <input
-                          type="text"
-                          className="form-control form-control-sm rounded-pill"
-                          placeholder="Enter coupon code"
-                          value={selectedCoupon}
-                          onChange={(e) => setSelectedCoupon(e.target.value)}
-                        />
+                      <hr className=" p-0 m-0 text-primary" />
+                    </div>
+
+                    <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                      <div className="d-flex justify-content-between align-items-center py-0">
+                        <span className="ps-2 font_size_14 gray-text">
+                          Discount{" "}
+                          <span className="gray-text small-number">
+                            ({discountPercent}%)
+                          </span>
+                        </span>
+                        <span className="pe-2 font_size_14 gray-text">
+                          -₹{discount.toFixed(2)}
+                        </span>
                       </div>
-                      <div className="col-3 d-flex align-items-center ps-1">
-                        <button
-                          className="btn btn-sm btn-primary rounded-pill w-100"
-                          onClick={handleApplyCoupon}
-                        >
-                          Apply
-                        </button>
+                    </div>
+
+                    <div className="col-12 pt-0">
+                      <div className="d-flex justify-content-between align-items-center py-0">
+                        <span className="font_size_14 gray-text">
+                          Total after discount
+                        </span>
+                        <span className="font_size_14 gray-text">
+                          ₹{totalAfterDiscount.toFixed(2)}
+                        </span>
                       </div>
-                      {couponError && (
-                        <div className="col-12 text-center">
-                          <div className="text-danger small mt-1">
-                            {couponError}
-                          </div>
-                        </div>
-                      )}
-                      {appliedCoupon && (
-                        <div className="col-12">
-                          <div className="d-flex justify-content-between align-items-center mt-2">
-                            <span className="text-success">
-                              <i className="fa-solid fa-check-circle me-1"></i>
-                              Coupon {appliedCoupon.code} applied
-                            </span>
-                            <button
-                              className="btn btn-link text-danger p-0 small"
-                              onClick={() => {
-                                setAppliedCoupon(null);
-                                setCouponCode("");
-                              }}
+                    </div>
+
+                    <div className="col-12 pt-0 px-2">
+                      <div className="d-flex justify-content-between align-items-center py-0">
+                        <span className="ps-2 font_size_14 gray-text">
+                          Service Charges{" "}
+                          <span className="gray-text small-number">
+                            ({serviceChargesPercent}%)
+                          </span>
+                        </span>
+                        <span className="pe-2 font_size_14 gray-text">
+                          ₹{serviceCharges.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="col-12 mb-0 py-1 px-2">
+                      <div className="d-flex justify-content-between align-items-center py-0">
+                        <span className="ps-2 font_size_14 gray-text">
+                          GST{" "}
+                          <span className="gray-text small-number">
+                            ({gstPercent}%)
+                          </span>
+                        </span>
+                        <span className="pe-2 font_size_14 gray-text">
+                          ₹{tax.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div className="col-12 mb-0 py-1 px-2">
+                        <div className="row align-items-center justify-content-center">
+                          <div className="col-1 text-center">
+                            <div
+                              className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                              style={{ height: "25px", width: "25px" }}
                             >
-                              Remove
+                              <i
+                                className="fa-solid fa-list font_size_14 cursor-pointer"
+                                onClick={() => {
+                                  setShowCouponModal(true);
+                                  fetchCoupons();
+                                }}
+                              ></i>
+                            </div>
+                          </div>
+                          <div className="col-8 d-flex align-items-center px-3">
+                            <input
+                              type="text"
+                              className="form-control form-control-sm rounded-pill"
+                              placeholder="Enter coupon code"
+                              value={selectedCoupon}
+                              onChange={(e) => setSelectedCoupon(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-3 d-flex align-items-center ps-1">
+                            <button
+                              className="btn btn-sm btn-primary rounded-pill w-100"
+                              onClick={handleApplyCoupon}
+                            >
+                              Apply
                             </button>
                           </div>
+                          {couponError && (
+                            <div className="col-12 text-center">
+                              <div className="text-danger small mt-1">
+                                {couponError}
+                              </div>
+                            </div>
+                          )}
+                          {appliedCoupon && (
+                            <div className="col-12">
+                              <div className="d-flex justify-content-between align-items-center mt-2">
+                                <span className="text-success">
+                                  <i className="fa-solid fa-check-circle me-1"></i>
+                                  Coupon {appliedCoupon.code} applied
+                                </span>
+                                <button
+                                  className="btn btn-link text-danger p-0 small"
+                                  onClick={() => {
+                                    setAppliedCoupon(null);
+                                    setCouponCode("");
+                                  }}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
+
+                      <hr className="p-0  text-primary mb-2 mt-1" />
+                    </div>
+
+                    <div className="col-12 px-2">
+                      <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                        <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                        <span className="pe-2 fs-6 fw-semibold">
+                          ₹{grandTotal.toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <hr className="p-0  text-primary mb-2 mt-1" />
                 </div>
-
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
-                    <span className="pe-2 fs-6 fw-semibold">
-                      ₹{grandTotal.toFixed(2)}
+                <div className="text-center">
+                  <button
+                    onClick={handlePlaceOrder}
+                    className="btn btn-success rounded-pill text-white"
+                    disabled={isProcessing || cartItems.length === 0}
+                  >
+                    Place Order
+                    <span className="small-number gray-text ps-1">
+                      ({cartItems.length} Items)
                     </span>
-                  </div>
+                  </button>
                 </div>
+              </>
+            ) : (
+              
+              <div className="text-center mt-4 d-flex flex-column justify-content-center align-items-center h-100">
+                <p className="text-muted">Your cart is empty</p>
+                <Link to="/user_app/Menu" className="btn btn-primary rounded-pill">
+                  <i className="ri-add-circle-line me-1"></i> Browse Menu
+                </Link>
               </div>
-            </div>
-            <div className="text-center">
-              <button
-                onClick={handlePlaceOrder}
-                className="btn btn-success rounded-pill text-white"
-                disabled={isProcessing || cartItems.length === 0}
-              >
-                Place Order
-                <span className="small-number gray-text ps-1">
-                  ({cartItems.length} Items)
-                </span>
-              </button>
-            </div>
+            )}
             <div className="d-flex flex-column align-items-center justify-content-center mt-3">
               <div className="d-flex align-items-center justify-content-center">
                 <Link
