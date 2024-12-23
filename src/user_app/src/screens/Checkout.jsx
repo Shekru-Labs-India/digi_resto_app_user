@@ -15,7 +15,7 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { clearCart } = useCart();
+  const { clearCart, removeFromCart } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user_id, setUser_id] = useState(null);
   const [role, setRole] = useState(null);
@@ -738,6 +738,29 @@ const Checkout = () => {
     }
   };
 
+  const handleRemoveItem = async (e, menuId) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Prevent event bubbling
+    
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
+        
+        const updatedCart = {
+          ...cartData,
+          order_items: updatedItems
+        };
+        
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        setCartItems(updatedItems); // Update state immediately
+      }
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -1232,7 +1255,8 @@ const Checkout = () => {
                     <div className="card rounded-4 my-1">
                       <div className="card-body py-2 rounded-4 px-0">
                         <div className="row">
-                          <div className="row">
+                          {/* Menu details row */}
+                          <div className="row pe-2">
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
@@ -1255,8 +1279,22 @@ const Checkout = () => {
                               )}
                             </div>
                             <div className="col-1 text-end px-0">
-                              <span>x {item.quantity}</span>
+                              <button
+                                className="btn"
+                                onClick={(e) => handleRemoveItem(e, item.menu_id)}
+                                style={{ 
+                                  padding: '4px 8px',
+                                  // backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                  // borderRadius: '50%',
+                                  // border: '1px solid #dee2e6'
+                                }}
+                              >
+                                <i className="fa-solid fa-times text-danger font_size_14"></i>
+                              </button>
                             </div>
+                            {/* <div className="col-1 text-end px-0">
+                              <span>x {item.quantity}</span>
+                            </div> */}
                           </div>
                           <div className="row">
                             <div className="col-6">

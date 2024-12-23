@@ -60,13 +60,6 @@ export const CartProvider = ({ children }) => {
       }
 
       const finalPrice = menuItem.half_or_full === 'half' ? prices.halfPrice : prices.fullPrice;
-      const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
-      
-      const existingItemIndex = existingCartData.order_items.findIndex(
-        item => item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full
-      );
-
-      // Create standardized menu item object with all possible fields
       const standardizedMenuItem = {
         menu_id: menuItem.menu_id,
         menu_name: menuItem.menu_name || menuItem.name || null,
@@ -83,29 +76,25 @@ export const CartProvider = ({ children }) => {
         is_favourite: menuItem.is_favourite || 0,
         image: menuItem.image || null,
         quantity: menuItem.quantity,
-        comment: menuItem.notes || '',
+        comment: menuItem.comment || menuItem.notes || '',
         half_or_full: menuItem.half_or_full || 'full',
         discountedPrice: menuItem.offer ? Math.floor(finalPrice * (1 - menuItem.offer / 100)) : finalPrice
       };
 
+      const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
+      const existingItemIndex = existingCartData.order_items.findIndex(
+        item => item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full
+      );
+
       let updatedOrderItems;
       if (existingItemIndex >= 0) {
-        // Update existing item while preserving all fields
         updatedOrderItems = existingCartData.order_items.map((item, index) =>
           index === existingItemIndex
-            ? {
-                ...item,
-                ...standardizedMenuItem,
-                quantity: item.quantity + menuItem.quantity,
-              }
+            ? { ...item, ...standardizedMenuItem, quantity: item.quantity + menuItem.quantity }
             : item
         );
       } else {
-        // Add new item with all fields
-        updatedOrderItems = [
-          ...existingCartData.order_items,
-          standardizedMenuItem
-        ];
+        updatedOrderItems = [...existingCartData.order_items, standardizedMenuItem];
       }
 
       const newCartData = {

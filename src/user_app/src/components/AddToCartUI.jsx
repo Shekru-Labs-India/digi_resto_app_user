@@ -89,22 +89,18 @@ const AddToCartUI = ({
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Add any special instructions here..."
                 />
-                <p
-                  className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                  onClick={() => handleSuggestionClick("Make it more sweet")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa-solid fa-comment-dots me-2"></i> Make it more
-                  sweet 
-                </p>
-                <p
-                  className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                  onClick={() => handleSuggestionClick("Make it more spicy")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa-solid fa-comment-dots me-2"></i> Make it more
-                  spicy
-                </p>
+                <div className="mt-2">
+                  {["Make it more sweet", "Make it more spicy", "Less spicy", "No onion"].map((suggestion) => (
+                    <p
+                      key={suggestion}
+                      className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i className="fa-solid fa-comment-dots me-2"></i> {suggestion}
+                    </p>
+                  ))}
+                </div>
               </div>
               <hr className="my-4" />
               <div className="mb-2">
