@@ -143,43 +143,32 @@ const OfferBanner = () => {
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id) {
+      showLoginPopup();
       return;
     }
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
-      return;
-    }
-
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          restaurant_id: restaurantId,
-        },
-        restaurantId
-      );
+      const success = await addToCart({
+        ...selectedMenu,
+        quantity: 1,
+        notes: notes,
+        half_or_full: portionSize,
+        price: selectedPrice,
+        menu_name: selectedMenu.menu_name || selectedMenu.name
+      }, restaurantId);
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
-
-      setShowModal(false);
-      setNotes("");
-      setPortionSize("full");
-      setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
+      if (success) {
+        setShowModal(false);
+        window.showToast("success", "Item added to cart");
+        // Dispatch event to update cart UI
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+      } else {
+        window.showToast("error", "Failed to add item to cart");
+      }
     } catch (error) {
-      console.clear();
-      window.showToast(
-        "error",
-        "Failed to add item to cart. Please try again."
-      );
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
@@ -443,20 +432,10 @@ const OfferBanner = () => {
   };
 
   // Update handleAddToCartClick function
-  const handleAddToCartClick = async (menuItem) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.user_id || !restaurantId) {
-      showLoginPopup();
-      return;
-    }
-
-    if (isMenuItemInCart(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
-      return;
-    }
-
+  const handleAddToCartClick = (menuItem) => {
     setSelectedMenu(menuItem);
-    fetchHalfFullPrices(menuItem.menu_id);
+    setPortionSize("full"); // Reset portion size
+    setNotes(""); // Reset notes
     setShowModal(true);
   };
 

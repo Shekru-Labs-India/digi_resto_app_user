@@ -90,50 +90,51 @@ const Checkout = () => {
     fetchCartDetails();
   }, []);
 
-  const fetchCartDetails = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.user_id || localStorage.getItem("user_id");
-    const cartId = getCartId();
-
+  const fetchCartDetails = () => {
     try {
-      const response = await axios.post(
-        `${config.apiDomain}/user_api/get_cart_detail`,
-        {
-          cart_id: cartId,
-          user_id: currentCustomerId,
-          restaurant_id: storedRestaurantId,
-        }
-      );
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        
+        // Calculate totals
+        const total = cartData.order_items.reduce((sum, item) => 
+          sum + (item.price * item.quantity), 0
+        );
 
-      if (response.data.st === 1) {
-        const data = response.data;
+        const serviceChargesPercent = 5;
+        const gstPercent = 5;
+        const serviceCharges = (total * serviceChargesPercent) / 100;
+        const tax = (total * gstPercent) / 100;
+        const discount = 0;
+        const totalAfterDiscount = total - discount;
+        const grandTotal = totalAfterDiscount + serviceCharges + tax;
 
-        // Map and update state
-        const mappedItems = data.order_items.map((item) => ({
+        // Map items to match API structure
+        const mappedItems = cartData.order_items.map(item => ({
           ...item,
-          discountedPrice: item.offer
-            ? Math.floor(item.price * (1 - item.offer / 100))
-            : item.price,
+          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
+          menu_cat_name: item.category_name || "Food",
+          menu_id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+          offer: item.offer || 0
         }));
 
-        // Update state immediately
+        // Update all states
         setCartItems(mappedItems);
-        setTotal(parseFloat(data.total_bill));
-        setServiceChargesPercent(parseFloat(data.service_charges_percent));
-        setServiceCharges(parseFloat(data.service_charges_amount));
-        setGstPercent(parseFloat(data.gst_percent));
-        setTax(parseFloat(data.gst_amount));
-        setDiscountPercent(parseFloat(data.discount_percent));
-        setDiscount(parseFloat(data.discount_amount));
-        setGrandTotal(parseFloat(data.grand_total));
-        setCartId(data.cart_id);
-        setTotalAfterDiscount(parseFloat(data.total_after_discount));
-      } else {
-        console.clear();
+        setTotal(total);
+        setServiceChargesPercent(serviceChargesPercent);
+        setServiceCharges(serviceCharges);
+        setGstPercent(gstPercent);
+        setTax(tax);
+        setDiscountPercent(0);
+        setDiscount(discount);
+        setGrandTotal(grandTotal);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
       }
     } catch (error) {
-      console.clear();
+      console.error('Error fetching cart details:', error);
     }
   };
 
@@ -161,6 +162,15 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+
+      if (!userData?.user_id) {
+        window.showToast("error", "Please login to place order");
+        return;
+      }
+
+      // First check if user has any existing order
       const response = await fetch(
         `${config.apiDomain}/user_api/check_order_exist`,
         {
@@ -169,7 +179,7 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: user_id,
+            user_id: userData.user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -177,37 +187,32 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.st === 1) {
-        setAvailableTables(data.available_tables);
-
-        // If no existing order, show order type selection
-        if (data.order_number === null && data.order_status === null) {
-          setShowOrderTypeModal(true);
-        }
-        // If there's an ongoing or placed order, show modal with options
-        else if (
-          data.order_status === "ongoing" ||
-          data.order_status === "placed"
-        ) {
+      if (data.st === 1) {
+        if (data.order_number) {
+          // Existing order found - show existing order modal
           setExistingOrderDetails({
             orderNumber: data.order_number,
             orderStatus: data.order_status,
             orderId: data.order_id,
-            orderType: data.order_type, // Store order_type here
+            orderType: data.order_type,
+            grand_total: data.grand_total
           });
           setShowExistingOrderModal(true);
+        } else {
+          // No existing order - show order type selection
+          setShowOrderTypeModal(true);
         }
       } else {
-        console.clear();
-        throw new Error("Failed to check order status");
+        throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
       window.showToast("error", "Failed to process order");
-      console.clear();
+      console.error('Error:', error);
     }
   };
 
   const handleOrderTypeSelection = (orderType) => {
+    setSelectedOrderType(orderType);
     if (pendingOrderAction) {
       handleOrderAction(pendingOrderAction, orderType);
     } else {
@@ -216,37 +221,35 @@ const Checkout = () => {
   };
 
   const handleCreateOrder = async (orderType) => {
-    if (!cartId || !user_id || !restaurantId || !orderType) {
-      window.showToast("error", "Missing required data to create an order");
-      return;
-    }
-
-    const tableNumber =
-      JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
-      localStorage.getItem("tableNumber") ||
-      "1";
-
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
-
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+
+      if (!storedCart?.order_items) {
+        window.showToast("error", "No items in cart");
+        return;
+      }
+
+      const requestBody = {
+        user_id: userData.user_id,
+        restaurant_id: restaurantId,
+        table_number: userData?.tableNumber || "1",
+        section_id: userData?.sectionId || "1",
+        order_type: orderType,
+        order_items: storedCart.order_items.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          comment: item.comment || "",
+          half_or_full: item.half_or_full || "full"
+        }))
+      };
+
       const response = await fetch(
         `${config.apiDomain}/user_api/create_order`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            user_id: user_id,
-            restaurant_id: restaurantId,
-            table_number: tableNumber,
-            order_type: orderType,
-            section_id: sectionId,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody)
         }
       );
 
@@ -257,16 +260,12 @@ const Checkout = () => {
         clearCartData();
         setShowOrderTypeModal(false);
         setShowPopup(true);
-        await fetchCartDetails();
-      } else if (response.ok && data.st === 2) {
-        window.showToast("error", "Table is occupied");
       } else {
-        console.clear();
-        throw new Error(data.msg);
+        throw new Error(data.msg || "Failed to create order");
       }
     } catch (error) {
-      window.showToast("error", "Failed to create order");
-      console.clear();
+      window.showToast("error", error.message || "Failed to create order");
+      console.error('Error:', error);
     }
   };
 
@@ -277,40 +276,43 @@ const Checkout = () => {
     setCartItems([]); // Clear cart items state if you're using it
   };
 
-  const handleOrderAction = async (orderStatus, orderType) => {
-    if (
-      !cartId ||
-      !user_id ||
-      !restaurantId ||
-      !existingOrderDetails.orderNumber ||
-      !orderType
-    ) {
-      window.showToast("error", "Missing required data to proceed");
-      return;
-    }
-
+  const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {
-      const sectionId =
-        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-        localStorage.getItem("sectionId") ||
-        "";
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+      const existingOrder = JSON.parse(localStorage.getItem('existing_order'));
+      
+      if (!existingOrderDetails.orderNumber) {
+        window.showToast("error", "Invalid order number");
+        return;
+      }
+
+      const requestBody = {
+        order_number: existingOrderDetails.orderNumber, // Using order number from API response
+        user_id: userData.user_id,
+        order_status: orderStatus,
+        restaurant_id: restaurantId,
+        table_number: userData?.tableNumber || "1",
+        section_id: userData?.sectionId || "1",
+        order_type: orderType,
+        order_items: storedCart.order_items.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          comment: item.comment || "",
+          half_or_full: item.half_or_full || "full"
+        }))
+      };
+
+      if (orderStatus === "completed" && paymentMethod) {
+        requestBody.payment_method = paymentMethod;
+      }
 
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            user_id: user_id,
-            restaurant_id: restaurantId,
-            order_number: existingOrderDetails.orderNumber,
-            order_status: orderStatus,
-            order_type: orderType,
-            section_id: sectionId,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody)
         }
       );
 
@@ -320,59 +322,42 @@ const Checkout = () => {
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
-        await fetchCartDetails();
-        navigate(`/user_app/MyOrder/`);
+        if (data.data?.new_order_number) {
+          setNewOrderNumber(data.data.new_order_number);
+          setShowPopup(true);
+        } else {
+          navigate(`/user_app/MyOrder/`);
+        }
       } else {
-        console.clear();
-        throw new Error(data.msg || "Failed to update order");
+        throw new Error(data.msg);
       }
     } catch (error) {
-      window.showToast("error", "Failed to process order");
-      console.clear();
+      window.showToast("error", error.message || "Failed to process order");
+      console.error('Error:', error);
     }
   };
 
-  const handleAddToExistingOrder = async () => {
+  const handleAddToExistingOrder = () => {
     try {
-      // Construct the order items array
-      const orderItems = cartItems.map((item) => ({
-        menu_id: item.menu_id,
-        quantity: item.quantity,
-        half_or_full: item.half_or_full || "full",
-      }));
+      const existingOrder = JSON.parse(localStorage.getItem('existing_order'));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
-      // Make the API call
-      const response = await fetch(
-        `${config.apiDomain}/user_api/add_to_existing_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
-            user_id: user_id,
-            restaurant_id: restaurantId,
-            cart_id: cartId,
-            order_items: orderItems,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.st === 1) {
-        setShowPopup(true);
-        await fetchCartDetails();
-        clearCartData();
-        setShowExistingOrderModal(false); // Close the modal
-      } else {
-        console.clear();
-        throw new Error(
-          data.msg || "Failed to add items to the existing order"
-        );
+      if (!existingOrder || !storedCart) {
+        window.showToast("error", "Failed to add items to order");
+        return;
       }
-    } catch (error) {}
+
+      // Merge cart items with existing order
+      existingOrder.items = [...existingOrder.items, ...storedCart.order_items];
+      localStorage.setItem('existing_order', JSON.stringify(existingOrder));
+
+      setShowPopup(true);
+      clearCartData();
+      setShowExistingOrderModal(false);
+    } catch (error) {
+      window.showToast("error", "Failed to add items to order");
+      console.error('Error:', error);
+    }
   };
 
   const closePopup = () => {
@@ -513,75 +498,21 @@ const Checkout = () => {
     }
   };
 
-  const initiatePayment = async (
-    method,
-    paymentUrl,
-    setProcessing,
-    timeoutKey
-  ) => {
-    if (
-      !cartId ||
-      !user_id ||
-      !restaurantId ||
-      !existingOrderDetails.orderNumber
-    ) {
-      window.showToast("error", "Missing required data to proceed");
-      setProcessing(false);
-      return;
-    }
-
+  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
     try {
-      const sectionId =
-        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-        localStorage.getItem("sectionId") ||
-        "";
-
-      const response = await fetch(
-        `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart_id: cartId,
-            user_id: user_id,
-            restaurant_id: restaurantId,
-            order_number: existingOrderDetails.orderNumber,
-            order_status: "completed",
-            payment_method: method, // Include payment method
-            order_type: existingOrderDetails.orderType, // Pass the order_type here
-            section_id: sectionId,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.st === 1) {
-        if (paymentUrl) {
-          // Redirect if paymentUrl is provided
-          window.location.href = paymentUrl;
-          timeoutRef.current[timeoutKey] = setTimeout(() => {
-            if (!document.hidden) {
-              window.showToast(
-                "error",
-                `No ${method} app found. Please install the app.`
-              );
-            }
-            setProcessing(false);
-          }, 3000);
-          navigate("/user_app/MyOrder");
-          clearCartData();
-        } else {
-          // Handle successful API response without redirection
-          window.showToast("success", `Payment via ${method} initiated successfully.`);
+      await handleOrderAction("completed", existingOrderDetails.orderType, method);
+      
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found. Please install the app.`);
+          }
           setProcessing(false);
-          navigate("/user_app/MyOrder");
-          clearCartData();
-        }
+        }, 3000);
       } else {
-        throw new Error(data.msg || "Failed to process payment");
+        window.showToast("success", `Payment via ${method} initiated successfully.`);
+        setProcessing(false);
       }
     } catch (error) {
       window.showToast("error", "Failed to process payment or order");
@@ -735,6 +666,76 @@ const Checkout = () => {
       return value.toUpperCase();
     }
     return couponCode; // Return existing value if invalid
+  };
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      try {
+        const cartData = JSON.parse(storedCart);
+        setCartItems(cartData.order_items || []);
+      } catch (error) {
+        console.error('Error parsing cart data:', error);
+        setCartItems([]);
+      }
+    }
+  }, []);
+
+  const incrementQuantity = (menuItem) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        const updatedItems = cartData.order_items.map(item => {
+          if (item.menu_id === menuItem.menu_id) {
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
+        
+        const updatedCart = {
+          ...cartData,
+          order_items: updatedItems
+        };
+        
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        setCartItems(updatedItems); // Update state
+        // calculateTotals(updatedItems); // Recalculate totals
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  const decrementQuantity = (menuItem) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        let updatedItems = cartData.order_items.map(item => {
+          if (item.menu_id === menuItem.menu_id && item.quantity > 1) {
+            return { ...item, quantity: item.quantity - 1 };
+          }
+          return item;
+        });
+        
+        // Remove item if quantity becomes 0
+        updatedItems = updatedItems.filter(item => item.quantity > 0);
+        
+        const updatedCart = {
+          ...cartData,
+          order_items: updatedItems
+        };
+        
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        setCartItems(updatedItems); // Update state
+        // calculateTotals(updatedItems); // Recalculate totals
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
   };
 
   return (
@@ -1258,28 +1259,67 @@ const Checkout = () => {
                             </div>
                           </div>
                           <div className="row">
-                            <div className="col-8">
+                            <div className="col-6">
                               <div className="ps-2">
                                 <div className="font_size_10 text-success">
                                   <i className="fa-solid fa-utensils text-success me-1"></i>
-                                  {item.menu_cat_name}
+                                  {item.menu_cat_name || "category"}
                                 </div>
                               </div>
                             </div>
                             {item.offer > 0 && (
-                              <div className="col-4 text-end px-0">
+                              <div className="col-6 text-end px-0">
                                 <span className="ps-2 text-success font_size_10">
-                                  {item.offer}% Off
+                                  {item.offer || "0"}% Off
                                 </span>
                               </div>
                             )}
                           </div>
                           {item.comment && (
-                            <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
+                            <p className="font_size_12 text-muted mt-1 mb-0 ms-2">
                               <i className="fa-solid fa-comment-dots me-2"></i>{" "}
                               {item.comment}
                             </p>
                           )}
+                          {/* Quantity buttons at bottom right */}
+                          <div className="row mt-2"></div>
+                        </div>
+                        <div className="row justify-content-end pe-3">
+                          <div className="col-4 d-flex  pe-3">
+                            <div className="dz-stepper style-3 d-flex justify-content-end">
+                              <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
+                                <span className="input-group-btn input-group-prepend">
+                                  <button
+                                    className="btn btn-primary bootstrap-touchspin-down"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      decrementQuantity(item);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-minus fs-6"></i>
+                                  </button>
+                                </span>
+                                <span className="text-dark font_size_14 px-2">
+                                  {item.quantity}
+                                </span>
+                                <span className="input-group-btn input-group-append">
+                                  <button
+                                    className="btn btn-primary bootstrap-touchspin-up"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      incrementQuantity(item);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-plus fs-6"></i>
+                                  </button>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1356,7 +1396,10 @@ const Checkout = () => {
                   <div className="col-12 mb-0 py-1 px-2">
                     <div className="row align-items-center justify-content-center">
                       <div className="col-1 text-center">
-                        <div className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center" style={{height: "25px", width: "25px"}}>
+                        <div
+                          className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                          style={{ height: "25px", width: "25px" }}
+                        >
                           <i
                             className="fa-solid fa-list font_size_14 cursor-pointer"
                             onClick={() => {
@@ -1372,9 +1415,7 @@ const Checkout = () => {
                           className="form-control form-control-sm rounded-pill"
                           placeholder="Enter coupon code"
                           value={selectedCoupon}
-                          onChange={(e) =>
-                            setSelectedCoupon(e.target.value)
-                          }
+                          onChange={(e) => setSelectedCoupon(e.target.value)}
                         />
                       </div>
                       <div className="col-3 d-flex align-items-center ps-1">
@@ -1431,6 +1472,7 @@ const Checkout = () => {
               <button
                 onClick={handlePlaceOrder}
                 className="btn btn-success rounded-pill text-white"
+                disabled={isProcessing || cartItems.length === 0}
               >
                 Place Order
                 <span className="small-number gray-text ps-1">

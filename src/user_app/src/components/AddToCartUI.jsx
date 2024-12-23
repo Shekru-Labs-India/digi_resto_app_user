@@ -1,6 +1,8 @@
 // menumitra/src/user_app/src/components/AddToCartUI.jsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const AddToCartUI = ({
   showModal,
@@ -10,15 +12,31 @@ const AddToCartUI = ({
   setComment,
   portionSize,
   setPortionSize,
-  halfPrice,
-  fullPrice,
-  originalHalfPrice,
-  originalFullPrice,
-  isPriceFetching,
   handleConfirmAddToCart,
   handleSuggestionClick,
   handleModalClick,
 }) => {
+  const [prices, setPrices] = useState({ halfPrice: null, fullPrice: null });
+  const [isPriceFetching, setIsPriceFetching] = useState(true);
+  const { fetchMenuPrices } = useCart();
+  const { restaurantId } = useRestaurantId();
+
+  // Fetch prices when modal opens
+  useEffect(() => {
+    const fetchPrices = async () => {
+      if (showModal && productDetails?.menu_id) {
+        setIsPriceFetching(true);
+        const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
+        if (priceData) {
+          setPrices(priceData);
+        }
+        setIsPriceFetching(false);
+      }
+    };
+
+    fetchPrices();
+  }, [showModal, productDetails?.menu_id, restaurantId]);
+
   if (!showModal) return null;
 
   return (
@@ -98,77 +116,37 @@ const AddToCartUI = ({
                     <p>Loading prices...</p>
                   ) : (
                     <div className="w-100">
-                      {halfPrice !== null && (
+                      {prices.halfPrice !== null && (
                         <div 
-                          className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3"
+                          className="d-flex justify-content-between align-items-center mb-3"
                           onClick={() => setPortionSize("half")}
-                          style={{ cursor: 'pointer' }}
                         >
                           <div className="form-check">
                             <input
                               type="radio"
                               className="form-check-input"
-                              id="halfPortion"
-                              name="portionSize"
                               checked={portionSize === "half"}
                               onChange={() => setPortionSize("half")}
                             />
-                            <label
-                              className="form-check-label font_size_14"
-                              htmlFor="halfPortion"
-                            >
-                              Half
-                            </label>
+                            <label className="form-check-label">Half</label>
                           </div>
-                          <div>
-                           
-                            <div className="d-flex align-items-center">
-                              <span className="font_size_14 fw-semibold text-info">
-                                ₹{Math.floor(halfPrice * (1 - productDetails.offer / 100))}
-                              </span>
-                              {productDetails.offer > 0 && (
-                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                  ₹{halfPrice}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                          <span>₹{prices.halfPrice}</span>
                         </div>
                       )}
                       <div 
                         className="d-flex justify-content-between align-items-center"
                         onClick={() => setPortionSize("full")}
-                        style={{ cursor: 'pointer' }}
                       >
                         <div className="form-check">
                           <input
                             type="radio"
                             className="form-check-input"
-                            id="fullPortion"
-                            name="portionSize"
                             checked={portionSize === "full"}
                             onChange={() => setPortionSize("full")}
                           />
-                          <label
-                            className="form-check-label font_size_14"
-                            htmlFor="fullPortion"
-                          >
-                            Full
-                          </label>
+                          <label className="form-check-label">Full</label>
                         </div>
-                        <div>
-                          
-                          <div className="d-flex align-items-center">
-                            <span className="font_size_14 fw-semibold text-info">
-                              ₹{Math.floor(fullPrice * (1 - productDetails.offer / 100))}
-                            </span>
-                            {productDetails.offer > 0 && (
-                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                ₹{fullPrice}
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                        <span>₹{prices.fullPrice}</span>
                       </div>
                     </div>
                   )}
@@ -188,7 +166,7 @@ const AddToCartUI = ({
                 type="button"
                 className="btn btn-primary rounded-pill"
                 onClick={handleConfirmAddToCart}
-                disabled={isPriceFetching || (!halfPrice && !fullPrice)}
+                disabled={isPriceFetching || (!prices.halfPrice && !prices.fullPrice)}
               >
                 <i className="fa-solid fa-plus pe-1 text-white"></i>
                 Add to Cart
