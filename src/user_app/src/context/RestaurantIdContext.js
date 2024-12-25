@@ -30,8 +30,53 @@ export const RestaurantIdProvider = ({ children }) => {
       setRestaurantCode(code);
       
       if (table) {
-        setTableNumber(table);
-        localStorage.setItem("tableNumber", table);
+        // First get restaurant details to get restaurant_id
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            restaurant_code: code,
+            section_id: section || null 
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const { restaurant_id } = data.restaurant_details;
+              
+              // Now validate the table
+              return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  restaurant_id: restaurant_id,
+                  section_id: section || null,
+                  table_id: table
+                }),
+              });
+            } else {
+              throw new Error('Failed to get restaurant details');
+            }
+          })
+          .then(response => response.json())
+          .then((data) => {
+            if (data.st === 1 && data.is_table_exists) {
+              // Table exists, set the table number
+              setTableNumber(table);
+              localStorage.setItem("tableNumber", table);
+            } else {
+              // Table doesn't exist, navigate to HotelList
+              navigate("/user_app/HotelList");
+            }
+          })
+          .catch((error) => {
+            console.clear();
+            navigate("/user_app/HotelList");
+          });
       }
 
       if (section) {
@@ -77,7 +122,7 @@ export const RestaurantIdProvider = ({ children }) => {
           });
       }
     }
-  }, [location]);
+  }, [location, navigate]);
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
