@@ -433,9 +433,14 @@ const OfferBanner = () => {
 
   // Update handleAddToCartClick function
   const handleAddToCartClick = (menuItem) => {
+    // Check if item is already in cart
+    if (isMenuItemInCart(menuItem.menu_id)) {
+      window.showToast("info", "This item is already in your cart");
+      return;
+    }
+
     setSelectedMenu(menuItem);
-    setPortionSize("full"); // Reset portion size
-    setNotes(""); // Reset notes
+    fetchHalfFullPrices(menuItem.menu_id);
     setShowModal(true);
   };
 
@@ -725,8 +730,8 @@ const OfferBanner = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={notes}
+          setComment={setNotes}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}

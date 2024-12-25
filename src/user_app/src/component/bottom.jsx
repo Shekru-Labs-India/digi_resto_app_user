@@ -53,17 +53,22 @@ const Bottom = () => {
         >
           <div className="position-relative d-inline-block">
             <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
-            {cartItems.length > 0 && (
-              <span
-                className="position-absolute p-1 bg-danger rounded-circle"
-                style={{
-                  top: "-5px",
-                  right: "20px",
-                  width: "5px",
-                  height: "5px",
-                }}
-              />
-            )}
+            {(() => {
+              const storedCart = localStorage.getItem('restaurant_cart_data');
+              const hasItems = storedCart ? JSON.parse(storedCart).order_items.length > 0 : false;
+              
+              return hasItems && (
+                <span
+                  className="position-absolute p-1 bg-danger rounded-circle"
+                  style={{
+                    top: "-5px",
+                    right: "20px",
+                    width: "5px",
+                    height: "5px",
+                  }}
+                />
+              );
+            })()}
           </div>
           <span className="name font_size_14">Cart</span>
         </Link>

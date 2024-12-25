@@ -165,7 +165,7 @@ const MyOrder = () => {
             order_status: activeTab === "cancelled" ? "cancle" : activeTab,
             user_id: userData.user_id,
             role: userData.role,
-            section_id: sectionId,
+            section_id: userData.sectionId,
           }),
         }
       );

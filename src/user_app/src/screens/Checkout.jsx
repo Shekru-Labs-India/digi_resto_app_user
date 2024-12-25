@@ -753,11 +753,17 @@ const Checkout = () => {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.map(item => 
-          item.menu_id === menuItem.menu_id 
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        const updatedItems = cartData.order_items.map(item => {
+          if (item.menu_id === menuItem.menu_id) {
+            // Check if quantity would exceed 20
+            if (item.quantity >= 20) {
+              window.showToast("info", "Maximum quantity limit reached (20)");
+              return item;
+            }
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
         
         const updatedCart = { ...cartData, order_items: updatedItems };
         localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
@@ -796,9 +802,19 @@ const Checkout = () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
-        const updatedCart = { ...cartData, order_items: updatedItems };
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
-        await fetchCheckoutDetails(); // Fetch updated totals
+        
+        if (updatedItems.length === 0) {
+          // If no items left, clear cart data completely
+          localStorage.removeItem('restaurant_cart_data');
+          setCartItems([]); // Update state to trigger re-render
+          setCheckoutDetails(null); // Reset checkout details
+        } else {
+          // Update cart with remaining items
+          const updatedCart = { ...cartData, order_items: updatedItems };
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        }
+        
+        await fetchCheckoutDetails(); // This will handle empty cart case
       }
     } catch (error) {
       console.error('Error removing item:', error);
@@ -876,12 +892,12 @@ const Checkout = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
                     {/* Parcel Option */}
                     <div className="col-6">
-                      <div 
+                      <div
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() => handleOrderTypeSelection("Parcel")}
                       >
@@ -896,9 +912,11 @@ const Checkout = () => {
 
                     {/* Drive-Through Option */}
                     <div className="col-6">
-                      <div 
+                      <div
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("Drive-through")}
+                        onClick={() =>
+                          handleOrderTypeSelection("Drive-through")
+                        }
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
@@ -911,7 +929,7 @@ const Checkout = () => {
 
                     {/* Dine-in Option */}
                     <div className="col-12 mb-3">
-                      <div 
+                      <div
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() => handleOrderTypeSelection("Dine-in")}
                       >
@@ -939,7 +957,10 @@ const Checkout = () => {
 
         {showPaymentOptions && (
           <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px", margin: "auto" }}>
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px", margin: "auto" }}
+            >
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -957,21 +978,30 @@ const Checkout = () => {
 
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
-                    Please select a payment method to complete your order #{existingOrderDetails.orderNumber}
+                    Please select a payment method to complete your order #
+                    {existingOrderDetails.orderNumber}
                   </p>
                   <div className="d-grid gap-2">
                     {/* UPI Payment Button */}
                     <button
                       className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
                       onClick={handleGenericUPI}
-                      disabled={processingPaymentMethod && processingPaymentMethod !== "upi"}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "upi"
+                      }
                     >
                       {processingPaymentMethod === "upi" ? (
                         "Processing..."
                       ) : (
                         <>
-                          Pay via Other UPI Apps
-                          <img src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png" width={45} alt="UPI" />
+                          Pay ₹{existingOrderDetails.grand_total} via Other UPI
+                          Apps
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
                         </>
                       )}
                     </button>
@@ -981,14 +1011,21 @@ const Checkout = () => {
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
                       style={{ backgroundColor: "#5f259f" }}
                       onClick={handlePhonePe}
-                      disabled={processingPaymentMethod && processingPaymentMethod !== "phonepe"}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "phonepe"
+                      }
                     >
                       {processingPaymentMethod === "phonepe" ? (
                         "Processing..."
                       ) : (
                         <>
-                          Pay via PhonePe
-                          <img src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000" width={45} alt="PhonePe" />
+                          Pay ₹{existingOrderDetails.grand_total} via PhonePe
+                          <img
+                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                            width={45}
+                            alt="PhonePe"
+                          />
                         </>
                       )}
                     </button>
@@ -998,13 +1035,16 @@ const Checkout = () => {
                       className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
                       style={{ backgroundColor: "#1a73e8" }}
                       onClick={handleGooglePay}
-                      disabled={processingPaymentMethod && processingPaymentMethod !== "gpay"}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "gpay"
+                      }
                     >
                       {processingPaymentMethod === "gpay" ? (
                         "Processing..."
                       ) : (
                         <>
-                          Pay via Google Pay
+                          Pay ₹{existingOrderDetails.grand_total} via Google Pay
                           <img
                             className="ms-2"
                             src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
@@ -1025,7 +1065,12 @@ const Checkout = () => {
                         className="px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark border"
                         onClick={() => {
                           setProcessingPaymentMethod("card");
-                          initiatePayment("card", null, setProcessingPaymentMethod, "card");
+                          initiatePayment(
+                            "card",
+                            null,
+                            setProcessingPaymentMethod,
+                            "card"
+                          );
                         }}
                       >
                         <i className="ri-bank-card-line me-1"></i>
@@ -1036,7 +1081,12 @@ const Checkout = () => {
                         className="px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark border"
                         onClick={() => {
                           setProcessingPaymentMethod("cash");
-                          initiatePayment("cash", null, setProcessingPaymentMethod, "cash");
+                          initiatePayment(
+                            "cash",
+                            null,
+                            setProcessingPaymentMethod,
+                            "cash"
+                          );
                         }}
                       >
                         <i className="ri-wallet-3-fill me-1"></i>
@@ -1059,7 +1109,10 @@ const Checkout = () => {
 
         {showExistingOrderModal && (
           <div className="popup-overlay d-flex align-items-center justify-content-center min-vh-100">
-            <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px" }}>
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px" }}
+            >
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
@@ -1101,7 +1154,8 @@ const Checkout = () => {
                       className="btn btn-info rounded-pill font_size_14 text-white"
                       onClick={handleAddToExistingOrder}
                     >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber})
+                      Add to Existing Order (#{existingOrderDetails.orderNumber}
+                      )
                     </button>
                     <button
                       className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
@@ -1172,7 +1226,7 @@ const Checkout = () => {
                             )}
                           </div>
                           {item.comment && (
-                            <p className="font_size_12 text-muted mt-1 mb-0 ms-2">
+                            <p className="font_size_12 text-dark mt-1 mb-0 ms-2">
                               <i className="fa-solid fa-comment-dots me-2"></i>{" "}
                               {item.comment}
                             </p>
@@ -1327,7 +1381,7 @@ const Checkout = () => {
                         <div className="col-8 d-flex align-items-center px-3">
                           <input
                             type="text"
-                            className="form-control form-control-sm rounded-pill"
+                            className="form-control form-control-sm rounded-pill border-primary"
                             placeholder="Enter coupon code"
                             value={selectedCoupon}
                             onChange={(e) => setSelectedCoupon(e.target.value)}

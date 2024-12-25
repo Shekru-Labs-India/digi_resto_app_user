@@ -1156,6 +1156,31 @@ const TrackOrder = () => {
                   </div>
                 </div>
               </div>
+              <div className="row">
+                <div className="col-6">
+                  <div className="menu-info">
+                    <span className="font_size_12 gray-text">
+                     
+                      Payment Method: {order_details.payment_method}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6">
+                  <div className="text-end">
+                    <span className="text-info font_size_14 fw-semibold">
+                      ₹{order_details.grand_total}
+                    </span>
+                    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                      ₹
+                      {(
+                        order_details.grand_total /
+                          (1 - order_details.discount_percent / 100) ||
+                        order_details.grand_total
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
