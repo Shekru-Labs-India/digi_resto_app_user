@@ -795,6 +795,7 @@ const Checkout = () => {
   };
 
   const handleRemoveItem = async (e, menuId) => {
+    window.showToast("info", "Item removed from cart");
     e.preventDefault();
     e.stopPropagation();
     try {
@@ -1201,7 +1202,7 @@ const Checkout = () => {
                                   padding: "4px 8px",
                                 }}
                               >
-                                <i className="fa-solid fa-times text-danger font_size_14"></i>
+                                <i className="fa-solid fa-times gray-text font_size_14"></i>
                               </button>
                             </div>
                             {/* <div className="col-1 text-end px-0">

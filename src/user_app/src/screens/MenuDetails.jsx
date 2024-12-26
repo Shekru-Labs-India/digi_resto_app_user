@@ -933,7 +933,7 @@ const MenuDetails = () => {
                     <div className="col-4 text-end px-0">
                       <span className="ps-2 font_size_10">
                         {renderStarRating(productDetails.rating)}
-                        {productDetails.rating.toFixed(1)}
+                        {productDetails.rating}
                       </span>
                     </div>
                   )}
