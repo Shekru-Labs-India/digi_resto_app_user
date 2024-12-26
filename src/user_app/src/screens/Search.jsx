@@ -798,452 +798,448 @@ const Search = () => {
               ></i>
             </div>
 
-            {debouncedSearchTerm.trim().length >= 3 &&
-              debouncedSearchTerm.trim().length <= 10 &&
-              searchedMenu.length > 0 && (
-                <div className="d-flex align-items-center mt-2 gap-2">
-                  {/* Food Type Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      {selectedFoodType ? (
-                        <div className="d-flex align-items-center">
-                          <i
-                            className={`${
-                              getFoodTypeStyles(selectedFoodType).icon
-                            } ${
-                              getFoodTypeStyles(selectedFoodType).textColor
-                            } me-2`}
-                          ></i>
-                          <span
-                            className={
-                              getFoodTypeStyles(selectedFoodType).textColor
-                            }
-                          >
-                            {selectedFoodType.charAt(0).toUpperCase() +
-                              selectedFoodType.slice(1)}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="d-flex align-items-center">
-                          <i className="fa-solid fa-filter text-success me-2"></i>
-                          <span className="text-success">Type</span>
-                        </div>
-                      )}
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleFilter(null)}
-                        >
-                          <i className="fa-solid fa-utensils text-success me-2"></i>
-                          <span>All</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      {foodTypes.map((type) => (
-                        <li key={type}>
-                          <button
-                            className="dropdown-item d-flex align-items-center"
-                            onClick={() => handleFilter(type)}
-                          >
-                            <i
-                              className={`${getFoodTypeStyles(type).icon} ${
-                                getFoodTypeStyles(type).textColor
-                              } me-2`}
-                            ></i>
-                            <span className={getFoodTypeStyles(type).textColor}>
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Price Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                        <span className="text-success">
-                          {priceFilter === "under50"
-                            ? "Under ₹50"
-                            : priceFilter === "under100"
-                            ? "Under ₹100"
-                            : priceFilter === "under200"
-                            ? "Under ₹200"
-                            : priceFilter === "under500"
-                            ? "Under ₹500"
-                            : priceFilter === "under1000"
-                            ? "Under ₹1000"
-                            : priceFilter === "above1000"
-                            ? "Above ₹1000"
-                            : "Price"}
-                        </span>
-                      </div>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter(null)}
-                        >
-                          <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
-                          <span>All Prices</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under50")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Under ₹50</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under100")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Under ₹100</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under200")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Under ₹200</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under500")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Under ₹500</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under1000")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Under ₹1000</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("above1000")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
-                          <span>Above ₹1000</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Spicy Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-pepper-hot text-success me-2"></i>
-                        <span className="text-success">
-                          {spicyFilter === 1
-                            ? "Spicy Level 1"
-                            : spicyFilter === 2
-                            ? "Spicy Level 2"
-                            : spicyFilter === 3
-                            ? "Spicy Level 3"
-                            : "Spicy"}
-                        </span>
-                      </div>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(null)}
-                        >
-                          <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
-                          <span>All</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(1)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-success me-2"></i>
-                          <span>Low</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(2)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
-                          <span>Medium</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(3)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
-                          <span>High</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-
-            {debouncedSearchTerm.trim().length >= 3 &&
-              debouncedSearchTerm.trim().length <= 10 &&
-              searchedMenu.length === 0 && (
-                <div className="d-flex justify-content-center align-items-center mt-3">
-                  <p className="gray-text text-center">No menu items found</p>
-                </div>
-              )}
-          </div>
-
-          {/* {isLoading && <p>Loading...</p>} */}
-
-          {searchedMenu.map((menu, index) => (
-            <div className="py-1 px-0" key={index}>
-              <div className="custom-card rounded-4 shadow-sm">
-                <Link
-                  to={`/user_app/ProductDetails/${menu.menu_id}`}
-                  state={{
-                    restaurant_id: menu.restaurant_id,
-                    menu_cat_id: menu.menu_cat_id,
-                  }}
-                  className="text-decoration-none text-reset"
-                  onClick={() => handleMenuClick(menu)}
+            {/* Always show filters */}
+            <div className="d-flex align-items-center mt-2 gap-2">
+              {/* Food Type Filter */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
                 >
-                  <div className="card-body py-0">
-                    <div className="row">
-                      <div className="col-3 px-0">
-                        <img
-                          src={menu.image || images}
-                          alt={menu.menu_name}
-                          className="rounded-4 img-fluid object-fit-cover"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            aspectRatio: "1/1",
-                          }}
-                          onError={(e) => {
-                            e.target.src = images;
-                            e.target.style.width = "100%";
-                            e.target.style.height = "100%";
-                            e.target.style.aspectRatio = "1/1";
-                          }}
-                        />
-                        {/* Like Button */}
-                        <div
-                          className={`border border-1 rounded-circle ${
-                            isDarkMode ? "bg-dark" : "bg-white"
-                          } opacity-75 d-flex justify-content-center align-items-center`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            right: "76%",
-                            height: "20px",
-                            width: "20px",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.is_favourite
-                                ? "fa-solid fa-heart text-danger"
-                                : "fa-regular fa-heart"
-                            } fs-6`}
-                          ></i>
-                        </div>
-                        {/* Special Star */}
-                        {menu.is_special && (
-                          <i
-                            className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                            style={{
-                              position: "absolute",
-                              top: 3,
-                              right: "76%",
-                              height: 17,
-                              width: 17,
-                            }}
-                          ></i>
-                        )}
-                        {/* Food Type Indicator */}
-                        <div
-                          className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                            getFoodTypeStyles(menu.menu_food_type).border
-                          }`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            left: "3px",
-                            height: "20px",
-                            width: "20px",
-                            borderWidth: "2px",
-                            borderRadius: "3px",
-                          }}
-                        >
-                          <i
-                            className={`${
-                              getFoodTypeStyles(menu.menu_food_type).icon
-                            } font_size_12`}
-                          ></i>
-                        </div>
-                        {/* Offer Tag */}
-                        {menu.offer !== 0 && (
-                          <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                            <span className="font_size_10 text-white">
-                              {menu.offer || "No"}% Off
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="col-9 pt-1 p-0 pe-2">
-                        <div className="row d-flex align-items-center mt-1">
-                          <div className="col-10">
-                            <div className="ps-2 font_size_14 fw-medium">
-                              {menu.menu_name}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row d-flex align-items-center mt-1">
-                          <div className="col-6 d-flex align-items-center">
-                            <div className="font_size_10 text-success">
-                              <i className="fa-solid fa-utensils text-success me-1"></i>
-                              {menu.category_name}
-                            </div>
-                          </div>
-                          <div className="col-4 d-flex align-items-center ps-4 pe-3">
-                            {menu.spicy_index && (
-                              <div className="">
-                                {renderSpicyLevel(menu.spicy_index)}
-                              </div>
-                            )}
-                          </div>
-                          <div className="col-2 d-flex align-items-center justify-content-end">
-                            {menu.rating > 0 && (
-                              <>
-                                {renderStarRating(menu.rating)}
-                                <span className="font_size_10 fw-normal gray-text">
-                                  {menu.rating}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-5 mt-2">
-                            <p className="ms-2 mb-0 fw-medium">
-                              {menu.offer ? (
-                                <>
-                                  <span className="font_size_14 fw-semibold text-info">
-                                    ₹
-                                    {Math.floor(
-                                      menu.price * (1 - menu.offer / 100)
-                                    )}
-                                  </span>
-                                  <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                    ₹{menu.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="font_size_14 fw-semibold text-info">
-                                  ₹{menu.price}
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
-                            <div
-                              className={`
-                                d-flex 
-                                align-items-center 
-                                justify-content-center 
-                                rounded-circle 
-                                bg-white 
-                                border-opacity-25 
-                                border-secondary 
-                                border
-                              `}
-                              style={{
-                                width: "25px",
-                                height: "25px",
-                                cursor: "pointer",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (userData?.user_id) {
-                                  handleAddToCartClick(menu);
-                                } else {
-                                  showLoginPopup();
-                                }
-                              }}
-                            >
-                              <i
-                                className={`fa-solid ${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "fa-solid fa-circle-check text-success"
-                                    : "fa-solid fa-plus text-secondary"
-                                } fs-6`}
-                              ></i>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                  {selectedFoodType ? (
+                    <div className="d-flex align-items-center">
+                      <i
+                        className={`${
+                          getFoodTypeStyles(selectedFoodType).icon
+                        } ${
+                          getFoodTypeStyles(selectedFoodType).textColor
+                        } me-2`}
+                      ></i>
+                      <span
+                        className={
+                          getFoodTypeStyles(selectedFoodType).textColor
+                        }
+                      >
+                        {selectedFoodType.charAt(0).toUpperCase() +
+                          selectedFoodType.slice(1)}
+                      </span>
                     </div>
+                  ) : (
+                    <div className="d-flex align-items-center">
+                      <i className="fa-solid fa-filter text-success me-2"></i>
+                      <span className="text-success">Type</span>
+                    </div>
+                  )}
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleFilter(null)}
+                    >
+                      <i className="fa-solid fa-utensils text-success me-2"></i>
+                      <span>All</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  {foodTypes.map((type) => (
+                    <li key={type}>
+                      <button
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => handleFilter(type)}
+                      >
+                        <i
+                          className={`${getFoodTypeStyles(type).icon} ${
+                            getFoodTypeStyles(type).textColor
+                          } me-2`}
+                        ></i>
+                        <span className={getFoodTypeStyles(type).textColor}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Price Filter */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                    <span className="text-success">
+                      {priceFilter === "under50"
+                        ? "Under ₹50"
+                        : priceFilter === "under100"
+                        ? "Under ₹100"
+                        : priceFilter === "under200"
+                        ? "Under ₹200"
+                        : priceFilter === "under500"
+                        ? "Under ₹500"
+                        : priceFilter === "under1000"
+                        ? "Under ₹1000"
+                        : priceFilter === "above1000"
+                        ? "Above ₹1000"
+                        : "Price"}
+                    </span>
                   </div>
-                </Link>
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter(null)}
+                    >
+                      <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
+                      <span>All Prices</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under50")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹50</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under100")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹100</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under200")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹200</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under500")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹500</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under1000")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹1000</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("above1000")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Above ₹1000</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Spicy Filter */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                    <span className="text-success">
+                      {spicyFilter === 1
+                        ? "Spicy 1"
+                        : spicyFilter === 2
+                        ? "Spicy 2"
+                        : spicyFilter === 3
+                        ? "Spicy 3"
+                        : "Spicy"}
+                    </span>
+                  </div>
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(null)}
+                    >
+                      <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
+                      <span>All</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(1)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                      <span>Low</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(2)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
+                      <span>Medium</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(3)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
+                      <span>High</span>
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
-          ))}
+
+            {/* Then show menu items if they exist */}
+            {searchedMenu.length > 0 ? (
+              <div className="menu-items-container">
+                {searchedMenu.map((menu, index) => (
+                  <div className="py-1 px-0" key={index}>
+                    <div className="custom-card rounded-4 shadow-sm">
+                      <Link
+                        to={`/user_app/ProductDetails/${menu.menu_id}`}
+                        state={{
+                          restaurant_id: menu.restaurant_id,
+                          menu_cat_id: menu.menu_cat_id,
+                        }}
+                        className="text-decoration-none text-reset"
+                        onClick={() => handleMenuClick(menu)}
+                      >
+                        <div className="card-body py-0">
+                          <div className="row">
+                            <div className="col-3 px-0">
+                              <img
+                                src={menu.image || images}
+                                alt={menu.menu_name}
+                                className="rounded-4 img-fluid object-fit-cover"
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  aspectRatio: "1/1",
+                                }}
+                                onError={(e) => {
+                                  e.target.src = images;
+                                  e.target.style.width = "100%";
+                                  e.target.style.height = "100%";
+                                  e.target.style.aspectRatio = "1/1";
+                                }}
+                              />
+                              {/* Like Button */}
+                              <div
+                                className={`border border-1 rounded-circle ${
+                                  isDarkMode ? "bg-dark" : "bg-white"
+                                } opacity-75 d-flex justify-content-center align-items-center`}
+                                style={{
+                                  position: "absolute",
+                                  bottom: "3px",
+                                  right: "76%",
+                                  height: "20px",
+                                  width: "20px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleLikeClick(menu.menu_id);
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    menu.is_favourite
+                                      ? "fa-solid fa-heart text-danger"
+                                      : "fa-regular fa-heart"
+                                  } fs-6`}
+                                ></i>
+                              </div>
+                              {/* Special Star */}
+                              {menu.is_special && (
+                                <i
+                                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                  style={{
+                                    position: "absolute",
+                                    top: 3,
+                                    right: "76%",
+                                    height: 17,
+                                    width: 17,
+                                  }}
+                                ></i>
+                              )}
+                              {/* Food Type Indicator */}
+                              <div
+                                className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                                  getFoodTypeStyles(menu.menu_food_type).border
+                                }`}
+                                style={{
+                                  position: "absolute",
+                                  bottom: "3px",
+                                  left: "3px",
+                                  height: "20px",
+                                  width: "20px",
+                                  borderWidth: "2px",
+                                  borderRadius: "3px",
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    getFoodTypeStyles(menu.menu_food_type).icon
+                                  } font_size_12`}
+                                ></i>
+                              </div>
+                              {/* Offer Tag */}
+                              {menu.offer !== 0 && (
+                                <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                                  <span className="font_size_10 text-white">
+                                    {menu.offer || "No"}% Off
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="col-9 pt-1 p-0 pe-2">
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-10">
+                                  <div className="ps-2 font_size_14 fw-medium">
+                                    {menu.menu_name}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-6 d-flex align-items-center">
+                                  <div className="font_size_10 text-success">
+                                    <i className="fa-solid fa-utensils text-success me-1"></i>
+                                    {menu.category_name}
+                                  </div>
+                                </div>
+                                <div className="col-4 d-flex align-items-center ps-4 pe-3">
+                                  {menu.spicy_index && (
+                                    <div className="">
+                                      {renderSpicyLevel(menu.spicy_index)}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="col-2 d-flex align-items-center justify-content-end">
+                                  {menu.rating > 0 && (
+                                    <>
+                                      {renderStarRating(menu.rating)}
+                                      <span className="font_size_10 fw-normal gray-text">
+                                        {menu.rating}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-5 mt-2">
+                                  <p className="ms-2 mb-0 fw-medium">
+                                    {menu.offer ? (
+                                      <>
+                                        <span className="font_size_14 fw-semibold text-info">
+                                          ₹
+                                          {Math.floor(
+                                            menu.price * (1 - menu.offer / 100)
+                                          )}
+                                        </span>
+                                        <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                          ₹{menu.price}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="font_size_14 fw-semibold text-info">
+                                        ₹{menu.price}
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                                <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
+                                  <div
+                                    className={`
+                                      d-flex 
+                                      align-items-center 
+                                      justify-content-center 
+                                      rounded-circle 
+                                      bg-white 
+                                      border-opacity-25 
+                                      border-secondary 
+                                      border
+                                    `}
+                                    style={{
+                                      width: "25px",
+                                      height: "25px",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      if (userData?.user_id) {
+                                        handleAddToCartClick(menu);
+                                      } else {
+                                        showLoginPopup();
+                                      }
+                                    }}
+                                  >
+                                    <i
+                                      className={`fa-solid ${
+                                        isMenuItemInCart(menu.menu_id)
+                                          ? "fa-solid fa-circle-check text-success"
+                                          : "fa-solid fa-plus text-secondary"
+                                      } fs-6`}
+                                    ></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center mt-4">
+                <p>No menu items found</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="container">
           <RestaurantSocials />

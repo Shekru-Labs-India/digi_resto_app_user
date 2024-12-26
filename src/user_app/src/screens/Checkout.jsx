@@ -1227,8 +1227,8 @@ const Checkout = () => {
                             )}
                           </div>
                           {item.comment && (
-                            <p className="font_size_12 text-dark mt-1 mb-0 ms-2">
-                              <i className="fa-solid fa-comment-dots me-2"></i>{" "}
+                            <p className="font_size_12 text-light mt-1 mb-0 ms-2">
+                              <i className="fa-solid fa-comment-dots"></i>{" "}
                               {item.comment}
                             </p>
                           )}
@@ -1240,10 +1240,10 @@ const Checkout = () => {
                             {item.offer ? (
                               <>
                                 <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.discountedPrice}
+                                  ₹{item.discountedPrice.toFixed(2)}
                                 </span>
                                 <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹{item.price}
+                                  ₹{item.price.toFixed(2)}
                                 </span>
                               </>
                             ) : (
