@@ -416,31 +416,33 @@ const OfferBanner = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
+    // 0 to 0.4: No star
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
+      return null; // Don't show anything
     }
 
+    // 0.5 to 2.5: Blank star (grey)
     if (numRating >= 0.5 && numRating <= 2.5) {
       return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+        <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>
       );
     }
 
+    // 3 to 4.5: Half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
+    // 5: Full star
     if (numRating === 5) {
       return (
         <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
       );
     }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
+    return null; // Default case
   };
 
   return (

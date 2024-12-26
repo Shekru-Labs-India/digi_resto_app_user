@@ -66,33 +66,33 @@ const getFoodTypeStyles = (foodType) => {
 };
 
 // Add this function near the top with other utility functions
-const renderStarRating = (rating) => {
-  const numRating = parseFloat(rating);
+ const renderStarRating = (rating) => {
+   const numRating = parseFloat(rating);
 
-  if (!numRating || numRating < 0.5) {
-    return <i className="font_size_10 text-warning me-1"></i>;
-  }
+   // 0 to 0.4: No star
+   if (!numRating || numRating < 0.5) {
+     return null; // Don't show anything
+   }
 
-  if (numRating >= 0.5 && numRating <= 2.5) {
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  }
+   // 0.5 to 2.5: Blank star (grey)
+   if (numRating >= 0.5 && numRating <= 2.5) {
+     return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+   }
 
-  if (numRating >= 3 && numRating <= 4.5) {
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  }
+   // 3 to 4.5: Half star
+   if (numRating >= 3 && numRating <= 4.5) {
+     return (
+       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+     );
+   }
 
-  if (numRating === 5) {
-    return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
-  }
+   // 5: Full star
+   if (numRating === 5) {
+     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+   }
 
-  return (
-    <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-  );
-};
+   return null; // Default case
+ };
 
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
