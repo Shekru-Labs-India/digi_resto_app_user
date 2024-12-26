@@ -1296,7 +1296,7 @@ const Checkout = () => {
                 <div></div>
               )}
             </div>
-            {cartItems.length > 0 && !loading ? (
+            {cartItems.length > 0 && (
               <div className="card mx-auto rounded-4 mt-2">
                 <div className="row px-2 py-1">
                   <div className="col-12 px-2">
@@ -1438,11 +1438,7 @@ const Checkout = () => {
                   </div>
                 </div>
               </div>
-            ) : error ? (
-              <div className="text-danger text-center mt-3">{error}</div>
-            ) : loading ? (
-              <div className="text-center mt-3">Calculating total...</div>
-            ) : null}
+            )}
 
             {cartItems.length > 0 && (
               <div className="text-center mt-3">
@@ -1469,18 +1465,41 @@ const Checkout = () => {
                     </>
                   )}
                 </button>
+                <div className="d-flex flex-column align-items-center justify-content-center mt-3">
+                  <div className="d-flex align-items-center justify-content-center">
+                    <Link
+                      to="/user_app/Menu"
+                      className="btn btn-outline-primary rounded-pill px-3"
+                    >
+                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
+                      More
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
-            <div className="d-flex flex-column align-items-center justify-content-center mt-3">
-              <div className="d-flex align-items-center justify-content-center">
-                <Link
-                  to="/user_app/Menu"
-                  className="btn btn-outline-primary rounded-pill px-3"
-                >
-                  <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-                </Link>
+
+            {cartItems.length === 0 && (
+              <div
+                className="container overflow-hidden d-flex justify-content-center align-items-center"
+                style={{ height: "78vh" }}
+              >
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <h5 className=" ">Your cart is empty.</h5>
+                    <p>Start ordering now!</p>
+                    <Link
+                      to="/user_app/Menu"
+                      className="btn btn-outline-primary rounded-pill px-3"
+                    >
+                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
+                      More
+                    </Link>
+                  </div>
+                </div>
+                
               </div>
-            </div>
+            )}
           </div>
         </div>
 

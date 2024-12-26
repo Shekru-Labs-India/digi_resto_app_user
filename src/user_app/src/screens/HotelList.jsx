@@ -19,17 +19,10 @@ const navigate = useNavigate();
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.restaurants.map((hotel) => {
+            const code = hotel.resto_url.split('user_app/')[1]?.split('/')[0];
             const urlParts = hotel.resto_url.split("/");
             const sectionId = urlParts[urlParts.length - 1];
             const tableNo = urlParts[urlParts.length - 2];
-            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || "";
-            
-            console.log('Processing hotel:', {
-              url: hotel.resto_url,
-              sectionId,
-              tableNo,
-              code
-            });
             
             return {
               ...hotel,
@@ -44,7 +37,7 @@ const navigate = useNavigate();
           localStorage.removeItem("allOrderList");
         }
       } catch (error) {
-        console.error('Error fetching hotels:', error);
+        console.error('Error:', error);
       }
     };
 
@@ -81,6 +74,13 @@ const navigate = useNavigate();
     }
 
     setFilteredHotels(filtered);
+  };
+
+  const handleHotelClick = (hotel) => {
+    localStorage.setItem("sectionId", hotel.section_id);
+    localStorage.setItem("restaurantCode", hotel.code);
+    localStorage.setItem("tableNumber", hotel.table_no);
+    navigate(`/user_app/${hotel.code}/${hotel.table_no}/${hotel.section_id}`);
   };
 
   return (
@@ -158,18 +158,7 @@ const navigate = useNavigate();
                 <div className="card rounded-4" key={hotel.restaurant_id}>
                   {hotel.is_open ? (
                     <div
-                    onClick={() => {
-                      console.log('Clicked hotel:', {
-                        sectionId: hotel.section_id,
-                        code: hotel.code,
-                        tableNo: hotel.table_no
-                      });
-                      
-                      localStorage.setItem("sectionId", hotel.section_id);
-                      localStorage.setItem("restaurantCode", hotel.code);
-                      localStorage.setItem("tableNumber", hotel.table_no);
-                      navigate(`/user_app/${hotel.code}/${hotel.table_no}/${hotel.section_id}`);
-                    }}
+                    onClick={() => handleHotelClick(hotel)}
                     >
                       <CardContent hotel={hotel} />
                     </div>

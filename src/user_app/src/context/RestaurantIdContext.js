@@ -63,20 +63,20 @@ export const RestaurantIdProvider = ({ children }) => {
             }
           })
           .then(response => response.json())
-          .then((data) => {
-            if (data.st === 1 && data.is_table_exists) {
-              // Table exists, set the table number
-              setTableNumber(table);
-              localStorage.setItem("tableNumber", table);
-            } else {
-              // Table doesn't exist, navigate to HotelList
-              navigate("/user_app/HotelList");
-            }
-          })
-          .catch((error) => {
-            console.clear();
-            navigate("/user_app/HotelList");
-          });
+          // .then((data) => {
+          //   if (data.st === 1 && data.is_table_exists) {
+          //     // Table exists, set the table number
+          //     setTableNumber(table);
+          //     localStorage.setItem("tableNumber", table);
+          //   } else {
+          //     // Table doesn't exist, navigate to HotelList
+          //     navigate("/user_app/HotelList");
+          //   }
+          // })
+          // .catch((error) => {
+          //   console.clear();
+          //   navigate("/user_app/HotelList");
+          // });
       }
 
       if (section) {
@@ -125,10 +125,17 @@ export const RestaurantIdProvider = ({ children }) => {
   }, [location, navigate]);
 
   useEffect(() => {
-    const fetchRestaurantDetails = async () => {
-      if (!restaurantCode || restaurantCode === lastFetchedCode.current) return;
+    const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
+      // Get code from localStorage if not provided
+      const storedCode = localStorage.getItem("restaurantCode");
+      const finalCode = restaurantCode || storedCode;
 
-      lastFetchedCode.current = restaurantCode;
+      // Debug log
+      console.log('Restaurant code being used:', {
+        providedCode: restaurantCode,
+        storedCode: storedCode,
+        finalCode: finalCode
+      });
 
       try {
         const response = await fetch(
@@ -139,7 +146,7 @@ export const RestaurantIdProvider = ({ children }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ 
-              restaurant_code: restaurantCode,
+              restaurant_code: finalCode,
               section_id: sectionId
             }),
           }
@@ -156,7 +163,7 @@ export const RestaurantIdProvider = ({ children }) => {
 
           localStorage.setItem("restaurantId", restaurant_id);
           localStorage.setItem("restaurantName", name);
-          localStorage.setItem("restaurantCode", restaurantCode);
+          localStorage.setItem("restaurantCode", finalCode);
           localStorage.setItem("restaurantStatus", account_status)
           localStorage.setItem("isRestaurantOpen", is_open)
           localStorage.setItem("sectionName", section_name)
@@ -167,7 +174,7 @@ export const RestaurantIdProvider = ({ children }) => {
               ...userData,
               restaurantId: restaurant_id,
               restaurantName: name,
-              restaurantCode: restaurantCode,
+              restaurantCode: finalCode,
               sectionId: sectionId
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
@@ -243,11 +250,11 @@ export const RestaurantIdProvider = ({ children }) => {
           console.clear();
         }
       } catch (error) {
-        console.clear();
+        console.error('Error fetching restaurant details:', error);
       }
     };
 
-    fetchRestaurantDetails();
+    fetchRestaurantDetails(restaurantCode, sectionId);
   }, [restaurantCode, sectionId, navigate]);
 
   useEffect(() => {
