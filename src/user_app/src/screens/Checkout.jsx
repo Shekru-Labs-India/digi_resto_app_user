@@ -1138,7 +1138,7 @@ const Checkout = () => {
                   <div className="d-grid gap-2">
                     <button
                       className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("cancel")}
+                      onClick={() => handleOrderActionClick("cancelled")}
                     >
                       Cancel Existing & Create New Order
                     </button>
@@ -1497,7 +1497,6 @@ const Checkout = () => {
                     </Link>
                   </div>
                 </div>
-                
               </div>
             )}
           </div>
