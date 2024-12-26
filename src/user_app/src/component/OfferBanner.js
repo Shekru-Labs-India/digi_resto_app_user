@@ -239,14 +239,8 @@ const OfferBanner = () => {
         loop: true,
         autoplay: {
           delay: 2500,
-          disableOnInteraction: true, // Changed to true
-          pauseOnMouseEnter: true, // Added this
+          disableOnInteraction: false,
         },
-        speed: 1000, // Added controlled speed
-        touchRatio: 1, // Normal touch ratio
-        preventClicks: false, // Allow clicks without stopping swiper
-        preventClicksPropagation: false, // Allow click events to propagate
-        grabCursor: true, // Shows grab cursor on hover
       });
 
       return () => {
