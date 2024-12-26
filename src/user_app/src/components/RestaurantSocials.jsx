@@ -11,8 +11,9 @@ function RestaurantSocials() {
 
   return (
     <div className="mb-0 pt-2">
-      <div className="divider border-success opacity-50 inner-divider mb-0 pb-0">
-        <span className="bg-body text-muted">Follow {restaurantName}</span>
+      <div className="divider border-success opacity-50 inner-divider mb-0 pb-0 mb-5">
+        <span className="bg-body text-muted">Follow {restaurantName}
+          </span>
       </div>
 
       <div className="container px-0 mt-3 pb-2">

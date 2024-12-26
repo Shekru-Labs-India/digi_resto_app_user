@@ -168,7 +168,7 @@ const Category = () => {
                   </div>
                 ))}
               </div>
-              <div className="container">
+              <div className="container px-0">
                 <RestaurantSocials />
               </div>
             </div>

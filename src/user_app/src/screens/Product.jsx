@@ -495,7 +495,7 @@ const Product = () => {
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
+      window.showToast("success", `${selectedMenu.name} is added.`);
 
       setShowModal(false);
       setComment("");
@@ -1144,9 +1144,9 @@ const Product = () => {
               <p>No items available with selected filters.</p>
             )}
           </div>
-          <div className="container">
+         
             <RestaurantSocials />
-          </div>
+         
         </div>
       </main>
 

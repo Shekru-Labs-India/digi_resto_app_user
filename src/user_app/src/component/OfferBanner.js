@@ -161,7 +161,7 @@ const OfferBanner = () => {
 
       if (success) {
         setShowModal(false);
-        window.showToast("success", "Item added to cart");
+        window.showToast("success", `${selectedMenu.name} is added.`);
         // Dispatch event to update cart UI
         window.dispatchEvent(new CustomEvent('cartUpdated'));
       } else {

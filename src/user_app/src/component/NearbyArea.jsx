@@ -156,7 +156,7 @@ const NearbyArea = () => {
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
+      window.showToast("success", `${selectedMenu.name} is added.`);
 
       setShowModal(false);
       setComment("");

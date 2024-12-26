@@ -898,12 +898,7 @@ const MenuDetails = () => {
 
           <div className="container py-0">
             <div className="dz-product-detail">
-              {/* {productDetails.is_special && (
-                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                  <i className="fa-regular fa-star me-2"></i> Special
-                  <hr className="mt-2 mb-0" />
-                </div>
-              )} */}
+             
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -939,53 +934,7 @@ const MenuDetails = () => {
                   )}
                 </div>
               </div>
-              {/* <div className="container ps-2 pt-1">
-                <div className="row">
-                  <div className="col-12 pt-1 px-0 ">
-                    {!isFromDifferentRestaurant && (
-                      <div className="dz-stepper style-3">
-                        
-                          <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
-                            <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                style={{
-                                  height: "30px",
-                                  width: "30px",
-                                }}
-                              >
-                                <i
-                                  className="ri-subtract-line fs-2"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleQuantityChange(-1)}
-                                ></i>
-                              </div>
-                            </span>
-                            <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
-                              {quantity}
-                            </span>
-                            <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                style={{
-                                  height: "30px",
-                                  width: "30px",
-                                }}
-                              >
-                                <i
-                                  className="ri-add-line fs-2"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleQuantityChange(1)}
-                                ></i>
-                              </div>
-                            </span>
-                          </div>
-                       
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div> */}
+             
 
               <div className=" ps-0 pt-1">
                 <div className="product-info menu_details-description">
@@ -996,7 +945,7 @@ const MenuDetails = () => {
                     </span>
                   </div>
                 </div>
-                <hr className="w-100"/>
+                <hr className=""/>
                 <div className="product-info menu_details-description">
                   <div>
                     <span className="text-capitalize text-wrap m-0 font_size_12">
@@ -1019,7 +968,7 @@ const MenuDetails = () => {
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
           <div className="container pt-0">
             <footer className="footer mb-2 pt-0">
-              <div className="row">
+              <div className="row w-100">
                 <hr className="dashed-line me-5 pe-5" />
 
                 <div className="col-4 ps-1 pe-0">
@@ -1086,7 +1035,7 @@ const MenuDetails = () => {
                       onClick={handleAddToCart}
                     >
                       <i className="fa-solid fa-plus  pe-2 text-white"></i>
-                      <div className="text-nowrap text-white">Add to Cart</div>
+                      <div className="text-nowrap text-white">Add</div>
                     </button>
                   )}
                 </div>

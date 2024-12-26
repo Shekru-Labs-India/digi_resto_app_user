@@ -165,7 +165,7 @@ const AddToCartUI = ({
                 disabled={isPriceFetching || (!prices.halfPrice && !prices.fullPrice)}
               >
                 <i className="fa-solid fa-plus pe-1 text-white"></i>
-                Add to Cart
+                Add
               </button>
             </div>
           </div>

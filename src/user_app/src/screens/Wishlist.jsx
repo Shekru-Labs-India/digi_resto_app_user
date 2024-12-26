@@ -298,7 +298,7 @@ const Wishlist = () => {
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.menu_name} added to cart`);
+      window.showToast("success", `${selectedMenu.menu_name} is added.`);
 
       setShowModal(false);
       setComment("");

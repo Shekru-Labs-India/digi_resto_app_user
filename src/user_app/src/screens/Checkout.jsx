@@ -795,7 +795,7 @@ const Checkout = () => {
   };
 
   const handleRemoveItem = async (e, menuId) => {
-    window.showToast("info", "Item removed from cart");
+    window.showToast("success", `Menu is removed.`);
     e.preventDefault();
     e.stopPropagation();
     try {
