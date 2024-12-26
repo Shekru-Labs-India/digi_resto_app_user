@@ -1001,7 +1001,7 @@ const Product = () => {
                           <i
                             className={`${
                               getFoodTypeStyles(menu.menu_food_type).icon
-                            } font_size_12 mb-1`}
+                            } font_size_12`}
                           ></i>
                         </div>
                         {menu.offer !== 0 && (
