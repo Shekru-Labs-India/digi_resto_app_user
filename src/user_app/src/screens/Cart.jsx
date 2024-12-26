@@ -433,9 +433,9 @@ const Cart = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-          textColor: "text-success", // Changed to green for category name
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text", // Changed to green for category name
           categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
@@ -455,52 +455,7 @@ const Cart = () => {
     }
   };
 
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
 
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-          border: "border-success",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-          border: "border-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-secondary",
-          border: "border-secondary",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-          border: "border-success",
-        };
-      default:
-        // Check if it's a known type with different casing
-        const lowerType = type.toLowerCase();
-        if (lowerType === "nonveg") {
-          return {
-            icon: "fa-solid fa-play fa-rotate-270",
-            textColor: "text-danger",
-            border: "border-danger",
-          };
-        }
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-          border: "border-success",
-        };
-    }
-  };
 
   if (isLoading) {
     return (

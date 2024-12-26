@@ -669,9 +669,9 @@ const Product = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-          textColor: "text-success", // Changed to green for category name
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text", // Changed to green for category name
           categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
@@ -691,38 +691,7 @@ const Product = () => {
     }
   };
 
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
-
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-        };
-    }
-  };
+  
 
   useEffect(() => {
     if (showAIModal) {

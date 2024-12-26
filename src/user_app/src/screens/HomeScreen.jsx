@@ -533,7 +533,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content space-top mb-5 p-b10">
+        <main className="page-content space-top mb-5 p-b40">
           <div className="container overflow-hidden pt-0">
             {/* {isNonProductionDomain() && <Notice />} */}
             <OfferBanner />
@@ -541,8 +541,8 @@ const HomeScreen = () => {
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
-            </div>
             <RestaurantSocials />
+            </div>
           </div>
         </main>
 

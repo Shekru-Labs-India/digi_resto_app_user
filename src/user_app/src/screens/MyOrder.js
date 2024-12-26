@@ -902,7 +902,7 @@ export const OrderCard = ({
             </div>
             <div className="col-6 text-end">
               <span className="text-info font_size_14 fw-semibold">
-                ₹{order.grand_total}
+                ₹{order.grand_total.toFixed(2)}
               </span>
               <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                 ₹
@@ -1579,7 +1579,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                         </div>
                         <div className="col-6 text-end">
                           <span className="text-info font_size_14 fw-semibold">
-                            ₹{order.grand_total}
+                            ₹{order.grand_total.toFixed(2)}
                           </span>
                           <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                             ₹
@@ -1769,22 +1769,23 @@ export const CircularCountdown = ({
     };
   }, [orderId]);
 
+  
+
+
   const handleTimerComplete = async () => {
     setTimeLeft(0);
     setIsCompleted(true);
     localStorage.removeItem(timerKey);
 
-    // Call the API to fetch updated orders
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.user_id || localStorage.getItem("user_id");
-      const restaurantId = order.restaurant_id; // Use the restaurant ID from the order object
-      const sectionId =
-        userData?.sectionId || localStorage.getItem("sectionId");
+      const currentCustomerId = userData?.user_id || localStorage.getItem("user_id");
+      const restaurantId = order.restaurant_id;
+      const sectionId = userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
 
+      // First update the order status in ongoing/placed orders
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
@@ -1801,30 +1802,89 @@ export const CircularCountdown = ({
       );
 
       const data = await response.json();
+      
+      // Handle the ongoing/placed orders update
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
+        let orderList = { placed: [], ongoing: [] };
+
         if (orders.length > 0) {
-          const status = orders[0]?.status;
-          const orderList =
-            status === "placed"
-              ? { placed: orders, ongoing: [] }
-              : { placed: [], ongoing: orders };
-          setOngoingOrPlacedOrders(orderList);
-        } else {
-          setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
+          // Group orders by their status
+          const placedOrders = orders.filter(o => o.status === "placed");
+          const ongoingOrders = orders.filter(o => o.status === "ongoing");
+
+          orderList = {
+            placed: placedOrders,
+            ongoing: ongoingOrders
+          };
+        }
+
+        setOngoingOrPlacedOrders(orderList);
+
+        // If this was a cancel or complete action, update all orders list
+        if (order.status === "cancelled" || order.status === "completed") {
+          // Fetch all orders to update the full order list
+          const allOrdersResponse = await fetch(
+            `${config.apiDomain}/user_api/get_all_orders`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_id: currentCustomerId,
+                restaurant_id: restaurantId,
+                section_id: sectionId,
+              }),
+            }
+          );
+
+          const allOrdersData = await allOrdersResponse.json();
+          
+          if (allOrdersData.st === 1) {
+            // Update localStorage with new order lists
+            localStorage.setItem("allOrderList", JSON.stringify(allOrdersData.data));
+            
+            // If order was cancelled, move it to cancelled list
+            if (order.status === "cancelled") {
+              const cancelledOrders = allOrdersData.data.cancelled || {};
+              const today = new Date().toISOString().split('T')[0];
+              
+              if (!cancelledOrders[today]) {
+                cancelledOrders[today] = [];
+              }
+              cancelledOrders[today].push(order);
+              
+              // Update cancelled orders in localStorage
+              const updatedAllOrders = {
+                ...allOrdersData.data,
+                cancelled: cancelledOrders
+              };
+              localStorage.setItem("allOrderList", JSON.stringify(updatedAllOrders));
+            }
+          }
         }
       } else {
-        console.clear();
         setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
       console.clear();
-      console.error("Error fetching orders after timer complete:", error);
+      setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
     }
 
-    // Call the onComplete function
-    onComplete();
-    // window.showToast("success", "Your order has moved to ongoing orders!");
+    // Call the onComplete callback if provided
+    if (onComplete) {
+      onComplete();
+    }
+
+    // Show appropriate toast message based on order status
+    if (order.status === "cancelled") {
+      window.showToast("success", "Order cancelled successfully!");
+    } else if (order.status === "completed") {
+      window.showToast("success", "Order completed successfully!");
+    } else {
+      window.showToast("info", "Order status updated!");
+    }
   };
 
   const percentage = (timeLeft / 90) * 100;

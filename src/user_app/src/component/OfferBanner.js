@@ -209,10 +209,10 @@ const OfferBanner = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-secondary",
-          border: "border-secondary",
-          textColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils text-success me-1",
+          icon: "fa-solid fa-egg gray-text",
+          border: "gray-text",
+          // textColor: "gray-text",
+          categoryIcon: "fa-solid fa-utensils me-1",
         };
       case "vegan":
         return {
@@ -356,38 +356,6 @@ const OfferBanner = () => {
   const handleModalClick = (e) => {
     if (e.target.classList.contains("modal")) {
       setShowModal(false);
-    }
-  };
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
-
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-light",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
-        };
     }
   };
 

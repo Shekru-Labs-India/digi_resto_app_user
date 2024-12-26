@@ -425,48 +425,7 @@ const Wishlist = () => {
     );
   };
 
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
 
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-          categoryColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-          categoryColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-secondary",
-          categoryColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-          categoryColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-          categoryColor: "text-success",
-          categoryIcon: "fa-solid fa-utensils",
-        };
-    }
-  };
 
   const getFoodTypeStyles = (foodType) => {
     // Convert foodType to lowercase for case-insensitive comparison
@@ -486,7 +445,7 @@ const Wishlist = () => {
       case "egg":
         return {
           icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          border: "gray-text",
         };
       case "vegan":
         return {

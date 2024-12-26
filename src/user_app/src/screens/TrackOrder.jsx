@@ -15,38 +15,7 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 const TrackOrder = () => {
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
-
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
-          border: "border-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf text-success",
-          border: "border-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle text-success",
-          border: "border-success",
-        };
-    }
-  };
+ 
 
   const titleCase = (str) => {
     if (!str) return "";
@@ -724,9 +693,9 @@ const TrackOrder = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text", // Food type indicator color
-          border: "border-muted",
-          textColor: "text-success", // Category text color - always green
+          icon: "fa-solid fa-egg", // Food type indicator color
+          border: "gray-text",
+          textColor: "gray-text", // Category text color - always green
           categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
@@ -1143,7 +1112,7 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="text-end">
                     <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total}
+                      ₹{order_details.grand_total.toFixed(2)}
                     </span>
                     <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                       ₹
@@ -1156,31 +1125,19 @@ const TrackOrder = () => {
                   </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-6">
-                  <div className="menu-info">
+
+              {orderDetails?.order_details?.payment_method && (
+                <div className="row">
+                  <div className="col-6">
+                    <div className="menu-info">
                     <span className="font_size_12 gray-text">
                      
                       Payment Method: {order_details.payment_method}
                     </span>
                   </div>
                 </div>
-                <div className="col-6">
-                  <div className="text-end">
-                    <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total}
-                    </span>
-                    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                      ₹
-                      {(
-                        order_details.grand_total /
-                          (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total
-                      ).toFixed(2)}
-                    </span>
-                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

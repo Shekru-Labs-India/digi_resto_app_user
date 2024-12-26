@@ -418,39 +418,7 @@ const Search = () => {
     localStorage.setItem("isDarkMode", newIsDarkMode);
   };
 
-  const getFoodTypeTextStyles = (foodType) => {
-    // Convert foodType to lowercase for case-insensitive comparison
-    const type = (foodType || "").toLowerCase();
-
-    switch (type) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle text-success", // Icon color
-          textColor: "text-success", // Category text color
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Icon color
-          textColor: "text-success", // Category text color
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg text-secondary", // Icon color
-          textColor: "text-success", // Category text color
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf text-success", // Icon color
-          textColor: "text-success", // Category text color
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle text-success", // Icon color
-          textColor: "text-success", // Category text color
-        };
-    }
-  };
-
+ 
   const getFoodTypeStyles = (foodType) => {
     // Convert foodType to lowercase for case-insensitive comparison
     const type = (foodType || "").toLowerCase();
@@ -472,9 +440,9 @@ const Search = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-secondary", // Food type indicator color
-          border: "border-secondary",
-          textColor: "text-success", // Category text color - always green
+          icon: "fa-solid fa-egg", // Food type indicator color
+          border: "gray-text",
+          textColor: "gray-text", // Category text color - always green
           categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":

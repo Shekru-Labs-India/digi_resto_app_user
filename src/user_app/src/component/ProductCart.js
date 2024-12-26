@@ -679,9 +679,9 @@ const ProductCard = ({ isVegOnly }) => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-secondary",
-          textColor: "text-success", // Changed to green for category text
-          border: "border-secondary",
+          icon: "fa-solid fa-egg",
+          textColor: "gray-text", // Changed to green for category text
+          border: "gray-text",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "vegan":
