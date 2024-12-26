@@ -309,7 +309,7 @@ const Checkout = () => {
         }))
       };
 
-      if (orderStatus === "completed" && paymentMethod) {
+      if (orderStatus === "paid" && paymentMethod) {
         requestBody.payment_method = paymentMethod;
       }
 
@@ -532,7 +532,7 @@ const Checkout = () => {
 
   const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
     try {
-      await handleOrderAction("completed", existingOrderDetails.orderType, method);
+      await handleOrderAction("paid", existingOrderDetails.orderType, method);
       
       if (paymentUrl) {
         window.location.href = paymentUrl;
@@ -1363,7 +1363,7 @@ const Checkout = () => {
                       </span>
                     </div>
 
-                    <div className="col-12 mb-0 py-1 px-2">
+                    <div className="col-12 mb-0 py-1">
                       <div className="row align-items-center justify-content-center">
                         <div className="col-1 text-center">
                           <div

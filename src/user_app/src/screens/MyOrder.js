@@ -1807,6 +1807,7 @@ export const CircularCountdown = ({
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
         let orderList = { placed: [], ongoing: [] };
+        window.location.reload();
 
         if (orders.length > 0) {
           // Group orders by their status
