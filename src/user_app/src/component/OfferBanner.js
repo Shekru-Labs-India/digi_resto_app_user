@@ -592,7 +592,7 @@ const OfferBanner = () => {
                                   <>
                                     {renderStarRating(menuItem.rating)}
                                     <span className="font_size_10 fw-normal gray-text">
-                                      {menuItem.rating}
+                                      {menuItem.rating.toFixed(1)}
                                     </span>
                                   </>
                                 )}

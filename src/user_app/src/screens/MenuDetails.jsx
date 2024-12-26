@@ -922,18 +922,18 @@ const MenuDetails = () => {
               <div className="product-meta ">
                 <div className="row me-1">
                   <div className="col-8">
-                    <div className="ps-2">
+                    <div className="">
                       <span className="font_size_10 text-success">
                         <i className="fa-solid fa-utensils text-success me-1"></i>
                         {productDetails.menu_cat_name}
                       </span>
                     </div>
                   </div>
-                  {productDetails.rating && (
+                  {productDetails.rating && productDetails.rating !== "null" && (
                     <div className="col-4 text-end px-0">
                       <span className="ps-2 font_size_10">
                         {renderStarRating(productDetails.rating)}
-                        {productDetails.rating}
+                        {productDetails.rating.toFixed(1)}
                       </span>
                     </div>
                   )}
@@ -987,25 +987,27 @@ const MenuDetails = () => {
                 </div>
               </div> */}
 
-              <div className="container ps-0 pt-1">
+              <div className=" ps-0 pt-1">
                 <div className="product-info menu_details-description">
-                  <div>
+                  <div className="">
                     <i className="fa-solid fa-spoon me-2 mt-4"></i>
                     <span className="text-wrap m-0 gray-text font_size_12">
                       {toTitleCase(productDetails.ingredients)}
                     </span>
                   </div>
-                  <hr />
+                </div>
+                <hr className="w-100"/>
+                <div className="product-info menu_details-description">
                   <div>
                     <span className="text-capitalize text-wrap m-0 font_size_12">
                       {productDetails.description}
                     </span>
                   </div>
-
-                  {showQuantityError && (
-                    <div className="text-danger">Please add a quantity.</div>
-                  )}
                 </div>
+
+                {showQuantityError && (
+                  <div className="text-danger">Please add a quantity.</div>
+                )}
 
                 {/* Add end border */}
                 <RestaurantSocials />
