@@ -112,6 +112,10 @@ const MyOrder = () => {
                 ? { placed: orders, ongoing: [] }
                 : { placed: [], ongoing: orders };
             setOngoingOrPlacedOrders(orderList);
+             localStorage.setItem(
+               "timeOfPlacedOrder",
+               data.data.map((order) => order.time)
+             );
 
             localStorage.setItem("allOrderList", JSON.stringify(orderList));
           } else {
@@ -1719,6 +1723,7 @@ export const CircularCountdown = ({
   setOngoingOrPlacedOrders,
   order,
   setActiveTab,
+  fetchOrders,
 }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -1777,6 +1782,9 @@ export const CircularCountdown = ({
     setIsCompleted(true);
     localStorage.removeItem(timerKey);
 
+    // fetchOrders();
+    window.location.reload();
+
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const currentCustomerId = userData?.user_id || localStorage.getItem("user_id");
@@ -1807,6 +1815,11 @@ export const CircularCountdown = ({
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
         let orderList = { placed: [], ongoing: [] };
+        localStorage.setItem(
+          "timeOfPlacedOrder",
+          data.data.map((order) => order.time)
+        );
+
         window.location.reload();
 
         if (orders.length > 0) {
