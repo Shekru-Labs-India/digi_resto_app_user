@@ -77,10 +77,21 @@ const navigate = useNavigate();
   };
 
   const handleHotelClick = (hotel) => {
-    localStorage.setItem("sectionId", hotel.section_id);
-    localStorage.setItem("restaurantCode", hotel.code);
-    localStorage.setItem("tableNumber", hotel.table_no);
-    navigate(`/user_app/${hotel.code}/${hotel.table_no}/${hotel.section_id}`);
+      if (hotel.is_outlet_filled !== true) {
+        navigate("/user_app/HotelList");
+      }
+      else{
+      
+      localStorage.setItem("sectionId", hotel.section_id);
+      localStorage.setItem("restaurantCode", hotel.code);
+      localStorage.setItem("tableNumber", hotel.table_no);
+      navigate(`/user_app/${hotel.code}/${hotel.table_no}/${hotel.section_id}`);
+      
+      }
+
+
+
+    
   };
 
   return (
