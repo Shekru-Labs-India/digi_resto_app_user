@@ -233,7 +233,7 @@ const ProductCard = ({ isVegOnly }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user_id: storedUserData?.user_id || null,
-            restaurant_id: storedRestaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -355,7 +355,7 @@ const ProductCard = ({ isVegOnly }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             menu_id: menuId,
             user_id: userData.user_id,
           }),
@@ -434,7 +434,7 @@ const ProductCard = ({ isVegOnly }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -533,7 +533,7 @@ const ProductCard = ({ isVegOnly }) => {
           comment,
           half_or_full: portionSize,
           price: portionSize === "half" ? halfPrice : fullPrice,
-          restaurant_id: restaurantId,
+          outlet_id: restaurantId,
         },
         restaurantId
       );
@@ -579,7 +579,7 @@ const ProductCard = ({ isVegOnly }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             user_id: userData?.user_id,
           }),
         }

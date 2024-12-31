@@ -128,7 +128,7 @@ const Wishlist = () => {
           },
           body: JSON.stringify({
             user_id: userData.user_id,
-            restaurant_id: localStorage.getItem("restaurantId"),
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -217,7 +217,7 @@ const Wishlist = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }

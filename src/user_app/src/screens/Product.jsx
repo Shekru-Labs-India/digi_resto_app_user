@@ -177,7 +177,7 @@ const Product = () => {
           },
           body: JSON.stringify({
             user_id: userData ? userData.user_id : null,
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -407,7 +407,7 @@ const Product = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }

@@ -37,14 +37,14 @@ export const RestaurantIdProvider = ({ children }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ 
-            restaurant_code: code,
+            outlet_code: code,
             section_id: section || null 
           }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.st === 1) {
-              const { restaurant_id } = data.restaurant_details;
+              const { restaurant_id } = data.outlet_details;
               
               // Now validate the table
               return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
@@ -53,9 +53,9 @@ export const RestaurantIdProvider = ({ children }) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  restaurant_id: restaurant_id,
+                  outlet_id: localStorage.getItem("outlet_id"),
                   section_id: section || null,
-                  table_id: table
+                  table_number: table,
                 }),
               });
             } else {
@@ -88,7 +88,7 @@ export const RestaurantIdProvider = ({ children }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ restaurant_code: code, section_id: section }),
+          body: JSON.stringify({ outlet_code: code, section_id: section }),
         })
           .then((response) => response.json())
           .then((data) => {
@@ -146,7 +146,7 @@ export const RestaurantIdProvider = ({ children }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ 
-              restaurant_code: finalCode,
+              outlet_code: finalCode,
               section_id: sectionId
             }),
           }
@@ -154,14 +154,14 @@ export const RestaurantIdProvider = ({ children }) => {
 
         const data = await response.json();
         if (data.st === 1) {
-          const { restaurant_id, name, account_status, is_open, section_name } = data.restaurant_details;
-          setRestaurantId(restaurant_id);
+          const { outlet_id, name, account_status, is_open, section_name } = data.outlet_details;
+          setRestaurantId(outlet_id);
           setRestaurantName(name);
           setRestaurantStatus(account_status)
           setIsRestaurantOpen(is_open)
           setSectionName(section_name)
 
-          localStorage.setItem("restaurantId", restaurant_id);
+          localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", finalCode);
           localStorage.setItem("restaurantStatus", account_status)
@@ -172,7 +172,7 @@ export const RestaurantIdProvider = ({ children }) => {
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
-              restaurantId: restaurant_id,
+              restaurantId: outlet_id,
               restaurantName: name,
               restaurantCode: finalCode,
               sectionId: sectionId
@@ -182,42 +182,42 @@ export const RestaurantIdProvider = ({ children }) => {
 
           const socialsArray = [
             {
-              id: 'whatsapp',
-              icon: 'ri-whatsapp-line',
-              name: 'WhatsApp',
-              link: data.restaurant_details.whatsapp || '',
+              id: "whatsapp",
+              icon: "ri-whatsapp-line",
+              name: "WhatsApp",
+              link: data.outlet_details.whatsapp || "",
             },
             {
-              id: 'facebook',
-              icon: 'ri-facebook-line',
-              name: 'Facebook',
-              link: data.restaurant_details.facebook || '',
+              id: "facebook",
+              icon: "ri-facebook-line",
+              name: "Facebook",
+              link: data.outlet_details.facebook || "",
             },
             {
-              id: 'instagram',
-              icon: 'ri-instagram-line',
-              name: 'Instagram',
-              link: data.restaurant_details.instagram || '',
+              id: "instagram",
+              icon: "ri-instagram-line",
+              name: "Instagram",
+              link: data.outlet_details.instagram || "",
             },
             {
-              id: 'website',
-              icon: 'ri-global-line',
-              name: 'Website',
-              link: data.restaurant_details.website || '',
+              id: "website",
+              icon: "ri-global-line",
+              name: "Website",
+              link: data.outlet_details.website || "",
             },
             {
-              id: 'google_review',
-              icon: 'ri-google-line',
-              name: 'Review',
-              link: data.restaurant_details.google_review || '',
+              id: "google_review",
+              icon: "ri-google-line",
+              name: "Review",
+              link: data.outlet_details.google_review || "",
             },
             {
-              id: 'google_business',
-              icon: 'ri-store-2-line',
-              name: 'Business',
-              link: data.restaurant_details.google_business_link || '',
-            }
-          ].filter(item => item.link);
+              id: "google_business",
+              icon: "ri-store-2-line",
+              name: "Business",
+              link: data.outlet_details.google_business_link || "",
+            },
+          ].filter((item) => item.link);
 
           localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
           

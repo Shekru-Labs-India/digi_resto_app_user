@@ -7,16 +7,19 @@ export const FavoritesProvider = ({ children }) => {
 
   const fetchFavorites = useCallback(async (user_id, restaurantId) => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: user_id,
-          restaurant_id: restaurantId,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user_id,
+            outlet_id: restaurantId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -32,17 +35,20 @@ export const FavoritesProvider = ({ children }) => {
 
   const addFavorite = async (item, user_id, restaurantId) => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/save_favourite_menu`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: user_id,
-          restaurant_id: restaurantId,
-          menu_id: item.menu_id,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/save_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user_id,
+            outlet_id: restaurantId,
+            menu_id: item.menu_id,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -57,17 +63,20 @@ export const FavoritesProvider = ({ children }) => {
 
   const removeFavorite = async (itemId, user_id, restaurantId) => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: user_id,
-          restaurant_id: restaurantId,
-          menu_id: itemId,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/remove_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user_id,
+            outlet_id: restaurantId,
+            menu_id: itemId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

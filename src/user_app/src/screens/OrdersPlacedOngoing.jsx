@@ -68,7 +68,7 @@ const titleCase = (str) => {
   return String(str)
     .toLowerCase()
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 };
 
@@ -358,7 +358,7 @@ const OrderCard = ({
                 <div className="restaurant">
                   <i className="fa-solid fa-store pe-2 font_size_14"></i>
                   <span className="fw-medium font_size_14">
-                    {order.restaurant_name.toUpperCase()}
+                    {order.restaurant_name?.toUpperCase()}
                   </span>
                 </div>
               </div>
@@ -491,7 +491,7 @@ const OrdersPlacedOngoing = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user_id: userData.user_id,
-            restaurant_id: userData.restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             section_id: sectionId,
           }),
           signal: controller.signal

@@ -98,7 +98,7 @@ const OfferBanner = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user_id: currentCustomerId,
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -294,7 +294,7 @@ const OfferBanner = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             menu_id: menuId,
             user_id: userData.user_id,
             role: userData.role,
@@ -368,7 +368,7 @@ const OfferBanner = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }

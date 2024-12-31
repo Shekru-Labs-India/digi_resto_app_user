@@ -266,7 +266,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             user_id: userId || null,
@@ -368,7 +368,7 @@ const MenuDetails = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }

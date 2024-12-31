@@ -18,12 +18,12 @@ const navigate = useNavigate();
         );
         const data = await response.json();
         if (data.st === 1) {
-          const formattedHotels = data.restaurants.map((hotel) => {
-            const code = hotel.resto_url.split('user_app/')[1]?.split('/')[0];
+          const formattedHotels = data.outlets.map((hotel) => {
+            const code = hotel.resto_url.split("user_app/")[1]?.split("/")[0];
             const urlParts = hotel.resto_url.split("/");
             const sectionId = urlParts[urlParts.length - 1];
             const tableNo = urlParts[urlParts.length - 2];
-            
+
             return {
               ...hotel,
               code,
@@ -155,7 +155,7 @@ const navigate = useNavigate();
           >
             {filteredHotels.length > 0 ? (
               filteredHotels.map((hotel) => (
-                <div className="card rounded-4" key={hotel.restaurant_id}>
+                <div className="card rounded-4" key={hotel.outlet_id}>
                   {hotel.is_open ? (
                     <div
                     onClick={() => handleHotelClick(hotel)}
@@ -263,7 +263,7 @@ const CardContent = ({ hotel }) => (
       <div className="d-flex align-items-center">
         <i className="fa-solid fa-store font_size_14"></i>
         <span className="font_size_14 fw-medium ms-2">
-          {hotel.restaurant_name.toUpperCase()}
+          {hotel.outlet_name?.toUpperCase()}
         </span>
       </div>
 

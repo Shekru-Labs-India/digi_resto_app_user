@@ -62,7 +62,7 @@ const Cart = () => {
           body: JSON.stringify({
             cart_id: cartId,
             user_id: user_id,
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
           }),
         }
       );

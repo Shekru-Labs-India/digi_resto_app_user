@@ -173,14 +173,17 @@ const Checkout = () => {
       setIsProcessing(true); // Show loading state
 
       // Check for existing order
-      const response = await fetch(`${config.apiDomain}/user_api/check_order_exist`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userData.user_id,
-          restaurant_id: restaurantId,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/check_order_exist`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: userData.user_id,
+            outlet_id: restaurantId,
+          }),
+        }
+      );
 
       const data = await response.json();
       setIsProcessing(false);
@@ -233,7 +236,7 @@ const Checkout = () => {
 
       const requestBody = {
         user_id: userData.user_id,
-        restaurant_id: restaurantId,
+        outlet_id: restaurantId,
         table_number: localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
@@ -297,16 +300,16 @@ const Checkout = () => {
         order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
         order_status: orderStatus,
-        restaurant_id: restaurantId,
+        outlet_id: restaurantId,
         table_number: userData?.tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: storedCart.order_items.map(item => ({
+        order_items: storedCart.order_items.map((item) => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
           comment: item.comment || "",
-          half_or_full: item.half_or_full || "full"
-        }))
+          half_or_full: item.half_or_full || "full",
+        })),
       };
 
       if (orderStatus === "paid" && paymentMethod) {
@@ -357,13 +360,13 @@ const Checkout = () => {
       const requestBody = {
         order_id: existingOrderDetails.orderId,
         user_id: userData.user_id,
-        restaurant_id: restaurantId,
-        order_items: storedCart.order_items.map(item => ({
+        outlet_id: restaurantId,
+        order_items: storedCart.order_items.map((item) => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
           half_or_full: item.half_or_full || "full",
-          comment: item.comment || ""
-        }))
+          comment: item.comment || "",
+        })),
       };
 
       // Make API call to add items to existing order
@@ -612,7 +615,7 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
           }),
         }
       );
@@ -657,7 +660,7 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             coupon_name: selectedCoupon,
             total_price: cartDetails.total_bill.toString(),
           }),
@@ -728,7 +731,7 @@ const Checkout = () => {
         `${config.apiDomain}/user_api/get_checkout_detail`,
         {
           order_items: cartData.order_items,
-          restaurant_id: userData.restaurantId
+          outlet_id: userData.restaurantId,
         }
       );
 
@@ -847,7 +850,7 @@ const Checkout = () => {
         `${config.apiDomain}/user_api/get_checkout_detail`,
         {
           order_items: cartData.order_items,
-          restaurant_id: restaurantId
+          outlet_id: restaurantId,
         }
       );
 

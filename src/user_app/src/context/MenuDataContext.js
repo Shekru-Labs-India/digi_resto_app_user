@@ -14,16 +14,22 @@ export const MenuDataProvider = ({ children }) => {
 
             try {
                 const [bannerResponse, featuredResponse] = await Promise.all([
-                    fetch(`${config.apiDomain}/user_api/get_banner_and_offer_menu_list`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ restaurant_id: restaurantId }),
-                    }),
-                    fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ restaurant_id: restaurantId }),
-                    }),
+                  fetch(
+                    `${config.apiDomain}/user_api/get_banner_and_offer_menu_list`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ outlet_id: restaurantId }),
+                    }
+                  ),
+                  fetch(
+                    `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ outlet_id: restaurantId }),
+                    }
+                  ),
                 ]);
 
                 const bannerData = await bannerResponse.json();

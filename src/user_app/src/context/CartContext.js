@@ -26,16 +26,19 @@ export const CartProvider = ({ children }) => {
   // New function to fetch menu prices
   const fetchMenuPrices = async (restaurantId, menuId) => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/get_full_half_price_of_menu`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          restaurant_id: restaurantId,
-          menu_id: menuId
-        })
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            outlet_id: localStorage.getItem("outlet_id"),
+            menu_id: menuId,
+          }),
+        }
+      );
 
       const data = await response.json();
       
@@ -64,7 +67,7 @@ export const CartProvider = ({ children }) => {
         menu_id: menuItem.menu_id,
         menu_name: menuItem.menu_name || menuItem.name || null,
         menu_food_type: menuItem.menu_food_type || menuItem.food_type || null,
-        restaurant_id: restaurantId || null,
+        outlet_id: restaurantId || null,
         menu_cat_id: menuItem.menu_cat_id || menuItem.category_id || null,
         menu_cat_name: menuItem.menu_cat_name || menuItem.category_name || null,
         category_name: menuItem.category_name || menuItem.menu_cat_name || null,
@@ -76,9 +79,11 @@ export const CartProvider = ({ children }) => {
         is_favourite: menuItem.is_favourite || 0,
         image: menuItem.image || null,
         quantity: menuItem.quantity,
-        comment: menuItem.comment || menuItem.notes || '',
-        half_or_full: menuItem.half_or_full || 'full',
-        discountedPrice: menuItem.offer ? Math.floor(finalPrice * (1 - menuItem.offer / 100)) : finalPrice
+        comment: menuItem.comment || menuItem.notes || "",
+        half_or_full: menuItem.half_or_full || "full",
+        discountedPrice: menuItem.offer
+          ? Math.floor(finalPrice * (1 - menuItem.offer / 100))
+          : finalPrice,
       };
 
       const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
@@ -98,8 +103,8 @@ export const CartProvider = ({ children }) => {
       }
 
       const newCartData = {
-        restaurant_id: restaurantId,
-        order_items: updatedOrderItems
+        outlet_id: restaurantId,
+        order_items: updatedOrderItems,
       };
       
       localStorage.setItem('restaurant_cart_data', JSON.stringify(newCartData));

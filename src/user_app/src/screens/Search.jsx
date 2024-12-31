@@ -105,7 +105,7 @@ const Search = () => {
 
       try {
         const requestBody = {
-          restaurant_id: parseInt(restaurantId, 10),
+          outlet_id: localStorage.getItem("outlet_id"),
           keyword: debouncedSearchTerm.trim(),
           user_id: userId || null,
         };
@@ -227,7 +227,7 @@ const Search = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -566,7 +566,7 @@ const Search = () => {
 
     try {
       const requestBody = {
-        restaurant_id: parseInt(restaurantId, 10),
+        outlet_id:localStorage.getItem("outlet_id"),
         keyword: searchValue.trim(),
         user_id: userId || null,
       };

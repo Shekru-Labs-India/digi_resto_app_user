@@ -11,14 +11,14 @@ const AllOrderList = () => {
 
 
   useEffect(() => {
-    fetch( `${config.apiDomain}/user_api/get_all_orders_of_restaurant`, {
-      method: 'POST',
+    fetch(`${config.apiDomain}/user_api/get_all_orders_of_restaurant`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        restaurant_id: restaurantId,
-      })
+        outlet_id: restaurantId,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -26,7 +26,7 @@ const AllOrderList = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.clear()
+        console.clear();
         setError("Failed to fetch orders. Please try again later.");
         setLoading(false);
       });

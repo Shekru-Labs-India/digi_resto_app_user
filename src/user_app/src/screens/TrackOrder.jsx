@@ -22,7 +22,7 @@ const TrackOrder = () => {
     return str
       .toLowerCase()
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
       .join(" ");
   };
   // Define displayCartItems
@@ -402,7 +402,7 @@ const TrackOrder = () => {
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      return txt.charAt(0)?.toUpperCase() + txt.substr(1)?.toLowerCase();
     });
   };
 
@@ -754,7 +754,7 @@ const TrackOrder = () => {
       return str
         .toLowerCase()
         .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
         .join(" ");
     };
 
@@ -1040,7 +1040,7 @@ const TrackOrder = () => {
                 <span className="d-flex align-items-center">
                   <i className={`${getStatusIcon(orderStatus)} me-2 fs-5`}></i>
                   <span className="font_size_14 fw-medium">
-                    {getDisplayStatus(orderStatus).toUpperCase()}
+                    {getDisplayStatus(orderStatus)?.toUpperCase()}
                   </span>
                 </span>
               </div>
@@ -1069,7 +1069,7 @@ const TrackOrder = () => {
                   <div className="restaurant">
                     <i className="fa-solid fa-store pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
-                      {order_details.restaurant_name.toUpperCase()}
+                      {order_details.restaurant_name?.toUpperCase()}
                     </span>
                   </div>
                 </div>

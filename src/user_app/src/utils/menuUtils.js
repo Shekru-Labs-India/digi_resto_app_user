@@ -8,7 +8,7 @@ export const fetchMenuPrices = async (restaurantId, menuId) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
         }),
       }

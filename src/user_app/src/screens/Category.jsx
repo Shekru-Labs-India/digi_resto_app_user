@@ -31,14 +31,14 @@ const Category = () => {
       try {
         setLoading(true);
         const response = await fetch(
-           `${config.apiDomain}/user_api/get_category_list_with_image`,
+          `${config.apiDomain}/user_api/get_category_list_with_image`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              restaurant_id: restaurantId,
+              outlet_id: restaurantId,
             }),
           }
         );

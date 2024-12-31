@@ -20,7 +20,7 @@ const titleCase = (str) => {
   return str
     .toLowerCase()
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
     .join(" ");
 };
 
@@ -95,7 +95,7 @@ const MyOrder = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: userData.user_id,
-              restaurant_id: restaurantId,
+              outlet_id: localStorage.getItem("outlet_id"),
               section_id: sectionId,
             }),
           }
@@ -161,7 +161,7 @@ const MyOrder = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             order_status: activeTab === "cancelled" ? "cancle" : activeTab,
             user_id: userData.user_id,
             role: userData.role,
@@ -221,7 +221,7 @@ const MyOrder = () => {
 
   const toTitleCase = (text) => {
     if (!text) return "";
-    return text.replace(/\b\w/g, (char) => char.toUpperCase());
+    return text.replace(/\b\w/g, (char) => char?.toUpperCase());
   };
 
   const calculateOrderCount = (orders) => {
@@ -311,7 +311,7 @@ const MyOrder = () => {
                   {tab === "cancelled" && (
                     <i className="far fa-times-circle text-danger me-2 fs-5"></i>
                   )}
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
                 </div>
               </>
             ))}
@@ -420,7 +420,7 @@ export const OrderCard = ({
     return str
       .toLowerCase()
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -451,7 +451,7 @@ export const OrderCard = ({
           },
           body: JSON.stringify({
             order_id: order.order_id,
-            restaurant_id: order.restaurant_id,
+            outlet_id: order.outlet_id,
             payment_method: paymentMethod, // Added payment method
           }),
         }
@@ -499,7 +499,7 @@ export const OrderCard = ({
           },
           body: JSON.stringify({
             order_id: order.order_id,
-            restaurant_id: order.restaurant_id,
+            outlet_id: order.outlet_id,
             payment_method: "Card",
           }),
         }
@@ -547,7 +547,7 @@ export const OrderCard = ({
           },
           body: JSON.stringify({
             order_id: order.order_id,
-            restaurant_id: order.restaurant_id,
+            outlet_id: order.outlet_id,
             payment_method: "Cash",
           }),
         }
@@ -653,9 +653,9 @@ export const OrderCard = ({
 
       const amount = Math.round(parseFloat(order.grand_total));
       const transactionNote = encodeURIComponent(
-        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+        `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
       );
-      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const encodedRestaurantName = encodeURIComponent(order.outlet_name);
       const upiId = "hivirajkadam@okhdfcbank";
 
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
@@ -681,9 +681,9 @@ export const OrderCard = ({
 
       const amount = Math.round(parseFloat(order.grand_total));
       const transactionNote = encodeURIComponent(
-        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+        `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
       );
-      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const encodedRestaurantName = encodeURIComponent(order.outlet_name);
       const upiId = "hivirajkadam@okhdfcbank";
 
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
@@ -714,9 +714,9 @@ export const OrderCard = ({
       const amount = Math.round(parseFloat(order.grand_total));
 
       const transactionNote = encodeURIComponent(
-        `${customerName} is paying Rs. ${amount} to ${order.restaurant_name} for order no. #${order.order_number}`
+        `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
       );
-      const encodedRestaurantName = encodeURIComponent(order.restaurant_name);
+      const encodedRestaurantName = encodeURIComponent(order.outlet_name);
       const upiId = "hivirajkadam@okhdfcbank";
 
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
@@ -752,7 +752,7 @@ export const OrderCard = ({
         },
         body: JSON.stringify({
           order_id: order.order_id,
-          restaurant_id: order.restaurant_id,
+          outlet_id: order.outlet_id,
           payment_method: method,
         }),
       }
@@ -859,7 +859,7 @@ export const OrderCard = ({
               <div className="restaurant">
                 <i className="fa-solid fa-store pe-2 font_size_14"></i>
                 <span className="fw-medium font_size_14">
-                  {order.restaurant_name.toUpperCase()}
+                  {order.outlet_name?.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -1536,7 +1536,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           <div className="restaurant">
                             <i className="fa-solid fa-store pe-2 font_size_14"></i>
                             <span className="fw-medium font_size_14">
-                              {order.restaurant_name.toUpperCase()}
+                              {order.outlet_name?.toUpperCase()}
                             </span>
                           </div>
                         </div>
@@ -1795,7 +1795,7 @@ export const CircularCountdown = ({
           },
           body: JSON.stringify({
             user_id: currentCustomerId,
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             section_id: sectionId,
           }),
         }
