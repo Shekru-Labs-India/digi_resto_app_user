@@ -134,7 +134,7 @@ const MenuDetails = () => {
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
-    return localStorage.getItem("restaurantId") || null;
+    return localStorage.getItem("outlet_id") || null;
   });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
