@@ -1508,7 +1508,7 @@ const TrackOrder = () => {
               </div>
             </div>
 
-            {orderStatus === "completed" && (
+            {orderStatus === "paid" && (
               <div className="d-flex justify-content-end">
                 {orderDetails?.order_details?.invoice_url ? (
                   <a
