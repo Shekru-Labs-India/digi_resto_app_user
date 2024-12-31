@@ -48,14 +48,14 @@ function RestaurantDetails() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              restaurant_id: restaurantId,
+              outlet_id: localStorage.getItem("outlet_id"),
             }),
           }
         );
         const data = await response.json();
 
         if (data.st === 1) {
-          setRestaurantDetails(data.restaurant_details);
+          setRestaurantDetails(data.outlet_details);
           setCountDetails(data.count);
           setCategoryList(data.categorys);
           setMenuList(data.menu_list);

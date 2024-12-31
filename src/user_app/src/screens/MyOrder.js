@@ -605,7 +605,7 @@ export const OrderCard = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            restaurant_id: order.restaurant_id,
+            outlet_id: order.outlet_id,
             order_id: order.order_id,
             note: cancelReason,
           }),
