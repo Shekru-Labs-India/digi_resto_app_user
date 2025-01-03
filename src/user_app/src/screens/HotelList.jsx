@@ -83,6 +83,7 @@ const navigate = useNavigate();
       localStorage.setItem("sectionId", outlets.section_id);
       localStorage.setItem("restaurantCode", outlets.code);
       localStorage.setItem("tableNumber", outlets.table_no);
+      console.log(`Navigating to /user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`);
       navigate(
         `/user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`
       );

@@ -693,7 +693,7 @@ export const OrderCard = ({
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
 
       await initiatePayment(
-        "PhonePe",
+        "phonepay",
         paymentUrl,
         setIsProcessingPhonePe,
         "phonepe"
@@ -726,7 +726,7 @@ export const OrderCard = ({
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
 
       await initiatePayment(
-        "GooglePay",
+        "gpay",
         paymentUrl,
         setIsProcessingGPay,
         "gpay"
@@ -1094,7 +1094,7 @@ export const OrderCard = ({
                   <button
                     type="button"
                     className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
-                      paymentMethod === "Card"
+                      paymentMethod === "card"
                         ? "bg-success text-white"
                         : "border "
                     }`}
@@ -1110,7 +1110,7 @@ export const OrderCard = ({
                   <button
                     type="button"
                     className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
-                      paymentMethod === "Cash"
+                      paymentMethod === "cash"
                         ? "bg-success text-white"
                         : "border border-muted"
                     }`}
