@@ -63,23 +63,23 @@ export const RestaurantIdProvider = ({ children }) => {
             }
           })
           .then(response => response.json())
-          .then((data) => {
-            if (data.st === 1 && data.is_table_exists) {
-              // Table exists, set the table number
-              setTableNumber(table);
-              localStorage.setItem("tableNumber", table);
-            } else {
-              // Table doesn't exist, navigate to HotelList
-              navigate("/user_app/HotelList");
-            window.showToast("error", "Table not exists");
-            console.log("Table not exists");
-            }
-          })
-          .catch((error) => {
-            console.clear();
-            navigate("/user_app/HotelList");
+          // .then((data) => {
+          //   if (data.st === 1 && data.is_table_exists) {
+          //     // Table exists, set the table number
+          //     setTableNumber(table);
+          //     localStorage.setItem("tableNumber", table);
+          //   } else {
+          //     // Table doesn't exist, navigate to HotelList
+          //     navigate("/user_app/HotelList");
+          //   window.showToast("error", "Table not exists");
+          //   console.log("Table not exists");
+          //   }
+          // })
+          // .catch((error) => {
+          //   console.clear();
+          //   navigate("/user_app/HotelList");
             
-          });
+          // });
       }
 
       if (section) {
