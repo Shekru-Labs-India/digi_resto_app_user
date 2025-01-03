@@ -711,26 +711,29 @@ const Checkout = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect((outlet_id) => {
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
     const storedCart = localStorage.getItem('restaurant_cart_data');
-    if (storedCart?.outlet_id !== restaurantId) {
-      const cartData = JSON.parse(storedCart);
-      cartData.order_items = cartData.order_items?.filter(item => item.outlet_id === restaurantId);
-      localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
-    }
-
-
     
     if (storedCart) {
       try {
         const cartData = JSON.parse(storedCart);
-        setCartItems(cartData.order_items || []);
+        // Filter items that match the current restaurant ID
+        if (cartData.order_items) {
+          cartData.order_items = cartData.order_items.filter(item => 
+            item.outlet_id === userData?.restaurantId
+          );
+          // Save filtered cart back to localStorage
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
+          // Update cart items state
+          setCartItems(cartData.order_items);
+        }
       } catch (error) {
         console.error('Error parsing cart data:', error);
         setCartItems([]);
       }
     }
-  }, []);
+  }, []); // Run once on component mount
 
   const fetchCheckoutDetails = async () => {
     try {
@@ -824,9 +827,11 @@ const Checkout = () => {
         
         if (updatedItems.length === 0) {
           // If no items left, clear cart data completely
-          localStorage.removeItem('restaurant_cart_data');
           setCartItems([]); // Update state to trigger re-render
           setCheckoutDetails(null); // Reset checkout details
+          const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
+          const updatedCart = { ...cartData, order_items: updatedItems };
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
         } else {
           // Update cart with remaining items
           const updatedCart = { ...cartData, order_items: updatedItems };
