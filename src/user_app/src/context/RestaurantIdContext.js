@@ -71,11 +71,14 @@ export const RestaurantIdProvider = ({ children }) => {
             } else {
               // Table doesn't exist, navigate to HotelList
               navigate("/user_app/HotelList");
+            window.showToast("error", "Table not exists");
+            console.log("Table not exists");
             }
           })
           .catch((error) => {
             console.clear();
             navigate("/user_app/HotelList");
+            
           });
       }
 
