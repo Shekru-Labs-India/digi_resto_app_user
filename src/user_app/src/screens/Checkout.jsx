@@ -711,8 +711,16 @@ const Checkout = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => {
+  useEffect((outlet_id) => {
     const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart?.outlet_id !== restaurantId) {
+      const cartData = JSON.parse(storedCart);
+      cartData.order_items = cartData.order_items.filter(item => item.outlet_id === restaurantId);
+      localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
+    }
+
+
+    
     if (storedCart) {
       try {
         const cartData = JSON.parse(storedCart);
