@@ -504,7 +504,7 @@ export const OrderCard = ({
           body: JSON.stringify({
             order_id: order.order_id,
             outlet_id: order.outlet_id,
-            payment_method: "Card",
+            payment_method: "card",
           }),
         }
       );
@@ -552,7 +552,7 @@ export const OrderCard = ({
           body: JSON.stringify({
             order_id: order.order_id,
             outlet_id: order.outlet_id,
-            payment_method: "Cash",
+            payment_method: "cash",
           }),
         }
       );
@@ -664,7 +664,7 @@ export const OrderCard = ({
 
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
 
-      await initiatePayment("UPI", paymentUrl, setIsProcessingUPI, "upi");
+      await initiatePayment("upi", paymentUrl, setIsProcessingUPI, "upi");
     } catch (error) {
       console.clear();
 
