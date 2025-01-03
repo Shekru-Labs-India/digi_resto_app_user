@@ -203,12 +203,19 @@ const Checkout = () => {
           // No existing order - show order type selection
           setShowOrderTypeModal(true);
         }
-      } else {
+      }
+      
+      if(data.st === 2){
+        setShowOrderTypeModal(true);
+        // setShowExistingOrderModal(false);
+        // setShowNewOrderModal(true);
+      }
+      else {
         throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
       setIsProcessing(false);
-      window.showToast("error", "Failed to process order");
+      // window.showToast("error", "Failed to process order");
       console.error('Error:', error);
     }
   };
@@ -903,7 +910,7 @@ const Checkout = () => {
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("Parcel")}
+                        onClick={() => handleOrderTypeSelection("parsel")}
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
@@ -919,7 +926,7 @@ const Checkout = () => {
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() =>
-                          handleOrderTypeSelection("Drive-through")
+                          handleOrderTypeSelection("drive-through")
                         }
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
@@ -935,7 +942,7 @@ const Checkout = () => {
                     <div className="col-12 mb-3">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("Dine-in")}
+                        onClick={() => handleOrderTypeSelection("dine-in")}
                       >
                         <div className="card-body d-flex align-items-center py-3">
                           <div className="text-center me-3">
