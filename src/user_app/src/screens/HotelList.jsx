@@ -18,14 +18,14 @@ const navigate = useNavigate();
         );
         const data = await response.json();
         if (data.st === 1) {
-          const formattedHotels = data.outlets.map((hotel) => {
-            const code = hotel.resto_url.split("user_app/")[1]?.split("/")[0];
-            const urlParts = hotel.resto_url.split("/");
+          const formattedHotels = data.outlets.map((outlets) => {
+            const code = outlets.resto_url.split("user_app/")[1]?.split("/")[0];
+            const urlParts = outlets.resto_url.split("/");
             const sectionId = urlParts[urlParts.length - 1];
             const tableNo = urlParts[urlParts.length - 2];
 
             return {
-              ...hotel,
+              ...outlets,
               code,
               section_id: sectionId,
               table_no: tableNo,
@@ -59,39 +59,34 @@ const navigate = useNavigate();
 
     // Apply veg/nonveg filter
     if (type !== "all") {
-      filtered = filtered.filter((hotel) =>
+      filtered = filtered.filter((outlets) =>
         type === "veg"
-          ? ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
-          : !["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+          ? ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
+          : !["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
       );
     }
 
     // Apply open/closed filter
     if (status !== "all") {
-      filtered = filtered.filter((hotel) =>
-        status === "open" ? hotel.is_open === true : hotel.is_open === false
+      filtered = filtered.filter((outlets) =>
+        status === "open" ? outlets.is_open === true : outlets.is_open === false
       );
     }
 
     setFilteredHotels(filtered);
   };
 
-  const handleHotelClick = (hotel) => {
-      if (hotel.is_outlet_filled !== true) {
-        navigate("/user_app/HotelList");
-      }
-      else{
-      
-      localStorage.setItem("sectionId", hotel.section_id);
-      localStorage.setItem("restaurantCode", hotel.code);
-      localStorage.setItem("tableNumber", hotel.table_no);
-      navigate(`/user_app/${hotel.code}/${hotel.table_no}/${hotel.section_id}`);
-      
-      }
-
-
-
-    
+  const handleHotelClick = (outlets) => {
+    if (outlets.is_outlet_filled !== true) {
+      navigate("/user_app/HotelList");
+    } else {
+      localStorage.setItem("sectionId", outlets.section_id);
+      localStorage.setItem("restaurantCode", outlets.code);
+      localStorage.setItem("tableNumber", outlets.table_no);
+      navigate(
+        `/user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`
+      );
+    }
   };
 
   return (
@@ -165,16 +160,14 @@ const navigate = useNavigate();
             // }}
           >
             {filteredHotels.length > 0 ? (
-              filteredHotels.map((hotel) => (
-                <div className="card rounded-4" key={hotel.outlet_id}>
-                  {hotel.is_open ? (
-                    <div
-                    onClick={() => handleHotelClick(hotel)}
-                    >
-                      <CardContent hotel={hotel} />
+              filteredHotels.map((outlets) => (
+                <div className="card rounded-4" key={outlets.outlet_id}>
+                  {outlets.is_open ? (
+                    <div onClick={() => handleHotelClick(outlets)}>
+                      <CardContent outlets={outlets} />
                     </div>
                   ) : (
-                    <CardContent hotel={hotel} />
+                    <CardContent outlets={outlets} />
                   )}
                 </div>
               ))
@@ -264,28 +257,28 @@ const navigate = useNavigate();
   );
 };
 
-const CardContent = ({ hotel }) => (
+const CardContent = ({ outlets }) => (
   <div
     className={`card-body py-2 ${
-      hotel.is_open === false ? "bg-light rounded-4" : ""
+      outlets.is_open === false ? "bg-light rounded-4" : ""
     }`}
   >
     <div className="d-flex justify-content-between align-items-center mb-2">
       <div className="d-flex align-items-center">
         <i className="fa-solid fa-store font_size_14"></i>
         <span className="font_size_14 fw-medium ms-2">
-          {hotel.outlet_name?.toUpperCase()}
+          {outlets.outlet_name?.toUpperCase()}
         </span>
       </div>
 
       <div className="d-flex align-items-center gap-2">
-        {hotel.is_open === false && (
+        {outlets.is_open === false && (
           <span className="badge badge-light rounded-pill">Closed</span>
         )}
-        {hotel.veg_nonveg && (
+        {outlets.veg_nonveg && (
           <div
             className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-              ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+              ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
                 ? "border-success"
                 : "border-danger"
             }`}
@@ -297,7 +290,7 @@ const CardContent = ({ hotel }) => (
           >
             <i
               className={`${
-                ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+                ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
                   ? "fa-solid fa-circle text-success"
                   : "fa-solid fa-play fa-rotate-270 text-danger"
               } font_size_12`}
@@ -309,7 +302,7 @@ const CardContent = ({ hotel }) => (
 
     <div className="d-flex justify-content-end gap-2">
       <a
-        href={`tel:${hotel.mobile}`}
+        href={`tel:${outlets.mobile}`}
         className="btn btn-outline-primary btn-sm"
         onClick={(e) => e.stopPropagation()}
       >
@@ -317,7 +310,9 @@ const CardContent = ({ hotel }) => (
         Call
       </a>
       <a
-        href={`https://maps.google.com/?q=${encodeURIComponent(hotel.address)}`}
+        href={`https://maps.google.com/?q=${encodeURIComponent(
+          outlets.address
+        )}`}
         target="_blank"
         rel="noopener noreferrer"
         className="btn btn-outline-secondary btn-sm"
