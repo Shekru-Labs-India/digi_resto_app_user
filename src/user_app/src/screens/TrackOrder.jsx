@@ -15,8 +15,6 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 const TrackOrder = () => {
- 
-
   const titleCase = (str) => {
     if (!str) return "";
     return str
@@ -350,7 +348,8 @@ const TrackOrder = () => {
 
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentUserId = userData?.user_id || localStorage.getItem("user_id");
+        const currentUserId =
+          userData?.user_id || localStorage.getItem("user_id");
         const currentRole = userData?.role || localStorage.getItem("role");
 
         if (!currentUserId) {
@@ -541,41 +540,53 @@ const TrackOrder = () => {
 
   const fetchOrderDetails = async (orderNumber) => {
     const sectionId = localStorage.getItem("sectionId") || "";
-    
+
     try {
       setLoading(true);
-      const response = await fetch(`${config.apiDomain}/user_api/get_order_details`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_number: orderNumber,
-          user_id: userId,
-          role: role,
-          section_id: sectionId
-        })
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_order_details`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_number: orderNumber,
+            user_id: userId,
+            role: role,
+            section_id: sectionId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const { lists } = await response.json();
         if (lists) {
           // Format menu items
-          const formattedMenu = lists.menu_details.map(item => ({
+          const formattedMenu = lists.menu_details.map((item) => ({
             ...item,
             menu_name: toTitleCase(item.menu_name),
             is_favourite: item.is_favourite === 1,
-            discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer/100)) : item.price
+            discountedPrice: item.offer
+              ? Math.floor(item.price * (1 - item.offer / 100))
+              : item.price,
           }));
 
           // Update order details with formatted menu
           setOrderDetails({
             ...lists,
-            menu_details: formattedMenu
+            menu_details: formattedMenu,
           });
 
           // Handle order status
           const status = lists.order_details.order_status.toLowerCase();
-          setOrderStatus(["cancle", "cancelled", "canceled"].includes(status) ? "canceled" : status);
-          setIsCompleted(status === "completed" || ["cancle", "cancelled", "canceled"].includes(status));
+          setOrderStatus(
+            ["cancle", "cancelled", "canceled"].includes(status)
+              ? "canceled"
+              : status
+          );
+          setIsCompleted(
+            status === "completed" ||
+              ["cancle", "cancelled", "canceled"].includes(status)
+          );
         }
       }
     } catch (error) {
@@ -797,100 +808,113 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, userId]);
 
-  useEffect(() => {
-    const checkOrderExists = () => {
-      try {
-        const allOrders = JSON.parse(
-          localStorage.getItem("allOrderList") || "{}"
-        );
+  // useEffect(() => {
+  //   const checkOrderExists = () => {
+  //     try {
+  //       const allOrders = JSON.parse(
+  //         localStorage.getItem("allOrderList") || "{}"
+  //       );
 
-        // Check placed orders
-        if (
-          allOrders.placed?.some((order) => order.order_number === order_number)
-        ) {
-          return true;
-        }
+  //       // Check placed orders
+  //       if (
+  //         allOrders.placed?.some((order) => order.order_number === order_number)
+  //       ) {
+  //         return true;
+  //       }
 
-        // Check ongoing orders
-        if (
-          allOrders.ongoing?.some(
-            (order) => order.order_number === order_number
-          )
-        ) {
-          return true;
-        }
+  //       // Check ongoing orders
+  //       if (
+  //         allOrders.ongoing?.some(
+  //           (order) => order.order_number === order_number
+  //         )
+  //       ) {
+  //         return true;
+  //       }
 
-        // Check completed orders (date-wise grouping)
-        if (allOrders.completed) {
-          const exists = Object.values(allOrders.completed).some((dateOrders) =>
-            dateOrders.some((order) => order.order_number === order_number)
-          );
-          if (exists) return true;
-        }
+  //       // Check completed orders (date-wise grouping)
+  //       if (allOrders.completed) {
+  //         const exists = Object.values(allOrders.completed).some((dateOrders) =>
+  //           dateOrders.some((order) => order.order_number === order_number)
+  //         );
+  //         if (exists) return true;
+  //       }
 
-        // Check cancelled orders (handle both spellings and structures)
-        if (
-          allOrders.cancelled?.some(
-            (order) => order.order_number === order_number
-          ) ||
-          allOrders.canceled?.some(
-            (order) => order.order_number === order_number
-          ) ||
-          allOrders.cancle?.some((order) => order.order_number === order_number)
-        ) {
-          return true;
-        }
+  //       // Check cancelled orders (handle both spellings and structures)
+  //       if (
+  //         allOrders.cancelled?.some(
+  //           (order) => order.order_number === order_number
+  //         ) ||
+  //         allOrders.canceled?.some(
+  //           (order) => order.order_number === order_number
+  //         ) ||
+  //         allOrders.cancle?.some((order) => order.order_number === order_number)
+  //       ) {
+  //         return true;
+  //       }
 
-        // If order not found anywhere
-        window.showToast("error", "Order not found");
-        navigate("/user_app/Index");
-        return false;
-      } catch (error) {
-        console.clear();
-      }
-    };
+  //       // If order not found anywhere
+  //       window.showToast("error", "Order not found");
+  //       navigate("/user_app/Index");
+  //       return false;
+  //     } catch (error) {
+  //       console.clear();
+  //     }
+  //   };
 
-    if (order_number && !orderDetails) {
-      checkOrderExists();
-    }
-  }, [order_number, navigate, orderDetails]);
+  //   if (order_number && !orderDetails) {
+  //     checkOrderExists();
+  //   }
+  // }, [order_number, navigate, orderDetails]);
 
   // Add this check right after the component declarations
   useEffect(() => {
     const validateOrder = () => {
+      console.log("TrackOrder: Starting order validation");
       try {
         const allOrders = JSON.parse(
           localStorage.getItem("allOrderList") || "{}"
+        );
+        console.log(
+          "TrackOrder: Retrieved allOrders from localStorage:",
+          allOrders
         );
         let orderFound = false;
 
         // Check ongoing orders
         if (allOrders.ongoing?.length > 0) {
+          console.log("TrackOrder: Checking ongoing orders");
           orderFound = allOrders.ongoing.some(
             (order) => order.order_number === order_number
           );
+          console.log("TrackOrder: Order found in ongoing?", orderFound);
         }
 
         // Check completed orders (date-wise grouping)
         if (!orderFound && allOrders.completed) {
+          console.log("TrackOrder: Checking completed orders");
           orderFound = Object.values(allOrders.completed).some((dateOrders) =>
             dateOrders.some((order) => order.order_number === order_number)
           );
+          console.log("TrackOrder: Order found in completed?", orderFound);
         }
 
         // Check placed orders
         if (!orderFound && allOrders.placed?.length > 0) {
+          console.log("TrackOrder: Checking placed orders");
           orderFound = allOrders.placed.some(
             (order) => order.order_number === order_number
           );
+          console.log("TrackOrder: Order found in placed?", orderFound);
         }
 
         // Check cancelled orders - handle both date-wise and array formats
         if (!orderFound) {
+          console.log("TrackOrder: Checking cancelled orders");
           // First check if cancelled orders are date-wise grouped
           const cancelTypes = ["cancelled", "canceled", "cancle"];
           for (const type of cancelTypes) {
             if (allOrders[type]) {
+              console.log(`TrackOrder: Checking ${type} orders`);
               // If it's an array, check directly
               if (Array.isArray(allOrders[type])) {
                 orderFound = allOrders[type].some(
@@ -907,6 +931,7 @@ const TrackOrder = () => {
                     )
                 );
               }
+              console.log(`TrackOrder: Order found in ${type}?`, orderFound);
               if (orderFound) break;
             }
           }
@@ -914,15 +939,19 @@ const TrackOrder = () => {
 
         // If order is not found in any category
         if (!orderFound) {
+          console.log(
+            "TrackOrder: Order not found in any category, redirecting to Index"
+          );
           setLoading(false);
           window.showToast("error", "Order not found");
           navigate("/user_app/Index");
           return false;
         }
 
+        console.log("TrackOrder: Order validation successful");
         return true;
       } catch (error) {
-        console.clear();
+        console.error("TrackOrder: Error during order validation:", error);
         setLoading(false);
         window.showToast("error", "Something went wrong");
         navigate("/user_app/Index");
@@ -949,37 +978,35 @@ const TrackOrder = () => {
   const { order_details, menu_details } = orderDetails;
 
   // Add the standardized rating function
-   const renderStarRating = (rating) => {
-     const numRating = parseFloat(rating);
+  const renderStarRating = (rating) => {
+    const numRating = parseFloat(rating);
 
-     // 0 to 0.4: No star
-     if (!numRating || numRating < 0.5) {
-       return null; // Don't show anything
-     }
+    // 0 to 0.4: No star
+    if (!numRating || numRating < 0.5) {
+      return null; // Don't show anything
+    }
 
-     // 0.5 to 2.5: Blank star (grey)
-     if (numRating >= 0.5 && numRating <= 2.5) {
-       return (
-         <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>
-       );
-     }
+    // 0.5 to 2.5: Blank star (grey)
+    if (numRating >= 0.5 && numRating <= 2.5) {
+      return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+    }
 
-     // 3 to 4.5: Half star
-     if (numRating >= 3 && numRating <= 4.5) {
-       return (
-         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-       );
-     }
+    // 3 to 4.5: Half star
+    if (numRating >= 3 && numRating <= 4.5) {
+      return (
+        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+      );
+    }
 
-     // 5: Full star
-     if (numRating === 5) {
-       return (
-         <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
-       );
-     }
+    // 5: Full star
+    if (numRating === 5) {
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
+    }
 
-     return null; // Default case
-   };
+    return null; // Default case
+  };
 
   // Define getOrderTypeIcon function inside the TrackOrder component
   const getOrderTypeIcon = (orderType) => {
@@ -1132,12 +1159,11 @@ const TrackOrder = () => {
                 <div className="row">
                   <div className="col-6">
                     <div className="menu-info">
-                    <span className="font_size_12 gray-text">
-                     
-                      Payment Method: {order_details.payment_method}
-                    </span>
+                      <span className="font_size_12 gray-text">
+                        Payment Method: {order_details.payment_method}
+                      </span>
+                    </div>
                   </div>
-                </div>
                 </div>
               )}
             </div>

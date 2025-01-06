@@ -70,8 +70,10 @@ const MyOrder = () => {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
       const sectionId = localStorage.getItem("sectionId");
+      console.log('MyOrder: Fetching active orders');
       
       if (!userData?.user_id || !restaurantId) {
+        console.log('MyOrder: Missing user_id or restaurantId, skipping active orders fetch');
         setLoading(false);
         return;
       }
@@ -90,6 +92,7 @@ const MyOrder = () => {
       );
 
       const data = await response.json();
+      console.log('MyOrder: Received active orders:', data);
 
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
@@ -99,25 +102,34 @@ const MyOrder = () => {
           const cookingOrders = orders.filter(o => o.status === "cooking");
           const servedOrders = orders.filter(o => o.status === "served");
 
-          setActiveOrders({
+          const activeOrders = {
             placed: placedOrders,
             cooking: cookingOrders,
             served: servedOrders
-          });
+          };
 
-          localStorage.setItem(
-            "timeOfPlacedOrder",
-            orders.map((order) => order.time)
-          );
+          // Update localStorage
+          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+          const updatedOrders = {
+            ...existingOrders,
+            placed: placedOrders,
+            ongoing: [...cookingOrders, ...servedOrders]
+          };
+          
+          localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
+          console.log('MyOrder: Updated localStorage with active orders:', updatedOrders);
+
+          setActiveOrders(activeOrders);
         } else {
+          console.log('MyOrder: No active orders found');
           setActiveOrders({ placed: [], cooking: [], served: [] });
         }
       } else {
-        console.clear();
+        console.log('MyOrder: No valid active orders in response');
         setActiveOrders({ placed: [], cooking: [], served: [] });
       }
     } catch (error) {
-      console.clear();
+      console.error('MyOrder: Error fetching active orders:', error);
       setActiveOrders({ placed: [], cooking: [], served: [] });
     } finally {
       setLoading(false);
@@ -128,8 +140,10 @@ const MyOrder = () => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
+      console.log('MyOrder: Fetching orders for user:', userData?.user_id);
       
       if (!userData?.user_id || !restaurantId) {
+        console.log('MyOrder: Missing user_id or restaurantId, skipping fetch');
         setLoading(false);
         return;
       }
@@ -151,6 +165,7 @@ const MyOrder = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('MyOrder: Received orders data:', data);
 
         if (data.st === 1 && data.lists) {
           const mappedData = {};
@@ -160,16 +175,29 @@ const MyOrder = () => {
             mappedData.completed = data.lists.paid;
           }
 
+          // Save to localStorage
+          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+          console.log('MyOrder: Existing orders in localStorage:', existingOrders);
+          
+          const updatedOrders = {
+            ...existingOrders,
+            ...mappedData
+          };
+          
+          localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
+          console.log('MyOrder: Updated localStorage with new orders:', updatedOrders);
+
           setOrders(mappedData);
         } else {
+          console.log('MyOrder: No valid lists in response');
           setOrders({});
         }
       } else {
-        console.clear();
+        console.error('MyOrder: API request failed');
         setOrders({});
       }
     } catch (error) {
-      console.clear();
+      console.error('MyOrder: Error fetching orders:', error);
       setOrders({});
     } finally {
       setLoading(false);
@@ -622,7 +650,20 @@ export const OrderCard = ({
   };
 
   const handleOrderClick = (orderNumber) => {
-    navigate(`/user_app/TrackOrder/${orderNumber}`);
+    console.log('MyOrder: Attempting to navigate to TrackOrder');
+    console.log('MyOrder: Order Number:', orderNumber);
+    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
+    
+    // Log the current state of allOrderList
+    const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
+    
+    try {
+      navigate(`/user_app/TrackOrder/${orderNumber}`);
+      console.log('MyOrder: Navigation initiated successfully');
+    } catch (error) {
+      console.error('MyOrder: Navigation failed:', error);
+    }
   };
 
   const handleGenericUPI = async () => {
@@ -1351,7 +1392,20 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   };
 
   const handleOrderClick = (orderNumber) => {
-    navigate(`/user_app/TrackOrder/${orderNumber}`);
+    console.log('MyOrder: Attempting to navigate to TrackOrder');
+    console.log('MyOrder: Order Number:', orderNumber);
+    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
+    
+    // Log the current state of allOrderList
+    const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
+    
+    try {
+      navigate(`/user_app/TrackOrder/${orderNumber}`);
+      console.log('MyOrder: Navigation initiated successfully');
+    } catch (error) {
+      console.error('MyOrder: Navigation failed:', error);
+    }
   };
 
   // Add this new useEffect for periodic API check
