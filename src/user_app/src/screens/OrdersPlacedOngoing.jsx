@@ -308,7 +308,7 @@ const OrderCard = ({
   
   const getOrderTypeIcon = (orderType) => {
       switch (orderType?.toLowerCase()) {
-        case "parcel":
+        case "parsel":
           return <i className="fa-solid fa-hand-holding-heart"></i>;
         case "drive-through":
           return <i className="fa-solid fa-car-side"></i>;
