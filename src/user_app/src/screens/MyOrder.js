@@ -35,7 +35,6 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  // const [orders, setOrders] = useState({ placed: [], ongoing: [] });
   const { restaurantName, restaurantId } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("completed");
@@ -45,20 +44,13 @@ const MyOrder = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user_id, setUser_id] = useState(null);
   const [role, setRole] = useState(null);
-  const [ongoingOrPlacedOrders, setOngoingOrPlacedOrders] = useState({
+  const [activeOrders, setActiveOrders] = useState({
     placed: [],
-    ongoing: [],
+    cooking: [],
+    served: []
   });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
-
-  // const [customerName, setCustomerName] = useState(null);
-
-  // useEffect(() => {
-  //   const customerName = localStorage.getItem("customerName");
-  //   setCustomerName(customerName);
-  //   console.log(customerName);
-  // }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   useEffect(() => {
     if (location.state?.activeTab) {
@@ -73,83 +65,66 @@ const MyOrder = () => {
     setRole(userData?.role);
   }, []);
 
-  const handleTabChange = (tab) => {  
-    setActiveTab(tab);
+  const fetchActiveOrders = async () => {
+    try {
+      setLoading(true);
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const sectionId = localStorage.getItem("sectionId");
+      
+      if (!userData?.user_id || !restaurantId) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: userData.user_id,
+            outlet_id: localStorage.getItem("outlet_id"),
+            section_id: sectionId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.st === 1) {
+        const orders = data.data || [];
+        if (orders.length > 0) {
+          // Group orders by their status
+          const placedOrders = orders.filter(o => o.status === "placed");
+          const cookingOrders = orders.filter(o => o.status === "cooking");
+          const servedOrders = orders.filter(o => o.status === "served");
+
+          setActiveOrders({
+            placed: placedOrders,
+            cooking: cookingOrders,
+            served: servedOrders
+          });
+
+          localStorage.setItem(
+            "timeOfPlacedOrder",
+            orders.map((order) => order.time)
+          );
+        } else {
+          setActiveOrders({ placed: [], cooking: [], served: [] });
+        }
+      } else {
+        console.clear();
+        setActiveOrders({ placed: [], cooking: [], served: [] });
+      }
+    } catch (error) {
+      console.clear();
+      setActiveOrders({ placed: [], cooking: [], served: [] });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const sectionId = localStorage.getItem("sectionId");
-    const fetchOngoingOrPlacedOrder = async () => {
-      try {
-        setLoading(true);
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        if (!userData?.user_id || !restaurantId) {
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(
-          `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: userData.user_id,
-              outlet_id: localStorage.getItem("outlet_id"),
-              section_id: sectionId,
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.ok && data.st === 1) {
-          const orders = data.data || [];
-          if (orders.length > 0) {
-            const status = orders[0]?.status;
-            const orderList =
-              status === "placed"
-                ? { placed: orders, ongoing: [] }
-                : { placed: [], ongoing: orders };
-            setOngoingOrPlacedOrders(orderList);
-             localStorage.setItem(
-               "timeOfPlacedOrder",
-               data.data.map((order) => order.time)
-             );
-
-            localStorage.setItem("allOrderList", JSON.stringify(orderList));
-          } else {
-            setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
-          }
-        } else {
-          console.clear();
-          setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
-        }
-      } catch (error) {
-        console.clear();
-        setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user_id && restaurantId) {
-      fetchOngoingOrPlacedOrder();
-    }
-  }, [user_id, restaurantId]);
-
-  useEffect(() => {
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
-
-    if (user_id && restaurantId) {
-      fetchOrders(sectionId); // Pass sectionId to the fetchOrders function
-    }
-  }, [activeTab, user_id, restaurantId]);
-
-  const fetchOrders = async (sectionId) => {
+  const fetchCompletedAndCancelledOrders = async () => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
@@ -185,20 +160,6 @@ const MyOrder = () => {
             mappedData.completed = data.lists.paid;
           }
 
-          // Get existing data from localStorage
-          const existingOrders = JSON.parse(
-            localStorage.getItem("allOrderList") || "{}"
-          );
-
-          // Merge existing data with new data
-          const updatedOrders = {
-            ...existingOrders,
-            ...mappedData,
-          };
-
-          // Update localStorage with merged data
-          localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-
           setOrders(mappedData);
         } else {
           setOrders({});
@@ -214,6 +175,18 @@ const MyOrder = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user_id && restaurantId) {
+      fetchActiveOrders();
+    }
+  }, [user_id, restaurantId]);
+
+  useEffect(() => {
+    if (user_id && restaurantId) {
+      fetchCompletedAndCancelledOrders();
+    }
+  }, [activeTab, user_id, restaurantId]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -264,60 +237,64 @@ const MyOrder = () => {
       <Header
         title="My Order"
         count={
-          orders &&
-          (activeTab === "cancelled" && orders.cancle
-            ? Array.isArray(orders.cancle)
-              ? orders.cancle.length
-              : 0
-            : calculateOrderCount(orders))
+          Object.values(activeOrders).reduce((total, orders) => total + orders.length, 0)
         }
       />
 
       <main className="page-content space-top p-b70">
         {isNonProductionDomain() && <Notice />}
         <div className="container px-1">
-          {ongoingOrPlacedOrders.placed.map((order, index) => (
+          {/* Render placed orders */}
+          {activeOrders.placed.map((order) => (
             <OrderCard
-              key={`${order.order_id}-${index}`}
+              key={`placed-${order.order_id}`}
               order={order}
               status="placed"
-              setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
+              setActiveOrders={setActiveOrders}
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}
               setActiveTab={setActiveTab}
-              fetchOrders={fetchOrders}
+              fetchOrders={fetchActiveOrders}
             />
           ))}
 
-          {ongoingOrPlacedOrders.ongoing.map((order, index) => (
+          {/* Render cooking orders */}
+          {activeOrders.cooking.map((order) => (
             <OrderCard
-              key={`${order.order_id}-${index}`} // Combine order_id with index to make it unique
+              key={`cooking-${order.order_id}`}
               order={order}
-              status="ongoing"
-              setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
-              fetchOrders={fetchOrders}
+              status="cooking"
+              setActiveOrders={setActiveOrders}
+              fetchOrders={fetchActiveOrders}
+            />
+          ))}
+
+          {/* Render served orders */}
+          {activeOrders.served.map((order) => (
+            <OrderCard
+              key={`served-${order.order_id}`}
+              order={order}
+              status="served"
+              setActiveOrders={setActiveOrders}
+              fetchOrders={fetchActiveOrders}
             />
           ))}
 
           <div className="nav nav-tabs nav-fill" role="tablist">
             {["completed", "cancelled"].map((tab) => (
-              <>
-                <div
-                  key={tab}
-                  className={`nav-link px-0 ${
-                    activeTab === tab ? "active" : ""
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab === "completed" && (
-                    <i className="far fa-check-circle text-success me-2 fs-5"></i>
-                  )}
-                  {tab === "cancelled" && (
-                    <i className="far fa-times-circle text-danger me-2 fs-5"></i>
-                  )}
-                  {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
-                </div>
-              </>
+              <div
+                key={tab}
+                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "completed" && (
+                  <i className="far fa-check-circle text-success me-2 fs-5"></i>
+                )}
+                {tab === "cancelled" && (
+                  <i className="far fa-times-circle text-danger me-2 fs-5"></i>
+                )}
+                {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
+              </div>
             ))}
           </div>
           <Bottom />
@@ -380,7 +357,7 @@ const MyOrder = () => {
                         orders={orders[activeTab]}
                         type={activeTab}
                         activeTab={activeTab}
-                        setOrders={setOrders} // Make sure this prop is passed
+                        setOrders={setOrders}
                         setActiveTab={setActiveTab}
                       />
                     </div>
@@ -401,7 +378,7 @@ export const OrderCard = ({
   order,
   status,
   fetchOrders,
-  setOngoingOrPlacedOrders,
+  setActiveOrders,
   completedTimers = new Set(),
   setActiveTab,
   setCompletedTimers = () => {},
@@ -471,7 +448,7 @@ export const OrderCard = ({
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
-        setOngoingOrPlacedOrders((prevOrders) => {
+        setActiveOrders((prevOrders) => {
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
@@ -519,7 +496,7 @@ export const OrderCard = ({
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
-        setOngoingOrPlacedOrders((prevOrders) => {
+        setActiveOrders((prevOrders) => {
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
@@ -567,7 +544,7 @@ export const OrderCard = ({
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
-        setOngoingOrPlacedOrders((prevOrders) => {
+        setActiveOrders((prevOrders) => {
           const updatedOngoing = prevOrders.ongoing.filter(
             (o) => o.order_id !== order.order_id
           );
@@ -627,7 +604,7 @@ export const OrderCard = ({
         setShowCancelModal(false);
         fetchOrders();
         // Update the state to remove the canceled order
-        setOngoingOrPlacedOrders((prevOrders) => ({
+        setActiveOrders((prevOrders) => ({
           placed: prevOrders.placed.filter(
             (o) => o.order_id !== order.order_id
           ),
@@ -763,7 +740,7 @@ export const OrderCard = ({
     );
 
     if (response.ok) {
-      setOngoingOrPlacedOrders((prevOrders) => {
+      setActiveOrders((prevOrders) => {
         const updatedOngoing = prevOrders.ongoing.filter(
           (o) => o.order_id !== order.order_id
         );
@@ -836,6 +813,75 @@ export const OrderCard = ({
     }
   };
 
+  const renderStatusSpecificUI = () => {
+    switch (status) {
+      case "placed":
+        return (
+          <div className="d-flex flex-column gap-2">
+            {!completedTimers.has(order.order_id) && (
+              <TimeRemaining
+                orderId={order.order_id}
+                completedTimers={completedTimers}
+                order={order}
+              />
+            )}
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="text-center">
+                <CircularCountdown
+                  orderId={order.order_id}
+                  onComplete={() => {
+                    setCompletedTimers(
+                      (prev) => new Set([...prev, order.order_id])
+                    );
+                  }}
+                  setActiveOrders={setActiveOrders}
+                  order={order}
+                />
+              </div>
+
+              <button
+                className="btn btn-sm btn-outline-danger rounded-pill px-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancelClick();
+                }}
+              >
+                Cancel Order
+              </button>
+            </div>
+          </div>
+        );
+
+      case "cooking":
+        return (
+          <div className="d-flex justify-content-center align-items-center py-2">
+            <div className="d-flex align-items-center">
+              <i className="fa-solid fa-fire text-warning me-2"></i>
+              <span className="text-muted">Your order is being prepared</span>
+            </div>
+          </div>
+        );
+
+      case "served":
+        return (
+          <div className="d-flex justify-content-end">
+            <button
+              className="btn btn-sm btn-outline-success rounded-pill px-4"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCompleteClick();
+              }}
+            >
+              Complete Order
+            </button>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="container pt-0">
       <div className="custom-card my-2 rounded-4 shadow-sm">
@@ -867,13 +913,6 @@ export const OrderCard = ({
                 </span>
               </div>
             </div>
-
-            {/* <div className="col-7 text-end">
-              <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-              <span className="font_size_12 gray-text font_size_12">
-                {order.table_number}
-              </span>
-            </div> */}
           </div>
           <div className="row">
             <div className="col-3 text-start pe-0">
@@ -888,7 +927,11 @@ export const OrderCard = ({
               <div className="font_size_12 gray-text font_size_12 text-nowrap">
                 <span className="fw-medium gray-text">
                   <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                  {titleCase(order.section_name)} - {order.table_number}
+                  {order.section_name
+                    ? `${titleCase(order.section_name)} - ${
+                        order.table_number
+                      }`
+                    : "Dine In"}
                 </span>
               </div>
             </div>
@@ -899,7 +942,7 @@ export const OrderCard = ({
                 <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                 <span className="gray-text font_size_12">
                   {order.menu_count === 0
-                    ? "No orders"
+                    ? "No Menus"
                     : `${order.menu_count} Menu`}
                 </span>
               </div>
@@ -920,55 +963,9 @@ export const OrderCard = ({
         </div>
 
         <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
-          {status === "placed" && (
-            <div className="d-flex flex-column gap-2">
-              {!completedTimers.has(order.order_id) && (
-                <TimeRemaining
-                  orderId={order.order_id}
-                  completedTimers={completedTimers}
-                />
-              )}
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="text-center">
-                  <CircularCountdown
-                    orderId={order.order_id}
-                    onComplete={() => {
-                      setCompletedTimers(
-                        (prev) => new Set([...prev, order.order_id])
-                      );
-                    }}
-                    setOngoingOrPlacedOrders={setOngoingOrPlacedOrders}
-                    order={order}
-                  />
-                </div>
-
-                <button
-                  className="btn btn-sm btn-outline-danger rounded-pill px-4 text-"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCancelClick();
-                  }}
-                >
-                  Cancel Order
-                </button>
-              </div>
-            </div>
-          )}
-
-          {status === "ongoing" && (
-            <div className="d-flex justify-content-end">
-              <button
-                className="btn btn-sm btn-outline-success rounded-pill px-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCompleteClick();
-                }}
-              >
-                Complete Order
-              </button>
-            </div>
-          )}
+          {renderStatusSpecificUI()}
         </div>
+
         {showCompleteModal && (
           <div
             className="modal fade show d-block"
@@ -1657,45 +1654,51 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   );
 };
 
-export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
+export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
-  const timerKey = `timer_${orderId}`;
 
   useEffect(() => {
-    // Check if timer is already completed or expired in localStorage
-    const startTime = localStorage.getItem(timerKey);
-    if (!startTime) {
-      // Set initial timer only if it doesn't exist
-      localStorage.setItem(timerKey, new Date().getTime().toString());
-    } else if (completedTimers?.has(orderId)) {
+    if (completedTimers?.has(orderId)) {
       setIsExpired(true);
       return;
     }
 
-    const now = new Date().getTime();
-    const elapsed =
-      now - parseInt(startTime || new Date().getTime().toString());
-    if (elapsed >= 90000) {
+    // Convert the order time from "HH:MM:SS AM/PM" to milliseconds
+    const getOrderTimeInMs = (timeStr) => {
+      if (!timeStr) return null;
+      const now = new Date();
+      const [time, period] = timeStr.split(" ");
+      const [hours, minutes, seconds] = time.split(":");
+      let hrs = parseInt(hours);
+      
+      // Convert to 24 hour format
+      if (period === "PM" && hrs !== 12) hrs += 12;
+      if (period === "AM" && hrs === 12) hrs = 0;
+      
+      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
+      
+      // If order time is in the future (past midnight), subtract a day
+      if (orderDate > now) {
+        orderDate.setDate(orderDate.getDate() - 1);
+      }
+      
+      return orderDate.getTime();
+    };
+
+    const orderTimeMs = getOrderTimeInMs(order?.time);
+    if (!orderTimeMs) {
       setIsExpired(true);
-      localStorage.removeItem(timerKey);
       return;
     }
 
     const calculateTimeLeft = () => {
-      const start = parseInt(localStorage.getItem(timerKey));
-      if (!start) {
-        setIsExpired(true);
-        return;
-      }
-
       const now = new Date().getTime();
-      const elapsed = now - start;
+      const elapsed = now - orderTimeMs;
       const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
 
       if (remaining === 0) {
         setIsExpired(true);
-        localStorage.removeItem(timerKey);
         clearInterval(timer);
         return;
       }
@@ -1706,7 +1709,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [orderId, completedTimers, timerKey]);
+  }, [orderId, completedTimers, order?.time]);
 
   if (isExpired || timeLeft === 0) return null;
   return (
@@ -1720,7 +1723,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
 export const CircularCountdown = ({
   orderId,
   onComplete,
-  setOngoingOrPlacedOrders,
+  setActiveOrders,
   order,
   setActiveTab,
   fetchOrders,
@@ -1728,17 +1731,38 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
-  const timerKey = `timer_${orderId}`;
 
   useEffect(() => {
-    const startTime = localStorage.getItem(timerKey);
-    if (!startTime) {
-      localStorage.setItem(timerKey, new Date().getTime().toString());
+    // Convert the order time from "HH:MM:SS AM/PM" to milliseconds
+    const getOrderTimeInMs = (timeStr) => {
+      if (!timeStr) return null;
+      const now = new Date();
+      const [time, period] = timeStr.split(" ");
+      const [hours, minutes, seconds] = time.split(":");
+      let hrs = parseInt(hours);
+      
+      // Convert to 24 hour format
+      if (period === "PM" && hrs !== 12) hrs += 12;
+      if (period === "AM" && hrs === 12) hrs = 0;
+      
+      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
+      
+      // If order time is in the future (past midnight), subtract a day
+      if (orderDate > now) {
+        orderDate.setDate(orderDate.getDate() - 1);
+      }
+      
+      return orderDate.getTime();
+    };
+
+    const orderTimeMs = getOrderTimeInMs(order?.time);
+    if (!orderTimeMs) {
+      handleTimerComplete();
+      return;
     }
 
     const now = new Date().getTime();
-    const start = parseInt(localStorage.getItem(timerKey));
-    const elapsed = now - start;
+    const elapsed = now - orderTimeMs;
 
     if (elapsed >= 90000) {
       handleTimerComplete();
@@ -1746,14 +1770,8 @@ export const CircularCountdown = ({
     }
 
     const calculateTimeLeft = () => {
-      const start = parseInt(localStorage.getItem(timerKey));
-      if (!start) {
-        handleTimerComplete();
-        return;
-      }
-
       const now = new Date().getTime();
-      const elapsed = now - start;
+      const elapsed = now - orderTimeMs;
       const remaining = Math.max(90 - Math.floor(elapsed / 1000), 0);
 
       if (remaining <= 0) {
@@ -1772,15 +1790,11 @@ export const CircularCountdown = ({
         clearInterval(timerRef.current);
       }
     };
-  }, [orderId]);
-
-  
-
+  }, [orderId, order?.time]);
 
   const handleTimerComplete = async () => {
     setTimeLeft(0);
     setIsCompleted(true);
-    localStorage.removeItem(timerKey);
 
     // fetchOrders();
     window.location.reload();
@@ -1833,7 +1847,7 @@ export const CircularCountdown = ({
           };
         }
 
-        setOngoingOrPlacedOrders(orderList);
+        setActiveOrders(orderList);
 
         // If this was a cancel or complete action, update all orders list
         if (order.status === "cancelled" || order.status === "completed") {
@@ -1877,13 +1891,15 @@ export const CircularCountdown = ({
               localStorage.setItem("allOrderList", JSON.stringify(updatedAllOrders));
             }
           }
+        } else {
+          setActiveOrders({ placed: [], ongoing: [] });
         }
       } else {
-        setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
+        setActiveOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
       console.clear();
-      setOngoingOrPlacedOrders({ placed: [], ongoing: [] });
+      setActiveOrders({ placed: [], ongoing: [] });
     }
 
     // Call the onComplete callback if provided

@@ -67,12 +67,12 @@ export const RestaurantIdProvider = ({ children }) => {
             if (data.st === 1 && data.is_table_exists) {
               // Table exists, set the table number
               setTableNumber(table);
-              window.showToast("info", "Table exists");
+              window.showToast("info", `You are at Table Number ${table}`);
               localStorage.setItem("tableNumber", table);
             } else {
               // Table doesn't exist, navigate to HotelList
               // navigate("/user_app/HotelList");
-            window.showToast("info", "Table not exists");
+            window.showToast("info", `You are at Table Number ${table} and it is not exists`);
             console.log("Table not exists");
             }
           })
