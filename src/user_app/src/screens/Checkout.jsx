@@ -227,6 +227,7 @@ const Checkout = () => {
     } else {
       handleCreateOrder(orderType);
     }
+    setShowOrderTypeModal(false); // Close the modal after selection
   };
 
   const handleCreateOrder = async (orderType) => {
@@ -338,11 +339,18 @@ const Checkout = () => {
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
+        
+        // Show success message
+        window.showToast("success", "Order processed successfully");
+        
+        // Navigate to MyOrder page after a short delay
+        setTimeout(() => {
+          navigate('/user_app/MyOrder');
+        }, 500);
+        
         if (data.data?.new_order_number) {
           setNewOrderNumber(data.data.new_order_number);
           setShowPopup(true);
-          navigate(`/user_app/MyOrder/`);
-        } else {
         }
       } else {
         throw new Error(data.msg);
@@ -555,6 +563,10 @@ const Checkout = () => {
       } else {
         window.showToast("success", `Payment initiated successfully`);
         setProcessing(false);
+        // Navigate to MyOrder page after a short delay
+        setTimeout(() => {
+          navigate('/user_app/MyOrder');
+        }, 500);
       }
     } catch (error) {
       window.showToast("error", "Payment processing failed");
