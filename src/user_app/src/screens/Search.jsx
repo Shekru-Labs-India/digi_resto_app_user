@@ -426,38 +426,38 @@ const Search = () => {
     switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success", // Food type indicator color
+          icon: "fa-solid fa-circle text-success", // Keep green icon
           border: "border-success",
-          textColor: "text-success", // Category text color - always green
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Food type indicator color
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Keep red icon
           border: "border-danger",
-          textColor: "text-success", // Category text color - always green
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg", // Food type indicator color
-          border: "gray-text",
-          textColor: "gray-text", // Category text color - always green
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          icon: "fa-solid fa-egg text-secondary", // Gray icon
+          border: "border-secondary",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success", // Food type indicator color
+          icon: "fa-solid fa-leaf text-success", // Keep green icon
           border: "border-success",
-          textColor: "text-success", // Category text color - always green
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success", // Food type indicator color
+          icon: "fa-solid fa-circle text-success", // Keep green icon
           border: "border-success",
-          textColor: "text-success", // Category text color - always green
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
     }
   };
@@ -854,9 +854,7 @@ const Search = () => {
                         onClick={() => handleFilter(type)}
                       >
                         <i
-                          className={`${getFoodTypeStyles(type).icon} ${
-                            getFoodTypeStyles(type).textColor
-                          } me-2`}
+                          className={`${getFoodTypeStyles(type).icon} me-2`}
                         ></i>
                         <span className={getFoodTypeStyles(type).textColor}>
                           {type.charAt(0).toUpperCase() + type.slice(1)}
