@@ -1167,32 +1167,57 @@ const Checkout = () => {
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
                     You have an ongoing order (#
-                    {existingOrderDetails.orderNumber}). Would you like to add
-                    to this order or create a new one?
+                    {existingOrderDetails.orderNumber}
+                    ).{" "}
+                    {existingOrderDetails.orderStatus === "placed" &&
+                      "Would you like to cancel this order and create a new one?"}
+                    {existingOrderDetails.orderStatus === "cooking" &&
+                      "Your order is being prepared. Would you like to add items to this order?"}
+                    {existingOrderDetails.orderStatus === "served" &&
+                      "Your order has been served. Would you like to complete this order and create a new one?"}
                   </p>
                   <div className="d-grid gap-2">
-                    <button
-                      className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("cancelled")}
-                    >
-                      Cancel Existing & Create New Order
-                    </button>
-                    <button
-                      className="btn btn-success rounded-pill font_size_14 text-white"
-                      onClick={() => {
-                        setShowExistingOrderModal(false);
-                        setShowPaymentOptions(true);
-                      }}
-                    >
-                      Complete Existing & Create New Order
-                    </button>
-                    <button
-                      className="btn btn-info rounded-pill font_size_14 text-white"
-                      onClick={handleAddToExistingOrder}
-                    >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber}
-                      )
-                    </button>
+                    {existingOrderDetails.orderStatus === "placed" && (
+                      <>
+                        <button
+                          className="btn btn-danger rounded-pill font_size_14 text-white"
+                          onClick={() => handleOrderActionClick("cancelled")}
+                        >
+                          Cancel Existing & Create New Order
+                        </button>
+                        <button
+                          className="btn btn-info rounded-pill font_size_14 text-white"
+                          onClick={handleAddToExistingOrder}
+                        >
+                          Add to Existing Order (#
+                          {existingOrderDetails.orderNumber})
+                        </button>
+                      </>
+                    )}
+
+                    {existingOrderDetails.orderStatus === "served" && (
+                      <button
+                        className="btn btn-success rounded-pill font_size_14 text-white"
+                        onClick={() => {
+                          setShowExistingOrderModal(false);
+                          setShowPaymentOptions(true);
+                        }}
+                      >
+                        Complete Existing & Create New Order
+                      </button>
+                    )}
+
+                    {(existingOrderDetails.orderStatus === "cooking" ||
+                      existingOrderDetails.orderStatus === "served") && (
+                      <button
+                        className="btn btn-info rounded-pill font_size_14 text-white"
+                        onClick={handleAddToExistingOrder}
+                      >
+                        Add to Existing Order (#
+                        {existingOrderDetails.orderNumber})
+                      </button>
+                    )}
+
                     <button
                       className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowExistingOrderModal(false)}
