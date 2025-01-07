@@ -643,7 +643,7 @@ const Checkout = () => {
       if (data.st === 1) {
         setCoupons(data.coupons);
       } else {
-        window.showToast("error", "Failed to fetch coupons");
+        window.showToast("info", `${data.msg}`);
       }
     } catch (error) {
       console.error("Error fetching coupons:", error);
