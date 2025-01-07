@@ -339,7 +339,8 @@ const Wishlist = () => {
     restaurantId
   ) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.user_id || !menuId || !restaurantId) {
+    const outletId = localStorage.getItem("outlet_id");
+    if (!userData?.user_id || !menuId || !outletId) {
       window.showToast("error", "Missing required information");
       return;
     }
@@ -351,7 +352,7 @@ const Wishlist = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
             user_id: userData.user_id,
           }),
