@@ -54,7 +54,7 @@ const Bottom = () => {
           <div className="position-relative d-inline-block">
             <i className="fa-solid fa-check-to-slot me-2 font_size_14"></i>
             {(() => {
-              const storedCart = localStorage.getItem("restaurant_cart_data");
+              const storedCart = localStorage.getItem("restaurant_cart_data"); 
               const hasItems = storedCart
                 ? JSON.parse(storedCart).order_items.length > 0
                 : false;

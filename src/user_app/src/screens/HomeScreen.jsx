@@ -351,11 +351,11 @@ const HomeScreen = () => {
               </Link>
             </li>
             <li>
-              <Link className="nav-link active" to="/user_app/Cart">
+              <Link className="nav-link active" to="/user_app/Checkout">
                 <span className="dz-icon icon-sm">
-                  <i className="fa-solid fa-cart-shopping fs-4"></i>
+                  <i className="fa-solid fa-check-to-slot fs-4"></i>
                 </span>
-                <span className=" font_size_16  fw-medium">Cart</span>
+                <span className=" font_size_16  fw-medium">Checkout</span>
               </Link>
             </li>
             <li>
