@@ -508,7 +508,7 @@ const MenuDetails = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          restaurant_id: restaurantIdToUse,
+          outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
           user_id: userData.user_id,
         }),
