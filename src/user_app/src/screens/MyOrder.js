@@ -20,7 +20,7 @@ const titleCase = (str) => {
   return str
     .toLowerCase()
     .split(" ")
-    .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
+    ?.map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
     .join(" ");
 };
 
@@ -96,7 +96,7 @@ const MyOrder = () => {
 
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
-        if (orders.length > 0) {
+        if (orders?.length > 0) {
           // Group orders by their status
           const placedOrders = orders?.filter(o => o.status === "placed") || [];
           const cookingOrders = orders?.filter(o => o.status === "cooking") || [];
@@ -238,18 +238,18 @@ const MyOrder = () => {
 
         // Handle canceled orders which might be under 'cancle' key
         if (curr.cancle) {
-          return acc + (Array.isArray(curr.cancle) ? curr.cancle.length : 0);
+          return acc + (Array.isArray(curr.cancle) ? curr.cancle?.length : 0);
         }
 
         // Handle regular orders
         if (Array.isArray(curr)) {
-          return acc + curr.length;
+          return acc + curr?.length;
         }
         if (typeof curr === "object") {
           return (
             acc +
             Object.values(curr).reduce((sum, val) => {
-              return sum + (Array.isArray(val) ? val.length : 0);
+              return sum + (Array.isArray(val) ? val?.length : 0);
             }, 0)
           );
         }
@@ -265,7 +265,7 @@ const MyOrder = () => {
       <Header
         title="My Order"
         count={
-          Object.values(activeOrders).reduce((total, orders) => total + orders.length, 0)
+          Object.values(activeOrders).reduce((total, orders) => total + orders?.length, 0)
         }
       />
 
@@ -273,7 +273,7 @@ const MyOrder = () => {
         {isNonProductionDomain() && <Notice />}
         <div className="container px-1">
           {/* Render placed orders */}
-          {activeOrders.placed.map((order) => (
+          {activeOrders.placed?.map((order) => (
             <OrderCard
               key={`placed-${order.order_id}`}
               order={order}
@@ -287,7 +287,7 @@ const MyOrder = () => {
           ))}
 
           {/* Render cooking orders */}
-          {activeOrders.cooking.map((order) => (
+          {activeOrders.cooking?.map((order) => (
             <OrderCard
               key={`cooking-${order.order_id}`}
               order={order}
@@ -298,7 +298,7 @@ const MyOrder = () => {
           ))}
 
           {/* Render served orders */}
-          {activeOrders.served.map((order) => (
+          {activeOrders.served?.map((order) => (
             <OrderCard
               key={`served-${order.order_id}`}
               order={order}
@@ -309,7 +309,7 @@ const MyOrder = () => {
           ))}
 
           <div className="nav nav-tabs nav-fill" role="tablist">
-            {["completed", "cancelled"].map((tab) => (
+            {["completed", "cancelled"]?.map((tab) => (
               <div
                 key={tab}
                 className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
@@ -429,7 +429,7 @@ export const OrderCard = ({
     return str
       .toLowerCase()
       .split(" ")
-      .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
+      ?.map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -477,7 +477,7 @@ export const OrderCard = ({
 
         // Update the state to remove the order from "ongoing"
         setActiveOrders((prevOrders) => {
-          const updatedOngoing = prevOrders.ongoing.filter(
+          const updatedOngoing = prevOrders.ongoing?.filter(
             (o) => o.order_id !== order.order_id
           );
 
@@ -525,7 +525,7 @@ export const OrderCard = ({
 
         // Update the state to remove the order from "ongoing"
         setActiveOrders((prevOrders) => {
-          const updatedOngoing = prevOrders.ongoing.filter(
+          const updatedOngoing = prevOrders.ongoing?.filter(
             (o) => o.order_id !== order.order_id
           );
 
@@ -573,7 +573,7 @@ export const OrderCard = ({
 
         // Update the state to remove the order from "ongoing"
         setActiveOrders((prevOrders) => {
-          const updatedOngoing = prevOrders.ongoing.filter(
+          const updatedOngoing = prevOrders.ongoing?.filter(
             (o) => o.order_id !== order.order_id
           );
 
@@ -633,7 +633,7 @@ export const OrderCard = ({
         fetchOrders();
         // Update the state to remove the canceled order
         setActiveOrders((prevOrders) => ({
-          placed: prevOrders.placed.filter(
+          placed: prevOrders.placed?.filter(
             (o) => o.order_id !== order.order_id
           ),
           ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
@@ -782,7 +782,7 @@ export const OrderCard = ({
 
     if (response.ok) {
       setActiveOrders((prevOrders) => {
-        const updatedOngoing = prevOrders.ongoing.filter(
+        const updatedOngoing = prevOrders.ongoing?.filter(
           (o) => o.order_id !== order.order_id
         );
 
@@ -855,7 +855,7 @@ export const OrderCard = ({
   };
 
   const renderStatusSpecificUI = () => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case "placed":
         return (
           <div className="d-flex flex-column gap-2">
@@ -879,7 +879,6 @@ export const OrderCard = ({
                   order={order}
                 />
               </div>
-
               <button
                 className="btn btn-sm btn-outline-danger rounded-pill px-4"
                 onClick={(e) => {
@@ -1360,7 +1359,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   useEffect(() => {
-    if (orders && Object.keys(orders).length > 0) {
+    if (orders && Object.keys(orders)?.length > 0) {
       // Get the first date (top-most order group)
       const firstDate = Object.keys(orders)[0];
 
@@ -1436,7 +1435,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   };
 
   const renderOrders = () => {
-    if (!orders || Object.keys(orders).length === 0) {
+    if (!orders || Object.keys(orders)?.length === 0) {
       return (
         <div className="text-center py-4">
           <p>No menus available</p>
@@ -1513,13 +1512,13 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
         </div>
 
         {/* Existing order rendering code */}
-        {Object.entries(ordersToRender).map(([date, dateOrders]) => {
+        {Object.entries(ordersToRender)?.map(([date, dateOrders]) => {
           // Ensure dateOrders is always an array
           const activeOrders = Array.isArray(dateOrders)
             ? dateOrders
             : Object.values(dateOrders);
 
-          if (activeOrders.length === 0) return null;
+          if (activeOrders?.length === 0) return null;
 
           const dateTypeKey = `${date}-${type}`;
 
@@ -1542,7 +1541,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                 <span>{date}</span>
                 <span className="d-flex align-items-center">
                   <span className="gray-text pe-2 small-number">
-                    {activeOrders.length}
+                    {activeOrders?.length}
                   </span>
                   <span className="icon-circle">
                     <i
@@ -1562,7 +1561,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   transition: "max-height 0.3s ease-out",
                 }}
               >
-                {activeOrders.map((order) => (
+                {activeOrders?.map((order) => (
                   <div
                     className="custom-card my-2 rounded-4 shadow-sm"
                     key={order.order_number}
@@ -1711,6 +1710,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (completedTimers?.has(orderId)) {
@@ -1718,7 +1718,6 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
       return;
     }
 
-    // Convert the order time from "HH:MM:SS AM/PM" to milliseconds
     const getOrderTimeInMs = (timeStr) => {
       if (!timeStr) return null;
       const now = new Date();
@@ -1726,13 +1725,11 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
       
-      // Convert to 24 hour format
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
       
       const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
       
-      // If order time is in the future (past midnight), subtract a day
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
@@ -1753,16 +1750,20 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
 
       if (remaining === 0) {
         setIsExpired(true);
-        clearInterval(timer);
+        clearInterval(timerRef.current);
         return;
       }
       setTimeLeft(remaining);
     };
 
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    timerRef.current = setInterval(calculateTimeLeft, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [orderId, completedTimers, order?.time]);
 
   if (isExpired || timeLeft === 0) return null;
@@ -1787,7 +1788,6 @@ export const CircularCountdown = ({
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // Convert the order time from "HH:MM:SS AM/PM" to milliseconds
     const getOrderTimeInMs = (timeStr) => {
       if (!timeStr) return null;
       const now = new Date();
@@ -1795,13 +1795,11 @@ export const CircularCountdown = ({
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
       
-      // Convert to 24 hour format
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
       
       const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
       
-      // If order time is in the future (past midnight), subtract a day
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
@@ -1885,15 +1883,15 @@ export const CircularCountdown = ({
         let orderList = { placed: [], ongoing: [] };
         localStorage.setItem(
           "timeOfPlacedOrder",
-          data.data.map((order) => order.time)
+          data.data?.map((order) => order.time)
         );
 
         window.location.reload();
 
-        if (orders.length > 0) {
+        if (orders?.length > 0) {
           // Group orders by their status
-          const placedOrders = orders.filter(o => o.status === "placed");
-          const ongoingOrders = orders.filter(o => o.status === "ongoing");
+          const placedOrders = orders?.filter(o => o.status === "placed");
+          const ongoingOrders = orders?.filter(o => o.status === "ongoing");
 
           orderList = {
             placed: placedOrders,
