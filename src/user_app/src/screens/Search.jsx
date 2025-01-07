@@ -440,7 +440,7 @@ const Search = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-secondary", // Gray icon
+          icon: "fa-solid fa-egg gray-text", // Gray icon
           border: "border-secondary",
           textColor: "text-dark", // Black text
           categoryIcon: "fa-solid fa-utensils text-success me-1",
@@ -814,15 +814,9 @@ const Search = () => {
                       <i
                         className={`${
                           getFoodTypeStyles(selectedFoodType).icon
-                        } ${
-                          getFoodTypeStyles(selectedFoodType).textColor
                         } me-2`}
                       ></i>
-                      <span
-                        className={
-                          getFoodTypeStyles(selectedFoodType).textColor
-                        }
-                      >
+                      <span className="text-dark">
                         {selectedFoodType.charAt(0).toUpperCase() +
                           selectedFoodType.slice(1)}
                       </span>
@@ -830,7 +824,7 @@ const Search = () => {
                   ) : (
                     <div className="d-flex align-items-center">
                       <i className="fa-solid fa-filter text-success me-2"></i>
-                      <span className="text-success">Type</span>
+                      <span className="text-dark">Type</span>
                     </div>
                   )}
                 </button>
