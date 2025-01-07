@@ -114,7 +114,7 @@ const Profile = () => {
                       <span className="font_size_14">My Order</span>
                     </Link>
                   </li>
-                  <li className="col-6">
+                  {/* <li className="col-6">
                     <Link
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
@@ -122,7 +122,7 @@ const Profile = () => {
                       <i className="fa-solid fa-cart-shopping me-2 fs-5"></i>
                       <span className="font_size_14">Cart</span>
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="col-6">
                     <Link
                       to="/user_app/Wishlist"
