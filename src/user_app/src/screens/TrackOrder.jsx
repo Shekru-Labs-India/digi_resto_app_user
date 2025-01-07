@@ -266,7 +266,7 @@ const TrackOrder = () => {
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
-      const filteredMenuDetails = orderDetails.menu_details.filter(
+      const filteredMenuDetails = orderDetails.menu_details?.filter(
         (item) =>
           !removedItems.some(
             (removedItem) =>
@@ -294,7 +294,7 @@ const TrackOrder = () => {
   }, [orderDetails, removedItems]);
 
   const handleRemovePendingItem = (menuId) => {
-    setPendingItems((prev) => prev.filter((item) => item.menu_id !== menuId));
+    setPendingItems((prev) => prev?.filter((item) => item.menu_id !== menuId));
     setRemovedItems((prev) => {
       const newSet = new Set(prev);
       newSet.delete(menuId);
@@ -670,7 +670,7 @@ const TrackOrder = () => {
     try {
       setOrderDetails((prev) => ({
         ...prev,
-        menu_details: prev.menu_details.filter(
+        menu_details: prev.menu_details?.filter(
           (item) => item.menu_id !== menu.menu_id
         ),
       }));
@@ -728,7 +728,7 @@ const TrackOrder = () => {
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
-      const filteredMenuDetails = orderDetails.menu_details.filter(
+      const filteredMenuDetails = orderDetails.menu_details?.filter(
         (item) =>
           !removedItems.some(
             (removedItem) =>

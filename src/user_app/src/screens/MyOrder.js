@@ -98,9 +98,9 @@ const MyOrder = () => {
         const orders = data.data || [];
         if (orders.length > 0) {
           // Group orders by their status
-          const placedOrders = orders.filter(o => o.status === "placed");
-          const cookingOrders = orders.filter(o => o.status === "cooking");
-          const servedOrders = orders.filter(o => o.status === "served");
+          const placedOrders = orders?.filter(o => o.status === "placed") || [];
+          const cookingOrders = orders?.filter(o => o.status === "cooking") || [];
+          const servedOrders = orders?.filter(o => o.status === "served") || [];
 
           const activeOrders = {
             placed: placedOrders,
