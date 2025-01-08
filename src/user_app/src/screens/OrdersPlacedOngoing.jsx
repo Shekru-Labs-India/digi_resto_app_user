@@ -388,22 +388,22 @@ const OrderCard = ({
             </div>
             <div className="row">
               <div className="col-6">
-                <div className="">
-                  <i className="fa-solid fa-bowl-rice me-2 gray-text font_size_12"></i>
+                <div className="menu-info">
+                  <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                   <span className="gray-text font_size_12">
-                    {order.menu_count === 0
-                      ? "No orders"
-                      : `${order.menu_count} Menu`}
+                    {order.menu_count === 0 ? "No Menus" : `${order.menu_count} Menu`}
                   </span>
                 </div>
               </div>
               <div className="col-6 text-end">
                 <span className="text-info font_size_14 fw-semibold">
-                  ₹{order.grand_total}
+                  ₹{order.grand_total.toFixed(2)}
                 </span>
-                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                  ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
-                </span>
+                {order.discount_percent > 0 && (
+                  <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                    ₹{(order.grand_total / (1 - order.discount_percent / 100)).toFixed(2)}
+                  </span>
+                )}
               </div>
             </div>
           </div>
