@@ -358,7 +358,7 @@ const OrderCard = ({
                 <div className="restaurant">
                   <i className="fa-solid fa-store pe-2 font_size_14"></i>
                   <span className="fw-medium font_size_14">
-                    {order.restaurant_name?.toUpperCase()}
+                    {order.outlet_name?.toUpperCase()}
                   </span>
                 </div>
               </div>
@@ -383,7 +383,7 @@ const OrderCard = ({
                     <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                     {titleCase(order.section_name)} - {order.table_number}
                   </span>
-              </div>
+                </div>
               </div>
             </div>
             <div className="row">
@@ -391,7 +391,9 @@ const OrderCard = ({
                 <div className="menu-info">
                   <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                   <span className="gray-text font_size_12">
-                    {order.menu_count === 0 ? "No Menus" : `${order.menu_count} Menu`}
+                    {order.menu_count === 0
+                      ? "No Menus"
+                      : `${order.menu_count} Menu`}
                   </span>
                 </div>
               </div>
@@ -401,7 +403,11 @@ const OrderCard = ({
                 </span>
                 {order.discount_percent > 0 && (
                   <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                    ₹{(order.grand_total / (1 - order.discount_percent / 100)).toFixed(2)}
+                    ₹
+                    {(
+                      order.grand_total /
+                      (1 - order.discount_percent / 100)
+                    ).toFixed(2)}
                   </span>
                 )}
               </div>
@@ -513,7 +519,7 @@ const OrdersPlacedOngoing = () => {
         const ordersData = data.data;
         setOrders({
           placed: ordersData.filter(order => order.status === 'placed'),
-          ongoing: ordersData.filter(order => order.status === 'ongoing')
+          ongoing: ordersData.filter(order => order.status === 'cooking')
         });
       } else {
         // Handle empty or invalid data structure silently
@@ -566,13 +572,13 @@ const OrdersPlacedOngoing = () => {
 
       {orders.ongoing.length > 0 && (
         <div>
-          <i className="fa-solid fa-hourglass-half pe-2 font_size_14 text-secondary opacity-25"></i>
-          <span className="font_size_14 fw-medium">Ongoing Order</span>
+          <i className="fa-solid fa-utensils pe-2 font_size_14 text-secondary"></i>
+          <span className="font_size_14 fw-medium">Cooking</span>
           {orders.ongoing.map((order, index) => (
             <OrderCard
               key={`ongoing-${order.order_id}-${index}`}
               order={order}
-              status="ongoing"
+              status="cooking"
               setOngoingOrPlacedOrders={setOrders}
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}
