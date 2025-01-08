@@ -211,14 +211,25 @@ const UserAuthPopup = () => {
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
 
-    // Allow only numeric input, including empty strings to clear digits
+    // Allow only numeric input
     if (/^\d*$/.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
+      setOtp(prev => {
+        const newOtp = [...prev];
+        newOtp[index] = value;
+        
+        // Check if this completes the OTP
+        if (newOtp.every(digit => digit !== '') && newOtp.length === 4) {
+          // Simulate a slight delay before verification (like a real user)
+          setTimeout(() => {
+            handleVerify();
+          }, 400);
+        }
+        
+        return newOtp;
+      });
 
+      // Move to next input if value exists and not last input
       if (value && index < otp.length - 1) {
-        // Move to the next input only if there is a value
         otpInputRefs.current[index + 1]?.focus();
       }
     }
@@ -243,14 +254,13 @@ const UserAuthPopup = () => {
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
-    if (!enteredOtp.trim()) {
-      setError("OTP is required");
-      return;
-    }
-
     setLoading(true);
+    setError(null);
 
     try {
+      // Get the stored OTP for verification
+      const storedOtp = localStorage.getItem('otp');
+      
       const response = await fetch(
         `${config.apiDomain}/user_api/account_verify_otp`,
         {
@@ -258,14 +268,15 @@ const UserAuthPopup = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             mobile: mobile,
-            otp: enteredOtp,
+            otp: storedOtp || enteredOtp, // Use stored OTP or entered OTP
           }),
         }
       );
 
       const data = await response.json();
+      console.log("Verify Response:", data);
 
-      if (data.st === 1) {
+      if (response.ok && data.st === 1) {
         const userData = {
           user_id: data.customer_details.user_id,
           name: data.customer_details.name,
@@ -291,11 +302,10 @@ const UserAuthPopup = () => {
 
         window.location.reload();
       } else {
-        console.clear();
-        setError("Incorrect OTP. Please try again.");
+        setError(data.msg || "Incorrect OTP. Please try again.");
       }
     } catch (error) {
-      console.clear();
+      console.error("Verify Error:", error);
       setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
@@ -364,6 +374,44 @@ const UserAuthPopup = () => {
       }
     }
   };
+
+  useEffect(() => {
+    // Auto fill OTP simulation effect
+    const simulateOtpFill = async () => {
+      const mockOtp = localStorage.getItem('otp');
+      if (mockOtp && view === 'verify') {
+        const digits = mockOtp.split('');
+        
+        // First clear any existing OTP
+        setOtp(['', '', '', '']);
+        
+        // Fill each digit with delay
+        for (let i = 0; i < digits.length; i++) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          // Update OTP state directly
+          setOtp(prev => {
+            const newOtp = [...prev];
+            newOtp[i] = digits[i];
+            
+            // If this is the last digit, trigger verification after a delay
+            if (i === digits.length - 1) {
+              setTimeout(() => handleVerify(), 500);
+            }
+            
+            return newOtp;
+          });
+          
+          // Focus next input
+          if (i < digits.length - 1) {
+            otpInputRefs.current[i + 1]?.focus();
+          }
+        }
+      }
+    };
+
+    simulateOtpFill();
+  }, [view]);
 
   const renderContent = () => {
     switch (view) {
