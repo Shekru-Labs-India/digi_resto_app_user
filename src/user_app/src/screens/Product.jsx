@@ -435,19 +435,17 @@ const Product = () => {
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
-
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
+    if (!userData?.user_id) {
+      showLoginPopup();
       return;
     }
-
-    if (!restaurantId) {
-      window.showToast("error", "Restaurant information is missing");
-      return;
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      const cartData = JSON.parse(storedCart);
+      if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
+        window.showToast("info", "This item is already in your cart");
+        return;
+      }
     }
 
     setSelectedMenu(menu);
@@ -1086,53 +1084,36 @@ const Product = () => {
                           </div>
 
                           <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-3 ps-0">
-                            {userData ? (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
+                            <div
+                              className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border"
+                              style={{
+                                width: "25px",
+                                height: "25px",
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (userData?.user_id) {
                                   handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i
-                                  className={`fa-solid ${
-                                    isMenuItemInCart(menu.menu_id)
-                                      ? "fa-circle-check text-success"
-                                      : "fa-solid fa-plus text-secondary"
-                                  } fs-6 `}
-                                ></i>
-                              </div>
-                            ) : (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
+                                } else {
                                   showLoginPopup();
-                                }}
-                              >
-                                <i className="fa-solid fa-plus text-secondary fs-6"></i>
-                              </div>
-                            )}
+                                }
+                              }}
+                            >
+                              <i
+                                className={`fa-solid ${
+                                  (() => {
+                                    const storedCart = localStorage.getItem('restaurant_cart_data');
+                                    if (!storedCart) return "fa-plus text-secondary";
+                                    const cartData = JSON.parse(storedCart);
+                                    return cartData.order_items?.some(item => item.menu_id === menu.menu_id)
+                                      ? "fa-circle-check text-success"
+                                      : "fa-plus text-secondary"
+                                  })()
+                                } fs-6`}
+                              ></i>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -201,14 +201,17 @@ const Search = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.user_id || userData.role === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
-
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart");
+    if (!userData?.user_id || userData.role === 'guest') {
+      showLoginPopup();
       return;
+    }
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      const cartData = JSON.parse(storedCart);
+      if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
+        window.showToast("info", "This item is already in your cart");
+        return;
+      }
     }
 
     setSelectedMenu(menu);
@@ -1183,16 +1186,7 @@ const Search = () => {
                                 </div>
                                 <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
                                   <div
-                                    className={`
-                                      d-flex 
-                                      align-items-center 
-                                      justify-content-center 
-                                      rounded-circle 
-                                      bg-white 
-                                      border-opacity-25 
-                                      border-secondary 
-                                      border
-                                    `}
+                                    className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border"
                                     style={{
                                       width: "25px",
                                       height: "25px",
@@ -1201,18 +1195,19 @@ const Search = () => {
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-                                      if (userData?.user_id) {
-                                        handleAddToCartClick(menu);
-                                      } else {
-                                        showLoginPopup();
-                                      }
+                                      handleAddToCartClick(menu);
                                     }}
                                   >
                                     <i
                                       className={`fa-solid ${
-                                        isMenuItemInCart(menu.menu_id)
-                                          ? "fa-solid fa-circle-check text-success"
-                                          : "fa-solid fa-plus text-secondary"
+                                        (() => {
+                                          const storedCart = localStorage.getItem('restaurant_cart_data');
+                                          if (!storedCart) return "fa-plus text-secondary";
+                                          const cartData = JSON.parse(storedCart);
+                                          return cartData.order_items?.some(item => item.menu_id === menu.menu_id)
+                                            ? "fa-circle-check text-success"
+                                            : "fa-plus text-secondary"
+                                        })()
                                       } fs-6`}
                                     ></i>
                                   </div>
