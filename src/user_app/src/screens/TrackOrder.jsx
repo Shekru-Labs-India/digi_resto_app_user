@@ -1613,7 +1613,7 @@ const TrackOrder = () => {
                 )}
               </div>
             )}
-
+            {orderStatus === "paid" && (
             <div className="d-flex flex-column align-items-center mt-4">
               <div className="d-flex justify-content-center gap-5 mb-2">
                 {/* Bad Rating */}
@@ -1692,6 +1692,7 @@ const TrackOrder = () => {
                 Rate us on Google
               </div>
             </div>
+            )}
 
             <RestaurantSocials />
           </div>
