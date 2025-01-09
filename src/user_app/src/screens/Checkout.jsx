@@ -900,6 +900,36 @@ const Checkout = () => {
     }
   };
 
+  const handleClearCart = async () => {
+    try {
+      // Clear cart from localStorage
+      localStorage.removeItem('restaurant_cart_data');
+      
+      // Clear cart items state
+      setCartItems([]);
+      
+      // Reset all totals
+      setTotal(0);
+      setServiceCharges(0);
+      setTax(0);
+      setDiscount(0);
+      setGrandTotal(0);
+      setTotalAfterDiscount(0);
+      
+      // Use the clearCart function from CartContext
+      clearCart();
+
+      window.showToast("success", "Cart cleared successfully");
+      
+      // Optional: Navigate to menu after clearing
+      // navigate("/user_app/Menu");
+
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      window.showToast("error", "Failed to clear cart");
+    }
+  };
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
@@ -1234,7 +1264,7 @@ const Checkout = () => {
 
         <div className="m-3">
           <div className="container d-flex justify-content-end">
-            <div className="px-3">
+            <div className="px-3" role="button" onClick={handleClearCart}>
               Clear Checkout
             </div>
           </div>
@@ -1532,7 +1562,7 @@ const Checkout = () => {
                   )}
                 </button>
                 <div className="d-flex flex-column align-items-center justify-content-center mt-3">
-                  <div className="d-flex align-items-center justify-content-center">
+                  <div className="d-flex align-items-center justify-content-center gap-3">
                     <Link
                       to="/user_app/Menu"
                       className="btn btn-outline-primary rounded-pill px-3"
@@ -1540,6 +1570,12 @@ const Checkout = () => {
                       <i className="ri-add-circle-line me-1 fs-4"></i> Order
                       More
                     </Link>
+                    {/* <button
+                      onClick={handleClearCart}
+                      className="btn btn-outline-danger rounded-pill px-3"
+                    >
+                      <i className="ri-delete-bin-line me-1"></i> Clear Cart
+                    </button> */}
                   </div>
                 </div>
               </div>

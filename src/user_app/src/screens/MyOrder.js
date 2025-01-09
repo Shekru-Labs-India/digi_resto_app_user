@@ -305,6 +305,7 @@ const MyOrder = () => {
               status="served"
               setActiveOrders={setActiveOrders}
               fetchOrders={fetchActiveOrders}
+              fetchCompletedAndCancelledOrders={fetchCompletedAndCancelledOrders}
             />
           ))}
 
@@ -474,6 +475,7 @@ export const OrderCard = ({
       const data = await response.json();
 
       if (data.st === 1) {
+        fetchCompletedAndCancelledOrders();
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
@@ -522,6 +524,7 @@ export const OrderCard = ({
       const data = await response.json();
 
       if (data.st === 1) {
+        
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
@@ -535,9 +538,12 @@ export const OrderCard = ({
             ongoing: updatedOngoing,
           };
         });
+
+        // Fetch both active and completed orders
         fetchOrders();
         fetchCompletedAndCancelledOrders();
         setShowCompleteModal(false); // Close the modal
+        
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
@@ -572,7 +578,7 @@ export const OrderCard = ({
 
       if (data.st === 1) {
         window.showToast("success", data.msg);
-
+        fetchCompletedAndCancelledOrders();
         // Update the state to remove the order from "ongoing"
         setActiveOrders((prevOrders) => {
           const updatedOngoing = prevOrders.ongoing?.filter(
@@ -783,6 +789,7 @@ export const OrderCard = ({
     );
 
     if (response.ok) {
+      fetchCompletedAndCancelledOrders();
       setActiveOrders((prevOrders) => {
         const updatedOngoing = prevOrders.ongoing?.filter(
           (o) => o.order_id !== order.order_id

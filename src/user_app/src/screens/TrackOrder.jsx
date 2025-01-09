@@ -24,10 +24,12 @@ const TrackOrder = () => {
       .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
       .join(" ");
   };
-  // Define displayCartItems
+
+  // Move these hooks to the top with other state declarations
+  const [hasGoogleReview, setHasGoogleReview] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
+  const [isCompleted, setIsCompleted] = useState(false);
   const [selectedRating, setSelectedRating] = useState("");
   const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
@@ -83,6 +85,16 @@ const TrackOrder = () => {
       pendingItems.some((item) => item.menu_id === menuId)
     );
   };
+
+  useEffect(() => {
+    try {
+      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
+      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      setHasGoogleReview(!!rateOnGoogle);
+    } catch (error) {
+      setHasGoogleReview(false);
+    }
+  }, []);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -1106,11 +1118,16 @@ const TrackOrder = () => {
     }
   };
 
+  // Update the handleRateOnGoogle function
   const handleRateOnGoogle = () => {
-    const rateOnGoogle = JSON.parse(localStorage.getItem("restaurantSocial")).find(social => social.id === "google_review")?.link;
-    console.log(rateOnGoogle);
-    if (rateOnGoogle) {
-      window.open(rateOnGoogle, "_blank");
+    try {
+      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
+      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      if (rateOnGoogle) {
+        window.open(rateOnGoogle, "_blank");
+      }
+    } catch (error) {
+      console.clear();
     }
   };
 
@@ -1687,12 +1704,15 @@ const TrackOrder = () => {
                 </div>
               )}
                
-              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
-              onClick={handleRateOnGoogle}
-              >
-                <i className="fa-solid fa-star me-2"></i>
-                Rate us on Google
-              </div>
+              {hasGoogleReview && (
+                <div 
+                  className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
+                  onClick={handleRateOnGoogle}
+                >
+                  <i className="fa-solid fa-star me-2"></i>
+                  Rate us on Google
+                </div>
+              )}
                  
             </div>
             )}

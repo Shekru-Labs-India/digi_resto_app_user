@@ -393,10 +393,30 @@ const OfferBanner = () => {
     }
   };
 
+  // Add this useEffect to listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render of menu items to update cart icons
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    // Listen for both cart updates and cart clear
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartUpdate);
+    };
+  }, []);
+
   // Update handleAddToCartClick function
   const handleAddToCartClick = (menuItem) => {
-    // Check if item is already in cart
-    if (isMenuItemInCart(menuItem.menu_id)) {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    const cartData = storedCart ? JSON.parse(storedCart) : { order_items: [] };
+    const isInCart = cartData.order_items?.some(item => item.menu_id === menuItem.menu_id);
+
+    if (isInCart) {
       window.showToast("info", "This item is already in your cart");
       return;
     }
