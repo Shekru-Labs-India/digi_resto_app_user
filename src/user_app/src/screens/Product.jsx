@@ -278,7 +278,7 @@ const Product = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
           user_id: userData.user_id,
         }),
