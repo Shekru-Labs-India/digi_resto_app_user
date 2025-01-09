@@ -1028,7 +1028,7 @@ const MenuDetails = () => {
                     >
                       <i className="fa-solid fa-xmark pe-1 text-white"></i>
                       <div className="font-poppins text-nowrap text-white">
-                        Remove from Cart
+                        Remove from Checkout
                       </div>
                     </button>
                   ) : (

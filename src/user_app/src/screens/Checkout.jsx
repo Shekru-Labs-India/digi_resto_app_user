@@ -1232,6 +1232,11 @@ const Checkout = () => {
         )}
 
         <div className="m-3">
+          <div className="container d-flex justify-content-end">
+            <button className="px-3">
+              Clear Checkout
+            </button>
+          </div>
           <div className="dz-flex-box">
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (

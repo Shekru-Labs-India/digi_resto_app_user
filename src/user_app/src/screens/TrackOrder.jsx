@@ -28,7 +28,7 @@ const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
-  const [selectedRating, setSelectedRating] = useState(null);
+  const [selectedRating, setSelectedRating] = useState("");
   const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
   const { order_number } = useParams();
@@ -61,7 +61,7 @@ const TrackOrder = () => {
   const userId = userData?.user_id || localStorage.getItem("user_id");
   const role = userData?.role || localStorage.getItem("role");
 
-  const [orderStatus, setOrderStatus] = useState(null);
+  const [orderStatus, setOrderStatus] = useState("");
 
   // Add helper function at the top of component
   const isVegMenu = (menuType) => {
@@ -103,7 +103,7 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.min((prev[menuId] || 1) + 1, 20);
       if (newQuantity === 20) {
-        toast.current.show({
+        toast.current?.show({
           severity: "info",
           summary: "Maximum Quantity",
           detail: "You've reached the maximum quantity",
@@ -131,7 +131,7 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.max((prev[menuId] || 1) - 1, 1);
       if (newQuantity === 1) {
-        toast.current.show({
+        toast.current?.show({
           severity: "info",
           summary: "Minimum Quantity",
           detail: "You've reached the minimum quantity",
@@ -578,6 +578,11 @@ const TrackOrder = () => {
             ...lists,
             menu_details: formattedMenu,
           });
+
+          // Set rating if it exists
+          if (lists.order_details.rating) {
+            setSelectedRating(lists.order_details.rating);
+          }
 
           // Handle order status
           const status = lists.order_details.order_status.toLowerCase();
@@ -1058,12 +1063,7 @@ const TrackOrder = () => {
     };
   };
 
-  const handleRating = async (ratingValue) => {
-    if (hasRated) {
-      window.showToast("info", "You have already rated this order");
-      return;
-    }
-
+  const handleRating = async (rating) => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/rating_to_order`, {
         method: "POST",
@@ -1073,22 +1073,36 @@ const TrackOrder = () => {
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
           user_id: userId,
-          order_id: orderDetails.order_details.order_id,
-          rating: ratingValue
+          order_id: orderDetails?.order_details?.order_id,
+          rating: rating
         }),
       });
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
-        setSelectedRating(ratingValue);
-        setHasRated(true);
-        window.showToast("success", "Thank you for your rating!");
+        setSelectedRating(rating);
+        toast.current?.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Rating updated successfully",
+          life: 3000,
+        });
       } else {
-        window.showToast("error", "Failed to submit rating");
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to update rating",
+          life: 3000,
+        });
       }
     } catch (error) {
-      console.clear();
-      window.showToast("error", "Failed to submit rating");
+      console.error("Error updating rating:", error);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update rating",
+        life: 3000,
+      });
     }
   };
 
@@ -1604,9 +1618,8 @@ const TrackOrder = () => {
                     value="1"
                     checked={selectedRating === "1"}
                     onChange={() => handleRating("1")}
-                    disabled={hasRated}
                   />
-                  <label htmlFor="bad-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
+                  <label htmlFor="bad-rating" style={{ cursor: 'pointer' }}>
                     <i
                       className={`fa-solid fa-face-frown ${selectedRating === "1" ? 'text-danger' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
@@ -1625,9 +1638,8 @@ const TrackOrder = () => {
                     value="3"
                     checked={selectedRating === "3"}
                     onChange={() => handleRating("3")}
-                    disabled={hasRated}
                   />
-                  <label htmlFor="okay-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
+                  <label htmlFor="okay-rating" style={{ cursor: 'pointer' }}>
                     <i
                       className={`fa-solid fa-face-meh ${selectedRating === "3" ? 'text-warning' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
@@ -1646,9 +1658,8 @@ const TrackOrder = () => {
                     value="5"
                     checked={selectedRating === "5"}
                     onChange={() => handleRating("5")}
-                    disabled={hasRated}
                   />
-                  <label htmlFor="good-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
+                  <label htmlFor="good-rating" style={{ cursor: 'pointer' }}>
                     <i
                       className={`fa-solid fa-face-smile ${selectedRating === "5" ? 'text-success' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
@@ -1657,9 +1668,13 @@ const TrackOrder = () => {
                   </label>
                 </div>
               </div>
-              {!hasRated && (
+              {selectedRating !== "0" ? (
                 <div className="text-center mt-2">
-                  <span className="font_size_12 text-secondary">Rate your experience</span>
+                  <span className="font_size_12 text-success">Thanks for your feedback! You can change your rating anytime.</span>
+                </div>
+              ) : (
+                <div className="text-center mt-2">
+                  <span className="font_size_12 text-secondary">Please rate your experience.</span>
                 </div>
               )}
               <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
