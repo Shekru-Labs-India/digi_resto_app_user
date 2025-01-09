@@ -345,8 +345,8 @@ const UserAuthPopup = () => {
       const data = await response.json();
 
       if (data.st === 1) {
-        const generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
-        localStorage.setItem("otp", generatedOtp);
+        // Always set OTP as "1234" for testing
+        localStorage.setItem("otp", "1234");
         localStorage.setItem("mobile", mobile);
         localStorage.setItem("customer_type", "regular");
         localStorage.setItem("isGuest", "false");

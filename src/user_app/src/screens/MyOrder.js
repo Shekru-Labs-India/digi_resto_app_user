@@ -409,6 +409,7 @@ export const OrderCard = ({
   setActiveOrders,
   completedTimers = new Set(),
   setActiveTab,
+  fetchCompletedAndCancelledOrders,
   setCompletedTimers = () => {},
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -535,6 +536,7 @@ export const OrderCard = ({
           };
         });
         fetchOrders();
+        fetchCompletedAndCancelledOrders();
         setShowCompleteModal(false); // Close the modal
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
@@ -583,7 +585,7 @@ export const OrderCard = ({
           };
         });
         fetchOrders();
-
+        
         setShowCompleteModal(false); // Close the modal
       } else {
         console.clear();
@@ -804,6 +806,7 @@ export const OrderCard = ({
           }
           setProcessing(false);
         }, 3000);
+       
       } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {

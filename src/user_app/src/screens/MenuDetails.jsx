@@ -163,6 +163,10 @@ const MenuDetails = () => {
   const [originalHalfPrice, setOriginalHalfPrice] = useState(null);
   const [originalFullPrice, setOriginalFullPrice] = useState(null);
 
+  const [differentRestaurantName, setDifferentRestaurantName] = useState(
+    localStorage.getItem("differentRestaurantName") || ""
+  );
+
   useEffect(() => {
     // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -192,13 +196,10 @@ const MenuDetails = () => {
     setRole(storedRole);
     setCurrentRestaurantId(initialRestaurantId);
 
-    // Clean up function
+    // Cleanup - restore previous restaurant when leaving
     return () => {
       if (!locationState?.fromDifferentRestaurant) {
-        // Restore previous restaurant ID only if not viewing a different restaurant's menu
-        const previousRestaurantId = localStorage.getItem(
-          "previousRestaurantId"
-        );
+        const previousRestaurantId = localStorage.getItem("previousRestaurantId");
         if (previousRestaurantId) {
           localStorage.setItem("restaurantId", previousRestaurantId);
           localStorage.setItem("currentRestaurantId", previousRestaurantId);
@@ -258,6 +259,10 @@ const MenuDetails = () => {
   const fetchProductDetails = async () => {
     setIsLoading(true);
     try {
+      const outlet_id = location.state?.fromDifferentRestaurant 
+        ? location.state.outlet_id  
+        : localStorage.getItem("outlet_id");
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_menu_details`,
         {
@@ -266,7 +271,7 @@ const MenuDetails = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
+            outlet_id: outlet_id,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
             user_id: userId || null,
@@ -292,6 +297,7 @@ const MenuDetails = () => {
             is_favorite,
             menu_food_type,
             restaurant_id: fetchedRestaurantId,
+            restaurant_name,
           } = data.details;
 
           // Update restaurant IDs
@@ -302,10 +308,8 @@ const MenuDetails = () => {
 
           if (location.state?.fromDifferentRestaurant) {
             setIsFromDifferentRestaurant(true);
-            localStorage.setItem(
-              "differentRestaurantName",
-              data.details.restaurant_name || ""
-            );
+            setDifferentRestaurantName(restaurant_name || "");
+            localStorage.setItem("differentRestaurantName", restaurant_name || "");
           }
 
           // Calculate discounted and old prices
@@ -444,7 +448,8 @@ const MenuDetails = () => {
           comment,
           half_or_full: portionSize,
           price: selectedPrice,
-          restaurant_id: restaurantId,
+          outlet_id: restaurantId,
+          menu_cat_id: menu_cat_id,
         },
         restaurantId
       );
@@ -457,7 +462,6 @@ const MenuDetails = () => {
       }, 2000);
     } catch (error) {
       console.clear();
-
       window.showToast("error", "Failed to add item to cart");
     }
   };
@@ -635,7 +639,7 @@ const MenuDetails = () => {
           <div className="mt-5 pt-1">
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
-                restaurantName={restaurantName}
+                restaurantName={isFromDifferentRestaurant ? differentRestaurantName : restaurantName}
                 tableNumber={userData?.tableNumber || "1"}
               />
             </div>
@@ -890,8 +894,16 @@ const MenuDetails = () => {
           {isFromDifferentRestaurant && (
             <div className="container mt-3">
               <div className="alert alert-warning" role="alert">
-                This Menu is from a different restaurant. You can view details,
-                but can't add it to your current cart.
+                <div className="d-flex align-items-center">
+                  <i className="fa-solid fa-store me-2"></i>
+                  <div>
+                    <div className="fw-medium">{differentRestaurantName}</div>
+                    <div className="font_size_12">
+                      This menu is from a different restaurant. You can view details,
+                      but can't add it to your current cart.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

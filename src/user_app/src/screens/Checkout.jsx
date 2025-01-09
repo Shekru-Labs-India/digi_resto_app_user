@@ -1234,9 +1234,9 @@ const Checkout = () => {
 
         <div className="m-3">
           <div className="container d-flex justify-content-end">
-            <button className="px-3">
+            <div className="px-3">
               Clear Checkout
-            </button>
+            </div>
           </div>
           <div className="dz-flex-box">
             <div className="dz-flex-box mt-2">
@@ -1429,7 +1429,7 @@ const Checkout = () => {
                       </span>
                     </div>
 
-                    <div className="col-12 mb-0 py-1">
+                    {/* <div className="col-12 mb-0 py-1">
                       <div className="row align-items-center justify-content-center">
                         <div className="col-1 text-center">
                           <div
@@ -1489,7 +1489,7 @@ const Checkout = () => {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </div> */}
 
                     <hr className="p-0  text-primary mb-2 mt-1" />
                   </div>

@@ -100,11 +100,11 @@ const Wishlist = () => {
 
   const handleMenuClick = (menu) => {
     // If the menu is from a different restaurant
-    if (menu.restaurant_id !== restaurantId) {
+    if (menu.outlet_id !== restaurantId) {
       // Store both current and target restaurant IDs
       localStorage.setItem("previousRestaurantId", restaurantId);
-      localStorage.setItem("currentRestaurantId", menu.restaurant_id);
-      localStorage.setItem("restaurantId", menu.restaurant_id);
+      localStorage.setItem("currentRestaurantId", menu.outlet_id);
+      localStorage.setItem("restaurantId", menu.outlet_id);
     }
   };
 
@@ -252,11 +252,11 @@ const Wishlist = () => {
       return;
     }
     if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
+      window.showToast("info", "This item is already in your checkout.");
       return;
     }
 
-    if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
+    if (isCartFromDifferentRestaurant(menu.outlet_id)) {
       window.showToast(
         "warning",
         "Please complete or clear your existing cart first"
@@ -332,60 +332,56 @@ const Wishlist = () => {
     (total, key) => total + menuList[key].length,
     0
   );
-
-  const handleRemoveItemClick = async (
-    restaurantName,
-    menuId,
-    restaurantId
-  ) => {
+  const handleRemoveItemClick = async (restaurantName, menuId, outletId) => {
+    // Retrieve user data from localStorage
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const outletId = localStorage.getItem("outlet_id");
-    if (!userData?.user_id || !menuId || !outletId) {
+  
+    // Extract user_id from userData
+    const userId = userData?.user_id;
+  
+    if (!userId || !menuId || !outletId) {
       window.showToast("error", "Missing required information");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/remove_favourite_menu`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            menu_id: menuId,
-            user_id: userData.user_id,
-          }),
-        }
-      );
-
+      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          outlet_id: outletId,
+          menu_id: menuId,
+          user_id: userId, // Use userId from userData
+        }),
+      });
+  
       const data = await response.json();
-
+  
       if (response.ok && data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
-          updatedMenuList[restaurantName] = updatedMenuList[
-            restaurantName
-          ].filter((item) => item.menu_id !== menuId);
-
+          updatedMenuList[restaurantName] = updatedMenuList[restaurantName].filter(
+            (item) => item.menu_id !== menuId
+          );
+  
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
           }
-
+  
           setHasFavorites(Object.keys(updatedMenuList).length > 0);
           return updatedMenuList;
         });
-
+  
         window.showToast("success", "Item has been removed from favourites");
       } else {
-        console.clear();
-        window.showToast("error", "Failed to remove item from favourite");
+        window.showToast("error", "Failed to remove item from favourites");
       }
     } catch (error) {
-      console.clear();
       window.showToast("error", "An error occurred while removing the item");
     }
   };
+  
+  
 
   useEffect(() => {
     if (isDarkMode) {
@@ -567,11 +563,10 @@ const Wishlist = () => {
                               <Link
                                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                                 state={{
-                                  restaurant_id: menu.restaurant_id,
+                                  ...(menu.outlet_id !== restaurantId && { outlet_id: menu.outlet_id }),
                                   menu_cat_id: menu.menu_cat_id,
                                   fromWishlist: true,
-                                  fromDifferentRestaurant:
-                                    menu.restaurant_id !== restaurantId,
+                                  fromDifferentRestaurant: menu.outlet_id !== restaurantId,
                                   previousRestaurantId: restaurantId,
                                 }}
                                 className="text-decoration-none text-reset"
@@ -616,7 +611,8 @@ const Wishlist = () => {
                                             handleRemoveItemClick(
                                               restaurantName,
                                               menu.menu_id,
-                                              menu.restaurant_id
+                                              menu.outlet_id
+                                             
                                             );
                                           }}
                                         ></i>
@@ -679,7 +675,8 @@ const Wishlist = () => {
                                               handleRemoveItemClick(
                                                 restaurantName,
                                                 menu.menu_id,
-                                                menu.restaurant_id
+                                                menu.outlet_id
+                                               
                                               );
                                             }}
                                           >
@@ -740,7 +737,7 @@ const Wishlist = () => {
                                         </div>
                                         <div className="col-7 d-flex justify-content-end pe-3 pt-2 pb-2">
                                           {user_id &&
-                                            menu.restaurant_id ===
+                                            menu.outlet_id ===
                                               restaurantId && (
                                               <div
                                                 className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
