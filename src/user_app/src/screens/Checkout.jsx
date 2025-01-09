@@ -681,7 +681,8 @@ const Checkout = () => {
           body: JSON.stringify({
             outlet_id: restaurantId,
             coupon_name: selectedCoupon,
-            total_price: cartDetails.total_bill.toString(),
+            total_price: checkoutDetails.total_bill_amount,
+            
           }),
         }
       );
