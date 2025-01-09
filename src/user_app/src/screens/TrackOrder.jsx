@@ -14,6 +14,7 @@ import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
+
 const TrackOrder = () => {
   const titleCase = (str) => {
     if (!str) return "";
@@ -27,6 +28,8 @@ const TrackOrder = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
   const { order_number } = useParams();
 
@@ -1055,6 +1058,40 @@ const TrackOrder = () => {
     };
   };
 
+  const handleRating = async (ratingValue) => {
+    if (hasRated) {
+      window.showToast("info", "You have already rated this order");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiDomain}/user_api/rating_to_order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          outlet_id: localStorage.getItem("outlet_id"),
+          user_id: userId,
+          order_id: orderDetails.order_details.order_id,
+          rating: ratingValue
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setSelectedRating(ratingValue);
+        setHasRated(true);
+        window.showToast("success", "Thank you for your rating!");
+      } else {
+        window.showToast("error", "Failed to submit rating");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "Failed to submit rating");
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1564,14 +1601,17 @@ const TrackOrder = () => {
                     className="btn-check"
                     name="rating"
                     id="bad-rating"
-                    value="bad"
+                    value="1"
+                    checked={selectedRating === "1"}
+                    onChange={() => handleRating("1")}
+                    disabled={hasRated}
                   />
-                  <label htmlFor="bad-rating">
+                  <label htmlFor="bad-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-frown text-danger"
+                      className={`fa-solid fa-face-frown ${selectedRating === "1" ? 'text-danger' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
-                    <span className="d-block mt-1 ">Bad</span>
+                    <span className="d-block mt-1">Bad</span>
                   </label>
                 </div>
 
@@ -1582,11 +1622,14 @@ const TrackOrder = () => {
                     className="btn-check"
                     name="rating"
                     id="okay-rating"
-                    value="okay"
+                    value="3"
+                    checked={selectedRating === "3"}
+                    onChange={() => handleRating("3")}
+                    disabled={hasRated}
                   />
-                  <label htmlFor="okay-rating">
+                  <label htmlFor="okay-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-meh text-light"
+                      className={`fa-solid fa-face-meh ${selectedRating === "3" ? 'text-warning' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
                     <span className="d-block mt-1">Okay</span>
@@ -1600,19 +1643,27 @@ const TrackOrder = () => {
                     className="btn-check"
                     name="rating"
                     id="good-rating"
-                    value="good"
+                    value="5"
+                    checked={selectedRating === "5"}
+                    onChange={() => handleRating("5")}
+                    disabled={hasRated}
                   />
-                  <label htmlFor="good-rating">
+                  <label htmlFor="good-rating" style={{ cursor: hasRated ? 'default' : 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-smile text-success"
+                      className={`fa-solid fa-face-smile ${selectedRating === "5" ? 'text-success' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
                     <span className="d-block mt-1">Good</span>
                   </label>
                 </div>
               </div>
+              {!hasRated && (
+                <div className="text-center mt-2">
+                  <span className="font_size_12 text-secondary">Rate your experience</span>
+                </div>
+              )}
               <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
-                <i class="fa-solid fa-star me-2"></i>
+                <i className="fa-solid fa-star me-2"></i>
                 Rate us on Google
               </div>
             </div>
