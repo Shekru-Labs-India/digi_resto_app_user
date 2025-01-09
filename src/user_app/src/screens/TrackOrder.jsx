@@ -1106,6 +1106,14 @@ const TrackOrder = () => {
     }
   };
 
+  const handleRateOnGoogle = () => {
+    const rateOnGoogle = JSON.parse(localStorage.getItem("restaurantSocial")).find(social => social.id === "google_review")?.link;
+    console.log(rateOnGoogle);
+    if (rateOnGoogle) {
+      window.open(rateOnGoogle, "_blank");
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1677,7 +1685,9 @@ const TrackOrder = () => {
                   <span className="font_size_12 text-secondary">Please rate your experience.</span>
                 </div>
               )}
-              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
+              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
+              onClick={handleRateOnGoogle}
+              >
                 <i className="fa-solid fa-star me-2"></i>
                 Rate us on Google
               </div>
