@@ -932,7 +932,7 @@ export const OrderCard = ({
 
       case "cooking":
         return (
-          <div className="d-flex justify-content-center align-items-center py-2">
+          <div className="d-flex justify-content-center  align-items-center py-2">
             <div className="d-flex align-items-center">
               <i className="fa-solid fa-fire text-warning me-2"></i>
               <span className="gray-text">Your order is being prepared</span>
@@ -1735,7 +1735,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
             </div>
           );
         })}
-        <div className="container">
+        <div className="">
           <RestaurantSocials />
         </div>
       </>
