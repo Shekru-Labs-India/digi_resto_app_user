@@ -643,6 +643,27 @@ const MenuDetails = () => {
     };
   }, []);
 
+  // Add this useEffect to check restaurant ID
+  useEffect(() => {
+    const checkRestaurant = () => {
+      // Get current outlet ID from localStorage
+      const currentOutletId = localStorage.getItem("outlet_id");
+      
+      // Get outlet ID from location state or API response
+      const menuOutletId = location.state?.outlet_id || productDetails?.outlet_id;
+
+      if (currentOutletId && menuOutletId) {
+        const isDifferentRestaurant = currentOutletId !== menuOutletId.toString();
+        setIsFromDifferentRestaurant(isDifferentRestaurant);
+
+        // Store the state for persistence
+        storeToLocalStorage("fromDifferentRestaurant", isDifferentRestaurant);
+      }
+    };
+
+    checkRestaurant();
+  }, [location.state?.outlet_id, productDetails]);
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -679,7 +700,7 @@ const MenuDetails = () => {
           <div className="mt-5 pt-1">
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
-                restaurantName={isFromDifferentRestaurant ? differentRestaurantName : restaurantName}
+                restaurantName={ restaurantName}
                 tableNumber={userData?.tableNumber || "1"}
               />
             </div>
@@ -1053,14 +1074,17 @@ const MenuDetails = () => {
                       <div className="text-nowrap ">Login to Order</div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
-                    <button
-                      className="btn btn-outline-white rounded-pill p-3"
-                      disabled
-                    >
-                      <div className="font-poppins text-break text-dark">
-                        Different Restaurant
-                      </div>
-                    </button>
+                    <div>
+                      <button
+                        className="btn btn-outline-white rounded-pill p-3"
+                        disabled
+                      >
+                        <div className="font-poppins text-break text-dark">
+                          Different Restaurant
+                        </div>
+                      </button>
+                      
+                    </div>
                   ) : isItemOrdered(menuId) ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"

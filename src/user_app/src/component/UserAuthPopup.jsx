@@ -216,15 +216,6 @@ const UserAuthPopup = () => {
       setOtp(prev => {
         const newOtp = [...prev];
         newOtp[index] = value;
-        
-        // Check if this completes the OTP
-        if (newOtp.every(digit => digit !== '') && newOtp.length === 4) {
-          // Simulate a slight delay before verification (like a real user)
-          setTimeout(() => {
-            handleVerify();
-          }, 400);
-        }
-        
         return newOtp;
       });
 
@@ -376,41 +367,28 @@ const UserAuthPopup = () => {
   };
 
   useEffect(() => {
-    // Auto fill OTP simulation effect
-    const simulateOtpFill = async () => {
-      const mockOtp = localStorage.getItem('otp');
-      if (mockOtp && view === 'verify') {
-        const digits = mockOtp.split('');
-        
-        // First clear any existing OTP
-        setOtp(['', '', '', '']);
-        
-        // Fill each digit with delay
-        for (let i = 0; i < digits.length; i++) {
-          await new Promise(resolve => setTimeout(resolve, 300));
-          
-          // Update OTP state directly
-          setOtp(prev => {
-            const newOtp = [...prev];
-            newOtp[i] = digits[i];
-            
-            // If this is the last digit, trigger verification after a delay
-            if (i === digits.length - 1) {
-              setTimeout(() => handleVerify(), 500);
-            }
-            
-            return newOtp;
-          });
-          
-          // Focus next input
-          if (i < digits.length - 1) {
-            otpInputRefs.current[i + 1]?.focus();
-          }
+    const handleOtpChange = (e, index) => {
+      const value = e.target.value;
+
+      // Allow only numeric input
+      if (/^\d*$/.test(value)) {
+        setOtp(prev => {
+          const newOtp = [...prev];
+          newOtp[index] = value;
+          return newOtp;
+        });
+
+        // Move to next input if value exists and not last input
+        if (value && index < otp.length - 1) {
+          otpInputRefs.current[index + 1]?.focus();
         }
       }
     };
 
-    simulateOtpFill();
+    // Focus first OTP input when view changes to verify
+    if (view === 'verify') {
+      otpInputRefs.current[0]?.focus();
+    }
   }, [view]);
 
   const renderContent = () => {
