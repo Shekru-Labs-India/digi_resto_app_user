@@ -1247,13 +1247,19 @@ const TrackOrder = () => {
       <div className="menu-info d-flex align-items-center gray-text">
         <span className="me-2">
           {orderDetails.order_details.payment_method === "card" && (
-            <i className="fas fa-credit-card "></i> // FontAwesome card icon
+            <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
           )}
           {orderDetails.order_details.payment_method === "cash" && (
-            <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
+            <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
           )}
-          {orderDetails.order_details.payment_method === "upi" && (
-            <i className="fas fa-wallet"></i> // FontAwesome wallet icon for UPI
+          {orderDetails.order_details.payment_method === "phonepay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {orderDetails.order_details.payment_method === "gpay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {orderDetails.order_details.payment_method === "upi" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
           )}
         </span>
         <span className="font_size_12 gray-text text-capitalize">
@@ -1289,9 +1295,15 @@ const TrackOrder = () => {
       {order_details.payment_method === "cash" && (
         <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
       )}
-      {order_details.payment_method === "upi" && (
-        <i className="fas fa-wallet"></i> // FontAwesome wallet icon for UPI
-      )}
+       {order_details.payment_method === "phonepay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {order_details.payment_method === "gpay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {order_details.payment_method === "upi" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
     </span>
     <span>{order_details.payment_method}</span>
   </div>

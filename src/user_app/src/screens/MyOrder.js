@@ -961,7 +961,7 @@ export const OrderCard = ({
   };
 
   return (
-    <div className="container pt-0">
+    <div className="container p-0">
       <div className="custom-card my-2 rounded-4 shadow-sm">
         <div
           className="card-body py-2"
