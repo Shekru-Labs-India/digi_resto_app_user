@@ -680,7 +680,7 @@ const NearbyArea = () => {
                                       rounded-circle 
                                       bg-white 
                                       border-opacity-25 
-                                      border-secondary 
+                                      gray-text 
                                       border
                                     `}
                                     style={{
@@ -711,7 +711,7 @@ const NearbyArea = () => {
                                       rounded-circle 
                                       bg-white 
                                       border-opacity-25 
-                                      border-secondary 
+                                   gray-text
                                       border
                                     `}
                                     style={{

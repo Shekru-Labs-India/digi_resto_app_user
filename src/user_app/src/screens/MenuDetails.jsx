@@ -26,44 +26,48 @@ const getFromLocalStorage = (key) => {
 
 // Add this function before your MenuDetails component
 const getFoodTypeStyles = (foodType) => {
-  switch (foodType?.toLowerCase()) {
+  // Convert foodType to lowercase and handle null/undefined
+  const type = (foodType || "").toLowerCase();
+
+  switch (type) {
     case "veg":
       return {
         icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
         border: "border-success",
-        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "nonveg":
       return {
         icon: "fa-solid fa-play fa-rotate-270 text-danger",
-        textColor: "text-success", // Changed to green for category name
+        textColor: "text-success", // Changed to green for category text
         border: "border-danger",
-        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "egg":
       return {
         icon: "fa-solid fa-egg",
-        textColor: "gray-text", // Changed to green for category name
+        textColor: "gray-text", // Changed to green for category text
         border: "gray-text",
-        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "vegan":
       return {
         icon: "fa-solid fa-leaf text-success",
         textColor: "text-success",
         border: "border-success",
-        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     default:
       return {
         icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
         border: "border-success",
-        categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
   }
 };
+
 
 // Add this function near the top with other utility functions
  const renderStarRating = (rating) => {
@@ -467,7 +471,7 @@ const MenuDetails = () => {
         restaurantId
       );
 
-      window.showToast("success", "Item has been added to your cart");
+      window.showToast("success", "Item has been added to your checkout");
 
       setShowModal(false);
       setTimeout(() => {
@@ -475,7 +479,7 @@ const MenuDetails = () => {
       }, 2000);
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to add item to cart");
+      window.showToast("error", "Failed to add item to checkout");
     }
   };
 
@@ -494,10 +498,10 @@ const MenuDetails = () => {
         currentUserId,
         currentRestaurantId
       );
-      window.showToast("success", "Item has been removed from your cart");
+      window.showToast("success", "Item has been removed from your checkout");
     } catch (error) {
       console.clear();
-      window.showToast("error", "Failed to remove item from cart");
+      window.showToast("error", "Failed to remove item from checkout");
     }
   };
 
@@ -795,21 +799,19 @@ const MenuDetails = () => {
                   {/* Veg/Non-veg indicator */}
 
                   <div
-                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      left: "3px",
-                      height: "20px",
-                      width: "20px",
-                      borderWidth: "2px",
-                      borderColor:
-                        productDetails.menu_food_type?.toLowerCase() ===
-                        "nonveg"
-                          ? "#dc3545"
-                          : "#198754",
-                    }}
-                  >
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        getFoodTypeStyles(productDetails.menu_food_type).border
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -865,22 +867,20 @@ const MenuDetails = () => {
                     }}
                   />
 
-                  <div
-                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      left: "3px",
-                      height: "20px",
-                      width: "20px",
-                      borderWidth: "2px",
-                      borderColor:
-                        productDetails.menu_food_type?.toLowerCase() ===
-                        "nonveg"
-                          ? "#dc3545"
-                          : "#198754",
-                    }}
-                  >
+<div
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        getFoodTypeStyles(productDetails.menu_food_type).border
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -936,7 +936,7 @@ const MenuDetails = () => {
                     <div className="fw-medium">{differentRestaurantName}</div>
                     <div className="font_size_12">
                       This menu is from a different restaurant. You can view details,
-                      but can't add it to your current cart.
+                      but can't add it to your current checkout.
                     </div>
                   </div>
                 </div>
@@ -944,7 +944,7 @@ const MenuDetails = () => {
             </div>
           )}
 
-          <div className="container py-0">
+          <div className="container py-0 mb-5">
             <div className="dz-product-detail">
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
@@ -1009,17 +1009,17 @@ const MenuDetails = () => {
                 )}
 
                 {/* Add end border */}
-                <RestaurantSocials />
+                <RestaurantSocials  />
               </div>
             </div>
           </div>
         </main>
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
-          <div className="container pt-0">
+          <div className="container  pt-0">
             <footer className="footer mb-2 pt-0">
               <div className="row w-100">
-                <hr className="dashed-line me-5 pe-5" />
+                <hr className="dashed-line me-0 pe-0" />
 
                 <div className="col-4 ps-1 pe-0">
                   <div className="d-flex align-items-center justify-content-between mb-5">

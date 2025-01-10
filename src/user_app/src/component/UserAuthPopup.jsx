@@ -589,10 +589,10 @@ const UserAuthPopup = () => {
               </div>
 
               <div className="form-group mb-3">
-                <div className="form-check" ref={checkboxRef}>
+                <div className="form-check gray-text" ref={checkboxRef}>
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className="form-check-input gray-text"
                     checked={agreed}
                     onChange={handleCheckboxChange}
                     id="termsCheckbox"

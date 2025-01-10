@@ -657,7 +657,7 @@ const OfferBanner = () => {
                               <div className="col-5 d-flex align-items-center justify-content-end">
                                 {customerId ? (
                                   <div
-                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border`}
+                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border`}
                                     style={{
                                       width: "25px",
                                       height: "25px",
@@ -679,7 +679,7 @@ const OfferBanner = () => {
                                   </div>
                                 ) : (
                                   <div
-                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border`}
+                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border`}
                                     style={{
                                       width: "25px",
                                       height: "25px",

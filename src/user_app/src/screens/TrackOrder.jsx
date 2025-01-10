@@ -1216,109 +1216,149 @@ const TrackOrder = () => {
                   </div>
                 </div>
                 <div className="col-6">
-                  <div className="text-end">
-                    <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total.toFixed(2)}
-                    </span>
-                    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                      ₹
-                      {(
-                        order_details.grand_total /
-                          (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
+  <div className="text-end">
+    <span className="text-info font_size_14 fw-semibold">
+      ₹{order_details.grand_total.toFixed(2)}
+    </span>
+
+    {/* Conditionally render the line-through price */}
+    {order_details.grand_total !==
+      (order_details.grand_total /
+        (1 - order_details.discount_percent / 100) ||
+        order_details.grand_total) && (
+      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+        ₹
+        {(
+          order_details.grand_total /
+            (1 - order_details.discount_percent / 100) ||
+          order_details.grand_total
+        ).toFixed(2)}
+      </span>
+    )}
+  </div>
+</div>
+
               </div>
 
+ 
               {orderDetails?.order_details?.payment_method && (
-                <div className="row">
-                  <div className="col-6">
-                    <div className="menu-info">
-                      <span className="font_size_12 gray-text">
-                        Payment Method: {order_details.payment_method}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
+  <div className="row">
+    <div className="col-6">
+      <div className="menu-info d-flex align-items-center gray-text">
+        <span className="me-2">
+          {orderDetails.order_details.payment_method === "card" && (
+            <i className="fas fa-credit-card "></i> // FontAwesome card icon
+          )}
+          {orderDetails.order_details.payment_method === "cash" && (
+            <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
+          )}
+          {orderDetails.order_details.payment_method === "upi" && (
+            <i className="fas fa-wallet"></i> // FontAwesome wallet icon for UPI
+          )}
+        </span>
+        <span className="font_size_12 gray-text text-capitalize">
+          {orderDetails.order_details.payment_method}
+        </span>
+      </div>
+    </div>
+  </div>
+)}
+
             </div>
           </div>
         </div>
 
         <ThemeProvider>
-          {/* Conditional rendering of the green card or OrderGif based on order status */}
-          <div className="container py-0">
-            {!loading && orderStatus && (
-              <>
-                {orderStatus === "completed" ? (
-                  <>
-                    <div className="card-body text-center bg-success rounded-4 text-white">
-                      <span className="fs-6 fw-medium h-100">
-                        Your delicious order has been served
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-center pt-3">
-                      {order_details.payment_method && (
-                        <div className="border border-success rounded-pill py-0 px-2 font_size_14">
-                          Payment Method: {order_details.payment_method}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : ["canceled", "cancelled", "cancle"].includes(
-                    orderStatus
-                  ) ? (
-                  <div className="card-body text-center bg-danger rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
-                      This order has been cancelled
-                    </span>
-                  </div>
-                ) : orderStatus === "placed" ? (
-                  <div className="card-body p-0">
-                    <div className="card rounded-4">
-                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
-                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                          <OrderGif />
-                        </div>
-                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                          <div className="text-start mb-0">
-                            <div className="fw-medium">
-                              Thanks for ordering!
-                            </div>
-                            <div className="fw-medium">
-                              We'll start right away.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : orderStatus === "ongoing" ? (
-                  <div className="card-body p-0">
-                    <div className="card rounded-4">
-                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
-                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                          <OrderGif />
-                        </div>
-                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                          <div className="text-center mb-0">
-                            <div className="fw-medium">
-                              You have the best taste in food.
-                            </div>
-                            <div className="fw-medium">
-                              We're crafting a menu to match it perfectly.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </>
-            )}
+        <div className="container py-0">
+  {!loading && orderStatus && (
+    <>
+      {orderStatus === "completed" ? (
+        <>
+          <div className="card-body text-center bg-success rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Your delicious order has been served
+            </span>
           </div>
+          <div className="d-flex justify-content-center pt-3 gray-text">
+          {order_details.payment_method && (
+  <div className="border border-success rounded-pill py-0 px-2 font_size_14 d-flex align-items-center">
+    <span className="me-2">
+      {order_details.payment_method === "card" && (
+        <i className="fas fa-credit-card"></i> // FontAwesome card icon
+      )}
+      {order_details.payment_method === "cash" && (
+        <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
+      )}
+      {order_details.payment_method === "upi" && (
+        <i className="fas fa-wallet"></i> // FontAwesome wallet icon for UPI
+      )}
+    </span>
+    <span>{order_details.payment_method}</span>
+  </div>
+)}
+
+</div>
+
+        </>
+      ) : ["canceled", "cancelled", "cancle"].includes(orderStatus) ? (
+        <div className="card-body text-center bg-danger rounded-4 text-white">
+          <span className="fs-6 fw-medium h-100">
+            This order has been cancelled
+          </span>
+        </div>
+      ) : orderStatus === "placed" ? (
+        <div className="card-body p-0">
+          <div className="card rounded-4">
+            <div className="row py-2 my-0 ps-2 pe-0 h-100">
+              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                <OrderGif />
+              </div>
+              <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                <div className="text-start mb-0">
+                  <div className="fw-medium">Thanks for ordering!</div>
+                  <div className="fw-medium">We'll start right away.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : orderStatus === "ongoing" ? (
+        <div className="card-body p-0">
+          <div className="card rounded-4">
+            <div className="row py-2 my-0 ps-2 pe-0 h-100">
+              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                <OrderGif />
+              </div>
+              <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                <div className="text-center mb-0">
+                  <div className="fw-medium">You have the best taste in food.</div>
+                  <div className="fw-medium">
+                    We're crafting a menu to match it perfectly.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : orderStatus === "paid" ? (
+        <div className="card-body text-center bg-info rounded-4 text-white">
+          <span className="fs-6 fw-medium h-100">Payment received. Thank you!</span>
+        </div>
+      ) : orderStatus === "served" ? (
+        <div className="card-body text-center bg-primary rounded-4 text-white">
+          <span className="fs-6 fw-medium h-100">Enjoy your meal!</span>
+        </div>
+      ) : orderStatus === "cooking" ? (
+        <div className="card-body text-center bg-warning rounded-4 text-dark">
+          <span className="fs-6 fw-medium h-100">
+            Your order is being prepared .
+          </span>
+        </div>
+      ) : null}
+    </>
+  )}
+</div>
+
         </ThemeProvider>
 
         <main className="page-content">
@@ -1455,7 +1495,7 @@ const TrackOrder = () => {
                                     )}
                                   </p>
                                 </div>
-                                <div className="col-3 text-end">
+                                <div className="col-3 text-end mt-2">
                                   <span className="font_size_14 gray-text">
                                     x {menu.quantity}
                                   </span>

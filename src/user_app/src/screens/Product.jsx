@@ -443,7 +443,7 @@ const Product = () => {
     if (storedCart) {
       const cartData = JSON.parse(storedCart);
       if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
-        window.showToast("info", "This item is already in your cart");
+        window.showToast("info", "This item is already in your checkout");
         return;
       }
     }
@@ -505,7 +505,7 @@ const Product = () => {
       console.clear();
       window.showToast(
         "error",
-        error.message || "Failed to add item to cart. Please try again."
+        error.message || "Failed to add item to checkout. Please try again."
       );
     }
   };
@@ -605,14 +605,14 @@ const Product = () => {
               navigate("/user_app/Cart", {
                 state: {
                   cartId: data.cart_id,
-                  magicMessage: "Your magic cart has been created!",
+                  magicMessage: "Your magic checkout has been created!",
                 },
               });
             }
           }, 5000);
         } else if (magicProcessRef.current) {
           console.clear();
-          window.showToast("error", data.msg || "Failed to create magic cart");
+          window.showToast("error", data.msg || "Failed to create magic checkout");
         }
       }
     } catch (error) {
@@ -765,7 +765,12 @@ const Product = () => {
             tableNumber={userData?.tableNumber || "1"}
           />
         </div>
-        {isNonProductionDomain() && <Notice />}
+        <div className="container px-3 py-0 mb-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
+        </div>
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
           <div className="d-flex justify-content-between mb-3 pt-1">
@@ -1085,7 +1090,7 @@ const Product = () => {
 
                           <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-3 ps-0">
                             <div
-                              className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border"
+                              className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
                               style={{
                                 width: "25px",
                                 height: "25px",

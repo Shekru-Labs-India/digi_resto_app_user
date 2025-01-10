@@ -14,6 +14,7 @@ import { usePopup } from "../context/PopupContext";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { isNonProductionDomain } from "../component/config";
 import Notice from "../component/Notice";
+import HotelNameAndTable from "../components/HotelNameAndTable";
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -260,6 +261,7 @@ const MyOrder = () => {
     }
   };
 
+
   return (
     <div className="page-wrapper">
       <Header
@@ -270,9 +272,12 @@ const MyOrder = () => {
       />
 
       <main className="page-content space-top p-b70">
-        {isNonProductionDomain() && <Notice />}
-        <div className="container px-1">
-          {/* Render placed orders */}
+        {/* {isNonProductionDomain() && <Notice />} */}
+        <div className="container px-3 py-0 mb-0">
+        <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={role?.tableNumber || "1"}
+          />
           {activeOrders.placed?.map((order) => (
             <OrderCard
               key={`placed-${order.order_id}`}
@@ -309,6 +314,7 @@ const MyOrder = () => {
             />
           ))}
 
+{isLoggedIn && (
           <div className="nav nav-tabs nav-fill" role="tablist">
             {["completed", "cancelled"]?.map((tab) => (
               <div
@@ -326,6 +332,28 @@ const MyOrder = () => {
               </div>
             ))}
           </div>
+)}
+
+          {!isLoggedIn && (
+  <div
+  className="container overflow-hidden d-flex justify-content-center align-items-center"
+  style={{ height: "68vh" }}
+>
+  <div className="m-b20 dz-flex-box text-center">
+    <div className="dz-cart-about">
+      <div className="mb-3">
+        <button
+          className="btn btn-outline-primary rounded-pill"
+          onClick={showLoginPopup}
+        >
+          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+        </button>
+      </div>
+      <span>Please login to access order</span>
+    </div>
+  </div>
+  </div>
+)}
           <Bottom />
         </div>
 
@@ -907,7 +935,7 @@ export const OrderCard = ({
           <div className="d-flex justify-content-center align-items-center py-2">
             <div className="d-flex align-items-center">
               <i className="fa-solid fa-fire text-warning me-2"></i>
-              <span className="text-muted">Your order is being prepared</span>
+              <span className="gray-text">Your order is being prepared</span>
             </div>
           </div>
         );
@@ -1647,18 +1675,25 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-                          <span className="text-info font_size_14 fw-semibold">
-                            ₹{order.grand_total.toFixed(2)}
-                          </span>
-                          <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                            ₹
-                            {(
-                              order.grand_total /
-                                (1 - order.discount_percent / 100) ||
-                              order.grand_total
-                            ).toFixed(2)}
-                          </span>
-                        </div>
+  <span className="text-info font_size_14 fw-semibold">
+    ₹{order.grand_total.toFixed(2)}
+  </span>
+
+  {/* Conditionally render the line-through price */}
+  {order.grand_total !==
+    (order.grand_total / (1 - order.discount_percent / 100) ||
+      order.grand_total) && (
+    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+      ₹
+      {(
+        order.grand_total /
+          (1 - order.discount_percent / 100) ||
+        order.grand_total
+      ).toFixed(2)}
+    </span>
+  )}
+</div>
+
                       </div>
                     </div>
 

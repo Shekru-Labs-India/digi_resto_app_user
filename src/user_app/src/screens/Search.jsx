@@ -209,7 +209,7 @@ const Search = () => {
     if (storedCart) {
       const cartData = JSON.parse(storedCart);
       if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
-        window.showToast("info", "This item is already in your cart");
+        window.showToast("info", "This item is already in your checkout");
         return;
       }
     }
@@ -290,7 +290,7 @@ const Search = () => {
 
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      window.showToast("error", "Failed to add item to cart. Please try again");
+      window.showToast("error", "Failed to add item to checkout. Please try again");
     }
   };
 
@@ -444,7 +444,7 @@ const Search = () => {
       case "egg":
         return {
           icon: "fa-solid fa-egg gray-text", // Gray icon
-          border: "border-secondary",
+          border: "gray-text",
           textColor: "text-dark", // Black text
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
@@ -804,7 +804,7 @@ const Search = () => {
             {/* Always show filters */}
             <div className="d-flex align-items-center mt-2 gap-2">
               {/* Food Type Filter */}
-              <div className="dropdown">
+              <div className="dropdown text-success">
                 <button
                   className="btn btn-sm btn-light rounded-5 dropdown-toggle"
                   type="button"
@@ -819,7 +819,7 @@ const Search = () => {
                           getFoodTypeStyles(selectedFoodType).icon
                         } me-2`}
                       ></i>
-                      <span className="text-dark">
+                      <span className="text-success">
                         {selectedFoodType.charAt(0).toUpperCase() +
                           selectedFoodType.slice(1)}
                       </span>
@@ -827,7 +827,7 @@ const Search = () => {
                   ) : (
                     <div className="d-flex align-items-center">
                       <i className="fa-solid fa-filter text-success me-2"></i>
-                      <span className="text-dark">Type</span>
+                      <span className="text-success">Type</span>
                     </div>
                   )}
                 </button>
@@ -838,7 +838,7 @@ const Search = () => {
                       onClick={() => handleFilter(null)}
                     >
                       <i className="fa-solid fa-utensils text-success me-2"></i>
-                      <span>All</span>
+                      <span  className="">All</span>
                     </button>
                   </li>
                   <li>
@@ -847,7 +847,7 @@ const Search = () => {
                   {foodTypes.map((type) => (
                     <li key={type}>
                       <button
-                        className="dropdown-item d-flex align-items-center"
+                        className="dropdown-item d-flex align-items-center text-success"
                         onClick={() => handleFilter(type)}
                       >
                         <i
@@ -1030,7 +1030,7 @@ const Search = () => {
             {searchedMenu.length > 0 ? (
               <div className="menu-items-container">
                 {searchedMenu.map((menu, index) => (
-                  <div className="py-1 px-0" key={index}>
+                  <div className="py-1 px-0 mt-2" key={index}>
                     <div className="custom-card rounded-4 shadow-sm">
                       <Link
                         to={`/user_app/ProductDetails/${menu.menu_id}`}
@@ -1138,7 +1138,7 @@ const Search = () => {
                                 </div>
                               </div>
                               <div className="row d-flex align-items-center mt-1">
-                                <div className="col-6 d-flex align-items-center">
+                                <div className="col-6 d-flex align-items-center ps-4">
                                   <div className="font_size_10 text-success">
                                     <i className="fa-solid fa-utensils text-success me-1"></i>
                                     {menu.category_name}
@@ -1186,7 +1186,7 @@ const Search = () => {
                                 </div>
                                 <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
                                   <div
-                                    className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border"
+                                    className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
                                     style={{
                                       width: "25px",
                                       height: "25px",

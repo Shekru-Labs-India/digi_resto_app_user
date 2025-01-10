@@ -298,7 +298,7 @@ const Profile = () => {
               {" "}
               <div className="d-flex align-items-center mt-4 mb-0">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
                   MenuMitra
                 </div>
               </div>

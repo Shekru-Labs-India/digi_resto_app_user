@@ -12,10 +12,12 @@ import { useCart } from "../context/CartContext";
 import config from "../component/config";
 import axios from "axios";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
+import { usePopup } from "../context/PopupContext";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
   const { clearCart, removeFromCart } = useCart();
+  const { showLoginPopup } = usePopup();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user_id, setUser_id] = useState(null);
   const [role, setRole] = useState(null);
@@ -46,6 +48,7 @@ const Checkout = () => {
     orderNumber: "",
     orderStatus: "",
   });
+  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -237,7 +240,7 @@ const Checkout = () => {
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
       if (!storedCart?.order_items) {
-        window.showToast("error", "No items in cart");
+        window.showToast("error", "No items in checkout");
         setIsProcessing(false);
         return;
       }
@@ -829,7 +832,7 @@ const Checkout = () => {
   };
 
   const handleRemoveItem = async (e, menuId) => {
-    window.showToast("success", `Menu is removed.`);
+    window.showToast("success", `Menu is removed from checkout.`);
     e.preventDefault();
     e.stopPropagation();
     try {
@@ -919,23 +922,26 @@ const Checkout = () => {
       // Use the clearCart function from CartContext
       clearCart();
 
-      window.showToast("success", "Cart cleared successfully");
+      window.showToast("success", "Checkout cleared successfully");
       
       // Optional: Navigate to menu after clearing
       // navigate("/user_app/Menu");
 
     } catch (error) {
       console.error('Error clearing cart:', error);
-      window.showToast("error", "Failed to clear cart");
+      window.showToast("error", "Failed to clear checkout");
     }
   };
+
+  // If user is not logged in, show login prompt
+ 
 
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
 
-      <main className="page-content mb-5 pb-3">
-        <div className="container py-0 my-0">
+      <main className="page-content space-top p-b70">
+      <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
@@ -1262,15 +1268,15 @@ const Checkout = () => {
           </div>
         )}
 
-        <div className="m-3">
+        <div className="">
         {cartItems.length > 0 && (
           <div className="container d-flex justify-content-end">
-            <div className="px-3" role="button" onClick={handleClearCart}>
+            <div className="gray-text" role="button" onClick={handleClearCart}>
               Clear Checkout
             </div>
           </div>
         )}
-          <div className="dz-flex-box">
+          <div className="dz-flex-box ms-3 mb-3 me-3">
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (
                 cartItems.map((item, index) => (
@@ -1583,26 +1589,47 @@ const Checkout = () => {
               </div>
             )}
 
-            {cartItems.length === 0 && (
-              <div
-                className="container overflow-hidden d-flex justify-content-center align-items-center"
-                style={{ height: "78vh" }}
-              >
-                <div className="m-b20 dz-flex-box text-center">
-                  <div className="dz-cart-about">
-                    <h5 className=" ">Your cart is empty.</h5>
-                    <p>Start ordering now!</p>
-                    <Link
-                      to="/user_app/Menu"
-                      className="btn btn-outline-primary rounded-pill px-3"
-                    >
-                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
-                      More
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
+{cartItems.length === 0 && isLoggedIn && (
+  <div
+    className="container overflow-hidden d-flex justify-content-center align-items-center"
+    style={{ height: "68vh" }}
+  >
+    <div className="m-b20 dz-flex-box text-center">
+      <div className="dz-cart-about">
+        <h5>Your checkout is empty.</h5>
+        <p>Start ordering now!</p>
+        <Link
+          to="/user_app/Menu"
+          className="btn btn-outline-primary rounded-pill px-3"
+        >
+          <i className="ri-add-circle-line me-1 fs-4"></i> Order More
+        </Link>
+      </div>
+    </div>
+  </div>
+)}
+
+{!isLoggedIn && (
+  <div
+  className="container overflow-hidden d-flex justify-content-center align-items-center"
+  style={{ height: "68vh" }}
+>
+  <div className="m-b20 dz-flex-box text-center">
+    <div className="dz-cart-about">
+      <div className="mb-3">
+        <button
+          className="btn btn-outline-primary rounded-pill"
+          onClick={showLoginPopup}
+        >
+          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+        </button>
+      </div>
+      <span>Please login to access checkout</span>
+    </div>
+  </div>
+  </div>
+)}
+
           </div>
         </div>
 

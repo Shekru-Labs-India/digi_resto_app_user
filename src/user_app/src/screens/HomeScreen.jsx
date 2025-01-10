@@ -109,7 +109,7 @@ const HomeScreen = () => {
             <div className="d-flex align-items-center">
               <Link to="/" className="d-flex align-items-center">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18">
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
                   MenuMitra
                 </span>
               </Link>
@@ -142,13 +142,7 @@ const HomeScreen = () => {
             <div className=" ">
               <Link to="/user_app/Profile">
                 <span className="ms-3 pt-4    ">
-                  <i
-                    className={
-                      userData?.user_id
-                        ? "fa-solid fa-user me-2 font_size_14"
-                        : "fa-regular fa-user me-2 font_size_14"
-                    }
-                  ></i>
+                 
                   {userData?.name ? (
                     `Hello, ${toTitleCase(getFirstName(userData.name))}`
                   ) : (
@@ -475,7 +469,7 @@ const HomeScreen = () => {
                 {" "}
                 <div className="d-flex align-items-center mt-4 mb-0">
                   <img src={logo} alt="logo" width="40" height="40" />
-                  <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  <div className="text-dark mb-0 mt-1 ms-2 fw-semibold font_size_18">
                     MenuMitra
                   </div>
                 </div>

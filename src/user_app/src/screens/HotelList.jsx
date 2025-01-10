@@ -197,7 +197,7 @@ const navigate = useNavigate();
               {" "}
               <div className="d-flex align-items-center mt-4 mb-0">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
                   MenuMitra
                 </div>
               </div>
@@ -316,7 +316,7 @@ const CardContent = ({ outlets }) => (
         )}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn btn-outline-secondary btn-sm"
+        className="btn btn-outline-primary btn-sm"
         onClick={(e) => e.stopPropagation()}
       >
         <i className="fa-solid fa-location-dot me-1"></i>
