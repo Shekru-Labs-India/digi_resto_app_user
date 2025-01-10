@@ -395,6 +395,42 @@ const NearbyArea = () => {
     }
   };
 
+  // Add this function to check cart status directly from localStorage
+  const isItemInCart = (menuId) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return false;
+      
+      const cartData = JSON.parse(storedCart);
+      return cartData.order_items?.some(item => item.menu_id === menuId);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Update the useEffect for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render of menu items
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
+    window.addEventListener('cartStatusChanged', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
+      window.removeEventListener('cartStatusChanged', handleCartUpdate);
+    };
+  }, []);
+
   // Update handleAddToCartClick function
   const handleAddToCartClick = async (menuItem) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -403,8 +439,12 @@ const NearbyArea = () => {
       return;
     }
 
-    if (isMenuItemInCart(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    const cartData = storedCart ? JSON.parse(storedCart) : { order_items: [] };
+    const isInCart = cartData.order_items?.some(item => item.menu_id === menuItem.menu_id);
+
+    if (isInCart) {
+      window.showToast("info", "This item is already in your cart");
       return;
     }
 
@@ -656,7 +696,7 @@ const NearbyArea = () => {
                                   >
                                     <i
                                       className={`fa-solid ${
-                                        isMenuItemInCart(menuItem.menu_id)
+                                        isItemInCart(menuItem.menu_id)
                                           ? "fa-circle-check text-success"
                                           : "fa-plus text-secondary"
                                       } fs-6`}

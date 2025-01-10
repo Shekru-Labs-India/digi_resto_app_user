@@ -94,6 +94,19 @@ const getFoodTypeStyles = (foodType) => {
    return null; // Default case
  };
 
+// Add this function to check cart status directly from localStorage
+const isItemInCart = (menuId) => {
+  try {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (!storedCart) return false;
+    
+    const cartData = JSON.parse(storedCart);
+    return cartData.order_items?.some(item => item.menu_id === menuId);
+  } catch (error) {
+    return false;
+  }
+};
+
 const MenuDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -603,6 +616,29 @@ const MenuDetails = () => {
     return () => clearInterval(timer);
   }, [productDetails, handleNextSlide]);
 
+  // Add this useEffect to listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render to update cart icon
+      setProductDetails(prevDetails => ({...prevDetails}));
+    };
+
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setProductDetails(prevDetails => ({...prevDetails}));
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
+    window.addEventListener('cartStatusChanged', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
+      window.removeEventListener('cartStatusChanged', handleCartUpdate);
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -1033,7 +1069,7 @@ const MenuDetails = () => {
                       <i className="fa-solid fa-check pe-1"></i>
                       <div className="font-poppins text-nowrap">Ordered</div>
                     </button>
-                  ) : isMenuItemInCart(menuId) ? (
+                  ) : isItemInCart(menuId) ? (
                     <button
                       className="btn btn-success rounded-pill"
                       onClick={handleRemoveFromCart}

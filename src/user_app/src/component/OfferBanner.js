@@ -393,20 +393,37 @@ const OfferBanner = () => {
     }
   };
 
-  // Add this useEffect to listen for cart updates
+  // Add this function to check cart status directly from localStorage
+  const isItemInCart = (menuId) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return false;
+      
+      const cartData = JSON.parse(storedCart);
+      return cartData.order_items?.some(item => item.menu_id === menuId);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Update the useEffect for cart updates
   useEffect(() => {
     const handleCartUpdate = () => {
-      // Force re-render of menu items to update cart icons
+      // Force re-render of menu items
       setMenuItems(prevItems => [...prevItems]);
     };
 
-    // Listen for both cart updates and cart clear
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
     window.addEventListener('cartUpdated', handleCartUpdate);
-    window.addEventListener('cartCleared', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
 
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
-      window.removeEventListener('cartCleared', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
     };
   }, []);
 
@@ -640,16 +657,7 @@ const OfferBanner = () => {
                               <div className="col-5 d-flex align-items-center justify-content-end">
                                 {customerId ? (
                                   <div
-                                    className={`
-                                      d-flex 
-                                      align-items-center 
-                                      justify-content-center 
-                                      rounded-circle 
-                                      bg-white 
-                                      border-opacity-25 
-                                      border-secondary 
-                                      border
-                                    `}
+                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border`}
                                     style={{
                                       width: "25px",
                                       height: "25px",
@@ -663,24 +671,15 @@ const OfferBanner = () => {
                                   >
                                     <i
                                       className={`fa-solid ${
-                                        isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check text-success  "
+                                        isItemInCart(menuItem.menu_id)
+                                          ? "fa-solid fa-circle-check text-success"
                                           : "fa-solid fa-plus text-secondary"
                                       } fs-6`}
                                     ></i>
                                   </div>
                                 ) : (
                                   <div
-                                    className={`
-                                      d-flex 
-                                      align-items-center 
-                                      justify-content-center 
-                                      rounded-circle 
-                                      bg-white 
-                                      border-opacity-25 
-                                      border-secondary 
-                                      border
-                                    `}
+                                    className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 border-secondary border`}
                                     style={{
                                       width: "25px",
                                       height: "25px",
