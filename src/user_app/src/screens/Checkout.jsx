@@ -1435,7 +1435,7 @@ const Checkout = () => {
                         Total after discount
                       </span>
                       <span className="font_size_14 gray-text">
-                        ₹{checkoutDetails.total_bill_with_discount}
+                        +₹{checkoutDetails.total_bill_with_discount}
                       </span>
                     </div>
                   </div>
@@ -1449,7 +1449,7 @@ const Checkout = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
-                        ₹{checkoutDetails.service_charges_amount}
+                        +₹{checkoutDetails.service_charges_amount}
                       </span>
                     </div>
                   </div>
@@ -1463,7 +1463,7 @@ const Checkout = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
-                        ₹{checkoutDetails.gst_amount}
+                        +₹{checkoutDetails.gst_amount}
                       </span>
                     </div>
 

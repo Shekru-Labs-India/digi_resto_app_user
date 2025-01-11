@@ -443,10 +443,10 @@ const NearbyArea = () => {
     const cartData = storedCart ? JSON.parse(storedCart) : { order_items: [] };
     const isInCart = cartData.order_items?.some(item => item.menu_id === menuItem.menu_id);
 
-    if (isInCart) {
-      window.showToast("info", "This item is already in your cart");
-      return;
-    }
+    // if (isInCart) {
+    //   window.showToast("info", "This item is already in your checkout");
+    //   return;
+    // }
 
     setSelectedMenu(menuItem);
     fetchHalfFullPrices(menuItem.menu_id);

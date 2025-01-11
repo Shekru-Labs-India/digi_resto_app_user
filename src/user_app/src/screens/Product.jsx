@@ -442,10 +442,10 @@ const Product = () => {
     const storedCart = localStorage.getItem('restaurant_cart_data');
     if (storedCart) {
       const cartData = JSON.parse(storedCart);
-      if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
-        window.showToast("info", "This item is already in your checkout");
-        return;
-      }
+      // if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
+      //   window.showToast("info", "This item is already in your checkout");
+      //   return;
+      // }
     }
 
     setSelectedMenu(menu);

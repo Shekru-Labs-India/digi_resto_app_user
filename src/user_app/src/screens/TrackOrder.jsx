@@ -1572,6 +1572,22 @@ const TrackOrder = () => {
                     </div>
                     <hr className="p-0 m-0 text-primary w-100" />
                   </div>
+                  <div className="col-12 mb-0 pt-0 ">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Discount{" "}
+                        <span className="gray-text small-number">
+                          ({orderDetails.order_details.discount_percent || 0}% )
+                        </span>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        -₹
+                        {parseFloat(
+                          orderDetails.order_details.discount_amount
+                        ).toFixed(2) || 0}
+                      </span>
+                    </div>
+                  </div>
                   <div className="col-12 pt-0">
                     {orderDetails.order_details.discount_amount > 0 && (
                       <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
@@ -1579,7 +1595,7 @@ const TrackOrder = () => {
                           Total after discount
                         </span>
                         <span className="font_size_14 gray-text">
-                          ₹
+                          +₹
                           {(
                             parseFloat(
                               orderDetails.order_details.total_bill_amount
@@ -1605,7 +1621,7 @@ const TrackOrder = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
-                        ₹
+                        +₹
                         {parseFloat(
                           orderDetails.order_details.service_charges_amount
                         ).toFixed(2) || 0}
@@ -1622,29 +1638,14 @@ const TrackOrder = () => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14  text-start gray-text">
-                        ₹
+                        +₹
                         {parseFloat(
                           orderDetails.order_details.gst_amount
                         ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
-                  <div className="col-12 mb-0 pt-0 pb-1">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        Discount{" "}
-                        <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        -₹
-                        {parseFloat(
-                          orderDetails.order_details.discount_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
+                 
                   <div>
                     <hr className=" p-0 m-0 text-primary w-100" />
                   </div>

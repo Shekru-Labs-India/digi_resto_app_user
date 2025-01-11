@@ -1096,12 +1096,10 @@ const MenuDetails = () => {
                   ) : isItemInCart(menuId) ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={handleRemoveFromCart}
+                      onClick={handleAddToCart}
                     >
-                      <i className="fa-solid fa-xmark pe-1 text-white"></i>
-                      <div className="font-poppins text-nowrap text-white">
-                        Remove from Checkout
-                      </div>
+                      <i className="fa-solid fa-plus  pe-2 text-white"></i>
+                      <div className="text-nowrap text-white">Add</div>
                     </button>
                   ) : (
                     <button

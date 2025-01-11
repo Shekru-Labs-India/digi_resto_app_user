@@ -471,7 +471,7 @@ const ProductCard = ({ isVegOnly }) => {
     }
   const storedCart = localStorage.getItem('restaurant_cart_data');
     if (storedCart && storedCart.order_items?.some(item => item.menu_id === menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart");
+      window.showToast("info", "This item is already in your checkout");
       return;
     }
 

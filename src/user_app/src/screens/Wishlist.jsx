@@ -251,10 +251,10 @@ const Wishlist = () => {
       showLoginPopup();
       return;
     }
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your checkout.");
-      return;
-    }
+    // if (isMenuItemInCart(menu.menu_id)) {
+    //   window.showToast("info", "This item is already in your checkout.");
+    //   return;
+    // }
 
     if (isCartFromDifferentRestaurant(menu.outlet_id)) {
       window.showToast(
