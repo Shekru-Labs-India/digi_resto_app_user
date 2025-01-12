@@ -1353,20 +1353,28 @@ const TrackOrder = () => {
           </div>
         </div>
       ) : orderStatus === "paid" ? (
-        <div className="card-body text-center bg-info rounded-4 text-white">
-          <span className="fs-6 fw-medium h-100">Payment received. Thank you!</span>
-        </div>
-      ) : orderStatus === "served" ? (
-        <div className="card-body text-center bg-primary rounded-4 text-white">
-          <span className="fs-6 fw-medium h-100">Enjoy your meal!</span>
-        </div>
-      ) : orderStatus === "cooking" ? (
-        <div className="card-body text-center bg-warning rounded-4 text-dark">
-          <span className="fs-6 fw-medium h-100">
-            Your order is being prepared .
-          </span>
-        </div>
-      ) : null}
+ 
+      
+       
+          <div className="card-body text-center bg-info rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Order has been paid. Thank you!
+            </span>
+          </div>
+        ) : orderStatus === "served" ? (
+          <div className="card-body text-center bg-primary rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Order has been served. Enjoy your meal!
+            </span>
+          </div>
+        ) : orderStatus === "cooking" ? (
+          <div className="card-body text-center bg-warning rounded-4 text-dark">
+            <span className="fs-6 fw-medium h-100">
+              Order is being cooked. Please wait patiently.
+            </span>
+          </div>
+        ) : null
+      }
     </>
   )}
 </div>

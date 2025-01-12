@@ -99,10 +99,13 @@ const Checkout = () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         
-        // Calculate totals
-        const total = cartData.order_items.reduce((sum, item) => 
-          sum + (item.price * item.quantity), 0
-        );
+        // Calculate totals with safe number conversion
+        const total = cartData.order_items.reduce((sum, item) => {
+          const itemPrice = item.half_or_full === "half" && item.half_price ? 
+            Number(item.half_price) : 
+            Number(item.price || 0);
+          return sum + (itemPrice * item.quantity);
+        }, 0);
 
         const serviceChargesPercent = 5;
         const gstPercent = 5;
@@ -112,15 +115,23 @@ const Checkout = () => {
         const totalAfterDiscount = total - discount;
         const grandTotal = totalAfterDiscount + serviceCharges + tax;
 
-        // Map items to match API structure
+        // Map items with safe price handling
         const mappedItems = cartData.order_items.map(item => ({
           ...item,
-          discountedPrice: item.offer ? Math.floor(item.price * (1 - item.offer / 100)) : item.price,
+          discountedPrice: item.offer ? 
+            Math.floor((item.half_or_full === "half" && item.half_price ? 
+              Number(item.half_price) : 
+              Number(item.price || 0)) * (1 - item.offer / 100)) 
+            : (item.half_or_full === "half" && item.half_price ? 
+              Number(item.half_price) : 
+              Number(item.price || 0)),
           menu_cat_name: item.category_name || "Food",
           menu_id: item.id,
           quantity: item.quantity,
-          price: item.price,
-          offer: item.offer || 0
+          price: Number(item.price || 0),
+          half_price: Number(item.half_price || 0),
+          offer: item.offer || 0,
+          half_or_full: item.half_or_full || "full"
         }));
 
         // Update all states
@@ -235,7 +246,7 @@ const Checkout = () => {
 
   const handleCreateOrder = async (orderType) => {
     try {
-      setIsProcessing(true); // Add loading state
+      setIsProcessing(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
@@ -1288,11 +1299,13 @@ const Checkout = () => {
                     <div className="card rounded-4 my-1">
                       <div className="card-body py-2 rounded-4 px-0">
                         <div className="row">
-                          {/* Menu details row */}
                           <div className="row pe-2">
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
+                                <span className="ms-2 font_size_10 text-capitalize text-muted">
+                                  ({item.half_or_full || "full"})
+                                </span>
                               </span>
                             </div>
 
@@ -1309,9 +1322,6 @@ const Checkout = () => {
                                 <i className="fa-solid fa-times gray-text font_size_14"></i>
                               </button>
                             </div>
-                            {/* <div className="col-1 text-end px-0">
-                              <span>x {item.quantity}</span>
-                            </div> */}
                           </div>
                           <div className="row">
                             <div className="col-6">
@@ -1336,7 +1346,6 @@ const Checkout = () => {
                               {item.comment}
                             </p>
                           )}
-                          {/* Quantity buttons at bottom right */}
                           <div className="row mt-2"></div>
                         </div>
                         <div className="row">
@@ -1344,15 +1353,21 @@ const Checkout = () => {
                             {item.offer ? (
                               <>
                                 <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.discountedPrice.toFixed(2)}
+                                  ₹{(item.half_or_full === "half" && item.half_price ? 
+                                    Number(item.half_price) : 
+                                    Number(item.price)
+                                  ).toFixed(2)}
                                 </span>
                                 <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹{item.price.toFixed(2)}
+                                  ₹{Number(item.price || 0).toFixed(2)}
                                 </span>
                               </>
                             ) : (
                               <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                ₹{item.price}
+                                ₹{(item.half_or_full === "half" && item.half_price ? 
+                                  Number(item.half_price) : 
+                                  Number(item.price || 0)
+                                ).toFixed(2)}
                               </span>
                             )}
                           </div>
