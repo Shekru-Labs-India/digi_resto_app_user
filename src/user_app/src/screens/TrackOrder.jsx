@@ -1604,15 +1604,9 @@ const TrackOrder = () => {
                         </span>
                         <span className="font_size_14 gray-text">
                           +₹
-                          {(
-                            parseFloat(
-                              orderDetails.order_details.total_bill_amount
-                            ) -
-                            parseFloat(
-                              orderDetails.order_details
-                                .total_bill_with_discount
-                            )
-                          ).toFixed(2)}
+                          {parseFloat(
+                          orderDetails.order_details.total_bill_with_discount
+                        ).toFixed(2) || 0}
                         </span>
                       </div>
                     )}
