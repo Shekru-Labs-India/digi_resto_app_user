@@ -466,14 +466,14 @@ const Checkout = () => {
       console.log(paymentUrl);
 
       await initiatePayment(
-        "UPI",
+        "upi",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "upi"
       );
 
       await initiatePayment(
-        "UPI",
+        "upi",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "upi"
@@ -505,14 +505,14 @@ const Checkout = () => {
       console.log(paymentUrl);
 
       await initiatePayment(
-        "PhonePe",
+        "phonepay",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "phonepe"
       );
 
       await initiatePayment(
-        "PhonePe",
+        "phonepay",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "phonepe"
@@ -544,14 +544,14 @@ const Checkout = () => {
       console.log(paymentUrl);
 
       await initiatePayment(
-        "GooglePay",
+        "gpay",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "gpay"
       );
 
       await initiatePayment(
-        "GooglePay",
+        "gpay",
         paymentUrl,
         () => setProcessingPaymentMethod(""),
         "gpay"
