@@ -1349,24 +1349,18 @@ const Checkout = () => {
                         </div>
                         <div className="row">
                           <div className="col-8 text-start">
-                            {item.offer ? (
+                          {item.offer ? (
                               <>
                                 <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{(item.half_or_full === "half" && item.half_price ? 
-                                    Number(item.half_price) : 
-                                    Number(item.price)
-                                  ).toFixed(2)}
+                                  ₹{item.discountedPrice.toFixed(2)}
                                 </span>
                                 <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹{Number(item.price || 0).toFixed(2)}
+                                  ₹{item.price.toFixed(2)}
                                 </span>
                               </>
                             ) : (
                               <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                ₹{(item.half_or_full === "half" && item.half_price ? 
-                                  Number(item.half_price) : 
-                                  Number(item.price || 0)
-                                ).toFixed(2)}
+                                ₹{item.price}
                               </span>
                             )}
                           </div>
