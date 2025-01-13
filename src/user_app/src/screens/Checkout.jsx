@@ -842,7 +842,7 @@ const Checkout = () => {
     }
   };
 
-  const handleRemoveItem = async (e, menuId) => {
+  const handleRemoveItem = async (e, menuId, portionSize) => {
     window.showToast("success", `Menu is removed from checkout.`);
     e.preventDefault();
     e.stopPropagation();
@@ -850,22 +850,23 @@ const Checkout = () => {
       const storedCart = localStorage.getItem('restaurant_cart_data');
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
+        
+        // Update to check both menuId and portion size
+        const updatedItems = cartData.order_items.filter(item => 
+          !(item.menu_id === menuId && item.half_or_full === portionSize)
+        );
         
         if (updatedItems.length === 0) {
-          // If no items left, clear cart data completely
-          setCartItems([]); // Update state to trigger re-render
-          setCheckoutDetails(null); // Reset checkout details
-          const updatedItems = cartData.order_items.filter(item => item.menu_id !== menuId);
+          setCartItems([]);
+          setCheckoutDetails(null);
           const updatedCart = { ...cartData, order_items: updatedItems };
           localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
         } else {
-          // Update cart with remaining items
           const updatedCart = { ...cartData, order_items: updatedItems };
           localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
         }
         
-        await fetchCheckoutDetails(); // This will handle empty cart case
+        await fetchCheckoutDetails();
       }
     } catch (error) {
       console.error('Error removing item:', error);
@@ -1312,9 +1313,7 @@ const Checkout = () => {
                             <div className="col-5 text-end px-0">
                               <button
                                 className="btn"
-                                onClick={(e) =>
-                                  handleRemoveItem(e, item.menu_id)
-                                }
+                                onClick={(e) => handleRemoveItem(e, item.menu_id, item.half_or_full)}
                                 style={{
                                   padding: "4px 8px",
                                 }}
