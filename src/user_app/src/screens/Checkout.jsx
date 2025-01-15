@@ -802,7 +802,8 @@ const Checkout = () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         const updatedItems = cartData.order_items.map(item => {
-          if (item.menu_id === menuItem.menu_id) {
+          // Check both menu_id and portion size
+          if (item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full) {
             // Check if quantity would exceed 20
             if (item.quantity >= 20) {
               window.showToast("info", "Maximum quantity limit reached (20)");
@@ -828,7 +829,10 @@ const Checkout = () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         let updatedItems = cartData.order_items.map(item => 
-          item.menu_id === menuItem.menu_id && item.quantity > 1
+          // Check both menu_id and portion size
+          item.menu_id === menuItem.menu_id && 
+          item.half_or_full === menuItem.half_or_full && 
+          item.quantity > 1
             ? { ...item, quantity: item.quantity - 1 }
             : item
         ).filter(item => item.quantity > 0);
