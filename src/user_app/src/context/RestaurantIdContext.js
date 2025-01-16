@@ -44,7 +44,7 @@ export const RestaurantIdProvider = ({ children }) => {
           .then((response) => response.json())
           .then((data) => {
             if (data.st === 1) {
-              const { restaurant_id } = data.outlet_details;
+              const { outlet_id } = data.outlet_details;
               
               // Now validate the table
               return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
@@ -53,7 +53,7 @@ export const RestaurantIdProvider = ({ children }) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  outlet_id: localStorage.getItem("outlet_id"),
+                  outlet_id:outlet_id,
                   section_id: section || null,
                   table_number: table,
                 }),
@@ -129,18 +129,24 @@ export const RestaurantIdProvider = ({ children }) => {
   }, [location, navigate]);
 
   useEffect(() => {
+    if (!sectionId) {
+      console.warn("Section ID is null or undefined. Skipping API call.");
+      return; // Do not execute the API call if sectionId is not available
+    }
+  
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
       // Get code from localStorage if not provided
       const storedCode = localStorage.getItem("restaurantCode");
       const finalCode = restaurantCode || storedCode;
-
+  
       // Debug log
       console.log('Restaurant code being used:', {
         providedCode: restaurantCode,
         storedCode: storedCode,
-        finalCode: finalCode
+        finalCode: finalCode,
+        sectionId: sectionId,
       });
-
+  
       try {
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
@@ -151,27 +157,27 @@ export const RestaurantIdProvider = ({ children }) => {
             },
             body: JSON.stringify({ 
               outlet_code: finalCode,
-              section_id: sectionId
+              section_id: sectionId,
             }),
           }
         );
-
+  
         const data = await response.json();
         if (data.st === 1) {
           const { outlet_id, name, account_status, is_open, section_name } = data.outlet_details;
           setRestaurantId(outlet_id);
           setRestaurantName(name);
-          setRestaurantStatus(account_status)
-          setIsRestaurantOpen(is_open)
-          setSectionName(section_name)
-
+          setRestaurantStatus(account_status);
+          setIsRestaurantOpen(is_open);
+          setSectionName(section_name);
+  
           localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", finalCode);
-          localStorage.setItem("restaurantStatus", account_status)
-          localStorage.setItem("isRestaurantOpen", is_open)
-          localStorage.setItem("sectionName", section_name)
-
+          localStorage.setItem("restaurantStatus", account_status);
+          localStorage.setItem("isRestaurantOpen", is_open);
+          localStorage.setItem("sectionName", section_name);
+  
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -179,11 +185,11 @@ export const RestaurantIdProvider = ({ children }) => {
               restaurantId: outlet_id,
               restaurantName: name,
               restaurantCode: finalCode,
-              sectionId: sectionId
+              sectionId: sectionId,
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-
+  
           const socialsArray = [
             {
               id: "whatsapp",
@@ -222,33 +228,31 @@ export const RestaurantIdProvider = ({ children }) => {
               link: data.outlet_details.google_business_link || "",
             },
           ].filter((item) => item.link);
-
+  
           localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
-          
           setSocials(socialsArray);
         } else if (data.st === 2) {
           setRestaurantId(null);
           setRestaurantName("");
-          
+  
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
           localStorage.removeItem("restaurantSocial");
-          
-          
+  
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: null,
               restaurantName: "",
-              restaurantCode: ""
+              restaurantCode: "",
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-          
+  
           navigate("/user_app/Index");
-
+  
           localStorage.setItem("restaurantStatus", false);
         } else {
           console.clear();
@@ -257,9 +261,10 @@ export const RestaurantIdProvider = ({ children }) => {
         console.error('Error fetching restaurant details:', error);
       }
     };
-
+  
     fetchRestaurantDetails(restaurantCode, sectionId);
   }, [restaurantCode, sectionId, navigate]);
+  
 
   useEffect(() => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
