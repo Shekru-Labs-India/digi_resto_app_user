@@ -14,7 +14,7 @@ import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
-
+import axios from "axios";
 const TrackOrder = () => {
   const titleCase = (str) => {
     if (!str) return "";
@@ -25,6 +25,15 @@ const TrackOrder = () => {
       .join(" ");
   };
 
+    const [customerName, setCustomerName] = useState("");
+ 
+  
+    useEffect(() => {
+      const customerName = localStorage.getItem("customerName");
+      setCustomerName(customerName);
+    }, []);
+const [paymentMethod, setPaymentMethod] = useState("");
+  const timeoutRef = useRef({});
   // Move these hooks to the top with other state declarations
   const [hasGoogleReview, setHasGoogleReview] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
@@ -34,9 +43,13 @@ const TrackOrder = () => {
   const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
   const { order_number } = useParams();
-
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
-
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
 
@@ -1131,7 +1144,154 @@ const TrackOrder = () => {
     }
   };
 
+  const handleCancelClick = () => {
+    setShowCompleteModal(true);
+  };
+
+  const handlePayment = async (method) => {
+    try {
+      setIsProcessing(true); // Add method-specific state if needed
+      const response = await axios.post("https://men4u.xyz/user_api/complete_order", {
+      
+        outlet_id: localStorage.getItem("outlet_id"),
+       
+        order_id: orderDetails?.order_details?.order_id,
+        payment_method: method,
+      });
+      window.showToast("success", "Payment successful!");
+      setShowCompleteModal(false);
+      fetchOrderDetails();
+    } catch (error) {
+      console.error(error);
+      window.showToast("error", "Payment failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   
+
+  // const handleGenericUPI = async () => {
+  //   if (isProcessingUPI) return;
+
+  //   try {
+  //     setIsProcessingUPI(true);
+  //     if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+  //     const amount = Math.round(parseFloat(orderDetails.grand_total));
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${orderDetails.outlet_name} for order no. #${orderDetails.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(orderDetails.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${orderDetails.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment("upi", paymentUrl, setIsProcessingUPI, "upi");
+  //   } catch (error) {
+  //     console.clear();
+
+  //     window.showToast(
+  //       "error",
+  //       "UPI payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingUPI(false);
+  //   }
+  // };
+
+  // const handlePhonePe = async () => {
+  //   if (isProcessingPhonePe) return;
+  //   console.log(customerName);
+  //   try {
+  //     setIsProcessingPhonePe(true);
+  //     if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+  //     const amount = Math.round(parseFloat(order.grand_total));
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(order.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment(
+  //       "phonepay",
+  //       paymentUrl,
+  //       setIsProcessingPhonePe,
+  //       "phonepe"
+  //     );
+  //   } catch (error) {
+  //     console.clear();
+  //     window.showToast(
+  //       "error",
+  //       "PhonePe payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingPhonePe(false);
+  //   }
+  // };
+
+  // const handleGooglePay = async () => {
+  //   if (isProcessingGPay) return;
+
+  //   try {
+  //     setIsProcessingGPay(true);
+  //     if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
+
+  //     const amount = Math.round(parseFloat(order.grand_total));
+
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(order.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment(
+  //       "gpay",
+  //       paymentUrl,
+  //       setIsProcessingGPay,
+  //       "gpay"
+  //     );
+  //   } catch (error) {
+  //     console.clear();
+  //     window.showToast(
+  //       "error",
+  //       "Google Pay payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingGPay(false);
+  //   }
+  // };
+
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
+    const response = await fetch(
+      `${config.apiDomain}/user_api/complete_order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          outlet_id: localStorage.getItem("outlet_id"),
+         
+          order_id: orderDetails?.order_details?.order_id,
+          payment_method: method,
+        }),
+      }
+    );
+
+    if (response.ok) {
+   
+   
+
+    
+    }
+  };
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1377,7 +1537,164 @@ const TrackOrder = () => {
       }
     </>
   )}
+  <>
+  {orderStatus === "served" && (
+  <div className="card-body text-center btn btn-outline-success text-primary rounded-pill rounded-4  mt-3"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleCancelClick();
+  }}
+  >
+    <span className="fs-6 fw-medium h-100">
+   Complete Order
+    </span>
+  </div>
+)}
+  </>
 </div>
+
+
+{showCompleteModal && (
+  <div
+    className="modal fade show d-block"
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content">
+        <div className="modal-header">
+          <div className="col-6 text-start">
+            <div className="modal-title font_size_16 fw-medium">
+              Complete Order
+            </div>
+          </div>
+          <div className="col-6 text-end">
+            <div className="d-flex justify-content-end">
+              <span
+                className="m-2 font_size_16"
+                onClick={() => setShowCompleteModal(false)}
+                aria-label="Close"
+              >
+                <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="modal-body">
+          <p className="text-center">
+            Are you sure you want to complete this order?
+          </p>
+          <div className="d-flex flex-column align-items-center gap-3">
+            {/* UPI Payment */}
+            <button
+              className="btn btn-info text-white w-100"
+              disabled={isProcessingUPI}
+              // onClick={handleGenericUPI}
+            >
+              {isProcessingUPI ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay{" "}
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>{" "}
+                  via
+                  <span className="ms-2">Other UPI Apps</span>
+                  <img
+                    className="text-white ms-1"
+                    src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                    width={45}
+                    alt="UPI"
+                  />
+                </>
+              )}
+            </button>
+            {/* PhonePe Payment */}
+            <button
+              className="btn text-white w-100"
+              style={{ backgroundColor: "#5f259f" }}
+              disabled={isProcessingPhonePe}
+              // onClick={handlePhonePe}
+            >
+              {isProcessingPhonePe ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay with PhonePe
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>
+                  <img
+                    className="ms-1"
+                    src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                    width={45}
+                    alt="PhonePe"
+                  />
+                </>
+              )}
+            </button>
+            {/* Google Pay Payment */}
+            <button
+              className="btn text-white w-100"
+              style={{ backgroundColor: "#1a73e8" }}
+              disabled={isProcessingGPay}
+              // onClick={handleGooglePay}
+            >
+              {isProcessingGPay ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay with Google Pay
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>
+                  <img
+                    className="ms-1"
+                    src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                    width={45}
+                    alt="Google Pay"
+                  />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="text-center">
+          <div>or make payment via:</div>
+        </div>
+        <div className="d-flex justify-content-center pt-2 mb-4">
+          {/* Card Payment */}
+          <button
+            type="button"
+            className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
+              paymentMethod === "card"
+                ? "bg-success text-white"
+                : "border"
+            }`}
+            onClick={() => handlePayment("card")}
+          >
+            <i className="ri-bank-card-line me-1"></i>
+            Card
+          </button>
+          {/* Cash Payment */}
+          <button
+            type="button"
+            className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
+              paymentMethod === "cash"
+                ? "bg-success text-white"
+                : "border border-muted"
+            }`}
+            onClick={() => handlePayment("cash")}
+          >
+            <i className="ri-wallet-3-fill me-1"></i>
+            Cash
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
         </ThemeProvider>
 
