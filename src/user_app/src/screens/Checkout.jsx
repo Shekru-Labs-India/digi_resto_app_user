@@ -1248,7 +1248,7 @@ const Checkout = () => {
                       </>
                     )}
 
-                    {existingOrderDetails.orderStatus === "served" && (
+                    {/* {existingOrderDetails.orderStatus === "served" && (
                       <button
                         className="btn btn-success rounded-pill font_size_14 text-white"
                         onClick={() => {
@@ -1258,7 +1258,7 @@ const Checkout = () => {
                       >
                         Complete Existing & Create New Order
                       </button>
-                    )}
+                    )} */}
 
                     {(existingOrderDetails.orderStatus === "cooking" ||
                       existingOrderDetails.orderStatus === "served") && (

@@ -1160,7 +1160,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
       });
       window.showToast("success", "Payment successful!");
       setShowCompleteModal(false);
-      fetchOrderDetails();
+      fetchOrderDetails(order_number);
     } catch (error) {
       console.error(error);
       window.showToast("error", "Payment failed. Please try again.");
@@ -1538,7 +1538,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
     </>
   )}
   <>
-  {orderStatus === "served" && (
+  {/* {orderStatus === "served" && (
   <div className="card-body text-center btn btn-outline-success text-primary rounded-pill rounded-4  mt-3"
   onClick={(e) => {
     e.stopPropagation();
@@ -1549,7 +1549,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
    Complete Order
     </span>
   </div>
-)}
+)} */}
   </>
 </div>
 

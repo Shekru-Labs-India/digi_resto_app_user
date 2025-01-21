@@ -940,20 +940,20 @@ export const OrderCard = ({
           </div>
         );
 
-      case "served":
-        return (
-          <div className="d-flex justify-content-end">
-            <button
-              className="btn btn-sm btn-outline-success rounded-pill px-4"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCompleteClick();
-              }}
-            >
-              Complete Order
-            </button>
-          </div>
-        );
+      // case "served":
+      //   return (
+      //     <div className="d-flex justify-content-end">
+      //       <button
+      //         className="btn btn-sm btn-outline-success rounded-pill px-4"
+      //         onClick={(e) => {
+      //           e.stopPropagation();
+      //           handleCompleteClick();
+      //         }}
+      //       >
+      //         Complete Order
+      //       </button>
+      //     </div>
+      //   );
 
       default:
         return null;
