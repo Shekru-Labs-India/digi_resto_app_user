@@ -1551,6 +1551,20 @@ const [paymentMethod, setPaymentMethod] = useState("");
   </div>
 )} */}
   </>
+  <>
+   {orderStatus === "placed" && (
+  <div className="card-body text-center btn btn-outline-danger text-danger rounded-pill rounded-4  mt-3"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleCancelClick();
+  }}
+  >
+    <span className="fs-6 fw-medium h-100">
+   Cancel Order
+    </span>
+  </div>
+)} 
+  </>
 </div>
 
 
