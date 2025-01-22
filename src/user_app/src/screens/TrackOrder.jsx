@@ -1551,7 +1551,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
   </div>
 )} */}
   </>
-  <>
+  {/* <>
    {orderStatus === "placed" && (
   <div className="card-body text-center btn btn-outline-danger text-danger rounded-pill rounded-4  mt-3"
   onClick={(e) => {
@@ -1564,7 +1564,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
     </span>
   </div>
 )} 
-  </>
+  </> */}
 </div>
 
 
