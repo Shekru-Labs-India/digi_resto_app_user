@@ -61,7 +61,7 @@ const Search = () => {
   const fetchFoodTypes = async () => {
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_food_type_list`
+        `${config.apiDomain}/common_api/get_food_type_list`
       );
       const data = await response.json();
 

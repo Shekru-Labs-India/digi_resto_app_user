@@ -271,7 +271,7 @@ const Checkout = () => {
       };
 
       const response = await fetch(
-        `${config.apiDomain}/user_api/create_order`,
+        `${config.apiDomain}/common_api/create_order`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

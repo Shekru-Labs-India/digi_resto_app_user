@@ -169,7 +169,7 @@ const Product = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+        `${config.apiDomain}/common_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: {
