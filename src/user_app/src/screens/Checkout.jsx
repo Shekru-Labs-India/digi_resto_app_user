@@ -260,7 +260,7 @@ const Checkout = () => {
         user_id: userData.user_id,
         outlet_id: restaurantId,
        tables: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
-
+action:'save',
         // table_number: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
