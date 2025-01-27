@@ -1851,12 +1851,20 @@ const [paymentMethod, setPaymentMethod] = useState("");
                                     x {menu.quantity}
                                   </span>
                                 </div>
+                               
                               </div>
+                          
                             </div>
                           </div>
+
+
                         </div>
+                       
+
                       </div>
+                      <div className="mt-2">{menu.comment}</div>
                     </div>
+                    
                   ))}
 
                   {/* Add Order More button outside the card, but only for placed and ongoing orders */}
