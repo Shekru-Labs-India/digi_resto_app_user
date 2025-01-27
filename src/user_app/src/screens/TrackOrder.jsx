@@ -1851,18 +1851,21 @@ const [paymentMethod, setPaymentMethod] = useState("");
                                     x {menu.quantity}
                                   </span>
                                 </div>
-                               
+                                {menu.comment && (
+                              <div className="my-2  text-light"><i className="fa-solid fa-comment-dots"></i>{" "}{menu.comment}</div>
+                            )}
                               </div>
-                          
-                            </div>
+                             
+                              </div>
+                             
                           </div>
 
-
+                          
                         </div>
                        
 
                       </div>
-                      <div className="mt-2">{menu.comment}</div>
+                    
                     </div>
                     
                   ))}
