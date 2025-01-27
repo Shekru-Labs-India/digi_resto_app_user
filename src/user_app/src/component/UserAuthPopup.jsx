@@ -162,10 +162,35 @@ const UserAuthPopup = () => {
     setLoading(true);
     setError(null);
 
+    const generateRandomSessionId = (length) => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let sessionId = "";
+      for (let i = 0; i < length; i++) {
+        sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return sessionId;
+    };
+  
+    const generateRandomFcmToken = (length) => {
+      const digits = "0123456789";
+      let fcmToken = "";
+      for (let i = 0; i < length; i++) {
+        fcmToken += digits.charAt(Math.floor(Math.random() * digits.length));
+      }
+      return fcmToken;
+    };
+    
+    // Example usage
+    const fcmToken = generateRandomFcmToken(12); // Generate a random FCM token of 12 digits
+    
+    // Generate a 20-character session ID
+    const deviceSessId = generateRandomSessionId(20);
+
     try {
       const response = await fetch(`${config.apiDomain}/user_api/guest_login`, {
-        method: "GET",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "Guest" ,role:'guest',fcm_token: fcmToken,device_sessid: deviceSessId}),
       });
 
       const data = await response.json();
