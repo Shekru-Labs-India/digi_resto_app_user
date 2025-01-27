@@ -995,12 +995,15 @@ const MenuDetails = () => {
                   {productDetails.rating &&
   productDetails.rating !== "null" &&
   productDetails.rating !== "0.0" &&
-  productDetails.rating !== 0 &&
+  productDetails.rating !== "0" &&
   productDetails.rating !== null && (
     <div className="col-4 text-end px-0">
       <span className="ps-2 font_size_10">
         {renderStarRating(productDetails.rating)}
+       
+       
         {productDetails.rating}
+      
       </span>
     </div>
   )}
