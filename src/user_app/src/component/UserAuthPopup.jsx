@@ -251,6 +251,31 @@ const UserAuthPopup = () => {
     try {
       // Get the stored OTP for verification
       const storedOtp = localStorage.getItem('otp');
+
+
+      const generateRandomSessionId = (length) => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let sessionId = "";
+        for (let i = 0; i < length; i++) {
+          sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return sessionId;
+      };
+    
+      const generateRandomFcmToken = (length) => {
+        const digits = "0123456789";
+        let fcmToken = "";
+        for (let i = 0; i < length; i++) {
+          fcmToken += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        return fcmToken;
+      };
+      
+      // Example usage
+      const fcmToken = generateRandomFcmToken(12); // Generate a random FCM token of 12 digits
+      
+      // Generate a 20-character session ID
+      const deviceSessId = generateRandomSessionId(20);
       
       const response = await fetch(
         `${config.apiDomain}/user_api/account_verify_otp`,
@@ -260,6 +285,9 @@ const UserAuthPopup = () => {
           body: JSON.stringify({
             mobile: mobile,
             otp: storedOtp || enteredOtp, // Use stored OTP or entered OTP
+            device_sessid: deviceSessId, 
+            fcm_token: fcmToken, 
+
           }),
         }
       );
@@ -323,13 +351,17 @@ const UserAuthPopup = () => {
     }
 
     setLoading(true);
+
+      
+ 
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/account_signup`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, mobile }),
+          body: JSON.stringify({ name, mobile}),
+
         }
       );
 

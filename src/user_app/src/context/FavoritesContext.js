@@ -8,7 +8,7 @@ export const FavoritesProvider = ({ children }) => {
   const fetchFavorites = useCallback(async (user_id, restaurantId) => {
     try {
       const response = await fetch(
-        `${config.apiDomain}/common_api/get_all_menu_list_by_category`,
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
           headers: {
