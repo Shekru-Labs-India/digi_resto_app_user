@@ -985,7 +985,7 @@ action:'save',
       <Header title="Checkout" count={cartItems.length} />
 
       <main className="page-content space-top p-b70">
-      <div className="container px-3 py-0 mb-0">
+        <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
@@ -1016,7 +1016,7 @@ action:'save',
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("parsel")}
+                        onClick={() => handleOrderTypeSelection("parcel")}
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
@@ -1313,13 +1313,17 @@ action:'save',
         )}
 
         <div className="">
-        {cartItems.length > 0 && (
-          <div className="container d-flex justify-content-end">
-            <div className="gray-text" role="button" onClick={handleClearCart}>
-              Clear Checkout
+          {cartItems.length > 0 && (
+            <div className="container d-flex justify-content-end">
+              <div
+                className="gray-text"
+                role="button"
+                onClick={handleClearCart}
+              >
+                Clear Checkout
+              </div>
             </div>
-          </div>
-        )}
+          )}
           <div className="dz-flex-box ms-3 mb-3 me-3">
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (
@@ -1381,7 +1385,7 @@ action:'save',
                         </div>
                         <div className="row">
                           <div className="col-8 text-start">
-                          {item.offer ? (
+                            {item.offer ? (
                               <>
                                 <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
                                   ₹{item.discountedPrice.toFixed(2)}
@@ -1629,47 +1633,47 @@ action:'save',
               </div>
             )}
 
-{cartItems.length === 0 && isLoggedIn && (
-  <div
-    className="container overflow-hidden d-flex justify-content-center align-items-center"
-    style={{ height: "68vh" }}
-  >
-    <div className="m-b20 dz-flex-box text-center">
-      <div className="dz-cart-about">
-        <h5>Your checkout is empty.</h5>
-        <p>Start ordering now!</p>
-        <Link
-          to="/user_app/Menu"
-          className="btn btn-outline-primary rounded-pill px-3"
-        >
-          <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-        </Link>
-      </div>
-    </div>
-  </div>
-)}
+            {cartItems.length === 0 && isLoggedIn && (
+              <div
+                className="container overflow-hidden d-flex justify-content-center align-items-center"
+                style={{ height: "68vh" }}
+              >
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <h5>Your checkout is empty.</h5>
+                    <p>Start ordering now!</p>
+                    <Link
+                      to="/user_app/Menu"
+                      className="btn btn-outline-primary rounded-pill px-3"
+                    >
+                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
+                      More
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
 
-{!isLoggedIn && (
-  <div
-  className="container overflow-hidden d-flex justify-content-center align-items-center"
-  style={{ height: "68vh" }}
->
-  <div className="m-b20 dz-flex-box text-center">
-    <div className="dz-cart-about">
-      <div className="mb-3">
-        <button
-          className="btn btn-outline-primary rounded-pill"
-          onClick={showLoginPopup}
-        >
-          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
-        </button>
-      </div>
-      <span>Please login to access checkout</span>
-    </div>
-  </div>
-  </div>
-)}
-
+            {!isLoggedIn && (
+              <div
+                className="container overflow-hidden d-flex justify-content-center align-items-center"
+                style={{ height: "68vh" }}
+              >
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <div className="mb-3">
+                      <button
+                        className="btn btn-outline-primary rounded-pill"
+                        onClick={showLoginPopup}
+                      >
+                        <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                      </button>
+                    </div>
+                    <span>Please login to access checkout</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
