@@ -280,7 +280,10 @@ action:'save',
         `${config.apiDomain}/common_api/create_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify(requestBody)
         }
       );
