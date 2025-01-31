@@ -35,6 +35,7 @@ export const RestaurantIdProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({ 
             outlet_code: code,
@@ -51,6 +52,7 @@ export const RestaurantIdProvider = ({ children }) => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
                 },
                 body: JSON.stringify({
                   outlet_id:outlet_id,
@@ -91,6 +93,7 @@ export const RestaurantIdProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({ outlet_code: code, section_id: section }),
         })
@@ -154,8 +157,9 @@ export const RestaurantIdProvider = ({ children }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
               outlet_code: finalCode,
               section_id: sectionId,
             }),

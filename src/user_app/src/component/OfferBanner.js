@@ -95,7 +95,9 @@ const OfferBanner = () => {
         `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json",
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+         },
           body: JSON.stringify({
             user_id: currentCustomerId,
             outlet_id: localStorage.getItem("outlet_id"),
@@ -292,7 +294,10 @@ const OfferBanner = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             outlet_id: restaurantId,
             menu_id: menuId,
@@ -366,7 +371,9 @@ const OfferBanner = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,

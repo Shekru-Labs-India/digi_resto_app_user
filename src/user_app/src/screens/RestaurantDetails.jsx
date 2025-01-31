@@ -46,6 +46,7 @@ function RestaurantDetails() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify({
               outlet_id: localStorage.getItem("outlet_id"),
@@ -250,7 +251,10 @@ function RestaurantDetails() {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             restaurant_id: restaurantId,
             menu_id: menuId,

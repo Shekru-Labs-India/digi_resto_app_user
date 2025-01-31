@@ -83,7 +83,10 @@ const MyOrder = () => {
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             user_id: userData.user_id,
             outlet_id: localStorage.getItem("outlet_id"),
@@ -153,7 +156,10 @@ const MyOrder = () => {
         `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             order_status: activeTab === "cancelled" ? "cancle" : activeTab,
@@ -487,6 +493,7 @@ export const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             order_id: order.order_id,
@@ -536,6 +543,7 @@ export const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             order_id: order.order_id,
@@ -589,6 +597,7 @@ export const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             order_id: order.order_id,
@@ -648,6 +657,7 @@ export const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             outlet_id: order.outlet_id,
@@ -807,6 +817,7 @@ export const OrderCard = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           order_id: order.order_id,
@@ -1916,6 +1927,7 @@ export const CircularCountdown = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             user_id: currentCustomerId,
@@ -1960,6 +1972,7 @@ export const CircularCountdown = ({
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
               },
               body: JSON.stringify({
                 user_id: currentCustomerId,

@@ -144,7 +144,10 @@ const CircularCountdown = ({
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             user_id: currentUserId,
             restaurant_id: restaurantId,
@@ -229,7 +232,9 @@ const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
@@ -269,6 +274,7 @@ const OrderCard = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           restaurant_id: order.restaurant_id,
@@ -494,7 +500,10 @@ const OrdersPlacedOngoing = () => {
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             user_id: userData.user_id,
             outlet_id: localStorage.getItem("outlet_id"),

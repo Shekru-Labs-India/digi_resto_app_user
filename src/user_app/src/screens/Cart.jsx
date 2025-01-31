@@ -58,7 +58,10 @@ const Cart = () => {
         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             cart_id: cartId,
             user_id: user_id,
@@ -147,7 +150,10 @@ const Cart = () => {
         "https://men4u.xyz/user_api/delete_entire_cart",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             cart_id: cartId,
             user_id: user_id,
@@ -266,7 +272,10 @@ const Cart = () => {
         `${config.apiDomain}/user_api/update_cart_menu_quantity`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             cart_id: cartId,
             user_id: user_id,
@@ -337,7 +346,10 @@ const Cart = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menuId,

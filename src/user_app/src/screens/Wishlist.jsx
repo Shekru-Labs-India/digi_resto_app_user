@@ -125,7 +125,9 @@ const Wishlist = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             user_id: userData.user_id,
             outlet_id: localStorage.getItem("outlet_id"),
@@ -215,7 +217,10 @@ const Wishlist = () => {
         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
@@ -347,7 +352,10 @@ const Wishlist = () => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         body: JSON.stringify({
           outlet_id: outletId,
           menu_id: menuId,

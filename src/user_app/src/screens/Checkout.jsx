@@ -191,7 +191,10 @@ const Checkout = () => {
         `${config.apiDomain}/user_api/check_order_exist`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             user_id: userData.user_id,
             outlet_id: restaurantId,
@@ -345,7 +348,10 @@ action:'save',
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify(requestBody)
         }
       );
@@ -406,7 +412,10 @@ action:'save',
         `${config.apiDomain}/user_api/add_to_existing_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify(requestBody)
         }
       );
@@ -649,6 +658,7 @@ action:'save',
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             outlet_id: restaurantId,
@@ -694,7 +704,9 @@ action:'save',
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             outlet_id: restaurantId,
             coupon_name: selectedCoupon,
@@ -776,10 +788,15 @@ action:'save',
 
       const cartData = JSON.parse(storedCart);
       const response = await axios.post(
-        `${config.apiDomain}/user_api/get_checkout_detail`,
+        `${config.apiDomain}/user_api/get_checkout_detail`, 
         {
           order_items: cartData.order_items,
           outlet_id: userData.restaurantId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
       );
 
@@ -906,6 +923,11 @@ action:'save',
         {
           order_items: cartData.order_items,
           outlet_id: restaurantId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
       );
 

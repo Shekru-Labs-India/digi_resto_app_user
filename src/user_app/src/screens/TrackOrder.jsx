@@ -397,6 +397,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify(requestBody),
           }
@@ -511,7 +512,9 @@ const [paymentMethod, setPaymentMethod] = useState("");
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
@@ -575,7 +578,10 @@ const [paymentMethod, setPaymentMethod] = useState("");
         `${config.apiDomain}/user_api/get_order_details`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             order_number: orderNumber,
             user_id: userId,
@@ -1094,7 +1100,9 @@ const [paymentMethod, setPaymentMethod] = useState("");
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
+
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
           user_id: userId,
@@ -1152,7 +1160,10 @@ const [paymentMethod, setPaymentMethod] = useState("");
     try {
       setIsProcessing(true); // Add method-specific state if needed
       const response = await axios.post("https://men4u.xyz/user_api/complete_order", {
-      
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         outlet_id: localStorage.getItem("outlet_id"),
        
         order_id: orderDetails?.order_details?.order_id,
@@ -1275,6 +1286,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),

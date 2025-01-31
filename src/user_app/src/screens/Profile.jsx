@@ -25,6 +25,7 @@ const Profile = () => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
+    localStorage.removeItem("access_token");
     
     showLoginPopup();
   };

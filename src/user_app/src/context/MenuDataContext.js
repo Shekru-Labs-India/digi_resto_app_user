@@ -18,7 +18,10 @@ export const MenuDataProvider = ({ children }) => {
                     `${config.apiDomain}/user_api/get_banner_and_offer_menu_list`,
                     {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                      },
                       body: JSON.stringify({ outlet_id: restaurantId }),
                     }
                   ),
@@ -26,7 +29,10 @@ export const MenuDataProvider = ({ children }) => {
                     `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
                     {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                      },
                       body: JSON.stringify({ outlet_id: restaurantId }),
                     }
                   ),

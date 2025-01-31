@@ -41,6 +41,7 @@ const EditProfile = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           user_id: userData?.user_id || "",

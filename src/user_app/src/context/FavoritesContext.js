@@ -13,7 +13,9 @@ export const FavoritesProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             user_id: user_id,
             outlet_id: restaurantId,
@@ -41,6 +43,7 @@ export const FavoritesProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             user_id: user_id,
@@ -69,6 +72,7 @@ export const FavoritesProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             user_id: user_id,

@@ -14,7 +14,13 @@ const navigate = useNavigate();
     const fetchHotels = async () => {
       try {
         const response = await fetch(
-          `${config.apiDomain}/user_api/get_all_restaurants`
+          `${config.apiDomain}/user_api/get_all_restaurants`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+              'Content-Type': 'application/json'
+            }
+          }
         );
         const data = await response.json();
         if (data.st === 1) {

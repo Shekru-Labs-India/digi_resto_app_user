@@ -174,7 +174,9 @@ const Product = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             user_id: userData ? userData.user_id : null,
             outlet_id: localStorage.getItem("outlet_id"),
@@ -276,6 +278,7 @@ const Product = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
@@ -405,7 +408,9 @@ const Product = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
@@ -588,7 +593,10 @@ const Product = () => {
           `${config.apiDomain}/user_api/auto_create_cart`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
             body: JSON.stringify({
               restaurant_id: restaurantId,
               user_id: userData?.user_id,

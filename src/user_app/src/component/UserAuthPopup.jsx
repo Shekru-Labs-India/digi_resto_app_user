@@ -118,7 +118,9 @@ const UserAuthPopup = () => {
         `${config.apiDomain}/user_api/account_login`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({ mobile }),
         }
       );
@@ -189,7 +191,9 @@ const UserAuthPopup = () => {
     try {
       const response = await fetch(`${config.apiDomain}/user_api/guest_login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         body: JSON.stringify({ name: "Guest" ,role:'guest',fcm_token: fcmToken,device_sessid: deviceSessId}),
       });
 
@@ -306,7 +310,10 @@ const UserAuthPopup = () => {
         `${config.apiDomain}/user_api/account_verify_otp`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             mobile: mobile,
             otp: storedOtp || enteredOtp, // Use stored OTP or entered OTP
@@ -326,9 +333,11 @@ const UserAuthPopup = () => {
           name: data.customer_details.name,
           mobile: data.customer_details.mobile,
           role: data.customer_details.role,
+          access_token: data.customer_details.access_token,
         };
         localStorage.setItem("customerName", data.customer_details.name);
         localStorage.setItem("userData", JSON.stringify(userData));
+        localStorage.setItem("access_token", data.customer_details.access_token);
         setCustomerId(data.customer_details.user_id);
         setCustomerType(data.customer_details.role);
         hideLoginPopup();
@@ -384,7 +393,10 @@ const UserAuthPopup = () => {
         `${config.apiDomain}/user_api/account_signup`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({ name, mobile}),
 
         }

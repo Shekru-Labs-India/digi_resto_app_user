@@ -114,7 +114,10 @@ const Search = () => {
           `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
             body: JSON.stringify(requestBody),
           }
         );
@@ -162,6 +165,7 @@ const Search = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId") || "",
@@ -228,7 +232,9 @@ const Search = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
@@ -328,7 +334,10 @@ const Search = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
@@ -576,7 +585,10 @@ const Search = () => {
 
       const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         body: JSON.stringify(requestBody),
       });
 
