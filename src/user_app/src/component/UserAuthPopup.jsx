@@ -119,7 +119,7 @@ const UserAuthPopup = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({ mobile }),
         }
@@ -312,11 +312,11 @@ const UserAuthPopup = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             mobile: mobile,
-            otp: storedOtp || enteredOtp, // Use stored OTP or entered OTP
+            otp:  enteredOtp, // Use stored OTP or entered OTP
             device_sessid: deviceSessId, 
             fcm_token: fcmToken, 
 
