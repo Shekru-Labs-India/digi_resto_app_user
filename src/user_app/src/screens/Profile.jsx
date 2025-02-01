@@ -22,9 +22,10 @@ const Profile = () => {
     const restaurantCode = localStorage.getItem("restaurantCode");
     const tableNumber = localStorage.getItem("tableNumber");
     
-    localStorage.removeItem("customer_id");
+    localStorage.removeItem("user_id");
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
+    localStorage.removeItem("access_token");
     
     showLoginPopup();
   };
@@ -58,35 +59,10 @@ const Profile = () => {
   };
 
   const renderContent = () => {
-    const isLoggedIn = userData && userData.customer_id;
+    const isLoggedIn = userData && userData.user_id;
 
     return (
       <>
-        {/* <header className="header header-fixed style-3 shadow-sm">
-          <div className="header-content ">
-            <div className="left-content">
-              <Link
-                to={`/user_app/${userData?.restaurantId || ""}/${userData?.tableNumber || ""}`}
-                className="back-btn fs-3"
-                onClick={() => navigate(-1)}
-              >
-                <i className="fa-solid fa-arrow-left "></i>
-              </Link>
-            </div>
-            <div className="mid-content">
-              <span className="me-2 title">Profile</span>
-            </div>
-            <div className="right-content gap-1">
-              <div
-                className="menu-toggler toggler-icon"
-                onClick={toggleSidebar}
-              >
-                <i className="fa-solid fa-bars-staggered"></i>
-              </div>
-            </div>
-          </div>
-        </header> */}
-
         <main className="page-content space-top">
           <Header title="Profile" />
           {isNonProductionDomain() && <Notice />}
@@ -137,7 +113,7 @@ const Profile = () => {
                       <span className="font_size_14">My Order</span>
                     </Link>
                   </li>
-                  <li className="col-6">
+                  {/* <li className="col-6">
                     <Link
                       to="/user_app/Cart"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
@@ -145,7 +121,7 @@ const Profile = () => {
                       <i className="fa-solid fa-cart-shopping me-2 fs-5"></i>
                       <span className="font_size_14">Cart</span>
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="col-6">
                     <Link
                       to="/user_app/Wishlist"
@@ -160,7 +136,7 @@ const Profile = () => {
                       to="/user_app/Search"
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
-                      <i class="fa-solid fa-magnifying-glass me-2 fs-5"></i>
+                      <i className="fa-solid fa-magnifying-glass me-2 fs-5"></i>
                       <span className="font_size_14">Search</span>
                     </Link>
                   </li>
@@ -171,6 +147,24 @@ const Profile = () => {
                     >
                       <i className="fa-solid fa-layer-group me-2 fs-5"></i>
                       <span className="font_size_14">Category</span>
+                    </Link>
+                  </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/savings"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="fa-solid fa-wallet me-2 fs-5"></i>
+                      <span className="font_size_14">Savings</span>
+                    </Link>
+                  </li>
+                  <li className="col-6">
+                    <Link
+                      to="/user_app/Checkout"
+                      className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
+                    >
+                      <i className="fa-solid fa-check-to-slot me-2 fs-5"></i>
+                      <span className="font_size_14">Checkout</span>
                     </Link>
                   </li>
                 </ul>
@@ -201,7 +195,7 @@ const Profile = () => {
                     </Link>
                   </div>
 
-                  <div class="divider border-light"></div>
+                  <div className="divider border-light"></div>
                 </>
               )}
             </div>
@@ -305,7 +299,7 @@ const Profile = () => {
               {" "}
               <div className="d-flex align-items-center mt-4 mb-0">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
                   MenuMitra
                 </div>
               </div>

@@ -21,7 +21,7 @@ const NearbyArea = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [customerId, setCustomerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
@@ -39,7 +39,7 @@ const NearbyArea = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
-      setCustomerId(userData.customer_id);
+      setCustomerId(userData.user_id);
     }
 
     // Only fetch if we have a restaurantId
@@ -83,7 +83,7 @@ const NearbyArea = () => {
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
     const currentCustomerId =
-      customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+      customerId || JSON.parse(localStorage.getItem("userData"))?.user_id;
 
     setIsLoading(true);
     try {
@@ -91,10 +91,13 @@ const NearbyArea = () => {
         `${config.apiDomain}/user_api/get_special_menu_list`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
-            restaurant_id: restaurantId,
+            user_id: currentCustomerId,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -132,7 +135,7 @@ const NearbyArea = () => {
     if (!selectedMenu) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       return;
     }
 
@@ -148,18 +151,18 @@ const NearbyArea = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
-          restaurant_id: restaurantId,
+          outlet_id: restaurantId,
         },
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
+      window.showToast("success", `${selectedMenu.name} is added.`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
@@ -189,39 +192,48 @@ const NearbyArea = () => {
   //   };
   // }, [fetchMenuData]);
 
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
 
-const getFoodTypeStyles = (foodType) => {
-  switch (foodType) {
-    case "veg":
-      return {
-        icon: "fa-solid fa-circle text-success",
-        border: "border-success",
-      };
-    case "non-veg":
-      return {
-        icon: "fa-solid fa-play fa-rotate-270 text-danger",
-        border: "border-danger",
-      };
-    case "egg":
-      return {
-        icon: "fa-solid fa-egg gray-text",
-        border: "border-muted",
-      };
-    case "vegan":
-      return {
-        icon: "fa-solid fa-leaf text-success",
-        border: "border-success",
-      };
-    default:
-      return {
-        icon: "fa-solid fa-circle text-success",
-        border: "border-success",
-      };
-  }
-};
-
-
-
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+    }
+  };
 
   useEffect(() => {
     if (menuItems.length > 0) {
@@ -269,7 +281,7 @@ const getFoodTypeStyles = (foodType) => {
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -284,12 +296,15 @@ const getFoodTypeStyles = (foodType) => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -312,7 +327,7 @@ const getFoodTypeStyles = (foodType) => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {
@@ -344,41 +359,11 @@ const getFoodTypeStyles = (foodType) => {
       setShowModal(false);
     }
   };
-     const getFoodTypeTextStyles = (foodType) => {
-       switch (foodType) {
-         case "veg":
-           return {
-             icon: "fa-solid fa-circle",
-             textColor: "text-primary",
-           };
-         case "nonveg":
-           return {
-             icon: "fa-solid fa-play fa-rotate-270",
-             textColor: "text-danger",
-           };
-         case "egg":
-           return {
-             icon: "fa-solid fa-egg",
-             textColor: "text-light",
-           };
-         case "vegan":
-           return {
-             icon: "fa-solid fa-leaf",
-             textColor: "text-success",
-           };
-         default:
-           return {
-             icon: "fa-solid fa-circle",
-             textColor: "text-primary",
-           };
-       }
-     };
 
- 
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
@@ -389,9 +374,10 @@ const getFoodTypeStyles = (foodType) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -416,18 +402,58 @@ const getFoodTypeStyles = (foodType) => {
     }
   };
 
+  // Add this function to check cart status directly from localStorage
+  const isItemInCart = (menuId) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return false;
+      
+      const cartData = JSON.parse(storedCart);
+      return cartData.order_items?.some(item => item.menu_id === menuId);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  // Update the useEffect for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render of menu items
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
+    window.addEventListener('cartStatusChanged', handleCartUpdate);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
+      window.removeEventListener('cartStatusChanged', handleCartUpdate);
+    };
+  }, []);
+
   // Update handleAddToCartClick function
   const handleAddToCartClick = async (menuItem) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
+    if (!userData?.user_id || !restaurantId) {
       showLoginPopup();
       return;
     }
 
-    if (isMenuItemInCart(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
-      return;
-    }
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    const cartData = storedCart ? JSON.parse(storedCart) : { order_items: [] };
+    const isInCart = cartData.order_items?.some(item => item.menu_id === menuItem.menu_id);
+
+    // if (isInCart) {
+    //   window.showToast("info", "This item is already in your checkout");
+    //   return;
+    // }
 
     setSelectedMenu(menuItem);
     fetchHalfFullPrices(menuItem.menu_id);
@@ -438,37 +464,35 @@ const getFoodTypeStyles = (foodType) => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
+    // 0 to 0.4: No star
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
+      return null; // Don't show anything
     }
 
+    // 0.5 to 2.5: Blank star (grey)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 gray-text me-1"></i>
-      );
+      return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
     }
 
+    // 3 to 4.5: Half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
+    // 5: Full star
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
+    return null; // Default case
   };
 
-
-
-  
-
   return (
-    <div className="dz-box style-2 nearby-area pb-3">
+    <div className="dz-box style-2 nearby-area pb-0">
       <div className=" align-items-start mb-0 ">
         <div className="">
           {menuItems.length > 0 && (
@@ -572,7 +596,10 @@ const getFoodTypeStyles = (foodType) => {
                                 className={`${
                                   getFoodTypeStyles(menuItem.menu_food_type)
                                     .icon
-                                } font_size_12`}
+                                } font_size_12 ${
+                                  getFoodTypeStyles(menuItem.menu_food_type)
+                                    .textColor
+                                }`}
                               ></i>
                             </div>
                             {/* Offer Tag */}
@@ -596,21 +623,15 @@ const getFoodTypeStyles = (foodType) => {
                               <div className="col-6 d-flex align-items-center">
                                 <span
                                   className={`ps-2 font_size_10 ${
-                                    getFoodTypeTextStyles(
-                                      menuItem.category_food_type
-                                    ).textColor
+                                    getFoodTypeStyles(menuItem.menu_food_type)
+                                      .textColor
                                   }`}
                                 >
                                   <i
-                                    className={`${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).icon
-                                    } ${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).textColor
-                                    } font_size_10 mt-0 me-1`}
+                                    className={
+                                      getFoodTypeStyles(menuItem.menu_food_type)
+                                        .categoryIcon
+                                    }
                                   ></i>
                                   {menuItem.category_name}
                                 </span>
@@ -666,7 +687,7 @@ const getFoodTypeStyles = (foodType) => {
                                       rounded-circle 
                                       bg-white 
                                       border-opacity-25 
-                                      border-secondary 
+                                      gray-text 
                                       border
                                     `}
                                     style={{
@@ -682,9 +703,9 @@ const getFoodTypeStyles = (foodType) => {
                                   >
                                     <i
                                       className={`fa-solid ${
-                                        isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check"
-                                          : "fa-solid fa-plus text-secondary"
+                                        isItemInCart(menuItem.menu_id)
+                                          ? "fa-circle-check text-success"
+                                          : "fa-plus text-secondary"
                                       } fs-6`}
                                     ></i>
                                   </div>
@@ -697,7 +718,7 @@ const getFoodTypeStyles = (foodType) => {
                                       rounded-circle 
                                       bg-white 
                                       border-opacity-25 
-                                      border-secondary 
+                                   gray-text
                                       border
                                     `}
                                     style={{
@@ -733,8 +754,8 @@ const getFoodTypeStyles = (foodType) => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -743,9 +764,9 @@ const getFoodTypeStyles = (foodType) => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

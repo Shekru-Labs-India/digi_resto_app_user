@@ -1,9 +1,9 @@
 export const getUserData = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     return {
-      customerId: userData?.customer_id || localStorage.getItem("customer_id"),
-      customerType: userData?.customer_type || localStorage.getItem("customer_type"),
-      isGuest: !userData?.customer_id && !!localStorage.getItem("customer_id")
+      userId: userData?.user_id || localStorage.getItem("user_id"),
+      role: userData?.role || localStorage.getItem("role"),
+      isGuest: !userData?.user_id && !!localStorage.getItem("user_id")
     };
   };
   

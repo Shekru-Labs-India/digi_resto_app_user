@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate ,Link} from 'react-router-dom';
-import { usePopup } from '../context/PopupContext';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { usePopup } from "../context/PopupContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
-import config from './config'
+import config from "./config";
 const UserAuthPopup = () => {
   const navigate = useNavigate();
   const { showPWAPopup, hideLoginPopup } = usePopup();
@@ -11,73 +11,72 @@ const UserAuthPopup = () => {
   const [mobileError, setMobileError] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [view, setView] = useState('login');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [name, setName] = useState('');
-  
+  const [view, setView] = useState("login");
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [name, setName] = useState("");
+
   const [agreed, setAgreed] = useState(false);
-  const [checkboxError, setCheckboxError] = useState('');
+  const [checkboxError, setCheckboxError] = useState("");
   const checkboxRef = useRef(null);
   const [originalPath, setOriginalPath] = useState(window.location.pathname);
   const mobileInputRef = useRef(null);
- 
+
   const otpInputRefs = useRef([]);
   const [customerId, setCustomerId] = useState(null);
-  const [nameError, setNameError] = useState('');
+  const [nameError, setNameError] = useState("");
   const nameInputRef = useRef(null);
-  const [isNameValid, setIsNameValid] = useState(false); 
- 
+  const [isNameValid, setIsNameValid] = useState(false);
+
   const handleNameChange = (e) => {
     let input = e.target.value;
-  
+
     // Remove any characters that are not letters or spaces
-    input = input.replace(/[^a-zA-Z\s]/g, '');
-  
+    input = input.replace(/[^a-zA-Z\s]/g, "");
+
     // Validate name length
     if (input.length < 3 || input.length > 15) {
-      setNameError('Name must be between 3 and 15 characters.');
+      setNameError("Name must be between 3 and 15 characters.");
       setIsNameValid(false);
     } else {
-      setNameError('');
+      setNameError("");
       setIsNameValid(true);
     }
-  
+
     // Convert to title case
     const titleCaseName = input
       .toLowerCase()
-      .split(' ')
+      .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  
+      .join(" ");
+
     setName(titleCaseName);
   };
 
-  
   const [customerType, setCustomerType] = useState("");
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const card = document.querySelector('.offcanvas-body');
+      const card = document.querySelector(".offcanvas-body");
       if (card && !card.contains(event.target)) {
         hideLoginPopup();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [hideLoginPopup]);
 
   useEffect(() => {
-    switch(view) {
-      case 'login':
-        mobileInputRef.current?.focus();  // Focus on mobile input when in login view
+    switch (view) {
+      case "login":
+        mobileInputRef.current?.focus(); // Focus on mobile input when in login view
         break;
-      case 'signup':
+      case "signup":
         nameInputRef.current?.focus();
         break;
-      case 'verify':
+      case "verify":
         otpInputRefs.current[0]?.focus();
         break;
     }
@@ -85,14 +84,14 @@ const UserAuthPopup = () => {
 
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 10); // Remove non-digits and limit length to 10
-  
+
     // Check if the first digit is 6, 7, 8, or 9
-    if (value.length > 0 && !['6', '7', '8', '9'].includes(value[0])) {
+    if (value.length > 0 && !["6", "7", "8", "9"].includes(value[0])) {
       return; // Prevent input if it doesn't start with 6, 7, 8, or 9
     }
-  
+
     setMobile(value);
-  
+
     if (value.length < 10) {
       setMobileError("Mobile must be 10 digits");
       setIsMobileValid(false);
@@ -101,7 +100,6 @@ const UserAuthPopup = () => {
       setIsMobileValid(checkMobileValidity(value));
     }
   };
-  
 
   const checkMobileValidity = (value) => {
     return /^\d{10}$/.test(value);
@@ -114,88 +112,125 @@ const UserAuthPopup = () => {
     }
     setLoading(true);
     setError(null);
-  
+
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/account_login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobile }),
-      });
-  
+      const response = await fetch(
+        `${config.apiDomain}/user_api/account_login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ mobile }),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (response.ok) {
         if (data.st === 1) {
           localStorage.setItem("mobile", mobile);
-          localStorage.setItem("customer_id", data.customer_id);
+          localStorage.setItem("user_id", data.user_id);
           setView("verify");
-          
+
           // Try to extract OTP if present in the message
           const otpMatch = data.msg.match(/\d+/);
           if (otpMatch) {
             const otp = otpMatch[0];
             localStorage.setItem("otp", otp);
           }
-  
-          localStorage.setItem("customer_type", "registered");
+
+          localStorage.setItem("role", "customer");
           localStorage.setItem("isGuest", "false");
         } else {
           setError(data.msg || "Sign in failed. Please try again.");
         }
       } else {
+        console.clear();
         setError(data.msg || `HTTP error! Status: ${response.status}`);
         if (data.st === 2) {
           setView("signup");
         }
       }
     } catch (error) {
-      console.error("Error signing in:", error);
+      console.clear();
       setError("Sign in failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleGuestLogin = async () => {
     setLoading(true);
     setError(null);
 
+    const generateRandomSessionId = (length) => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let sessionId = "";
+      for (let i = 0; i < length; i++) {
+        sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return sessionId;
+    };
+  
+    const generateRandomFcmToken = (length) => {
+      const digits = "0123456789";
+      let fcmToken = "";
+      for (let i = 0; i < length; i++) {
+        fcmToken += digits.charAt(Math.floor(Math.random() * digits.length));
+      }
+      return fcmToken;
+    };
+    
+    // Example usage
+    const fcmToken = generateRandomFcmToken(12); // Generate a random FCM token of 12 digits
+    
+    // Generate a 20-character session ID
+    const deviceSessId = generateRandomSessionId(20);
+
     try {
       const response = await fetch(`${config.apiDomain}/user_api/guest_login`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        headers: { "Content-Type": "application/json",
+          // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ name: "Guest" ,role:'guest',fcm_token: fcmToken,device_sessid: deviceSessId}),
       });
 
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
         const userData = {
-          customer_id: data.customer_details.customer_id,
-          customer_type: data.customer_details.customer_type,
+          user_id: data.customer_details.user_id,
+          role: data.customer_details.role,
           name: data.customer_details.name,
-          isGuest: true
+          isGuest: true,
         };
-        
+
         localStorage.setItem("userData", JSON.stringify(userData));
-        setCustomerId(data.customer_details.customer_id);
-        setCustomerType(data.customer_details.customer_type);
+        setCustomerId(data.customer_details.user_id);
+        setCustomerType(data.customer_details.role);
         hideLoginPopup();
 
-        const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
-        
+        const isDefaultRoute =
+          originalPath === "/" ||
+          originalPath === "/user" ||
+          originalPath === "/user_app";
+
         if (isDefaultRoute) {
           const restaurantCode = localStorage.getItem("restaurantCode");
           const tableNumber = localStorage.getItem("tableNumber") || "1";
           navigate(`/user_app/${restaurantCode}/${tableNumber}`);
         }
-        
+
         window.location.reload();
       } else {
+        console.clear();
+
         setError(data.msg || "Guest login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error during guest login:", error);
+      console.clear();
       setError("Guest login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -204,26 +239,26 @@ const UserAuthPopup = () => {
 
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-  
-    // Allow only numeric input, including empty strings to clear digits
+
+    // Allow only numeric input
     if (/^\d*$/.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-  
+      setOtp(prev => {
+        const newOtp = [...prev];
+        newOtp[index] = value;
+        return newOtp;
+      });
+
+      // Move to next input if value exists and not last input
       if (value && index < otp.length - 1) {
-        // Move to the next input only if there is a value
         otpInputRefs.current[index + 1]?.focus();
       }
     }
   };
-  
-  
 
   const handleOtpKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       const newOtp = [...otp];
-  
+
       if (!otp[index] && index > 0) {
         // If the current input is empty and the user presses Backspace, move focus back
         newOtp[index - 1] = "";
@@ -236,56 +271,94 @@ const UserAuthPopup = () => {
       }
     }
   };
-  
 
   const handleVerify = async () => {
     const enteredOtp = otp.join("");
-    if (!enteredOtp.trim()) {
-      setError("OTP is required");
-      return;
-    }
-
     setLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/account_verify_otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mobile: mobile,
-          otp: enteredOtp
-        }),
-      });
+      // Get the stored OTP for verification
+      const storedOtp = localStorage.getItem('otp');
+
+
+      const generateRandomSessionId = (length) => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let sessionId = "";
+        for (let i = 0; i < length; i++) {
+          sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return sessionId;
+      };
+    
+      const generateRandomFcmToken = (length) => {
+        const digits = "0123456789";
+        let fcmToken = "";
+        for (let i = 0; i < length; i++) {
+          fcmToken += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        return fcmToken;
+      };
+      
+      // Example usage
+      const fcmToken = generateRandomFcmToken(12); // Generate a random FCM token of 12 digits
+      
+      // Generate a 20-character session ID
+      const deviceSessId = generateRandomSessionId(20);
+      
+      const response = await fetch(
+        `${config.apiDomain}/user_api/account_verify_otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            mobile: mobile,
+            otp:  enteredOtp, // Use stored OTP or entered OTP
+            device_sessid: deviceSessId, 
+            fcm_token: fcmToken, 
+
+          }),
+        }
+      );
 
       const data = await response.json();
+      console.log("Verify Response:", data);
 
-      if (data.st === 1) {
+      if (response.ok && data.st === 1) {
         const userData = {
-          customer_id: data.customer_details.customer_id,
+          user_id: data.customer_details.user_id,
           name: data.customer_details.name,
           mobile: data.customer_details.mobile,
-          customer_type: data.customer_details.customer_type
+          role: data.customer_details.role,
+          access_token: data.customer_details.access_token,
         };
-        localStorage.setItem("customerName",data.customer_details.name);
+        localStorage.setItem("customerName", data.customer_details.name);
         localStorage.setItem("userData", JSON.stringify(userData));
-        setCustomerId(data.customer_details.customer_id);
-        setCustomerType(data.customer_details.customer_type);
+        localStorage.setItem("access_token", data.customer_details.access_token);
+        setCustomerId(data.customer_details.user_id);
+        setCustomerType(data.customer_details.role);
         hideLoginPopup();
 
-        const isDefaultRoute = originalPath === "/" || originalPath === "/user" || originalPath === "/user_app";
-        
+        const isDefaultRoute =
+          originalPath === "/" ||
+          originalPath === "/user" ||
+          originalPath === "/user_app";
+
         if (isDefaultRoute) {
           const restaurantCode = localStorage.getItem("restaurantCode");
           const tableNumber = localStorage.getItem("tableNumber") || "1";
           navigate(`/user_app/${restaurantCode}/${tableNumber}`);
         }
-        
+
         window.location.reload();
       } else {
-        setError("Incorrect OTP. Please try again.");
+        setError(data.msg || "Incorrect OTP. Please try again.");
       }
     } catch (error) {
-      console.error("Error verifying OTP:", error);
+      console.error("Verify Error:", error);
       setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
@@ -294,13 +367,13 @@ const UserAuthPopup = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    
+
     if (!agreed) {
       setCheckboxError("Please accept the terms and conditions");
       if (checkboxRef.current) {
-        checkboxRef.current.classList.add('shake');
+        checkboxRef.current.classList.add("shake");
         setTimeout(() => {
-          checkboxRef.current.classList.remove('shake');
+          checkboxRef.current.classList.remove("shake");
         }, 500);
       }
       return;
@@ -312,29 +385,40 @@ const UserAuthPopup = () => {
     }
 
     setLoading(true);
+
+      
+ 
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/account_signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, mobile }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/account_signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ name, mobile}),
+
+        }
+      );
 
       const data = await response.json();
 
       if (data.st === 1) {
-        const generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
-        localStorage.setItem("otp", generatedOtp);
+        // Always set OTP as "1234" for testing
+        localStorage.setItem("otp", "1234");
         localStorage.setItem("mobile", mobile);
         localStorage.setItem("customer_type", "regular");
         localStorage.setItem("isGuest", "false");
 
-        setView('verify');
+        setView("verify");
       } else {
+        console.clear();
         setError(data.msg || "Failed to create account");
-        setView('login');
+        setView("login");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.clear();
       setError(error.message || "Failed to create account");
     } finally {
       setLoading(false);
@@ -344,16 +428,41 @@ const UserAuthPopup = () => {
   const handleCheckboxChange = (e) => {
     setAgreed(e.target.checked);
     if (e.target.checked) {
-      setCheckboxError('');
+      setCheckboxError("");
       if (checkboxRef.current) {
-        checkboxRef.current.classList.remove('shake');
+        checkboxRef.current.classList.remove("shake");
       }
     }
   };
 
+  useEffect(() => {
+    const handleOtpChange = (e, index) => {
+      const value = e.target.value;
+
+      // Allow only numeric input
+      if (/^\d*$/.test(value)) {
+        setOtp(prev => {
+          const newOtp = [...prev];
+          newOtp[index] = value;
+          return newOtp;
+        });
+
+        // Move to next input if value exists and not last input
+        if (value && index < otp.length - 1) {
+          otpInputRefs.current[index + 1]?.focus();
+        }
+      }
+    };
+
+    // Focus first OTP input when view changes to verify
+    if (view === 'verify') {
+      otpInputRefs.current[0]?.focus();
+    }
+  }, [view]);
+
   const renderContent = () => {
-    switch(view) {
-      case 'verify':
+    switch (view) {
+      case "verify":
         return (
           <div className="account-section mt-1 px-2 py-1">
             {/* <div className="section-head"></div> */}
@@ -363,17 +472,24 @@ const UserAuthPopup = () => {
                 style={{ zIndex: 1040, position: "relative" }}
               >
                 <div className="mb-3">
-                  <Link to="/" className="d-flex align-items-center text-decoration-none">
-                    <img src={logo} alt="logo" width="40" height="40" className="me-2" />
-                    <span className="text-dark fw-bolder">
-                      MenuMitra
-                    </span>
+                  <Link
+                    to="/"
+                    className="d-flex align-items-center text-decoration-none"
+                  >
+                    <img
+                      src={logo}
+                      alt="logo"
+                      width="40"
+                      height="40"
+                      className="me-2"
+                    />
+                    <span className="text-dark fw-bolder">MenuMitra</span>
                   </Link>
                 </div>
               </div>
               <div className="text-center mb-4">
-                <h4>Verify OTP</h4>
-                <span>Enter OTP sent to {mobile}</span>
+                <h4 className="text-dark">Verify OTP</h4>
+                <span className="text-dark">Enter OTP sent to {mobile}</span>
               </div>
               <div
                 id="otp"
@@ -384,15 +500,17 @@ const UserAuthPopup = () => {
                   <input
                     key={index}
                     ref={(el) => (otpInputRefs.current[index] = el)}
-                    type="number" 
-                    className="form-control text-center d-flex align-items-center border border-1"
+                    type="number"
+                    className="form-control text-center d-flex align-items-center border border-1 rounded-3 p-0"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
                     onInput={(e) => {
                       // Remove non-numeric characters and restrict to one digit
-                      e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 1);
+                      e.target.value = e.target.value
+                        .replace(/[^0-9]/g, "")
+                        .slice(0, 1);
                     }}
                     id={`digit-${index + 1}`}
                     autoFocus={index === 0}
@@ -428,7 +546,7 @@ const UserAuthPopup = () => {
           </div>
         );
 
-      case 'signup':
+      case "signup":
         return (
           <div className="account-section mt-1 px-2 py-1">
             {/* <div className="section-head"></div> */}
@@ -518,10 +636,10 @@ const UserAuthPopup = () => {
               </div>
 
               <div className="form-group mb-3">
-                <div className="form-check" ref={checkboxRef}>
+                <div className="form-check gray-text" ref={checkboxRef}>
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className="form-check-input gray-text"
                     checked={agreed}
                     onChange={handleCheckboxChange}
                     id="termsCheckbox"
@@ -641,7 +759,7 @@ const UserAuthPopup = () => {
                   disabled={!isMobileValid}
                 >
                   Send OTP
-                  <i class="bx bx-paper-plane ms-2"></i>
+                  <i className="bx bx-paper-plane ms-2"></i>
                 </button>
               )}
             </form>
@@ -671,7 +789,6 @@ const UserAuthPopup = () => {
   return (
     <>
       <div
-        
         className={`offcanvas offcanvas-bottom pwa-offcanvas border border-bottom-0 ${
           showPWAPopup ? "show" : ""
         }`}
@@ -682,10 +799,7 @@ const UserAuthPopup = () => {
               <main className="page-content">
                 <div className="container pt-0 overflow-hidden">
                   <div className="dz-authentication-area dz-flex-box">
-                    <div
-                      className="account-section mt-1 px-2 py-1"
-                      
-                    >
+                    <div className="account-section mt-1 px-2 py-1">
                       {renderContent()}
                     </div>
                   </div>

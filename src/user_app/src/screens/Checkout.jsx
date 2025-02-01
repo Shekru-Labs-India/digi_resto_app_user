@@ -9,17 +9,18 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import NearbyArea from "../component/NearbyArea";
 import { useCart } from "../context/CartContext";
-import { Toast } from "primereact/toast";
 import config from "../component/config";
 import axios from "axios";
+import RestaurantSocials from "../components/RestaurantSocials.jsx";
+import { usePopup } from "../context/PopupContext";
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { clearCart } = useCart();
-  const toast = useRef(null);
+  const { clearCart, removeFromCart } = useCart();
+  const { showLoginPopup } = usePopup();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  const [user_id, setUser_id] = useState(null);
+  const [role, setRole] = useState(null);
   const storedRestaurantId = localStorage.getItem("restaurantId");
   const [availableTables, setAvailableTables] = useState(0);
 
@@ -38,7 +39,7 @@ const Checkout = () => {
   const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [cartId, setCartId] = useState(null);
-
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [showExistingOrderModal, setShowExistingOrderModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
 
@@ -47,6 +48,7 @@ const Checkout = () => {
     orderNumber: "",
     orderStatus: "",
   });
+  
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -69,19 +71,19 @@ const Checkout = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
+      userData?.user_id || localStorage.getItem("user_id");
     const currentCustomerType =
-      userData?.customer_type || localStorage.getItem("customer_type");
+      userData?.role || localStorage.getItem("role");
 
     setIsLoggedIn(!!currentCustomerId);
-    setCustomerId(currentCustomerId);
-    setCustomerType(currentCustomerType);
+    setUser_id(currentCustomerId);
+    setRole(currentCustomerType);
   }, []);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
+      userData?.user_id || localStorage.getItem("user_id");
     const cartId = getCartId();
 
     // if (!cartId || !currentCustomerId || !restaurantId) {
@@ -91,49 +93,62 @@ const Checkout = () => {
     fetchCartDetails();
   }, []);
 
-  const fetchCartDetails = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId =
-      userData?.customer_id || localStorage.getItem("customer_id");
-    const cartId = getCartId();
-
+  const fetchCartDetails = () => {
     try {
-      const response = await axios.post(
-        `${config.apiDomain}/user_api/get_cart_detail`,
-        {
-          cart_id: cartId,
-          customer_id: currentCustomerId,
-          restaurant_id: storedRestaurantId,
-        }
-      );
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        
+        // Calculate totals with safe number conversion
+        const total = cartData.order_items.reduce((sum, item) => {
+          const itemPrice = item.half_or_full === "half" && item.half_price ? 
+            Number(item.half_price) : 
+            Number(item.price || 0);
+          return sum + (itemPrice * item.quantity);
+        }, 0);
 
-      if (response.data.st === 1) {
-        const data = response.data;
+        const serviceChargesPercent = 5;
+        const gstPercent = 5;
+        const serviceCharges = (total * serviceChargesPercent) / 100;
+        const tax = (total * gstPercent) / 100;
+        const discount = 0;
+        const totalAfterDiscount = total - discount;
+        const grandTotal = totalAfterDiscount + serviceCharges + tax;
 
-        // Map and update state
-        const mappedItems = data.order_items.map((item) => ({
+        // Map items with safe price handling
+        const mappedItems = cartData.order_items.map(item => ({
           ...item,
-          discountedPrice: item.offer
-            ? Math.floor(item.price * (1 - item.offer / 100))
-            : item.price,
+          discountedPrice: item.offer ? 
+            Math.floor((item.half_or_full === "half" && item.half_price ? 
+              Number(item.half_price) : 
+              Number(item.price || 0)) * (1 - item.offer / 100)) 
+            : (item.half_or_full === "half" && item.half_price ? 
+              Number(item.half_price) : 
+              Number(item.price || 0)),
+          menu_cat_name: item.category_name || "Food",
+          menu_id: item.id,
+          quantity: item.quantity,
+          price: Number(item.price || 0),
+          half_price: Number(item.half_price || 0),
+          offer: item.offer || 0,
+          half_or_full: item.half_or_full || "full"
         }));
 
-        // Update state immediately
+        // Update all states
         setCartItems(mappedItems);
-        setTotal(parseFloat(data.total_bill));
-        setServiceChargesPercent(parseFloat(data.service_charges_percent));
-        setServiceCharges(parseFloat(data.service_charges_amount));
-        setGstPercent(parseFloat(data.gst_percent));
-        setTax(parseFloat(data.gst_amount));
-        setDiscountPercent(parseFloat(data.discount_percent));
-        setDiscount(parseFloat(data.discount_amount));
-        setGrandTotal(parseFloat(data.grand_total));
-        setCartId(data.cart_id);
-      } else {
-        console.error("Failed to fetch cart details:", response.data.msg);
+        setTotal(total);
+        setServiceChargesPercent(serviceChargesPercent);
+        setServiceCharges(serviceCharges);
+        setGstPercent(gstPercent);
+        setTax(tax);
+        setDiscountPercent(0);
+        setDiscount(discount);
+        setGrandTotal(grandTotal);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
       }
     } catch (error) {
-      console.error("Error fetching cart details:", error);
+      console.error('Error fetching cart details:', error);
     }
   };
 
@@ -143,7 +158,7 @@ const Checkout = () => {
       setRestaurantCode(storedRestaurantCode);
     }
     // fetchCartDetails();
-  }, [restaurantId, customerId]);
+  }, [restaurantId, user_id]);
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -161,120 +176,138 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     try {
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+
+      if (!userData?.user_id) {
+        window.showToast("error", "Please login to place order");
+        return;
+      }
+
+      setIsProcessing(true); // Show loading state
+
+      // Check for existing order
       const response = await fetch(
         `${config.apiDomain}/user_api/check_order_exist`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
-            customer_id: customerId,
-            restaurant_id: restaurantId,
+            user_id: userData.user_id,
+            outlet_id: restaurantId,
           }),
         }
       );
 
       const data = await response.json();
+      setIsProcessing(false);
 
-      if (response.ok && data.st === 1) {
-        setAvailableTables(data.available_tables);
-
-        // If no existing order, show order type selection
-        if (data.order_number === null && data.order_status === null) {
-          setShowOrderTypeModal(true);
-        }
-        // If there's an ongoing or placed order, show modal with options
-        else if (
-          data.order_status === "ongoing" ||
-          data.order_status === "placed"
-        ) {
+      if (data.st === 1) {
+        if (data.order_number) {
+          // Existing order found - show existing order modal
           setExistingOrderDetails({
             orderNumber: data.order_number,
             orderStatus: data.order_status,
             orderId: data.order_id,
+            orderType: data.order_type,
+            grand_total: data.grand_total
           });
           setShowExistingOrderModal(true);
+        } else {
+          // No existing order - show order type selection
+          setShowOrderTypeModal(true);
         }
-      } else {
-        throw new Error("Failed to check order status");
+      }
+      
+      if(data.st === 2){
+        setShowOrderTypeModal(true);
+        // setShowExistingOrderModal(false);
+        // setShowNewOrderModal(true);
+      }
+      else {
+        throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process order",
-        life: 3000,
-      });
+      setIsProcessing(false);
+      // window.showToast("error", "Failed to process order");
+      console.error('Error:', error);
     }
   };
 
   const handleOrderTypeSelection = (orderType) => {
+    setSelectedOrderType(orderType);
     if (pendingOrderAction) {
       handleOrderAction(pendingOrderAction, orderType);
     } else {
       handleCreateOrder(orderType);
     }
+    setShowOrderTypeModal(false); // Close the modal after selection
   };
 
   const handleCreateOrder = async (orderType) => {
-    if (!cartId || !customerId || !restaurantId || !orderType) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Missing required data to create an order",
-        life: 3000,
-      });
-      return;
-    }
-
-    const tableNumber =
-      JSON.parse(localStorage.getItem("userData"))?.tableNumber ||
-      localStorage.getItem("tableNumber") ||
-      "1";
-
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
-
     try {
+      setIsProcessing(true);
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+
+      if (!storedCart?.order_items) {
+        window.showToast("error", "No items in checkout");
+        setIsProcessing(false);
+        return;
+      }
+
+      const requestBody = {
+        user_id: userData.user_id,
+        outlet_id: restaurantId,
+       tables: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
+action:'save',
+
+        // table_number: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
+        section_id: userData?.sectionId || "1",
+        order_type: orderType,
+        order_items: storedCart.order_items.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          comment: item.comment || "",
+          half_or_full: item.half_or_full || "full"
+        }))
+      };
+
       const response = await fetch(
-        `${config.apiDomain}/user_api/create_order`,
+        `${config.apiDomain}/common_api/create_order`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            table_number: tableNumber,
-            order_type: orderType,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody)
         }
       );
 
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
+        window.showToast("success", "Order placed successfully");
         setNewOrderNumber(data.order_number);
         clearCartData();
         setShowOrderTypeModal(false);
-        setShowPopup(true);
-        await fetchCartDetails();
+        
+        // Small delay to ensure toast is visible
+        setTimeout(() => {
+          navigate("/user_app/MyOrder/");
+        }, 500);
       } else {
         throw new Error(data.msg || "Failed to create order");
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to create order",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to create order");
+      console.error('Error:', error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -285,28 +318,34 @@ const Checkout = () => {
     setCartItems([]); // Clear cart items state if you're using it
   };
 
-  const handleOrderAction = async (orderStatus, orderType) => {
-    if (
-      !cartId ||
-      !customerId ||
-      !restaurantId ||
-      !existingOrderDetails.orderNumber ||
-      !orderType
-    ) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Missing required data to proceed",
-        life: 3000,
-      });
-      return;
-    }
-
+  const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {
-      const sectionId =
-        JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-        localStorage.getItem("sectionId") ||
-        "";
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+      
+      if (!existingOrderDetails.orderNumber) {
+        throw new Error("Invalid order number");
+      }
+
+      const requestBody = {
+        order_number: existingOrderDetails.orderNumber,
+        user_id: userData.user_id,
+        order_status: orderStatus,
+        outlet_id: restaurantId,
+        table_number: userData?.tableNumber || "1",
+        section_id: userData?.sectionId || "1",
+        order_type: orderType,
+        order_items: storedCart.order_items.map((item) => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          comment: item.comment || "",
+          half_or_full: item.half_or_full || "full",
+        })),
+      };
+
+      if (orderStatus === "paid" && paymentMethod) {
+        requestBody.payment_method = paymentMethod;
+      }
 
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
@@ -314,16 +353,9 @@ const Checkout = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            order_number: existingOrderDetails.orderNumber,
-            order_status: orderStatus,
-            order_type: orderType,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody)
         }
       );
 
@@ -333,61 +365,78 @@ const Checkout = () => {
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
-        await fetchCartDetails();
-        navigate(`/user_app/MyOrder/`);
+        
+        // Show success message
+        window.showToast("success", "Order processed successfully");
+        
+        // Navigate to MyOrder page after a short delay
+        setTimeout(() => {
+          navigate('/user_app/MyOrder');
+        }, 500);
+        
+        if (data.data?.new_order_number) {
+          setNewOrderNumber(data.data.new_order_number);
+          setShowPopup(true);
+        }
       } else {
-        throw new Error(data.msg || "Failed to update order");
+        throw new Error(data.msg);
       }
     } catch (error) {
-      toast.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Failed to process order",
-        life: 3000,
-      });
+      window.showToast("error", error.message || "Failed to process order");
+      console.error('Error:', error);
     }
   };
 
   const handleAddToExistingOrder = async () => {
     try {
-      // Construct the order items array
-      const orderItems = cartItems.map((item) => ({
-        menu_id: item.menu_id,
-        quantity: item.quantity,
-        half_or_full: item.half_or_full || "full",
-      }));
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
 
-      // Make the API call
+      if (!storedCart?.order_items || !existingOrderDetails.orderId) {
+        window.showToast("error", "Failed to add items to order");
+        return;
+      }
+
+      // Prepare request body with exact structure needed by the API
+      const requestBody = {
+        order_id: existingOrderDetails.orderId,
+        user_id: userData.user_id,
+        outlet_id: restaurantId,
+        order_items: storedCart.order_items.map((item) => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          half_or_full: item.half_or_full || "full",
+          comment: item.comment || "",
+        })),
+      };
+
+      // Make API call to add items to existing order
       const response = await fetch(
         `${config.apiDomain}/user_api/add_to_existing_order`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            order_id: existingOrderDetails.orderId, // Use the orderId from the existing order details
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            cart_id: cartId,
-            order_items: orderItems,
-          }),
+          body: JSON.stringify(requestBody)
         }
       );
 
       const data = await response.json();
 
-      if (response.ok && data.st === 1) {
-        setShowPopup(true);
-        await fetchCartDetails();
+      if (data.st === 1) {
+        window.showToast("success", "Items added to order successfully");
         clearCartData();
-        setShowExistingOrderModal(false); // Close the modal
+        setShowExistingOrderModal(false);
+        navigate('/user_app/MyOrder');
       } else {
-        throw new Error(
-          data.msg || "Failed to add items to the existing order"
-        );
+        throw new Error(data.msg || "Failed to add items to order");
       }
-    } catch (error) {}
+    } catch (error) {
+      window.showToast("error", error.message || "Failed to add items to order");
+      console.error('Error:', error);
+    }
   };
 
   const closePopup = () => {
@@ -402,13 +451,541 @@ const Checkout = () => {
     setShowOrderTypeModal(true);
   };
 
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+
+  const timeoutRef = useRef({});
+
+  const [processingPaymentMethod, setProcessingPaymentMethod] = useState(""); // tracks which method is being processed
+
+  const handleGenericUPI = async () => {
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
+    try {
+      setProcessingPaymentMethod("upi");
+      if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+
+      const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment(
+        "upi",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "upi"
+      );
+
+      await initiatePayment(
+        "upi",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "upi"
+      );
+    } catch (error) {
+      window.showToast("error", "UPI payment initiation failed");
+      setProcessingPaymentMethod("");
+    }
+  };
+
+  const handlePhonePe = async () => {
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
+    try {
+      setProcessingPaymentMethod("phonepe");
+      if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+
+      const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment(
+        "phonepay",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "phonepe"
+      );
+
+      await initiatePayment(
+        "phonepay",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "phonepe"
+      );
+    } catch (error) {
+      window.showToast("error", "PhonePe payment initiation failed");
+      setProcessingPaymentMethod("");
+    }
+  };
+
+  const handleGooglePay = async () => {
+    if (processingPaymentMethod) return; // Prevents multiple payments at once
+    try {
+      setProcessingPaymentMethod("gpay");
+      if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
+
+      const amount = Math.round(parseFloat(existingOrderDetails.grand_total));
+      const transactionNote = encodeURIComponent(
+        `${
+          userData?.name || "Customer"
+        } is paying Rs. ${amount} to ${restaurantName} for order no. #${
+          existingOrderDetails.orderNumber
+        }`
+      );
+      const encodedRestaurantName = encodeURIComponent(restaurantName);
+      const upiId = "hivirajkadam@okhdfcbank";
+
+      const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+      console.log(paymentUrl);
+
+      await initiatePayment(
+        "gpay",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "gpay"
+      );
+
+      await initiatePayment(
+        "gpay",
+        paymentUrl,
+        () => setProcessingPaymentMethod(""),
+        "gpay"
+      );
+    } catch (error) {
+      window.showToast("error", "Google Pay payment initiation failed");
+      setProcessingPaymentMethod("");
+    }
+  };
+
+  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+    try {
+      await handleOrderAction("paid", existingOrderDetails.orderType, method);
+      
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+        timeoutRef.current[timeoutKey] = setTimeout(() => {
+          if (!document.hidden) {
+            window.showToast("error", `No ${method} app found`);
+          }
+          setProcessing(false);
+        }, 3000);
+      } else {
+        window.showToast("success", `Payment initiated successfully`);
+        setProcessing(false);
+        // Navigate to MyOrder page after a short delay
+        setTimeout(() => {
+          navigate('/user_app/MyOrder');
+        }, 500);
+      }
+    } catch (error) {
+      window.showToast("error", "Payment processing failed");
+      setProcessing(false);
+    }
+  };
+
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          border: "border-danger",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
+    }
+  };
+
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [selectedCoupon, setSelectedCoupon] = useState("");
+  const [coupons, setCoupons] = useState([]);
+
+  const fetchCoupons = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_all_coupons_by_restaurant_id`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            outlet_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.st === 1) {
+        setCoupons(data.coupons);
+      } else {
+        window.showToast("info", `${data.msg}`);
+      }
+    } catch (error) {
+      console.error("Error fetching coupons:", error);
+      window.showToast("error", "Error fetching coupons");
+    }
+  };
+
+  const [cartDetails, setCartDetails] = useState({
+    total_bill: 0,
+    discount_percent: 0,
+    discount_amount: 0,
+    grand_total: 0,
+    service_charges_amount: 0,
+    service_charges_percent: 0,
+    gst_amount: 0,
+    gst_percent: 0,
+    total_after_discount: 0,
+    order_items: [],
+  });
+
+  const handleApplyCoupon = async () => {
+    if (!selectedCoupon) {
+      window.showToast("error", "Please enter a coupon code");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/verify_coupon`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+
+          body: JSON.stringify({
+            outlet_id: restaurantId,
+            coupon_name: selectedCoupon,
+            total_price: checkoutDetails.total_bill_amount,
+            
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        setCartDetails((prevCart) => ({
+          ...prevCart,
+          discount_percent: data.discount_percent,
+          discount_amount: prevCart.total_bill - data.discounted_price,
+          grand_total: data.discounted_price,
+          total_after_discount: data.discounted_price,
+        }));
+
+        window.showToast("success", data.msg || "Coupon applied successfully");
+        setShowCouponModal(false);
+      } else {
+        window.showToast("error", data.msg || "Invalid coupon code");
+      }
+    } catch (error) {
+      console.error("Error verifying coupon:", error);
+      window.showToast("error", "Failed to verify coupon");
+    }
+  };
+
+  const [showScanner, setShowScanner] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  const videoRef = useRef(null);
+
+  const validateCouponInput = (value) => {
+    // Allow only alphanumeric, max 10 characters
+    const regex = /^[a-zA-Z0-9]*$/;
+    if (value.length <= 10 && regex.test(value)) {
+      return value.toUpperCase();
+    }
+    return couponCode; // Return existing value if invalid
+  };
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    
+    if (storedCart) {
+      try {
+        const cartData = JSON.parse(storedCart);
+        // Filter items that match the current restaurant ID
+        if (cartData.order_items) {
+          cartData.order_items = cartData.order_items.filter(item => 
+            item.outlet_id === userData?.restaurantId
+          );
+          // Save filtered cart back to localStorage
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
+          // Update cart items state
+          setCartItems(cartData.order_items);
+        }
+      } catch (error) {
+        console.error('Error parsing cart data:', error);
+        setCartItems([]);
+      }
+    }
+  }, []); // Run once on component mount
+
+  const fetchCheckoutDetails = async () => {
+    try {
+      setLoading(true);
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) {
+        setError("Add menus to order first");
+        return;
+      }
+
+      const cartData = JSON.parse(storedCart);
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/get_checkout_detail`, 
+        {
+          order_items: cartData.order_items,
+          outlet_id: userData.restaurantId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      if (response.data.st === 1) {
+        setCheckoutDetails(response.data);
+        setCartItems(cartData.order_items);
+      }
+    } catch (err) {
+      console.error('Error fetching checkout details:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Call API on mount
+  useEffect(() => {
+    fetchCheckoutDetails();
+  }, []);
+
+  const incrementQuantity = async (menuItem) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        const updatedItems = cartData.order_items.map(item => {
+          // Check both menu_id and portion size
+          if (item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full) {
+            // Check if quantity would exceed 20
+            if (item.quantity >= 20) {
+              window.showToast("info", "Maximum quantity limit reached (20)");
+              return item;
+            }
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
+        
+        const updatedCart = { ...cartData, order_items: updatedItems };
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        await fetchCheckoutDetails(); // Fetch updated totals
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  const decrementQuantity = async (menuItem) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        let updatedItems = cartData.order_items.map(item => 
+          // Check both menu_id and portion size
+          item.menu_id === menuItem.menu_id && 
+          item.half_or_full === menuItem.half_or_full && 
+          item.quantity > 1
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        ).filter(item => item.quantity > 0);
+        
+        const updatedCart = { ...cartData, order_items: updatedItems };
+        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        await fetchCheckoutDetails(); // Fetch updated totals
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  const handleRemoveItem = async (e, menuId, portionSize) => {
+    window.showToast("success", `Menu is removed from checkout.`);
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
+        
+        // Update to check both menuId and portion size
+        const updatedItems = cartData.order_items.filter(item => 
+          !(item.menu_id === menuId && item.half_or_full === portionSize)
+        );
+        
+        if (updatedItems.length === 0) {
+          setCartItems([]);
+          setCheckoutDetails(null);
+          const updatedCart = { ...cartData, order_items: updatedItems };
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        } else {
+          const updatedCart = { ...cartData, order_items: updatedItems };
+          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        }
+        
+        await fetchCheckoutDetails();
+      }
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
+  };
+
+  const [checkoutDetails, setCheckoutDetails] = useState({
+    total_bill_amount: 0,
+    total_bill_with_discount: 0,
+    service_charges_percent: 0,
+    service_charges_amount: 0,
+    gst_percent: 0,
+    gst_amount: 0,
+    discount_percent: 0,
+    discount_amount: 0,
+    grand_total: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return;
+
+      const cartData = JSON.parse(storedCart);
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/get_checkout_detail`,
+        {
+          order_items: cartData.order_items,
+          outlet_id: restaurantId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      if (response.data.st === 1) {
+        setCheckoutDetails(response.data);
+        // Proceed with checkout process
+        handlePlaceOrder();
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      window.showToast("error", "Failed to process checkout");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      // Clear cart from localStorage
+      localStorage.removeItem('restaurant_cart_data');
+      
+      // Clear cart items state
+      setCartItems([]);
+      
+      // Reset all totals
+      setTotal(0);
+      setServiceCharges(0);
+      setTax(0);
+      setDiscount(0);
+      setGrandTotal(0);
+      setTotalAfterDiscount(0);
+      
+      // Use the clearCart function from CartContext
+      clearCart();
+
+      window.showToast("success", "Checkout cleared successfully");
+      
+      // Optional: Navigate to menu after clearing
+      // navigate("/user_app/Menu");
+
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      window.showToast("error", "Failed to clear checkout");
+    }
+  };
+
+  // If user is not logged in, show login prompt
+ 
+
   return (
     <div className="page-wrapper full-height">
       <Header title="Checkout" count={cartItems.length} />
-      <Toast ref={toast} position="bottom-center" className="custom-toast" />
 
-      <main className="page-content mb-5 pb-3">
-        <div className="container py-0 my-0">
+      <main className="page-content space-top p-b70">
+        <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
@@ -417,53 +994,30 @@ const Checkout = () => {
 
         {showOrderTypeModal && (
           <div className="popup-overlay">
-            <div className="modal-dialog w-75" role="document">
+            <div className="modal-dialog w-75">
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
-                  <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
-                    Select Order Type
-                  </h5>
-                  {/* <button
-                    className="btn p-0 fs-3 gray-text"
-                    onClick={() => setShowOrderTypeModal(false)}
-                  >
-                    <i className="fa-solid fa-xmark text-dark font_size_14 pe-3"></i>
-                  </button> */}
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                      Select Order Type
+                    </div>
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowOrderTypeModal(false)}
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
+                  </div>
                 </div>
+
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
-                    {/* Parcel */}
+                    {/* Parcel Option */}
                     <div className="col-6">
                       <div
-                        className="card h-100 border rounded-4 cursor-pointer position-relative"
-                        onClick={() => handleOrderTypeSelection("Parcel")}
+                        className="card h-100 border rounded-4 cursor-pointer"
+                        onClick={() => handleOrderTypeSelection("parcel")}
                       >
-                        {/* Icons container */}
-                        {/* <div className="position-absolute top-0 end-0 p-2 pt-0">
-                          <div className="d-flex flex-column gap-1">
-                            <div
-                              className="rounded-circle p-1"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/ymXDmYihTOzgPDddKSvZRKzXkboAapBF2yoFIeQBaWSAJmC9IUpSPKgvfaAgS5yFxQ=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                            <div
-                              className="rounded-circle p-1 pt-0"
-                              style={{ width: "24px", height: "24px" }}
-                            >
-                              <img
-                                src="https://play-lh.googleusercontent.com/HJdzprqlCwh_8YNyhMBU6rIaGBGwxHXflZuuqI3iR4US7Jb-bSYiJk_DKV2la9SoBM0K=w240-h480-rw"
-                                className="img-fluid rounded-circle"
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </div> */}
-
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
                           <div className="text-center">
                             <i className="fa-solid fa-hand-holding-heart fs-2 mb-2 text-primary"></i>
@@ -473,12 +1027,12 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* Drive-Through */}
+                    {/* Drive-Through Option */}
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
                         onClick={() =>
-                          handleOrderTypeSelection("Drive-through")
+                          handleOrderTypeSelection("drive-through")
                         }
                       >
                         <div className="card-body d-flex justify-content-center align-items-center py-3">
@@ -490,11 +1044,11 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* Dine-in */}
+                    {/* Dine-in Option */}
                     <div className="col-12 mb-3">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
-                        onClick={() => handleOrderTypeSelection("Dine-in")}
+                        onClick={() => handleOrderTypeSelection("dine-in")}
                       >
                         <div className="card-body d-flex align-items-center py-3">
                           <div className="text-center me-3">
@@ -502,9 +1056,11 @@ const Checkout = () => {
                           </div>
                           <div>
                             <p className="mb-0 fw-medium">Dine-In</p>
-                            <small className="text-dark">
-                              {availableTables} Tables Available
-                            </small>
+                            {availableTables > 0 && (
+                              <small className="text-dark">
+                                {availableTables} Tables Available
+                              </small>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -516,23 +1072,173 @@ const Checkout = () => {
           </div>
         )}
 
-        {showExistingOrderModal && (
+        {showPaymentOptions && (
           <div className="popup-overlay">
             <div
               className="modal-dialog modal-dialog-centered"
-              role="document"
               style={{ maxWidth: "350px", margin: "auto" }}
             >
               <div className="modal-content">
                 <div className="modal-header ps-3 pe-2">
                   <div className="d-flex justify-content-between align-items-center w-100">
-                    <h5 className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
+                      Complete Payment
+                    </div>
+                    <button
+                      className="btn p-0 fs-3 gray-text"
+                      onClick={() => setShowPaymentOptions(false)}
+                    >
+                      <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="modal-body py-2 px-3">
+                  <p className="text-center mb-4">
+                    Please select a payment method to complete your order #
+                    {existingOrderDetails.orderNumber}
+                  </p>
+                  <div className="d-grid gap-2">
+                    {/* UPI Payment Button */}
+                    <button
+                      className="btn btn-info text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      onClick={handleGenericUPI}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "upi"
+                      }
+                    >
+                      {processingPaymentMethod === "upi" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay ₹{existingOrderDetails.grand_total} via Other UPI
+                          Apps
+                          <img
+                            src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                            width={45}
+                            alt="UPI"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    {/* PhonePe Button */}
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#5f259f" }}
+                      onClick={handlePhonePe}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "phonepe"
+                      }
+                    >
+                      {processingPaymentMethod === "phonepe" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay ₹{existingOrderDetails.grand_total} via PhonePe
+                          <img
+                            src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                            width={45}
+                            alt="PhonePe"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    {/* Google Pay Button */}
+                    <button
+                      className="btn text-white w-100 d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: "#1a73e8" }}
+                      onClick={handleGooglePay}
+                      disabled={
+                        processingPaymentMethod &&
+                        processingPaymentMethod !== "gpay"
+                      }
+                    >
+                      {processingPaymentMethod === "gpay" ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          Pay ₹{existingOrderDetails.grand_total} via Google Pay
+                          <img
+                            className="ms-2"
+                            src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                            width={45}
+                            alt="Google Pay"
+                          />
+                        </>
+                      )}
+                    </button>
+
+                    {/* Alternative Payment Methods */}
+                    <div className="text-center mt-3">
+                      <div>or make payment via:</div>
+                    </div>
+                    <div className="d-flex justify-content-center pt-2">
+                      <button
+                        type="button"
+                        className="px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark border"
+                        onClick={() => {
+                          setProcessingPaymentMethod("card");
+                          initiatePayment(
+                            "card",
+                            null,
+                            setProcessingPaymentMethod,
+                            "card"
+                          );
+                        }}
+                      >
+                        <i className="ri-bank-card-line me-1"></i>
+                        Card
+                      </button>
+                      <button
+                        type="button"
+                        className="px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark border"
+                        onClick={() => {
+                          setProcessingPaymentMethod("cash");
+                          initiatePayment(
+                            "cash",
+                            null,
+                            setProcessingPaymentMethod,
+                            "cash"
+                          );
+                        }}
+                      >
+                        <i className="ri-wallet-3-fill me-1"></i>
+                        Cash
+                      </button>
+                    </div>
+
+                    <button
+                      className="btn btn-md border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
+                      onClick={() => setShowPaymentOptions(false)}
+                    >
+                      Back
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showExistingOrderModal && (
+          <div className="popup-overlay d-flex align-items-center justify-content-center min-vh-100">
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "350px" }}
+            >
+              <div className="modal-content">
+                <div className="modal-header ps-3 pe-2">
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <div className="modal-title font_size_16 fw-medium mb-0 text-dark">
                       Existing Order Found
-                    </h5>
+                    </div>
                     <button
                       className="btn p-0 fs-3 gray-text"
                       onClick={() => setShowExistingOrderModal(false)}
-                      aria-label="Close"
                     >
                       <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
                     </button>
@@ -542,32 +1248,58 @@ const Checkout = () => {
                 <div className="modal-body py-2 px-3">
                   <p className="text-center mb-4">
                     You have an ongoing order (#
-                    {existingOrderDetails.orderNumber}). Would you like to add
-                    to this order or create a new one?
+                    {existingOrderDetails.orderNumber}
+                    ).{" "}
+                    {existingOrderDetails.orderStatus === "placed" &&
+                      "Would you like to cancel this order and create a new one?"}
+                    {existingOrderDetails.orderStatus === "cooking" &&
+                      "Your order is being prepared. Would you like to add items to this order?"}
+                    {existingOrderDetails.orderStatus === "served" &&
+                      "Your order has been served. Would you like to complete this order and create a new one?"}
                   </p>
+                  <div className="d-grid gap-2">
+                    {existingOrderDetails.orderStatus === "placed" && (
+                      <>
+                        <button
+                          className="btn btn-danger rounded-pill font_size_14 text-white"
+                          onClick={() => handleOrderActionClick("cancelled")}
+                        >
+                          Cancel Existing & Create New Order
+                        </button>
+                        <button
+                          className="btn btn-info rounded-pill font_size_14 text-white"
+                          onClick={handleAddToExistingOrder}
+                        >
+                          Add to Existing Order (#
+                          {existingOrderDetails.orderNumber})
+                        </button>
+                      </>
+                    )}
 
-                  <div className="d-flex flex-column gap-2">
+                    {/* {existingOrderDetails.orderStatus === "served" && (
+                      <button
+                        className="btn btn-success rounded-pill font_size_14 text-white"
+                        onClick={() => {
+                          setShowExistingOrderModal(false);
+                          setShowPaymentOptions(true);
+                        }}
+                      >
+                        Complete Existing & Create New Order
+                      </button>
+                    )} */}
+
+                    {(existingOrderDetails.orderStatus === "cooking" ||
+                      existingOrderDetails.orderStatus === "served") && (
+                      <button
+                        className="btn btn-info rounded-pill font_size_14 text-white"
+                        onClick={handleAddToExistingOrder}
+                      >
+                        Add to Existing Order (#
+                        {existingOrderDetails.orderNumber})
+                      </button>
+                    )}
+
                     <button
-                      className="btn btn-danger rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("cancle")}
-                    >
-                      Cancel Existing & Create New Order
-                    </button>
-                    <button
-                      className="btn btn-success rounded-pill font_size_14 text-white"
-                      onClick={() => handleOrderActionClick("completed")}
-                    >
-                      Complete Existing & Create New Order
-                    </button>
-                    <button
-                      className="btn btn-info rounded-pill font_size_14"
-                      onClick={handleAddToExistingOrder}
-                    >
-                      Add to Existing Order (#{existingOrderDetails.orderNumber}
-                      )
-                    </button>
-                    <button
-                      type="button"
                       className="btn btn-sm border border-1 border-muted bg-transparent rounded-pill font_size_14 text-dark"
                       onClick={() => setShowExistingOrderModal(false)}
                     >
@@ -580,95 +1312,19 @@ const Checkout = () => {
           </div>
         )}
 
-        {showPopup && (
-          <div className="popup-overlay">
-            <div className="container d-flex align-items-center justify-content-center">
+        <div className="">
+          {cartItems.length > 0 && (
+            <div className="container d-flex justify-content-end">
               <div
-                className="modal-dialog modal-dialog-centered"
-                role="document"
+                className="gray-text"
+                role="button"
+                onClick={handleClearCart}
               >
-                <div className="modal-content">
-                  <h5 className="modal-title border-bottom py-2 text-center">
-                    Success
-                  </h5>
-                  <div className="modal-header py-0">
-                    <button
-                      className="btn-close"
-                      onClick={() => setShowPopup(false)}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="d-flex justify-content-center bg-light rounded-circle w-25 h-25 mx-auto">
-                      <img
-                        src={OrderGif}
-                        alt="Order Success"
-                        className="popup-gif"
-                        height={100}
-                        width={100}
-                      />
-                    </div>
-                    <span className="text-dark my-2 d-block text-center">
-                      Order placed successfully
-                    </span>
-                    <div className="fs-6 fw-semibold text-center">
-                      #{newOrderNumber || existingOrderDetails.orderNumber}
-                    </div>
-                    <p className="text-dark text-center mb-4">
-                      You have successfully made payment and placed your order.
-                    </p>
-                    <button
-                      className="btn btn-success rounded-pill text-white w-100"
-                      onClick={closePopup}
-                    >
-                      View Order
-                    </button>
-                  </div>
-                </div>
+                Clear Checkout
               </div>
             </div>
-          </div>
-        )}
-
-        {showNewOrderModal && (
-          <div className="popup-overlay">
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div className="container">
-                <div className="modal-content">
-                  <div className="p-3 border-bottom">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0 fw-semibold text-dark">
-                        Create New Order
-                      </h5>
-                      <button
-                        className="btn p-0 fs-3 text-dark"
-                        onClick={() => setShowNewOrderModal(false)}
-                      >
-                        <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-3">
-                    <p className="text-center mb-4 text-dark">
-                      No ongoing order found. <br />
-                      Would you like to create a new order?
-                    </p>
-
-                    <button
-                      className="btn btn-success rounded-pill w-100 py-2 text-white"
-                      onClick={handleCreateOrder}
-                    >
-                      Create Order
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="m-3">
-          <div className="dz-flex-box">
+          )}
+          <div className="dz-flex-box ms-3 mb-3 me-3">
             <div className="dz-flex-box mt-2">
               {cartItems.length > 0 ? (
                 cartItems.map((item, index) => (
@@ -680,151 +1336,351 @@ const Checkout = () => {
                     <div className="card rounded-4 my-1">
                       <div className="card-body py-2 rounded-4 px-0">
                         <div className="row">
-                          <div className="row">
+                          <div className="row pe-2">
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
+                                <span className="ms-2 font_size_10 text-capitalize text-muted">
+                                  ({item.half_or_full || "full"})
+                                </span>
                               </span>
                             </div>
-                            <div className="col-4 p-0 text-end">
-                              {item.offer ? (
-                                <>
-                                  <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                    ₹{item.discountedPrice}
-                                  </span>
-                                  <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                    ₹{item.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="ms-0 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.price}
-                                </span>
-                              )}
-                            </div>
-                            <div className="col-1 text-end px-0">
-                              <span>x {item.quantity}</span>
+
+                            <div className="col-5 text-end px-0">
+                              <button
+                                className="btn"
+                                onClick={(e) => handleRemoveItem(e, item.menu_id, item.half_or_full)}
+                                style={{
+                                  padding: "4px 8px",
+                                }}
+                              >
+                                <i className="fa-solid fa-times gray-text font_size_14"></i>
+                              </button>
                             </div>
                           </div>
                           <div className="row">
-                            <div className="col-8">
+                            <div className="col-6">
                               <div className="ps-2">
-                                <span className="text-success font_size_10">
-                                  <i className="fa-solid fa-utensils me-2"></i>
-                                  {item.menu_cat_name}
-                                </span>
+                                <div className="font_size_10 text-success">
+                                  <i className="fa-solid fa-utensils text-success me-1"></i>
+                                  {item.menu_cat_name || "category"}
+                                </div>
                               </div>
                             </div>
                             {item.offer > 0 && (
-                              <div className="col-4 text-end px-0">
+                              <div className="col-6 text-end px-0">
                                 <span className="ps-2 text-success font_size_10">
-                                  {item.offer}% Off
+                                  {item.offer || "0"}% Off
                                 </span>
                               </div>
                             )}
                           </div>
-
-                          <p className="font_size_12 text-muted  mt-1 mb-0 ms-2">
-                            <i className="fa-solid fa-comment-dots me-2"></i>{" "}
-                            Make it more spicy {item.notes}
-                          </p>
+                          {item.comment && (
+                            <p className="font_size_12 text-light mt-1 mb-0 ms-2">
+                              <i className="fa-solid fa-comment-dots"></i>{" "}
+                              {item.comment}
+                            </p>
+                          )}
+                          <div className="row mt-2"></div>
+                        </div>
+                        <div className="row">
+                          <div className="col-8 text-start">
+                            {item.offer ? (
+                              <>
+                                <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+                                  ₹{item.discountedPrice.toFixed(2)}
+                                </span>
+                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+                                  ₹{item.price.toFixed(2)}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+                                ₹{item.price}
+                              </span>
+                            )}
+                          </div>
+                          <div className="col-4 d-flex justify-content-end pe-3">
+                            <div className="dz-stepper style-3">
+                              <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected d-flex align-items-center justify-content-between w-100">
+                                <span className="input-group-btn input-group-prepend">
+                                  <button
+                                    className="btn btn-primary bootstrap-touchspin-down"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      decrementQuantity(item);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-minus fs-6"></i>
+                                  </button>
+                                </span>
+                                <span className="text-dark font_size_14 px-2">
+                                  {item.quantity}
+                                </span>
+                                <span className="input-group-btn input-group-append">
+                                  <button
+                                    className="btn btn-primary bootstrap-touchspin-up"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      incrementQuantity(item);
+                                    }}
+                                  >
+                                    <i className="fa-solid fa-plus fs-6"></i>
+                                  </button>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </Link>
                 ))
               ) : (
-                <div>No items in the cart.</div>
+                <div></div>
               )}
             </div>
-            <div className="card mx-auto rounded-4 mt-2">
-              <div className="row px-2 py-1">
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1">
-                    <span className="ps-2 font_size_14 fw-semibold">Total</span>
-                    <span className="pe-2 font_size_14 fw-semibold">
-                      ₹{total.toFixed(2)}
-                    </span>
-                  </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
-                </div>
-                <div className="col-12 pt-0 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Service Charges{" "}
-                      <span className="gray-text small-number">
-                        ({serviceChargesPercent}%)
+            {cartItems.length > 0 && (
+              <div className="card mx-auto rounded-4 mt-2">
+                <div className="row px-2 py-1">
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14 fw-semibold">
+                        Total
                       </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      ₹{serviceCharges.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-                <div className="col-12 mb-0 py-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0">
-                    <span className="ps-2 font_size_14 gray-text">
-                      GST{" "}
-                      <span className="gray-text small-number">
-                        ({gstPercent}%)
+                      <span className="pe-2 font_size_14 fw-semibold">
+                        ₹{checkoutDetails.total_bill_amount}
                       </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      ₹{tax.toFixed(2)}
-                    </span>
+                    </div>
+                    <hr className="p-0 m-0 text-primary" />
                   </div>
-                </div>
-                <div className="col-12 mb-0 pt-0 pb-1 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-0 pb-2">
-                    <span className="ps-2 font_size_14 gray-text">
-                      Discount{" "}
-                      <span className="gray-text small-number">
-                        ({discountPercent}%)
+
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Discount{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.discount_percent}%)
+                        </span>
                       </span>
-                    </span>
-                    <span className="pe-2 font_size_14 gray-text">
-                      -₹{discount.toFixed(2)}
-                    </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        -₹{checkoutDetails.discount_amount}
+                      </span>
+                    </div>
                   </div>
-                  <hr className="me-0 p-0 m-0 text-primary" />
-                </div>
-                <div className="col-12 px-2">
-                  <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                    <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
-                    <span className="pe-2 fs-6 fw-semibold">
-                      ₹{grandTotal.toFixed(2)}
-                    </span>
+
+                  <div className="col-12 pt-0">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="font_size_14 gray-text">
+                        Total after discount
+                      </span>
+                      <span className="font_size_14 gray-text">
+                        +₹{checkoutDetails.total_bill_with_discount}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-12 pt-0 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Service Charges{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.service_charges_percent}%)
+                        </span>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        +₹{checkoutDetails.service_charges_amount}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="col-12 mb-0 py-1 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        GST{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.gst_percent}%)
+                        </span>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        +₹{checkoutDetails.gst_amount}
+                      </span>
+                    </div>
+
+                    {/* <div className="col-12 mb-0 py-1">
+                      <div className="row align-items-center justify-content-center">
+                        <div className="col-1 text-center">
+                          <div
+                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
+                            style={{ height: "25px", width: "25px" }}
+                          >
+                            <i
+                              className="fa-solid fa-list font_size_14 cursor-pointer"
+                              onClick={() => {
+                                setShowCouponModal(true);
+                                fetchCoupons();
+                              }}
+                            ></i>
+                          </div>
+                        </div>
+                        <div className="col-8 d-flex align-items-center px-3">
+                          <input
+                            type="text"
+                            className="form-control form-control-sm rounded-pill border-primary"
+                            placeholder="Enter coupon code"
+                            value={selectedCoupon}
+                            onChange={(e) => setSelectedCoupon(e.target.value)}
+                          />
+                        </div>
+                        <div className="col-3 d-flex align-items-center ps-1">
+                          <button
+                            className="btn btn-sm btn-primary rounded-pill w-100"
+                            onClick={handleApplyCoupon}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                        {couponError && (
+                          <div className="col-12 text-center">
+                            <div className="text-danger small mt-1">
+                              {couponError}
+                            </div>
+                          </div>
+                        )}
+                        {appliedCoupon && (
+                          <div className="col-12">
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              <span className="text-success">
+                                <i className="fa-solid fa-check-circle me-1"></i>
+                                Coupon {appliedCoupon.code} applied
+                              </span>
+                              <button
+                                className="btn btn-link text-danger p-0 small"
+                                onClick={() => {
+                                  setAppliedCoupon(null);
+                                  setCouponCode("");
+                                }}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div> */}
+
+                    <hr className="p-0  text-primary mb-2 mt-1" />
+                  </div>
+
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
+                      <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                      <span className="pe-2 fs-6 fw-semibold">
+                        ₹{checkoutDetails.grand_total}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="text-center">
-              <button
-                onClick={handlePlaceOrder}
-                className="btn btn-success rounded-pill text-white"
+            )}
+
+            {cartItems.length > 0 && (
+              <div className="text-center mt-3">
+                <button
+                  onClick={handlePlaceOrder}
+                  className="btn btn-success rounded-pill text-white px-4 py-2"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Processing...
+                    </div>
+                  ) : (
+                    <>
+                      Place Order
+                      <span className="small-number gray-text ps-1">
+                        ({cartItems.length} Items)
+                      </span>
+                    </>
+                  )}
+                </button>
+                <div className="d-flex flex-column align-items-center justify-content-center mt-3">
+                  <div className="d-flex align-items-center justify-content-center gap-3">
+                    <Link
+                      to="/user_app/Menu"
+                      className="btn btn-outline-primary rounded-pill px-3"
+                    >
+                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
+                      More
+                    </Link>
+                    {/* <button
+                      onClick={handleClearCart}
+                      className="btn btn-outline-danger rounded-pill px-3"
+                    >
+                      <i className="ri-delete-bin-line me-1"></i> Clear Cart
+                    </button> */}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {cartItems.length === 0 && isLoggedIn && (
+              <div
+                className="container overflow-hidden d-flex justify-content-center align-items-center"
+                style={{ height: "68vh" }}
               >
-                Place Order
-                <span className="small-number gray-text ps-1">
-                  ({cartItems.length} Items)
-                </span>
-              </button>
-            </div>
-            <div className="d-flex align-items-center justify-content-center mt-3">
-              <Link
-                to="/user_app/Menu"
-                className="btn btn-outline-primary rounded-pill px-3"
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <h5>Your checkout is empty.</h5>
+                    <p>Start ordering now!</p>
+                    <Link
+                      to="/user_app/Menu"
+                      className="btn btn-outline-primary rounded-pill px-3"
+                    >
+                      <i className="ri-add-circle-line me-1 fs-4"></i> Order
+                      More
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!isLoggedIn && (
+              <div
+                className="container overflow-hidden d-flex justify-content-center align-items-center"
+                style={{ height: "68vh" }}
               >
-                <i className="ri-add-circle-line me-1 fs-4"></i> Order More
-              </Link>
-            </div>
+                <div className="m-b20 dz-flex-box text-center">
+                  <div className="dz-cart-about">
+                    <div className="mb-3">
+                      <button
+                        className="btn btn-outline-primary rounded-pill"
+                        onClick={showLoginPopup}
+                      >
+                        <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                      </button>
+                    </div>
+                    <span>Please login to access checkout</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="container py-0">
-          <NearbyArea />
-          <div className="divider border-success inner-divider transparent mb-0">
-            <span className="bg-body">End</span>
-          </div>
+          {/* <NearbyArea /> */}
+          {/* <RestaurantSocials /> */}
+          <RestaurantSocials />
         </div>
       </main>
 

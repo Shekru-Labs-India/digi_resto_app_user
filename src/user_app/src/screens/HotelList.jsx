@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-// import '../assets/styles.css'
-// import '../assets/custom.css'
+import { Link ,useNavigate} from "react-router-dom";
+
 import config, { APP_VERSION } from "../component/config";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import Notice from "../component/Notice";
@@ -10,22 +9,41 @@ const HotelList = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeStatusFilter, setActiveStatusFilter] = useState("all");
-
+const navigate = useNavigate();
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await fetch(
-          `${config.apiDomain}/user_api/get_all_restaurants`
-        );
+     // Store the hardcoded access token in localStorage
+// localStorage.setItem(
+//   "access_token",
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTcyOTE1LCJpYXQiOjE3Mzg0MDAxMTUsImp0aSI6IjA2NGRmNWQ2NTE3NDQwZTU4OTZkODYwNGJlZThlZmNmIiwidXNlcl9pZCI6MjYyfQ.sfgIzI1HCKks8xK-98iHCluGIlbB_K0bOMA9beGE7ic"
+// );
+
+// Fetch API request using the stored token
+const response = await fetch(
+  `${config.apiDomain}/user_api/get_all_restaurants`,
+  // {
+  //   headers: {
+  //     'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+  //     'Content-Type': 'application/json'
+  //   }
+  // }
+);
+
+        
         const data = await response.json();
         if (data.st === 1) {
-          const formattedHotels = data.restaurants.map((hotel) => {
-            const sectionId = hotel.resto_url.split("/").pop();
-            const code = hotel.resto_url.match(/\/(\d{6})\//)?.[1] || "";
+          const formattedHotels = data.outlets.map((outlets) => {
+            const code = outlets.resto_url.split("user_app/")[1]?.split("/")[0];
+            const urlParts = outlets.resto_url.split("/");
+            const sectionId = urlParts[urlParts.length - 1];
+            const tableNo = urlParts[urlParts.length - 2];
+
             return {
-              ...hotel,
+              ...outlets,
               code,
               section_id: sectionId,
+              table_no: tableNo,
             };
           });
           setHotels(formattedHotels);
@@ -33,7 +51,9 @@ const HotelList = () => {
 
           localStorage.removeItem("allOrderList");
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error('Error:', error);
+      }
     };
 
     fetchHotels();
@@ -54,21 +74,35 @@ const HotelList = () => {
 
     // Apply veg/nonveg filter
     if (type !== "all") {
-      filtered = filtered.filter((hotel) =>
+      filtered = filtered.filter((outlets) =>
         type === "veg"
-          ? ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
-          : !["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+          ? ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
+          : !["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
       );
     }
 
     // Apply open/closed filter
     if (status !== "all") {
-      filtered = filtered.filter((hotel) =>
-        status === "open" ? hotel.is_open === true : hotel.is_open === false
+      filtered = filtered.filter((outlets) =>
+        status === "open" ? outlets.is_open === true : outlets.is_open === false
       );
     }
 
     setFilteredHotels(filtered);
+  };
+
+  const handleHotelClick = (outlets) => {
+    if (outlets.is_outlet_filled !== true) {
+      navigate("/user_app/HotelList");
+    } else {
+      localStorage.setItem("sectionId", outlets.section_id);
+      localStorage.setItem("restaurantCode", outlets.code);
+      localStorage.setItem("tableNumber", outlets.table_no);
+      console.log(`Navigating to /user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`);
+      navigate(
+        `/user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`
+      );
+    }
   };
 
   return (
@@ -122,7 +156,7 @@ const HotelList = () => {
                   Open
                 </button>
                 <button
-                  className={`btn p-2 btn-outline-dark shadow-lg ${
+                  className={`btn fw-normal p-2 btn-outline-warning shadow-lg ${
                     activeStatusFilter === "closed" ? "active text-white" : ""
                   }`}
                   onClick={() => handleStatusFilter("closed")}
@@ -142,20 +176,14 @@ const HotelList = () => {
             // }}
           >
             {filteredHotels.length > 0 ? (
-              filteredHotels.map((hotel) => (
-                <div className="card rounded-4" key={hotel.restaurant_id}>
-                  {hotel.is_open ? (
-                    <Link
-                      to={`/user_app/${hotel.code}/1/${hotel.section_id}`}
-                      onClick={() => {
-                        localStorage.setItem("sectionId", hotel.section_id);
-                        localStorage.setItem("restaurantCode", hotel.code);
-                      }}
-                    >
-                      <CardContent hotel={hotel} />
-                    </Link>
+              filteredHotels.map((outlets) => (
+                <div className="card rounded-4" key={outlets.outlet_id}>
+                  {outlets.is_open ? (
+                    <div onClick={() => handleHotelClick(outlets)}>
+                      <CardContent outlets={outlets} />
+                    </div>
                   ) : (
-                    <CardContent hotel={hotel} />
+                    <CardContent outlets={outlets} />
                   )}
                 </div>
               ))
@@ -184,7 +212,7 @@ const HotelList = () => {
               {" "}
               <div className="d-flex align-items-center mt-4 mb-0">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
                   MenuMitra
                 </div>
               </div>
@@ -245,28 +273,28 @@ const HotelList = () => {
   );
 };
 
-const CardContent = ({ hotel }) => (
+const CardContent = ({ outlets }) => (
   <div
     className={`card-body py-2 ${
-      hotel.is_open === false ? "bg-light rounded-4" : ""
+      outlets.is_open === false ? "bg-light rounded-4" : ""
     }`}
   >
     <div className="d-flex justify-content-between align-items-center mb-2">
       <div className="d-flex align-items-center">
         <i className="fa-solid fa-store font_size_14"></i>
         <span className="font_size_14 fw-medium ms-2">
-          {hotel.restaurant_name.toUpperCase()}
+          {outlets.outlet_name?.toUpperCase()}
         </span>
       </div>
 
       <div className="d-flex align-items-center gap-2">
-        {hotel.is_open === false && (
+        {outlets.is_open === false && (
           <span className="badge badge-light rounded-pill">Closed</span>
         )}
-        {hotel.veg_nonveg && (
+        {outlets.veg_nonveg && (
           <div
             className={`border rounded-1 bg-white d-flex justify-content-center align-items-center ${
-              ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+              ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
                 ? "border-success"
                 : "border-danger"
             }`}
@@ -278,7 +306,7 @@ const CardContent = ({ hotel }) => (
           >
             <i
               className={`${
-                ["veg", "Veg", "VEG"].includes(hotel.veg_nonveg)
+                ["veg", "Veg", "VEG"].includes(outlets.veg_nonveg)
                   ? "fa-solid fa-circle text-success"
                   : "fa-solid fa-play fa-rotate-270 text-danger"
               } font_size_12`}
@@ -290,7 +318,7 @@ const CardContent = ({ hotel }) => (
 
     <div className="d-flex justify-content-end gap-2">
       <a
-        href={`tel:${hotel.mobile}`}
+        href={`tel:${outlets.mobile}`}
         className="btn btn-outline-primary btn-sm"
         onClick={(e) => e.stopPropagation()}
       >
@@ -298,10 +326,12 @@ const CardContent = ({ hotel }) => (
         Call
       </a>
       <a
-        href={`https://maps.google.com/?q=${encodeURIComponent(hotel.address)}`}
+        href={`https://maps.google.com/?q=${encodeURIComponent(
+          outlets.address
+        )}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn btn-outline-secondary btn-sm"
+        className="btn btn-outline-primary btn-sm"
         onClick={(e) => e.stopPropagation()}
       >
         <i className="fa-solid fa-location-dot me-1"></i>

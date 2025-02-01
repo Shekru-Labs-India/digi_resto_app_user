@@ -1,24 +1,42 @@
 // menumitra/src/user_app/src/components/AddToCartUI.jsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 const AddToCartUI = ({
   showModal,
   setShowModal,
   productDetails,
-  notes,
-  setNotes,
+  comment,
+  setComment,
   portionSize,
   setPortionSize,
-  halfPrice,
-  fullPrice,
-  originalHalfPrice,
-  originalFullPrice,
-  isPriceFetching,
   handleConfirmAddToCart,
   handleSuggestionClick,
   handleModalClick,
 }) => {
+  const [prices, setPrices] = useState({ halfPrice: null, fullPrice: null });
+  const [isPriceFetching, setIsPriceFetching] = useState(true);
+  const { fetchMenuPrices } = useCart();
+  const { restaurantId } = useRestaurantId();
+
+  // Fetch prices when modal opens
+  useEffect(() => {
+    const fetchPrices = async () => {
+      if (showModal && productDetails?.menu_id) {
+        setIsPriceFetching(true);
+        const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
+        if (priceData) {
+          setPrices(priceData);
+        }
+        setIsPriceFetching(false);
+      }
+    };
+
+    fetchPrices();
+  }, [showModal, productDetails?.menu_id, restaurantId]);
+
   if (!showModal) return null;
 
   return (
@@ -39,7 +57,7 @@ const AddToCartUI = ({
             <div className="modal-header ps-3 pe-2">
               <div className="col-10 text-start">
                 <div className="modal-title font_size_16 fw-medium">
-                  Add {productDetails.name} to Cart
+                  Add {productDetails.name||productDetails.menu_name} to Checkout
                 </div>
               </div>
 
@@ -58,7 +76,7 @@ const AddToCartUI = ({
             <div className="modal-body py-2 px-3">
               <div className="mb-3 mt-0">
                 <label
-                  htmlFor="notes"
+                  htmlFor="comment"
                   className="form-label d-flex justify-content-start font_size_14 fw-normal"
                 >
                   Special Instructions
@@ -66,27 +84,23 @@ const AddToCartUI = ({
                 <input
                   type="text"
                   className="form-control font_size_16 border border-light rounded-4"
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  id="comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
                   placeholder="Add any special instructions here..."
                 />
-                <p
-                  className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                  onClick={() => handleSuggestionClick("Make it more sweet 😋")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa-solid fa-comment-dots me-2"></i> Make it more
-                  sweet 😋
-                </p>
-                <p
-                  className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
-                  onClick={() => handleSuggestionClick("Make it more spicy")}
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa-solid fa-comment-dots me-2"></i> Make it more
-                  spicy
-                </p>
+                <div className="mt-2">
+                  {["Make it more sweet", "Make it more spicy", "Less spicy", "No onion"].map((suggestion) => (
+                    <p
+                      key={suggestion}
+                      className="font_size_12 text-dark mt-2 mb-0 ms-2 cursor-pointer"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i className="fa-solid fa-comment-dots me-2"></i> {suggestion}
+                    </p>
+                  ))}
+                </div>
               </div>
               <hr className="my-4" />
               <div className="mb-2">
@@ -98,71 +112,37 @@ const AddToCartUI = ({
                     <p>Loading prices...</p>
                   ) : (
                     <div className="w-100">
-                      {halfPrice !== null && (
+                      {prices.halfPrice !== null && prices.halfPrice !== 0 && (
                         <div 
-                          className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3"
+                          className="d-flex justify-content-between align-items-center mb-3"
                           onClick={() => setPortionSize("half")}
-                          style={{ cursor: 'pointer' }}
                         >
                           <div className="form-check">
                             <input
                               type="radio"
                               className="form-check-input"
-                              id="halfPortion"
-                              name="portionSize"
                               checked={portionSize === "half"}
                               onChange={() => setPortionSize("half")}
                             />
-                            <label
-                              className="form-check-label font_size_14"
-                              htmlFor="halfPortion"
-                            >
-                              Half
-                            </label>
+                            <label className="form-check-label">Half</label>
                           </div>
-                          <div>
-                            <span className="font_size_14 fw-semibold text-info">
-                              ₹{halfPrice}
-                            </span>
-                            {productDetails.offer > 0 && (
-                              <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                ₹{originalHalfPrice}
-                              </span>
-                            )}
-                          </div>
+                          <span>₹{prices.halfPrice}</span>
                         </div>
                       )}
                       <div 
                         className="d-flex justify-content-between align-items-center"
                         onClick={() => setPortionSize("full")}
-                        style={{ cursor: 'pointer' }}
                       >
                         <div className="form-check">
                           <input
                             type="radio"
                             className="form-check-input"
-                            id="fullPortion"
-                            name="portionSize"
                             checked={portionSize === "full"}
                             onChange={() => setPortionSize("full")}
                           />
-                          <label
-                            className="form-check-label font_size_14"
-                            htmlFor="fullPortion"
-                          >
-                            Full
-                          </label>
+                          <label className="form-check-label">Full</label>
                         </div>
-                        <div>
-                          <span className="font_size_14 fw-semibold text-info">
-                            ₹{fullPrice}
-                          </span>
-                          {productDetails.offer > 0 && (
-                            <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                              ₹{originalFullPrice}
-                            </span>
-                          )}
-                        </div>
+                        <span>₹{prices.fullPrice}</span>
                       </div>
                     </div>
                   )}
@@ -182,10 +162,10 @@ const AddToCartUI = ({
                 type="button"
                 className="btn btn-primary rounded-pill"
                 onClick={handleConfirmAddToCart}
-                disabled={isPriceFetching || (!halfPrice && !fullPrice)}
+                disabled={isPriceFetching || (!prices.halfPrice && !prices.fullPrice)}
               >
                 <i className="fa-solid fa-plus pe-1 text-white"></i>
-                Add to Cart
+                Add
               </button>
             </div>
           </div>

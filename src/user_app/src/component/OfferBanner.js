@@ -13,7 +13,7 @@ import config from "./config";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import Notice from "./Notice";
 import { renderSpicyLevel } from "./config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 const OfferBanner = () => {
   const [userData, setUserData] = useState(null);
@@ -43,22 +43,13 @@ const OfferBanner = () => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (userData) {
-      setCustomerId(userData.customer_id);
+      setCustomerId(userData.user_id);
     }
 
-    // Only fetch if we have a restaurantId
     if (restaurantId) {
       fetchMenuData();
     }
   }, [restaurantId]);
-
-  // const toTitleCase = (str) => {
-  //   if (!str) return "";
-  //   return str.replace(
-  //     /\w\S*/g,
-  //     (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  //   );
-  // };
 
   useEffect(() => {
     const handleFavoriteUpdate = (event) => {
@@ -87,18 +78,20 @@ const OfferBanner = () => {
   const fetchMenuData = useCallback(async () => {
     if (!restaurantId) return;
     const currentCustomerId =
-      customerId || JSON.parse(localStorage.getItem("userData"))?.customer_id;
+      customerId || JSON.parse(localStorage.getItem("userData"))?.user_id;
 
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_special_menu_list`,
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json",
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+         },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
-            restaurant_id: restaurantId,
+            user_id: currentCustomerId,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -109,17 +102,23 @@ const OfferBanner = () => {
 
       const data = await response.json();
 
-      if (data.st === 1 && Array.isArray(data.data.special_menu_list)) {
-        const formattedMenuItems = data.data.special_menu_list.map((menu) => ({
-          ...menu,
-          name: menu.menu_name,
-          category_name: menu.category_name,
-          oldPrice: menu.offer ? menu.price : null,
-          price: menu.offer
-            ? Math.floor(menu.price * (1 - menu.offer / 100))
-            : menu.price,
-          is_favourite: menu.is_favourite === 1,
-        }));
+      if (data.st === 1) {
+        // Filter and format only menus with offers
+        const formattedMenuItems = data.data.menus
+          .filter(menu => menu.offer && menu.offer > 0) // Only include menus with offers
+          .map((menu) => ({
+            ...menu,
+            name: menu.menu_name,
+            category_name: menu.category_name,
+            image: menu.image || images,
+            oldPrice: menu.price,
+            price: Math.floor(menu.price * (1 - menu.offer / 100)),
+            is_favourite: menu.is_favourite === 1,
+            menu_food_type: menu.menu_food_type?.toLowerCase(),
+            category_food_type: menu.category_food_type?.toLowerCase(),
+            rating: parseFloat(menu.rating) || 0,
+            spicy_index: parseInt(menu.spicy_index) || 0,
+          }));
 
         setMenuItems(formattedMenuItems);
       }
@@ -131,94 +130,79 @@ const OfferBanner = () => {
     }
   }, [restaurantId, customerId]);
 
-  // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
+      showLoginPopup();
       return;
     }
 
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
-      return;
-    }
-
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          notes,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          restaurant_id: restaurantId,
-        },
-        restaurantId
-      );
+      const success = await addToCart({
+        ...selectedMenu,
+        quantity: 1,
+        notes: notes,
+        half_or_full: portionSize,
+        price: selectedPrice,
+        menu_name: selectedMenu.menu_name || selectedMenu.name
+      }, restaurantId);
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
-
-      setShowModal(false);
-      setNotes("");
-      setPortionSize("full");
-      setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
+      if (success) {
+        setShowModal(false);
+        window.showToast("success", `${selectedMenu.name} is added.`);
+        // Dispatch event to update cart UI
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+      } else {
+        window.showToast("error", "Failed to add item to cart");
+      }
     } catch (error) {
-      console.clear();
-      window.showToast(
-        "error",
-        "Failed to add item to cart. Please try again."
-      );
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
-  // 5. Keep the focus handler but with a debounce
-  // useEffect(() => {
-  //   const handleFocus = debounce(() => {
-  //     if (restaurantId) {
-  //       fetchMenuData();
-  //     }
-  //   }, 1000);
-
-  //   window.addEventListener("focus", handleFocus);
-
-  //   return () => {
-  //     window.removeEventListener("focus", handleFocus);
-  //     handleFocus.cancel();
-  //   };
-  // }, [fetchMenuData]);
-
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-      case "non-veg":
+      case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       case "egg":
         return {
           icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          border: "gray-text",
+          // textColor: "gray-text",
+          categoryIcon: "fa-solid fa-utensils me-1",
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
     }
   };
@@ -269,7 +253,7 @@ const OfferBanner = () => {
   // Update handleLikeClick function
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -284,12 +268,15 @@ const OfferBanner = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: restaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -312,7 +299,7 @@ const OfferBanner = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {
@@ -344,35 +331,6 @@ const OfferBanner = () => {
       setShowModal(false);
     }
   };
-  const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-light",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
-        };
-    }
-  };
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
@@ -387,9 +345,11 @@ const OfferBanner = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -414,18 +374,50 @@ const OfferBanner = () => {
     }
   };
 
-  // Update handleAddToCartClick function
-  const handleAddToCartClick = async (menuItem) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !restaurantId) {
-      showLoginPopup();
-      return;
+  // Add this function to check cart status directly from localStorage
+  const isItemInCart = (menuId) => {
+    try {
+      const storedCart = localStorage.getItem('restaurant_cart_data');
+      if (!storedCart) return false;
+      
+      const cartData = JSON.parse(storedCart);
+      return cartData.order_items?.some(item => item.menu_id === menuId);
+    } catch (error) {
+      return false;
     }
+  };
 
-    if (isMenuItemInCart(menuItem.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
-      return;
-    }
+  // Update the useEffect for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render of menu items
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setMenuItems(prevItems => [...prevItems]);
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
+
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
+    };
+  }, []);
+
+  // Update handleAddToCartClick function
+  const handleAddToCartClick = (menuItem) => {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    const cartData = storedCart ? JSON.parse(storedCart) : { order_items: [] };
+    const isInCart = cartData.order_items?.some(item => item.menu_id === menuItem.menu_id);
+
+    // if (isInCart) {
+    //   window.showToast("info", "This item is already in your checkout");
+    //   return;
+    // }
 
     setSelectedMenu(menuItem);
     fetchHalfFullPrices(menuItem.menu_id);
@@ -436,292 +428,278 @@ const OfferBanner = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
+    // 0 to 0.4: No star
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
+      return null; // Don't show anything
     }
 
+    // 0.5 to 2.5: Blank star (grey)
     if (numRating >= 0.5 && numRating <= 2.5) {
       return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+        <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>
       );
     }
 
+    // 3 to 4.5: Half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
+    // 5: Full star
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
+    return null; // Default case
   };
 
   return (
     <div className="dz-box style-2 py-2">
-      <div className="m-0">
-        <HotelNameAndTable
-          restaurantName={restaurantName}
-          tableNumber={userData?.tableNumber || "1"}
-        />
-      </div>
-      <div className="dz-box style-3">
-        <div className="swiper nearby-swiper mt-0">
-          <div className="swiper-wrapper">
-            {menuItems.map((menuItem) => (
-              <div key={menuItem.menu_id} className="swiper-slide">
-                <div className="py-1 px-0">
-                  <div className="custom-card rounded-4 shadow-sm">
-                    <Link
-                      to={`/user_app/ProductDetails/${menuItem.menu_id}`}
-                      state={{ menu_cat_id: menuItem.menu_cat_id }}
-                      className="text-decoration-none text-reset"
-                    >
-                      <div className="card-body py-0">
-                        <div className="row">
-                          <div className="col-3 px-0">
-                            <img
-                              src={menuItem.image || images}
-                              alt={menuItem.name}
-                              className="rounded-4 img-fluid object-fit-cover"
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                aspectRatio: "1/1",
-                              }}
-                              onError={(e) => {
-                                e.target.src = images;
-                                e.target.style.width = "100%";
-                                e.target.style.height = "100%";
-                                e.target.style.aspectRatio = "1/1";
-                              }}
-                            />
-                            {/* Like Button */}
-                            <div
-                              className={`border border-1 rounded-circle ${
-                                isDarkMode ? "bg-dark" : "bg-white"
-                              } opacity-75 d-flex justify-content-center align-items-center`}
-                              style={{
-                                position: "absolute",
-                                bottom: "3px",
-                                right: "76%",
-                                height: "20px",
-                                width: "20px",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleLikeClick(menuItem.menu_id);
-                              }}
-                            >
-                              <i
-                                className={`${
-                                  menuItem.is_favourite
-                                    ? "fa-solid fa-heart text-danger"
-                                    : "fa-regular fa-heart"
-                                } fs-6`}
-                              ></i>
-                            </div>
-                            {/* Special Star */}
-                            {menuItem.is_special && (
-                              <i
-                                className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                                style={{
-                                  position: "absolute",
-                                  top: 3,
-                                  right: "76%",
-                                  height: 17,
-                                  width: 17,
-                                }}
-                              ></i>
-                            )}
-                            {/* Food Type Indicator */}
-                            <div
-                              className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                                getFoodTypeStyles(menuItem.menu_food_type)
-                                  .border
-                              }`}
-                              style={{
-                                position: "absolute",
-                                bottom: "3px",
-                                left: "3px",
-                                height: "20px",
-                                width: "20px",
-                                borderWidth: "2px",
-                                borderRadius: "3px",
-                              }}
-                            >
-                              <i
-                                className={`${
-                                  getFoodTypeStyles(menuItem.menu_food_type)
-                                    .icon
-                                } font_size_12`}
-                              ></i>
-                            </div>
-                            {/* Offer Tag */}
-                            {menuItem.offer !== 0 && (
-                              <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                                <span className="font_size_10 text-white">
-                                  {menuItem.offer}% Off
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="col-9 pt-1 p-0 pe-2">
-                            <div className="row d-flex align-items-center mt-1">
-                              <div className="col-12">
-                                <div className="ps-2 font_size_14 fw-medium">
-                                  {menuItem.name}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="row d-flex align-items-center mt-1">
-                              <div className="col-6 d-flex align-items-center">
-                                <span
-                                  className={`ps-2 font_size_10 ${
-                                    getFoodTypeTextStyles(
-                                      menuItem.category_food_type
-                                    ).textColor
-                                  }`}
+      {menuItems.length > 0 && (
+        <>
+          <div className="m-0">
+            <HotelNameAndTable
+              restaurantName={restaurantName}
+              tableNumber={userData?.tableNumber || "1"}
+            />
+          </div>
+          <div className="dz-box style-3">
+            <div className="swiper nearby-swiper mt-0">
+              <div className="swiper-wrapper">
+                {menuItems.map((menuItem) => (
+                  <div key={menuItem.menu_id} className="swiper-slide">
+                    <div className="py-1 px-0">
+                      <div className="custom-card rounded-4 shadow-sm">
+                        <Link
+                          to={`/user_app/ProductDetails/${menuItem.menu_id}`}
+                          state={{ menu_cat_id: menuItem.menu_cat_id }}
+                          className="text-decoration-none text-reset"
+                        >
+                          <div className="card-body py-0">
+                            <div className="row">
+                              <div className="col-3 px-0">
+                                <img
+                                  src={menuItem.image || images}
+                                  alt={menuItem.name}
+                                  className="rounded-4 img-fluid object-fit-cover"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    aspectRatio: "1/1",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.src = images;
+                                    e.target.style.width = "100%";
+                                    e.target.style.height = "100%";
+                                    e.target.style.aspectRatio = "1/1";
+                                  }}
+                                />
+                                {/* Like Button */}
+                                <div
+                                  className={`border border-1 rounded-circle ${
+                                    isDarkMode ? "bg-dark" : "bg-white"
+                                  } opacity-75 d-flex justify-content-center align-items-center`}
+                                  style={{
+                                    position: "absolute",
+                                    bottom: "3px",
+                                    right: "76%",
+                                    height: "20px",
+                                    width: "20px",
+                                  }}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleLikeClick(menuItem.menu_id);
+                                  }}
                                 >
                                   <i
                                     className={`${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).icon
-                                    } ${
-                                      getFoodTypeTextStyles(
-                                        menuItem.category_food_type
-                                      ).textColor
-                                    } font_size_10 mt-0 me-1`}
+                                      menuItem.is_favourite
+                                        ? "fa-solid fa-heart text-danger"
+                                        : "fa-regular fa-heart"
+                                    } fs-6`}
                                   ></i>
-                                  {menuItem.category_name}
-                                </span>
-                              </div>
-                              <div className="col-4 d-flex align-items-center ps-4 pe-3">
-                                {menuItem.spicy_index && (
-                                  <div className="">
-                                    {renderSpicyLevel(menuItem.spicy_index)}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="col-2 d-flex align-items-center justify-content-end">
-                                {menuItem.rating > 0 && (
-                                  <>
-                                    {renderStarRating(menuItem.rating)}
-                                    <span className="font_size_10 fw-normal gray-text">
-                                      {menuItem.rating}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <div className="row">
-                              <div className="col-7 mt-2">
-                                <p className="ms-2 mb-0 fw-medium">
-                                  {menuItem.offer ? (
-                                    <>
-                                      <span className="font_size_14 fw-semibold text-info">
-                                        ₹
-                                        {Math.floor(
-                                          menuItem.price *
-                                            (1 - menuItem.offer / 100)
-                                        )}
-                                      </span>
-                                      <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                        ₹{menuItem.price}
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="font_size_14 fw-semibold text-info">
-                                      ₹{menuItem.price}
-                                    </span>
-                                  )}
-                                </p>
-                              </div>
-                              <div className="col-5 d-flex align-items-center justify-content-end">
-                                {customerId ? (
-                                  <div
-                                    className={`
-                                      d-flex 
-                                      align-items-center 
-                                      justify-content-center 
-                                      rounded-circle 
-                                      bg-white 
-                                      border-opacity-25 
-                                      border-secondary 
-                                      border
-                                    `}
+                                </div>
+                                {/* Special Star */}
+                                {menuItem.is_special && (
+                                  <i
+                                    className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
                                     style={{
-                                      width: "25px",
-                                      height: "25px",
-                                      cursor: "pointer",
+                                      position: "absolute",
+                                      top: 3,
+                                      right: "76%",
+                                      height: 17,
+                                      width: 17,
                                     }}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleAddToCartClick(menuItem);
-                                    }}
-                                  >
-                                    <i
-                                      className={`fa-solid ${
-                                        isMenuItemInCart(menuItem.menu_id)
-                                          ? "fa-solid fa-circle-check"
-                                          : "fa-solid fa-plus text-secondary"
-                                      } fs-6`}
-                                    ></i>
-                                  </div>
-                                ) : (
-                                  <div
-                                    className={`
-                                      d-flex 
-                                      align-items-center 
-                                      justify-content-center 
-                                      rounded-circle 
-                                      bg-white 
-                                      border-opacity-25 
-                                      border-secondary 
-                                      border
-                                    `}
-                                    style={{
-                                      width: "25px",
-                                      height: "25px",
-                                      cursor: "pointer",
-                                    }}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      showLoginPopup();
-                                    }}
-                                  >
-                                    <i className="fa-solid fa-plus text-secondary fs-6"></i>
+                                  ></i>
+                                )}
+                                {/* Food Type Indicator */}
+                                <div
+                                  className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                                    getFoodTypeStyles(menuItem.menu_food_type)
+                                      .border
+                                  }`}
+                                  style={{
+                                    position: "absolute",
+                                    bottom: "3px",
+                                    left: "3px",
+                                    height: "20px",
+                                    width: "20px",
+                                    borderWidth: "2px",
+                                    borderRadius: "3px",
+                                  }}
+                                >
+                                  <i
+                                    className={`${
+                                      getFoodTypeStyles(menuItem.menu_food_type)
+                                        .icon
+                                    } font_size_12`}
+                                  ></i>
+                                </div>
+                                {/* Offer Tag */}
+                                {menuItem.offer !== 0 && (
+                                  <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                                    <span className="font_size_10 text-white">
+                                      {menuItem.offer}% Off
+                                    </span>
                                   </div>
                                 )}
+                              </div>
+                              <div className="col-9 pt-1 p-0 pe-2">
+                                <div className="row d-flex align-items-center mt-1">
+                                  <div className="col-12">
+                                    <div className="ps-2 font_size_14 fw-medium">
+                                      {menuItem.name}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="row d-flex align-items-center mt-1">
+                                  <div className="col-6 d-flex align-items-center">
+                                    <span
+                                      className={`ps-2 font_size_10 ${
+                                        getFoodTypeStyles(
+                                          menuItem.category_food_type
+                                        ).textColor
+                                      }`}
+                                    >
+                                      <i
+                                        className={
+                                          getFoodTypeStyles(
+                                            menuItem.category_food_type
+                                          ).categoryIcon
+                                        }
+                                      ></i>
+                                      {menuItem.category_name}
+                                    </span>
+                                  </div>
+                                  <div className="col-4 d-flex align-items-center ps-4 pe-3">
+                                    {menuItem.spicy_index && (
+                                      <div className="">
+                                        {renderSpicyLevel(menuItem.spicy_index)}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="col-2 d-flex align-items-center justify-content-end">
+                                    {menuItem.rating > 0 && (
+                                      <>
+                                        {renderStarRating(menuItem.rating)}
+                                        <span className="font_size_10 fw-normal gray-text">
+                                          {menuItem.rating.toFixed(1)}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="row">
+                                  <div className="col-7 mt-2">
+                                    <p className="ms-2 mb-0 fw-medium">
+                                      {menuItem.offer ? (
+                                        <>
+                                          <span className="font_size_14 fw-semibold text-info">
+                                            ₹
+                                            {Math.floor(
+                                              menuItem.price *
+                                                (1 - menuItem.offer / 100)
+                                            )}
+                                          </span>
+                                          <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                            ₹{menuItem.price}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <span className="font_size_14 fw-semibold text-info">
+                                          ₹{menuItem.price}
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
+                                  <div className="col-5 d-flex align-items-center justify-content-end">
+                                    {customerId ? (
+                                      <div
+                                        className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border`}
+                                        style={{
+                                          width: "25px",
+                                          height: "25px",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          handleAddToCartClick(menuItem);
+                                        }}
+                                      >
+                                        <i
+                                          className={`fa-solid ${
+                                            isItemInCart(menuItem.menu_id)
+                                              ? "fa-solid fa-circle-check text-success"
+                                              : "fa-solid fa-plus text-secondary"
+                                          } fs-6`}
+                                        ></i>
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className={`d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border`}
+                                        style={{
+                                          width: "25px",
+                                          height: "25px",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          showLoginPopup();
+                                        }}
+                                      >
+                                        <i className="fa-solid fa-plus text-secondary fs-6"></i>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       </div>
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {showModal && (
         <AddToCartUI
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={notes}
+          setComment={setNotes}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -732,7 +710,7 @@ const OfferBanner = () => {
           handleConfirmAddToCart={handleConfirmAddToCart}
           handleSuggestionClick={(suggestion) => setNotes(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

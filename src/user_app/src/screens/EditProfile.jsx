@@ -15,7 +15,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
-    if (!storedUserData.customer_id) {
+    if (!storedUserData.user_id) {
       window.showToast("error", "Please login to edit profile");
      
       return;
@@ -41,9 +41,10 @@ const EditProfile = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
-          customer_id: userData?.customer_id || "",
+          user_id: userData?.user_id || "",
           name: newName,
           mobile: newMobile,
         }),
@@ -73,11 +74,12 @@ const EditProfile = () => {
           navigate("/user_app/Profile");
         }, 2000);
       } else {
+        console.clear();
         setError("Profile update failed. Please try again.");
         window.showToast("error", "Profile update failed. Please try again.");
       }
     } catch (error) {
-      
+      console.clear();
       setError("Profile update failed. Please try again.");
       window.showToast("error", "Profile update failed. Please try again.");
     } finally {

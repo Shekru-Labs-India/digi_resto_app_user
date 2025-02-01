@@ -7,12 +7,8 @@ const LoaderGif = () => {
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-center">
-      <img
-        src={LoaderGIF}
-        
-        className="img-fluid"
-      />
-      <h5 className=" ">Loading please wait...</h5>
+      <img src={LoaderGIF} className="img-fluid" />
+      <h5 className="gray-text">Loading...</h5>
     </div>
   );
 };

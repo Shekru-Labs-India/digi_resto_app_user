@@ -3,7 +3,7 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 import HotelList from "./HotelList";
 // import OverlayIcon from "../assets/google lens.svg";
 import logo from "../assets/logos/menumitra_logo_128.png";
-import CompanyVersion from "../constants/CompanyVersion";
+
 import { Link } from "react-router-dom";
 import Notice from "../component/Notice";
 import { isNonProductionDomain } from "../component/config";
@@ -36,12 +36,12 @@ const QRScanner = () => {
           }
 
           if (error) {
-            console.warn(error);
+            console.clear();
           }
         })
         .catch((err) => {
-          console.error("Error occurred while trying to read from video device:", err);
-          window.showToast("error", "Failed to access camera. Please try again.");
+          console.clear();
+                    window.showToast("error", "Failed to access camera. Please try again.");
         });
     }
   };
@@ -52,7 +52,7 @@ const QRScanner = () => {
       setShowCamera(true);
       stream.getTracks().forEach((track) => track.stop());
     } catch (error) {
-      console.error("Camera permission denied:", error);
+      console.clear();
       window.showToast("error", "Camera access denied. Please allow camera access to scan QR codes.");
     }
   };
@@ -73,7 +73,7 @@ const QRScanner = () => {
           {" "}
           <div className="d-flex align-items-center mt-4 mb-3">
             <img src={logo} alt="logo" width="40" height="40" />
-            <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+            <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
               MenuMitra
             </div>
           </div>

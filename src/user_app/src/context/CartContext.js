@@ -1,184 +1,199 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import config from "../component/config"
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import config from '../component/config';
+
 const CartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
+// Custom hook for using cart context
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
-    return savedCartItems ? JSON.parse(savedCartItems) : [];
-  });
+  const [cartItems, setCartItems] = useState([]);
 
-  const [cartId, setCartId] = useState(() => {
-    return localStorage.getItem('cartId') || null;
-  });
-
+  // Load cart data from localStorage on initial render
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    if (cartId) {
-      localStorage.setItem('cartId', cartId);
-    } else {
-      localStorage.removeItem('cartId');
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart).order_items || []);
     }
-  }, [cartId]);
+  }, []);
 
-  const updateCart = useCallback(async (customerId, restaurantId) => {
-    if (!customerId || !restaurantId || !cartId) return;
-
+  // New function to fetch menu prices
+  const fetchMenuPrices = async (restaurantId, menuId) => {
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
+        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
+            menu_id: menuId,
           }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      if (data.st === 1 && data.order_items) {
-        setCartItems(data.order_items);
-      } else {
-        setCartItems([]);
-      }
-    } catch (error) {
-      console.error("Error fetching cart details:", error);
-      setCartItems([]);
-    }
-  }, [cartId]);
-
-  const isMenuItemInCart = useCallback((menuId) => {
-    return cartItems.some(item => item.menu_id === menuId);
-  }, [cartItems]);
-
-  const navigate = useNavigate();
-
-  const addToCart = async (item, restaurantId) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) {
-     
-      throw new Error("User not logged in");
-    }
-  
-    if (!restaurantId) {
-      const storedRestaurantId = localStorage.getItem("restaurantId");
-      if (!storedRestaurantId) {
-        throw new Error("Restaurant ID not found");
-      }
-      restaurantId = storedRestaurantId;
-    }
-  
-    if (isMenuItemInCart(item.menu_id)) {
-      throw new Error("Item is already in the cart");
-    }
-  
-    try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/add_to_cart`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
-            restaurant_id: restaurantId,
-            menu_id: item.menu_id,
-            quantity: item.quantity || 1,
-            half_or_full: item.half_or_full,
-            notes: item.notes,
-          }),
-        }
-      );
-  
-      const data = await response.json();
+      
       if (data.st === 1) {
-        setCartItems((prevItems) => [...prevItems, { 
-          ...item, 
-          quantity: 1,
-          restaurant_id: restaurantId // Add restaurant_id to cart item
-        }]);
-        setCartId(data.cart_id);
-        
-        // Store restaurant ID in localStorage if not already stored
-        if (!localStorage.getItem("restaurantId")) {
-          localStorage.setItem("restaurantId", restaurantId);
-        }
-      } else {
-        console.error("Failed to add item to cart:", data.msg);
-        throw new Error(data.msg || "Failed to add item to cart");
+        return {
+          halfPrice: data.menu_detail.half_price,
+          fullPrice: data.menu_detail.full_price
+        };
       }
+      throw new Error('Failed to fetch menu prices');
     } catch (error) {
-      console.error("Error adding item to cart:", error);
-      throw error;
+      console.error('Error fetching menu prices:', error);
+      return null;
     }
   };
 
-  const removeFromCart = async (menuId, customerId, restaurantId) => {
+  const addToCart = async (menuItem, restaurantId) => {
     try {
-      const cartId = localStorage.getItem("cartId");
-      
-      const response = await fetch(
-        `${config.apiDomain}/user_api/remove_from_cart`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            menu_id: menuId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
-            cart_id: cartId
-          }),
-        }
+      const prices = await fetchMenuPrices(restaurantId, menuItem.menu_id);
+      if (!prices) {
+        throw new Error('Failed to fetch menu prices');
+      }
+
+      const finalPrice = menuItem.half_or_full === 'half' ? prices.halfPrice : prices.fullPrice;
+      const standardizedMenuItem = {
+        menu_id: menuItem.menu_id,
+        menu_name: menuItem.menu_name || menuItem.name || null,
+        menu_food_type: menuItem.menu_food_type || menuItem.food_type || null,
+        outlet_id: restaurantId || null,
+        menu_cat_id: menuItem.menu_cat_id || menuItem.category_id || null,
+        menu_cat_name: menuItem.menu_cat_name || menuItem.category_name || null,
+        category_name: menuItem.category_name || menuItem.menu_cat_name || null,
+        spicy_index: menuItem.spicy_index || null,
+        price: finalPrice,
+        rating: menuItem.rating || null,
+        offer: menuItem.offer || 0,
+        is_special: menuItem.is_special || false,
+        is_favourite: menuItem.is_favourite || 0,
+        image: menuItem.image || null,
+        quantity: menuItem.quantity,
+        comment: menuItem.comment || menuItem.notes || "",
+        half_or_full: menuItem.half_or_full || "full",
+        discountedPrice: menuItem.offer
+          ? Math.floor(finalPrice * (1 - menuItem.offer / 100))
+          : finalPrice,
+      };
+
+      const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
+      const existingItemIndex = existingCartData.order_items.findIndex(
+        item => item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full
       );
 
-      const data = await response.json();
-      if (data.st === 1) {
-        // Immediately update the cartItems state
-        setCartItems(prevItems => prevItems.filter(item => item.menu_id !== menuId));
-        window.dispatchEvent(new Event("cartUpdated"));
-        return true;
+      let updatedOrderItems;
+      if (existingItemIndex >= 0) {
+        updatedOrderItems = existingCartData.order_items.map((item, index) =>
+          index === existingItemIndex
+            ? { ...item, ...standardizedMenuItem, quantity: item.quantity + menuItem.quantity }
+            : item
+        );
+      } else {
+        updatedOrderItems = [...existingCartData.order_items, standardizedMenuItem];
       }
-      return false;
+
+      const newCartData = {
+        outlet_id: restaurantId,
+        order_items: updatedOrderItems,
+      };
+      
+      localStorage.setItem('restaurant_cart_data', JSON.stringify(newCartData));
+      setCartItems(updatedOrderItems);
+
+      return true;
     } catch (error) {
-      console.error("Error removing from cart:", error);
+      console.error('Error adding to cart:', error);
+      return false;
+    }
+  };
+
+  const removeFromCart = async (menuId) => {
+    try {
+      const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
+      const updatedOrderItems = existingCartData.order_items.filter(
+        item => item.menu_id !== menuId
+      );
+
+      const newCartData = {
+        ...existingCartData,
+        order_items: updatedOrderItems
+      };
+
+      localStorage.setItem('restaurant_cart_data', JSON.stringify(newCartData));
+      setCartItems(updatedOrderItems);
+      return true;
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      return false;
+    }
+  };
+
+  const updateCartItemQuantity = async (menuId, quantity) => {
+    try {
+      const existingCartData = JSON.parse(localStorage.getItem('restaurant_cart_data') || '{"order_items": []}');
+      const updatedOrderItems = existingCartData.order_items.map(item =>
+        item.menu_id === menuId ? { ...item, quantity } : item
+      );
+
+      const newCartData = {
+        ...existingCartData,
+        order_items: updatedOrderItems
+      };
+
+      localStorage.setItem('restaurant_cart_data', JSON.stringify(newCartData));
+      setCartItems(updatedOrderItems);
+      return true;
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
       return false;
     }
   };
 
   const clearCart = () => {
-    setCartItems([]);
-    setCartId(null);
-  };
-  
-  const value = {
-    cartItems,
-    cartId,
-    setCartId,
-    updateCart,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    isMenuItemInCart,
+    try {
+      localStorage.removeItem('restaurant_cart_data');
+      setCartItems([]);
+      return true;
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      return false;
+    }
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  const isMenuItemInCart = (menuId) => {
+    return cartItems.some(item => item.menu_id === menuId);
+  };
+
+  const getCartItemCount = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  return (
+    <CartContext.Provider value={{
+      cartItems,
+      addToCart,
+      removeFromCart,
+      updateCartItemQuantity,
+      clearCart,
+      isMenuItemInCart,
+      getCartItemCount,
+      fetchMenuPrices
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
 };
+
+export { CartContext };

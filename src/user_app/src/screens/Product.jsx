@@ -17,10 +17,9 @@ import Notice from "../component/Notice";
 
 import RestaurantSocials from "../components/RestaurantSocials";
 import AI_Loading from "../assets/gif/AI_Loading.gif";
-import CategorySlider from "./CategorySlider";
 
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -66,7 +65,7 @@ const Product = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -76,6 +75,9 @@ const Product = () => {
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [countdown, setCountdown] = useState(null);
+  // const [activeFilters, setActiveFilters] = useState({
+  //   categoryId: location.state?.selectedCategory || null, // Get selected category from state
+  // });
 
   // Add a ref to track if the process should continue
   const magicProcessRef = useRef(true);
@@ -83,8 +85,49 @@ const Product = () => {
   const [activeFilters, setActiveFilters] = useState({
     special: false,
     offer: false,
-    categoryId: null
+    categoryId: null,
+    categoryId: location.state?.selectedCategory || null, // Get selected category from state
   });
+
+  // useEffect(() => {
+  //   if (location.state && location.state.selectedCategory) {
+  //     setActiveFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       categoryId: location.state.selectedCategory,
+  //     }));
+  //   } else {
+  //     setActiveFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       categoryId: null, // Default to "All"
+  //     }));
+  //   }
+  // }, [location.state]);
+
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters({ categoryId });
+  // };
+
+  useEffect(() => {
+    setActiveFilters((prevFilters) => ({
+      ...prevFilters,
+      categoryId: categoryId ? parseInt(categoryId, 10) : null, // Parse categoryId from URL or default to null ("All")
+    }));
+  }, [categoryId]);
+
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters((prev) => ({
+  //     ...prev,
+  //     categoryId,
+  //   }));
+  // };
+
+  const handleCategorySelect = (categoryId) => {
+    navigate(`/user_app/Menu/${categoryId || ""}`); // Update URL with selected categoryId or empty for "All"
+    setActiveFilters((prevFilters) => ({
+      ...prevFilters,
+      categoryId,
+    }));
+  };
 
   const [totalMenuCount, setTotalMenuCount] = useState(0);
 
@@ -131,10 +174,12 @@ const Product = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            customer_id: userData ? userData.customer_id : null,
-            restaurant_id: restaurantId,
+            user_id: userData ? userData.user_id : null,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -155,6 +200,7 @@ const Product = () => {
         }));
 
         setMenuList(formattedMenuList);
+        setFilteredMenuList(formattedMenuList);
         localStorage.setItem("menuItems", JSON.stringify(formattedMenuList));
 
         // Format categories without adding Special category to slider
@@ -169,11 +215,13 @@ const Product = () => {
         const specialItems = formattedMenuList.filter(
           (item) => item.is_special
         );
-        setFilteredMenuList(formattedMenuList);
+        // setFilteredMenuList(formattedMenuList);
       } else {
+        console.clear();
         throw new Error("API request unsuccessful");
       }
     } catch (error) {
+      console.clear();
     } finally {
       setIsLoading(false);
     }
@@ -211,7 +259,7 @@ const Product = () => {
   // Handle favorites (like/unlike)
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -230,11 +278,12 @@ const Product = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
-          restaurant_id: restaurantId,
+          outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
-          customer_id: userData.customer_id,
+          user_id: userData.user_id,
         }),
       });
 
@@ -265,6 +314,7 @@ const Product = () => {
         }
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to update favourite status");
     }
   };
@@ -294,40 +344,54 @@ const Product = () => {
 
   useEffect(() => {
     if (menuList.length > 0) {
-      if (selectedCategory === "special") {
-        setFilteredMenuList(menuList.filter((menu) => menu.is_special));
-      } else if (selectedCategory === "offer") {
-        setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
-      } else if (selectedCategory === null) {
-        setFilteredMenuList(menuList);
+      if (activeFilters.categoryId === null) {
+        setFilteredMenuList(menuList); // Show all items if no category selected
       } else {
         setFilteredMenuList(
-          menuList.filter((menu) => menu.menu_cat_id === selectedCategory)
+          menuList.filter(
+            (menu) => menu.menu_cat_id === activeFilters.categoryId
+          )
         );
       }
     }
-  }, [selectedCategory, menuList]);
+  }, [menuList, activeFilters.categoryId]);
 
-  const handleCategorySelect = (categoryId) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      categoryId: categoryId
-    }));
-  };
+  // useEffect(() => {
+  //   if (menuList.length > 0) {
+  //     if (selectedCategory === "special") {
+  //       setFilteredMenuList(menuList.filter((menu) => menu.is_special));
+  //     } else if (selectedCategory === "offer") {
+  //       setFilteredMenuList(menuList.filter((menu) => menu.offer > 0));
+  //     } else if (selectedCategory === null) {
+  //       setFilteredMenuList(menuList);
+  //     } else {
+  //       setFilteredMenuList(
+  //         menuList.filter((menu) => menu.menu_cat_id === selectedCategory)
+  //       );
+  //     }
+  //   }
+  // }, [selectedCategory, menuList]);
+
+  // const handleCategorySelect = (categoryId) => {
+  //   setActiveFilters(prev => ({
+  //     ...prev,
+  //     categoryId: categoryId
+  //   }));
+  // };
 
   const handleSpecialSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       special: !prev.special,
-      offer: false // Turn off offer when special is selected
+      offer: false, // Turn off offer when special is selected
     }));
   };
 
   const handleOfferSelect = () => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       offer: !prev.offer,
-      special: false // Turn off special when offer is selected
+      special: false, // Turn off special when offer is selected
     }));
   };
 
@@ -344,9 +408,11 @@ const Product = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -360,9 +426,11 @@ const Product = () => {
           setPortionSize("full");
         }
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to fetch price information");
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -372,19 +440,17 @@ const Product = () => {
   // Add item to cart
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
-
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
+    if (!userData?.user_id) {
+      showLoginPopup();
       return;
     }
-
-    if (!restaurantId) {
-      window.showToast("error", "Restaurant information is missing");
-      return;
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      const cartData = JSON.parse(storedCart);
+      // if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
+      //   window.showToast("info", "This item is already in your checkout");
+      //   return;
+      // }
     }
 
     setSelectedMenu(menu);
@@ -424,7 +490,7 @@ const Product = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
           restaurant_id: restaurantId,
@@ -432,18 +498,19 @@ const Product = () => {
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.name} added to cart`);
+      window.showToast("success", `${selectedMenu.name} is added.`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
+      console.clear();
       window.showToast(
         "error",
-        error.message || "Failed to add item to cart. Please try again."
+        error.message || "Failed to add item to checkout. Please try again."
       );
     }
   };
@@ -456,7 +523,7 @@ const Product = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   const toggleSidebar = () => {
@@ -485,33 +552,33 @@ const Product = () => {
   }, [isDarkMode]); // Depend on isDarkMode to re-apply on state change
 
   // Add the standardized rating function
-  const renderStarRating = (rating) => {
-    const numRating = parseFloat(rating);
+ const renderStarRating = (rating) => {
+   const numRating = parseFloat(rating);
 
-    if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
-    }
+   // 0 to 0.4: No star
+   if (!numRating || numRating < 0.5) {
+     return null; // Don't show anything
+   }
 
-    if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+   // 0.5 to 2.5: Blank star (grey)
+   if (numRating >= 0.5 && numRating <= 2.5) {
+     return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+   }
 
-    if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+   // 3 to 4.5: Half star
+   if (numRating >= 3 && numRating <= 4.5) {
+     return (
+       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+     );
+   }
 
-    if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
-    }
+   // 5: Full star
+   if (numRating === 5) {
+     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+   }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  };
+   return null; // Default case
+ };
 
   // Modify the handleMagicClick function
   const handleMagicClick = async () => {
@@ -521,7 +588,6 @@ const Product = () => {
     magicProcessRef.current = true;
 
     try {
-      // Only proceed if the process hasn't been cancelled
       if (magicProcessRef.current) {
         const response = await fetch(
           `${config.apiDomain}/user_api/auto_create_cart`,
@@ -529,10 +595,11 @@ const Product = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify({
               restaurant_id: restaurantId,
-              customer_id: userData?.customer_id,
+              user_id: userData?.user_id,
             }),
           }
         );
@@ -546,16 +613,18 @@ const Product = () => {
               navigate("/user_app/Cart", {
                 state: {
                   cartId: data.cart_id,
-                  magicMessage: "Your magic cart has been created!",
+                  magicMessage: "Your magic checkout has been created!",
                 },
               });
             }
           }, 5000);
         } else if (magicProcessRef.current) {
-          window.showToast("error", data.msg || "Failed to create magic cart");
+          console.clear();
+          window.showToast("error", data.msg || "Failed to create magic checkout");
         }
       }
     } catch (error) {
+      console.clear();
       if (magicProcessRef.current) {
         console.clear();
         window.showToast("error", "Something went wrong. Please try again.");
@@ -583,36 +652,49 @@ const Product = () => {
     setCountdown(null);
   };
 
-    
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
+
   
 
   useEffect(() => {
@@ -641,17 +723,19 @@ const Product = () => {
 
     // Apply category filter if selected
     if (activeFilters.categoryId) {
-      filteredList = filteredList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      filteredList = filteredList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
 
     // Apply special filter if active
     if (activeFilters.special) {
-      filteredList = filteredList.filter(menu => menu.is_special === true);
+      filteredList = filteredList.filter((menu) => menu.is_special === true);
     }
 
     // Apply offer filter if active
     if (activeFilters.offer) {
-      filteredList = filteredList.filter(menu => menu.offer > 0);
+      filteredList = filteredList.filter((menu) => menu.offer > 0);
     }
 
     return filteredList;
@@ -659,17 +743,21 @@ const Product = () => {
 
   // Add these count functions
   const getSpecialCount = () => {
-    let specialList = menuList.filter(menu => menu.is_special);
+    let specialList = menuList.filter((menu) => menu.is_special);
     if (activeFilters.categoryId) {
-      specialList = specialList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      specialList = specialList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return specialList.length;
   };
 
   const getOfferCount = () => {
-    let offerList = menuList.filter(menu => menu.offer > 0);
+    let offerList = menuList.filter((menu) => menu.offer > 0);
     if (activeFilters.categoryId) {
-      offerList = offerList.filter(menu => menu.menu_cat_id === activeFilters.categoryId);
+      offerList = offerList.filter(
+        (menu) => menu.menu_cat_id === activeFilters.categoryId
+      );
     }
     return offerList.length;
   };
@@ -685,7 +773,12 @@ const Product = () => {
             tableNumber={userData?.tableNumber || "1"}
           />
         </div>
-        {isNonProductionDomain() && <Notice />}
+        <div className="container px-3 py-0 mb-0">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
+        </div>
         {/* Category Swiper */}
         <div className="container pb-0 pt-0">
           <div className="d-flex justify-content-between mb-3 pt-1">
@@ -783,41 +876,43 @@ const Product = () => {
               </div>
 
               {/* Regular category buttons */}
-              {categories.map((category) => (
-                <div key={category.menu_cat_id} className="swiper-slide">
-                  <div
-                    className="category-btn font_size_14 rounded-5 py-1"
-                    onClick={() => handleCategorySelect(category.menu_cat_id)}
-                    style={{
-                      backgroundColor:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#0D775E"
-                          : "#ffffff",
-                      color:
-                        activeFilters.categoryId === category.menu_cat_id
-                          ? "#ffffff"
-                          : "#000000",
-                      border: "1px solid #ddd",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    {category.category_name}
-                    <span
+              {categories
+                .filter((category) => category.menu_count > 0) // Filter out categories with menu_count 0
+                .map((category) => (
+                  <div key={category.menu_cat_id} className="swiper-slide">
+                    <div
+                      className="category-btn font_size_14 rounded-5 py-1"
+                      onClick={() => handleCategorySelect(category.menu_cat_id)}
                       style={{
+                        backgroundColor:
+                          activeFilters.categoryId === category.menu_cat_id
+                            ? "#0D775E"
+                            : "#ffffff",
                         color:
                           activeFilters.categoryId === category.menu_cat_id
                             ? "#ffffff"
-                            : "#666",
-                        fontSize: "0.8em",
+                            : "#000000",
+                        border: "1px solid #ddd",
+                        cursor: "pointer",
+                        padding: "8px 16px",
+                        transition: "all 0.3s ease",
                       }}
                     >
-                      ({category.menu_count})
-                    </span>
+                      {category.category_name}
+                      <span
+                        style={{
+                          color:
+                            activeFilters.categoryId === category.menu_cat_id
+                              ? "#ffffff"
+                              : "#666",
+                          fontSize: "0.8em",
+                        }}
+                      >
+                        ({category.menu_count})
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>
@@ -943,12 +1038,11 @@ const Product = () => {
                             </div>
                           )} */}
                           <div className="d-flex justify-content-between align-items-center">
-                            <div className="fw-medium text-success font_size_10 d-flex align-items-center">
-                              <i className="fa-solid fa-utensils pe-1"></i>
-                              {categories.find(
-                                (category) =>
-                                  category.menu_cat_id === menu.menu_cat_id
-                              )?.name || menu.category}
+                            <div
+                              className={`fw-medium font_size_10 text-success`}
+                            >
+                              <i className="fa-solid fa-utensils text-success me-1"></i>
+                              {menu.category_name}
                             </div>
                             <div className="text-end">
                               {menu.rating > 0 && (
@@ -1003,53 +1097,36 @@ const Product = () => {
                           </div>
 
                           <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-3 ps-0">
-                            {userData ? (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
+                            <div
+                              className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
+                              style={{
+                                width: "25px",
+                                height: "25px",
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (userData?.user_id) {
                                   handleAddToCartClick(menu);
-                                }}
-                              >
-                                <i
-                                  className={`fa-solid ${
-                                    isMenuItemInCart(menu.menu_id)
-                                      ? "fa-circle-check "
-                                      : "fa-solid fa-plus text-secondary"
-                                  } fs-6 `}
-                                ></i>
-                              </div>
-                            ) : (
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75"
-                                style={{
-                                  border: "1px solid gray",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  width: "25px",
-                                  height: "25px",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
+                                } else {
                                   showLoginPopup();
-                                }}
-                              >
-                                <i className="fa-solid fa-plus text-secondary fs-6"></i>
-                              </div>
-                            )}
+                                }
+                              }}
+                            >
+                              <i
+                                className={`fa-solid ${
+                                  (() => {
+                                    const storedCart = localStorage.getItem('restaurant_cart_data');
+                                    if (!storedCart) return "fa-plus text-secondary";
+                                    const cartData = JSON.parse(storedCart);
+                                    return cartData.order_items?.some(item => item.menu_id === menu.menu_id)
+                                      ? "fa-circle-check text-success"
+                                      : "fa-plus text-secondary"
+                                  })()
+                                } fs-6`}
+                              ></i>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1061,9 +1138,9 @@ const Product = () => {
               <p>No items available with selected filters.</p>
             )}
           </div>
-          <div className="container">
+         
             <RestaurantSocials />
-          </div>
+         
         </div>
       </main>
 
@@ -1072,8 +1149,8 @@ const Product = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -1082,9 +1159,9 @@ const Product = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

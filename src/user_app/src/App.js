@@ -26,6 +26,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
 import { PopupProvider } from "./context/PopupContext";
+import Saving from "./screens/Saving";
 
 function App() {
   const { restaurantCode } = useParams();
@@ -46,6 +47,7 @@ function App() {
             <div className="user-app-root">
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
+                
                 <Route
                   path=":restaurantCode/:table_number/:section_id"
                   element={<HomeScreen />}
@@ -60,6 +62,7 @@ function App() {
                 <Route path="Cart" element={<Cart />} />
                 <Route path="Checkout" element={<Checkout />} />
                 <Route path="Category" element={<Category />} />
+                <Route path="savings" element={<Saving />} />
                 <Route path="Profile" element={<Profile />} />
                 <Route path="EditProfile" element={<EditProfile />} />
                 <Route path="MyOrder" element={<MyOrder />} />

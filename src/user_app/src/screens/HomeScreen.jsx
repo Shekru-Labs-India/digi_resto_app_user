@@ -109,7 +109,7 @@ const HomeScreen = () => {
             <div className="d-flex align-items-center">
               <Link to="/" className="d-flex align-items-center">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18">
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
                   MenuMitra
                 </span>
               </Link>
@@ -142,13 +142,7 @@ const HomeScreen = () => {
             <div className=" ">
               <Link to="/user_app/Profile">
                 <span className="ms-3 pt-4    ">
-                  <i
-                    className={
-                      userData?.customer_id
-                        ? "fa-solid fa-user me-2 font_size_14"
-                        : "fa-regular fa-user me-2 font_size_14"
-                    }
-                  ></i>
+                 
                   {userData?.name ? (
                     `Hello, ${toTitleCase(getFirstName(userData.name))}`
                   ) : (
@@ -351,11 +345,11 @@ const HomeScreen = () => {
               </Link>
             </li>
             <li>
-              <Link className="nav-link active" to="/user_app/Cart">
+              <Link className="nav-link active" to="/user_app/Checkout">
                 <span className="dz-icon icon-sm">
-                  <i className="fa-solid fa-cart-shopping fs-4"></i>
+                  <i className="fa-solid fa-check-to-slot fs-4"></i>
                 </span>
-                <span className=" font_size_16  fw-medium">Cart</span>
+                <span className=" font_size_16  fw-medium">Checkout</span>
               </Link>
             </li>
             <li>
@@ -371,7 +365,7 @@ const HomeScreen = () => {
                 <span className="dz-icon icon-sm">
                   <i
                     className={
-                      userData?.customer_id
+                      userData?.user_id
                         ? "fa-solid fa-user"
                         : "fa-regular fa-user"
                     }
@@ -475,7 +469,7 @@ const HomeScreen = () => {
                 {" "}
                 <div className="d-flex align-items-center mt-4 mb-0">
                   <img src={logo} alt="logo" width="40" height="40" />
-                  <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                  <div className="text-dark mb-0 mt-1 ms-2 fw-semibold font_size_18">
                     MenuMitra
                   </div>
                 </div>
@@ -533,7 +527,7 @@ const HomeScreen = () => {
           </div>
         </div>
 
-        <main className="page-content space-top mb-5 p-b70">
+        <main className="page-content space-top mb-5 p-b40">
           <div className="container overflow-hidden pt-0">
             {/* {isNonProductionDomain() && <Notice />} */}
             <OfferBanner />
@@ -541,8 +535,8 @@ const HomeScreen = () => {
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
-            </div>
             <RestaurantSocials />
+            </div>
           </div>
         </main>
 

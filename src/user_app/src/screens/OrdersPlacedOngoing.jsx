@@ -68,7 +68,7 @@ const titleCase = (str) => {
   return String(str)
     .toLowerCase()
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 };
 
@@ -134,12 +134,11 @@ const CircularCountdown = ({
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId =
-        userData?.customer_id || localStorage.getItem("customer_id");
+      const currentUserId = userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
       const sectionId = order.section_id;
 
-      if (!currentCustomerId || !restaurantId) return;
+      if (!currentUserId || !restaurantId) return;
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
@@ -147,9 +146,10 @@ const CircularCountdown = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
-            customer_id: currentCustomerId,
+            user_id: currentUserId,
             restaurant_id: restaurantId,
             section_id: sectionId,
           }),
@@ -216,7 +216,7 @@ const OrderCard = ({
   setCompletedTimers = () => {},
 }) => {
   const navigate = useNavigate();
-  console.log('Order Number:', order.order_number);
+
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -232,7 +232,9 @@ const OrderCard = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
@@ -272,6 +274,7 @@ const OrderCard = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           restaurant_id: order.restaurant_id,
@@ -303,6 +306,7 @@ const OrderCard = ({
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -310,7 +314,7 @@ const OrderCard = ({
   
   const getOrderTypeIcon = (orderType) => {
       switch (orderType?.toLowerCase()) {
-        case "parcel":
+        case "parsel":
           return <i className="fa-solid fa-hand-holding-heart"></i>;
         case "drive-through":
           return <i className="fa-solid fa-car-side"></i>;
@@ -360,7 +364,7 @@ const OrderCard = ({
                 <div className="restaurant">
                   <i className="fa-solid fa-store pe-2 font_size_14"></i>
                   <span className="fw-medium font_size_14">
-                    {order.restaurant_name.toUpperCase()}
+                    {order.outlet_name?.toUpperCase()}
                   </span>
                 </div>
               </div>
@@ -385,27 +389,33 @@ const OrderCard = ({
                     <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                     {titleCase(order.section_name)} - {order.table_number}
                   </span>
-              </div>
+                </div>
               </div>
             </div>
             <div className="row">
               <div className="col-6">
-                <div className="">
-                  <i className="fa-solid fa-bowl-rice me-2 gray-text font_size_12"></i>
+                <div className="menu-info">
+                  <i className="fa-solid fa-bowl-rice pe-2 gray-text font_size_12"></i>
                   <span className="gray-text font_size_12">
                     {order.menu_count === 0
-                      ? "No orders"
+                      ? "No Menus"
                       : `${order.menu_count} Menu`}
                   </span>
                 </div>
               </div>
               <div className="col-6 text-end">
                 <span className="text-info font_size_14 fw-semibold">
-                  ₹{order.grand_total}
+                  ₹{order.grand_total.toFixed(2)}
                 </span>
-                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                  ₹{(parseFloat(order.grand_total) * 1.1).toFixed(2)}
-                </span>
+                {order.discount_percent > 0 && (
+                  <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                    ₹
+                    {(
+                      order.grand_total /
+                      (1 - order.discount_percent / 100)
+                    ).toFixed(2)}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -477,7 +487,7 @@ const OrdersPlacedOngoing = () => {
 
   const fetchData = async () => {
     // Check if we have required data before making the API call
-    if (!userData?.customer_id || !userData?.restaurantId) {
+    if (!userData?.user_id || !userData?.restaurantId) {
       setOrders({ placed: [], ongoing: [] });
       return;
     }
@@ -490,10 +500,13 @@ const OrdersPlacedOngoing = () => {
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            customer_id: userData.customer_id,
-            restaurant_id: userData.restaurantId,
+            user_id: userData.user_id,
+            outlet_id: localStorage.getItem("outlet_id"),
             section_id: sectionId,
           }),
           signal: controller.signal
@@ -515,7 +528,7 @@ const OrdersPlacedOngoing = () => {
         const ordersData = data.data;
         setOrders({
           placed: ordersData.filter(order => order.status === 'placed'),
-          ongoing: ordersData.filter(order => order.status === 'ongoing')
+          ongoing: ordersData.filter(order => order.status === 'cooking')
         });
       } else {
         // Handle empty or invalid data structure silently
@@ -568,13 +581,13 @@ const OrdersPlacedOngoing = () => {
 
       {orders.ongoing.length > 0 && (
         <div>
-          <i className="fa-solid fa-hourglass-half pe-2 font_size_14 text-secondary opacity-25"></i>
-          <span className="font_size_14 fw-medium">Ongoing Order</span>
+          <i className="fa-solid fa-utensils pe-2 font_size_14 text-secondary"></i>
+          <span className="font_size_14 fw-medium">Cooking</span>
           {orders.ongoing.map((order, index) => (
             <OrderCard
               key={`ongoing-${order.order_id}-${index}`}
               order={order}
-              status="ongoing"
+              status="cooking"
               setOngoingOrPlacedOrders={setOrders}
               completedTimers={completedTimers}
               setCompletedTimers={setCompletedTimers}

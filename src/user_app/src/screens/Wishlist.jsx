@@ -14,7 +14,7 @@ import { getUserData, getRestaurantData } from "../utils/userUtils";
 import RestaurantSocials from "../components/RestaurantSocials";
 import "../assets/css/toast.css";
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 
 const Wishlist = () => {
   const [checkedItems, setCheckedItems] = useState({});
@@ -24,8 +24,8 @@ const Wishlist = () => {
   const { restaurantId, restaurantName } = useRestaurantId();
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [customerId, setCustomerId] = useState(null);
-  const [customerType, setCustomerType] = useState(null);
+  const [user_id, setUser_id] = useState(null);
+  const [role, setRole] = useState(null);
 
   const toggleChecked = (restaurantName) => {
     setCheckedItems((prev) => ({
@@ -57,7 +57,7 @@ const Wishlist = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
@@ -72,14 +72,12 @@ const Wishlist = () => {
   // Single useEffect for initial data fetch
   useEffect(() => {
     const initializeData = async () => {
-      const { customerId, customerType } = getUserData();
-      const { restaurantId } = getRestaurantData();
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      setIsLoggedIn(!!userData?.user_id);
+      setUser_id(userData?.user_id);
+      setRole(userData?.role);
 
-      setIsLoggedIn(!!customerId);
-      setCustomerId(customerId);
-      setCustomerType(customerType);
-
-      if (customerId) {
+      if (userData?.user_id) {
         await fetchFavoriteItems();
       } else {
         setIsLoading(false);
@@ -102,11 +100,11 @@ const Wishlist = () => {
 
   const handleMenuClick = (menu) => {
     // If the menu is from a different restaurant
-    if (menu.restaurant_id !== restaurantId) {
+    if (menu.outlet_id !== restaurantId) {
       // Store both current and target restaurant IDs
       localStorage.setItem("previousRestaurantId", restaurantId);
-      localStorage.setItem("currentRestaurantId", menu.restaurant_id);
-      localStorage.setItem("restaurantId", menu.restaurant_id);
+      localStorage.setItem("currentRestaurantId", menu.outlet_id);
+      localStorage.setItem("restaurantId", menu.outlet_id);
     }
   };
 
@@ -114,7 +112,7 @@ const Wishlist = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const storedRestaurantId = localStorage.getItem("restaurantId"); // Get current restaurant ID
 
-    if (!userData?.customer_id) {
+    if (!userData?.user_id) {
       setIsLoading(false);
       return;
     }
@@ -127,9 +125,12 @@ const Wishlist = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
+            outlet_id: localStorage.getItem("outlet_id"),
           }),
         }
       );
@@ -149,11 +150,13 @@ const Wishlist = () => {
           setHasFavorites(false);
         }
       } else {
+        console.clear();
         setWishlistItems({});
         setMenuList({});
         setHasFavorites(false);
       }
     } catch (error) {
+      console.clear();
       setWishlistItems({});
       setMenuList({});
       setHasFavorites(false);
@@ -161,10 +164,6 @@ const Wishlist = () => {
       setIsLoading(false);
     }
   };
-
-
-
-
 
   // Keep the favorite update listener
   useEffect(() => {
@@ -193,10 +192,10 @@ const Wishlist = () => {
 
   // 3. Update cart restaurant ID when needed
   useEffect(() => {
-    if (customerId && restaurantId) {
+    if (user_id && restaurantId) {
       updateCartRestaurantId();
     }
-  }, [customerId, restaurantId]);
+  }, [user_id, restaurantId]);
 
   const updateCartRestaurantId = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -218,9 +217,12 @@ const Wishlist = () => {
         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -234,12 +236,14 @@ const Wishlist = () => {
           setPortionSize("full");
         }
       } else {
+        console.clear();
         window.showToast(
           "error",
           data.msg || "Failed to fetch price information"
         );
       }
     } catch (error) {
+      console.clear();
       window.showToast("error", "Failed to fetch price information");
     } finally {
       setIsPriceFetching(false);
@@ -248,16 +252,16 @@ const Wishlist = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart.");
-      return;
-    }
+    // if (isMenuItemInCart(menu.menu_id)) {
+    //   window.showToast("info", "This item is already in your checkout.");
+    //   return;
+    // }
 
-    if (isCartFromDifferentRestaurant(menu.restaurant_id)) {
+    if (isCartFromDifferentRestaurant(menu.outlet_id)) {
       window.showToast(
         "warning",
         "Please complete or clear your existing cart first"
@@ -273,7 +277,7 @@ const Wishlist = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -292,17 +296,17 @@ const Wishlist = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
         },
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.menu_name} added to cart`);
+      window.showToast("success", `${selectedMenu.menu_name} is added.`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
@@ -311,6 +315,7 @@ const Wishlist = () => {
       // Dispatch cart update event
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
+      console.clear();
       window.showToast(
         "error",
         "Failed to add item to cart. Please try again."
@@ -325,64 +330,66 @@ const Wishlist = () => {
   };
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   const wishlistCount = Object.keys(menuList).reduce(
     (total, key) => total + menuList[key].length,
     0
   );
-
-  const handleRemoveItemClick = async (
-    restaurantName,
-    menuId,
-    restaurantId
-  ) => {
+  const handleRemoveItemClick = async (restaurantName, menuId, outletId) => {
+    // Retrieve user data from localStorage
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || !menuId || !restaurantId) {
+  
+    // Extract user_id from userData
+    const userId = userData?.user_id;
+  
+    if (!userId || !menuId || !outletId) {
       window.showToast("error", "Missing required information");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/remove_favourite_menu`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurant_id: restaurantId,
-            menu_id: menuId,
-            customer_id: userData.customer_id,
-          }),
-        }
-      );
-
+      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          outlet_id: outletId,
+          menu_id: menuId,
+          user_id: userId, // Use userId from userData
+        }),
+      });
+  
       const data = await response.json();
-
+  
       if (response.ok && data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
-          updatedMenuList[restaurantName] = updatedMenuList[
-            restaurantName
-          ].filter((item) => item.menu_id !== menuId);
-
+          updatedMenuList[restaurantName] = updatedMenuList[restaurantName].filter(
+            (item) => item.menu_id !== menuId
+          );
+  
           if (updatedMenuList[restaurantName].length === 0) {
             delete updatedMenuList[restaurantName];
           }
-
+  
           setHasFavorites(Object.keys(updatedMenuList).length > 0);
           return updatedMenuList;
         });
-
-        window.showToast("success", "Item has been removed from favourite");
+  
+        window.showToast("success", "Item has been removed from favourites");
       } else {
-        window.showToast("error", "Failed to remove item from favourite");
+        window.showToast("error", "Failed to remove item from favourites");
       }
     } catch (error) {
       window.showToast("error", "An error occurred while removing the item");
     }
   };
+  
+  
 
   useEffect(() => {
     if (isDarkMode) {
@@ -393,73 +400,45 @@ const Wishlist = () => {
   }, [isDarkMode]);
 
   // Add the standardized rating function
-  const renderStarRating = (rating) => {
-    const numRating = parseFloat(rating);
+ const renderStarRating = (rating) => {
+   const numRating = parseFloat(rating);
 
-    if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
-    }
+   // 0 to 0.4: No star
+   if (!numRating || numRating < 0.5) {
+     return null; // Don't show anything
+   }
 
-    if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+   // 0.5 to 2.5: Blank star (grey)
+   if (numRating >= 0.5 && numRating <= 2.5) {
+     return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+   }
 
-    if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+   // 3 to 4.5: Half star
+   if (numRating >= 3 && numRating <= 4.5) {
+     return (
+       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+     );
+   }
 
-    if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
-    }
+   // 5: Full star
+   if (numRating === 5) {
+     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+   }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  };
-
-
-  const getFoodTypeTextStyles = (foodType) => {
-    switch(foodType) {
-      case 'veg':
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary"
-        };
-      case 'nonveg':
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger"
-        };
-      case 'egg':
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "text-light"
-        };
-      case 'vegan':
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success"
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary"
-        };
-    }
-  };
+   return null; // Default case
+ };
 
 
-    
+
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-primary",
-          border: "border-primary",
+          icon: "fa-solid fa-circle text-success",
+          border: "border-success",
         };
       case "nonveg":
         return {
@@ -468,8 +447,8 @@ const Wishlist = () => {
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-light",
-          border: "border-light",
+          icon: "fa-solid fa-egg gray-text",
+          border: "gray-text",
         };
       case "vegan":
         return {
@@ -483,7 +462,7 @@ const Wishlist = () => {
         };
     }
   };
-  
+
   if (isLoading) {
     return (
       <div id="preloader">
@@ -501,7 +480,7 @@ const Wishlist = () => {
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={customerType?.tableNumber || "1"}
+            tableNumber={role?.tableNumber || "1"}
           />
         </div>
         {isLoading ? (
@@ -592,11 +571,10 @@ const Wishlist = () => {
                               <Link
                                 to={`/user_app/ProductDetails/${menu.menu_id}`}
                                 state={{
-                                  restaurant_id: menu.restaurant_id,
+                                  ...(menu.outlet_id !== restaurantId && { outlet_id: menu.outlet_id }),
                                   menu_cat_id: menu.menu_cat_id,
                                   fromWishlist: true,
-                                  fromDifferentRestaurant:
-                                    menu.restaurant_id !== restaurantId,
+                                  fromDifferentRestaurant: menu.outlet_id !== restaurantId,
                                   previousRestaurantId: restaurantId,
                                 }}
                                 className="text-decoration-none text-reset"
@@ -641,7 +619,8 @@ const Wishlist = () => {
                                             handleRemoveItemClick(
                                               restaurantName,
                                               menu.menu_id,
-                                              menu.restaurant_id
+                                              menu.outlet_id
+                                             
                                             );
                                           }}
                                         ></i>
@@ -698,13 +677,14 @@ const Wishlist = () => {
                                         </div>
                                         <div className="col-2 text-end font_size_10 ">
                                           <div
-                                            className="d-flex align-items-center justify-content-end"
+                                            className="d-flex align-items-center ps-1"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               handleRemoveItemClick(
                                                 restaurantName,
                                                 menu.menu_id,
-                                                menu.restaurant_id
+                                                menu.outlet_id
+                                               
                                               );
                                             }}
                                           >
@@ -714,24 +694,8 @@ const Wishlist = () => {
                                       </div>
                                       <div className="row d-flex align-items-center mt-1">
                                         <div className="col-6 d-flex align-items-center">
-                                          <span
-                                            className={`ps-2 font_size_10 ${
-                                              getFoodTypeTextStyles(
-                                                menu.category_food_type
-                                              ).textColor
-                                            }`}
-                                          >
-                                            <i
-                                              className={`${
-                                                getFoodTypeTextStyles(
-                                                  menu.category_food_type
-                                                ).icon
-                                              } ${
-                                                getFoodTypeTextStyles(
-                                                  menu.category_food_type
-                                                ).textColor
-                                              } font_size_10 mt-0 me-1`}
-                                            ></i>
+                                          <span className="ps-2 font_size_10 text-success">
+                                            <i className="fa-solid fa-utensils text-success me-1"></i>
                                             {menu.category_name}
                                           </span>
                                         </div>
@@ -762,63 +726,6 @@ const Wishlist = () => {
                                             {menu.offer ? (
                                               <>
                                                 <span className="font_size_14 fw-semibold text-info">
-                                                  ₹{Math.floor(menu.price * (1 - menu.offer / 100))}
-                                                </span>
-                                                <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                                  ₹{menu.price}
-                                                </span>
-                                              </>
-                                            ) : (
-                                              <span className="font_size_14 fw-semibold text-info">
-                                                ₹{menu.price}
-                                              </span>
-                                            )}
-                                          </p>
-                                        </div>
-                                        <div className="col-7 d-flex justify-content-end pe-3 pb-2">
-                                          {customerId && 
-                                           menu.restaurant_id === restaurantId && 
-                                           !isCartFromDifferentRestaurant(menu.restaurant_id) && (
-                                            <div
-                                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                                              style={{
-                                                width: "25px",
-                                                height: "25px",
-                                                cursor: "pointer"
-                                              }}
-                                              onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleAddToCartClick(menu);
-                                              }}
-                                            >
-                                              <i
-                                                className={`fa-solid ${
-                                                  isMenuItemInCart(menu.menu_id)
-                                                    ? "fa-circle-check text-success"
-                                                    : "fa-plus text-secondary"
-                                                } fs-6`}
-                                              ></i>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      <div className="row mt-1">
-                                        {/* <div className="col-4 text-start d-flex align-items-center pe-0">
-                                          <span className="ps-2 font_size_10 text-success">
-                                            <i className="fa-solid fa-utensils mt-0 me-1"></i>
-                                            {menu.category_name}
-                                          </span>
-                                        </div> */}
-                                      </div>
-
-                                      {/* <div className="row mt-1">
-                                        <div className="col-6">
-                                          <p className="ms-2 mb-0 fw-medium">
-                                            {menu.offer ? (
-                                              <>
-                                                <span className="font_size_14 fw-semibold text-info">
                                                   ₹
                                                   {Math.floor(
                                                     menu.price *
@@ -836,36 +743,36 @@ const Wishlist = () => {
                                             )}
                                           </p>
                                         </div>
-
-                                        <div className="col-6 d-flex justify-content-end">
-                                          {customerId &&
-                                          menu.restaurant_id === restaurantId &&
-                                          !isCartFromDifferentRestaurant(
-                                            menu.restaurant_id
-                                          ) ? (
-                                            <div
-                                              className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
-                                              style={{
-                                                width: "25px",
-                                                height: "25px",
-                                              }}
-                                              onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                handleAddToCartClick(menu);
-                                              }}
-                                            >
-                                              <i
-                                                className={`fa-solid ${
-                                                  isMenuItemInCart(menu.menu_id)
-                                                    ? "fa-solid fa-circle-check"
-                                                    : "fa-solid fa-plus text-secondary"
-                                                } fs-6`}
-                                              ></i>
-                                            </div>
-                                          ) : null}
+                                        <div className="col-7 d-flex justify-content-end pe-3 pt-2 pb-2">
+                                          {user_id &&
+                                            menu.outlet_id ===
+                                              restaurantId && (
+                                              <div
+                                                className="border border-1 rounded-circle bg-white opacity-75 d-flex align-items-center justify-content-center"
+                                                style={{
+                                                  width: "25px",
+                                                  height: "25px",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  e.stopPropagation();
+                                                  handleAddToCartClick(menu);
+                                                }}
+                                              >
+                                                <i
+                                                  className={`fa-solid ${
+                                                    isMenuItemInCart(
+                                                      menu.menu_id
+                                                    )
+                                                      ? "fa-circle-check text-success"
+                                                      : "fa-plus text-secondary"
+                                                  } fs-6`}
+                                                ></i>
+                                              </div>
+                                            )}
                                         </div>
-                                      </div> */}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -930,8 +837,8 @@ const Wishlist = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -940,9 +847,9 @@ const Wishlist = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains("modal")) {
               setShowModal(false);
             }
           }}

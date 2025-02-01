@@ -16,36 +16,86 @@ export const RestaurantIdProvider = ({ children }) => {
   const [isRestaurantOpen,setIsRestaurantOpen] = useState(null)
   const [sectionName, setSectionName] = useState("")
   const [socials, setSocials] = useState([]);
-  const sectionId = localStorage.getItem("sectionId")
+  const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
     const path = location.pathname;
-    const match = path.match(/\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/);
+    const match = path.match(/\/user_app\/(\d{6})(?:\/([^\/]+))(?:\/(\d+))?/);
 
     if (match) {
       const [, code, table, section] = match;
       setRestaurantCode(code);
       
-      // Store table number if present
       if (table) {
-        setTableNumber(table);
-        localStorage.setItem("tableNumber", table);
-      }
-
-      // Store section ID if present and valid (not more than 10)
-      if (section && parseInt(section) <= 10) {
-        localStorage.setItem("sectionId", section);
-        
-        // Fetch restaurant details to get section name
+        // First get restaurant details to get restaurant_id
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({ restaurant_code: code, section_id: sectionId }),
+          body: JSON.stringify({ 
+            outlet_code: code,
+            section_id: section || null 
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const { outlet_id } = data.outlet_details;
+              
+              // Now validate the table
+              return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+                },
+                body: JSON.stringify({
+                  outlet_id:outlet_id,
+                  section_id: section || null,
+                  table_number: table,
+                }),
+              });
+            } else {
+              throw new Error('Failed to get restaurant details');
+            }
+          })
+          .then(response => response.json())
+          .then((data) => {
+            if (data.st === 1 && data.is_table_exists) {
+              // Table exists, set the table number
+              setTableNumber(table);
+              // window.showToast("info", `You are at Table Number ${table}`);
+              localStorage.setItem("tableNumber", table);
+            } else {
+              // Table doesn't exist, navigate to HotelList
+              // navigate("/user_app/HotelList");
+            // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
+            console.log("Table not exists");
+            }
+          })
+          .catch((error) => {
+            console.clear();
+            navigate("/user_app/HotelList");
+            
+          });
+      }
+
+      if (section) {
+        setSectionId(section);
+        localStorage.setItem("sectionId", section);
+        
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ outlet_code: code, section_id: section }),
         })
           .then((response) => response.json())
           .then((data) => {
@@ -78,17 +128,28 @@ export const RestaurantIdProvider = ({ children }) => {
             console.clear();
           });
       }
-
-      // ... rest of the code
     }
-  }, [location]);
+  }, [location, navigate]);
 
   useEffect(() => {
-    const fetchRestaurantDetails = async () => {
-      if (!restaurantCode || restaurantCode === lastFetchedCode.current) return;
-
-      lastFetchedCode.current = restaurantCode;
-
+    if (!sectionId) {
+      console.warn("Section ID is null or undefined. Skipping API call.");
+      return; // Do not execute the API call if sectionId is not available
+    }
+  
+    const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
+      // Get code from localStorage if not provided
+      const storedCode = localStorage.getItem("restaurantCode");
+      const finalCode = restaurantCode || storedCode;
+  
+      // Debug log
+      console.log('Restaurant code being used:', {
+        providedCode: restaurantCode,
+        storedCode: storedCode,
+        finalCode: finalCode,
+        sectionId: sectionId,
+      });
+  
       try {
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
@@ -96,118 +157,118 @@ export const RestaurantIdProvider = ({ children }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-            body: JSON.stringify({ 
-              restaurant_code: restaurantCode,
-              section_id: sectionId
+            body: JSON.stringify({
+              outlet_code: finalCode,
+              section_id: sectionId,
             }),
           }
         );
-
+  
         const data = await response.json();
         if (data.st === 1) {
-          const { restaurant_id, name, account_status, is_open, section_name } = data.restaurant_details;
-          setRestaurantId(restaurant_id);
+          const { outlet_id, name, account_status, is_open, section_name } = data.outlet_details;
+          setRestaurantId(outlet_id);
           setRestaurantName(name);
-          setRestaurantStatus(account_status)
-          setIsRestaurantOpen(is_open)
-          setSectionName(section_name)
-
-          localStorage.setItem("restaurantId", restaurant_id);
+          setRestaurantStatus(account_status);
+          setIsRestaurantOpen(is_open);
+          setSectionName(section_name);
+  
+          localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
-          localStorage.setItem("restaurantCode", restaurantCode);
-          localStorage.setItem("restaurantStatus", account_status)
-          localStorage.setItem("isRestaurantOpen", is_open)
-          localStorage.setItem("sectionName", section_name)
-
+          localStorage.setItem("restaurantCode", finalCode);
+          localStorage.setItem("restaurantStatus", account_status);
+          localStorage.setItem("isRestaurantOpen", is_open);
+          localStorage.setItem("sectionName", section_name);
+  
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
-              restaurantId: restaurant_id,
+              restaurantId: outlet_id,
               restaurantName: name,
-              restaurantCode: restaurantCode,
-              sectionId: sectionId
+              restaurantCode: finalCode,
+              sectionId: sectionId,
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-
+  
           const socialsArray = [
             {
-              id: 'whatsapp',
-              icon: 'ri-whatsapp-line',
-              name: 'WhatsApp',
-              link: data.restaurant_details.whatsapp || '',
+              id: "whatsapp",
+              icon: "ri-whatsapp-line",
+              name: "WhatsApp",
+              link: data.outlet_details.whatsapp || "",
             },
             {
-              id: 'facebook',
-              icon: 'ri-facebook-line',
-              name: 'Facebook',
-              link: data.restaurant_details.facebook || '',
+              id: "facebook",
+              icon: "ri-facebook-line",
+              name: "Facebook",
+              link: data.outlet_details.facebook || "",
             },
             {
-              id: 'instagram',
-              icon: 'ri-instagram-line',
-              name: 'Instagram',
-              link: data.restaurant_details.instagram || '',
+              id: "instagram",
+              icon: "ri-instagram-line",
+              name: "Instagram",
+              link: data.outlet_details.instagram || "",
             },
             {
-              id: 'website',
-              icon: 'ri-global-line',
-              name: 'Website',
-              link: data.restaurant_details.website || '',
+              id: "website",
+              icon: "ri-global-line",
+              name: "Website",
+              link: data.outlet_details.website || "",
             },
             {
-              id: 'google_review',
-              icon: 'ri-google-line',
-              name: 'Review',
-              link: data.restaurant_details.google_review || '',
+              id: "google_review",
+              icon: "ri-google-line",
+              name: "Review",
+              link: data.outlet_details.google_review || "",
             },
             {
-              id: 'google_business',
-              icon: 'ri-store-2-line',
-              name: 'Business',
-              link: data.restaurant_details.google_business_link || '',
-            }
-          ].filter(item => item.link);
-
+              id: "google_business",
+              icon: "ri-store-2-line",
+              name: "Business",
+              link: data.outlet_details.google_business_link || "",
+            },
+          ].filter((item) => item.link);
+  
           localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
-          
           setSocials(socialsArray);
         } else if (data.st === 2) {
           setRestaurantId(null);
           setRestaurantName("");
-          
+  
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
           localStorage.removeItem("restaurantSocial");
-          
-          
+  
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: null,
               restaurantName: "",
-              restaurantCode: ""
+              restaurantCode: "",
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-          
+  
           navigate("/user_app/Index");
-
+  
           localStorage.setItem("restaurantStatus", false);
         } else {
-          console.error("Failed to fetch restaurant details:", data.msg);
+          console.clear();
         }
       } catch (error) {
-        console.error("Error fetching restaurant details:", error);
+        console.error('Error fetching restaurant details:', error);
       }
     };
-
-    fetchRestaurantDetails();
+  
+    fetchRestaurantDetails(restaurantCode, sectionId);
   }, [restaurantCode, sectionId, navigate]);
+  
 
   useEffect(() => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
@@ -232,7 +293,7 @@ export const RestaurantIdProvider = ({ children }) => {
   };
 
   const updateSectionId = (id) => {
-    // setSectionId(id);
+    setSectionId(id);
     localStorage.setItem("sectionId", id);
   };
 

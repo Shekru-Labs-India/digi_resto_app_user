@@ -46,26 +46,35 @@ const Bottom = () => {
         </Link>
 
         <Link
-          to="/user_app/Cart"
+          to="/user_app/Checkout"
           className={`nav-link ${
-            location.pathname === "/user_app/Cart" ? "active" : ""
+            location.pathname === "/user_app/Checkout" ? "active" : ""
           }`}
         >
           <div className="position-relative d-inline-block">
-            <i className="fa-solid fa-cart-shopping me-2 font_size_14"></i>
-            {cartItems.length > 0 && (
-              <span
-                className="position-absolute p-1 bg-danger rounded-circle"
-                style={{
-                  top: "-5px",
-                  right: "20px",
-                  width: "5px",
-                  height: "5px",
-                }}
-              />
-            )}
+            <i className="fa-solid fa-check-to-slot me-2 font_size_14"></i>
+            {(() => {
+              const storedCart = localStorage.getItem("restaurant_cart_data"); 
+              const hasItems = storedCart
+                ? JSON.parse(storedCart).order_items.length > 0
+                : false;
+
+              return (
+                hasItems && (
+                  <span
+                    className="position-absolute p-1 bg-danger rounded-circle"
+                    style={{
+                      top: "-5px",
+                      right: "20px",
+                      width: "5px",
+                      height: "5px",
+                    }}
+                  />
+                )
+              );
+            })()}
           </div>
-          <span className="name font_size_14">Cart</span>
+          <span className="name font_size_14">Checkout</span>
         </Link>
 
         <Link
@@ -86,7 +95,7 @@ const Bottom = () => {
         >
           <i
             className={
-              userData?.customer_id
+              userData?.user_id
                 ? "fa-solid fa-user me-2 font_size_14"
                 : "fa-regular fa-user me-2 font_size_14"
             }

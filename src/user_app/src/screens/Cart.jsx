@@ -14,11 +14,12 @@ import { getUserData } from "../utils/userUtils";
 import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
+// import { useCart } from "../context/CartContext";
 const Cart = () => {
-    const location = useLocation();
-    const magicMessage = location.state?.magicMessage;
+  const location = useLocation();
+  const magicMessage = location.state?.magicMessage;
   const { restaurantId, restaurantName } = useRestaurantId();
-  const { cartItems, updateCart, removeFromCart } = useCart();
+  const { updateCart, removeFromCart } = useCart();
   const [userData, setUserData] = useState(null);
   const [cartDetails, setCartDetails] = useState({ order_items: [] });
   const navigate = useNavigate();
@@ -27,19 +28,21 @@ const Cart = () => {
   const [customerId, setCustomerId] = useState(null);
   const [customerType, setCustomerType] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
+  const { clearCart } = useCart();
+  const [cartItems, setCartItems] = useState([]);
   const { showLoginPopup } = usePopup();
   // Helper function to get stored restaurant ID
   const getStoredRestaurantId = useCallback(() => {
     return localStorage.getItem("restaurantId") || restaurantId;
   }, [restaurantId]);
-  
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
 
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
-    const customerId = getCustomerId();
+    const user_id = getCustomerId();
     // const cartId = getCartId();
 
     const cartId = getCartId() || localStorage.getItem("cartId");
@@ -55,11 +58,14 @@ const Cart = () => {
         `${config.apiDomain}/user_api/get_cart_detail_add_to_cart`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
-            restaurant_id: restaurantId,
+            user_id: user_id,
+            outlet_id: restaurantId,
           }),
         }
       );
@@ -83,10 +89,11 @@ const Cart = () => {
           setCartDetails({ order_items: [] });
         }
       } else {
+        console.clear();
         setCartDetails({ order_items: [] });
       }
     } catch (error) {
-      console.error("Error fetching cart:", error);
+      console.clear();
       setCartDetails({ order_items: [] });
     } finally {
       setIsLoading(false);
@@ -96,14 +103,14 @@ const Cart = () => {
   // Initial load effect with restaurant ID check
   useEffect(() => {
     const initializeCart = async () => {
-      const { customerId, customerType } = getUserData();
+      const { user_id, role } = getUserData();
       const currentRestaurantId = getStoredRestaurantId();
 
-      if (customerId && currentRestaurantId) {
+      if (user_id && currentRestaurantId) {
         setIsLoggedIn(true);
-        setCustomerId(customerId);
-        setCustomerType(customerType);
-        setUserData({ customer_id: customerId, customer_type: customerType });
+        setCustomerId(user_id);
+        setCustomerType(role);
+        setUserData({ user_id: user_id, role: role });
         await fetchCartDetails();
       } else {
         setIsLoggedIn(false);
@@ -129,6 +136,54 @@ const Cart = () => {
     return () => window.removeEventListener("cartUpdated", handleCartUpdate);
   }, [fetchCartDetails, restaurantId]);
 
+  const handleClearCart = async () => {
+    const user_id = getCustomerId();
+    const cartId = getCartId() || localStorage.getItem("cartId");
+
+    if (!user_id || !cartId || !restaurantId) {
+      window.showToast("error", "Required information is missing.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/delete_entire_cart`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            cart_id: cartId,
+            user_id: user_id,
+            restaurant_id: restaurantId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        clearCartData();
+        window.showToast("success", data.msg || "Cart cleared successfully.");
+        setCartDetails({ order_items: [] }); // Clear cart details in state
+        localStorage.removeItem("cartId"); // Optionally remove cartId from localStorage
+      } else {
+        window.showToast("error", data.msg || "Failed to clear the cart.");
+      }
+    } catch (error) {
+      console.clear();
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  };
+
+  const clearCartData = () => {
+    clearCart(); // Clear cart context
+    localStorage.removeItem("cartItems"); // Clear cart items from localStorage
+    localStorage.removeItem("cartId"); // Clear cart ID from localStorage
+    setCartItems([]); // Clear cart items state if you're using it
+  };
   // Window focus handler with restaurant ID check
   useEffect(() => {
     if (userData && restaurantId) {
@@ -143,7 +198,7 @@ const Cart = () => {
 
   const getCustomerId = useCallback(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_id || localStorage.getItem("customer_id") || null;
+    return userData?.user_id || localStorage.getItem("user_id") || null;
   }, []);
 
   const getCartId = useCallback(() => {
@@ -203,13 +258,13 @@ const Cart = () => {
       );
       fetchCartDetails();
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.clear();
       window.showToast("error", "Failed to remove item from cart.");
     }
   };
 
   const updateCartQuantity = async (menuId, quantity) => {
-    const customerId = getCustomerId();
+    const user_id = getCustomerId();
     const cartId = getCartId();
 
     try {
@@ -217,10 +272,13 @@ const Cart = () => {
         `${config.apiDomain}/user_api/update_cart_menu_quantity`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             cart_id: cartId,
-            customer_id: customerId,
+            user_id: user_id,
             restaurant_id: restaurantId,
             menu_id: menuId,
             quantity: quantity,
@@ -230,14 +288,11 @@ const Cart = () => {
       const data = await response.json();
       if (data.st === 1) {
         fetchCartDetails();
-     
       } else {
-        console.error("Failed to update cart quantity:", data.msg);
-        
+        console.clear();
       }
     } catch (error) {
-      console.error("Error updating cart quantity:", error);
-    
+      console.clear();
     }
   };
 
@@ -264,7 +319,7 @@ const Cart = () => {
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -279,7 +334,6 @@ const Cart = () => {
       (item) => item.menu_id === menuId
     );
     if (!menuItem) {
-      console.error("Menu item not found:", menuId);
       return;
     }
 
@@ -292,12 +346,15 @@ const Cart = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -321,13 +378,14 @@ const Cart = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       } else {
+        console.clear();
         throw new Error(data.msg || "Failed to update favorite status");
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast(
         "error",
         error.message || "Failed to update favorite status"
@@ -356,7 +414,9 @@ const Cart = () => {
     }
 
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
     return (
@@ -364,70 +424,50 @@ const Cart = () => {
     );
   };
 
-  
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
           icon: "fa-solid fa-circle text-success",
-          border: "border-primary",
+          border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
           icon: "fa-solid fa-play fa-rotate-270 text-danger",
           border: "border-danger",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg gray-text",
-          border: "border-muted",
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "gray-text", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
           icon: "fa-solid fa-circle text-success",
           border: "border-success",
+          textColor: "text-success",
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
 
-  
-  const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-primary",
-        };
-      case "nonveg":
-        return {
-          icon: "fa-solid fa-play fa-rotate-270",
-          textColor: "text-danger",
-        };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text",
-        };
-      case "vegan":
-        return {
-          icon: "fa-solid fa-leaf",
-          textColor: "text-success",
-        };
-      default:
-        return {
-          icon: "fa-solid fa-circle",
-          textColor: "text-success",
-        };
-    }
-  };
 
-  
-  
 
   if (isLoading) {
     return (
@@ -481,7 +521,7 @@ const Cart = () => {
           {magicMessage && (
             <div className="container py-0">
               <div className="font_size_14 text-center text-info mt-2 mb-3 bg-white rounded-pill px-3 py-2">
-                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                <i className="fa-solid fa-wand-magic-sparkles me-2"></i>
                 {magicMessage}
               </div>
             </div>
@@ -612,45 +652,22 @@ const Cart = () => {
                           </div>
 
                           {/* Category & Spicy Row */}
-                          <div className="row d-flex align-items-center mt-1">
-                            <div className="col-6 d-flex align-items-center">
-                              <span
-                                className={`ps-2 font_size_10 ${
-                                  getFoodTypeTextStyles(item.category_food_type)
-                                    .textColor
-                                }`}
-                              >
-                                <i
-                                  className={`${
-                                    getFoodTypeTextStyles(
-                                      item.category_food_type
-                                    ).icon
-                                  } ${
-                                    getFoodTypeTextStyles(
-                                      item.category_food_type
-                                    ).textColor
-                                  } font_size_10 mt-0 me-1`}
-                                ></i>
-                                {item.menu_cat_name || item.category_name}
-                              </span>
+                          <div className="row">
+                            <div className="col-8">
+                              <div className="ps-2">
+                                <span className="font_size_10 text-success">
+                                  <i className="fa-solid fa-utensils text-success me-1"></i>
+                                  {item.menu_cat_name}
+                                </span>
+                              </div>
                             </div>
-                            <div className="col-4 d-flex align-items-center ps-4 pe-3">
-                              {item.spicy_index && (
-                                <div className="">
-                                  {renderSpicyLevel(item.spicy_index)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="col-2 d-flex align-items-center justify-content-end">
-                              {item.rating > 0 && (
-                                <>
-                                  {renderStarRating(item.rating)}
-                                  <span className="font_size_10 fw-normal gray-text">
-                                    {item.rating}
-                                  </span>
-                                </>
-                              )}
-                            </div>
+                            {item.offer > 0 && (
+                              <div className="col-4 text-end px-0">
+                                <span className="ps-2 text-success font_size_10">
+                                  {item.offer}% Off
+                                </span>
+                              </div>
+                            )}
                           </div>
 
                           {/* Price & Quantity Row */}
@@ -722,8 +739,12 @@ const Cart = () => {
             ))}
           </div>
           <div className="container py-0">
-            <div className="d-flex justify-content-end align-items-center gray-text font_size_14">
-              <i class="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
+            <div
+              className="d-flex justify-content-end align-items-center gray-text font_size_14"
+              onClick={handleClearCart} // Attach the event handler
+              style={{ cursor: "pointer" }}
+            >
+              <i className="fa-solid fa-xmark gray-text font_size_14 pe-2"></i>
               Clear Cart
             </div>
           </div>
@@ -747,6 +768,32 @@ const Cart = () => {
                           </span>
                         </div>
                         <hr className=" me-3 p-0 m-0  text-primary" />
+                      </div>
+                      <div className="col-12 mb-0 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Discount{" "}
+                            <span className="gray-text small-number">
+                              ({cartDetails?.discount_percent || 0}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            -₹{cartDetails?.discount_amount || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Total after discount
+                            {/* <span className="gray-text small-number">
+                              ({cartDetails.service_charges_percent}%)
+                            </span> */}
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            ₹{cartDetails?.total_after_discount || ""}
+                          </span>
+                        </div>
                       </div>
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
@@ -774,19 +821,7 @@ const Cart = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="col-12 mb-0 pt-0 pb-1">
-                        <div className="d-flex justify-content-between align-items-center py-0">
-                          <span className="ps-2 font_size_14 gray-text">
-                            Discount{" "}
-                            <span className="gray-text small-number">
-                              ({cartDetails?.discount_percent || 0}%)
-                            </span>
-                          </span>
-                          <span className="pe-2 font_size_14 gray-text">
-                            -₹{cartDetails?.discount_amount || 0}
-                          </span>
-                        </div>
-                      </div>
+
                       <div>
                         <hr className=" me-3 p-0 m-0 text-primary" />
                       </div>

@@ -14,39 +14,100 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 
+const storeToLocalStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+// Get data from localStorage
+const getFromLocalStorage = (key) => {
+  const value = localStorage.getItem(key);
+  return value ? JSON.parse(value) : null;
+};
+
 // Add this function before your MenuDetails component
 const getFoodTypeStyles = (foodType) => {
-  switch (foodType?.toLowerCase()) {
+  // Convert foodType to lowercase and handle null/undefined
+  const type = (foodType || "").toLowerCase();
+
+  switch (type) {
     case "veg":
       return {
-        icon: "fa-solid fa-circle",
+        icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "nonveg":
       return {
-        icon: "fa-solid fa-play fa-rotate-270",
-        textColor: "text-danger",
-        border: "border-danger"
+        icon: "fa-solid fa-play fa-rotate-270 text-danger",
+        textColor: "text-success", // Changed to green for category text
+        border: "border-danger",
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "egg":
       return {
         icon: "fa-solid fa-egg",
-        textColor: "gray-text",
-        border: "border-muted"
+        textColor: "gray-text", // Changed to green for category text
+        border: "gray-text",
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     case "vegan":
       return {
-        icon: "fa-solid fa-leaf",
+        icon: "fa-solid fa-leaf text-success",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
     default:
       return {
-        icon: "fa-solid fa-circle",
+        icon: "fa-solid fa-circle text-success",
         textColor: "text-success",
-        border: "border-success"
+        border: "border-success",
+        categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
+  }
+};
+
+
+// Add this function near the top with other utility functions
+ const renderStarRating = (rating) => {
+   const numRating = parseFloat(rating);
+
+   // 0 to 0.4: No star
+   if (!numRating || numRating < 0.5) {
+     return null; // Don't show anything
+   }
+
+   // 0.5 to 2.5: Blank star (grey)
+   if (numRating >= 0.5 && numRating <= 2.5) {
+     return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+   }
+
+   // 3 to 4.5: Half star
+   if (numRating >= 3 && numRating <= 4.5) {
+     return (
+       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+     );
+   }
+
+   // 5: Full star
+   if (numRating === 5) {
+     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+   }
+
+   return null; // Default case
+ };
+
+// Add this function to check cart status directly from localStorage
+const isItemInCart = (menuId) => {
+  try {
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (!storedCart) return false;
+    
+    const cartData = JSON.parse(storedCart);
+    return cartData.order_items?.some(item => item.menu_id === menuId);
+  } catch (error) {
+    return false;
   }
 };
 
@@ -68,9 +129,14 @@ const MenuDetails = () => {
   const { addToCart, removeFromCart, isMenuItemInCart } = useCart();
 
   // At the top with other state declarations
-  const [customerId, setCustomerId] = useState(() => {
+  const [userId, setUserId] = useState(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_id || null;
+    return userData?.user_id || null;
+  });
+
+  const [role, setRole] = useState(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    return userData?.role || null;
   });
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
@@ -79,13 +145,13 @@ const MenuDetails = () => {
   const [favorites, setFavorites] = useState([]);
   const menu_cat_id = location.state?.menu_cat_id || 1;
   const [showModal, setShowModal] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
-    return localStorage.getItem("restaurantId") || null;
+    return localStorage.getItem("outlet_id") || null;
   });
   const [menuRestaurantId, setMenuRestaurantId] = useState(null);
   const [sourceRestaurantId, setSourceRestaurantId] = useState(null);
@@ -93,11 +159,20 @@ const MenuDetails = () => {
   const storedRestaurantId = localStorage.getItem("restaurantId");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const [customerType, setCustomerType] = useState(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    return userData?.customer_type || null;
+  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] = useState(
+    () => {
+      return (
+        location.state?.fromDifferentRestaurant ||
+        getFromLocalStorage("fromDifferentRestaurant") ||
+        false
+      );
+    }
+  );
 
-    
+  const [orderedItems, setOrderedItems] = useState(() => {
+    return (
+      location.state?.orderedItems || getFromLocalStorage("orderedItems") || []
+    );
   });
 
   const { showLoginPopup } = usePopup();
@@ -105,11 +180,15 @@ const MenuDetails = () => {
   const [originalHalfPrice, setOriginalHalfPrice] = useState(null);
   const [originalFullPrice, setOriginalFullPrice] = useState(null);
 
+  const [differentRestaurantName, setDifferentRestaurantName] = useState(
+    localStorage.getItem("differentRestaurantName") || ""
+  );
+
   useEffect(() => {
     // Get user data
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const storedCustomerId = storedUserData?.customer_id;
-    const storedCustomerType = storedUserData?.customer_type;
+    const storedUserId = storedUserData?.user_id;
+    const storedRole = storedUserData?.role;
 
     // Get restaurant data from location state or localStorage
     const locationState = location.state;
@@ -130,21 +209,14 @@ const MenuDetails = () => {
         localStorage.getItem("restaurantId");
     }
 
-    setCustomerId(storedCustomerId);
-    setCustomerType(storedCustomerType);
+    setUserId(storedUserId);
+    setRole(storedRole);
     setCurrentRestaurantId(initialRestaurantId);
 
-
-
-    
-
-    // Clean up function
+    // Cleanup - restore previous restaurant when leaving
     return () => {
       if (!locationState?.fromDifferentRestaurant) {
-        // Restore previous restaurant ID only if not viewing a different restaurant's menu
-        const previousRestaurantId = localStorage.getItem(
-          "previousRestaurantId"
-        );
+        const previousRestaurantId = localStorage.getItem("previousRestaurantId");
         if (previousRestaurantId) {
           localStorage.setItem("restaurantId", previousRestaurantId);
           localStorage.setItem("currentRestaurantId", previousRestaurantId);
@@ -161,10 +233,24 @@ const MenuDetails = () => {
     );
   };
 
-  const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
-    useState(false);
+  // const [isFromDifferentRestaurant, setIsFromDifferentRestaurant] =
+  //   useState(false);
 
-  const orderedItems = location.state?.orderedItems || [];
+  // const orderedItems = location.state?.orderedItems || [];
+
+  useEffect(() => {
+    if (location.state) {
+      if (location.state.fromDifferentRestaurant) {
+        storeToLocalStorage(
+          "fromDifferentRestaurant",
+          location.state.fromDifferentRestaurant
+        );
+      }
+      if (location.state.orderedItems) {
+        storeToLocalStorage("orderedItems", location.state.orderedItems);
+      }
+    }
+  }, [location.state]);
   const [previousRestaurantId, setPreviousRestaurantId] = useState(null);
 
   const isItemOrdered = (menuId) => {
@@ -190,18 +276,23 @@ const MenuDetails = () => {
   const fetchProductDetails = async () => {
     setIsLoading(true);
     try {
+      const outlet_id = location.state?.fromDifferentRestaurant 
+        ? location.state.outlet_id  
+        : localStorage.getItem("outlet_id");
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_menu_details`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
-            restaurant_id: currentRestaurantId,
+            outlet_id: outlet_id,
             menu_id: menuId,
             menu_cat_id: menu_cat_id,
-            customer_id: customerId || null,
+            user_id: userId || null,
           }),
         }
       );
@@ -224,6 +315,7 @@ const MenuDetails = () => {
             is_favorite,
             menu_food_type,
             restaurant_id: fetchedRestaurantId,
+            restaurant_name,
           } = data.details;
 
           // Update restaurant IDs
@@ -234,10 +326,8 @@ const MenuDetails = () => {
 
           if (location.state?.fromDifferentRestaurant) {
             setIsFromDifferentRestaurant(true);
-            localStorage.setItem(
-              "differentRestaurantName",
-              data.details.restaurant_name || ""
-            );
+            setDifferentRestaurantName(restaurant_name || "");
+            localStorage.setItem("differentRestaurantName", restaurant_name || "");
           }
 
           // Calculate discounted and old prices
@@ -278,7 +368,7 @@ const MenuDetails = () => {
         }
       }
     } catch (error) {
-      console.error("Error fetching product details:", error);
+      console.clear();
     } finally {
       setIsLoading(false);
     }
@@ -298,9 +388,12 @@ const MenuDetails = () => {
         `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -309,15 +402,19 @@ const MenuDetails = () => {
       const data = await response.json();
       if (response.ok && data.st === 1) {
         // Calculate discounted prices if there's an offer
-        const halfPriceWithOffer = data.menu_detail.half_price 
-          ? productDetails.offer 
-            ? Math.floor(data.menu_detail.half_price * (1 - productDetails.offer / 100))
+        const halfPriceWithOffer = data.menu_detail.half_price
+          ? productDetails.offer
+            ? Math.floor(
+                data.menu_detail.half_price * (1 - productDetails.offer / 100)
+              )
             : data.menu_detail.half_price
           : null;
 
         const fullPriceWithOffer = data.menu_detail.full_price
           ? productDetails.offer
-            ? Math.floor(data.menu_detail.full_price * (1 - productDetails.offer / 100))
+            ? Math.floor(
+                data.menu_detail.full_price * (1 - productDetails.offer / 100)
+              )
             : data.menu_detail.full_price
           : null;
 
@@ -337,9 +434,9 @@ const MenuDetails = () => {
 
   const handleAddToCart = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
+    const currentUserId = userData?.user_id;
 
-    if (!currentCustomerId) {
+    if (!currentUserId) {
       showLoginPopup();
       return;
     }
@@ -350,10 +447,10 @@ const MenuDetails = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
-    const currentCustomerType = userData?.customer_type;
+    const currentUserId = userData?.user_id;
+    const currentRole = userData?.role;
 
-    if (!currentCustomerId || !restaurantId) {
+    if (!currentUserId || !restaurantId) {
       return;
     }
 
@@ -369,31 +466,32 @@ const MenuDetails = () => {
         {
           ...productDetails,
           quantity,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
-          restaurant_id: restaurantId,
+          outlet_id: restaurantId,
+          menu_cat_id: menu_cat_id,
         },
         restaurantId
       );
 
-      window.showToast("success", "Item has been added to your cart");
+      window.showToast("success", "Item has been added to your checkout");
 
       setShowModal(false);
       setTimeout(() => {
-        navigate("/user_app/Cart");
+        navigate("/user_app/Menu");
       }, 2000);
     } catch (error) {
-      console.error("Error adding item to cart:", error);
-      window.showToast("error", "Failed to add item to cart");
+      console.clear();
+      window.showToast("error", "Failed to add item to checkout");
     }
   };
 
   const handleRemoveFromCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    const currentCustomerId = userData?.customer_id;
+    const currentUserId = userData?.user_id;
 
-    if (!currentCustomerId) {
+    if (!currentUserId) {
       showLoginPopup();
       return;
     }
@@ -401,13 +499,13 @@ const MenuDetails = () => {
     try {
       await removeFromCart(
         productDetails.menu_id,
-        currentCustomerId,
+        currentUserId,
         currentRestaurantId
       );
-      window.showToast("success", "Item has been removed from your cart");
+      window.showToast("success", "Item has been removed from your checkout");
     } catch (error) {
-      console.error("Error removing item from cart:", error);
-      window.showToast("error", "Failed to remove item from cart");
+      console.clear();
+      window.showToast("error", "Failed to remove item from checkout");
     }
   };
 
@@ -418,7 +516,7 @@ const MenuDetails = () => {
   // Function to handle favorite status toggle
   const handleLikeClick = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       handleUnauthorizedFavorite(navigate);
       return;
     }
@@ -433,11 +531,14 @@ const MenuDetails = () => {
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         body: JSON.stringify({
-          restaurant_id: restaurantIdToUse,
+          outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
-          customer_id: userData.customer_id,
+          user_id: userData.user_id,
         }),
       });
 
@@ -454,18 +555,18 @@ const MenuDetails = () => {
           window.showToast(
             updatedFavoriteStatus ? "success" : "success",
             updatedFavoriteStatus
-              ? "Item has been added to your favourite"
-              : "Item has been removed from your favourite"
+              ? "Item has been added to your favourites"
+              : "Item has been removed from your favourites"
           );
 
           window.dispatchEvent(new CustomEvent("favoritesUpdated"));
         } else {
-          console.error("Failed to update favorite status:", data.msg);
+          console.clear();
           window.showToast("error", "Failed to update favorite status");
         }
       }
     } catch (error) {
-      console.error("Error updating favorite status:", error);
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
@@ -490,7 +591,7 @@ const MenuDetails = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   // Helper function to check if menu is veg
@@ -526,34 +627,49 @@ const MenuDetails = () => {
     return () => clearInterval(timer);
   }, [productDetails, handleNextSlide]);
 
-  // Add the standardized rating function
-  const renderStarRating = (rating) => {
-    const numRating = parseFloat(rating);
+  // Add this useEffect to listen for cart updates
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Force re-render to update cart icon
+      setProductDetails(prevDetails => ({...prevDetails}));
+    };
 
-    if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
-    }
+    const handleCartClear = () => {
+      // Force re-render when cart is cleared
+      setProductDetails(prevDetails => ({...prevDetails}));
+    };
 
-    if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('cartCleared', handleCartClear);
+    window.addEventListener('cartStatusChanged', handleCartUpdate);
 
-    if (numRating >= 3 && numRating <= 4.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
-    }
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('cartCleared', handleCartClear);
+      window.removeEventListener('cartStatusChanged', handleCartUpdate);
+    };
+  }, []);
 
-    if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
-    }
+  // Add this useEffect to check restaurant ID
+  useEffect(() => {
+    const checkRestaurant = () => {
+      // Get current outlet ID from localStorage
+      const currentOutletId = localStorage.getItem("outlet_id");
+      
+      // Get outlet ID from location state or API response
+      const menuOutletId = location.state?.outlet_id || productDetails?.outlet_id;
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
-  };
+      if (currentOutletId && menuOutletId) {
+        const isDifferentRestaurant = currentOutletId !== menuOutletId.toString();
+        setIsFromDifferentRestaurant(isDifferentRestaurant);
+
+        // Store the state for persistence
+        storeToLocalStorage("fromDifferentRestaurant", isDifferentRestaurant);
+      }
+    };
+
+    checkRestaurant();
+  }, [location.state?.outlet_id, productDetails]);
 
   if (isLoading) {
     return (
@@ -579,9 +695,6 @@ const MenuDetails = () => {
     );
   }
 
-  console.log("Product Details:", productDetails);
-  console.log("Images Array:", productDetails?.images);
-
   return (
     <>
       <div className="page-wrapper">
@@ -594,7 +707,7 @@ const MenuDetails = () => {
           <div className="mt-5 pt-1">
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
-                restaurantName={restaurantName}
+                restaurantName={ restaurantName}
                 tableNumber={userData?.tableNumber || "1"}
               />
             </div>
@@ -611,7 +724,6 @@ const MenuDetails = () => {
                 backgroundColor: "#f6f6f6",
               }}
             >
-              {console.log("Checking images:", productDetails?.images)}
               {productDetails?.images && productDetails.images.length > 0 ? (
                 <>
                   <img
@@ -715,21 +827,19 @@ const MenuDetails = () => {
                   {/* Veg/Non-veg indicator */}
 
                   <div
-                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      left: "3px",
-                      height: "20px",
-                      width: "20px",
-                      borderWidth: "2px",
-                      borderColor:
-                        productDetails.menu_food_type?.toLowerCase() ===
-                        "nonveg"
-                          ? "#dc3545"
-                          : "#198754",
-                    }}
-                  >
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        getFoodTypeStyles(productDetails.menu_food_type).border
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -785,22 +895,20 @@ const MenuDetails = () => {
                     }}
                   />
 
-                  <div
-                    className="border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      position: "absolute",
-                      bottom: "3px",
-                      left: "3px",
-                      height: "20px",
-                      width: "20px",
-                      borderWidth: "2px",
-                      borderColor:
-                        productDetails.menu_food_type?.toLowerCase() ===
-                        "nonveg"
-                          ? "#dc3545"
-                          : "#198754",
-                    }}
-                  >
+<div
+                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                        getFoodTypeStyles(productDetails.menu_food_type).border
+                      }`}
+                      style={{
+                        position: "absolute",
+                        bottom: "3px",
+                        left: "3px",
+                        height: "20px",
+                        width: "20px",
+                        borderWidth: "2px",
+                        borderRadius: "3px",
+                      }}
+                    >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -850,20 +958,22 @@ const MenuDetails = () => {
           {isFromDifferentRestaurant && (
             <div className="container mt-3">
               <div className="alert alert-warning" role="alert">
-                This Menu is from a different restaurant. You can view details,
-                but can't add it to your current cart.
+                <div className="d-flex align-items-center">
+                  <i className="fa-solid fa-store me-2"></i>
+                  <div>
+                    <div className="fw-medium">{differentRestaurantName}</div>
+                    <div className="font_size_12">
+                      This menu is from a different restaurant. You can view details,
+                      but can't add it to your current checkout.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          <div className="container py-0">
+          <div className="container py-0 mb-5">
             <div className="dz-product-detail">
-              {/* {productDetails.is_special && (
-                <div className=" text-info text-center font_size_12 fw-medium my-1 py-0 mx-0 px-0">
-                  <i className="fa-regular fa-star me-2"></i> Special
-                  <hr className="mt-2 mb-0" />
-                </div>
-              )} */}
               <div className="detail-content mt-0 mb-0">
                 {productDetails.menu_cat_name && (
                   <h3 className="product-title">
@@ -881,124 +991,69 @@ const MenuDetails = () => {
 
               <div className="product-meta ">
                 <div className="row me-1">
-                  <div className="col-5 px-0 pt-2">
-                    <div
-                      className={`ps-3 ${
-                        getFoodTypeStyles(productDetails.menu_food_type)
-                          .textColor
-                      } font_size_10`}
-                    >
-                      <i
-                        className={`${
-                          getFoodTypeStyles(productDetails.menu_food_type).icon
-                        } me-1 ${
-                          getFoodTypeStyles(productDetails.menu_food_type)
-                            .textColor
-                        }`}
-                      ></i>
-                      {productDetails.menu_cat_name || ""}
+                  <div className="col-8">
+                    <div className="">
+                      <span className="font_size_10 text-success">
+                        <i className="fa-solid fa-utensils text-success me-1"></i>
+                        {productDetails.menu_cat_name}
+                      </span>
                     </div>
                   </div>
+                  {productDetails.rating &&
+  productDetails.rating !== "null" &&
+  productDetails.rating !== "0.0" &&
+  productDetails.rating !== "0" &&
+  productDetails.rating !== null && (
+    <div className="col-4 text-end px-0">
+      <span className="ps-2 font_size_10">
+        {renderStarRating(productDetails.rating)}
+       
+       
+        {productDetails.rating}
+      
+      </span>
+    </div>
+  )}
 
-                  <div className="col-3 ps-4 pt-1 text-center px-0">
-                    {productDetails.spicy_index && (
-                      <div className="">
-                        {renderSpicyLevel(productDetails.spicy_index)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-4 text-end px-0">
-                    {productDetails.rating > 0 && (
-                      <>
-                        {renderStarRating(productDetails.rating)}
-                        <span className="font_size_10 fw-normal gray-text">
-                          {productDetails.rating}
-                        </span>
-                      </>
-                    )}
-                  </div>
                 </div>
               </div>
-              {/* <div className="container ps-2 pt-1">
-                <div className="row">
-                  <div className="col-12 pt-1 px-0 ">
-                    {!isFromDifferentRestaurant && (
-                      <div className="dz-stepper style-3">
-                        
-                          <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected ">
-                            <span className="input-group-btn input-group-prepend d-flex justify-content-center align-items-center">
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                style={{
-                                  height: "30px",
-                                  width: "30px",
-                                }}
-                              >
-                                <i
-                                  className="ri-subtract-line fs-2"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleQuantityChange(-1)}
-                                ></i>
-                              </div>
-                            </span>
-                            <span className="stepper px-3 mx-2 rounded-1 bg-light text-center">
-                              {quantity}
-                            </span>
-                            <span className="input-group-btn input-group-append d-flex justify-content-center align-items-center">
-                              <div
-                                className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                                style={{
-                                  height: "30px",
-                                  width: "30px",
-                                }}
-                              >
-                                <i
-                                  className="ri-add-line fs-2"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleQuantityChange(1)}
-                                ></i>
-                              </div>
-                            </span>
-                          </div>
-                       
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div> */}
 
-              <div className="container ps-0 pt-1">
+              <div className=" ps-0 pt-1">
                 <div className="product-info menu_details-description">
-                  <div>
-                    <i className="fa-solid fa-spoon me-2 mt-4"></i>
-                    <span className="text-wrap m-0 gray-text font_size_12">
-                      {toTitleCase(productDetails.ingredients)}
-                    </span>
-                  </div>
-                  <hr />
+                  {productDetails.ingredients && (
+                    <>
+                      <i className="fa-solid fa-spoon me-2 mt-4"></i>
+                      <span className="text-wrap m-0 gray-text font_size_12">
+                        {toTitleCase(productDetails.ingredients)}
+                      </span>
+                      <hr className="" />
+                    </>
+                  )}
+                </div>
+                <div className="product-info menu_details-description">
                   <div>
                     <span className="text-capitalize text-wrap m-0 font_size_12">
                       {productDetails.description}
                     </span>
                   </div>
-
-                  {showQuantityError && (
-                    <div className="text-danger">Please add a quantity.</div>
-                  )}
                 </div>
 
+                {showQuantityError && (
+                  <div className="text-danger">Please add a quantity.</div>
+                )}
+
                 {/* Add end border */}
-                <RestaurantSocials />
+                <RestaurantSocials  />
               </div>
             </div>
           </div>
         </main>
 
         <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
-          <div className="container pt-0">
+          <div className="container  pt-0">
             <footer className="footer mb-2 pt-0">
-              <div className="row">
-                <hr className="dashed-line me-5 pe-5" />
+              <div className="row w-100">
+                <hr className="dashed-line me-0 pe-0" />
 
                 <div className="col-4 ps-1 pe-0">
                   <div className="d-flex align-items-center justify-content-between mb-5">
@@ -1023,7 +1078,7 @@ const MenuDetails = () => {
                   </div>
                 </div>
                 <div className="col-8 px-0 text-center">
-                  {!customerId ? (
+                  {!userId ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       onClick={showLoginPopup}
@@ -1032,31 +1087,32 @@ const MenuDetails = () => {
                       <div className="text-nowrap ">Login to Order</div>
                     </button>
                   ) : isFromDifferentRestaurant ? (
-                    <button
-                      className="btn btn-outline-white rounded-pill p-3"
-                      disabled
-                    >
-                      <div className="font-poppins text-break text-dark">
-                        Different Restaurant
-                      </div>
-                    </button>
+                    <div>
+                      <button
+                        className="btn btn-outline-white rounded-pill p-3"
+                        disabled
+                      >
+                        <div className="font-poppins text-break text-dark">
+                          Different Restaurant
+                        </div>
+                      </button>
+                      
+                    </div>
                   ) : isItemOrdered(menuId) ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
                       disabled
                     >
-                      <i className="ri-check-line pe-1"></i>
+                      <i className="fa-solid fa-check pe-1"></i>
                       <div className="font-poppins text-nowrap">Ordered</div>
                     </button>
-                  ) : isMenuItemInCart(menuId) ? (
+                  ) : isItemInCart(menuId) ? (
                     <button
                       className="btn btn-success rounded-pill"
-                      onClick={handleRemoveFromCart}
+                      onClick={handleAddToCart}
                     >
-                      <i className="fa-solid fa-xmark pe-1 text-white"></i>
-                      <div className="font-poppins text-nowrap text-white">
-                        Remove from Cart
-                      </div>
+                      <i className="fa-solid fa-plus  pe-2 text-white"></i>
+                      <div className="text-nowrap text-white">Add</div>
                     </button>
                   ) : (
                     <button
@@ -1064,7 +1120,7 @@ const MenuDetails = () => {
                       onClick={handleAddToCart}
                     >
                       <i className="fa-solid fa-plus  pe-2 text-white"></i>
-                      <div className="text-nowrap text-white">Add to Cart</div>
+                      <div className="text-nowrap text-white">Add</div>
                     </button>
                   )}
                 </div>
@@ -1080,8 +1136,8 @@ const MenuDetails = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         productDetails={productDetails || {}}
-        notes={notes}
-        setNotes={setNotes}
+        comment={comment}
+        setComment={setComment}
         portionSize={portionSize}
         setPortionSize={setPortionSize}
         halfPrice={halfPrice}

@@ -264,12 +264,12 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Cart">
-              <span className="dz-icon icon-sm">
-                <i className="fa-solid fa-cart-shopping fs-4"></i>
-              </span>
-              <span className=" font_size_16  fw-medium">Cart</span>
-            </Link>
+          <Link className="nav-link active" to="/user_app/Checkout">
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-check-to-slot fs-4"></i>
+                </span>
+                <span className=" font_size_16  fw-medium">Checkout</span>
+              </Link>
           </li>
           <li>
             <Link className="nav-link active" to="/user_app/Search">
@@ -284,7 +284,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i
                   className={
-                    userData?.customer_id
+                    userData?.user_id
                       ? "fa-solid fa-user"
                       : "fa-regular fa-user"
                   }
@@ -384,7 +384,7 @@ export const SidebarToggler = () => {
               {" "}
               <div className="d-flex align-items-center mt-4 mb-0">
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18">
+                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
                   MenuMitra
                 </div>
               </div>

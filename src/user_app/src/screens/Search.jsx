@@ -11,7 +11,7 @@ import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { renderSpicyLevel } from "../component/config";
-import AddToCartUI from '../components/AddToCartUI';
+import AddToCartUI from "../components/AddToCartUI";
 const Search = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
@@ -28,28 +28,28 @@ const Search = () => {
   const navigate = useNavigate();
   const { restaurantName } = useRestaurantId();
   const { restaurantId } = useRestaurantId();
-  const [customerId, setCustomerId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const { addToCart, isMenuItemInCart } = useCart();
   const { showLoginPopup } = usePopup();
-  const [customerType, setCustomerType] = useState(null);
+  const [role, setRole] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [originalMenu, setOriginalMenu] = useState([]); // Store original menu items
   const [foodTypes, setFoodTypes] = useState([]);
   const [selectedFoodType, setSelectedFoodType] = useState(null);
-  const [priceFilter, setPriceFilter] = useState('low');
+  const [priceFilter, setPriceFilter] = useState("low");
   const [spicyFilter, setSpicyFilter] = useState(null); // Add this state
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     if (storedUserData) {
-      setCustomerId(storedUserData.customer_id);
+      setUserId(storedUserData.user_id);
     }
   }, []);
 
@@ -60,14 +60,22 @@ const Search = () => {
   // Fetch food types from the API
   const fetchFoodTypes = async () => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/get_food_type_list`);
+      const response = await fetch(
+        `${config.apiDomain}/common_api/get_food_type_list`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
       const data = await response.json();
-      
+
       if (data.st === 1) {
         setFoodTypes(Object.values(data.food_type_list));
       }
     } catch (error) {
-      console.error('Error fetching food types:', error);
+      console.clear();
     }
   };
 
@@ -91,7 +99,10 @@ const Search = () => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) return;
 
-      if (debouncedSearchTerm.trim().length < 3 || debouncedSearchTerm.trim().length > 10) {
+      if (
+        debouncedSearchTerm.trim().length < 3 ||
+        debouncedSearchTerm.trim().length > 10
+      ) {
         setSearchedMenu([]);
         return;
       }
@@ -100,16 +111,22 @@ const Search = () => {
 
       try {
         const requestBody = {
-          restaurant_id: parseInt(restaurantId, 10),
+          outlet_id: localStorage.getItem("outlet_id"),
           keyword: debouncedSearchTerm.trim(),
-          customer_id: customerId || null,
+          user_id: userId || null,
         };
 
-        const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        });
+        const response = await fetch(
+          `${config.apiDomain}/user_api/search_menu`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            body: JSON.stringify(requestBody),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -145,7 +162,7 @@ const Search = () => {
 
   const fetchCartItems = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id) return [];
+    if (!userData?.user_id) return [];
 
     try {
       const response = await fetch(
@@ -154,10 +171,11 @@ const Search = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             cart_id: localStorage.getItem("cartId") || "",
-            customer_id: userData.customer_id,
+            user_id: userData.user_id,
             restaurant_id: restaurantId,
           }),
         }
@@ -193,14 +211,17 @@ const Search = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
-
-    if (isMenuItemInCart(menu.menu_id)) {
-      window.showToast("info", "This item is already in your cart");
+    if (!userData?.user_id || userData.role === 'guest') {
+      showLoginPopup();
       return;
+    }
+    const storedCart = localStorage.getItem('restaurant_cart_data');
+    if (storedCart) {
+      const cartData = JSON.parse(storedCart);
+      // if (cartData.order_items?.some(item => item.menu_id === menu.menu_id)) {
+      //   window.showToast("info", "This item is already in your checkout");
+      //   return;
+      // }
     }
 
     setSelectedMenu(menu);
@@ -217,9 +238,11 @@ const Search = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
@@ -244,7 +267,7 @@ const Search = () => {
 
   const handleConfirmAddToCart = async () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
+    // if (!userData?.user_id || userData.role === 'guest') {
     //   showLoginPopup();
     //   return;
     // }
@@ -263,23 +286,23 @@ const Search = () => {
         {
           ...selectedMenu,
           quantity: 1,
-          notes,
+          comment,
           half_or_full: portionSize,
           price: selectedPrice,
         },
         restaurantId
       );
 
-      window.showToast("success", `${selectedMenu.menu_name} added to cart`);
+      window.showToast("success", `${selectedMenu.menu_name} is added.`);
 
       setShowModal(false);
-      setNotes("");
+      setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
 
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      window.showToast("error", "Failed to add item to cart. Please try again");
+      window.showToast("error", "Failed to add item to checkout. Please try again");
     }
   };
 
@@ -291,7 +314,7 @@ const Search = () => {
 
   const handleSuggestionClick = (suggestion) => {
     // Simply set the suggestion as the new note value
-    setNotes(suggestion);
+    setComment(suggestion);
   };
 
   const handleUnauthorizedFavorite = () => {
@@ -300,7 +323,7 @@ const Search = () => {
 
   const handleLikeClick = async (menuId) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
+    if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
       return;
     }
@@ -317,12 +340,15 @@ const Search = () => {
         }_favourite_menu`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
           body: JSON.stringify({
-            restaurant_id: restaurantId,
+            outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -345,7 +371,7 @@ const Search = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourite" : "Added to favourite"
+          isFavorite ? "Removed from favourites" : "Added to favourites"
         );
       }
     } catch (error) {
@@ -379,8 +405,6 @@ const Search = () => {
     );
   };
 
-
-
   const handleMenuClick = (menuId) => {
     const menu = searchedMenu.find((item) => item.menu_id === menuId);
     if (menu) {
@@ -412,67 +436,49 @@ const Search = () => {
     localStorage.setItem("isDarkMode", newIsDarkMode);
   };
 
+ 
+  const getFoodTypeStyles = (foodType) => {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
 
-    
-   const getFoodTypeTextStyles = (foodType) => {
-     switch (foodType?.toLowerCase()) {
-       case "veg":
-         return {
-           icon: "fa-solid fa-circle",
-           textColor: "text-primary",
-         };
-       case "nonveg":
-         return {
-           icon: "fa-solid fa-play fa-rotate-270",
-           textColor: "text-danger",
-         };
-       case "egg":
-         return {
-           icon: "fa-solid fa-egg",
-           textColor: "text-light",
-         };
-       case "vegan":
-         return {
-           icon: "fa-solid fa-leaf",
-           textColor: "text-success",
-         };
-       default:
-         return {
-           icon: "fa-solid fa-circle",
-           textColor: "text-primary",
-         };
-     }
-   };
-
-   const getFoodTypeStyles = (foodType) => {
-     switch (foodType?.toLowerCase()) {
-       case "veg":
-         return {
-           icon: "fa-solid fa-circle text-primary",
-           border: "border-primary",
-         };
-       case "nonveg":
-         return {
-           icon: "fa-solid fa-play fa-rotate-270 text-danger",
-           border: "border-danger",
-         };
-       case "egg":
-         return {
-           icon: "fa-solid fa-egg text-light",
-           border: "border-light",
-         };
-       case "vegan":
-         return {
-           icon: "fa-solid fa-leaf text-success",
-           border: "border-success",
-         };
-       default:
-         return {
-           icon: "fa-solid fa-circle text-success",
-           border: "border-success",
-         };
-     }
-   };
+    switch (type) {
+      case "veg":
+        return {
+          icon: "fa-solid fa-circle text-success", // Keep green icon
+          border: "border-success",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "nonveg":
+        return {
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Keep red icon
+          border: "border-danger",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text", // Gray icon
+          border: "gray-text",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      case "vegan":
+        return {
+          icon: "fa-solid fa-leaf text-success", // Keep green icon
+          border: "border-success",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+      default:
+        return {
+          icon: "fa-solid fa-circle text-success", // Keep green icon
+          border: "border-success",
+          textColor: "text-dark", // Black text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
+    }
+  };
 
   useEffect(() => {
     // Apply the theme class based on the current state
@@ -507,29 +513,31 @@ const Search = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
+    // 0 to 0.4: No star
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
+      return null; // Don't show anything
     }
 
+    // 0.5 to 2.5: Blank star (grey)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
+      return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
     }
 
+    // 3 to 4.5: Half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
+    // 5: Full star
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
+    return null; // Default case
   };
 
   const handleFilter = (filterType) => {
@@ -540,14 +548,16 @@ const Search = () => {
     }
 
     const safeFilterType = String(filterType).toLowerCase();
-    
+
     if (selectedFoodType === filterType) {
       setSelectedFoodType(null);
       setSearchedMenu(originalMenu);
     } else {
       setSelectedFoodType(filterType);
-      const filteredMenu = originalMenu.filter(menu => {
-        const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+      const filteredMenu = originalMenu.filter((menu) => {
+        const menuFoodType = menu.menu_food_type
+          ? String(menu.menu_food_type).toLowerCase()
+          : "";
         return menuFoodType === safeFilterType;
       });
       setSearchedMenu(filteredMenu);
@@ -574,14 +584,17 @@ const Search = () => {
 
     try {
       const requestBody = {
-        restaurant_id: parseInt(restaurantId, 10),
+        outlet_id:localStorage.getItem("outlet_id"),
         keyword: searchValue.trim(),
-        customer_id: customerId || null,
+        user_id: userId || null,
       };
 
       const response = await fetch(`${config.apiDomain}/user_api/search_menu`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
         body: JSON.stringify(requestBody),
       });
 
@@ -599,8 +612,10 @@ const Search = () => {
           let filteredMenu = formattedMenu;
           if (selectedFoodType) {
             const safeSelectedType = String(selectedFoodType).toLowerCase();
-            filteredMenu = formattedMenu.filter(menu => {
-              const menuFoodType = menu.menu_food_type ? String(menu.menu_food_type).toLowerCase() : '';
+            filteredMenu = formattedMenu.filter((menu) => {
+              const menuFoodType = menu.menu_food_type
+                ? String(menu.menu_food_type).toLowerCase()
+                : "";
               return menuFoodType === safeSelectedType;
             });
           }
@@ -612,7 +627,7 @@ const Search = () => {
         handleError();
       }
     } catch (error) {
-      console.error("Search error:", error);
+      console.clear();
       handleError();
     } finally {
       setIsLoading(false);
@@ -632,19 +647,22 @@ const Search = () => {
 
   // Handle search results
   useEffect(() => {
-    if (debouncedSearchTerm.trim().length >= 3 && debouncedSearchTerm.trim().length <= 10) {
+    if (
+      debouncedSearchTerm.trim().length >= 3 &&
+      debouncedSearchTerm.trim().length <= 10
+    ) {
       handleSearch({ target: { value: debouncedSearchTerm } });
     }
   }, [debouncedSearchTerm]);
 
   // Utility function to convert a string to title case
   const toTitleCase = (str) => {
-    if (!str || typeof str !== 'string') return "";
+    if (!str || typeof str !== "string") return "";
 
     return str
       .toLowerCase()
       .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
 
@@ -659,44 +677,56 @@ const Search = () => {
     let sortedMenu = [...searchedMenu];
 
     switch (filterType) {
-      case 'under50':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under50":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 50;
         });
         break;
 
-      case 'under100':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under100":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 100;
         });
         break;
 
-      case 'under200':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under200":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 200;
         });
         break;
 
-      case 'under500':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under500":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 500;
         });
         break;
 
-      case 'under1000':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "under1000":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice <= 1000;
         });
         break;
 
-      case 'above1000':
-        sortedMenu = originalMenu.filter(item => {
-          const finalPrice = item.offer ? item.price * (1 - item.offer / 100) : item.price;
+      case "above1000":
+        sortedMenu = originalMenu.filter((item) => {
+          const finalPrice = item.offer
+            ? item.price * (1 - item.offer / 100)
+            : item.price;
           return finalPrice > 1000;
         });
         break;
@@ -720,7 +750,9 @@ const Search = () => {
     let filteredMenu = [...originalMenu];
 
     if (filterLevel !== null) {
-      filteredMenu = originalMenu.filter(item => parseInt(item.spicy_index, 10) === filterLevel);
+      filteredMenu = originalMenu.filter(
+        (item) => parseInt(item.spicy_index, 10) === filterLevel
+      );
     }
 
     setSearchedMenu(filteredMenu);
@@ -758,7 +790,7 @@ const Search = () => {
         <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={customerType?.tableNumber || "1"}
+            tableNumber={role?.tableNumber || "1"}
           />
         </div>
 
@@ -787,457 +819,432 @@ const Search = () => {
               ></i>
             </div>
 
-            {debouncedSearchTerm.trim().length >= 3 &&
-              debouncedSearchTerm.trim().length <= 10 &&
-              searchedMenu.length > 0 && (
-                <div className="d-flex align-items-center mt-2 gap-2">
-                  {/* Food Type Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      {selectedFoodType ? (
-                        <div className="d-flex align-items-center">
-                          <i
-                            className={`${
-                              getFoodTypeStyles(selectedFoodType).icon
-                            } me-2`}
-                          ></i>
-                          <span>
-                            {selectedFoodType.charAt(0).toUpperCase() +
-                              selectedFoodType.slice(1)}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="d-flex align-items-center">
-                          <i className="fa-solid fa-filter me-2"></i>
-                          <span>Type</span>
-                        </div>
-                      )}
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleFilter(null)}
-                        >
-                          <i className="fa-solid fa-utensils me-2"></i>
-                          <span>All</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      {foodTypes.map((type) => (
-                        <li key={type}>
-                          <button
-                            className="dropdown-item d-flex align-items-center"
-                            onClick={() => handleFilter(type)}
-                          >
-                            <i
-                              className={`${getFoodTypeStyles(type).icon} me-2`}
-                            ></i>
-                            <span>
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Price Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                        <span>
-                          {priceFilter === "under50"
-                            ? "Under ₹50"
-                            : priceFilter === "under100"
-                            ? "Under ₹100"
-                            : priceFilter === "under200"
-                            ? "Under ₹200"
-                            : priceFilter === "under500"
-                            ? "Under ₹500"
-                            : priceFilter === "under1000"
-                            ? "Under ₹1000"
-                            : priceFilter === "above1000"
-                            ? "Above ₹1000"
-                            : "Price"}
-                        </span>
-                      </div>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter(null)}
-                        >
-                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
-                          <span>All Prices</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under50")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Under ₹50</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under100")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Under ₹100</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under200")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Under ₹200</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under500")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Under ₹500</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("under1000")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Under ₹1000</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handlePriceFilter("above1000")}
-                        >
-                          <i className="fa-solid fa-indian-rupee-sign me-2"></i>
-                          <span>Above ₹1000</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Spicy Filter */}
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-outline-success bg-light rounded-5 dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                      style={{ height: "38px" }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <i className="fa-solid fa-pepper-hot me-2"></i>
-                        <span>
-                          {spicyFilter === 1
-                            ? "Spicy Level 1"
-                            : spicyFilter === 2
-                            ? "Spicy Level 2"
-                            : spicyFilter === 3
-                            ? "Spicy Level 3"
-                            : "Spicy"}
-                        </span>
-                      </div>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(null)}
-                        >
-                          <i className="fa-solid fa-filter-circle-xmark me-2"></i>
-                          <span>All</span>
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(1)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-success me-2"></i>
-                          <span>Low</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(2)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
-                          <span>Medium</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item d-flex align-items-center"
-                          onClick={() => handleSpicyFilter(3)}
-                        >
-                          <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
-                          <span>High</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-
-            {debouncedSearchTerm.trim().length >= 3 &&
-              debouncedSearchTerm.trim().length <= 10 &&
-              searchedMenu.length === 0 && (
-                <div className="d-flex justify-content-center align-items-center mt-3">
-                  <p className="text-muted text-center">No menu items found</p>
-                </div>
-              )}
-          </div>
-
-          {/* {isLoading && <p>Loading...</p>} */}
-
-          {searchedMenu.map((menu, index) => (
-            <div className="py-1 px-0" key={index}>
-              <div className="custom-card rounded-4 shadow-sm">
-                <Link
-                  to={`/user_app/ProductDetails/${menu.menu_id}`}
-                  state={{
-                    restaurant_id: menu.restaurant_id,
-                    menu_cat_id: menu.menu_cat_id,
-                  }}
-                  className="text-decoration-none text-reset"
-                  onClick={() => handleMenuClick(menu)}
+            {/* Always show filters */}
+            <div className="d-flex align-items-center mt-2 gap-2">
+              {/* Food Type Filter */}
+              <div className="dropdown text-success">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
                 >
-                  <div className="card-body py-0">
-                    <div className="row">
-                      <div className="col-3 px-0">
-                        <img
-                          src={menu.image || images}
-                          alt={menu.menu_name}
-                          className="rounded-4 img-fluid object-fit-cover"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            aspectRatio: "1/1",
-                          }}
-                          onError={(e) => {
-                            e.target.src = images;
-                            e.target.style.width = "100%";
-                            e.target.style.height = "100%";
-                            e.target.style.aspectRatio = "1/1";
-                          }}
-                        />
-                        {/* Like Button */}
-                        <div
-                          className={`border border-1 rounded-circle ${
-                            isDarkMode ? "bg-dark" : "bg-white"
-                          } opacity-75 d-flex justify-content-center align-items-center`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            right: "76%",
-                            height: "20px",
-                            width: "20px",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLikeClick(menu.menu_id);
-                          }}
-                        >
-                          <i
-                            className={`${
-                              menu.is_favourite
-                                ? "fa-solid fa-heart text-danger"
-                                : "fa-regular fa-heart"
-                            } fs-6`}
-                          ></i>
-                        </div>
-                        {/* Special Star */}
-                        {menu.is_special && (
-                          <i
-                            className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                            style={{
-                              position: "absolute",
-                              top: 3,
-                              right: "76%",
-                              height: 17,
-                              width: 17,
-                            }}
-                          ></i>
-                        )}
-                        {/* Food Type Indicator */}
-                        <div
-                          className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                            getFoodTypeStyles(menu.menu_food_type).border
-                          }`}
-                          style={{
-                            position: "absolute",
-                            bottom: "3px",
-                            left: "3px",
-                            height: "20px",
-                            width: "20px",
-                            borderWidth: "2px",
-                            borderRadius: "3px",
-                          }}
-                        >
-                          <i
-                            className={`${
-                              getFoodTypeStyles(menu.menu_food_type).icon
-                            } font_size_12`}
-                          ></i>
-                        </div>
-                        {/* Offer Tag */}
-                        {menu.offer !== 0 && (
-                          <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                            <span className="font_size_10 text-white">
-                              {menu.offer || "No"}% Off
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="col-9 pt-1 p-0 pe-2">
-                        <div className="row d-flex align-items-center mt-1">
-                          <div className="col-10">
-                            <div className="ps-2 font_size_14 fw-medium">
-                              {menu.menu_name}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="row d-flex align-items-center mt-1">
-                          <div className="col-6 d-flex align-items-center">
-                            <span
-                              className={`ps-2 font_size_10 ${
-                                getFoodTypeTextStyles(menu.category_food_type)
-                                  .textColor
-                              }`}
-                            >
-                              <i
-                                className={`${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .icon
-                                } ${
-                                  getFoodTypeTextStyles(menu.category_food_type)
-                                    .textColor
-                                } font_size_10 mt-0 me-1`}
-                              ></i>
-                              {menu.category_name}
-                            </span>
-                          </div>
-                          <div className="col-4 d-flex align-items-center ps-4 pe-3">
-                            {menu.spicy_index && (
-                              <div className="">
-                                {renderSpicyLevel(menu.spicy_index)}
-                              </div>
-                            )}
-                          </div>
-                          <div className="col-2 d-flex align-items-center justify-content-end">
-                            {menu.rating > 0 && (
-                              <>
-                                {renderStarRating(menu.rating)}
-                                <span className="font_size_10 fw-normal gray-text">
-                                  {menu.rating}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-5 mt-2">
-                            <p className="ms-2 mb-0 fw-medium">
-                              {menu.offer ? (
-                                <>
-                                  <span className="font_size_14 fw-semibold text-info">
-                                    ₹
-                                    {Math.floor(
-                                      menu.price * (1 - menu.offer / 100)
-                                    )}
-                                  </span>
-                                  <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                    ₹{menu.price}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="font_size_14 fw-semibold text-info">
-                                  ₹{menu.price}
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
-                            <div
-                              className={`
-                                d-flex 
-                                align-items-center 
-                                justify-content-center 
-                                rounded-circle 
-                                bg-white 
-                                border-opacity-25 
-                                border-secondary 
-                                border
-                              `}
-                              style={{
-                                width: "25px",
-                                height: "25px",
-                                cursor: "pointer",
-                              }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (userData?.customer_id) {
-                                  handleAddToCartClick(menu);
-                                } else {
-                                  showLoginPopup();
-                                }
-                              }}
-                            >
-                              <i
-                                className={`fa-solid ${
-                                  isMenuItemInCart(menu.menu_id)
-                                    ? "fa-solid fa-circle-check"
-                                    : "fa-solid fa-plus text-secondary"
-                                } fs-6`}
-                              ></i>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                  {selectedFoodType ? (
+                    <div className="d-flex align-items-center">
+                      <i
+                        className={`${
+                          getFoodTypeStyles(selectedFoodType).icon
+                        } me-2`}
+                      ></i>
+                      <span className="text-success">
+                        {selectedFoodType.charAt(0).toUpperCase() +
+                          selectedFoodType.slice(1)}
+                      </span>
                     </div>
+                  ) : (
+                    <div className="d-flex align-items-center">
+                      <i className="fa-solid fa-filter text-success me-2"></i>
+                      <span className="text-success">Type</span>
+                    </div>
+                  )}
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleFilter(null)}
+                    >
+                      <i className="fa-solid fa-utensils text-success me-2"></i>
+                      <span  className="">All</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  {foodTypes.map((type) => (
+                    <li key={type}>
+                      <button
+                        className="dropdown-item d-flex align-items-center text-success"
+                        onClick={() => handleFilter(type)}
+                      >
+                        <i
+                          className={`${getFoodTypeStyles(type).icon} me-2`}
+                        ></i>
+                        <span className={getFoodTypeStyles(type).textColor}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Price Filter */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                    <span className="text-success">
+                      {priceFilter === "under50"
+                        ? "Under ₹50"
+                        : priceFilter === "under100"
+                        ? "Under ₹100"
+                        : priceFilter === "under200"
+                        ? "Under ₹200"
+                        : priceFilter === "under500"
+                        ? "Under ₹500"
+                        : priceFilter === "under1000"
+                        ? "Under ₹1000"
+                        : priceFilter === "above1000"
+                        ? "Above ₹1000"
+                        : "Price"}
+                    </span>
                   </div>
-                </Link>
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter(null)}
+                    >
+                      <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
+                      <span>All Prices</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under50")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹50</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under100")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹100</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under200")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹200</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under500")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹500</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("under1000")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Under ₹1000</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handlePriceFilter("above1000")}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign text-success me-2"></i>
+                      <span>Above ₹1000</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Spicy Filter */}
+              <div className="dropdown">
+                <button
+                  className="btn btn-sm btn-light rounded-5 dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ height: "38px" }}
+                >
+                  <div className="d-flex align-items-center">
+                    <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                    <span className="text-success">
+                      {spicyFilter === 1
+                        ? "Spicy 1"
+                        : spicyFilter === 2
+                        ? "Spicy 2"
+                        : spicyFilter === 3
+                        ? "Spicy 3"
+                        : "Spicy"}
+                    </span>
+                  </div>
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(null)}
+                    >
+                      <i className="fa-solid fa-filter-circle-xmark text-success me-2"></i>
+                      <span>All</span>
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(1)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-success me-2"></i>
+                      <span>Low</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(2)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-warning me-2"></i>
+                      <span>Medium</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item d-flex align-items-center"
+                      onClick={() => handleSpicyFilter(3)}
+                    >
+                      <i className="fa-solid fa-pepper-hot text-danger me-2"></i>
+                      <span>High</span>
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
-          ))}
+
+            {/* Then show menu items if they exist */}
+            {searchedMenu.length > 0 ? (
+              <div className="menu-items-container">
+                {searchedMenu.map((menu, index) => (
+                  <div className="py-1 px-0 mt-2" key={index}>
+                    <div className="custom-card rounded-4 shadow-sm">
+                      <Link
+                        to={`/user_app/ProductDetails/${menu.menu_id}`}
+                        state={{
+                          restaurant_id: menu.restaurant_id,
+                          menu_cat_id: menu.menu_cat_id,
+                        }}
+                        className="text-decoration-none text-reset"
+                        onClick={() => handleMenuClick(menu)}
+                      >
+                        <div className="card-body py-0">
+                          <div className="row">
+                            <div className="col-3 px-0">
+                              <img
+                                src={menu.image || images}
+                                alt={menu.menu_name}
+                                className="rounded-4 img-fluid object-fit-cover"
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  aspectRatio: "1/1",
+                                }}
+                                onError={(e) => {
+                                  e.target.src = images;
+                                  e.target.style.width = "100%";
+                                  e.target.style.height = "100%";
+                                  e.target.style.aspectRatio = "1/1";
+                                }}
+                              />
+                              {/* Like Button */}
+                              <div
+                                className={`border border-1 rounded-circle ${
+                                  isDarkMode ? "bg-dark" : "bg-white"
+                                } opacity-75 d-flex justify-content-center align-items-center`}
+                                style={{
+                                  position: "absolute",
+                                  bottom: "3px",
+                                  right: "76%",
+                                  height: "20px",
+                                  width: "20px",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleLikeClick(menu.menu_id);
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    menu.is_favourite
+                                      ? "fa-solid fa-heart text-danger"
+                                      : "fa-regular fa-heart"
+                                  } fs-6`}
+                                ></i>
+                              </div>
+                              {/* Special Star */}
+                              {menu.is_special && (
+                                <i
+                                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
+                                  style={{
+                                    position: "absolute",
+                                    top: 3,
+                                    right: "76%",
+                                    height: 17,
+                                    width: 17,
+                                  }}
+                                ></i>
+                              )}
+                              {/* Food Type Indicator */}
+                              <div
+                                className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                                  getFoodTypeStyles(menu.menu_food_type).border
+                                }`}
+                                style={{
+                                  position: "absolute",
+                                  bottom: "3px",
+                                  left: "3px",
+                                  height: "20px",
+                                  width: "20px",
+                                  borderWidth: "2px",
+                                  borderRadius: "3px",
+                                }}
+                              >
+                                <i
+                                  className={`${
+                                    getFoodTypeStyles(menu.menu_food_type).icon
+                                  } font_size_12`}
+                                ></i>
+                              </div>
+                              {/* Offer Tag */}
+                              {menu.offer !== 0 && (
+                                <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                                  <span className="font_size_10 text-white">
+                                    {menu.offer || "No"}% Off
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="col-9 pt-1 p-0 pe-2">
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-10">
+                                  <div className="ps-2 font_size_14 fw-medium">
+                                    {menu.menu_name}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row d-flex align-items-center mt-1">
+                                <div className="col-6 d-flex align-items-center ps-4">
+                                  <div className="font_size_10 text-success">
+                                    <i className="fa-solid fa-utensils text-success me-1"></i>
+                                    {menu.category_name}
+                                  </div>
+                                </div>
+                                <div className="col-4 d-flex align-items-center ps-4 pe-3">
+                                  {menu.spicy_index && (
+                                    <div className="">
+                                      {renderSpicyLevel(menu.spicy_index)}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="col-2 d-flex align-items-center justify-content-end">
+                                  {menu.rating > 0 && (
+                                    <>
+                                      {renderStarRating(menu.rating)}
+                                      <span className="font_size_10 fw-normal gray-text">
+                                        {menu.rating}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-5 mt-2">
+                                  <p className="ms-2 mb-0 fw-medium">
+                                    {menu.offer ? (
+                                      <>
+                                        <span className="font_size_14 fw-semibold text-info">
+                                          ₹
+                                          {Math.floor(
+                                            menu.price * (1 - menu.offer / 100)
+                                          )}
+                                        </span>
+                                        <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
+                                          ₹{menu.price}
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="font_size_14 fw-semibold text-info">
+                                        ₹{menu.price}
+                                      </span>
+                                    )}
+                                  </p>
+                                </div>
+                                <div className="col-7 text-end font_size_10 d-flex align-items-center justify-content-end">
+                                  <div
+                                    className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
+                                    style={{
+                                      width: "25px",
+                                      height: "25px",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleAddToCartClick(menu);
+                                    }}
+                                  >
+                                    <i
+                                      className={`fa-solid ${
+                                        (() => {
+                                          const storedCart = localStorage.getItem('restaurant_cart_data');
+                                          if (!storedCart) return "fa-plus text-secondary";
+                                          const cartData = JSON.parse(storedCart);
+                                          return cartData.order_items?.some(item => item.menu_id === menu.menu_id)
+                                            ? "fa-circle-check text-success"
+                                            : "fa-plus text-secondary"
+                                        })()
+                                      } fs-6`}
+                                    ></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center mt-4">
+                <p>No menu items found</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="container">
           <RestaurantSocials />
@@ -1249,8 +1256,8 @@ const Search = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           productDetails={selectedMenu || {}}
-          notes={notes}
-          setNotes={setNotes}
+          comment={comment}
+          setComment={setComment}
           portionSize={portionSize}
           setPortionSize={setPortionSize}
           halfPrice={halfPrice}
@@ -1259,7 +1266,7 @@ const Search = () => {
           originalFullPrice={selectedMenu?.full_price}
           isPriceFetching={isPriceFetching}
           handleConfirmAddToCart={handleConfirmAddToCart}
-          handleSuggestionClick={(suggestion) => setNotes(suggestion)}
+          handleSuggestionClick={(suggestion) => setComment(suggestion)}
           handleModalClick={(e) => {
             if (e.target.classList.contains("modal")) {
               setShowModal(false);

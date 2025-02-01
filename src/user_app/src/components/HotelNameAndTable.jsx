@@ -58,7 +58,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
     navigate("/user_app/restaurant");
   };
 
-  const displayName = restaurantName ? titleCase(restaurantName) : "";
+  const displayName = restaurantName ? restaurantName.toUpperCase() : "";
 
   return (
     <>

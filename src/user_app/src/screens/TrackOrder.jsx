@@ -1,63 +1,55 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
-import images from "../assets/chiken.jpg";
+import images from "../assets/MenuDefault.png";
 import SigninButton from "../constants/SigninButton";
 import Bottom from "../component/bottom";
 import OrderGif from "../screens/OrderGif"; // Ensure this import path is correct
- import "../assets/css/toast.css";
+import "../assets/css/toast.css";
 import { useRestaurantId } from "../context/RestaurantIdContext"; // Correct import
 import { ThemeProvider } from "../context/ThemeContext.js";
 import LoaderGif from "./LoaderGIF.jsx";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
-import config from "../component/config"
+import config from "../component/config";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
+import { usePopup } from "../context/PopupContext";
+import axios from "axios";
 const TrackOrder = () => {
-
-  // Add these helper functions at the top of your component
-  const getFoodTypeTextStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
-      case "veg":
-        return {
-          textColor: "text-success",
-          icon: "fa-solid fa-leaf",
-        };
-      case "non-veg":
-        return {
-          textColor: "text-danger",
-          icon: "fa-solid fa-drumstick-bite",
-        };
-      case "egg":
-        return {
-          textColor: "text-light",
-          icon: "fa-solid fa-egg",
-        };
-      default:
-        return {
-          textColor: "text-success",
-          icon: "fa-solid fa-leaf",
-        };
-    }
-  };
-
   const titleCase = (str) => {
     if (!str) return "";
     return str
       .toLowerCase()
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
       .join(" ");
   };
-  // Define displayCartItems
+
+    const [customerName, setCustomerName] = useState("");
+ 
+  
+    useEffect(() => {
+      const customerName = localStorage.getItem("customerName");
+      setCustomerName(customerName);
+    }, []);
+const [paymentMethod, setPaymentMethod] = useState("");
+  const timeoutRef = useRef({});
+  // Move these hooks to the top with other state declarations
+  const [hasGoogleReview, setHasGoogleReview] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isCompleted, setIsCompleted] = useState(false); // State to track if order is completed
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [selectedRating, setSelectedRating] = useState("");
+  const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
   const { order_number } = useParams();
-
+  const [isProcessingUPI, setIsProcessingUPI] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
+  const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
-
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
 
@@ -68,25 +60,23 @@ const TrackOrder = () => {
   const toast = useRef(null);
 
   const isLoggedIn = !!localStorage.getItem("userData");
- 
+
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [portionSize, setPortionSize] = useState("full");
   const [halfPrice, setHalfPrice] = useState(null);
   const [fullPrice, setFullPrice] = useState(null);
-  const [notes, setNotes] = useState("");
+  const [comment, setComment] = useState("");
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem("userData");
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Get customer ID and type
-  const customerId =
-    userData?.customer_id || localStorage.getItem("customer_id");
-  const customerType =
-    userData?.customer_type || localStorage.getItem("customer_type");
+  // Get user ID and role
+  const userId = userData?.user_id || localStorage.getItem("user_id");
+  const role = userData?.role || localStorage.getItem("role");
 
-  const [orderStatus, setOrderStatus] = useState(null);
+  const [orderStatus, setOrderStatus] = useState("");
 
   // Add helper function at the top of component
   const isVegMenu = (menuType) => {
@@ -102,15 +92,22 @@ const TrackOrder = () => {
     });
   };
 
- 
-
- 
   const isItemAdded = (menuId) => {
     return (
       removedItems.has(menuId) ||
       pendingItems.some((item) => item.menu_id === menuId)
     );
   };
+
+  useEffect(() => {
+    try {
+      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
+      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      setHasGoogleReview(!!rateOnGoogle);
+    } catch (error) {
+      setHasGoogleReview(false);
+    }
+  }, []);
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -131,7 +128,7 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.min((prev[menuId] || 1) + 1, 20);
       if (newQuantity === 20) {
-        toast.current.show({
+        toast.current?.show({
           severity: "info",
           summary: "Maximum Quantity",
           detail: "You've reached the maximum quantity",
@@ -159,7 +156,7 @@ const TrackOrder = () => {
     setQuantities((prev) => {
       const newQuantity = Math.max((prev[menuId] || 1) - 1, 1);
       if (newQuantity === 1) {
-        toast.current.show({
+        toast.current?.show({
           severity: "info",
           summary: "Minimum Quantity",
           detail: "You've reached the minimum quantity",
@@ -297,7 +294,7 @@ const TrackOrder = () => {
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
-      const filteredMenuDetails = orderDetails.menu_details.filter(
+      const filteredMenuDetails = orderDetails.menu_details?.filter(
         (item) =>
           !removedItems.some(
             (removedItem) =>
@@ -324,10 +321,8 @@ const TrackOrder = () => {
     }
   }, [orderDetails, removedItems]);
 
-  
-
   const handleRemovePendingItem = (menuId) => {
-    setPendingItems((prev) => prev.filter((item) => item.menu_id !== menuId));
+    setPendingItems((prev) => prev?.filter((item) => item.menu_id !== menuId));
     setRemovedItems((prev) => {
       const newSet = new Set(prev);
       newSet.delete(menuId);
@@ -366,7 +361,6 @@ const TrackOrder = () => {
   useEffect(() => {
     const fetchSearchedMenu = async () => {
       if (!restaurantId) {
-        
         return;
       }
 
@@ -382,29 +376,28 @@ const TrackOrder = () => {
 
       try {
         const userData = JSON.parse(localStorage.getItem("userData"));
-        const currentCustomerId =
-          userData?.customer_id || localStorage.getItem("customer_id");
-        const currentCustomerType =
-          userData?.customer_type || localStorage.getItem("customer_type");
+        const currentUserId =
+          userData?.user_id || localStorage.getItem("user_id");
+        const currentRole = userData?.role || localStorage.getItem("role");
 
-        if (!currentCustomerId) {
-     
+        if (!currentUserId) {
           return;
         }
 
         const requestBody = {
           restaurant_id: parseInt(restaurantId, 10),
           keyword: debouncedSearchTerm.trim(),
-          customer_id: currentCustomerId,
-          customer_type: currentCustomerType,
+          user_id: currentUserId,
+          role: currentRole,
         };
 
         const response = await fetch(
-           `${config.apiDomain}/user_api/search_menu`,
+          `${config.apiDomain}/user_api/search_menu`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify(requestBody),
           }
@@ -421,28 +414,25 @@ const TrackOrder = () => {
             }));
             setSearchedMenu(formattedMenu);
           } else {
-            
           }
         } else {
-         
+          console.clear();
         }
       } catch (error) {
-        
+        console.clear();
       }
 
       setIsLoading(false);
     };
 
     fetchSearchedMenu();
-  }, [debouncedSearchTerm, restaurantId, customerId]);
+  }, [debouncedSearchTerm, restaurantId, userId]);
 
   const toTitleCase = (str) => {
     return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      return txt.charAt(0)?.toUpperCase() + txt.substr(1)?.toLowerCase();
     });
   };
-
-  
 
   // Update the handleLikeClick function
   useEffect(() => {
@@ -491,9 +481,11 @@ const TrackOrder = () => {
     };
   }, []);
 
-  const handleUnauthorizedFavorite = () => {
+  const { showLoginPopup } = usePopup();
+
+  const handleUnauthorizedFavorite = (navigate) => {
     window.showToast("info", "Please login to use favourite functionality");
-   
+    showLoginPopup();
   };
 
   const handleLikeClick = async (menu, e) => {
@@ -501,8 +493,9 @@ const TrackOrder = () => {
     e.stopPropagation();
 
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.customer_id || userData.customer_type === "guest") {
-      handleUnauthorizedFavorite();
+    if (!userData?.user_id || userData.role === "guest") {
+      window.showToast("info", "Please login to use favourite functionality");
+      showLoginPopup();
       return;
     }
 
@@ -512,19 +505,21 @@ const TrackOrder = () => {
 
     try {
       const response = await fetch(
-         `${config.apiDomain}/user_api/${
+        `${config.apiDomain}/user_api/${
           isFavorite ? "remove" : "save"
         }_favourite_menu`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
-            customer_id: userData.customer_id,
-            customer_type: userData.customer_type,
+            user_id: userData.user_id,
+            role: userData.role,
           }),
         }
       );
@@ -541,10 +536,10 @@ const TrackOrder = () => {
 
         // Update order details
         setOrderDetails((prevDetails) => {
-          if (!prevDetails?.order_items) return prevDetails;
+          if (!prevDetails?.menu_details) return prevDetails;
           return {
             ...prevDetails,
-            order_items: prevDetails.order_items.map((item) =>
+            menu_details: prevDetails.menu_details.map((item) =>
               item.menu_id === menu.menu_id
                 ? { ...item, is_favourite: newFavoriteStatus }
                 : item
@@ -552,7 +547,7 @@ const TrackOrder = () => {
           };
         });
 
-        // Dispatch global event with consistent name
+        // Dispatch global event
         window.dispatchEvent(
           new CustomEvent("favoriteUpdated", {
             detail: {
@@ -569,56 +564,72 @@ const TrackOrder = () => {
         );
       }
     } catch (error) {
-     
+      console.clear();
       window.showToast("error", "Failed to update favorite status");
     }
   };
 
   const fetchOrderDetails = async (orderNumber) => {
-    const sectionId =
-      JSON.parse(localStorage.getItem("userData"))?.sectionId ||
-      localStorage.getItem("sectionId") ||
-      "";
+    const sectionId = localStorage.getItem("sectionId") || "";
+
     try {
       setLoading(true);
       const response = await fetch(
-         `${config.apiDomain}/user_api/get_order_details`,
+        `${config.apiDomain}/user_api/get_order_details`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
             order_number: orderNumber,
-            customer_id: customerId,
-            customer_type: customerType,
+            user_id: userId,
+            role: role,
             section_id: sectionId,
           }),
         }
       );
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1 && data.lists) {
-          setOrderDetails(data.lists);
-          const status = data.lists.order_details.order_status.toLowerCase();
+        const { lists } = await response.json();
+        if (lists) {
+          // Format menu items
+          const formattedMenu = lists.menu_details.map((item) => ({
+            ...item,
+            menu_name: toTitleCase(item.menu_name),
+            is_favourite: item.is_favourite === 1,
+            discountedPrice: item.offer
+              ? Math.floor(item.price * (1 - item.offer / 100))
+              : item.price,
+          }));
 
-          // Normalize cancelled status variations
-          if (["cancle", "cancelled", "canceled"].includes(status)) {
-            setOrderStatus("canceled");
-            setIsCompleted(true); // Treat cancelled orders like completed ones
-          } else if (status === "completed") {
-            setOrderStatus("completed");
-            setIsCompleted(true);
-          } else {
-            setOrderStatus(status);
-            setIsCompleted(false);
+          // Update order details with formatted menu
+          setOrderDetails({
+            ...lists,
+            menu_details: formattedMenu,
+          });
+
+          // Set rating if it exists
+          if (lists.order_details.rating) {
+            setSelectedRating(lists.order_details.rating);
           }
+
+          // Handle order status
+          const status = lists.order_details.order_status.toLowerCase();
+          setOrderStatus(
+            ["cancle", "cancelled", "canceled"].includes(status)
+              ? "canceled"
+              : status
+          );
+          setIsCompleted(
+            status === "completed" ||
+              ["cancle", "cancelled", "canceled"].includes(status)
+          );
         }
       }
-      
     } catch (error) {
-      
+      console.clear();
     } finally {
       setLoading(false);
     }
@@ -645,7 +656,7 @@ const TrackOrder = () => {
     switch (status?.toLowerCase()) {
       case "canceled":
       case "cancle":
-        return "ri-close-circle-line text-danger";
+        return "fa-regular fa-circle-xmark text-danger";
       case "ongoing":
         return "fa-solid fa-hourglass-half text-secondary opacity-25 font_size_14";
       case "placed":
@@ -698,58 +709,65 @@ const TrackOrder = () => {
     try {
       setOrderDetails((prev) => ({
         ...prev,
-        menu_details: prev.menu_details.filter(
+        menu_details: prev.menu_details?.filter(
           (item) => item.menu_id !== menu.menu_id
         ),
       }));
 
       window.showToast("success", `${menu.menu_name} removed from order`);
     } catch (error) {
-     
+      console.clear();
+
       window.showToast("error", "Failed to remove item. Please try again.");
     }
   };
 
-
-
-    
   const getFoodTypeStyles = (foodType) => {
-    switch (foodType?.toLowerCase()) {
+    // Convert foodType to lowercase for case-insensitive comparison
+    const type = (foodType || "").toLowerCase();
+
+    switch (type) {
       case "veg":
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "nonveg":
         return {
-          icon: "fa-solid fa-play fa-rotate-270 text-danger",
+          icon: "fa-solid fa-play fa-rotate-270 text-danger", // Food type indicator color
           border: "border-danger",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "egg":
         return {
-          icon: "fa-solid fa-egg text-light",
-          border: "border-muted",
+          icon: "fa-solid fa-egg", // Food type indicator color
+          border: "gray-text",
+          textColor: "gray-text", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
         return {
-          icon: "fa-solid fa-leaf text-success",
+          icon: "fa-solid fa-leaf text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       default:
         return {
-          icon: "fa-solid fa-circle text-success",
+          icon: "fa-solid fa-circle text-success", // Food type indicator color
           border: "border-success",
+          textColor: "text-success", // Category text color - always green
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
     }
   };
-  
- 
-
- 
 
   useEffect(() => {
     if (orderDetails && removedItems.length > 0) {
-      const filteredMenuDetails = orderDetails.menu_details.filter(
+      const filteredMenuDetails = orderDetails.menu_details?.filter(
         (item) =>
           !removedItems.some(
             (removedItem) =>
@@ -786,7 +804,7 @@ const TrackOrder = () => {
       return str
         .toLowerCase()
         .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0)?.toUpperCase() + word.slice(1))
         .join(" ");
     };
 
@@ -817,111 +835,142 @@ const TrackOrder = () => {
 
   const handleCategoryClick = (categoryId, categoryName) => {
     navigate(`/user_app/Category/${categoryId}`, {
-      state: { categoryName }
+      state: { categoryName },
     });
   };
 
   useEffect(() => {
-    if (order_number && restaurantId && customerId) {
+    if (order_number && restaurantId && userId) {
       fetchOrderDetails(order_number);
       // fetchOrderStatus();
       // handleSubmitOrder();
     }
-  }, [order_number, restaurantId, customerId]);
+  }, [order_number, restaurantId, userId]);
 
-  useEffect(() => {
-    const checkOrderExists = () => {
-      try {
-        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-        
-        // Check placed orders
-        if (allOrders.placed?.some(order => order.order_number === order_number)) {
-          return true;
-        }
+  // useEffect(() => {
+  //   const checkOrderExists = () => {
+  //     try {
+  //       const allOrders = JSON.parse(
+  //         localStorage.getItem("allOrderList") || "{}"
+  //       );
 
-        // Check ongoing orders
-        if (allOrders.ongoing?.some(order => order.order_number === order_number)) {
-          return true;
-        }
+  //       // Check placed orders
+  //       if (
+  //         allOrders.placed?.some((order) => order.order_number === order_number)
+  //       ) {
+  //         return true;
+  //       }
 
-        // Check completed orders (date-wise grouping)
-        if (allOrders.completed) {
-          const exists = Object.values(allOrders.completed).some(dateOrders => 
-            dateOrders.some(order => order.order_number === order_number)
-          );
-          if (exists) return true;
-        }
+  //       // Check ongoing orders
+  //       if (
+  //         allOrders.ongoing?.some(
+  //           (order) => order.order_number === order_number
+  //         )
+  //       ) {
+  //         return true;
+  //       }
 
-        // Check cancelled orders (handle both spellings and structures)
-        if (allOrders.cancelled?.some(order => order.order_number === order_number) || 
-            allOrders.canceled?.some(order => order.order_number === order_number) ||
-            allOrders.cancle?.some(order => order.order_number === order_number)) {
-          return true;
-        }
+  //       // Check completed orders (date-wise grouping)
+  //       if (allOrders.completed) {
+  //         const exists = Object.values(allOrders.completed).some((dateOrders) =>
+  //           dateOrders.some((order) => order.order_number === order_number)
+  //         );
+  //         if (exists) return true;
+  //       }
 
-        // If order not found anywhere
-        window.showToast("error", "Order not found");
-        navigate("/user_app/Index");
-        return false;
+  //       // Check cancelled orders (handle both spellings and structures)
+  //       if (
+  //         allOrders.cancelled?.some(
+  //           (order) => order.order_number === order_number
+  //         ) ||
+  //         allOrders.canceled?.some(
+  //           (order) => order.order_number === order_number
+  //         ) ||
+  //         allOrders.cancle?.some((order) => order.order_number === order_number)
+  //       ) {
+  //         return true;
+  //       }
 
-      } catch (error) {
-        console.error("Error checking order:", error);
-      }
-    };
+  //       // If order not found anywhere
+  //       window.showToast("error", "Order not found");
+  //       navigate("/user_app/Index");
+  //       return false;
+  //     } catch (error) {
+  //       console.clear();
+  //     }
+  //   };
 
-    if (order_number && !orderDetails) {
-      checkOrderExists();
-    }
-  }, [order_number, navigate, orderDetails]);
+  //   if (order_number && !orderDetails) {
+  //     checkOrderExists();
+  //   }
+  // }, [order_number, navigate, orderDetails]);
 
   // Add this check right after the component declarations
   useEffect(() => {
     const validateOrder = () => {
+      console.log("TrackOrder: Starting order validation");
       try {
-        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+        const allOrders = JSON.parse(
+          localStorage.getItem("allOrderList") || "{}"
+        );
+        console.log(
+          "TrackOrder: Retrieved allOrders from localStorage:",
+          allOrders
+        );
         let orderFound = false;
 
         // Check ongoing orders
         if (allOrders.ongoing?.length > 0) {
+          console.log("TrackOrder: Checking ongoing orders");
           orderFound = allOrders.ongoing.some(
-            order => order.order_number === order_number
+            (order) => order.order_number === order_number
           );
+          console.log("TrackOrder: Order found in ongoing?", orderFound);
         }
 
         // Check completed orders (date-wise grouping)
         if (!orderFound && allOrders.completed) {
-          orderFound = Object.values(allOrders.completed).some(dateOrders => 
-            dateOrders.some(order => order.order_number === order_number)
+          console.log("TrackOrder: Checking completed orders");
+          orderFound = Object.values(allOrders.completed).some((dateOrders) =>
+            dateOrders.some((order) => order.order_number === order_number)
           );
+          console.log("TrackOrder: Order found in completed?", orderFound);
         }
 
         // Check placed orders
         if (!orderFound && allOrders.placed?.length > 0) {
+          console.log("TrackOrder: Checking placed orders");
           orderFound = allOrders.placed.some(
-            order => order.order_number === order_number
+            (order) => order.order_number === order_number
           );
+          console.log("TrackOrder: Order found in placed?", orderFound);
         }
 
         // Check cancelled orders - handle both date-wise and array formats
         if (!orderFound) {
+          console.log("TrackOrder: Checking cancelled orders");
           // First check if cancelled orders are date-wise grouped
-          const cancelTypes = ['cancelled', 'canceled', 'cancle'];
+          const cancelTypes = ["cancelled", "canceled", "cancle"];
           for (const type of cancelTypes) {
             if (allOrders[type]) {
+              console.log(`TrackOrder: Checking ${type} orders`);
               // If it's an array, check directly
               if (Array.isArray(allOrders[type])) {
                 orderFound = allOrders[type].some(
-                  order => order.order_number === order_number
-                );
-              } 
-              // If it's date-wise grouped, check each date group
-              else {
-                orderFound = Object.values(allOrders[type]).some(dateOrders =>
-                  Array.isArray(dateOrders) && dateOrders.some(
-                    order => order.order_number === order_number
-                  )
+                  (order) => order.order_number === order_number
                 );
               }
+              // If it's date-wise grouped, check each date group
+              else {
+                orderFound = Object.values(allOrders[type]).some(
+                  (dateOrders) =>
+                    Array.isArray(dateOrders) &&
+                    dateOrders.some(
+                      (order) => order.order_number === order_number
+                    )
+                );
+              }
+              console.log(`TrackOrder: Order found in ${type}?`, orderFound);
               if (orderFound) break;
             }
           }
@@ -929,15 +978,19 @@ const TrackOrder = () => {
 
         // If order is not found in any category
         if (!orderFound) {
+          console.log(
+            "TrackOrder: Order not found in any category, redirecting to Index"
+          );
           setLoading(false);
           window.showToast("error", "Order not found");
           navigate("/user_app/Index");
           return false;
         }
 
+        console.log("TrackOrder: Order validation successful");
         return true;
       } catch (error) {
-        console.error("Error validating order:", error);
+        console.error("TrackOrder: Error during order validation:", error);
         setLoading(false);
         window.showToast("error", "Something went wrong");
         navigate("/user_app/Index");
@@ -967,45 +1020,290 @@ const TrackOrder = () => {
   const renderStarRating = (rating) => {
     const numRating = parseFloat(rating);
 
+    // 0 to 0.4: No star
     if (!numRating || numRating < 0.5) {
-      return <i className="font_size_10 text-warning me-1"></i>;
+      return null; // Don't show anything
     }
 
+    // 0.5 to 2.5: Blank star (grey)
     if (numRating >= 0.5 && numRating <= 2.5) {
-      return (
-        <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-      );
+      return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
     }
 
+    // 3 to 4.5: Half star
     if (numRating >= 3 && numRating <= 4.5) {
       return (
         <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
       );
     }
 
+    // 5: Full star
     if (numRating === 5) {
-      return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+      return (
+        <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>
+      );
     }
 
-    return (
-      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-    );
+    return null; // Default case
   };
 
   // Define getOrderTypeIcon function inside the TrackOrder component
-const getOrderTypeIcon = (orderType) => {
-  switch (orderType?.toLowerCase()) {
-    case "parcel":
-      return <i className="fa-solid fa-hand-holding-heart"></i>;
-    case "drive-through":
-      return <i className="fa-solid fa-car-side"></i>;
-    case "dine-in":
-      return <i className="fa-solid fa-utensils"></i>;
-    default:
-      return null;
-  }
-};
+  const getOrderTypeIcon = (orderType) => {
+    switch (orderType?.toLowerCase()) {
+      case "parcel":
+        return <i className="fa-solid fa-hand-holding-heart"></i>;
+      case "drive-through":
+        return <i className="fa-solid fa-car-side"></i>;
+      case "dine-in":
+        return <i className="fa-solid fa-utensils"></i>;
+      default:
+        return null;
+    }
+  };
 
+  // Add this calculation function
+  const calculateTotals = (orderDetails) => {
+    if (!orderDetails) return {};
+
+    const totalBill = parseFloat(orderDetails.total_bill || 0);
+    const discountPercent = parseFloat(orderDetails.discount_percent || 0);
+    const discountAmount = parseFloat(orderDetails.discount_amount || 0);
+    const totalAfterDiscount = parseFloat(
+      orderDetails.total_after_discount || 0
+    );
+    const serviceChargesPercent = parseFloat(
+      orderDetails.service_charges_percent || 0
+    );
+    const serviceChargesAmount = parseFloat(
+      orderDetails.service_charges_amount || 0
+    );
+    const gstPercent = parseFloat(orderDetails.gst_percent || 0);
+    const gstAmount = parseFloat(orderDetails.gst_amount || 0);
+    const grandTotal = parseFloat(orderDetails.grand_total || 0);
+
+    return {
+      totalBill,
+      discountPercent,
+      discountAmount,
+      totalAfterDiscount,
+      serviceChargesPercent,
+      serviceChargesAmount,
+      gstPercent,
+      gstAmount,
+      grandTotal,
+    };
+  };
+
+  const handleRating = async (rating) => {
+    try {
+      const response = await fetch(`${config.apiDomain}/user_api/rating_to_order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+
+        body: JSON.stringify({
+          outlet_id: localStorage.getItem("outlet_id"),
+          user_id: userId,
+          order_id: orderDetails?.order_details?.order_id,
+          rating: rating
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.st === 1) {
+        setSelectedRating(rating);
+        toast.current?.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Rating updated successfully",
+          life: 3000,
+        });
+      } else {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to update rating",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating rating:", error);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update rating",
+        life: 3000,
+      });
+    }
+  };
+
+  // Update the handleRateOnGoogle function
+  const handleRateOnGoogle = () => {
+    try {
+      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
+      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      if (rateOnGoogle) {
+        window.open(rateOnGoogle, "_blank");
+      }
+    } catch (error) {
+      console.clear();
+    }
+  };
+
+  const handleCancelClick = () => {
+    setShowCompleteModal(true);
+  };
+
+  const handlePayment = async (method) => {
+    try {
+      setIsProcessing(true); // Add method-specific state if needed
+      const response = await axios.post(`${config.apiDomain}/user_api/complete_order`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        outlet_id: localStorage.getItem("outlet_id"),
+       
+        order_id: orderDetails?.order_details?.order_id,
+        payment_method: method,
+      });
+      window.showToast("success", "Payment successful!");
+      setShowCompleteModal(false);
+      fetchOrderDetails(order_number);
+    } catch (error) {
+      console.error(error);
+      window.showToast("error", "Payment failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  
+
+  // const handleGenericUPI = async () => {
+  //   if (isProcessingUPI) return;
+
+  //   try {
+  //     setIsProcessingUPI(true);
+  //     if (timeoutRef.current.upi) clearTimeout(timeoutRef.current.upi);
+
+  //     const amount = Math.round(parseFloat(orderDetails.grand_total));
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${orderDetails.outlet_name} for order no. #${orderDetails.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(orderDetails.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${orderDetails.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment("upi", paymentUrl, setIsProcessingUPI, "upi");
+  //   } catch (error) {
+  //     console.clear();
+
+  //     window.showToast(
+  //       "error",
+  //       "UPI payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingUPI(false);
+  //   }
+  // };
+
+  // const handlePhonePe = async () => {
+  //   if (isProcessingPhonePe) return;
+  //   console.log(customerName);
+  //   try {
+  //     setIsProcessingPhonePe(true);
+  //     if (timeoutRef.current.phonepe) clearTimeout(timeoutRef.current.phonepe);
+
+  //     const amount = Math.round(parseFloat(order.grand_total));
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(order.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment(
+  //       "phonepay",
+  //       paymentUrl,
+  //       setIsProcessingPhonePe,
+  //       "phonepe"
+  //     );
+  //   } catch (error) {
+  //     console.clear();
+  //     window.showToast(
+  //       "error",
+  //       "PhonePe payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingPhonePe(false);
+  //   }
+  // };
+
+  // const handleGooglePay = async () => {
+  //   if (isProcessingGPay) return;
+
+  //   try {
+  //     setIsProcessingGPay(true);
+  //     if (timeoutRef.current.gpay) clearTimeout(timeoutRef.current.gpay);
+
+  //     const amount = Math.round(parseFloat(order.grand_total));
+
+  //     const transactionNote = encodeURIComponent(
+  //       `${customerName} is paying Rs. ${amount} to ${order.outlet_name} for order no. #${order.order_number}`
+  //     );
+  //     const encodedRestaurantName = encodeURIComponent(order.outlet_name);
+  //     const upiId = "hivirajkadam@okhdfcbank";
+
+  //     const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
+
+  //     await initiatePayment(
+  //       "gpay",
+  //       paymentUrl,
+  //       setIsProcessingGPay,
+  //       "gpay"
+  //     );
+  //   } catch (error) {
+  //     console.clear();
+  //     window.showToast(
+  //       "error",
+  //       "Google Pay payment initiation failed. Please try again."
+  //     );
+  //     setIsProcessingGPay(false);
+  //   }
+  // };
+
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
+    const response = await fetch(
+      `${config.apiDomain}/user_api/complete_order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          outlet_id: localStorage.getItem("outlet_id"),
+         
+          order_id: orderDetails?.order_details?.order_id,
+          payment_method: method,
+        }),
+      }
+    );
+
+    if (response.ok) {
+   
+   
+
+    
+    }
+  };
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1017,8 +1315,8 @@ const getOrderTypeIcon = (orderType) => {
               <div className="order-status d-flex align-items-center">
                 <span className="d-flex align-items-center">
                   <i className={`${getStatusIcon(orderStatus)} me-2 fs-5`}></i>
-                  <span className="font_size_14">
-                    {getDisplayStatus(orderStatus)}
+                  <span className="font_size_14 fw-medium">
+                    {getDisplayStatus(orderStatus)?.toUpperCase()}
                   </span>
                 </span>
               </div>
@@ -1047,7 +1345,7 @@ const getOrderTypeIcon = (orderType) => {
                   <div className="restaurant">
                     <i className="fa-solid fa-store pe-2 font_size_14"></i>
                     <span className="font_size_14 fw-medium">
-                      {order_details.restaurant_name.toUpperCase()}
+                      {order_details.outlet_name?.toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -1090,97 +1388,340 @@ const getOrderTypeIcon = (orderType) => {
                   </div>
                 </div>
                 <div className="col-6">
-                  <div className="text-end">
-                    <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total}
-                    </span>
-                    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                      ₹
-                      {(
-                        order_details.grand_total /
-                          (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total
-                      ).toFixed(2)}
-                    </span>
+  <div className="text-end">
+    <span className="text-info font_size_14 fw-semibold">
+      ₹{order_details.grand_total.toFixed(2)}
+    </span>
+
+    {/* Conditionally render the line-through price */}
+    {order_details.grand_total !==
+      (order_details.grand_total /
+        (1 - order_details.discount_percent / 100) ||
+        order_details.grand_total) && (
+      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+        ₹
+        {(
+          order_details.grand_total /
+            (1 - order_details.discount_percent / 100) ||
+          order_details.grand_total
+        ).toFixed(2)}
+      </span>
+    )}
+  </div>
+</div>
+
+              </div>
+
+ 
+              {orderDetails?.order_details?.payment_method && (
+  <div className="row">
+    <div className="col-6">
+      <div className="menu-info d-flex align-items-center gray-text">
+        <span className="me-2">
+          {orderDetails.order_details.payment_method === "card" && (
+            <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
+          )}
+          {orderDetails.order_details.payment_method === "cash" && (
+            <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
+          )}
+          {orderDetails.order_details.payment_method === "phonepay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {orderDetails.order_details.payment_method === "gpay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {orderDetails.order_details.payment_method === "upi" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+        </span>
+        <span className="font_size_12 gray-text text-capitalize">
+          {orderDetails.order_details.payment_method}
+        </span>
+      </div>
+    </div>
+  </div>
+)}
+
+            </div>
+          </div>
+        </div>
+
+        <ThemeProvider>
+        <div className="container py-0">
+  {!loading && orderStatus && (
+    <>
+      {orderStatus === "completed" ? (
+        <>
+          <div className="card-body text-center bg-success rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Your delicious order has been served
+            </span>
+          </div>
+          <div className="d-flex justify-content-center pt-3 gray-text">
+          {order_details.payment_method && (
+  <div className="border border-success rounded-pill py-0 px-2 font_size_14 d-flex align-items-center">
+    <span className="me-2">
+      {order_details.payment_method === "card" && (
+        <i className="fas fa-credit-card"></i> // FontAwesome card icon
+      )}
+      {order_details.payment_method === "cash" && (
+        <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
+      )}
+       {order_details.payment_method === "phonepay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {order_details.payment_method === "gpay" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+           {order_details.payment_method === "upi" && (
+            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+          )}
+    </span>
+    <span>{order_details.payment_method}</span>
+  </div>
+)}
+
+</div>
+
+        </>
+      ) : ["canceled", "cancelled", "cancle"].includes(orderStatus) ? (
+        <div className="card-body text-center bg-danger rounded-4 text-white">
+          <span className="fs-6 fw-medium h-100">
+            This order has been cancelled
+          </span>
+        </div>
+      ) : orderStatus === "placed" ? (
+        <div className="card-body p-0">
+          <div className="card rounded-4">
+            <div className="row py-2 my-0 ps-2 pe-0 h-100">
+              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                <OrderGif />
+              </div>
+              <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                <div className="text-start mb-0">
+                  <div className="fw-medium">Thanks for ordering!</div>
+                  <div className="fw-medium">We'll start right away.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : orderStatus === "ongoing" ? (
+        <div className="card-body p-0">
+          <div className="card rounded-4">
+            <div className="row py-2 my-0 ps-2 pe-0 h-100">
+              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                <OrderGif />
+              </div>
+              <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                <div className="text-center mb-0">
+                  <div className="fw-medium">You have the best taste in food.</div>
+                  <div className="fw-medium">
+                    We're crafting a menu to match it perfectly.
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <ThemeProvider>
-          {/* Conditional rendering of the green card or OrderGif based on order status */}
-          <div className="container py-0">
-            {!loading && orderStatus && (
-              <>
-                {orderStatus === "completed" ? (
-                  <>
-                    <div className="card-body text-center bg-success rounded-4 text-white">
-                      <span className="fs-6 fw-medium h-100">
-                        Your delicious order has been served
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-center pt-3">
-                      {order_details.payment_method && (
-                        <div className="border border-success rounded-pill py-0 px-2 font_size_14">
-                          Payment Method: {order_details.payment_method}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : ["canceled", "cancelled", "cancle"].includes(
-                    orderStatus
-                  ) ? (
-                  <div className="card-body text-center bg-danger rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
-                      This order has been cancelled
-                    </span>
-                  </div>
-                ) : orderStatus === "placed" ? (
-                  <div className="card-body p-0">
-                    <div className="card rounded-4">
-                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
-                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                          <OrderGif />
-                        </div>
-                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                          <div className="text-start mb-0">
-                            <div className="fw-medium">
-                              Thanks for ordering!
-                            </div>
-                            <div className="fw-medium">
-                              We'll start right away.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : orderStatus === "ongoing" ? (
-                  <div className="card-body p-0">
-                    <div className="card rounded-4">
-                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
-                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                          <OrderGif />
-                        </div>
-                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                          <div className="text-center mb-0">
-                            <div className="fw-medium">
-                              You have the best taste in food.
-                            </div>
-                            <div className="fw-medium">
-                              We're crafting a menu to match it perfectly.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </>
-            )}
+      ) : orderStatus === "paid" ? (
+ 
+      
+       
+          <div className="card-body text-center bg-info rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Order has been paid. Thank you!
+            </span>
           </div>
+        ) : orderStatus === "served" ? (
+          <div className="card-body text-center bg-primary rounded-4 text-white">
+            <span className="fs-6 fw-medium h-100">
+              Order has been served. Enjoy your meal!
+            </span>
+          </div>
+        ) : orderStatus === "cooking" ? (
+          <div className="card-body text-center bg-warning rounded-4 text-dark">
+            <span className="fs-6 fw-medium h-100">
+              Order is being cooked. Please wait patiently.
+            </span>
+          </div>
+        ) : null
+      }
+    </>
+  )}
+  <>
+  {/* {orderStatus === "served" && (
+  <div className="card-body text-center btn btn-outline-success text-primary rounded-pill rounded-4  mt-3"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleCancelClick();
+  }}
+  >
+    <span className="fs-6 fw-medium h-100">
+   Complete Order
+    </span>
+  </div>
+)} */}
+  </>
+  {/* <>
+   {orderStatus === "placed" && (
+  <div className="card-body text-center btn btn-outline-danger text-danger rounded-pill rounded-4  mt-3"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleCancelClick();
+  }}
+  >
+    <span className="fs-6 fw-medium h-100">
+   Cancel Order
+    </span>
+  </div>
+)} 
+  </> */}
+</div>
+
+
+{showCompleteModal && (
+  <div
+    className="modal fade show d-block"
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+  >
+    <div className="modal-dialog modal-dialog-centered">
+      <div className="modal-content">
+        <div className="modal-header">
+          <div className="col-6 text-start">
+            <div className="modal-title font_size_16 fw-medium">
+              Complete Order
+            </div>
+          </div>
+          <div className="col-6 text-end">
+            <div className="d-flex justify-content-end">
+              <span
+                className="m-2 font_size_16"
+                onClick={() => setShowCompleteModal(false)}
+                aria-label="Close"
+              >
+                <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="modal-body">
+          <p className="text-center">
+            Are you sure you want to complete this order?
+          </p>
+          <div className="d-flex flex-column align-items-center gap-3">
+            {/* UPI Payment */}
+            <button
+              className="btn btn-info text-white w-100"
+              disabled={isProcessingUPI}
+              // onClick={handleGenericUPI}
+            >
+              {isProcessingUPI ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay{" "}
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>{" "}
+                  via
+                  <span className="ms-2">Other UPI Apps</span>
+                  <img
+                    className="text-white ms-1"
+                    src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                    width={45}
+                    alt="UPI"
+                  />
+                </>
+              )}
+            </button>
+            {/* PhonePe Payment */}
+            <button
+              className="btn text-white w-100"
+              style={{ backgroundColor: "#5f259f" }}
+              disabled={isProcessingPhonePe}
+              // onClick={handlePhonePe}
+            >
+              {isProcessingPhonePe ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay with PhonePe
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>
+                  <img
+                    className="ms-1"
+                    src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                    width={45}
+                    alt="PhonePe"
+                  />
+                </>
+              )}
+            </button>
+            {/* Google Pay Payment */}
+            <button
+              className="btn text-white w-100"
+              style={{ backgroundColor: "#1a73e8" }}
+              disabled={isProcessingGPay}
+              // onClick={handleGooglePay}
+            >
+              {isProcessingGPay ? (
+                "Processing..."
+              ) : (
+                <>
+                  Pay with Google Pay
+                  <span className="fs-4 mx-1">
+                    ₹{order_details.grand_total.toFixed(2)}
+                  </span>
+                  <img
+                    className="ms-1"
+                    src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                    width={45}
+                    alt="Google Pay"
+                  />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="text-center">
+          <div>or make payment via:</div>
+        </div>
+        <div className="d-flex justify-content-center pt-2 mb-4">
+          {/* Card Payment */}
+          <button
+            type="button"
+            className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
+              paymentMethod === "card"
+                ? "bg-success text-white"
+                : "border"
+            }`}
+            onClick={() => handlePayment("card")}
+          >
+            <i className="ri-bank-card-line me-1"></i>
+            Card
+          </button>
+          {/* Cash Payment */}
+          <button
+            type="button"
+            className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
+              paymentMethod === "cash"
+                ? "bg-success text-white"
+                : "border border-muted"
+            }`}
+            onClick={() => handlePayment("cash")}
+          >
+            <i className="ri-wallet-3-fill me-1"></i>
+            Cash
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
         </ThemeProvider>
 
         <main className="page-content">
@@ -1188,7 +1729,7 @@ const getOrderTypeIcon = (orderType) => {
             <RemainingTimeDisplay />
           )}
 
-          {customerId ? (
+          {userId ? (
             <section className="container mt-1 py-1">
               {!isCompleted && pendingItems.length > 0 && searchTerm !== "" && (
                 <hr className="my-4 dotted-line text-primary" />
@@ -1217,20 +1758,7 @@ const getOrderTypeIcon = (orderType) => {
                                   e.target.src = images;
                                 }}
                               />
-                              {/* Special icon */}
-                              {menu.is_special && (
-                                <i
-                                  className="fa-solid fa-star border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center text-info"
-                                  style={{
-                                    position: "absolute",
-                                    top: 3,
-                                    right: "76%",
-                                    height: 17,
-                                    width: 17,
-                                  }}
-                                ></i>
-                              )}
-                              {/* Veg/Non-veg indicator */}
+
                               <div
                                 className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
                                   getFoodTypeStyles(menu.menu_food_type).border
@@ -1287,23 +1815,8 @@ const getOrderTypeIcon = (orderType) => {
                               {/* Category, Spicy level, and Rating */}
                               <div className="row d-flex align-items-center mt-1">
                                 <div className="col-6 d-flex align-items-center">
-                                  <span
-                                    className={`ps-2 font_size_10 ${
-                                      getFoodTypeTextStyles(menu.menu_food_type)
-                                        .textColor
-                                    }`}
-                                  >
-                                    <i
-                                      className={`${
-                                        getFoodTypeTextStyles(
-                                          menu.menu_food_type
-                                        ).icon
-                                      } ${
-                                        getFoodTypeTextStyles(
-                                          menu.menu_food_type
-                                        ).textColor
-                                      } font_size_10 mt-0 me-1`}
-                                    ></i>
+                                  <span className="ps-2 font_size_10 text-success">
+                                    <i className="fa-solid fa-utensils text-success me-1"></i>
                                     {menu.category_name}
                                   </span>
                                 </div>
@@ -1331,30 +1844,42 @@ const getOrderTypeIcon = (orderType) => {
                                 <div className="col-9 mt-2">
                                   <p className="ms-2 mb-0 fw-medium">
                                     <span className="font_size_14 fw-semibold text-info">
-                                      ₹{menu.price}
+                                      ₹
+                                      {menu.offer > 0
+                                        ? Math.floor(
+                                            menu.price * (1 - menu.offer / 100)
+                                          )
+                                        : menu.price}
                                     </span>
                                     {menu.offer > 0 && (
                                       <span className="gray-text font_size_12 text-decoration-line-through fw-normal ms-2">
-                                        ₹
-                                        {(
-                                          menu.price /
-                                          (1 - menu.offer / 100)
-                                        ).toFixed(2)}
+                                        ₹{menu.price}
                                       </span>
                                     )}
                                   </p>
                                 </div>
-                                <div className="col-3 text-end">
+                                <div className="col-3 text-end mt-2">
                                   <span className="font_size_14 gray-text">
                                     x {menu.quantity}
                                   </span>
                                 </div>
+                                {menu.comment && (
+                              <div className="my-2  text-light"><i className="fa-solid fa-comment-dots"></i>{" "}{menu.comment}</div>
+                            )}
                               </div>
-                            </div>
+                             
+                              </div>
+                             
                           </div>
+
+                          
                         </div>
+                       
+
                       </div>
+                    
                     </div>
+                    
                   ))}
 
                   {/* Add Order More button outside the card, but only for placed and ongoing orders */}
@@ -1390,7 +1915,7 @@ const getOrderTypeIcon = (orderType) => {
           )}
         </main>
 
-        {customerId && orderDetails && (
+        {userId && orderDetails && (
           <div className="container mb-4 pt-0 z-3">
             <div className="card mt-2 p-0 mb-3 ">
               <div className="card-body mx-auto rounded-4 p-0">
@@ -1403,11 +1928,42 @@ const getOrderTypeIcon = (orderType) => {
                       <span className="pe-2 font_size_14 fw-semibold">
                         ₹
                         {parseFloat(
-                          orderDetails.order_details.total_total || 0
+                          orderDetails.order_details.total_bill_amount || 0
                         ).toFixed(2)}
                       </span>
                     </div>
-                    <hr className="p-0 m-0 text-primary" />
+                    <hr className="p-0 m-0 text-primary w-100" />
+                  </div>
+                  <div className="col-12 mb-0 pt-0 ">
+                    <div className="d-flex justify-content-between align-items-center py-0">
+                      <span className="ps-2 font_size_14 gray-text">
+                        Discount{" "}
+                        <span className="gray-text small-number">
+                          ({orderDetails.order_details.discount_percent || 0}% )
+                        </span>
+                      </span>
+                      <span className="pe-2 font_size_14 gray-text">
+                        -₹
+                        {parseFloat(
+                          orderDetails.order_details.discount_amount
+                        ).toFixed(2) || 0}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-12 pt-0">
+                    {orderDetails.order_details.discount_amount > 0 && (
+                      <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
+                        <span className="font_size_14 gray-text">
+                          Total after discount
+                        </span>
+                        <span className="font_size_14 gray-text">
+                          +₹
+                          {parseFloat(
+                          orderDetails.order_details.total_bill_with_discount
+                        ).toFixed(2) || 0}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="col-12 pt-0">
                     <div className="d-flex justify-content-between align-items-center py-0">
@@ -1421,7 +1977,7 @@ const getOrderTypeIcon = (orderType) => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
-                        ₹
+                        +₹
                         {parseFloat(
                           orderDetails.order_details.service_charges_amount
                         ).toFixed(2) || 0}
@@ -1438,31 +1994,16 @@ const getOrderTypeIcon = (orderType) => {
                         </span>
                       </span>
                       <span className="pe-2 font_size_14  text-start gray-text">
-                        ₹
+                        +₹
                         {parseFloat(
                           orderDetails.order_details.gst_amount
                         ).toFixed(2) || 0}
                       </span>
                     </div>
                   </div>
-                  <div className="col-12 mb-0 pt-0 pb-1">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        Discount{" "}
-                        <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        -₹
-                        {parseFloat(
-                          orderDetails.order_details.discount_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
+                 
                   <div>
-                    <hr className=" p-0 m-0 text-primary" />
+                    <hr className=" p-0 m-0 text-primary w-100" />
                   </div>
                   <div className="col-12">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
@@ -1479,7 +2020,7 @@ const getOrderTypeIcon = (orderType) => {
               </div>
             </div>
 
-            {orderStatus === "completed" && (
+            {orderStatus === "paid" && (
               <div className="d-flex justify-content-end">
                 {orderDetails?.order_details?.invoice_url ? (
                   <a
@@ -1499,7 +2040,7 @@ const getOrderTypeIcon = (orderType) => {
                 )}
               </div>
             )}
-
+            {orderStatus === "paid" && (
             <div className="d-flex flex-column align-items-center mt-4">
               <div className="d-flex justify-content-center gap-5 mb-2">
                 {/* Bad Rating */}
@@ -1509,14 +2050,16 @@ const getOrderTypeIcon = (orderType) => {
                     className="btn-check"
                     name="rating"
                     id="bad-rating"
-                    value="bad"
+                    value="1"
+                    checked={selectedRating === "1"}
+                    onChange={() => handleRating("1")}
                   />
-                  <label htmlFor="bad-rating">
+                  <label htmlFor="bad-rating" style={{ cursor: 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-frown text-danger"
+                      className={`fa-solid fa-face-frown ${selectedRating === "1" ? 'text-danger' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
-                    <span className="d-block mt-1 ">Bad</span>
+                    <span className="d-block mt-1">Bad</span>
                   </label>
                 </div>
 
@@ -1527,11 +2070,13 @@ const getOrderTypeIcon = (orderType) => {
                     className="btn-check"
                     name="rating"
                     id="okay-rating"
-                    value="okay"
+                    value="3"
+                    checked={selectedRating === "3"}
+                    onChange={() => handleRating("3")}
                   />
-                  <label htmlFor="okay-rating">
+                  <label htmlFor="okay-rating" style={{ cursor: 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-meh text-light"
+                      className={`fa-solid fa-face-meh ${selectedRating === "3" ? 'text-warning' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
                     <span className="d-block mt-1">Okay</span>
@@ -1545,22 +2090,41 @@ const getOrderTypeIcon = (orderType) => {
                     className="btn-check"
                     name="rating"
                     id="good-rating"
-                    value="good"
+                    value="5"
+                    checked={selectedRating === "5"}
+                    onChange={() => handleRating("5")}
                   />
-                  <label htmlFor="good-rating">
+                  <label htmlFor="good-rating" style={{ cursor: 'pointer' }}>
                     <i
-                      className="fa-solid fa-face-smile text-success"
+                      className={`fa-solid fa-face-smile ${selectedRating === "5" ? 'text-success' : 'text-secondary'}`}
                       style={{ fontSize: "3em" }}
                     ></i>
                     <span className="d-block mt-1">Good</span>
                   </label>
                 </div>
               </div>
-              <div className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4">
-                <i class="fa-solid fa-star me-2"></i>
-                Rate us on Google
-              </div>
+              {selectedRating !== "0" ? (
+                <div className="text-center mt-2">
+                  <span className="font_size_12 text-success">Thanks for your feedback! You can change your rating anytime.</span>
+                </div>
+              ) : (
+                <div className="text-center mt-2">
+                  <span className="font_size_12 text-secondary">Please rate your experience.</span>
+                </div>
+              )}
+               
+              {hasGoogleReview && (
+                <div 
+                  className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
+                  onClick={handleRateOnGoogle}
+                >
+                  <i className="fa-solid fa-star me-2"></i>
+                  Rate us on Google
+                </div>
+              )}
+                 
             </div>
+            )}
 
             <RestaurantSocials />
           </div>
