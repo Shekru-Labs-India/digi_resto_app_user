@@ -61,11 +61,11 @@ const Search = () => {
   const fetchFoodTypes = async () => {
     try {
       const response = await fetch(
-        `${config.apiDomain}/common_api/get_food_type_list`,
+        `${config.apiDomain}/user_api/get_food_type_list`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
@@ -122,7 +122,7 @@ const Search = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify(requestBody),
           }
@@ -593,7 +593,7 @@ const Search = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(requestBody),
       });
