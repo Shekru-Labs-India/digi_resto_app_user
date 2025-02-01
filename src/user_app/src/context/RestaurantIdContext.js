@@ -52,7 +52,7 @@ export const RestaurantIdProvider = ({ children }) => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+                  // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
                 },
                 body: JSON.stringify({
                   outlet_id:outlet_id,
