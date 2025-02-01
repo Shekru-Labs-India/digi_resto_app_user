@@ -14,20 +14,20 @@ const navigate = useNavigate();
     const fetchHotels = async () => {
       try {
      // Store the hardcoded access token in localStorage
-localStorage.setItem(
-  "access_token",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTcxOTA3LCJpYXQiOjE3MzgzOTkxMDcsImp0aSI6ImMyYzRhNGZmNzg1NjQxM2I5YjFkYjIwNGE5Y2VkZDVjIiwidXNlcl9pZCI6MjYyfQ.Mh31YiIqG6txiTbGeC4oYE6Wt0Vc8g3sW8I87voWKG4"
-);
+// localStorage.setItem(
+//   "access_token",
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTcxOTA3LCJpYXQiOjE3MzgzOTkxMDcsImp0aSI6ImMyYzRhNGZmNzg1NjQxM2I5YjFkYjIwNGE5Y2VkZDVjIiwidXNlcl9pZCI6MjYyfQ.Mh31YiIqG6txiTbGeC4oYE6Wt0Vc8g3sW8I87voWKG4"
+// );
 
 // Fetch API request using the stored token
 const response = await fetch(
   `${config.apiDomain}/user_api/get_all_restaurants`,
-  {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-      'Content-Type': 'application/json'
-    }
-  }
+  // {
+  //   headers: {
+  //     'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+  //     'Content-Type': 'application/json'
+  //   }
+  // }
 );
 
         
