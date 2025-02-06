@@ -211,10 +211,10 @@ const Search = () => {
 
   const handleAddToCartClick = (menu) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (!userData?.user_id || userData.role === 'guest') {
-      showLoginPopup();
-      return;
-    }
+    // if (!userData?.user_id || userData.role === 'guest') {
+    //   showLoginPopup();
+    //   return;
+    // }
     const storedCart = localStorage.getItem('restaurant_cart_data');
     if (storedCart) {
       const cartData = JSON.parse(storedCart);
