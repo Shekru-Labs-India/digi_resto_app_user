@@ -772,14 +772,7 @@ const UserAuthPopup = () => {
               >
                 Create new account
               </a>
-              <div className="d-flex justify-content-center mt-">
-                <span
-                  className="mt-4 text-lowercase gray-text "
-                  onClick={handleGuestLogin}
-                >
-                  continue as guest
-                </span>
-              </div>
+             
             </div>
           </div>
         );
@@ -838,3 +831,14 @@ const UserAuthPopup = () => {
 };
 
 export default UserAuthPopup;
+
+
+
+{/* <div className="d-flex justify-content-center mt-">
+<span
+  className="mt-4 text-lowercase gray-text "
+  onClick={handleGuestLogin}
+>
+  continue as guest
+</span>
+</div> */}
