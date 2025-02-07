@@ -1081,7 +1081,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-8 px-0 text-center">
+                <div className="col-8 px-0 text-end">
                   {!userId ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
