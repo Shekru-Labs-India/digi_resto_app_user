@@ -1017,7 +1017,7 @@ const MenuDetails = () => {
         {renderStarRating(productDetails.rating)}
        
        
-        {productDetails.rating}
+        {parseFloat(productDetails.rating).toFixed(1)}
       
       </span>
     </div>

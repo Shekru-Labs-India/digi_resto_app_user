@@ -1044,7 +1044,7 @@ const ProductCard = ({ isVegOnly }) => {
                             <div className="col-4 text-end pe-2 d-flex justify-content-end align-items-center">
                               {renderStarRating(menu.rating)}
                               <span className="font_size_10 fw-normal gray-text">
-                                {menu.rating}
+                                {parseFloat(menu.rating).toFixed(1)}
                               </span>
                             </div>
                           )}

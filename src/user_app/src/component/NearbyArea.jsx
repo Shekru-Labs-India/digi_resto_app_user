@@ -657,7 +657,7 @@ const NearbyArea = () => {
                                   <>
                                     {renderStarRating(menuItem.rating)}
                                     <span className="font_size_10 fw-normal gray-text">
-                                      {menuItem.rating}
+                                      {parseFloat(menuItem.rating).toFixed(1)}
                                     </span>
                                   </>
                                 )}

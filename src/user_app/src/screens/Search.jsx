@@ -1182,7 +1182,7 @@ const Search = () => {
                                     <>
                                       {renderStarRating(menu.rating)}
                                       <span className="font_size_10 fw-normal gray-text">
-                                        {menu.rating}
+                                        {parseFloat(menu.rating).toFixed(1)}
                                       </span>
                                     </>
                                   )}
