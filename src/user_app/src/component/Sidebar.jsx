@@ -115,9 +115,9 @@ export const SidebarToggler = () => {
 
       const data = await response.json();
       if (data.st === 1) {
-        alert(data.msg || 'Waiter has been called successfully!');
+       alert("Waiter has been called successfully!" || data.msg);
       } else {
-        alert(data.msg || 'Failed to call waiter. Please try again.' );
+        alert("Failed to call waiter. Please try again." || data.msg);
       }
     } catch (error) {
       console.error('Error calling waiter:', error);
