@@ -133,6 +133,15 @@ const NearbyArea = () => {
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
+    
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+ 
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id) {

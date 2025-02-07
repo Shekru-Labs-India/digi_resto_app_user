@@ -533,6 +533,11 @@ const ProductCard = ({ isVegOnly }) => {
 
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
+    
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast("error", "Comment should be between 5 and 30 characters.");
+      return;
+    }
 
     try {
       await addToCart(

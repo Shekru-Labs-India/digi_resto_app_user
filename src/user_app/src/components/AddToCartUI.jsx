@@ -21,6 +21,21 @@ const AddToCartUI = ({
   const { fetchMenuPrices } = useCart();
   const { restaurantId } = useRestaurantId();
 
+  const [commentError, setCommentError] = useState("");
+
+  const handleCommentChange = (e) => {
+    const value = e.target.value;
+    setComment(value);
+
+    if (value.length > 0 && value.length < 5) {
+      setCommentError("Comment should be between 5 and 30 characters.");
+    } else if (value.length > 30) {
+      setCommentError("Comment should be between 5 and 30 characters.");
+    } else {
+      setCommentError("");
+    }
+  };
+
   // Fetch prices when modal opens
   useEffect(() => {
     const fetchPrices = async () => {
@@ -87,9 +102,14 @@ const AddToCartUI = ({
                   className="form-control font_size_16 border border-light rounded-4"
                   id="comment"
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  onChange={handleCommentChange}
                   placeholder="Add any special instructions here..."
                 />
+                {commentError && (
+                  <div className="text-danger font_size_12 mt-1">
+                    {commentError}
+                  </div>
+                )}
                 <div className="mt-2">
                   {[
                     "Make it more sweet",

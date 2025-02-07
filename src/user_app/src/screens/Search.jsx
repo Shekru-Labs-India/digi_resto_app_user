@@ -274,6 +274,14 @@ const Search = () => {
 
     if (!selectedMenu) return;
 
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {

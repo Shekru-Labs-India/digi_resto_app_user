@@ -133,6 +133,14 @@ const OfferBanner = () => {
   const handleConfirmAddToCart = async () => {
     if (!selectedMenu) return;
 
+    if (notes && (notes.length < 5 || notes.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id) {
       showLoginPopup();
