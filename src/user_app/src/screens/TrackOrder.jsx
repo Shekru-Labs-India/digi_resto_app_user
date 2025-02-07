@@ -25,14 +25,13 @@ const TrackOrder = () => {
       .join(" ");
   };
 
-    const [customerName, setCustomerName] = useState("");
- 
-  
-    useEffect(() => {
-      const customerName = localStorage.getItem("customerName");
-      setCustomerName(customerName);
-    }, []);
-const [paymentMethod, setPaymentMethod] = useState("");
+  const [customerName, setCustomerName] = useState("");
+
+  useEffect(() => {
+    const customerName = localStorage.getItem("customerName");
+    setCustomerName(customerName);
+  }, []);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const timeoutRef = useRef({});
   // Move these hooks to the top with other state declarations
   const [hasGoogleReview, setHasGoogleReview] = useState(false);
@@ -45,7 +44,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
   const { order_number } = useParams();
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
@@ -101,8 +100,12 @@ const [paymentMethod, setPaymentMethod] = useState("");
 
   useEffect(() => {
     try {
-      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
-      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      const restaurantSocial = JSON.parse(
+        localStorage.getItem("restaurantSocial") || "[]"
+      );
+      const rateOnGoogle = restaurantSocial.find(
+        (social) => social.id === "google_review"
+      )?.link;
       setHasGoogleReview(!!rateOnGoogle);
     } catch (error) {
       setHasGoogleReview(false);
@@ -225,6 +228,10 @@ const [paymentMethod, setPaymentMethod] = useState("");
   useEffect(() => {
     if (orderDetails?.order_details) {
       setOrderStatus(orderDetails.order_details.order_status.toLowerCase());
+      console.log(
+        "------",
+        orderDetails.order_details.order_status.toLowerCase()
+      );
 
       if (orderDetails.order_details.order_status.toLowerCase() === "placed") {
         const orderTime = new Date(
@@ -1096,20 +1103,23 @@ const [paymentMethod, setPaymentMethod] = useState("");
 
   const handleRating = async (rating) => {
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/rating_to_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+      const response = await fetch(
+        `${config.apiDomain}/user_api/rating_to_order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
 
-        body: JSON.stringify({
-          outlet_id: localStorage.getItem("outlet_id"),
-          user_id: userId,
-          order_id: orderDetails?.order_details?.order_id,
-          rating: rating
-        }),
-      });
+          body: JSON.stringify({
+            outlet_id: localStorage.getItem("outlet_id"),
+            user_id: userId,
+            order_id: orderDetails?.order_details?.order_id,
+            rating: rating,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -1142,8 +1152,12 @@ const [paymentMethod, setPaymentMethod] = useState("");
   // Update the handleRateOnGoogle function
   const handleRateOnGoogle = () => {
     try {
-      const restaurantSocial = JSON.parse(localStorage.getItem("restaurantSocial") || "[]");
-      const rateOnGoogle = restaurantSocial.find(social => social.id === "google_review")?.link;
+      const restaurantSocial = JSON.parse(
+        localStorage.getItem("restaurantSocial") || "[]"
+      );
+      const rateOnGoogle = restaurantSocial.find(
+        (social) => social.id === "google_review"
+      )?.link;
       if (rateOnGoogle) {
         window.open(rateOnGoogle, "_blank");
       }
@@ -1159,16 +1173,19 @@ const [paymentMethod, setPaymentMethod] = useState("");
   const handlePayment = async (method) => {
     try {
       setIsProcessing(true); // Add method-specific state if needed
-      const response = await axios.post(`${config.apiDomain}/user_api/complete_order`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        outlet_id: localStorage.getItem("outlet_id"),
-       
-        order_id: orderDetails?.order_details?.order_id,
-        payment_method: method,
-      });
+      const response = await axios.post(
+        `${config.apiDomain}/user_api/complete_order`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          outlet_id: localStorage.getItem("outlet_id"),
+
+          order_id: orderDetails?.order_details?.order_id,
+          payment_method: method,
+        }
+      );
       window.showToast("success", "Payment successful!");
       setShowCompleteModal(false);
       fetchOrderDetails(order_number);
@@ -1179,7 +1196,6 @@ const [paymentMethod, setPaymentMethod] = useState("");
       setIsProcessing(false);
     }
   };
-  
 
   // const handleGenericUPI = async () => {
   //   if (isProcessingUPI) return;
@@ -1290,7 +1306,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
         },
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
-         
+
           order_id: orderDetails?.order_details?.order_id,
           payment_method: method,
         }),
@@ -1298,10 +1314,6 @@ const [paymentMethod, setPaymentMethod] = useState("");
     );
 
     if (response.ok) {
-   
-   
-
-    
     }
   };
   return (
@@ -1388,169 +1400,175 @@ const [paymentMethod, setPaymentMethod] = useState("");
                   </div>
                 </div>
                 <div className="col-6">
-  <div className="text-end">
-    <span className="text-info font_size_14 fw-semibold">
-      ₹{order_details.grand_total.toFixed(2)}
-    </span>
+                  <div className="text-end">
+                    <span className="text-info font_size_14 fw-semibold">
+                      ₹{order_details.grand_total.toFixed(2)}
+                    </span>
 
-    {/* Conditionally render the line-through price */}
-    {order_details.grand_total !==
-      (order_details.grand_total /
-        (1 - order_details.discount_percent / 100) ||
-        order_details.grand_total) && (
-      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-        ₹
-        {(
-          order_details.grand_total /
-            (1 - order_details.discount_percent / 100) ||
-          order_details.grand_total
-        ).toFixed(2)}
-      </span>
-    )}
-  </div>
-</div>
-
+                    {/* Conditionally render the line-through price */}
+                    {order_details.grand_total !==
+                      (order_details.grand_total /
+                        (1 - order_details.discount_percent / 100) ||
+                        order_details.grand_total) && (
+                      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                        ₹
+                        {(
+                          order_details.grand_total /
+                            (1 - order_details.discount_percent / 100) ||
+                          order_details.grand_total
+                        ).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
- 
               {orderDetails?.order_details?.payment_method && (
-  <div className="row">
-    <div className="col-6">
-      <div className="menu-info d-flex align-items-center gray-text">
-        <span className="me-2">
-          {orderDetails.order_details.payment_method === "card" && (
-            <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
-          )}
-          {orderDetails.order_details.payment_method === "cash" && (
-            <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
-          )}
-          {orderDetails.order_details.payment_method === "phonepay" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-           {orderDetails.order_details.payment_method === "gpay" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-           {orderDetails.order_details.payment_method === "upi" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-        </span>
-        <span className="font_size_12 gray-text text-capitalize">
-          {orderDetails.order_details.payment_method}
-        </span>
-      </div>
-    </div>
-  </div>
-)}
-
+                <div className="row">
+                  <div className="col-6">
+                    {orderDetails.order_details.order_status === "paid" && (
+                      <div className="menu-info d-flex align-items-center gray-text">
+                        <span className="me-2">
+                          {orderDetails.order_details.payment_method ===
+                            "card" && (
+                            <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
+                          )}
+                          {orderDetails.order_details.payment_method ===
+                            "cash" && (
+                            <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
+                          )}
+                          {orderDetails.order_details.payment_method ===
+                            "phonepay" && (
+                            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                          )}
+                          {orderDetails.order_details.payment_method ===
+                            "gpay" && (
+                            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                          )}
+                          {orderDetails.order_details.payment_method ===
+                            "upi" && (
+                            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                          )}
+                        </span>
+                        <span className="font_size_12 gray-text text-capitalize">
+                          {orderDetails.order_details.payment_method}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <ThemeProvider>
-        <div className="container py-0">
-  {!loading && orderStatus && (
-    <>
-      {orderStatus === "completed" ? (
-        <>
-          <div className="card-body text-center bg-success rounded-4 text-white">
-            <span className="fs-6 fw-medium h-100">
-              Your delicious order has been served
-            </span>
-          </div>
-          <div className="d-flex justify-content-center pt-3 gray-text">
-          {order_details.payment_method && (
-  <div className="border border-success rounded-pill py-0 px-2 font_size_14 d-flex align-items-center">
-    <span className="me-2">
-      {order_details.payment_method === "card" && (
-        <i className="fas fa-credit-card"></i> // FontAwesome card icon
-      )}
-      {order_details.payment_method === "cash" && (
-        <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
-      )}
-       {order_details.payment_method === "phonepay" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-           {order_details.payment_method === "gpay" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-           {order_details.payment_method === "upi" && (
-            <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
-          )}
-    </span>
-    <span>{order_details.payment_method}</span>
-  </div>
-)}
-
-</div>
-
-        </>
-      ) : ["canceled", "cancelled", "cancle"].includes(orderStatus) ? (
-        <div className="card-body text-center bg-danger rounded-4 text-white">
-          <span className="fs-6 fw-medium h-100">
-            This order has been cancelled
-          </span>
-        </div>
-      ) : orderStatus === "placed" ? (
-        <div className="card-body p-0">
-          <div className="card rounded-4">
-            <div className="row py-2 my-0 ps-2 pe-0 h-100">
-              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                <OrderGif />
-              </div>
-              <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                <div className="text-start mb-0">
-                  <div className="fw-medium">Thanks for ordering!</div>
-                  <div className="fw-medium">We'll start right away.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : orderStatus === "ongoing" ? (
-        <div className="card-body p-0">
-          <div className="card rounded-4">
-            <div className="row py-2 my-0 ps-2 pe-0 h-100">
-              <div className="col-3 d-flex align-items-center justify-content-center pe-2">
-                <OrderGif />
-              </div>
-              <div className="col-8 d-flex align-items-center justify-content-center px-0">
-                <div className="text-center mb-0">
-                  <div className="fw-medium">You have the best taste in food.</div>
-                  <div className="fw-medium">
-                    We're crafting a menu to match it perfectly.
+          <div className="container py-0">
+            {!loading && orderStatus && (
+              <>
+                {orderStatus === "paid" ? (
+                  <>
+                    <div className="card-body text-center bg-success rounded-4 text-white">
+                      <span className="fs-6 fw-medium h-100">
+                        Your delicious order has been served
+                      </span>
+                    </div>
+                    <div className="d-flex justify-content-center pt-3 gray-text">
+                      {order_details.payment_method && (
+                        <div className="border border-success rounded-pill py-0 px-2 font_size_14 d-flex align-items-center">
+                          <span className="me-2">
+                            {order_details.payment_method === "card" && (
+                              <i className="fas fa-credit-card"></i> // FontAwesome card icon
+                            )}
+                            {order_details.payment_method === "cash" && (
+                              <i className="fas fa-money-bill-wave"></i> // FontAwesome cash icon
+                            )}
+                            {order_details.payment_method === "phonepay" && (
+                              <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                            )}
+                            {order_details.payment_method === "gpay" && (
+                              <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                            )}
+                            {order_details.payment_method === "upi" && (
+                              <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
+                            )}
+                          </span>
+                          <span>{order_details.payment_method}</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : ["canceled", "cancelled", "cancle"].includes(
+                    orderStatus
+                  ) ? (
+                  <div className="card-body text-center bg-danger rounded-4 text-white">
+                    <span className="fs-6 fw-medium h-100">
+                      This order has been cancelled
+                    </span>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : orderStatus === "paid" ? (
- 
-      
-       
-          <div className="card-body text-center bg-info rounded-4 text-white">
-            <span className="fs-6 fw-medium h-100">
-              Order has been paid. Thank you!
-            </span>
-          </div>
-        ) : orderStatus === "served" ? (
-          <div className="card-body text-center bg-primary rounded-4 text-white">
-            <span className="fs-6 fw-medium h-100">
-              Order has been served. Enjoy your meal!
-            </span>
-          </div>
-        ) : orderStatus === "cooking" ? (
-          <div className="card-body text-center bg-warning rounded-4 text-dark">
-            <span className="fs-6 fw-medium h-100">
-              Order is being cooked. Please wait patiently.
-            </span>
-          </div>
-        ) : null
-      }
-    </>
-  )}
-  <>
-  {/* {orderStatus === "served" && (
+                ) : orderStatus === "placed" ? (
+                  <div className="card-body p-0">
+                    <div className="card rounded-4">
+                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
+                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                          <OrderGif />
+                        </div>
+                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                          <div className="text-start mb-0">
+                            <div className="fw-medium">
+                              Thanks for ordering!
+                            </div>
+                            <div className="fw-medium">
+                              We'll start right away.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : orderStatus === "ongoing" ? (
+                  <div className="card-body p-0">
+                    <div className="card rounded-4">
+                      <div className="row py-2 my-0 ps-2 pe-0 h-100">
+                        <div className="col-3 d-flex align-items-center justify-content-center pe-2">
+                          <OrderGif />
+                        </div>
+                        <div className="col-8 d-flex align-items-center justify-content-center px-0">
+                          <div className="text-center mb-0">
+                            <div className="fw-medium">
+                              You have the best taste in food.
+                            </div>
+                            <div className="fw-medium">
+                              We're crafting a menu to match it perfectly.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : orderStatus === "paid" ? (
+                  <div className="card-body text-center bg-info rounded-4 text-white">
+                    <span className="fs-6 fw-medium h-100">
+                      Order has been paid. Thank you!
+                    </span>
+                  </div>
+                ) : orderStatus === "served" ? (
+                  <div className="card-body text-center bg-primary rounded-4 text-white">
+                    <span className="fs-6 fw-medium h-100">
+                      Order has been served. Enjoy your meal!
+                    </span>
+                  </div>
+                ) : orderStatus === "cooking" ? (
+                  <div className="card-body text-center bg-warning rounded-4 text-dark">
+                    <span className="fs-6 fw-medium h-100">
+                      Order is being cooked. Please wait patiently.
+                    </span>
+                  </div>
+                ) : null}
+              </>
+            )}
+            <>
+              {/* {orderStatus === "served" && (
   <div className="card-body text-center btn btn-outline-success text-primary rounded-pill rounded-4  mt-3"
   onClick={(e) => {
     e.stopPropagation();
@@ -1562,8 +1580,8 @@ const [paymentMethod, setPaymentMethod] = useState("");
     </span>
   </div>
 )} */}
-  </>
-  {/* <>
+            </>
+            {/* <>
    {orderStatus === "placed" && (
   <div className="card-body text-center btn btn-outline-danger text-danger rounded-pill rounded-4  mt-3"
   onClick={(e) => {
@@ -1577,151 +1595,148 @@ const [paymentMethod, setPaymentMethod] = useState("");
   </div>
 )} 
   </> */}
-</div>
+          </div>
 
-
-{showCompleteModal && (
-  <div
-    className="modal fade show d-block"
-    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-  >
-    <div className="modal-dialog modal-dialog-centered">
-      <div className="modal-content">
-        <div className="modal-header">
-          <div className="col-6 text-start">
-            <div className="modal-title font_size_16 fw-medium">
-              Complete Order
+          {showCompleteModal && (
+            <div
+              className="modal fade show d-block"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <div className="col-6 text-start">
+                      <div className="modal-title font_size_16 fw-medium">
+                        Complete Order
+                      </div>
+                    </div>
+                    <div className="col-6 text-end">
+                      <div className="d-flex justify-content-end">
+                        <span
+                          className="m-2 font_size_16"
+                          onClick={() => setShowCompleteModal(false)}
+                          aria-label="Close"
+                        >
+                          <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-body">
+                    <p className="text-center">
+                      Are you sure you want to complete this order?
+                    </p>
+                    <div className="d-flex flex-column align-items-center gap-3">
+                      {/* UPI Payment */}
+                      <button
+                        className="btn btn-info text-white w-100"
+                        disabled={isProcessingUPI}
+                        // onClick={handleGenericUPI}
+                      >
+                        {isProcessingUPI ? (
+                          "Processing..."
+                        ) : (
+                          <>
+                            Pay{" "}
+                            <span className="fs-4 mx-1">
+                              ₹{order_details.grand_total.toFixed(2)}
+                            </span>{" "}
+                            via
+                            <span className="ms-2">Other UPI Apps</span>
+                            <img
+                              className="text-white ms-1"
+                              src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
+                              width={45}
+                              alt="UPI"
+                            />
+                          </>
+                        )}
+                      </button>
+                      {/* PhonePe Payment */}
+                      <button
+                        className="btn text-white w-100"
+                        style={{ backgroundColor: "#5f259f" }}
+                        disabled={isProcessingPhonePe}
+                        // onClick={handlePhonePe}
+                      >
+                        {isProcessingPhonePe ? (
+                          "Processing..."
+                        ) : (
+                          <>
+                            Pay with PhonePe
+                            <span className="fs-4 mx-1">
+                              ₹{order_details.grand_total.toFixed(2)}
+                            </span>
+                            <img
+                              className="ms-1"
+                              src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
+                              width={45}
+                              alt="PhonePe"
+                            />
+                          </>
+                        )}
+                      </button>
+                      {/* Google Pay Payment */}
+                      <button
+                        className="btn text-white w-100"
+                        style={{ backgroundColor: "#1a73e8" }}
+                        disabled={isProcessingGPay}
+                        // onClick={handleGooglePay}
+                      >
+                        {isProcessingGPay ? (
+                          "Processing..."
+                        ) : (
+                          <>
+                            Pay with Google Pay
+                            <span className="fs-4 mx-1">
+                              ₹{order_details.grand_total.toFixed(2)}
+                            </span>
+                            <img
+                              className="ms-1"
+                              src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
+                              width={45}
+                              alt="Google Pay"
+                            />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div>or make payment via:</div>
+                  </div>
+                  <div className="d-flex justify-content-center pt-2 mb-4">
+                    {/* Card Payment */}
+                    <button
+                      type="button"
+                      className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
+                        paymentMethod === "card"
+                          ? "bg-success text-white"
+                          : "border"
+                      }`}
+                      onClick={() => handlePayment("card")}
+                    >
+                      <i className="ri-bank-card-line me-1"></i>
+                      Card
+                    </button>
+                    {/* Cash Payment */}
+                    <button
+                      type="button"
+                      className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
+                        paymentMethod === "cash"
+                          ? "bg-success text-white"
+                          : "border border-muted"
+                      }`}
+                      onClick={() => handlePayment("cash")}
+                    >
+                      <i className="ri-wallet-3-fill me-1"></i>
+                      Cash
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-6 text-end">
-            <div className="d-flex justify-content-end">
-              <span
-                className="m-2 font_size_16"
-                onClick={() => setShowCompleteModal(false)}
-                aria-label="Close"
-              >
-                <i className="fa-solid fa-xmark gray-text font_size_14 pe-3"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="modal-body">
-          <p className="text-center">
-            Are you sure you want to complete this order?
-          </p>
-          <div className="d-flex flex-column align-items-center gap-3">
-            {/* UPI Payment */}
-            <button
-              className="btn btn-info text-white w-100"
-              disabled={isProcessingUPI}
-              // onClick={handleGenericUPI}
-            >
-              {isProcessingUPI ? (
-                "Processing..."
-              ) : (
-                <>
-                  Pay{" "}
-                  <span className="fs-4 mx-1">
-                    ₹{order_details.grand_total.toFixed(2)}
-                  </span>{" "}
-                  via
-                  <span className="ms-2">Other UPI Apps</span>
-                  <img
-                    className="text-white ms-1"
-                    src="https://img.icons8.com/ios-filled/50/FFFFFF/bhim-upi.png"
-                    width={45}
-                    alt="UPI"
-                  />
-                </>
-              )}
-            </button>
-            {/* PhonePe Payment */}
-            <button
-              className="btn text-white w-100"
-              style={{ backgroundColor: "#5f259f" }}
-              disabled={isProcessingPhonePe}
-              // onClick={handlePhonePe}
-            >
-              {isProcessingPhonePe ? (
-                "Processing..."
-              ) : (
-                <>
-                  Pay with PhonePe
-                  <span className="fs-4 mx-1">
-                    ₹{order_details.grand_total.toFixed(2)}
-                  </span>
-                  <img
-                    className="ms-1"
-                    src="https://img.icons8.com/?size=100&id=OYtBxIlJwMGA&format=png&color=000000"
-                    width={45}
-                    alt="PhonePe"
-                  />
-                </>
-              )}
-            </button>
-            {/* Google Pay Payment */}
-            <button
-              className="btn text-white w-100"
-              style={{ backgroundColor: "#1a73e8" }}
-              disabled={isProcessingGPay}
-              // onClick={handleGooglePay}
-            >
-              {isProcessingGPay ? (
-                "Processing..."
-              ) : (
-                <>
-                  Pay with Google Pay
-                  <span className="fs-4 mx-1">
-                    ₹{order_details.grand_total.toFixed(2)}
-                  </span>
-                  <img
-                    className="ms-1"
-                    src="https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png"
-                    width={45}
-                    alt="Google Pay"
-                  />
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-        <div className="text-center">
-          <div>or make payment via:</div>
-        </div>
-        <div className="d-flex justify-content-center pt-2 mb-4">
-          {/* Card Payment */}
-          <button
-            type="button"
-            className={`px-2 bg-white mb-2 me-4 rounded-pill py-1 text-dark ${
-              paymentMethod === "card"
-                ? "bg-success text-white"
-                : "border"
-            }`}
-            onClick={() => handlePayment("card")}
-          >
-            <i className="ri-bank-card-line me-1"></i>
-            Card
-          </button>
-          {/* Cash Payment */}
-          <button
-            type="button"
-            className={`px-2 bg-white mb-2 me-2 rounded-pill py-1 text-dark ${
-              paymentMethod === "cash"
-                ? "bg-success text-white"
-                : "border border-muted"
-            }`}
-            onClick={() => handlePayment("cash")}
-          >
-            <i className="ri-wallet-3-fill me-1"></i>
-            Cash
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+          )}
         </ThemeProvider>
 
         <main className="page-content">
@@ -1864,22 +1879,19 @@ const [paymentMethod, setPaymentMethod] = useState("");
                                   </span>
                                 </div>
                                 {menu.comment && (
-                              <div className="my-2  text-light"><i className="fa-solid fa-comment-dots"></i>{" "}{menu.comment}</div>
-                            )}
+                                  <div className="row">
+                                    <div className="col-12 my-2 ms-2  text-light">
+                                      <i className="fa-solid fa-comment-dots"></i>{" "}
+                                      {menu.comment}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                             
-                              </div>
-                             
+                            </div>
                           </div>
-
-                          
                         </div>
-                       
-
                       </div>
-                    
                     </div>
-                    
                   ))}
 
                   {/* Add Order More button outside the card, but only for placed and ongoing orders */}
@@ -1959,8 +1971,8 @@ const [paymentMethod, setPaymentMethod] = useState("");
                         <span className="font_size_14 gray-text">
                           +₹
                           {parseFloat(
-                          orderDetails.order_details.total_bill_with_discount
-                        ).toFixed(2) || 0}
+                            orderDetails.order_details.total_bill_with_discount
+                          ).toFixed(2) || 0}
                         </span>
                       </div>
                     )}
@@ -2001,7 +2013,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
                       </span>
                     </div>
                   </div>
-                 
+
                   <div>
                     <hr className=" p-0 m-0 text-primary w-100" />
                   </div>
@@ -2041,89 +2053,105 @@ const [paymentMethod, setPaymentMethod] = useState("");
               </div>
             )}
             {orderStatus === "paid" && (
-            <div className="d-flex flex-column align-items-center mt-4">
-              <div className="d-flex justify-content-center gap-5 mb-2">
-                {/* Bad Rating */}
-                <div className="text-center">
-                  <input
-                    type="radio"
-                    className="btn-check"
-                    name="rating"
-                    id="bad-rating"
-                    value="1"
-                    checked={selectedRating === "1"}
-                    onChange={() => handleRating("1")}
-                  />
-                  <label htmlFor="bad-rating" style={{ cursor: 'pointer' }}>
-                    <i
-                      className={`fa-solid fa-face-frown ${selectedRating === "1" ? 'text-danger' : 'text-secondary'}`}
-                      style={{ fontSize: "3em" }}
-                    ></i>
-                    <span className="d-block mt-1">Bad</span>
-                  </label>
-                </div>
+              <div className="d-flex flex-column align-items-center mt-4">
+                <div className="d-flex justify-content-center gap-5 mb-2">
+                  {/* Bad Rating */}
+                  <div className="text-center">
+                    <input
+                      type="radio"
+                      className="btn-check"
+                      name="rating"
+                      id="bad-rating"
+                      value="1"
+                      checked={selectedRating === "1"}
+                      onChange={() => handleRating("1")}
+                    />
+                    <label htmlFor="bad-rating" style={{ cursor: "pointer" }}>
+                      <i
+                        className={`fa-solid fa-face-frown ${
+                          selectedRating === "1"
+                            ? "text-danger"
+                            : "text-secondary"
+                        }`}
+                        style={{ fontSize: "3em" }}
+                      ></i>
+                      <span className="d-block mt-1">Bad</span>
+                    </label>
+                  </div>
 
-                {/* Okay Rating */}
-                <div className="text-center">
-                  <input
-                    type="radio"
-                    className="btn-check"
-                    name="rating"
-                    id="okay-rating"
-                    value="3"
-                    checked={selectedRating === "3"}
-                    onChange={() => handleRating("3")}
-                  />
-                  <label htmlFor="okay-rating" style={{ cursor: 'pointer' }}>
-                    <i
-                      className={`fa-solid fa-face-meh ${selectedRating === "3" ? 'text-warning' : 'text-secondary'}`}
-                      style={{ fontSize: "3em" }}
-                    ></i>
-                    <span className="d-block mt-1">Okay</span>
-                  </label>
-                </div>
+                  {/* Okay Rating */}
+                  <div className="text-center">
+                    <input
+                      type="radio"
+                      className="btn-check"
+                      name="rating"
+                      id="okay-rating"
+                      value="3"
+                      checked={selectedRating === "3"}
+                      onChange={() => handleRating("3")}
+                    />
+                    <label htmlFor="okay-rating" style={{ cursor: "pointer" }}>
+                      <i
+                        className={`fa-solid fa-face-meh ${
+                          selectedRating === "3"
+                            ? "text-warning"
+                            : "text-secondary"
+                        }`}
+                        style={{ fontSize: "3em" }}
+                      ></i>
+                      <span className="d-block mt-1">Okay</span>
+                    </label>
+                  </div>
 
-                {/* Good Rating */}
-                <div className="text-center">
-                  <input
-                    type="radio"
-                    className="btn-check"
-                    name="rating"
-                    id="good-rating"
-                    value="5"
-                    checked={selectedRating === "5"}
-                    onChange={() => handleRating("5")}
-                  />
-                  <label htmlFor="good-rating" style={{ cursor: 'pointer' }}>
-                    <i
-                      className={`fa-solid fa-face-smile ${selectedRating === "5" ? 'text-success' : 'text-secondary'}`}
-                      style={{ fontSize: "3em" }}
-                    ></i>
-                    <span className="d-block mt-1">Good</span>
-                  </label>
+                  {/* Good Rating */}
+                  <div className="text-center">
+                    <input
+                      type="radio"
+                      className="btn-check"
+                      name="rating"
+                      id="good-rating"
+                      value="5"
+                      checked={selectedRating === "5"}
+                      onChange={() => handleRating("5")}
+                    />
+                    <label htmlFor="good-rating" style={{ cursor: "pointer" }}>
+                      <i
+                        className={`fa-solid fa-face-smile ${
+                          selectedRating === "5"
+                            ? "text-success"
+                            : "text-secondary"
+                        }`}
+                        style={{ fontSize: "3em" }}
+                      ></i>
+                      <span className="d-block mt-1">Good</span>
+                    </label>
+                  </div>
                 </div>
+                {selectedRating !== "0" ? (
+                  <div className="text-center mt-2">
+                    <span className="font_size_12 text-success">
+                      Thanks for your feedback! You can change your rating
+                      anytime.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-center mt-2">
+                    <span className="font_size_12 text-secondary">
+                      Please rate your experience.
+                    </span>
+                  </div>
+                )}
+
+                {hasGoogleReview && (
+                  <div
+                    className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
+                    onClick={handleRateOnGoogle}
+                  >
+                    <i className="fa-solid fa-star me-2"></i>
+                    Rate us on Google
+                  </div>
+                )}
               </div>
-              {selectedRating !== "0" ? (
-                <div className="text-center mt-2">
-                  <span className="font_size_12 text-success">Thanks for your feedback! You can change your rating anytime.</span>
-                </div>
-              ) : (
-                <div className="text-center mt-2">
-                  <span className="font_size_12 text-secondary">Please rate your experience.</span>
-                </div>
-              )}
-               
-              {hasGoogleReview && (
-                <div 
-                  className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
-                  onClick={handleRateOnGoogle}
-                >
-                  <i className="fa-solid fa-star me-2"></i>
-                  Rate us on Google
-                </div>
-              )}
-                 
-            </div>
             )}
 
             <RestaurantSocials />
