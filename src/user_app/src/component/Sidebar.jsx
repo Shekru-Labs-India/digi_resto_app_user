@@ -5,6 +5,7 @@ import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
 import { useLocation } from "react-router-dom";
 import { APP_VERSION } from "../component/config";
+import config from "./config";
 
 export const SidebarToggler = () => {
   const location = useLocation();
@@ -88,6 +89,38 @@ export const SidebarToggler = () => {
       /\w\S*/g,
       (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
+  };
+
+  const callWaiter = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData?.user_id) {
+        showLoginPopup();
+        return;
+      }
+
+      const response = await fetch(`${config.apiDomain}/common_api/call_waiter`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          outlet_id: restaurantId,
+          user_id: userData.user_id
+        })
+      });
+
+      const data = await response.json();
+      if (data.st === 1) {
+        alert(data.msg || 'Waiter has been called successfully!');
+      } else {
+        alert(data.msg || 'Failed to call waiter. Please try again.' );
+      }
+    } catch (error) {
+      console.error('Error calling waiter:', error);
+      alert('Failed to call waiter. Please try again.');
+    }
   };
 
   return (
@@ -291,6 +324,21 @@ export const SidebarToggler = () => {
                 ></i>
               </span>
               <span className=" font_size_16 fw-medium  ">Profile</span>
+            </Link>
+          </li>
+          <li>
+            <Link 
+              className="nav-link active" 
+              to="#"
+              onClick={(e) => {
+                e.preventDefault();
+                callWaiter();
+              }}
+            >
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-bell fs-4"></i>
+              </span>
+              <span className=" font_size_16 fw-medium  ">Call Waiter</span>
             </Link>
           </li>
         </ul>
