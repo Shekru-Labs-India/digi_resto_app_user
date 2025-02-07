@@ -317,6 +317,12 @@ action:'save',
     localStorage.removeItem("cartId"); // Clear cart ID from localStorage
     setCartItems([]); // Clear cart items state if you're using it
   };
+//   useEffect(() => {
+//     if (!userData?.user_id || userData.role === 'guest') {
+//         clearCartData();
+      
+//     }
+// }, [userData]);
 
   const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {

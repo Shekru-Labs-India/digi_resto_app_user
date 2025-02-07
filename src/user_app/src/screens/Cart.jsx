@@ -147,7 +147,7 @@ const Cart = () => {
 
     try {
       const response = await fetch(
-        "https://men4u.xyz/user_api/delete_entire_cart",
+        `${config.apiDomain}/user_api/delete_entire_cart`,
         {
           method: "POST",
           headers: {

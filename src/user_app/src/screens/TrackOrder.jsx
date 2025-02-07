@@ -1159,7 +1159,7 @@ const [paymentMethod, setPaymentMethod] = useState("");
   const handlePayment = async (method) => {
     try {
       setIsProcessing(true); // Add method-specific state if needed
-      const response = await axios.post("https://men4u.xyz/user_api/complete_order", {
+      const response = await axios.post(`${config.apiDomain}/user_api/complete_order`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
