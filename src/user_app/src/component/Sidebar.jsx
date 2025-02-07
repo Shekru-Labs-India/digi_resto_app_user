@@ -92,7 +92,7 @@ export const SidebarToggler = () => {
   };
 
 
-  //call waiter
+  //call waiter .
   const callWaiter = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem('userData'));
