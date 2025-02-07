@@ -228,10 +228,10 @@ const TrackOrder = () => {
   useEffect(() => {
     if (orderDetails?.order_details) {
       setOrderStatus(orderDetails.order_details.order_status.toLowerCase());
-      console.log(
-        "------",
-        orderDetails.order_details.order_status.toLowerCase()
-      );
+      // console.log(
+      //   "------",
+      //   orderDetails.order_details.order_status.toLowerCase()
+      // );
 
       if (orderDetails.order_details.order_status.toLowerCase() === "placed") {
         const orderTime = new Date(
