@@ -1346,7 +1346,7 @@ action:'save',
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
-                                <span className="ms-2 font_size_10 text-capitalize text-muted">
+                                <span className="ms-2 font_size_10 text-capitalize text-dark">
                                   ({item.half_or_full || "full"})
                                 </span>
                               </span>

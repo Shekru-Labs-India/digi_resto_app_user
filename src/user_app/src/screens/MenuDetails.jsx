@@ -454,6 +454,14 @@ const MenuDetails = () => {
       return;
     }
 
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
@@ -707,7 +715,7 @@ const MenuDetails = () => {
           <div className="mt-5 pt-1">
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
-                restaurantName={ restaurantName}
+                restaurantName={restaurantName}
                 tableNumber={userData?.tableNumber || "1"}
               />
             </div>
@@ -827,19 +835,19 @@ const MenuDetails = () => {
                   {/* Veg/Non-veg indicator */}
 
                   <div
-                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        getFoodTypeStyles(productDetails.menu_food_type).border
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        left: "3px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                      }}
-                    >
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                      getFoodTypeStyles(productDetails.menu_food_type).border
+                    }`}
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      left: "3px",
+                      height: "20px",
+                      width: "20px",
+                      borderWidth: "2px",
+                      borderRadius: "3px",
+                    }}
+                  >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -895,20 +903,20 @@ const MenuDetails = () => {
                     }}
                   />
 
-<div
-                      className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
-                        getFoodTypeStyles(productDetails.menu_food_type).border
-                      }`}
-                      style={{
-                        position: "absolute",
-                        bottom: "3px",
-                        left: "3px",
-                        height: "20px",
-                        width: "20px",
-                        borderWidth: "2px",
-                        borderRadius: "3px",
-                      }}
-                    >
+                  <div
+                    className={`border rounded-3 bg-white opacity-100 d-flex justify-content-center align-items-center ${
+                      getFoodTypeStyles(productDetails.menu_food_type).border
+                    }`}
+                    style={{
+                      position: "absolute",
+                      bottom: "3px",
+                      left: "3px",
+                      height: "20px",
+                      width: "20px",
+                      borderWidth: "2px",
+                      borderRadius: "3px",
+                    }}
+                  >
                     <i
                       className={`${
                         getFoodTypeStyles(productDetails.menu_food_type).icon
@@ -963,8 +971,8 @@ const MenuDetails = () => {
                   <div>
                     <div className="fw-medium">{differentRestaurantName}</div>
                     <div className="font_size_12">
-                      This menu is from a different restaurant. You can view details,
-                      but can't add it to your current checkout.
+                      This menu is from a different restaurant. You can view
+                      details, but can't add it to your current checkout.
                     </div>
                   </div>
                 </div>
@@ -1000,21 +1008,18 @@ const MenuDetails = () => {
                     </div>
                   </div>
                   {productDetails.rating &&
-  productDetails.rating !== "null" &&
-  productDetails.rating !== "0.0" &&
-  productDetails.rating !== "0" &&
-  productDetails.rating !== null && (
-    <div className="col-4 text-end px-0">
-      <span className="ps-2 font_size_10">
-        {renderStarRating(productDetails.rating)}
-       
-       
-        {productDetails.rating}
-      
-      </span>
-    </div>
-  )}
+                    productDetails.rating !== "null" &&
+                    productDetails.rating !== "0.0" &&
+                    productDetails.rating !== "0" &&
+                    productDetails.rating !== null && (
+                      <div className="col-4 text-end px-0">
+                        <span className="ps-2 font_size_10">
+                          {renderStarRating(productDetails.rating)}
 
+                          {parseFloat(productDetails.rating).toFixed(1)}
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -1043,18 +1048,17 @@ const MenuDetails = () => {
                 )}
 
                 {/* Add end border */}
-                <RestaurantSocials  />
+                <RestaurantSocials />
               </div>
             </div>
           </div>
         </main>
 
-        <div className="footer-fixed-btn bottom-0 pt-0 pe-0">
+        <div className="footer-fixed-btn bottom-0 pt-0 px-0">
+          <hr className="dashed-line me-0 pe-0 mt-0" />
           <div className="container  pt-0">
             <footer className="footer mb-2 pt-0">
               <div className="row w-100">
-                <hr className="dashed-line me-0 pe-0" />
-
                 <div className="col-4 ps-1 pe-0">
                   <div className="d-flex align-items-center justify-content-between mb-5">
                     <div className="d-flex flex-column">
@@ -1077,7 +1081,7 @@ const MenuDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-8 px-0 text-center">
+                <div className="col-8 px-0 text-end">
                   {!userId ? (
                     <button
                       className="btn btn-outline-primary rounded-pill"
@@ -1096,7 +1100,6 @@ const MenuDetails = () => {
                           Different Restaurant
                         </div>
                       </button>
-                      
                     </div>
                   ) : isItemOrdered(menuId) ? (
                     <button

@@ -13,7 +13,7 @@ import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
-import { isNonProductionDomain } from "../component/config";
+import config  from "../component/config";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const { showLoginPopup } = usePopup();
@@ -98,6 +98,39 @@ const HomeScreen = () => {
     );
   };
 
+    //call waiter
+  const callWaiter = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData?.user_id) {
+        showLoginPopup();
+        return;
+      }
+
+      const response = await fetch(`${config.apiDomain}/common_api/call_waiter`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          outlet_id: restaurantId,
+          user_id: userData.user_id
+        })
+      });
+
+      const data = await response.json();
+      if (data.st === 1) {
+        alert('Waiter has been called successfully!' || data.msg);
+      } else {
+        alert('Failed to call waiter. Please try again.' || data.msg);
+      }
+    } catch (error) {
+      console.error('Error calling waiter:', error);
+      alert('Failed to call waiter. Please try again.');
+    }
+  };
+
   return (
     <div>
       <div className="page-wrapper">
@@ -142,7 +175,6 @@ const HomeScreen = () => {
             <div className=" ">
               <Link to="/user_app/Profile">
                 <span className="ms-3 pt-4    ">
-                 
                   {userData?.name ? (
                     `Hello, ${toTitleCase(getFirstName(userData.name))}`
                   ) : (
@@ -374,6 +406,21 @@ const HomeScreen = () => {
                 <span className="  font_size_16 fw-medium ">Profile</span>
               </Link>
             </li>
+            <li>
+              <Link
+                className="nav-link active"
+                to="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  callWaiter();
+                }}
+              >
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-bell fs-4"></i>
+                </span>
+                <span className=" font_size_16 fw-medium  ">Call Waiter</span>
+              </Link>
+            </li>
           </ul>
           {/* <div className="dz-mode mt-4 me-4">
           <div className="theme-btn" onClick={toggleTheme}>
@@ -535,7 +582,7 @@ const HomeScreen = () => {
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
-            <RestaurantSocials />
+              <RestaurantSocials />
             </div>
           </div>
         </main>

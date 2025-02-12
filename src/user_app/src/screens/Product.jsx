@@ -468,6 +468,14 @@ const Product = () => {
 
     if (!selectedMenu) return;
 
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
@@ -767,20 +775,24 @@ const Product = () => {
       <Header title="Menu" count={menuList.length} />
 
       <main className={`page-content`}>
-        <div className="container px-3 py-0">
+        {/* <div className="container px-3 py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
           />
-        </div>
-        <div className="container px-3 py-0 mb-0">
+        </div> */}
+        {/* <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={userData?.tableNumber || "1"}
           />
-        </div>
+        </div> */}
         {/* Category Swiper */}
-        <div className="container pb-0 pt-0">
+        <div className="container pb-0 pt-0 p-t50">
+          <HotelNameAndTable
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
+          />
           <div className="d-flex justify-content-between mb-3 pt-1">
             <div className="me-2 w-100" style={{ height: "40px" }}>
               <div
@@ -1049,7 +1061,7 @@ const Product = () => {
                                 <>
                                   {renderStarRating(menu.rating)}
                                   <span className="font_size_10 fw-normal gray-text">
-                                    {menu.rating}
+                                    {parseFloat(menu.rating).toFixed(1)}
                                   </span>
                                 </>
                               )}
@@ -1115,16 +1127,19 @@ const Product = () => {
                               }}
                             >
                               <i
-                                className={`fa-solid ${
-                                  (() => {
-                                    const storedCart = localStorage.getItem('restaurant_cart_data');
-                                    if (!storedCart) return "fa-plus text-secondary";
-                                    const cartData = JSON.parse(storedCart);
-                                    return cartData.order_items?.some(item => item.menu_id === menu.menu_id)
-                                      ? "fa-circle-check text-success"
-                                      : "fa-plus text-secondary"
-                                  })()
-                                } fs-6`}
+                                className={`fa-solid ${(() => {
+                                  const storedCart = localStorage.getItem(
+                                    "restaurant_cart_data"
+                                  );
+                                  if (!storedCart)
+                                    return "fa-plus text-secondary";
+                                  const cartData = JSON.parse(storedCart);
+                                  return cartData.order_items?.some(
+                                    (item) => item.menu_id === menu.menu_id
+                                  )
+                                    ? "fa-circle-check text-success"
+                                    : "fa-plus text-secondary";
+                                })()} fs-6`}
                               ></i>
                             </div>
                           </div>
@@ -1138,9 +1153,8 @@ const Product = () => {
               <p>No items available with selected filters.</p>
             )}
           </div>
-         
-            <RestaurantSocials />
-         
+
+          <RestaurantSocials />
         </div>
       </main>
 

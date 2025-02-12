@@ -274,6 +274,14 @@ const Search = () => {
 
     if (!selectedMenu) return;
 
+    if (comment && (comment.length < 5 || comment.length > 30)) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
+      return;
+    }
+
     const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
 
     if (!selectedPrice) {
@@ -1174,7 +1182,7 @@ const Search = () => {
                                     <>
                                       {renderStarRating(menu.rating)}
                                       <span className="font_size_10 fw-normal gray-text">
-                                        {menu.rating}
+                                        {parseFloat(menu.rating).toFixed(1)}
                                       </span>
                                     </>
                                   )}
