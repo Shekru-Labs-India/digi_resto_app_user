@@ -1473,7 +1473,7 @@ const TrackOrder = () => {
                         Your delicious order has been served
                       </span>
                     </div>
-                    <div className="d-flex justify-content-center pt-3 gray-text">
+                    {/* <div className="d-flex justify-content-center pt-3 gray-text">
                       {order_details.payment_method && (
                         <div className="border border-success rounded-pill py-0 px-2 font_size_14 d-flex align-items-center">
                           <span className="me-2">
@@ -1496,7 +1496,7 @@ const TrackOrder = () => {
                           <span>{order_details.payment_method}</span>
                         </div>
                       )}
-                    </div>
+                    </div> */}
                   </>
                 ) : ["canceled", "cancelled", "cancle"].includes(
                     orderStatus
