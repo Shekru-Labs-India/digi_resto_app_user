@@ -467,14 +467,14 @@ const OfferBanner = () => {
 
   return (
     <div className="dz-box style-2 py-2">
+      <div className="m-0">
+        <HotelNameAndTable
+          restaurantName={restaurantName}
+          tableNumber={userData?.tableNumber || "1"}
+        />
+      </div>
       {menuItems.length > 0 && (
         <>
-          <div className="m-0">
-            <HotelNameAndTable
-              restaurantName={restaurantName}
-              tableNumber={userData?.tableNumber || "1"}
-            />
-          </div>
           <div className="dz-box style-3">
             <div className="swiper nearby-swiper mt-0">
               <div className="swiper-wrapper">
@@ -569,13 +569,14 @@ const OfferBanner = () => {
                                   ></i>
                                 </div>
                                 {/* Offer Tag */}
-                                {menuItem.offer !== 0 && (
-                                  <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
-                                    <span className="font_size_10 text-white">
-                                      {menuItem.offer}% Off
-                                    </span>
-                                  </div>
-                                )}
+                                {menuItem.offer !== 0 &&
+                                  menuItem.offer !== null && (
+                                    <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
+                                      <span className="font_size_10 text-white">
+                                        {menuItem.offer}% Off
+                                      </span>
+                                    </div>
+                                  )}
                               </div>
                               <div className="col-9 pt-1 p-0 pe-2">
                                 <div className="row d-flex align-items-center mt-1">
