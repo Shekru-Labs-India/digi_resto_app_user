@@ -619,7 +619,7 @@ const Cart = () => {
                             ></i>
                           </div>
                           {/* Offer Tag */}
-                          {item.offer !== 0 && (
+                          {item.offer !== 0 && item.offer !== null && (
                             <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                               <span className="font_size_10 text-white">
                                 {item.offer || "No"}% Off

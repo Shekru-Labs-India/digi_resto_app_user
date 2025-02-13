@@ -612,7 +612,7 @@ const NearbyArea = () => {
                               ></i>
                             </div>
                             {/* Offer Tag */}
-                            {menuItem.offer !== 0 && (
+                            {menuItem.offer !== 0 && menuItem.offer !== null && (
                               <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                                 <span className="font_size_10 text-white">
                                   {menuItem.offer}% Off

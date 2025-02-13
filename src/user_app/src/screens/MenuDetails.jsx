@@ -882,7 +882,7 @@ const MenuDetails = () => {
                   </div>
 
                   {/* Discount badge */}
-                  {productDetails?.offer !== 0 && (
+                  {productDetails?.offer !== 0 && productDetails?.offer !== null && (
                     <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                       <span className="font_size_10 text-white">
                         {productDetails.offer}% Off
@@ -951,7 +951,7 @@ const MenuDetails = () => {
                   </div>
 
                   {/* Discount badge */}
-                  {productDetails?.offer !== 0 && (
+                  {productDetails?.offer !== 0 && productDetails?.offer !== null && (
                     <div className="gradient_bg d-flex justify-content-center align-items-center gradient_bg_offer">
                       <span className="font_size_10 text-white">
                         {productDetails.offer}% Off
