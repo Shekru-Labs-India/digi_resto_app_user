@@ -224,19 +224,18 @@ const AddToCartUI = ({
                     >
                       <i className="fa-solid fa-plus text-white"></i>
                     </div>
+                  <div
+                    type="button"
+                    className="btn btn-primary rounded-pill ms-2 px-3"
+                    onClick={handleConfirmWithQuantity}
+                    disabled={
+                      isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
+                    }
+                  >
+                    <i className="fa-solid fa-plus pe-1 text-white"></i>
+                    Add
+                  </div>
                 </div>
-              </div>
-              
-              <div
-                type="button"
-                className="btn btn-primary rounded-pill ms-2 px-3"
-                onClick={handleConfirmWithQuantity}
-                disabled={
-                  isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
-                }
-              >
-                <i className="fa-solid fa-plus pe-1 text-white"></i>
-                Add
               </div>
             </div>
           </div>
