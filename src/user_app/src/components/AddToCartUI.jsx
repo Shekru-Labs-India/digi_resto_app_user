@@ -199,37 +199,37 @@ const AddToCartUI = ({
             <hr className="my-4" />
             <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
               <div className="dz-stepper style-3">
-                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                  {/* <span className="input-group-btn input-group-prepend"> */}
+                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected px-4" style={{ background: "#f8f9fa", borderRadius: "50px" }}>
                     <div 
-                      className="btn btn-primary bootstrap-touchspin-down" 
+                      className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
+                      style={{ width: "35px", height: "35px", padding: "0" }}
                       type="button"
                       onClick={() => handleQuantityChange('decrement')}
                     >
                       <i className="fa-solid fa-minus text-white"></i>
                     </div>
-                  {/* </span> */}
                   <input 
                     readOnly
-                    className="stepper form-control" 
+                    className="stepper form-control text-center mx-2" 
                     type="text" 
                     value={quantity} 
                     name="quantity"
+                    style={{ width: "50px", border: "none", background: "transparent" }}
                   />
-                  {/* <span className="input-group-btn input-group-append"> */}
-                    <button 
-                      className="btn btn-primary bootstrap-touchspin-up" 
+                    <div 
+                      className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
+                      style={{ width: "35px", height: "35px", padding: "0" }}
                       type="button"
                       onClick={() => handleQuantityChange('increment')}
                     >
                       <i className="fa-solid fa-plus text-white"></i>
-                    </button>
-                  {/* </span> */}
+                    </div>
                 </div>
               </div>
-              <button
+              
+              <div
                 type="button"
-                className="btn btn-primary rounded-pill"
+                className="btn btn-primary rounded-pill ms-2 px-3"
                 onClick={handleConfirmWithQuantity}
                 disabled={
                   isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
@@ -237,7 +237,7 @@ const AddToCartUI = ({
               >
                 <i className="fa-solid fa-plus pe-1 text-white"></i>
                 Add
-              </button>
+              </div>
             </div>
           </div>
         </div>
