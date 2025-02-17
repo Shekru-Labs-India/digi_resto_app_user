@@ -531,10 +531,10 @@ const ProductCard = ({ isVegOnly }) => {
     );
   }, [handleAddToCartClick]);
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
     
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast("error", "Comment should be between 5 and 30 characters.");
       return;
     }
@@ -543,10 +543,10 @@ const ProductCard = ({ isVegOnly }) => {
       await addToCart(
         {
           ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: portionSize === "half" ? halfPrice : fullPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
           outlet_id: restaurantId,
         },
         restaurantId

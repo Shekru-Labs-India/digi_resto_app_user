@@ -20,8 +20,16 @@ const AddToCartUI = ({
   const [isPriceFetching, setIsPriceFetching] = useState(true);
   const { fetchMenuPrices } = useCart();
   const { restaurantId } = useRestaurantId();
-
+  const [quantity, setQuantity] = useState(1);
   const [commentError, setCommentError] = useState("");
+
+  const handleQuantityChange = (action) => {
+    setQuantity(prev => {
+      if (action === 'increment' && prev < 20) return prev + 1;
+      if (action === 'decrement' && prev > 1) return prev - 1;
+      return prev;
+    });
+  };
 
   const handleCommentChange = (e) => {
     const value = e.target.value;
@@ -51,6 +59,18 @@ const AddToCartUI = ({
 
     fetchPrices();
   }, [showModal, productDetails?.menu_id, restaurantId]);
+
+  const handleConfirmWithQuantity = () => {
+    // Create a new product object with quantity
+    const productWithQuantity = {
+      ...productDetails,
+      quantity: quantity,
+      comment: comment,
+      half_or_full: portionSize,
+      price: portionSize === "half" ? prices.halfPrice : prices.fullPrice,
+    };
+    handleConfirmAddToCart(productWithQuantity);
+  };
 
   if (!showModal) return null;
 
@@ -178,17 +198,39 @@ const AddToCartUI = ({
             </div>
             <hr className="my-4" />
             <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
-              <button
-                type="button"
-                className="border border-1 border-muted bg-transparent px-4 font_size_14 rounded-pill text-dark"
-                onClick={() => setShowModal(false)}
-              >
-                Close
-              </button>
+              <div className="dz-stepper style-3">
+                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+                  <span className="input-group-btn input-group-prepend">
+                    <button 
+                      className="btn btn-primary bootstrap-touchspin-down" 
+                      type="button"
+                      onClick={() => handleQuantityChange('decrement')}
+                    >
+                      -
+                    </button>
+                  </span>
+                  <input 
+                    readOnly
+                    className="stepper form-control" 
+                    type="text" 
+                    value={quantity} 
+                    name="quantity"
+                  />
+                  <span className="input-group-btn input-group-append">
+                    <button 
+                      className="btn btn-primary bootstrap-touchspin-up" 
+                      type="button"
+                      onClick={() => handleQuantityChange('increment')}
+                    >
+                      +
+                    </button>
+                  </span>
+                </div>
+              </div>
               <button
                 type="button"
                 className="btn btn-primary rounded-pill"
-                onClick={handleConfirmAddToCart}
+                onClick={handleConfirmWithQuantity}
                 disabled={
                   isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
                 }

@@ -445,7 +445,7 @@ const MenuDetails = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentUserId = userData?.user_id;
     const currentRole = userData?.role;
@@ -454,7 +454,7 @@ const MenuDetails = () => {
       return;
     }
 
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -462,21 +462,14 @@ const MenuDetails = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available");
-      return;
-    }
-
     try {
       await addToCart(
         {
           ...productDetails,
-          quantity,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
           outlet_id: restaurantId,
           menu_cat_id: menu_cat_id,
         },

@@ -56,7 +56,7 @@ const Bottom = () => {
             {(() => {
               const storedCart = localStorage.getItem("restaurant_cart_data"); 
               const hasItems = storedCart
-                ? JSON.parse(storedCart).order_items.length > 0
+                ? JSON.parse(storedCart).order_items?.length > 0
                 : false;
 
               return (

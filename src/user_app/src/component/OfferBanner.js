@@ -130,10 +130,10 @@ const OfferBanner = () => {
     }
   }, [restaurantId, customerId]);
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
 
-    if (notes && (notes.length < 5 || notes.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -147,15 +147,13 @@ const OfferBanner = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
     try {
       const success = await addToCart({
         ...selectedMenu,
-        quantity: 1,
-        notes: notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
+        quantity: productWithQuantity.quantity,
+        notes: productWithQuantity.comment,
+        half_or_full: productWithQuantity.half_or_full,
+        price: productWithQuantity.price,
         menu_name: selectedMenu.menu_name || selectedMenu.name
       }, restaurantId);
 

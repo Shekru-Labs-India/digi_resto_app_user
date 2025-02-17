@@ -110,7 +110,7 @@ export const RestaurantIdProvider = ({ children }) => {
                 const userData = JSON.parse(
                   localStorage.getItem("userData") || "{}"
                 );
-                if (Object.keys(userData).length > 0) {
+                if (Object.keys(userData)?.length > 0) {
                   const updatedUserData = {
                     ...userData,
                     sectionId: section,
@@ -183,7 +183,7 @@ export const RestaurantIdProvider = ({ children }) => {
           localStorage.setItem("sectionName", section_name);
   
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-          if (Object.keys(userData).length > 0) {
+          if (Object.keys(userData)?.length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: outlet_id,
@@ -245,7 +245,7 @@ export const RestaurantIdProvider = ({ children }) => {
           localStorage.removeItem("restaurantSocial");
   
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-          if (Object.keys(userData).length > 0) {
+          if (Object.keys(userData)?.length > 0) {
             const updatedUserData = {
               ...userData,
               restaurantId: null,

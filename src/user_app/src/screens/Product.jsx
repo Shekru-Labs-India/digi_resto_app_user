@@ -459,27 +459,16 @@ const Product = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
 
     if (!selectedMenu) return;
 
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
       );
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available");
       return;
     }
 
@@ -497,10 +486,10 @@ const Product = () => {
       await addToCart(
         {
           ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
           restaurant_id: restaurantId,
         },
         restaurantId
@@ -512,14 +501,9 @@ const Product = () => {
       setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.clear();
-      window.showToast(
-        "error",
-        error.message || "Failed to add item to checkout. Please try again."
-      );
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 

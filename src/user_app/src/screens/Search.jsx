@@ -265,16 +265,10 @@ const Search = () => {
     }
   };
 
-  const handleConfirmAddToCart = async () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.user_id || userData.role === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
-
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
-
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -282,35 +276,32 @@ const Search = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData?.user_id) {
+      showLoginPopup();
       return;
     }
 
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
-        },
-        restaurantId
-      );
+      const success = await addToCart({
+        ...selectedMenu,
+        quantity: productWithQuantity.quantity,
+        comment: productWithQuantity.comment,
+        half_or_full: productWithQuantity.half_or_full,
+        price: productWithQuantity.price,
+        menu_name: selectedMenu.menu_name || selectedMenu.name
+      }, restaurantId);
 
-      window.showToast("success", `${selectedMenu.menu_name} is added.`);
-
-      setShowModal(false);
-      setComment("");
-      setPortionSize("full");
-      setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
+      if (success) {
+        setShowModal(false);
+        window.showToast("success", `${selectedMenu.name} is added.`);
+        // Dispatch event to update cart UI
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+      } else {
+        window.showToast("error", "Failed to add item to cart");
+      }
     } catch (error) {
-      window.showToast("error", "Failed to add item to checkout. Please try again");
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
