@@ -200,15 +200,15 @@ const AddToCartUI = ({
             <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
               <div className="dz-stepper style-3">
                 <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                  <span className="input-group-btn input-group-prepend">
-                    <button 
+                  {/* <span className="input-group-btn input-group-prepend"> */}
+                    <div 
                       className="btn btn-primary bootstrap-touchspin-down" 
                       type="button"
                       onClick={() => handleQuantityChange('decrement')}
                     >
-                      -
-                    </button>
-                  </span>
+                      <i className="fa-solid fa-minus text-white"></i>
+                    </div>
+                  {/* </span> */}
                   <input 
                     readOnly
                     className="stepper form-control" 
@@ -216,15 +216,15 @@ const AddToCartUI = ({
                     value={quantity} 
                     name="quantity"
                   />
-                  <span className="input-group-btn input-group-append">
+                  {/* <span className="input-group-btn input-group-append"> */}
                     <button 
                       className="btn btn-primary bootstrap-touchspin-up" 
                       type="button"
                       onClick={() => handleQuantityChange('increment')}
                     >
-                      +
+                      <i className="fa-solid fa-plus text-white"></i>
                     </button>
-                  </span>
+                  {/* </span> */}
                 </div>
               </div>
               <button
