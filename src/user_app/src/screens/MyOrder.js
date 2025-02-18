@@ -1367,7 +1367,7 @@ export const OrderCard = ({
                   </div>
                 </div>
                 <hr className="my-4" />
-                <div className=" ">
+                <div className="">
                   <div className="container d-flex justify-content-between">
                     <span className="col-3">
                       <button
@@ -1711,16 +1711,30 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                     <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
                       {activeTab === "completed" && (
                         <div className="container py-0">
-                          <div className="row">
-                            <div className="col-7 ps-0">
+                          <div className="row align-items-center">
+                            <div className="col-6 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
                                   <i className="far fa-check-circle me-1"></i>
-                                  Completed
+                                  Paid
                                 </span>
                               </div>
                             </div>
-                            <div className="col-5 pe-0 font_size_14 text-end">
+                            <div className="col-6 pe-0 d-flex justify-content-end align-items-center gap-2">
+                              {order.invoice_url && (
+                                <a
+                                  href={order.invoice_url}
+                                  download={`invoice_${order.order_number}.pdf`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <button className="btn btn-light py-1 px-2 rounded-pill font_size_12">
+                                    <i className="fa-solid fa-download me-2"></i>
+                                    Invoice
+                                  </button>
+                                </a>
+                              )}
                               {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">
                                   {order.payment_method}
