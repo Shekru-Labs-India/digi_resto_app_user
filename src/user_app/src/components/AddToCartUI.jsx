@@ -197,44 +197,46 @@ const AddToCartUI = ({
               </div>
             </div>
             <hr className="my-4" />
-            <div className="modal-body d-flex justify-content-between px-3 pt-2 pb-3">
-              <div className="dz-stepper style-3 d-flex align-items-center">
-                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected" style={{ background: "#e9ecef", borderRadius: "50px" }}>
-                    <div 
+            <div className="modal-body px-3 pt-2 pb-3">
+              <div className="d-flex justify-content-center">
+                <div className="d-flex align-items-center" style={{ gap: "12px" }}>
+                  <div className="d-flex align-items-center justify-content-between" style={{ background: "#e9ecef", borderRadius: "50px", width: "130px", padding: "4px 8px", height: "48px" }}>
+                    <button 
                       className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "35px", height: "35px", padding: "0" }}
+                      style={{ width: "32px", height: "30px", minWidth: "32px", padding: "0" }}
                       type="button"
                       onClick={() => handleQuantityChange('decrement')}
                     >
                       <i className="fa-solid fa-minus text-white"></i>
-                    </div>
-                  <input 
-                    readOnly
-                    className="stepper form-control text-center" 
-                    type="text" 
-                    value={quantity} 
-                    name="quantity"
-                    style={{ width: "50px", border: "none", background: "transparent" }}
-                  />
-                    <div 
+                    </button>
+                    <input 
+                      readOnly
+                      className="form-control text-center border-0 p-0 bg-transparent"
+                      type="text" 
+                      value={quantity} 
+                      name="quantity"
+                      style={{ width: "38px", minWidth: "38px" }}
+                    />
+                    <button 
                       className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "35px", height: "35px", padding: "0" }}
+                      style={{ width: "32px", height: "32px", minWidth: "32px", padding: "0" }}
                       type="button"
                       onClick={() => handleQuantityChange('increment')}
                     >
                       <i className="fa-solid fa-plus text-white"></i>
-                    </div>
-                </div>
-                <div
-                  type="button"
-                  className="btn btn-primary rounded-pill ms-3 px-4 d-flex align-items-center"
-                  onClick={handleConfirmWithQuantity}
-                  disabled={
-                    isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
-                  }
-                >
-                  <span className="me-1">+</span>
-                  Add
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary rounded-pill px-4 d-flex align-items-center"
+                    onClick={handleConfirmWithQuantity}
+                    disabled={
+                      isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
+                    }
+                  >
+                    <span className="me-1">+</span>
+                    Add
+                  </button>
                 </div>
               </div>
             </div>
