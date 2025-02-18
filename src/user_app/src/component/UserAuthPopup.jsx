@@ -27,6 +27,9 @@ const UserAuthPopup = () => {
   const nameInputRef = useRef(null);
   const [isNameValid, setIsNameValid] = useState(false);
 
+  const [resendTimer, setResendTimer] = useState(15);
+  const [canResend, setCanResend] = useState(false);
+
   const handleNameChange = (e) => {
     let input = e.target.value;
 
@@ -81,6 +84,22 @@ const UserAuthPopup = () => {
         break;
     }
   }, [view]);
+
+  useEffect(() => {
+    let timer;
+    if (view === 'verify' && resendTimer > 0) {
+      timer = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [view, resendTimer]);
 
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 10); // Remove non-digits and limit length to 10
@@ -460,6 +479,35 @@ const UserAuthPopup = () => {
     }
   }, [view]);
 
+  const handleResendOTP = async () => {
+    try {
+      setCanResend(false);
+      setResendTimer(15);
+      const response = await fetch(
+        `${config.apiDomain}/user_api/resend_otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mobile: mobile,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.st === 1) {
+        window.showToast("success", "OTP sent successfully");
+      } else {
+        window.showToast("error", data.msg || "Failed to resend OTP");
+        setCanResend(true);
+      }
+    } catch (error) {
+      window.showToast("error", "Failed to resend OTP");
+      setCanResend(true);
+    }
+  };
+
   const renderContent = () => {
     switch (view) {
       case "verify":
@@ -524,6 +572,25 @@ const UserAuthPopup = () => {
                 ))}
               </div>
               {error && <div className="text-danger mb-3">{error}</div>}
+
+              {/* resend opt  */}
+              <div className="text-center mb-3">
+                <button
+                  className="btn btn-link text-primary text-decoration-none font_size_14"
+                  onClick={handleResendOTP}
+                  disabled={!canResend}
+                >
+                  {canResend ? (
+                    "Resend OTP"
+                  ) : (
+                    <>
+                      Resend OTP in {resendTimer}s
+                    </>
+                  )}
+                </button>
+              </div>
+
+              
               {loading ? (
                 <div className="text-center">{/* <LoaderGif /> */}</div>
               ) : (
