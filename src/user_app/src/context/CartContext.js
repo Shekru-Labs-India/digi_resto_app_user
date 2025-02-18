@@ -55,7 +55,8 @@ export const CartProvider = ({ children }) => {
       console.error('Error fetching menu prices:', error);
       return null;
     }
-  };
+  };  
+  //end of fetch menu prices
 
   const addToCart = async (menuItem, restaurantId) => {
     try {
