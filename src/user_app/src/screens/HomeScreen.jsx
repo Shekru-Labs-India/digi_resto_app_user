@@ -373,7 +373,7 @@ const HomeScreen = () => {
                 <span className="dz-icon icon-sm">
                   <i className="fa-solid fa-clock-rotate-left fs-4"></i>
                 </span>
-                <span className=" font_size_16  fw-medium">My Orders</span>
+                <span className=" font_size_16  fw-medium">Orders</span>
               </Link>
             </li>
             <li>

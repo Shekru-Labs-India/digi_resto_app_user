@@ -110,7 +110,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="fa-solid fa-clock-rotate-left me-2 fs-5"></i>
-                      <span className="font_size_14">My Order</span>
+                      <span className="font_size_14">Order</span>
                     </Link>
                   </li>
                   {/* <li className="col-6">

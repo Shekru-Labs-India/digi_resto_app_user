@@ -271,7 +271,7 @@ const MyOrder = () => {
   return (
     <div className="page-wrapper">
       <Header
-        title="My Order"
+        title="Order"
         count={
           Object.values(activeOrders).reduce((total, orders) => total + orders?.length, 0)
         }

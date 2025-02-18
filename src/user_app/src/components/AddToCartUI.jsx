@@ -197,9 +197,9 @@ const AddToCartUI = ({
               </div>
             </div>
             <hr className="my-4" />
-            <div className="modal-body d-flex justify-content-around px-0 pt-2 pb-3">
-              <div className="dz-stepper style-3">
-                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected px-4" style={{ background: "#f8f9fa", borderRadius: "50px" }}>
+            <div className="modal-body d-flex justify-content-between px-3 pt-2 pb-3">
+              <div className="dz-stepper style-3 d-flex align-items-center">
+                <div className="input-group bootstrap-touchspin bootstrap-touchspin-injected" style={{ background: "#e9ecef", borderRadius: "50px" }}>
                     <div 
                       className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
                       style={{ width: "35px", height: "35px", padding: "0" }}
@@ -210,7 +210,7 @@ const AddToCartUI = ({
                     </div>
                   <input 
                     readOnly
-                    className="stepper form-control text-center mx-2" 
+                    className="stepper form-control text-center" 
                     type="text" 
                     value={quantity} 
                     name="quantity"
@@ -224,17 +224,17 @@ const AddToCartUI = ({
                     >
                       <i className="fa-solid fa-plus text-white"></i>
                     </div>
-                  <div
-                    type="button"
-                    className="btn btn-primary rounded-pill ms-2 px-3"
-                    onClick={handleConfirmWithQuantity}
-                    disabled={
-                      isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
-                    }
-                  >
-                    <i className="fa-solid fa-plus pe-1 text-white"></i>
-                    Add
-                  </div>
+                </div>
+                <div
+                  type="button"
+                  className="btn btn-primary rounded-pill ms-3 px-4 d-flex align-items-center"
+                  onClick={handleConfirmWithQuantity}
+                  disabled={
+                    isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
+                  }
+                >
+                  <span className="me-1">+</span>
+                  Add
                 </div>
               </div>
             </div>
