@@ -88,7 +88,7 @@ const Bottom = () => {
           style={{ gap: "2px", minWidth: "60px" }}
         >
           <i className="fa-solid fa-clock-rotate-left font_size_14"></i>
-          <span style={{ display: "block", fontSize: "12px", marginTop: "2px" }}>Order</span>
+          <span style={{ display: "block", fontSize: "12px", marginTop: "2px" }}>Orders</span>
         </Link>
 
         <Link
