@@ -1683,7 +1683,7 @@ action:'save',
           </div>
         </div>
 
-        <div className="container py-0">
+        <div className="container py-0 mb-2">
           {/* <NearbyArea /> */}
           {/* <RestaurantSocials /> */}
           <RestaurantSocials />

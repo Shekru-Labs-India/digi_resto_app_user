@@ -1138,7 +1138,9 @@ const Product = () => {
             )}
           </div>
 
-          <RestaurantSocials />
+          <div className="container py-0 mb-2">
+            <RestaurantSocials />
+          </div>
         </div>
       </main>
 

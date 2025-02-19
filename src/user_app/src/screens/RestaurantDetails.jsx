@@ -722,7 +722,7 @@ function RestaurantDetails() {
           </Swiper>
         </div>
       </div>
-      <div className="container p-b65">
+      <div className="container p-b80">
         <RestaurantSocials />
       </div>
       <Bottom />
