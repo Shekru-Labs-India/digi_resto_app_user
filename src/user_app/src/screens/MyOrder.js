@@ -449,6 +449,7 @@ export const OrderCard = ({
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [cancelReasonError, setCancelReasonError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const navigate = useNavigate();
@@ -640,13 +641,25 @@ export const OrderCard = ({
     }
   };
 
+  const handleCancelReasonChange = (e) => {
+    const value = e.target.value;
+    setCancelReason(value);
+    
+    if (value.trim().length > 0 && value.trim().length < 3) {
+      setCancelReasonError("Cancellation reason should be at least 3 characters long.");
+    } else {
+      setCancelReasonError("");
+    }
+  };
+
   const handleConfirmCancel = async () => {
-    // Check if the cancel reason is provided
     if (!cancelReason.trim()) {
-      window.showToast(
-        "warning",
-        "Please select a reason to cancel the order."
-      );
+      setCancelReasonError("Please select a reason to cancel the order.");
+      return;
+    }
+
+    if (cancelReason.trim().length < 3) {
+      setCancelReasonError("Cancellation reason should be at least 3 characters long.");
       return;
     }
 
@@ -677,14 +690,15 @@ export const OrderCard = ({
         window.showToast("success", data.msg);
         setShowCancelModal(false);
         fetchOrders();
-        // Update the state to remove the canceled order
         setActiveOrders((prevOrders) => ({
           placed: prevOrders.placed?.filter(
             (o) => o.order_id !== order.order_id
           ),
-          ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
+          ongoing: prevOrders.ongoing,
         }));
         setActiveTab("cancelled");
+      } else if (data.st === 2) {
+        window.showToast("error", data.msg || "Unable to cancel order at this time.");
       } else {
         console.clear();
         window.showToast("error", data.msg || "Failed to cancel the order.");
@@ -1274,12 +1288,17 @@ export const OrderCard = ({
                     </label>
                     <textarea
                       id="cancelReason"
-                      className="form-control border border-primary"
+                      className={`form-control border ${cancelReasonError ? 'border-danger' : 'border-primary'}`}
                       rows="3"
                       value={cancelReason}
-                      onChange={(e) => setCancelReason(e.target.value)}
+                      onChange={handleCancelReasonChange}
                       placeholder="Enter your reason here..."
                     ></textarea>
+                    {cancelReasonError && (
+                      <div className="text-danger font_size_12 mt-1">
+                        {cancelReasonError}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="modal-body">

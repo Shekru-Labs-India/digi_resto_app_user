@@ -25,7 +25,13 @@ const AddToCartUI = ({
 
   const handleQuantityChange = (action) => {
     setQuantity(prev => {
-      if (action === 'increment' && prev < 20) return prev + 1;
+      if (action === 'increment') {
+        if (prev >= 20) {
+          window.showToast("warning", "Maximum quantity limit is 20!");
+          return prev;
+        }
+        return prev + 1;
+      }
       if (action === 'decrement' && prev > 1) return prev - 1;
       return prev;
     });
