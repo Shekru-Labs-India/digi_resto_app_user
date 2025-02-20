@@ -327,6 +327,8 @@ action:'save',
   const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
+      const tableNumber = localStorage.getItem("tableNumber") || "1";
+      console.log(tableNumber+"current table number");
       const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
       
       if (!existingOrderDetails.orderNumber) {
@@ -338,7 +340,7 @@ action:'save',
         user_id: userData.user_id,
         order_status: orderStatus,
         outlet_id: restaurantId,
-        table_number: userData?.tableNumber || "1",
+        table_number: tableNumber || "1",
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map((item) => ({
