@@ -1031,8 +1031,11 @@ export const OrderCard = ({
                 <span className="fw-medium gray-text">
                   <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                   {order.section_name
-                    ? `${titleCase(order.section_name)} - ${
-                        order.table_number
+                    ? `${titleCase(order.section_name)}${
+                        order.order_type?.toLowerCase() === "drive-through" || 
+                        order.order_type?.toLowerCase() === "parcel" 
+                          ? "" 
+                          : ` - ${order.table_number}`
                       }`
                     : "Dine In"}
                 </span>
