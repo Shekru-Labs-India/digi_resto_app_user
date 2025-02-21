@@ -39,7 +39,7 @@ export const RestaurantIdProvider = ({ children }) => {
           },
           body: JSON.stringify({ 
             outlet_code: code,
-            section_id: section || null 
+            section_id: section 
           }),
         })
           .then((response) => response.json())
