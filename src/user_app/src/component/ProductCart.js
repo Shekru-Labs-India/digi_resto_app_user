@@ -333,15 +333,8 @@ const ProductCard = ({ isVegOnly }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id) {
-    //   showLoginPopup();
-    //   return;
-    // }
-
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id || userData.role === "guest") {
-      // window.showToast("info", "Please login to use favourite functionality");
       showLoginPopup();
       return;
     }
@@ -367,6 +360,15 @@ const ProductCard = ({ isVegOnly }) => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       if (response.ok) {
         const data = await response.json();
@@ -448,6 +450,16 @@ const ProductCard = ({ isVegOnly }) => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        setIsPriceFetching(false);
+        return;
+      }
 
       const data = await response.json();
       if (data.st === 1) {

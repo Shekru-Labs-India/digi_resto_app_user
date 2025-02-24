@@ -17,6 +17,18 @@ export const fetchMenuPrices = async (restaurantId, menuId) => {
       }
     );
 
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      return {
+        success: false,
+        error: "unauthorized",
+        status: 401
+      };
+    }
+
     const data = await response.json();
     if (response.ok && data.st === 1) {
       return {

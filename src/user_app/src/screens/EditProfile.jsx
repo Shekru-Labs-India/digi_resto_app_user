@@ -3,7 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Bottom from "../component/bottom";
 import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
-import  config from "../component/config"
+import config from "../component/config";
+import { usePopup } from "../context/PopupContext";
+
 const EditProfile = () => {
   const [userData, setUserData] = useState({});
   const [newName, setNewName] = useState("");
@@ -12,20 +14,24 @@ const EditProfile = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { showLoginPopup } = usePopup();
 
   useEffect(() => {
     const storedUserData = JSON.parse(localStorage.getItem("userData")) || {};
     if (!storedUserData.user_id) {
-      window.showToast("error", "Please login to edit profile");
-     
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      showLoginPopup();
+      navigate("/user_app/Profile");
       return;
     }
-    
     
     setUserData(storedUserData);
     setNewName(storedUserData.name || "");
     setNewMobile(storedUserData.mobile || "");
-  }, [navigate]);
+  }, [navigate, showLoginPopup]);
 
   const handleUpdateProfile = async () => {
     if (newMobile.length !== 10) {
@@ -36,7 +42,7 @@ const EditProfile = () => {
 
     try {
       setLoading(true);
-      const url =  `${config.apiDomain}/user_api/account_profile_update`;
+      const url = `${config.apiDomain}/user_api/account_profile_update`;
       const requestOptions = {
         method: "POST",
         headers: {
@@ -51,6 +57,15 @@ const EditProfile = () => {
       };
 
       const response = await fetch(url, requestOptions);
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -116,8 +131,12 @@ const EditProfile = () => {
   };
 
   if (userData?.customer_type === 'guest') {
-    window.showToast("info", "Please login to edit profile");
-   
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("userData");
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("access_token");
+    showLoginPopup();
+    navigate("/user_app/Profile");
     return;
   }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-
 import config from "./config"
+import { usePopup } from "../context/PopupContext";
 
 const AllOrderList = () => {
   const [data, setData] = useState(null);
@@ -8,7 +8,7 @@ const AllOrderList = () => {
   const [error, setError] = useState(null);
   const restaurantId = localStorage.getItem("restaurantId");
   const restaurantName = localStorage.getItem("restaurantName");
-
+  const { showLoginPopup } = usePopup();
 
   useEffect(() => {
     fetch(`${config.apiDomain}/user_api/get_all_orders_of_restaurant`, {
@@ -21,7 +21,17 @@ const AllOrderList = () => {
         outlet_id: restaurantId,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("userData");
+          localStorage.removeItem("cartItems");
+          localStorage.removeItem("access_token");
+          showLoginPopup();
+          throw new Error('Unauthorized');
+        }
+        return response.json();
+      })
       .then((data) => {
         setData(data);
         setLoading(false);
@@ -31,6 +41,7 @@ const AllOrderList = () => {
         setError("Failed to fetch orders. Please try again later.");
         setLoading(false);
       });
+      
   }, [restaurantId]);
 
   if (loading) {

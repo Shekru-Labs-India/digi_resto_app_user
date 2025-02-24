@@ -598,6 +598,15 @@ const TrackOrder = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       if (response.ok) {
         const { lists } = await response.json();
         if (lists) {
@@ -1121,6 +1130,15 @@ const TrackOrder = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setSelectedRating(rating);
@@ -1306,12 +1324,20 @@ const TrackOrder = () => {
         },
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
-
           order_id: orderDetails?.order_details?.order_id,
           payment_method: method,
         }),
       }
     );
+
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      showLoginPopup();
+      return;
+    }
 
     if (response.ok) {
     }

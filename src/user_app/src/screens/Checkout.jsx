@@ -288,6 +288,15 @@ action:'save',
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
 
       if (response.ok && data.st === 1) {
@@ -367,6 +376,15 @@ action:'save',
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
 
       if (data.st === 1) {
@@ -431,6 +449,15 @@ action:'save',
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
 
       if (data.st === 1) {
@@ -488,19 +515,42 @@ action:'save',
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "upi",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "upi"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_upi_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "upi",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "upi"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction("paid", existingOrderDetails.orderType, "upi");
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(data.msg || "Failed to generate UPI payment link");
+      }
     } catch (error) {
       window.showToast("error", "UPI payment initiation failed");
       setProcessingPaymentMethod("");
@@ -527,19 +577,42 @@ action:'save',
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "phonepay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "phonepe"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_phonepe_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "phonepay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "phonepe"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction("paid", existingOrderDetails.orderType, "phonepe");
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(data.msg || "Failed to generate PhonePe payment link");
+      }
     } catch (error) {
       window.showToast("error", "PhonePe payment initiation failed");
       setProcessingPaymentMethod("");
@@ -566,19 +639,42 @@ action:'save',
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "gpay"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_googlepay_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "gpay"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction("paid", existingOrderDetails.orderType, "gpay");
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(data.msg || "Failed to generate Google Pay payment link");
+      }
     } catch (error) {
       window.showToast("error", "Google Pay payment initiation failed");
       setProcessingPaymentMethod("");
@@ -664,18 +760,25 @@ action:'save',
   const fetchCoupons = async () => {
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/get_all_coupons_by_restaurant_id`,
+        `${config.apiDomain}/user_api/get_coupons`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            outlet_id: restaurantId,
-          }),
+          body: JSON.stringify({ outlet_id: restaurantId }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
       if (data.st === 1) {
@@ -710,22 +813,29 @@ action:'save',
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/verify_coupon`,
+        `${config.apiDomain}/user_api/apply_coupon`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: restaurantId,
             coupon_name: selectedCoupon,
             total_price: checkoutDetails.total_bill_amount,
-            
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 

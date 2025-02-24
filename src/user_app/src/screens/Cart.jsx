@@ -43,8 +43,6 @@ const Cart = () => {
   // Define fetchCartDetails with proper checks
   const fetchCartDetails = useCallback(async () => {
     const user_id = getCustomerId();
-    // const cartId = getCartId();
-
     const cartId = getCartId() || localStorage.getItem("cartId");
 
     if (!customerId || !cartId || !restaurantId) {
@@ -69,6 +67,17 @@ const Cart = () => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        setCartDetails({ order_items: [] });
+        setIsLoading(false);
+        return;
+      }
 
       const data = await response.json();
       if (data.st === 1) {
@@ -98,7 +107,7 @@ const Cart = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [restaurantId]);
+  }, [restaurantId, customerId, showLoginPopup]);
 
   // Initial load effect with restaurant ID check
   useEffect(() => {
@@ -161,6 +170,15 @@ const Cart = () => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -285,6 +303,16 @@ const Cart = () => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (data.st === 1) {
         fetchCartDetails();
@@ -358,6 +386,15 @@ const Cart = () => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
       if (response.ok && data.st === 1) {

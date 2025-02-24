@@ -2,6 +2,7 @@ import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
 import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
+import { usePopup } from "../context/PopupContext";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -216,7 +217,7 @@ const OrderCard = ({
   setCompletedTimers = () => {},
 }) => {
   const navigate = useNavigate();
-
+  const { showLoginPopup } = usePopup();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -234,13 +235,21 @@ const OrderCard = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -282,6 +291,15 @@ const OrderCard = ({
           note: cancelReason,
         }),
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -484,6 +502,7 @@ const OrdersPlacedOngoing = () => {
     JSON.parse(localStorage.getItem("userData"))?.sectionId ||
     localStorage.getItem("sectionId") ||
     "";
+  const { showLoginPopup } = usePopup();
 
   const fetchData = async () => {
     // Check if we have required data before making the API call
@@ -514,6 +533,16 @@ const OrdersPlacedOngoing = () => {
       );
 
       clearTimeout(timeoutId);
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        setOrders({ placed: [], ongoing: [] });
+        return;
+      }
 
       // Handle all non-200 responses silently
       if (!response.ok) {

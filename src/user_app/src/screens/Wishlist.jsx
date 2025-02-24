@@ -228,6 +228,15 @@ const Wishlist = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
@@ -351,18 +360,30 @@ const Wishlist = () => {
     }
   
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({
-          outlet_id: outletId,
-          menu_id: menuId,
-          user_id: userId, // Use userId from userData
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/remove_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            outlet_id: outletId,
+            menu_id: menuId,
+            user_id: userId,
+          }),
+        }
+      );
+  
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
   
       const data = await response.json();
   

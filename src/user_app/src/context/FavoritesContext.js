@@ -1,9 +1,12 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import config from "../component/config"
+import { usePopup } from './PopupContext';
+
 const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
+  const { showLoginPopup } = usePopup();
 
   const fetchFavorites = useCallback(async (user_id, restaurantId) => {
     try {
@@ -53,6 +56,15 @@ export const FavoritesProvider = ({ children }) => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
@@ -81,6 +93,15 @@ export const FavoritesProvider = ({ children }) => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        return;
+      }
 
       if (response.ok) {
         const data = await response.json();
