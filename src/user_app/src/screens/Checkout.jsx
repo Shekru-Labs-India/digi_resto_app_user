@@ -202,6 +202,16 @@ const Checkout = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        setIsProcessing(false);
+        return;
+      }
+
       const data = await response.json();
       setIsProcessing(false);
 

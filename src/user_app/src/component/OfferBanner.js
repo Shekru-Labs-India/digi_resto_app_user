@@ -362,13 +362,22 @@ const OfferBanner = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        showLoginPopup();
+        setIsPriceFetching(false);
+        return;
+      }
 
       const data = await response.json();
       if (response.ok && data.st === 1) {

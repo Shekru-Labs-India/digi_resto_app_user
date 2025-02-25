@@ -1248,9 +1248,13 @@ const Search = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center mt-4">
-                <p>No menu items found</p>
-              </div>
+              <>
+                {debouncedSearchTerm.trim().length >= 3 && !isLoading && (
+                  <div className="text-center mt-4">
+                    <p>No menu items found</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

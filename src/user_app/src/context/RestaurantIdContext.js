@@ -141,13 +141,18 @@ export const RestaurantIdProvider = ({ children }) => {
       // Get code from localStorage if not provided
       const storedCode = localStorage.getItem("restaurantCode");
       const finalCode = restaurantCode || storedCode;
-  
+      
+      const sectionIdfromLocal = localStorage.getItem("sectionId");
+      console.log(sectionIdfromLocal);
       // Debug log
-      console.log('Restaurant code being used:', {
+      // alert(sectionIdfromLocal);
+      console.log("Restaurant code being used:", {
         providedCode: restaurantCode,
         storedCode: storedCode,
         finalCode: finalCode,
-        sectionId: sectionId,
+        // sectionId: sectionId,
+        sectionId: sectionIdfromLocal || sectionId,
+        
       });
   
       try {
@@ -157,11 +162,11 @@ export const RestaurantIdProvider = ({ children }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-             // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             body: JSON.stringify({
               outlet_code: finalCode,
-              section_id: sectionId,
+              section_id: sectionIdfromLocal || sectionId, //section id switched to local storage
             }),
           }
         );
