@@ -80,7 +80,7 @@ export const RestaurantIdProvider = ({ children }) => {
           })
           .catch((error) => {
             console.clear();
-            navigate("/user_app/HotelList");
+            navigate("/user_app/Index");
             
           });
       }
@@ -140,8 +140,44 @@ export const RestaurantIdProvider = ({ children }) => {
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
       // Get code from localStorage if not provided
       const storedCode = localStorage.getItem("restaurantCode");
-      const finalCode = restaurantCode || storedCode;
+      const currentUrl = window.location.pathname;
+      const urlPattern = /\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/;
+      const match = currentUrl.match(urlPattern);
+
+      let extractedCode = null;
+      let extractedTableNumber = null;
+      let extractedSectionId = null;
+
+      if (match) {
+        [, extractedCode, extractedTableNumber, extractedSectionId] = match;
+      }
+
+      // If we only have outlet code in URL, don't use fallbacks for table and section
+      const isOutletOnlyUrl = match && !match[2] && !match[3];
       
+      // Use extracted values, but only use fallbacks if we're not in outlet-only mode
+      const finalCode = extractedCode || restaurantCode || storedCode;
+      const finalSectionId = isOutletOnlyUrl ? null : (extractedSectionId || sectionId || localStorage.getItem("sectionId"));
+
+      // Only update table number if explicitly in URL
+      if (extractedTableNumber) {
+        updateTableNumber(extractedTableNumber);
+      } else if (isOutletOnlyUrl) {
+        // Clear table number if we're in outlet-only mode
+        updateTableNumber("");
+        localStorage.removeItem("tableNumber");
+      }
+
+      // Debug log
+      console.log("URL parsing results:", {
+        isOutletOnlyUrl,
+        extractedCode,
+        extractedTableNumber,
+        extractedSectionId,
+        finalCode,
+        finalSectionId
+      });
+
       const sectionIdfromLocal = localStorage.getItem("sectionId");
       console.log(sectionIdfromLocal);
       // Debug log
@@ -151,10 +187,9 @@ export const RestaurantIdProvider = ({ children }) => {
         storedCode: storedCode,
         finalCode: finalCode,
         // sectionId: sectionId,
-        sectionId: sectionIdfromLocal || sectionId,
-        
+        sectionId: finalSectionId,
       });
-  
+
       try {
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
@@ -166,27 +201,28 @@ export const RestaurantIdProvider = ({ children }) => {
             },
             body: JSON.stringify({
               outlet_code: finalCode,
-              section_id: sectionIdfromLocal || sectionId, //section id switched to local storage
+              section_id: finalSectionId, //section id switched to local storage
             }),
           }
         );
-  
+
         const data = await response.json();
         if (data.st === 1) {
-          const { outlet_id, name, account_status, is_open, section_name } = data.outlet_details;
+          const { outlet_id, name, account_status, is_open, section_name } =
+            data.outlet_details;
           setRestaurantId(outlet_id);
           setRestaurantName(name);
           setRestaurantStatus(account_status);
           setIsRestaurantOpen(is_open);
           setSectionName(section_name);
-  
+
           localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
           localStorage.setItem("restaurantCode", finalCode);
           localStorage.setItem("restaurantStatus", account_status);
           localStorage.setItem("isRestaurantOpen", is_open);
           localStorage.setItem("sectionName", section_name);
-  
+
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -198,7 +234,7 @@ export const RestaurantIdProvider = ({ children }) => {
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-  
+
           const socialsArray = [
             {
               id: "whatsapp",
@@ -237,18 +273,21 @@ export const RestaurantIdProvider = ({ children }) => {
               link: data.outlet_details.google_business_link || "",
             },
           ].filter((item) => item.link);
-  
-          localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
+
+          localStorage.setItem(
+            "restaurantSocial",
+            JSON.stringify(socialsArray)
+          );
           setSocials(socialsArray);
         } else if (data.st === 2) {
           setRestaurantId(null);
           setRestaurantName("");
-  
+
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
           localStorage.removeItem("restaurantSocial");
-  
+
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -259,15 +298,15 @@ export const RestaurantIdProvider = ({ children }) => {
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-  
+
           navigate("/user_app/Index");
-  
+
           localStorage.setItem("restaurantStatus", false);
         } else {
           console.clear();
         }
       } catch (error) {
-        console.error('Error fetching restaurant details:', error);
+        console.error("Error fetching restaurant details:", error);
       }
     };
   

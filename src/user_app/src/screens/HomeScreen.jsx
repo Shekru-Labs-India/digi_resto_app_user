@@ -582,7 +582,10 @@ const HomeScreen = () => {
             <ProductCart isVegOnly={isVegOnly} />
             <div className="mb-3">
               <NearbyArea />
+              <div className="pb-2">
               <RestaurantSocials />
+
+              </div>
             </div>
           </div>
         </main>

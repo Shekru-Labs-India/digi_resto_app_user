@@ -93,7 +93,7 @@ const response = await fetch(
 
   const handleHotelClick = (outlets) => {
     if (outlets.is_outlet_filled !== true) {
-      navigate("/user_app/HotelList");
+      navigate("/user_app/Index");
     } else {
       localStorage.setItem("sectionId", outlets.section_id);
       localStorage.setItem("restaurantCode", outlets.code);
