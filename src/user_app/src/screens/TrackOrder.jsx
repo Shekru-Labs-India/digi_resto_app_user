@@ -1875,7 +1875,10 @@ const TrackOrder = () => {
                               <div className="row d-flex align-items-center mt-1">
                                 <div className="col-10">
                                   <div className="ps-2 font_size_14 fw-medium">
-                                    {menu.menu_name}
+                                    {menu.menu_name} 
+                                    <span className="ms-2 font_size_10 text-capitalize text-dark">
+                                    ({toTitleCase(menu.half_or_full)})
+                                    </span>
                                   </div>
                                 </div>
                                 {orderStatus === "placed" &&
