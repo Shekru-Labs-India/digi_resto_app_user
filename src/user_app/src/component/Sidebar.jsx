@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
@@ -208,8 +208,8 @@ export const SidebarToggler = () => {
         </div>
         <ul className="nav navbar-nav">
           <li>
-            <Link
-              className="nav-link active"
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
               onClick={(e) => handleClick(e, `/user_app/${restaurantCode}/${tableNumber}/${sectionId}`)}
             >
@@ -248,11 +248,11 @@ export const SidebarToggler = () => {
                   )}
                 </div>
               </div> */}
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link
-              className="nav-link active d-flex align-items-center justify-content-between"
+            <NavLink
+              className={({ isActive }) => `nav-link d-flex align-items-center justify-content-between ${isActive ? 'active' : ''}`}
               to="/user_app/Menu"
               onClick={(e) => handleClick(e, "/user_app/Menu")}
             >
@@ -283,65 +283,83 @@ export const SidebarToggler = () => {
                   <div className="toggle-button"></div>
                 </div>
               </div> */}
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Category" onClick={(e) => handleClick(e, "/user_app/Category")}>
+            <NavLink 
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Category"
+              onClick={(e) => handleClick(e, "/user_app/Category")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-layer-group fs-3"></i>
               </span>
-              <span className="  font_size_16 fw-medium">Category</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Category</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Wishlist" onClick={(e) => handleClick(e, "/user_app/Wishlist")}>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Wishlist"
+              onClick={(e) => handleClick(e, "/user_app/Wishlist")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-regular fa-heart fs-4"></i>
               </span>
-              <span className="  font_size_16  fw-medium">Favourite</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Favourite</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/MyOrder" onClick={(e) => handleClick(e, "/user_app/MyOrder")}>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/MyOrder"
+              onClick={(e) => handleClick(e, "/user_app/MyOrder")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-clock-rotate-left fs-4"></i>
               </span>
-              <span className="  font_size_16 fw-medium ">Orders</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Orders</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Checkout" onClick={(e) => handleClick(e, "/user_app/Checkout")}>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Checkout"
+              onClick={(e) => handleClick(e, "/user_app/Checkout")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-check-to-slot fs-4"></i>
               </span>
-              <span className=" font_size_16  fw-medium">Checkout</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Checkout</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Search" onClick={(e) => handleClick(e, "/user_app/Search")}>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Search"
+              onClick={(e) => handleClick(e, "/user_app/Search")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-magnifying-glass"></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Search</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Search</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Profile" onClick={(e) => handleClick(e, "/user_app/Profile")}>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Profile"
+              onClick={(e) => handleClick(e, "/user_app/Profile")}
+            >
               <span className="dz-icon icon-sm">
-                <i
-                  className={
-                    userData?.user_id
-                      ? "fa-solid fa-user"
-                      : "fa-regular fa-user"
-                  }
-                ></i>
+                <i className={userData?.user_id ? "fa-solid fa-user" : "fa-regular fa-user"}></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Profile</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Profile</span>
+            </NavLink>
           </li>
           <li>
             <Link
-              className="nav-link active"
+              className="nav-link"
               to="#"
               onClick={(e) => {
                 e.preventDefault();
@@ -351,7 +369,7 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-bell fs-4"></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Call Waiter</span>
+              <span className="font_size_16 fw-medium">Call Waiter</span>
             </Link>
           </li>
         </ul>
