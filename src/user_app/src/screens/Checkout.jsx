@@ -180,7 +180,7 @@ const Checkout = () => {
       const storedCart = localStorage.getItem('restaurant_cart_data');
 
       if (!userData?.user_id) {
-        window.showToast("error", "Please login to place order");
+        // window.showToast("error", "Please login to place order");
         return;
       }
 
