@@ -16,6 +16,8 @@ import { APP_VERSION } from "../component/config";
 import config  from "../component/config";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
+  const tableNumber = localStorage.getItem("tableNumber");
+  const sectionId = localStorage.getItem("sectionId");
   const { showLoginPopup } = usePopup();
   const { setRestaurantCode, restaurantId, restaurantDetails, restaurantName } =
     useRestaurantId();
@@ -215,43 +217,16 @@ const HomeScreen = () => {
             <li>
               <Link
                 className="nav-link active"
-                to={`/user_app/${restaurantCode}`}
+                to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleSidebar();
+                }}
               >
                 <span className="dz-icon icon-sm">
                   <i className="fa-solid fa-house fs-3"></i>
                 </span>
                 <span className="font_size_16 fw-medium">Home</span>
-                {/* <div className="ms-5 ps-5">
-                  <div
-                    className={`  border ${
-                      isVegOnly ? "border-success" : "border-danger"
-                    } p-1`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleVegNonVeg();
-                    }}
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "24px", // Adjust height
-                      width: "24px", // Adjust width
-                      backgroundColor: "#d4e3dd",
-                    }}
-                  >
-                    {isVegOnly ? (
-                      <i
-                        className="fa-solid fa-circle text-success"
-                        style={{ fontSize: "16px" }} // Adjust icon size
-                      ></i>
-                    ) : (
-                      <i
-                        className="fa-solid fa-play fa-rotate-270 text-danger"
-                        style={{ fontSize: "16px" }} // Adjust icon size
-                      ></i>
-                    )}
-                  </div>
-                </div> */}
               </Link>
             </li>
             <li>
@@ -265,91 +240,6 @@ const HomeScreen = () => {
                   </span>
                   <span className="font_size_16 fw-medium">Menu</span>
                 </div>
-
-                {/* <div className="">
-                  <div
-                    className={`  border ${
-                      isVegOnly ? "border-success" : "border-danger"
-                    } p-1`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleVegNonVeg();
-                    }}
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "24px", // Adjust height
-                      width: "24px", // Adjust width
-                      backgroundColor: "#d4e3dd",
-                    }}
-                  >
-                    {isVegOnly ? (
-                      <i
-                        className="fa-solid fa-circle text-success"
-                        style={{ fontSize: "16px" }} // Adjust icon size
-                      ></i>
-                    ) : (
-                      <i
-                        className="fa-solid fa-play fa-rotate-270 text-danger"
-                        style={{ fontSize: "16px" }} // Adjust icon size
-                      ></i>
-                    )}
-                  </div>
-                </div> */}
-
-                {/* <div className="dz-mode ">
-                <div
-                  className={`theme-btn ${isVegOnly ? "active" : ""}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleVegNonVeg();
-                  }}
-                >
-                  
-                    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle text-danger me-1"></i>
-                    
-                    </span>
-                    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-                      <i className="fa-solid fa-circle text-success me-1"></i>
-                  
-                    </span>
-                  
-                  
-                </div>
-              </div> */}
-
-                {/* <div className="dz-mode">
-  <div
-    className={`theme-btn ${isVegOnly ? "active" : ""}`}
-    onClick={(e) => {
-      e.preventDefault();
-      toggleVegNonVeg();
-    }}
-  >
-    <span className={`non-veg ${isVegOnly ? "active" : ""}`}>
-      <i
-        className="fa-solid fa-circle text-danger me-1"
-        style={{
-          border: '1px solid red', // Set border color for Non-Veg icon
-          fontSize: '16px',
-          padding: '4px', // Adjust padding if needed
-        }}
-      ></i>
-    </span>
-    <span className={`veg ${!isVegOnly ? "active" : ""}`}>
-      <i
-        className="fa-solid fa-circle text-success me-1"
-        style={{
-          border: '2px solid green', // Set border color for Veg icon
-          
-          padding: '2px', // Adjust padding if needed
-        }}
-      ></i>
-    </span>
-  </div>
-</div> */}
               </Link>
             </li>
             <li>
@@ -422,94 +312,6 @@ const HomeScreen = () => {
               </Link>
             </li>
           </ul>
-          {/* <div className="dz-mode mt-4 me-4">
-          <div className="theme-btn" onClick={toggleTheme}>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-sun-line" : "ri-moon-line"
-              } sun`}
-            ></i>
-            <i
-              className={`ri ${
-                isDarkMode ? "ri-moon-line" : "ri-sun-line"
-              } moon`}
-            ></i>
-          </div>
-        </div> */}
-          {/* <div className="sidebar-bottom">
-            <div className="text-center pt-3">
-              <a
-                href="https://www.facebook.com/people/Menu-Mitra/61565082412478/"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-facebook"></i>
-              </a>
-              <a
-                href="https://www.instagram.com/menumitra/"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-              <a
-                href="https://www.youtube.com/@menumitra"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-youtube"></i>
-              </a>
-              <a
-                href="https://www.linkedin.com/company/102429337/admin/dashboard/"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-linkedin"></i>
-              </a>
-              <a
-                href="https://x.com/MenuMitra"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-x-twitter"></i>
-              </a>
-              <a
-                href="https://t.me/MenuMitra"
-                className="footer-link mx-2"
-                target="_blank"
-              >
-                <i className="fa-brands fa-telegram"></i>
-              </a>
-            </div>
-            <div className="sidebar-logo text-center mt-5">
-              <Link
-                to="/"
-                className="d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src={logo}
-                  alt="logo"
-                  className="me-2"
-                  width="40"
-                  height="40"
-                />
-                <span className="text-dark mb-0 fw-semibold font_size_18">
-                  MenuMitra
-                </span>
-              </Link>
-            </div>
-
-            <div className="text-center text-md-center mt-2 gray-text mb-5 font_size_12">
-              <i className="fa-solid fa-bolt "></i> Powered by <br />
-              <a
-                className="text-success font_size_12"
-                href="https://www.shekruweb.com"
-                target="_blank"
-              >
-                Shekru Labs India Pvt. Ltd.
-              </a>
-            </div>
-          </div> */}{" "}
           <div className="align-bottom border-top">
             <div className="d-flex justify-content-center py-0">
               <Link to="/">

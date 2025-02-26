@@ -27,6 +27,8 @@ export const SidebarToggler = () => {
   });
 
   const [restaurantCode, setRestaurantCode] = useState('');
+  const tableNumber = localStorage.getItem("tableNumber");
+  const sectionId = localStorage.getItem("sectionId");
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -125,6 +127,13 @@ export const SidebarToggler = () => {
     }
   };
 
+  const handleClick = (e, path) => {
+    if (location.pathname === path) {
+      e.preventDefault();
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <>
       <div className="right-content gap-1">
@@ -201,7 +210,8 @@ export const SidebarToggler = () => {
           <li>
             <Link
               className="nav-link active"
-              to={`/user_app/${restaurantCode}`}
+              to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
+              onClick={(e) => handleClick(e, `/user_app/${restaurantCode}/${tableNumber}/${sectionId}`)}
             >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-house fs-3"></i>
@@ -244,6 +254,7 @@ export const SidebarToggler = () => {
             <Link
               className="nav-link active d-flex align-items-center justify-content-between"
               to="/user_app/Menu"
+              onClick={(e) => handleClick(e, "/user_app/Menu")}
             >
               <div className="d-flex align-items-center">
                 <span className="dz-icon icon-sm">
@@ -275,7 +286,7 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Category">
+            <Link className="nav-link active" to="/user_app/Category" onClick={(e) => handleClick(e, "/user_app/Category")}>
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-layer-group fs-3"></i>
               </span>
@@ -283,7 +294,7 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Wishlist">
+            <Link className="nav-link active" to="/user_app/Wishlist" onClick={(e) => handleClick(e, "/user_app/Wishlist")}>
               <span className="dz-icon icon-sm">
                 <i className="fa-regular fa-heart fs-4"></i>
               </span>
@@ -291,7 +302,7 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/MyOrder">
+            <Link className="nav-link active" to="/user_app/MyOrder" onClick={(e) => handleClick(e, "/user_app/MyOrder")}>
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-clock-rotate-left fs-4"></i>
               </span>
@@ -299,15 +310,15 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-          <Link className="nav-link active" to="/user_app/Checkout">
-                <span className="dz-icon icon-sm">
-                  <i className="fa-solid fa-check-to-slot fs-4"></i>
-                </span>
-                <span className=" font_size_16  fw-medium">Checkout</span>
-              </Link>
+            <Link className="nav-link active" to="/user_app/Checkout" onClick={(e) => handleClick(e, "/user_app/Checkout")}>
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-check-to-slot fs-4"></i>
+              </span>
+              <span className=" font_size_16  fw-medium">Checkout</span>
+            </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Search">
+            <Link className="nav-link active" to="/user_app/Search" onClick={(e) => handleClick(e, "/user_app/Search")}>
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-magnifying-glass"></i>
               </span>
@@ -315,7 +326,7 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Profile">
+            <Link className="nav-link active" to="/user_app/Profile" onClick={(e) => handleClick(e, "/user_app/Profile")}>
               <span className="dz-icon icon-sm">
                 <i
                   className={
@@ -329,8 +340,8 @@ export const SidebarToggler = () => {
             </Link>
           </li>
           <li>
-            <Link 
-              className="nav-link active" 
+            <Link
+              className="nav-link active"
               to="#"
               onClick={(e) => {
                 e.preventDefault();
