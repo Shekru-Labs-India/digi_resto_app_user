@@ -25,15 +25,19 @@ const TrackOrder = () => {
       .join(" ");
   };
 
-  const [customerName, setCustomerName] = useState("");
+  const { state } = useLocation();
+  const { order_number } = useParams();
+  
+  // Get orderId from multiple sources with fallback
+  const orderId = state?.orderId || localStorage.getItem('current_order_id');
+  
+  console.log('TrackOrder: Component mounted');
+  console.log('TrackOrder: State from navigation:', state);
+  console.log('TrackOrder: OrderId from state:', orderId);
+  console.log('TrackOrder: Order number from params:', order_number);
 
-  useEffect(() => {
-    const customerName = localStorage.getItem("customerName");
-    setCustomerName(customerName);
-  }, []);
+  const [customerName, setCustomerName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const timeoutRef = useRef({});
-  // Move these hooks to the top with other state declarations
   const [hasGoogleReview, setHasGoogleReview] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,9 +45,21 @@ const TrackOrder = () => {
   const [selectedRating, setSelectedRating] = useState("");
   const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
-  const { order_number } = useParams();
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const timeoutRef = useRef({});
+
+  // Clean up localStorage on unmount
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('current_order_id');
+    };
+  }, []);
+
+  useEffect(() => {
+    const customerName = localStorage.getItem("customerName");
+    setCustomerName(customerName);
+  }, []);
 
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
@@ -578,6 +594,11 @@ const TrackOrder = () => {
 
   const fetchOrderDetails = async (orderNumber) => {
     const sectionId = localStorage.getItem("sectionId") || "";
+    
+    console.log('TrackOrder: Fetching order details');
+    console.log('TrackOrder: Order Number:', orderNumber);
+    console.log('TrackOrder: Order ID:', orderId);
+    console.log('TrackOrder: Section ID:', sectionId);
 
     try {
       setLoading(true);
@@ -590,9 +611,7 @@ const TrackOrder = () => {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
           body: JSON.stringify({
-            order_number: orderNumber,
-            user_id: userId,
-            role: role,
+            order_id: orderId,
             section_id: sectionId,
           }),
         }
@@ -603,13 +622,17 @@ const TrackOrder = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("current_order_id");
         showLoginPopup();
         return;
       }
 
       if (response.ok) {
-        const { lists } = await response.json();
-        if (lists) {
+        const data = await response.json();
+        console.log('TrackOrder: API Response:', data);
+        
+        if (data.st === 1 && data.lists) {
+          const { lists } = data;
           // Format menu items
           const formattedMenu = lists.menu_details.map((item) => ({
             ...item,
@@ -642,10 +665,14 @@ const TrackOrder = () => {
             status === "completed" ||
               ["cancle", "cancelled", "canceled"].includes(status)
           );
+        } else {
+          console.error('TrackOrder: Invalid response format:', data);
+          window.showToast("error", "Failed to fetch order details");
         }
       }
     } catch (error) {
-      console.clear();
+      console.error('TrackOrder: Error fetching order details:', error);
+      window.showToast("error", "An error occurred while fetching order details");
     } finally {
       setLoading(false);
     }
@@ -1190,26 +1217,38 @@ const TrackOrder = () => {
 
   const handlePayment = async (method) => {
     try {
-      setIsProcessing(true); // Add method-specific state if needed
+      setIsProcessing(true);
+      console.log('TrackOrder: Initiating payment');
+      console.log('TrackOrder: Payment method:', method);
+      console.log('TrackOrder: Order ID:', orderId);
+      
       const response = await axios.post(
         `${config.apiDomain}/user_api/complete_order`,
+        {
+          outlet_id: localStorage.getItem("outlet_id"),
+          order_id: orderId,
+          payment_method: method,
+        },
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          outlet_id: localStorage.getItem("outlet_id"),
-
-          order_id: orderDetails?.order_details?.order_id,
-          payment_method: method,
         }
       );
+
+      console.log('TrackOrder: Payment response:', response.data);
+      
+      if (response.data.st === 1) {
       window.showToast("success", "Payment successful!");
       setShowCompleteModal(false);
-      fetchOrderDetails(order_number);
+        await fetchOrderDetails(order_number);
+      } else {
+        throw new Error(response.data.msg || "Payment failed");
+      }
     } catch (error) {
-      console.error(error);
-      window.showToast("error", "Payment failed. Please try again.");
+      console.error('TrackOrder: Payment error:', error);
+      window.showToast("error", error.message || "Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -1342,6 +1381,7 @@ const TrackOrder = () => {
     if (response.ok) {
     }
   };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">

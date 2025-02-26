@@ -769,9 +769,10 @@ export const OrderCard = ({
     }
   };
 
-  const handleOrderClick = (orderNumber) => {
+  const handleOrderClick = (orderNumber, orderId) => {
     console.log('MyOrder: Attempting to navigate to TrackOrder');
     console.log('MyOrder: Order Number:', orderNumber);
+    console.log('MyOrder: Order ID:', orderId);
     console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
     
     // Log the current state of allOrderList
@@ -779,7 +780,14 @@ export const OrderCard = ({
     console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
     
     try {
-      navigate(`/user_app/TrackOrder/${orderNumber}`);
+      // Store orderId in localStorage before navigation
+      localStorage.setItem('current_order_id', orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, { 
+        state: { 
+          orderId: orderId,
+          from: 'order_card' 
+        } 
+      });
       console.log('MyOrder: Navigation initiated successfully');
     } catch (error) {
       console.error('MyOrder: Navigation failed:', error);
@@ -1059,7 +1067,10 @@ export const OrderCard = ({
       <div className="custom-card my-2 rounded-4 shadow-sm">
         <div
           className="card-body py-2"
-          onClick={() => handleOrderClick(order.order_number)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOrderClick(order.order_number, order.order_id);
+          }}
         >
           <div className="row align-items-center">
             <div className="col-4">
@@ -1535,9 +1546,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     }));
   };
 
-  const handleOrderClick = (orderNumber) => {
+  const handleOrderClick = (orderNumber, orderId) => {
     console.log('MyOrder: Attempting to navigate to TrackOrder');
     console.log('MyOrder: Order Number:', orderNumber);
+    console.log('MyOrder: Order ID:', orderId);
     console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
     
     // Log the current state of allOrderList
@@ -1545,7 +1557,14 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
     
     try {
-      navigate(`/user_app/TrackOrder/${orderNumber}`);
+      // Store orderId in localStorage before navigation
+      localStorage.setItem('current_order_id', orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, { 
+        state: { 
+          orderId: orderId,
+          from: 'orders_tab' 
+        } 
+      });
       console.log('MyOrder: Navigation initiated successfully');
     } catch (error) {
       console.error('MyOrder: Navigation failed:', error);
@@ -1713,7 +1732,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   >
                     <div
                       className="card-body py-2"
-                      onClick={() => handleOrderClick(order.order_number)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOrderClick(order.order_number, order.order_id);
+                      }}
                     >
                       {/* Card body content remains the same */}
                       <div className="row align-items-center">
