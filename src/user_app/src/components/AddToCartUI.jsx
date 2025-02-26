@@ -56,6 +56,10 @@ const AddToCartUI = ({
       if (showModal && productDetails?.menu_id) {
         setIsPriceFetching(true);
         const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
+        if (priceData?.error === 'unauthorized') {
+          setShowModal(false); // Close the modal on unauthorized
+          return;
+        }
         if (priceData) {
           setPrices(priceData);
         }

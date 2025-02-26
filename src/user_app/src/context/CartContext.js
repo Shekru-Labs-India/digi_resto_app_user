@@ -49,7 +49,7 @@ export const CartProvider = ({ children }) => {
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
         showLoginPopup();
-        return null;
+        return { error: 'unauthorized' };
       }
 
       const data = await response.json();
