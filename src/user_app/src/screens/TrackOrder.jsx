@@ -1614,19 +1614,19 @@ const TrackOrder = () => {
                   </div>
                 ) : orderStatus === "paid" ? (
                   <div className="card-body text-center bg-info rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order has been paid. Thank you!
                     </span>
                   </div>
                 ) : orderStatus === "served" ? (
                   <div className="card-body text-center bg-primary rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order has been served. Enjoy your meal!
                     </span>
                   </div>
                 ) : orderStatus === "cooking" ? (
                   <div className="card-body text-center bg-warning rounded-4 text-dark">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order is being cooked. Please wait patiently.
                     </span>
                   </div>
