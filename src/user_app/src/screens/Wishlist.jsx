@@ -355,7 +355,8 @@ const Wishlist = () => {
     const userId = userData?.user_id;
   
     if (!userId || !menuId || !outletId) {
-      window.showToast("error", "Missing required information");
+      // window.showToast("error", "Missing required information");
+      showLoginPopup();
       return;
     }
   
