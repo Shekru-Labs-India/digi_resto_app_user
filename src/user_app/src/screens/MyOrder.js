@@ -1848,11 +1848,11 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                                   </button>
                                 </a>
                               )}
-                              {order.payment_method && (
+                              {/* {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">
                                   {order.payment_method}
                                 </div>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         </div>

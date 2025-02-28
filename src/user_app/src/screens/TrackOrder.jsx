@@ -618,12 +618,17 @@ const TrackOrder = () => {
       );
 
       if (response.status === 401) {
+         const restaurantCode = localStorage.getItem("restaurantCode");
+         const tableNumber = localStorage.getItem("tableNumber");
+         const sectionId = localStorage.getItem("sectionId");
         localStorage.removeItem("user_id");
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
         localStorage.removeItem("current_order_id");
         showLoginPopup();
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
         return;
       }
 
