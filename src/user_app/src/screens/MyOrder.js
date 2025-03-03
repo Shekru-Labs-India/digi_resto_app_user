@@ -136,24 +136,33 @@ const generatePDF = async (orderData) => {
     `;
 
     document.body.appendChild(content);
-    const canvas = await html2canvas(content, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      logging: false,
-      useCORS: true
-    });
-    
-    document.body.removeChild(content);
-    
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`invoice-${order_details.order_number}.pdf`);
 
-    window.showToast("success", "Invoice downloaded successfully");
+    try {
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true
+      });
+      
+      document.body.removeChild(content);
+      
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`invoice-${order_details.order_number}.pdf`);
+
+      window.showToast("success", "Invoice downloaded successfully");
+    } catch (error) {
+      // Clean up in case of error
+      if (document.body.contains(content)) {
+        document.body.removeChild(content);
+      }
+      throw error;
+    }
   } catch (error) {
     console.error("Error generating PDF:", error);
     window.showToast("error", "Failed to generate invoice");
@@ -181,7 +190,6 @@ const MyOrder = () => {
   });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
-  const [orderDetailsCache, setOrderDetailsCache] = useState({});
 
   useEffect(() => {
     if (location.state?.activeTab) {
@@ -450,43 +458,6 @@ const MyOrder = () => {
       window.showToast("error", "Failed to generate invoice");
     }
   };
-
-  // Fetch and cache order details when completed orders are loaded
-  useEffect(() => {
-    const fetchAllOrderDetails = async () => {
-      if (activeTab === "completed" && orders?.completed) {
-        const details = {};
-        for (const order of Object.values(orders.completed).flat()) {
-          try {
-            const response = await fetch(
-              `${config.apiDomain}/user_api/get_order_details`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-                },
-                body: JSON.stringify({
-                  order_id: order.order_id,
-                  section_id: localStorage.getItem("sectionId"),
-                }),
-              }
-            );
-            if (response.ok) {
-              const data = await response.json();
-              if (data.st === 1 && data.lists) {
-                details[order.order_id] = data.lists;
-              }
-            }
-          } catch (error) {
-            console.error("Error fetching order details:", error);
-          }
-        }
-        setOrderDetailsCache(details);
-      }
-    };
-    fetchAllOrderDetails();
-  }, [orders?.completed, activeTab]);
 
   return (
     <div className="page-wrapper">
@@ -2053,16 +2024,11 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, fetchOrde
                             <div className="col-6 pe-0 d-flex justify-content-end align-items-center gap-2">
                               {activeTab === "completed" && (
                                 <button 
-                                  className="btn btn-light py-1 px-2 rounded-pill font_size_12"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (fetchOrderDetailsForPDF) {
-                                      fetchOrderDetailsForPDF(order);
-                                    }
-                                  }}
+                                  className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
+                                  onClick={() => handleDownloadInvoice(order)}
                                 >
                                   <i className="fa-solid fa-download me-2"></i>
-                                  Invoice
+                                  Invoice &nbsp;
                                 </button>
                               )}
                               {/* {order.payment_method && (
@@ -2400,6 +2366,43 @@ export const CircularCountdown = ({
       <div className="timer-text-overlay text-dark">{timeLeft}s</div>
     </div>
   );
+};
+
+// Add this function to fetch single order details and generate PDF
+const handleDownloadInvoice = async (order) => {
+  try {
+    window.showToast("info", "Generating invoice...");
+
+    const response = await fetch(
+      `${config.apiDomain}/user_api/get_order_details`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          order_id: order.order_id,
+          section_id: localStorage.getItem("sectionId"),
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch order details");
+    }
+
+    const data = await response.json();
+    if (data.st !== 1 || !data.lists) {
+      throw new Error("Invalid order data received");
+    }
+
+    await generatePDF(data.lists);
+
+  } catch (error) {
+    console.error("Error generating invoice:", error);
+    window.showToast("error", "Failed to generate invoice");
+  }
 };
 
 export default MyOrder;
