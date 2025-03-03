@@ -335,17 +335,17 @@ const OrderCard = ({
     
   
   const getOrderTypeIcon = (orderType) => {
-      switch (orderType?.toLowerCase()) {
-        case "parsel":
-          return <i className="fa-solid fa-hand-holding-heart"></i>;
-        case "drive-through":
-          return <i className="fa-solid fa-car-side"></i>;
-        case "dine-in":
-          return <i className="fa-solid fa-utensils"></i>;
-        default:
-          return null;
-      }
-    };
+    switch (orderType?.toLowerCase()) {
+      case "parcel":
+        return <i className="fa-solid fa-hand-holding-heart"></i>;
+      case "drive-through":
+        return <i className="fa-solid fa-car-side"></i>;
+      case "dine-in":
+        return <i className="fa-solid fa-utensils"></i>;
+      default:
+        return null;
+    }
+  };
 
   const handleOrderClick = (order) => {
     navigate(`/user_app/TrackOrder/${order.order_number}`);
@@ -399,17 +399,23 @@ const OrderCard = ({
             </div>
             <div className="row">
               <div className="col-3 text-start pe-0">
-                {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                 <span className="font_size_12 gray-text font_size_12 text-nowrap">
                   {getOrderTypeIcon(order.order_type)}
-                  <span className="ms-2">{order.order_type}</span>
+                  <span className="ms-2">{order.order_type || "Dine In"}</span>
                 </span>
               </div>
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
                   <span className="fw-medium gray-text">
                     <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                    {titleCase(order.section_name)} - {order.table_number}
+                    {order.section_name
+                      ? `${titleCase(order.section_name)}${
+                          order.order_type?.toLowerCase() === "drive-through" || 
+                          order.order_type?.toLowerCase() === "parcel" 
+                            ? "" 
+                            : ` - ${order.table_number}`
+                        }`
+                      : "Dine In"}
                   </span>
                 </div>
               </div>
