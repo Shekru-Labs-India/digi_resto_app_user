@@ -356,9 +356,17 @@ const OrderCard = ({
       <Link
         to={`/user_app/TrackOrder/${order.order_number}`}
         className="text-decoration-none"
-        state={{
-          orderDetails: order,
-          orderNumber: order.order_number,
+        onClick={(e) => {
+          e.preventDefault();
+          // Store orderId in localStorage before navigation
+          localStorage.setItem('current_order_id', order.order_id?.toString());
+          navigate(`/user_app/TrackOrder/${order.order_number}`, {
+            state: {
+              orderId: order.order_id,
+              orderDetails: order,
+              from: 'orders_placed_ongoing'
+            }
+          });
         }}
       >
         <div className="custom-card my-2 rounded-4 shadow-sm">
