@@ -1388,14 +1388,17 @@ const TrackOrder = () => {
                 2
               )}</p>
               <p style="margin: 5px 0; font-size: 15px;">
-              <span style="font-weight: bold;">
+              
+              ${
+                order_details.discount_percent > 0
+                  ? `<span style="font-weight: bold;">
               Discount:
-              (${
-                order_details.discount_percent || "-0"
-              }%):
+              (${order_details.discount_percent}%):
               </span>
               
-              -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>
+              -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>`
+                  : "</p>"
+              }
 ${
   order_details.special_discount
     ? `
