@@ -73,6 +73,8 @@ const Cart = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         setCartDetails({ order_items: [] });
         setIsLoading(false);
@@ -176,6 +178,8 @@ const Cart = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -309,6 +313,8 @@ const Cart = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -392,6 +398,8 @@ const Cart = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }

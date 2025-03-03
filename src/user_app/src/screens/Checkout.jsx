@@ -207,6 +207,8 @@ const Checkout = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         setIsProcessing(false);
         return;
@@ -303,6 +305,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -391,6 +395,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -464,6 +470,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -548,6 +556,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -610,6 +620,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -672,6 +684,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -786,6 +800,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -843,6 +859,8 @@ action:'save',
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }

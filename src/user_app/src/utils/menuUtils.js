@@ -22,6 +22,8 @@ export const fetchMenuPrices = async (restaurantId, menuId) => {
       localStorage.removeItem("userData");
       localStorage.removeItem("cartItems");
       localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
       return {
         success: false,
         error: "unauthorized",

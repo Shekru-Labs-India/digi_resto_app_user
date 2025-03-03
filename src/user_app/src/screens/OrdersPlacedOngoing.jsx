@@ -247,6 +247,8 @@ const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -297,6 +299,8 @@ const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -539,6 +543,8 @@ const OrdersPlacedOngoing = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         setOrders({ placed: [], ongoing: [] });
         return;

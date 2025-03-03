@@ -309,6 +309,8 @@ const NearbyArea = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -392,6 +394,8 @@ const NearbyArea = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         setIsPriceFetching(false);
         return;

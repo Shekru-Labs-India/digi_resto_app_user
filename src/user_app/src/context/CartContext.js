@@ -48,6 +48,8 @@ export const CartProvider = ({ children }) => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return { error: 'unauthorized' };
       }

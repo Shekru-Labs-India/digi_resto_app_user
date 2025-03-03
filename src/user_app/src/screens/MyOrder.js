@@ -100,6 +100,8 @@ const MyOrder = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -184,6 +186,8 @@ const MyOrder = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -528,6 +532,8 @@ export const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -587,6 +593,8 @@ export const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -650,6 +658,8 @@ export const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -734,6 +744,8 @@ export const OrderCard = ({
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         setShowCancelModal(false);
         navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
@@ -914,6 +926,8 @@ export const OrderCard = ({
       localStorage.removeItem("userData");
       localStorage.removeItem("cartItems");
       localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
       showLoginPopup();
       return;
     }

@@ -626,6 +626,8 @@ const TrackOrder = () => {
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
         localStorage.removeItem("current_order_id");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
 
@@ -1167,6 +1169,8 @@ const TrackOrder = () => {
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
         showLoginPopup();
         return;
       }
@@ -1379,6 +1383,8 @@ const TrackOrder = () => {
       localStorage.removeItem("userData");
       localStorage.removeItem("cartItems");
       localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
       showLoginPopup();
       return;
     }
