@@ -15,6 +15,9 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { isNonProductionDomain } from "../component/config";
 import Notice from "../component/Notice";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import MenuMitra from "../assets/logos/menumitra_logo_128.png";
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -29,6 +32,132 @@ const calculateOriginalPrice = (grandTotal) => {
   const numericTotal = parseFloat(grandTotal);
   const originalPrice = (numericTotal / 0.6).toFixed(2); // 40% discount means price is 60% of original
   return originalPrice;
+};
+
+// Add generatePDF utility function
+const generatePDF = async (orderData) => {
+  try {
+    if (!orderData?.order_details) {
+      throw new Error("Order details not found");
+    }
+
+    const { order_details, menu_details } = orderData;
+    const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+    const outlet_address = localStorage.getItem("outlet_address") || "-";
+    const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
+    const website_url = "https://menumitra.com";
+    const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
+
+    const content = document.createElement('div');
+    content.innerHTML = `
+      <div style="padding: 40px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <div style="display: flex; align-items: center;">
+            <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
+            <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+          </div>
+          <span style="color: #d9534f; font-size: 20px; font-weight: normal;">Invoice</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+          <div>
+            <p style="margin: 0; font-weight: bold;">Hello, ${customerName}</p>
+            <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0;">Order no: ${order_details.order_number}</p>
+            <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr>
+            <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Item</th>
+            <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
+            <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
+          </tr>
+          ${menu_details.map(item => `
+            <tr>
+              <td style="padding: 8px 0; color: #d9534f;">${item.menu_name}</td>
+              <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
+              <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(2)}</td>
+            </tr>
+          `).join('')}
+        </table>
+
+        <div style="border-top: 1px solid #ddd; margin-top: 20px;">
+          <div style="text-align: right; margin-top: 10px;">
+            <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(2)}</p>
+            ${order_details.discount_percent > 0 
+              ? `<p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Discount (${order_details.discount_percent}%):</span> -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>` 
+              : ""
+            }
+            ${order_details.special_discount 
+              ? `<p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${order_details.special_discount?.toFixed(2) || "-"}</p>`
+              : ""
+            }
+            <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total after Discount:</span> ₹${order_details.total_bill_with_discount?.toFixed(2) || "-"}</p>
+            ${order_details.charges > 0 
+              ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${order_details.charges?.toFixed(2) || "-"}</p>`
+              : ""
+            }
+            <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Service Charges (${order_details.service_charges_percent || 1}%):</span> +₹${order_details.service_charges_amount?.toFixed(2) || "-"}</p>
+            <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">GST (${order_details.gst_percent || 1}%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
+            <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${order_details.grand_total?.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+          <div>
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
+            <p style="margin: 5px 0;">► ${outlet_name}</p>
+            <p style="margin: 5px 0;">► ${outlet_address}</p>
+            <p style="margin: 5px 0;">► ${outlet_mobile}</p>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
+            <p style="margin: 5px 0; text-transform: uppercase;">${order_details.payment_method || "CASH"}</p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
+          <div style="margin: 20px 0;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+              <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
+              <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+            </div>
+          </div>
+          <p style="margin: 3px 0; color: #666; font-size: 13px;">info@menumitra.com</p>
+          <p style="margin: 3px 0; color: #666; font-size: 13px;">+91 9172530151</p>
+          <p style="margin: 3px 0; color: #666; font-size: 13px;">${website_url}</p>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(content);
+    const canvas = await html2canvas(content, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      logging: false,
+      useCORS: true
+    });
+    
+    document.body.removeChild(content);
+    
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`invoice-${order_details.order_number}.pdf`);
+
+    window.showToast("success", "Invoice downloaded successfully");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    window.showToast("error", "Failed to generate invoice");
+  }
 };
 
 const MyOrder = () => {
@@ -52,6 +181,7 @@ const MyOrder = () => {
   });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
+  const [orderDetailsCache, setOrderDetailsCache] = useState({});
 
   useEffect(() => {
     if (location.state?.activeTab) {
@@ -289,6 +419,74 @@ const MyOrder = () => {
     }
   };
 
+  // Add this function to fetch order details when needed
+  const fetchOrderDetailsForPDF = async (order) => {
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_order_details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            order_id: order.order_id,
+            section_id: localStorage.getItem("sectionId"),
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && data.lists) {
+          await generatePDF(data.lists);
+        } else {
+          window.showToast("error", "Failed to generate invoice");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      window.showToast("error", "Failed to generate invoice");
+    }
+  };
+
+  // Fetch and cache order details when completed orders are loaded
+  useEffect(() => {
+    const fetchAllOrderDetails = async () => {
+      if (activeTab === "completed" && orders?.completed) {
+        const details = {};
+        for (const order of Object.values(orders.completed).flat()) {
+          try {
+            const response = await fetch(
+              `${config.apiDomain}/user_api/get_order_details`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+                body: JSON.stringify({
+                  order_id: order.order_id,
+                  section_id: localStorage.getItem("sectionId"),
+                }),
+              }
+            );
+            if (response.ok) {
+              const data = await response.json();
+              if (data.st === 1 && data.lists) {
+                details[order.order_id] = data.lists;
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching order details:", error);
+          }
+        }
+        setOrderDetailsCache(details);
+      }
+    };
+    fetchAllOrderDetails();
+  }, [orders?.completed, activeTab]);
 
   return (
     <div className="page-wrapper">
@@ -429,6 +627,7 @@ const MyOrder = () => {
                         activeTab={activeTab}
                         setOrders={setOrders}
                         setActiveTab={setActiveTab}
+                        fetchOrderDetailsForPDF={fetchOrderDetailsForPDF}
                       />
                     </div>
                     <div
@@ -468,6 +667,7 @@ export const OrderCard = ({
   setActiveTab,
   fetchCompletedAndCancelledOrders,
   setCompletedTimers = () => {},
+  fetchOrderDetailsForPDF,
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
@@ -1516,7 +1716,7 @@ export const OrderCard = ({
   );
 };
 
-const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
+const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, fetchOrderDetailsForPDF }) => {
   const navigate = useNavigate();
   // const [activeTab, setActiveTab] = useState("ongoing");
   const [checkedItems, setCheckedItems] = useState({});
@@ -1851,19 +2051,19 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                               </div>
                             </div>
                             <div className="col-6 pe-0 d-flex justify-content-end align-items-center gap-2">
-                              {order.invoice_url && (
-                                <a
-                                  href={order.invoice_url}
-                                  download={`invoice_${order.order_number}.pdf`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
+                              {activeTab === "completed" && (
+                                <button 
+                                  className="btn btn-light py-1 px-2 rounded-pill font_size_12"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (fetchOrderDetailsForPDF) {
+                                      fetchOrderDetailsForPDF(order);
+                                    }
+                                  }}
                                 >
-                                  <button className="btn btn-light py-1 px-2 rounded-pill font_size_12">
-                                    <i className="fa-solid fa-download me-2"></i>
-                                    Invoice
-                                  </button>
-                                </a>
+                                  <i className="fa-solid fa-download me-2"></i>
+                                  Invoice
+                                </button>
                               )}
                               {/* {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">

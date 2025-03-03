@@ -1424,7 +1424,7 @@ ${
               }
               <p style="margin: 5px 0; font-size: 15px;">
               <span style="font-weight: bold;">
-              Service Charges:
+              Service Charges
               (${
                 order_details.service_charges_percent || 1
               }%):
@@ -1435,7 +1435,7 @@ ${
       }</p>
               <p style="margin: 5px 0; font-size: 15px;">
               <span style="font-weight: bold;">
-              GST:
+              GST
               (${
                 order_details.gst_percent || 1
               }%):
