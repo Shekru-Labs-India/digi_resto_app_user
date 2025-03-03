@@ -15,6 +15,10 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 import axios from "axios";
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import MenuMitra from '../assets/logos/menumitra_logo_128.png';
+
 const TrackOrder = () => {
   const titleCase = (str) => {
     if (!str) return "";
@@ -1289,10 +1293,165 @@ const TrackOrder = () => {
       localStorage.removeItem("customerName");
       localStorage.removeItem("mobile");
       showLoginPopup();
-      return;
-    }
+        return;
+      }
 
     if (response.ok) {
+    }
+  };
+
+  // Add generatePDF function before return statement
+  const generatePDF = async (orderDetails) => {
+    try {
+      if (!orderDetails?.order_details) {
+        window.showToast("error", "Order details not found");
+        return;
+      }
+
+      const { order_details, menu_details } = orderDetails;
+      const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_address = localStorage.getItem("outlet_address") || "-";
+      const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
+      const website_url = "https://menumitra.com";
+      
+      // Get customer name from localStorage or order details
+      const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
+
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div style="padding: 40px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center;">
+              <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
+              <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+            </div>
+            <span style="color: #d9534f; font-size: 20px; font-weight: normal;">Invoice</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+            <div>
+              <p style="margin: 0; font-weight: bold;">Hello, ${customerName}</p>
+              <p style="margin: 5px 0 0 0; color: #333;">Thank you for dining with us.</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0;">Order number: ${order_details.order_number}</p>
+              <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""}</p>
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Item</th>
+              <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
+              <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
+            </tr>
+            ${menu_details
+              .map(
+                (item) => `
+              <tr>
+                <td style="padding: 8px 0; color: #d9534f;">${
+                  item.menu_name
+                }</td>
+                <td style="text-align: center; padding: 8px 0;">${
+                  item.quantity
+                }</td>
+                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(
+                  2
+                )}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </table>
+
+          <div style="border-top: 1px solid #ddd; margin-top: 20px;">
+            <div style="text-align: right; margin-top: 10px;">
+              <p style="margin: 5px 0; font-size: 15px;">Total: ₹${order_details.total_bill_amount?.toFixed(
+                2
+              )}</p>
+              <p style="margin: 5px 0; font-size: 15px;">Discount (${
+                order_details.discount_percent || "-"
+              }%): -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>
+              <p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
+                order_details.special_discount?.toFixed(2) || "-"
+              }</p>
+              <p style="margin: 5px 0; font-size: 15px;">Total after Discount: ₹${
+                order_details.total_bill_with_discount?.toFixed(2) || "-"
+              }</p>
+              <p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
+                order_details.charges?.toFixed(2) || "70.00"
+              }</p>
+              <p style="margin: 5px 0; font-size: 15px;">Service Charges (${
+                order_details.service_charges_percent || 1
+              }%): +₹${
+        order_details.service_charges_amount?.toFixed(2) || "-"
+      }</p>
+              <p style="margin: 5px 0; font-size: 15px;">GST (${
+                order_details.gst_percent || 1
+              }%): +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
+              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
+                order_details.grand_total?.toFixed(2) || "1626.10"
+              }</p>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <div>
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
+              <p style="margin: 5px 0;">► ${outlet_name}</p>
+              <p style="margin: 5px 0;">► ${outlet_address}</p>
+              <p style="margin: 5px 0;">► ${outlet_mobile}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
+              <p style="margin: 5px 0; text-transform: uppercase;">${
+                order_details.payment_method || "CASH"
+              }</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 40px;">
+            <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
+            <div style="margin: 20px 0;">
+              <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
+                <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+              </div>
+            </div>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">info@menumitra.com</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">+91 9172530151</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">${website_url}</p>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(content);
+
+      try {
+        const canvas = await html2canvas(content, { 
+          scale: 2,
+          backgroundColor: '#ffffff',
+          logging: false,
+          useCORS: true
+        });
+        document.body.removeChild(content);
+        
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`invoice-${order_details.order_number}.pdf`);
+        
+        window.showToast("success", "Invoice downloaded successfully");
+      } catch (error) {
+        console.error('PDF generation error:', error);
+        window.showToast("error", "Failed to generate invoice");
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      window.showToast("error", "Failed to generate invoice");
     }
   };
 
@@ -2021,123 +2180,13 @@ const TrackOrder = () => {
 
             {orderStatus === "paid" && (
               <div className="d-flex justify-content-end">
-                {orderDetails?.order_details?.invoice_url ? (
-                  <a
-                    href={orderDetails.order_details.invoice_url}
-                    download={`invoice_${orderDetails.order_details.order_number}.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12">
-                      <i className="fa-solid fa-download me-2"></i>
-                      Invoice &nbsp;
-                    </button>
-                  </a>
-                ) : (
-                  <></>
-                )}
-              </div>
-            )}
-            {orderStatus === "paid" && (
-              <div className="d-flex flex-column align-items-center mt-4">
-                <div className="d-flex justify-content-center gap-5 mb-2">
-                  {/* Bad Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="bad-rating"
-                      value="1"
-                      checked={selectedRating === "1"}
-                      onChange={() => handleRating("1")}
-                    />
-                    <label htmlFor="bad-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-frown ${
-                          selectedRating === "1"
-                            ? "text-danger"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Bad</span>
-                    </label>
-                  </div>
-
-                  {/* Okay Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="okay-rating"
-                      value="3"
-                      checked={selectedRating === "3"}
-                      onChange={() => handleRating("3")}
-                    />
-                    <label htmlFor="okay-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-meh ${
-                          selectedRating === "3"
-                            ? "text-warning"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Okay</span>
-                    </label>
-                  </div>
-
-                  {/* Good Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="good-rating"
-                      value="5"
-                      checked={selectedRating === "5"}
-                      onChange={() => handleRating("5")}
-                    />
-                    <label htmlFor="good-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-smile ${
-                          selectedRating === "5"
-                            ? "text-success"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Good</span>
-                    </label>
-                  </div>
-                </div>
-                {selectedRating !== "0" ? (
-                  <div className="text-center mt-2">
-                    <span className="font_size_12 text-success">
-                      Thanks for your feedback! You can change your rating
-                      anytime.
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-center mt-2">
-                    <span className="font_size_12 text-secondary">
-                      Please rate your experience.
-                    </span>
-                  </div>
-                )}
-
-                {hasGoogleReview && (
-                  <div
-                    className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
-                    onClick={handleRateOnGoogle}
-                  >
-                    <i className="fa-solid fa-star me-2"></i>
-                    Rate us on Google
-                  </div>
-                )}
+                <button 
+                  className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
+                  onClick={() => generatePDF(orderDetails)}
+                >
+                  <i className="fa-solid fa-download me-2"></i>
+                  Invoice &nbsp;
+                </button>
               </div>
             )}
 

@@ -208,8 +208,15 @@ export const RestaurantIdProvider = ({ children }) => {
 
         const data = await response.json();
         if (data.st === 1) {
-          const { outlet_id, name, account_status, is_open, section_name } =
-            data.outlet_details;
+          const {
+            outlet_id,
+            name,
+            account_status,
+            is_open,
+            section_name,
+            address,
+            mobile,
+          } = data.outlet_details;
           setRestaurantId(outlet_id);
           setRestaurantName(name);
           setRestaurantStatus(account_status);
@@ -222,7 +229,8 @@ export const RestaurantIdProvider = ({ children }) => {
           localStorage.setItem("restaurantStatus", account_status);
           localStorage.setItem("isRestaurantOpen", is_open);
           localStorage.setItem("sectionName", section_name);
-
+          localStorage.setItem("outlet_address", address);
+          localStorage.setItem("outlet_mobile", mobile);
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
