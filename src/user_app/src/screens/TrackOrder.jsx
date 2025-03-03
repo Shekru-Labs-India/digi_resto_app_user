@@ -15,9 +15,9 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 import axios from "axios";
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import MenuMitra from '../assets/logos/menumitra_logo_128.png';
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import MenuMitra from "../assets/logos/menumitra_logo_128.png";
 
 const TrackOrder = () => {
   const titleCase = (str) => {
@@ -31,14 +31,14 @@ const TrackOrder = () => {
 
   const { state } = useLocation();
   const { order_number } = useParams();
-  
+
   // Get orderId from multiple sources with fallback
-  const orderId = state?.orderId || localStorage.getItem('current_order_id');
-  
-  console.log('TrackOrder: Component mounted');
-  console.log('TrackOrder: State from navigation:', state);
-  console.log('TrackOrder: OrderId from state:', orderId);
-  console.log('TrackOrder: Order number from params:', order_number);
+  const orderId = state?.orderId || localStorage.getItem("current_order_id");
+
+  console.log("TrackOrder: Component mounted");
+  console.log("TrackOrder: State from navigation:", state);
+  console.log("TrackOrder: OrderId from state:", orderId);
+  console.log("TrackOrder: Order number from params:", order_number);
 
   const [customerName, setCustomerName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -56,7 +56,7 @@ const TrackOrder = () => {
   // Clean up localStorage on unmount
   useEffect(() => {
     return () => {
-      localStorage.removeItem('current_order_id');
+      localStorage.removeItem("current_order_id");
     };
   }, []);
 
@@ -598,11 +598,11 @@ const TrackOrder = () => {
 
   const fetchOrderDetails = async (orderNumber) => {
     const sectionId = localStorage.getItem("sectionId") || "";
-    
-    console.log('TrackOrder: Fetching order details');
-    console.log('TrackOrder: Order Number:', orderNumber);
-    console.log('TrackOrder: Order ID:', orderId);
-    console.log('TrackOrder: Section ID:', sectionId);
+
+    console.log("TrackOrder: Fetching order details");
+    console.log("TrackOrder: Order Number:", orderNumber);
+    console.log("TrackOrder: Order ID:", orderId);
+    console.log("TrackOrder: Section ID:", sectionId);
 
     try {
       setLoading(true);
@@ -622,9 +622,9 @@ const TrackOrder = () => {
       );
 
       if (response.status === 401) {
-         const restaurantCode = localStorage.getItem("restaurantCode");
-         const tableNumber = localStorage.getItem("tableNumber");
-         const sectionId = localStorage.getItem("sectionId");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
         localStorage.removeItem("user_id");
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
@@ -640,8 +640,8 @@ const TrackOrder = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('TrackOrder: API Response:', data);
-        
+        console.log("TrackOrder: API Response:", data);
+
         if (data.st === 1 && data.lists) {
           const { lists } = data;
           // Format menu items
@@ -677,13 +677,16 @@ const TrackOrder = () => {
               ["cancle", "cancelled", "canceled"].includes(status)
           );
         } else {
-          console.error('TrackOrder: Invalid response format:', data);
+          console.error("TrackOrder: Invalid response format:", data);
           window.showToast("error", "Failed to fetch order details");
         }
       }
     } catch (error) {
-      console.error('TrackOrder: Error fetching order details:', error);
-      window.showToast("error", "An error occurred while fetching order details");
+      console.error("TrackOrder: Error fetching order details:", error);
+      window.showToast(
+        "error",
+        "An error occurred while fetching order details"
+      );
     } finally {
       setLoading(false);
     }
@@ -906,7 +909,7 @@ const TrackOrder = () => {
       console.log("TrackOrder: Starting order validation");
       try {
         // First check state or localStorage for orderId
-        if (state?.orderId || localStorage.getItem('current_order_id')) {
+        if (state?.orderId || localStorage.getItem("current_order_id")) {
           console.log("TrackOrder: Order ID found, validation successful");
           return true;
         }
@@ -934,8 +937,8 @@ const TrackOrder = () => {
         if (!orderFound) {
           orderFound = [
             ...Object.values(allOrders.completed || {}).flat(),
-            ...Object.values(allOrders.cancelled || {}).flat()
-          ].some(order => order.order_number === order_number);
+            ...Object.values(allOrders.cancelled || {}).flat(),
+          ].some((order) => order.order_number === order_number);
         }
 
         if (!orderFound) {
@@ -1134,10 +1137,10 @@ const TrackOrder = () => {
   const handlePayment = async (method) => {
     try {
       setIsProcessing(true);
-      console.log('TrackOrder: Initiating payment');
-      console.log('TrackOrder: Payment method:', method);
-      console.log('TrackOrder: Order ID:', orderId);
-      
+      console.log("TrackOrder: Initiating payment");
+      console.log("TrackOrder: Payment method:", method);
+      console.log("TrackOrder: Order ID:", orderId);
+
       const response = await axios.post(
         `${config.apiDomain}/user_api/complete_order`,
         {
@@ -1153,18 +1156,21 @@ const TrackOrder = () => {
         }
       );
 
-      console.log('TrackOrder: Payment response:', response.data);
-      
+      console.log("TrackOrder: Payment response:", response.data);
+
       if (response.data.st === 1) {
-      window.showToast("success", "Payment successful!");
-      setShowCompleteModal(false);
+        window.showToast("success", "Payment successful!");
+        setShowCompleteModal(false);
         await fetchOrderDetails(order_number);
       } else {
         throw new Error(response.data.msg || "Payment failed");
       }
     } catch (error) {
-      console.error('TrackOrder: Payment error:', error);
-      window.showToast("error", error.message || "Payment failed. Please try again.");
+      console.error("TrackOrder: Payment error:", error);
+      window.showToast(
+        "error",
+        error.message || "Payment failed. Please try again."
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -1293,8 +1299,8 @@ const TrackOrder = () => {
       localStorage.removeItem("customerName");
       localStorage.removeItem("mobile");
       showLoginPopup();
-        return;
-      }
+      return;
+    }
 
     if (response.ok) {
     }
@@ -1309,15 +1315,19 @@ const TrackOrder = () => {
       }
 
       const { order_details, menu_details } = orderDetails;
-      const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_name =
+        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
       const outlet_address = localStorage.getItem("outlet_address") || "-";
       const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
       const website_url = "https://menumitra.com";
-      
-      // Get customer name from localStorage or order details
-      const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
 
-      const content = document.createElement('div');
+      // Get customer name from localStorage or order details
+      const customerName =
+        localStorage.getItem("customerName") ||
+        order_details.customer_name ||
+        "Guest";
+
+      const content = document.createElement("div");
       content.innerHTML = `
         <div style="padding: 40px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -1331,11 +1341,15 @@ const TrackOrder = () => {
           <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
             <div>
               <p style="margin: 0; font-weight: bold;">Hello, ${customerName}</p>
-              <p style="margin: 5px 0 0 0; color: #333;">Thank you for dining with us.</p>
+              <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
             </div>
             <div style="text-align: right;">
-              <p style="margin: 0;">Order number: ${order_details.order_number}</p>
-              <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""}</p>
+              <p style="margin: 0;">Order no: ${order_details.order_number}</p>
+              <p style="margin: 5px 0 0 0; color: #666;">${
+                order_details.date || ""
+              }
+              ${order_details.time || ""}
+              </p>
             </div>
           </div>
 
@@ -1366,29 +1380,65 @@ const TrackOrder = () => {
 
           <div style="border-top: 1px solid #ddd; margin-top: 20px;">
             <div style="text-align: right; margin-top: 10px;">
-              <p style="margin: 5px 0; font-size: 15px;">Total: ₹${order_details.total_bill_amount?.toFixed(
+              <p style="margin: 5px 0; font-size: 15px;">
+              <span style="font-weight: bold;">
+              Total:
+              </span>
+               ₹${order_details.total_bill_amount?.toFixed(
                 2
               )}</p>
-              <p style="margin: 5px 0; font-size: 15px;">Discount (${
-                order_details.discount_percent || "-"
-              }%): -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>
+              <p style="margin: 5px 0; font-size: 15px;">
+              <span style="font-weight: bold;">
+              Discount:
+              (${
+                order_details.discount_percent || "-0"
+              }%):
+              </span>
+              
+              -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>
+${
+  order_details.special_discount
+    ? `
               <p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
                 order_details.special_discount?.toFixed(2) || "-"
-              }</p>
-              <p style="margin: 5px 0; font-size: 15px;">Total after Discount: ₹${
+              }</p>`
+    : ""
+}
+
+              <p style="margin: 5px 0; font-size: 15px;">
+              <span style="font-weight: bold;">
+              Total after Discount:
+              </span>
+              ₹${
                 order_details.total_bill_with_discount?.toFixed(2) || "-"
               }</p>
-              <p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
-                order_details.charges?.toFixed(2) || "70.00"
-              }</p>
-              <p style="margin: 5px 0; font-size: 15px;">Service Charges (${
+              ${
+                order_details.charges > 0
+                  ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
+                      order_details.charges?.toFixed(2) || "-"
+                    }</p>`
+                  : ""
+              }
+              <p style="margin: 5px 0; font-size: 15px;">
+              <span style="font-weight: bold;">
+              Service Charges:
+              (${
                 order_details.service_charges_percent || 1
-              }%): +₹${
+              }%):
+              </span>
+              
+              +₹${
         order_details.service_charges_amount?.toFixed(2) || "-"
       }</p>
-              <p style="margin: 5px 0; font-size: 15px;">GST (${
+              <p style="margin: 5px 0; font-size: 15px;">
+              <span style="font-weight: bold;">
+              GST:
+              (${
                 order_details.gst_percent || 1
-              }%): +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
+              }%):
+              </span>
+              
+              +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
               <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
                 order_details.grand_total?.toFixed(2) || "1626.10"
               }</p>
@@ -1428,29 +1478,29 @@ const TrackOrder = () => {
       document.body.appendChild(content);
 
       try {
-        const canvas = await html2canvas(content, { 
+        const canvas = await html2canvas(content, {
           scale: 2,
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
           logging: false,
-          useCORS: true
+          useCORS: true,
         });
         document.body.removeChild(content);
-        
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        const pdf = new jsPDF("p", "mm", "a4");
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
         pdf.save(`invoice-${order_details.order_number}.pdf`);
-        
+
         window.showToast("success", "Invoice downloaded successfully");
       } catch (error) {
-        console.error('PDF generation error:', error);
+        console.error("PDF generation error:", error);
         window.showToast("error", "Failed to generate invoice");
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error("Error generating PDF:", error);
       window.showToast("error", "Failed to generate invoice");
     }
   };
@@ -1524,9 +1574,10 @@ const TrackOrder = () => {
                     <span className="fw-medium gray-text">
                       <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                       {`${titleCase(order_details.section_name)}${
-                        order_details.order_type?.toLowerCase() === "drive-through" || 
-                        order_details.order_type?.toLowerCase() === "parcel" 
-                          ? "" 
+                        order_details.order_type?.toLowerCase() ===
+                          "drive-through" ||
+                        order_details.order_type?.toLowerCase() === "parcel"
+                          ? ""
                           : ` - ${order_details.table_number}`
                       }`}
                     </span>
@@ -1952,9 +2003,9 @@ const TrackOrder = () => {
                               <div className="row d-flex align-items-center mt-1">
                                 <div className="col-10">
                                   <div className="ps-2 font_size_14 fw-medium">
-                                    {menu.menu_name} 
+                                    {menu.menu_name}
                                     <span className="ms-2 font_size_10 text-capitalize text-dark">
-                                    ({toTitleCase(menu.half_or_full)})
+                                      ({toTitleCase(menu.half_or_full)})
                                     </span>
                                   </div>
                                 </div>
@@ -2180,7 +2231,7 @@ const TrackOrder = () => {
 
             {orderStatus === "paid" && (
               <div className="d-flex justify-content-end">
-                <button 
+                <button
                   className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
                   onClick={() => generatePDF(orderDetails)}
                 >
