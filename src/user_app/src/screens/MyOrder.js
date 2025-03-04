@@ -2090,7 +2090,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
                       </div>
                     </div>
 
-                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3 pe-0">
                       {activeTab === "completed" && (
                         <div className="container py-0">
                           <div className="row align-items-center">
@@ -2109,7 +2109,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
                                   onClick={() => handleDownloadInvoice(order, navigate, showLoginPopup, generatePDF)}
                                 >
                                   <i className="fa-solid fa-download me-2"></i>
-                                  Download Invoice
+                                  Invoice
                                 </button>
                               )}
                               {/* {order.payment_method && (

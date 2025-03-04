@@ -1331,13 +1331,19 @@ const TrackOrder = () => {
       const website_url = "https://menumitra.com";
       const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
 
-      const content = document.createElement("div");
-      // Increase base width for larger content
-      content.style.width = "800px"; // Wider content
-      content.style.margin = "0";
-      content.style.padding = "60px"; // Increased padding
-      content.style.fontSize = "16px"; // Larger base font size
-      content.innerHTML = `
+      // Create a hidden container with specific dimensions
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '-9999px';
+      container.style.width = '800px';
+      container.style.margin = '0';
+      container.style.padding = '60px';
+      container.style.fontSize = '16px';
+      container.style.backgroundColor = '#ffffff';
+      document.body.appendChild(container);
+
+      container.innerHTML = `
         <div style="padding: 20px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <div style="display: flex; align-items: center;">
@@ -1354,11 +1360,7 @@ const TrackOrder = () => {
             </div>
             <div style="text-align: right;">
               <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
-              <p style="margin: 5px 0 0 0; color: #666;">${
-                order_details.date || ""
-              }
-              ${order_details.time || ""}
-              </p>
+              <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
             </div>
           </div>
 
@@ -1368,92 +1370,41 @@ const TrackOrder = () => {
               <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
               <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
             </tr>
-            ${menu_details
-              .map(
-                (item) => `
+            ${menu_details.map((item) => `
               <tr>
-                <td style="padding: 8px 0; color: #d9534f;">${
-                  item.menu_name
-                }</td>
-                <td style="text-align: center; padding: 8px 0;">${
-                  item.quantity
-                }</td>
-                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(
-                  2
-                )}</td>
+                <td style="padding: 8px 0; color: #d9534f;">${item.menu_name}</td>
+                <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
+                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(2)}</td>
               </tr>
-            `
-              )
-              .join("")}
+            `).join("")}
           </table>
 
           <div style="border-top: 1px solid #ddd; margin-top: 20px;">
             <div style="text-align: right; margin-top: 10px;">
               <p style="margin: 5px 0; font-size: 15px;">
-              <span style="font-weight: bold;">
-              Total:
-              </span>
-               ₹${order_details.total_bill_amount?.toFixed(
-                2
-              )}</p>
+                <span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(2)}
+              </p>
+              ${order_details.discount_percent > 0 ? `
+                <p style="margin: 5px 0; font-size: 15px;">
+                  <span style="font-weight: bold;">Discount (${order_details.discount_percent}%):</span> -₹${order_details.discount_amount?.toFixed(2) || "-"}
+                </p>
+              ` : ""}
+              ${order_details.special_discount ? `
+                <p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${order_details.special_discount?.toFixed(2) || "-"}</p>
+              ` : ""}
               <p style="margin: 5px 0; font-size: 15px;">
-              
-              ${
-                order_details.discount_percent > 0
-                  ? `<span style="font-weight: bold;">
-              Discount:
-              (${order_details.discount_percent}%):
-              </span>
-              
-              -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>`
-                  : "</p>"
-              }
-${
-  order_details.special_discount
-    ? `
-              <p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
-                order_details.special_discount?.toFixed(2) || "-"
-              }</p>`
-    : ""
-}
-
+                <span style="font-weight: bold;">Total after Discount:</span> ₹${order_details.total_bill_with_discount?.toFixed(2) || "-"}
+              </p>
+              ${order_details.charges > 0 ? `
+                <p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${order_details.charges?.toFixed(2) || "-"}</p>
+              ` : ""}
               <p style="margin: 5px 0; font-size: 15px;">
-              <span style="font-weight: bold;">
-              Total after Discount:
-              </span>
-              ₹${
-                order_details.total_bill_with_discount?.toFixed(2) || "-"
-              }</p>
-              ${
-                order_details.charges > 0
-                  ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
-                      order_details.charges?.toFixed(2) || "-"
-                    }</p>`
-                  : ""
-              }
+                <span style="font-weight: bold;">Service Charges (${order_details.service_charges_percent || 1}%):</span> +₹${order_details.service_charges_amount?.toFixed(2) || "-"}
+              </p>
               <p style="margin: 5px 0; font-size: 15px;">
-              <span style="font-weight: bold;">
-              Service Charges
-              (${
-                order_details.service_charges_percent || 1
-              }%):
-              </span>
-              
-              +₹${
-        order_details.service_charges_amount?.toFixed(2) || "-"
-      }</p>
-              <p style="margin: 5px 0; font-size: 15px;">
-              <span style="font-weight: bold;">
-              GST
-              (${
-                order_details.gst_percent || 1
-              }%):
-              </span>
-              
-              +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
-              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
-                order_details.grand_total?.toFixed(2) || "1626.10"
-              }</p>
+                <span style="font-weight: bold;">GST (${order_details.gst_percent || 1}%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}
+              </p>
+              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${order_details.grand_total?.toFixed(2) || "1626.10"}</p>
             </div>
           </div>
 
@@ -1466,9 +1417,7 @@ ${
             </div>
             <div style="text-align: right;">
               <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
-              <p style="margin: 5px 0; text-transform: uppercase;">${
-                order_details.payment_method || ""
-              }</p>
+              <p style="margin: 5px 0; text-transform: uppercase;">${order_details.payment_method || ""}</p>
             </div>
           </div>
 
@@ -1487,41 +1436,58 @@ ${
         </div>
       `;
 
-      document.body.appendChild(content);
-
       try {
-        const canvas = await html2canvas(content, {
-          scale: 3, // Increased scale for better quality
-          width: 800, // Match content width
-          height: 1131, // Proportional to A4 ratio
-          backgroundColor: "#ffffff",
+        // Wait for all images to load
+        const images = container.getElementsByTagName('img');
+        await Promise.all(Array.from(images).map(img => {
+          return new Promise((resolve) => {
+            if (img.complete) {
+              resolve();
+            } else {
+              img.onload = resolve;
+              img.onerror = resolve;
+            }
+          });
+        }));
+
+        // Generate PDF with exact same configuration as MyOrder.js
+        const canvas = await html2canvas(container, {
+          scale: 3,
+          width: 800,
+          height: container.offsetHeight || 1131,
+          backgroundColor: '#ffffff',
+          windowWidth: 800,
+          windowHeight: container.offsetHeight || 1131,
           logging: false,
           useCORS: true,
+          allowTaint: true
         });
-        
-        document.body.removeChild(content);
 
-        const imgData = canvas.toDataURL("image/jpeg", 1.0); // Full quality for better scaling
-        
         // Create PDF with A4 dimensions
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
         const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: "a4"
+          orientation: 'portrait',
+          unit: 'pt',
+          format: 'a4'
         });
 
         // Calculate dimensions to fit A4 while maintaining aspect ratio
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        // Add image with scaling
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        // Add image with proper scaling
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
         pdf.save(`invoice-${order_details.order_number}.pdf`);
 
         window.showToast("success", "Invoice downloaded successfully");
       } catch (error) {
         console.error("PDF generation error:", error);
         window.showToast("error", "Failed to generate invoice");
+      } finally {
+        // Clean up: Remove the temporary container
+        if (document.body.contains(container)) {
+          document.body.removeChild(container);
+        }
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
