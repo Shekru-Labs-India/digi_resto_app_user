@@ -121,7 +121,9 @@ const MyOrder = () => {
             </div>
             <div style="text-align: right;">
               <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
-              <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
+              <p style="margin: 5px 0 0 0; color: #666;">${
+                order_details.date || ""
+              } ${order_details.time || ""}</p>
             </div>
           </div>
 
@@ -131,34 +133,67 @@ const MyOrder = () => {
               <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
               <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
             </tr>
-            ${menu_details.map(item => `
+            ${menu_details
+              .map(
+                (item) => `
               <tr>
-                <td style="padding: 8px 0; color: #d9534f;">${item.menu_name}</td>
-                <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
-                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(2)}</td>
+                <td style="padding: 8px 0; color: #d9534f;">${
+                  item.menu_name
+                }</td>
+                <td style="text-align: center; padding: 8px 0;">${
+                  item.quantity
+                }</td>
+                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(
+                  2
+                )}</td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join("")}
           </table>
 
           <div style="border-top: 1px solid #ddd; margin-top: 20px;">
             <div style="text-align: right; margin-top: 10px;">
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(2)}</p>
-              ${order_details.discount_percent > 0 
-                ? `<p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Discount (${order_details.discount_percent}%):</span> -₹${order_details.discount_amount?.toFixed(2) || "-"}</p>` 
-                : ""
+              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(
+                2
+              )}</p>
+              ${
+                order_details.discount_percent > 0
+                  ? `<p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Discount (${
+                      order_details.discount_percent
+                    }%):</span> -₹${
+                      order_details.discount_amount?.toFixed(2) || "-"
+                    }</p>`
+                  : ""
               }
-              ${order_details.special_discount 
-                ? `<p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${order_details.special_discount?.toFixed(2) || "-"}</p>`
-                : ""
+              ${
+                order_details.special_discount
+                  ? `<p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
+                      order_details.special_discount?.toFixed(2) || "-"
+                    }</p>`
+                  : ""
               }
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total after Discount:</span> ₹${order_details.total_bill_with_discount?.toFixed(2) || "-"}</p>
-              ${order_details.charges > 0 
-                ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${order_details.charges?.toFixed(2) || "-"}</p>`
-                : ""
+              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total after Discount:</span> ₹${
+                order_details.total_bill_with_discount?.toFixed(2) || "-"
+              }</p>
+              ${
+                order_details.charges > 0
+                  ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
+                      order_details.charges?.toFixed(2) || "-"
+                    }</p>`
+                  : ""
               }
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Service Charges (${order_details.service_charges_percent || 1}%):</span> +₹${order_details.service_charges_amount?.toFixed(2) || "-"}</p>
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">GST (${order_details.gst_percent || 1}%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
-              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${order_details.grand_total?.toFixed(2)}</p>
+              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Service Charges (${
+                order_details.service_charges_percent || 1
+              }%):</span> +₹${
+        order_details.service_charges_amount?.toFixed(2) || "-"
+      }</p>
+              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">GST (${
+                order_details.gst_percent || 1
+              }%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
+              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${order_details.final_grand_total?.toFixed(
+                2
+              )}</p>
             </div>
           </div>
 
@@ -171,7 +206,9 @@ const MyOrder = () => {
             </div>
             <div style="text-align: right;">
               <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
-              <p style="margin: 5px 0; text-transform: uppercase;">${order_details.payment_method || "CASH"}</p>
+              <p style="margin: 5px 0; text-transform: uppercase;">${
+                order_details.payment_method || "CASH"
+              }</p>
             </div>
           </div>
 
