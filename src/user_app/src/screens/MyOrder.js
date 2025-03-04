@@ -19,6 +19,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import MenuMitra from "../assets/logos/menumitra_logo_128.png";
 
+
 const titleCase = (str) => {
   if (!str) return "";
   return str
@@ -33,6 +34,7 @@ const calculateOriginalPrice = (grandTotal) => {
   const originalPrice = (numericTotal / 0.6).toFixed(2); // 40% discount means price is 60% of original
   return originalPrice;
 };
+
 
 // Add generatePDF utility function
 const generatePDF = async (orderData) => {
@@ -445,6 +447,23 @@ const MyOrder = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1 && data.lists) {
@@ -653,6 +672,7 @@ export const OrderCard = ({
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const timeoutRef = useRef({});
   const { showLoginPopup } = usePopup();
+  
 
   const [customerName, setCustomerName] = useState("");
   const titleCase = (str) => {
@@ -1688,16 +1708,16 @@ export const OrderCard = ({
 };
 
 const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, fetchOrderDetailsForPDF }) => {
-  const navigate = useNavigate();
-  // const [activeTab, setActiveTab] = useState("ongoing");
   const [checkedItems, setCheckedItems] = useState({});
+  const navigate = useNavigate();
+  const { showLoginPopup } = usePopup();
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
   const [timeLeft, setTimeLeft] = useState(90);
-
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [completedTimers, setCompletedTimers] = useState(new Set());
 
   useEffect(() => {
     if (orders && Object.keys(orders)?.length > 0) {
@@ -1714,7 +1734,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, fetchOrde
 
     setExpandAll(false);
   }, [orders, type]);
-  const [completedTimers, setCompletedTimers] = useState(new Set());
 
   const handleOrderMore = (orderId) => {
     navigate("/user_app/Menu", {
@@ -2025,7 +2044,7 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, fetchOrde
                               {activeTab === "completed" && (
                                 <button 
                                   className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
-                                  onClick={() => handleDownloadInvoice(order)}
+                                  onClick={() => handleDownloadInvoice(order, navigate, showLoginPopup)}
                                 >
                                   <i className="fa-solid fa-download me-2"></i>
                                   Invoice &nbsp;
@@ -2082,6 +2101,7 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
   const timerRef = useRef(null);
+  
 
   useEffect(() => {
     if (completedTimers?.has(orderId)) {
@@ -2157,6 +2177,7 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
+  
 
   useEffect(() => {
     const getOrderTimeInMs = (timeStr) => {
@@ -2369,7 +2390,7 @@ export const CircularCountdown = ({
 };
 
 // Add this function to fetch single order details and generate PDF
-const handleDownloadInvoice = async (order) => {
+const handleDownloadInvoice = async (order, navigate, showLoginPopup) => {
   try {
     window.showToast("info", "Generating invoice...");
 
@@ -2387,6 +2408,26 @@ const handleDownloadInvoice = async (order) => {
         }),
       }
     );
+
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
+      showLoginPopup();
+      
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
+
+
+      return;
+    }
 
     if (!response.ok) {
       throw new Error("Failed to fetch order details");
