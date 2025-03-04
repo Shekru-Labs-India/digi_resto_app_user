@@ -51,8 +51,13 @@ const generatePDF = async (orderData) => {
     const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
 
     const content = document.createElement('div');
+    // Updated content base size settings
+    content.style.width = "800px";  // Increased base width
+    content.style.padding = "60px"; // Increased padding
+    content.style.fontSize = "16px"; // Explicit font size
+    content.style.margin = "0";
     content.innerHTML = `
-      <div style="padding: 40px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+      <div style="max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
           <div style="display: flex; align-items: center;">
             <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
@@ -140,8 +145,11 @@ const generatePDF = async (orderData) => {
     document.body.appendChild(content);
 
     try {
+      // Updated HTML2Canvas settings
       const canvas = await html2canvas(content, {
-        scale: 2,
+        scale: 3,             // Increased scale for better resolution
+        width: 800,           // Match content width
+        height: 1131,         // Proportional to A4 ratio
         backgroundColor: '#ffffff',
         logging: false,
         useCORS: true
@@ -150,16 +158,21 @@ const generatePDF = async (orderData) => {
       document.body.removeChild(content);
       
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Updated PDF Configuration
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "pt",
+        format: "a4"
+      });
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`invoice-${order_details.order_number}.pdf`);
 
       window.showToast("success", "Invoice downloaded successfully");
     } catch (error) {
-      // Clean up in case of error
       if (document.body.contains(content)) {
         document.body.removeChild(content);
       }
