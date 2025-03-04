@@ -68,6 +68,53 @@ const Checkout = () => {
     return cartId ? parseInt(cartId, 10) : null;
   };
 
+  // Track user authentication status
+  const [currentUserId, setCurrentUserId] = useState(
+    JSON.parse(localStorage.getItem("userData"))?.user_id || null
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const checkAuthStatus = () => {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const newUserId = userData?.user_id;
+      
+      if (!newUserId && mounted) {
+        // Clear auth data and cart
+        const keysToRemove = [
+          "user_id", 
+          "userData", 
+          "cartItems", 
+          "access_token", 
+          "customerName", 
+          "mobile"
+        ];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        // Show login popup and navigate home
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        
+        setCurrentUserId(null);
+      }
+    };
+
+    // Initial check
+    checkAuthStatus();
+
+    // Set up interval to check auth status
+    const authCheckInterval = setInterval(checkAuthStatus, 1000);
+
+    return () => {
+      mounted = false;
+      clearInterval(authCheckInterval);
+    };
+  }, [currentUserId, navigate, showLoginPopup]);
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
