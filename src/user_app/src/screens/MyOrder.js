@@ -243,6 +243,11 @@ const MyOrder = () => {
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
         showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         return;
       }
 
@@ -329,6 +334,11 @@ const MyOrder = () => {
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
         showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         return;
       }
 
@@ -726,6 +736,11 @@ export const OrderCard = ({
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
         showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         return;
       }
 
@@ -787,6 +802,11 @@ export const OrderCard = ({
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
         showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         return;
       }
 
@@ -851,6 +871,11 @@ export const OrderCard = ({
         localStorage.removeItem("access_token");
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         showLoginPopup();
         return;
       }
@@ -1119,6 +1144,11 @@ export const OrderCard = ({
       localStorage.removeItem("access_token");
       localStorage.removeItem("customerName");
       localStorage.removeItem("mobile");
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
       showLoginPopup();
       return;
     }
