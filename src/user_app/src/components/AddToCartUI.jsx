@@ -50,24 +50,30 @@ const AddToCartUI = ({
     }
   };
 
-  // Fetch prices when modal opens
-  useEffect(() => {
-    const fetchPrices = async () => {
-      if (showModal && productDetails?.menu_id) {
-        setIsPriceFetching(true);
-        const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
-        if (priceData?.error === 'unauthorized') {
-          setShowModal(false); // Close the modal on unauthorized
-          return;
-        }
-        if (priceData) {
-          setPrices(priceData);
-        }
-        setIsPriceFetching(false);
-      }
-    };
+  const checkAuthAndFetchPrices = async () => {
+    if (!showModal || !productDetails?.menu_id) return;
+    
+    setIsPriceFetching(true);
+    const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
+    
+    if (priceData?.error === 'unauthorized') {
+      setShowModal(false);
+      return false;
+    }
+    
+    if (priceData) {
+      setPrices(priceData);
+      setIsPriceFetching(false);
+      return true;
+    }
+    
+    return false;
+  };
 
-    fetchPrices();
+  useEffect(() => {
+    if (showModal) {
+      checkAuthAndFetchPrices();
+    }
   }, [showModal, productDetails?.menu_id, restaurantId]);
 
   const handleConfirmWithQuantity = () => {
@@ -82,7 +88,7 @@ const AddToCartUI = ({
     handleConfirmAddToCart(productWithQuantity);
   };
 
-  if (!showModal) return null;
+  if (!showModal || isPriceFetching) return null;
 
   return (
     <>
