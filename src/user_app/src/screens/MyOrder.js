@@ -67,7 +67,7 @@ const generatePDF = async (orderData) => {
             <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
           </div>
           <div style="text-align: right;">
-            <p style="margin: 0;">Order no: ${order_details.order_number}</p>
+            <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
             <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
           </div>
         </div>
