@@ -521,15 +521,22 @@ const OrdersPlacedOngoing = () => {
     localStorage.getItem("sectionId") ||
     "";
   const { showLoginPopup } = usePopup();
+  const [currentRestaurntId, setCurrentRestaurantId] = useState(localStorage.getItem("outlet_id"));
 
   const fetchData = async () => {
-    // Check if we have required data before making the API call
-    if (!userData?.user_id || !userData?.restaurantId) {
+    // Get fresh data each time
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const sectionId = userData?.sectionId || localStorage.getItem("sectionId") || "";
+    const outletId = localStorage.getItem("outlet_id");
+
+    // Early return if missing data
+    if (!userData?.user_id || !outletId) {
       setOrders({ placed: [], ongoing: [] });
       return;
     }
 
     try {
+      // Add timeout control
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
@@ -543,7 +550,7 @@ const OrdersPlacedOngoing = () => {
           },
           body: JSON.stringify({
             user_id: userData.user_id,
-            outlet_id: localStorage.getItem("outlet_id"),
+            outlet_id: outletId,
             section_id: sectionId,
           }),
           signal: controller.signal
@@ -552,19 +559,24 @@ const OrdersPlacedOngoing = () => {
 
       clearTimeout(timeoutId);
 
+      // Handle unauthorized access
       if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
+        // Clear all auth-related data
+        const keysToRemove = [
+          "user_id",
+          "userData",
+          "cartItems",
+          "access_token",
+          "customerName",
+          "mobile"
+        ];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
         showLoginPopup();
         setOrders({ placed: [], ongoing: [] });
         return;
       }
 
-      // Handle all non-200 responses silently
+      // Handle non-200 responses
       if (!response.ok) {
         setOrders({ placed: [], ongoing: [] });
         return;
@@ -572,20 +584,25 @@ const OrdersPlacedOngoing = () => {
 
       const data = await response.json();
 
-      // Check if data exists and has the expected structure
+      // Validate response data and current restaurant
       if (data?.st === 1 && Array.isArray(data.data)) {
-        const ordersData = data.data;
-        setOrders({
-          placed: ordersData.filter(order => order.status === 'placed'),
-          ongoing: ordersData.filter(order => order.status === 'cooking')
-        });
+        const currentOutletId = localStorage.getItem("outlet_id");
+        
+        // Only update if we're still on the same restaurant
+        if (outletId === currentOutletId) {
+          const ordersData = data.data;
+          setOrders({
+            placed: ordersData.filter(order => order.status === 'placed'),
+            ongoing: ordersData.filter(order => order.status === 'cooking')
+          });
+        }
       } else {
-        // Handle empty or invalid data structure silently
         setOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
-      // Handle all errors silently (including abort errors)
+      // Only log and clear orders for non-abort errors
       if (error.name !== 'AbortError') {
+        console.error('Error fetching orders:', error);
         setOrders({ placed: [], ongoing: [] });
       }
     }
@@ -593,20 +610,34 @@ const OrdersPlacedOngoing = () => {
 
   useEffect(() => {
     let mounted = true;
-
-    const loadData = async () => {
-      await fetchData();
+    
+    const checkRestaurantChange = () => {
+      const newRestaurantId = localStorage.getItem("outlet_id");
+      if (newRestaurantId !== currentRestaurntId && mounted) {
+        // Clear existing orders when restaurant changes
+        setOrders({ placed: [], ongoing: [] });
+        setCurrentRestaurantId(newRestaurantId);
+      }
     };
 
-    loadData();
+    // Initial fetch
+    fetchData();
+
+    // Set up intervals for restaurant checks and data refresh
+    const restaurantCheckInterval = setInterval(checkRestaurantChange, 1000);
+    const dataRefreshInterval = setInterval(() => {
+      if (mounted) {
+        fetchData();
+      }
+    }, 30000); // Refresh data every 30 seconds
 
     // Cleanup function
     return () => {
       mounted = false;
+      clearInterval(restaurantCheckInterval);
+      clearInterval(dataRefreshInterval);
     };
-  }, []);
-
-
+  }, [currentRestaurntId]); // Add currentRestaurantId as dependency
 
   return (
     <div>
