@@ -1325,21 +1325,20 @@ const TrackOrder = () => {
       }
 
       const { order_details, menu_details } = orderDetails;
-      const outlet_name =
-        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
       const outlet_address = localStorage.getItem("outlet_address") || "-";
       const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
       const website_url = "https://menumitra.com";
-
-      // Get customer name from localStorage or order details
-      const customerName =
-        localStorage.getItem("customerName") ||
-        order_details.customer_name ||
-        "Guest";
+      const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
 
       const content = document.createElement("div");
+      // Increase base width for larger content
+      content.style.width = "800px"; // Wider content
+      content.style.margin = "0";
+      content.style.padding = "60px"; // Increased padding
+      content.style.fontSize = "16px"; // Larger base font size
       content.innerHTML = `
-        <div style="padding: 40px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+        <div style="padding: 20px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <div style="display: flex; align-items: center;">
               <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
@@ -1468,7 +1467,7 @@ ${
             <div style="text-align: right;">
               <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
               <p style="margin: 5px 0; text-transform: uppercase;">${
-                order_details.payment_method || "CASH"
+                order_details.payment_method || ""
               }</p>
             </div>
           </div>
@@ -1492,18 +1491,30 @@ ${
 
       try {
         const canvas = await html2canvas(content, {
-          scale: 2,
+          scale: 3, // Increased scale for better quality
+          width: 800, // Match content width
+          height: 1131, // Proportional to A4 ratio
           backgroundColor: "#ffffff",
           logging: false,
           useCORS: true,
         });
+        
         document.body.removeChild(content);
 
-        const imgData = canvas.toDataURL("image/jpeg", 1.0);
-        const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const imgData = canvas.toDataURL("image/jpeg", 1.0); // Full quality for better scaling
+        
+        // Create PDF with A4 dimensions
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4"
+        });
 
+        // Calculate dimensions to fit A4 while maintaining aspect ratio
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // Add image with scaling
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
         pdf.save(`invoice-${order_details.order_number}.pdf`);
 
