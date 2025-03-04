@@ -1500,10 +1500,10 @@ const TrackOrder = () => {
         const canvas = await html2canvas(container, {
           scale: 3,
           width: 800,
-          height: container.offsetHeight || 1131,
+          height: container.offsetHeight,
           backgroundColor: '#ffffff',
           windowWidth: 800,
-          windowHeight: container.offsetHeight || 1131,
+          windowHeight: container.offsetHeight,
           logging: false,
           useCORS: true,
           allowTaint: true

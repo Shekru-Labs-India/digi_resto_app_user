@@ -207,7 +207,7 @@ const MyOrder = () => {
             <div style="text-align: right;">
               <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
               <p style="margin: 5px 0; text-transform: uppercase;">${
-                order_details.payment_method || "CASH"
+                order_details.payment_method || ""
               }</p>
             </div>
           </div>
