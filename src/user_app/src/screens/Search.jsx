@@ -381,7 +381,9 @@ const Search = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourites" : "Added to favourites"
+          isFavorite
+            ? "Item has been removed from favourites"
+            : "Item has been added to favourites"
         );
       }
     } catch (error) {
