@@ -1436,18 +1436,18 @@ const TrackOrder = () => {
               }
               <p style="margin: 5px 0; font-size: 15px;">
                 <span style="font-weight: bold;">Service Charges (${
-                  order_details.service_charges_percent || 1
+                  order_details.service_charges_percent || ""
                 }%):</span> +₹${
         order_details.service_charges_amount?.toFixed(2) || "-"
       }
               </p>
               <p style="margin: 5px 0; font-size: 15px;">
                 <span style="font-weight: bold;">GST (${
-                  order_details.gst_percent || 1
+                  order_details.gst_percent || ""
                 }%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}
               </p>
               <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
-                order_details.final_grand_total?.toFixed(2) || "1626.10"
+                order_details.final_grand_total?.toFixed(2) || "-"
               }</p>
             </div>
           </div>
