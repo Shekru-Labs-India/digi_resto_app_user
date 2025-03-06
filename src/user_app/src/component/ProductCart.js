@@ -225,7 +225,7 @@ const ProductCard = ({ isVegOnly }) => {
 
     if (!storedRestaurantId) return;
 
-    setLoading(true);
+    setLoading(false);
     setMenuList([]); // ✅ Clear previous menu before fetching new one.
 
     try {
@@ -283,7 +283,7 @@ useEffect(() => {
   if (currentRestaurantId) {
       fetchMenuData(currentRestaurantId, setMenuList, setLoading, setMenuCategories, applyFilters, selectedCategoryId, isVegOnly);
   }
-}, [currentRestaurantId, isVegOnly, selectedCategoryId]); // ✅ Use fetchMenuData in dependency list to ensure updates
+}, [currentRestaurantId, isVegOnly, selectedCategoryId]);
 
 
 
