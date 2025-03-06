@@ -40,8 +40,11 @@ const AddToCartUI = ({
   const handleCommentChange = (e) => {
     const value = e.target.value;
     setComment(value);
-
-    if (value.length > 0 && value.length < 5) {
+    const validPattern = /^[a-zA-Z0-9\-\/\s\.]*$/;
+  
+    if (!validPattern.test(value)) {
+      setCommentError('Only letters, numbers, dashes, slashes and dots are allowed');
+    } else if (value.length > 0 && value.length < 5) {
       setCommentError("Comment should be between 5 and 30 characters.");
     } else if (value.length > 30) {
       setCommentError("Comment should be between 5 and 30 characters.");
@@ -49,6 +52,7 @@ const AddToCartUI = ({
       setCommentError("");
     }
   };
+  
 
   const checkAuthAndFetchPrices = async () => {
     if (!showModal || !productDetails?.menu_id) return;

@@ -72,11 +72,11 @@ const ProductCard = ({ isVegOnly }) => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const { cartItems, addToCart, removeFromCart, isMenuItemInCart } = useCart();
+  
 
   // Add this state for tracking restaurant data
-  const [currentRestaurantId, setCurrentRestaurantId] = useState(() => {
-    return restaurantId || localStorage.getItem("restaurantId");
-  });
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(restaurantId || localStorage.getItem("restaurantId"));
+
 
   const { showLoginPopup } = usePopup();
 
@@ -218,73 +218,66 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   // Fetch menu data with optimized updates
+  
   const fetchMenuData = useCallback(async () => {
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const storedRestaurantId =
-      restaurantId || localStorage.getItem("restaurantId");
-
-    if (!storedRestaurantId) return;
+    if (!currentRestaurantId) return;
 
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            user_id: storedUserData?.user_id || null,
-            outlet_id: localStorage.getItem("outlet_id"),
-          }),
+        const storedUserData = JSON.parse(localStorage.getItem("userData"));
+
+        const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: storedUserData?.user_id || null,
+                outlet_id: localStorage.getItem("outlet_id"),
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.st === 1) {
+            const formattedMenuList = data.data.menus.map((menu) => ({
+                ...menu,
+                image: menu.image || images,
+                category: toTitleCase(menu.category_name),
+                name: toTitleCase(menu.menu_name),
+                oldPrice: menu.offer ? menu.price : null,
+                price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
+                is_favourite: menu.is_favourite === 1,
+            }));
+
+            setMenuList(formattedMenuList);
+            setMenuCategories(
+                data.data.category.map((category) => ({
+                    ...category,
+                    name: toTitleCase(category.category_name),
+                }))
+            );
+
+            // Apply existing filters to new data
+            applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
         }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.st === 1) {
-        const formattedMenuList = data.data.menus.map((menu) => ({
-          ...menu,
-          image: menu.image || images,
-          category: toTitleCase(menu.category_name),
-          name: toTitleCase(menu.menu_name),
-          oldPrice: menu.offer ? menu.price : null,
-          price: menu.offer
-            ? Math.floor(menu.price * (1 - menu.offer / 100))
-            : menu.price,
-          is_favourite: menu.is_favourite === 1,
-        }));
-
-        setMenuList(formattedMenuList);
-        setMenuCategories(
-          data.data.category.map((category) => ({
-            ...category,
-            name: toTitleCase(category.category_name),
-          }))
-        );
-
-        // Apply existing filters to new data
-        applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
-      }
-      if (data.st === 2) {
-        showLoginPopup();
-        //  let userData = JSON.parse(localStorage.getItem("userData"));
-        //  delete userData.customer_id;
-        localStorage.removeItem("userData");
-        navigate("/user_app/Profile");
-      }
+        if (data.st === 2) {
+            showLoginPopup();
+            localStorage.removeItem("userData");
+            navigate("/user_app/Profile");
+        }
     } catch (error) {
-      console.clear();
+        console.error("Error fetching menu data:", error);
     }
-  }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
+}, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
   // Initial data fetch
   useEffect(() => {
-    if (restaurantId) {
-      fetchMenuData();
+    if (restaurantId !== currentRestaurantId) {
+        setCurrentRestaurantId(restaurantId);
+        localStorage.setItem("restaurantId", restaurantId); // Save the new restaurantId
+        fetchMenuData(); // Fetch new menu
     }
-  }, [restaurantId, fetchMenuData]);
+}, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
   // Polling for updates without affecting UI
   useEffect(() => {
@@ -708,13 +701,13 @@ const ProductCard = ({ isVegOnly }) => {
           border: "border-danger",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          textColor: "gray-text", // Changed to green for category text
-          border: "gray-text",
-          categoryIcon: "fa-solid fa-utensils text-success me-1",
-        };
+        case "egg":
+          return {
+            icon: "fa-solid fa-egg text-grey",
+            border: "gray-text",
+            textColor: "text-success", // Changed to green for category name
+            categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",

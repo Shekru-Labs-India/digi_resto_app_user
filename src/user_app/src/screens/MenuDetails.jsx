@@ -47,7 +47,7 @@ const getFoodTypeStyles = (foodType) => {
     case "egg":
       return {
         icon: "fa-solid fa-egg",
-        textColor: "gray-text", // Changed to green for category text
+        textColor: "text-success", // Changed to green for category text
         border: "gray-text",
         categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
