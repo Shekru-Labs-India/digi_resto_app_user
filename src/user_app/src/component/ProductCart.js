@@ -222,12 +222,9 @@ const ProductCard = ({ isVegOnly }) => {
   const fetchMenuData = useCallback(async () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
     const storedRestaurantId =
-      currentRestaurantId || localStorage.getItem("restaurantId");
+      restaurantId || localStorage.getItem("restaurantId");
 
     if (!storedRestaurantId) return;
-
-    // setLoading(false);
-    setMenuList([]); // ✅ Clear previous menu before fetching new one.
 
     try {
       const response = await fetch(
@@ -236,6 +233,7 @@ const ProductCard = ({ isVegOnly }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            // Authorization: Bearer ${localStorage.getItem("access_token")},
           },
           body: JSON.stringify({
             user_id: storedUserData?.user_id || null,
@@ -259,8 +257,6 @@ const ProductCard = ({ isVegOnly }) => {
           is_favourite: menu.is_favourite === 1,
         }));
 
-        console.log("✅ New Menu Fetched:", formattedMenuList); // Debug log
-
         setMenuList(formattedMenuList);
         setMenuCategories(
           data.data.category.map((category) => ({
@@ -269,34 +265,25 @@ const ProductCard = ({ isVegOnly }) => {
           }))
         );
 
+        // Apply existing filters to new data
         applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
       }
       if (data.st === 2) {
         showLoginPopup();
+        //  let userData = JSON.parse(localStorage.getItem("userData"));
+        //  delete userData.customer_id;
         localStorage.removeItem("userData");
         navigate("/user_app/Profile");
       }
     } catch (error) {
-      console.error("❌ Error fetching menu data:", error);
-    } finally {
-      // setLoading(false);
+      console.clear();
     }
-  }, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
+  }, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
   // 🚀 Auto-fetch menu data when restaurant changes
   useEffect(() => {
-    if (currentRestaurantId) {
-      fetchMenuData(
-        currentRestaurantId,
-        setMenuList,
-        // setLoading,
-        setMenuCategories,
-        applyFilters,
-        selectedCategoryId,
-        isVegOnly
-      );
-    }
-  }, [currentRestaurantId, isVegOnly, selectedCategoryId]);
+    fetchMenuData();
+  }, [restaurantId, isVegOnly, selectedCategoryId, fetchMenuData]); // Dependencies
 
   // Polling for updates without affecting UI
   useEffect(() => {
