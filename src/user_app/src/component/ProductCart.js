@@ -62,7 +62,7 @@ const ProductCard = ({ isVegOnly }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const swiperRef = useRef(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Track loading state
 
   const [showModal, setShowModal] = useState(false);
   const [comment, setComment] = useState("");
@@ -218,9 +218,11 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   // Fetch menu data with optimized updates
-  
+
   const fetchMenuData = useCallback(async () => {
-    if (!currentRestaurantId) return;
+    if (!currentRestaurantId || loading) return; // Prevent duplicate calls
+
+    setLoading(true); // Start loading
 
     try {
         const storedUserData = JSON.parse(localStorage.getItem("userData"));
@@ -237,19 +239,19 @@ const ProductCard = ({ isVegOnly }) => {
         });
 
         const data = await response.json();
-
         if (response.ok && data.st === 1) {
-            const formattedMenuList = data.data.menus.map((menu) => ({
-                ...menu,
-                image: menu.image || images,
-                category: toTitleCase(menu.category_name),
-                name: toTitleCase(menu.menu_name),
-                oldPrice: menu.offer ? menu.price : null,
-                price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
-                is_favourite: menu.is_favourite === 1,
-            }));
+            setMenuList(
+                data.data.menus.map((menu) => ({
+                    ...menu,
+                    image: menu.image || images,
+                    category: toTitleCase(menu.category_name),
+                    name: toTitleCase(menu.menu_name),
+                    oldPrice: menu.offer ? menu.price : null,
+                    price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
+                    is_favourite: menu.is_favourite === 1,
+                }))
+            );
 
-            setMenuList(formattedMenuList);
             setMenuCategories(
                 data.data.category.map((category) => ({
                     ...category,
@@ -257,8 +259,7 @@ const ProductCard = ({ isVegOnly }) => {
                 }))
             );
 
-            // Apply existing filters to new data
-            applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
+            applyFilters(data.data.menus, selectedCategoryId, isVegOnly);
         }
         if (data.st === 2) {
             showLoginPopup();
@@ -267,17 +268,17 @@ const ProductCard = ({ isVegOnly }) => {
         }
     } catch (error) {
         console.error("Error fetching menu data:", error);
+    } finally {
+        setLoading(false); // Stop loading after fetching
     }
 }, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
+
   // Initial data fetch
-  useEffect(() => {
-    if (restaurantId !== currentRestaurantId) {
-        setCurrentRestaurantId(restaurantId);
-        localStorage.setItem("restaurantId", restaurantId); // Save the new restaurantId
-        fetchMenuData(); // Fetch new menu
-    }
-}, [restaurantId, isVegOnly, selectedCategoryId, applyFilters]);
+ useEffect(() => {
+    fetchMenuData();
+}, [currentRestaurantId]); // Only fetch when restaurant changes
+
 
   // Polling for updates without affecting UI
   useEffect(() => {
