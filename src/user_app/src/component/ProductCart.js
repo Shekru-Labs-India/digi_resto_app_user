@@ -23,33 +23,33 @@ const toTitleCase = (text) => {
   return text.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
- const renderStarRating = (rating) => {
-   const numRating = parseFloat(rating);
+const renderStarRating = (rating) => {
+  const numRating = parseFloat(rating);
 
-   // 0 to 0.4: No star
-   if (!numRating || numRating < 0.5) {
-     return null; // Don't show anything
-   }
+  // 0 to 0.4: No star
+  if (!numRating || numRating < 0.5) {
+    return null; // Don't show anything
+  }
 
-   // 0.5 to 2.5: Blank star (grey)
-   if (numRating >= 0.5 && numRating <= 2.5) {
-     return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
-   }
+  // 0.5 to 2.5: Blank star (grey)
+  if (numRating >= 0.5 && numRating <= 2.5) {
+    return <i className="fa-regular fa-star font_size_10 gray-text me-1"></i>;
+  }
 
-   // 3 to 4.5: Half star
-   if (numRating >= 3 && numRating <= 4.5) {
-     return (
-       <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
-     );
-   }
+  // 3 to 4.5: Half star
+  if (numRating >= 3 && numRating <= 4.5) {
+    return (
+      <i className="fa-solid fa-star-half-stroke font_size_10 text-warning me-1"></i>
+    );
+  }
 
-   // 5: Full star
-   if (numRating === 5) {
-     return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
-   }
+  // 5: Full star
+  if (numRating === 5) {
+    return <i className="fa-solid fa-star font_size_10 text-warning me-1"></i>;
+  }
 
-   return null; // Default case
- };
+  return null; // Default case
+};
 const ProductCard = ({ isVegOnly }) => {
   const [menuList, setMenuList] = useState([]);
   const [menuCategories, setMenuCategories] = useState([]);
@@ -72,11 +72,11 @@ const ProductCard = ({ isVegOnly }) => {
   const [isPriceFetching, setIsPriceFetching] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState(null);
   const { cartItems, addToCart, removeFromCart, isMenuItemInCart } = useCart();
-  
 
   // Add this state for tracking restaurant data
-  const [currentRestaurantId, setCurrentRestaurantId] = useState(restaurantId || localStorage.getItem("restaurantId"));
-
+  const [currentRestaurantId, setCurrentRestaurantId] = useState(
+    restaurantId || localStorage.getItem("restaurantId")
+  );
 
   const { showLoginPopup } = usePopup();
 
@@ -220,13 +220,15 @@ const ProductCard = ({ isVegOnly }) => {
   // Fetch menu data with optimized updates
 
   const fetchMenuData = useCallback(async () => {
-    if (!currentRestaurantId || loading) return; // Prevent duplicate calls
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    const storedRestaurantId = currentRestaurantId || localStorage.getItem("restaurantId");
 
-    setLoading(true); // Start loading
+    if (!storedRestaurantId) return;
+
+    setLoading(true);
+    setMenuList([]); // ✅ Clear previous menu before fetching new one.
 
     try {
-        const storedUserData = JSON.parse(localStorage.getItem("userData"));
-
         const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
             method: "POST",
             headers: {
@@ -239,19 +241,21 @@ const ProductCard = ({ isVegOnly }) => {
         });
 
         const data = await response.json();
-        if (response.ok && data.st === 1) {
-            setMenuList(
-                data.data.menus.map((menu) => ({
-                    ...menu,
-                    image: menu.image || images,
-                    category: toTitleCase(menu.category_name),
-                    name: toTitleCase(menu.menu_name),
-                    oldPrice: menu.offer ? menu.price : null,
-                    price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
-                    is_favourite: menu.is_favourite === 1,
-                }))
-            );
 
+        if (response.ok && data.st === 1) {
+            const formattedMenuList = data.data.menus.map((menu) => ({
+                ...menu,
+                image: menu.image || images,
+                category: toTitleCase(menu.category_name),
+                name: toTitleCase(menu.menu_name),
+                oldPrice: menu.offer ? menu.price : null,
+                price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
+                is_favourite: menu.is_favourite === 1,
+            }));
+
+            console.log("✅ New Menu Fetched:", formattedMenuList); // Debug log
+
+            setMenuList(formattedMenuList);
             setMenuCategories(
                 data.data.category.map((category) => ({
                     ...category,
@@ -259,7 +263,7 @@ const ProductCard = ({ isVegOnly }) => {
                 }))
             );
 
-            applyFilters(data.data.menus, selectedCategoryId, isVegOnly);
+            applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
         }
         if (data.st === 2) {
             showLoginPopup();
@@ -267,17 +271,20 @@ const ProductCard = ({ isVegOnly }) => {
             navigate("/user_app/Profile");
         }
     } catch (error) {
-        console.error("Error fetching menu data:", error);
+        console.error("❌ Error fetching menu data:", error);
     } finally {
-        setLoading(false); // Stop loading after fetching
+        setLoading(false);
     }
 }, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
 
-  // Initial data fetch
- useEffect(() => {
-    fetchMenuData();
-}, [currentRestaurantId]); // Only fetch when restaurant changes
+// 🚀 Auto-fetch menu data when restaurant changes
+useEffect(() => {
+  if (currentRestaurantId) {
+      fetchMenuData(currentRestaurantId, setMenuList, setLoading, setMenuCategories, applyFilters, selectedCategoryId, isVegOnly);
+  }
+}, [currentRestaurantId, isVegOnly, selectedCategoryId]); // ✅ Use fetchMenuData in dependency list to ensure updates
+
 
 
   // Polling for updates without affecting UI
@@ -488,8 +495,11 @@ const ProductCard = ({ isVegOnly }) => {
       showLoginPopup();
       return;
     }
-  const storedCart = localStorage.getItem('restaurant_cart_data');
-    if (storedCart && storedCart.order_items?.some(item => item.menu_id === menu.menu_id)) {
+    const storedCart = localStorage.getItem("restaurant_cart_data");
+    if (
+      storedCart &&
+      storedCart.order_items?.some((item) => item.menu_id === menu.menu_id)
+    ) {
       window.showToast("info", "This item is already in your checkout");
       return;
     }
@@ -500,52 +510,64 @@ const ProductCard = ({ isVegOnly }) => {
   };
 
   // Updated renderCartIcon
-  const renderCartIcon = useCallback((menu) => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    
-    // Check if menu item exists in cart
-    const isInCart = () => {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
-      if (!storedCart) return false;
-      
-      const cartData = JSON.parse(storedCart);
-      return cartData.order_items?.some(item => item.menu_id === menu.menu_id);
-    };
+  const renderCartIcon = useCallback(
+    (menu) => {
+      const userData = JSON.parse(localStorage.getItem("userData"));
 
-    return (
-      <div
-        className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
-        style={{
-          width: "25px",
-          height: "25px",
-          cursor: "pointer",
-        }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (userData?.user_id) {
-            handleAddToCartClick(menu);
-          } else {
-            showLoginPopup();
-          }
-        }}
-      >
-        <i
-          className={`fa-solid ${
-            isInCart() 
-              ? "fa-circle-check text-success" 
-              : "fa-plus text-secondary"
-          } fs-6`}
-        ></i>
-      </div>
-    );
-  }, [handleAddToCartClick]);
+      // Check if menu item exists in cart
+      const isInCart = () => {
+        const storedCart = localStorage.getItem("restaurant_cart_data");
+        if (!storedCart) return false;
+
+        const cartData = JSON.parse(storedCart);
+        return cartData.order_items?.some(
+          (item) => item.menu_id === menu.menu_id
+        );
+      };
+
+      return (
+        <div
+          className="d-flex align-items-center justify-content-center rounded-circle bg-white border-opacity-25 gray-text border"
+          style={{
+            width: "25px",
+            height: "25px",
+            cursor: "pointer",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (userData?.user_id) {
+              handleAddToCartClick(menu);
+            } else {
+              showLoginPopup();
+            }
+          }}
+        >
+          <i
+            className={`fa-solid ${
+              isInCart()
+                ? "fa-circle-check text-success"
+                : "fa-plus text-secondary"
+            } fs-6`}
+          ></i>
+        </div>
+      );
+    },
+    [handleAddToCartClick]
+  );
 
   const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
-    
-    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
-      window.showToast("error", "Comment should be between 5 and 30 characters.");
+
+    if (
+      productWithQuantity.comment &&
+      (productWithQuantity.comment.length < 5 ||
+        productWithQuantity.comment.length > 30)
+    ) {
+      window.showToast(
+        "error",
+        "Comment should be between 5 and 30 characters."
+      );
       return;
     }
 
@@ -702,13 +724,13 @@ const ProductCard = ({ isVegOnly }) => {
           border: "border-danger",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-        case "egg":
-          return {
-            icon: "fa-solid fa-egg text-grey",
-            border: "gray-text",
-            textColor: "text-success", // Changed to green for category name
-            categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
-          };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg text-grey",
+          border: "gray-text",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
