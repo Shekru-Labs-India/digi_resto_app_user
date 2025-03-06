@@ -62,7 +62,7 @@ const ProductCard = ({ isVegOnly }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const swiperRef = useRef(null);
-  const [loading, setLoading] = useState(false); // Track loading state
+  // const [loading, setLoading] = useState(false); // Track loading state
 
   const [showModal, setShowModal] = useState(false);
   const [comment, setComment] = useState("");
@@ -221,71 +221,82 @@ const ProductCard = ({ isVegOnly }) => {
 
   const fetchMenuData = useCallback(async () => {
     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    const storedRestaurantId = currentRestaurantId || localStorage.getItem("restaurantId");
+    const storedRestaurantId =
+      currentRestaurantId || localStorage.getItem("restaurantId");
 
     if (!storedRestaurantId) return;
 
-    setLoading(false);
+    // setLoading(false);
     setMenuList([]); // ✅ Clear previous menu before fetching new one.
 
     try {
-        const response = await fetch(`${config.apiDomain}/user_api/get_all_menu_list_by_category`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                user_id: storedUserData?.user_id || null,
-                outlet_id: localStorage.getItem("outlet_id"),
-            }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.st === 1) {
-            const formattedMenuList = data.data.menus.map((menu) => ({
-                ...menu,
-                image: menu.image || images,
-                category: toTitleCase(menu.category_name),
-                name: toTitleCase(menu.menu_name),
-                oldPrice: menu.offer ? menu.price : null,
-                price: menu.offer ? Math.floor(menu.price * (1 - menu.offer / 100)) : menu.price,
-                is_favourite: menu.is_favourite === 1,
-            }));
-
-            console.log("✅ New Menu Fetched:", formattedMenuList); // Debug log
-
-            setMenuList(formattedMenuList);
-            setMenuCategories(
-                data.data.category.map((category) => ({
-                    ...category,
-                    name: toTitleCase(category.category_name),
-                }))
-            );
-
-            applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_all_menu_list_by_category`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: storedUserData?.user_id || null,
+            outlet_id: localStorage.getItem("outlet_id"),
+          }),
         }
-        if (data.st === 2) {
-            showLoginPopup();
-            localStorage.removeItem("userData");
-            navigate("/user_app/Profile");
-        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.st === 1) {
+        const formattedMenuList = data.data.menus.map((menu) => ({
+          ...menu,
+          image: menu.image || images,
+          category: toTitleCase(menu.category_name),
+          name: toTitleCase(menu.menu_name),
+          oldPrice: menu.offer ? menu.price : null,
+          price: menu.offer
+            ? Math.floor(menu.price * (1 - menu.offer / 100))
+            : menu.price,
+          is_favourite: menu.is_favourite === 1,
+        }));
+
+        console.log("✅ New Menu Fetched:", formattedMenuList); // Debug log
+
+        setMenuList(formattedMenuList);
+        setMenuCategories(
+          data.data.category.map((category) => ({
+            ...category,
+            name: toTitleCase(category.category_name),
+          }))
+        );
+
+        applyFilters(formattedMenuList, selectedCategoryId, isVegOnly);
+      }
+      if (data.st === 2) {
+        showLoginPopup();
+        localStorage.removeItem("userData");
+        navigate("/user_app/Profile");
+      }
     } catch (error) {
-        console.error("❌ Error fetching menu data:", error);
+      console.error("❌ Error fetching menu data:", error);
     } finally {
-        setLoading(false);
+      // setLoading(false);
     }
-}, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
+  }, [currentRestaurantId, isVegOnly, selectedCategoryId, applyFilters]);
 
-
-// 🚀 Auto-fetch menu data when restaurant changes
-useEffect(() => {
-  if (currentRestaurantId) {
-      fetchMenuData(currentRestaurantId, setMenuList, setLoading, setMenuCategories, applyFilters, selectedCategoryId, isVegOnly);
-  }
-}, [currentRestaurantId, isVegOnly, selectedCategoryId]);
-
-
+  // 🚀 Auto-fetch menu data when restaurant changes
+  useEffect(() => {
+    if (currentRestaurantId) {
+      fetchMenuData(
+        currentRestaurantId,
+        setMenuList,
+        // setLoading,
+        setMenuCategories,
+        applyFilters,
+        selectedCategoryId,
+        isVegOnly
+      );
+    }
+  }, [currentRestaurantId, isVegOnly, selectedCategoryId]);
 
   // Polling for updates without affecting UI
   useEffect(() => {
