@@ -39,19 +39,26 @@ const AddToCartUI = ({
 
   const handleCommentChange = (e) => {
     const value = e.target.value;
-    setComment(value);
-    const validPattern = /^[a-zA-Z0-9\-\/\s\.]*$/;
-  
+
+    // ✅ Updated regex to block special characters and emojis
+    const validPattern = /^[a-zA-Z0-9\-\/\s.]*$/u;
+
     if (!validPattern.test(value)) {
-      setCommentError('Only letters, numbers, dashes, slashes and dots are allowed');
-    } else if (value.length > 0 && value.length < 5) {
-      setCommentError("Comment should be between 5 and 30 characters.");
-    } else if (value.length > 30) {
-      setCommentError("Comment should be between 5 and 30 characters.");
-    } else {
-      setCommentError("");
+        setCommentError("Only letters, numbers, dashes (-), slashes (/), dots (.) are allowed.");
+        return; // Stop further execution
     }
-  };
+
+    setComment(value); // ✅ Update state only if valid
+
+    if (value.length < 5) {
+        setCommentError("Comment should be between 5 and 30 characters.");
+    } else if (value.length > 30) {
+        setCommentError("Comment should be between 5 and 30 characters.");
+    } else {
+        setCommentError(""); // ✅ No errors
+    }
+};
+
   
 
   const checkAuthAndFetchPrices = async () => {
