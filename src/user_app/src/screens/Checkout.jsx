@@ -424,7 +424,7 @@ action:'save',
         user_id: userData.user_id,
         order_status: orderStatus,
         outlet_id: restaurantId,
-        table_number: tableNumber || "1",
+        table_number:[localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map((item) => ({
