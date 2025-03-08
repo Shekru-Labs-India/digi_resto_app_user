@@ -44,13 +44,13 @@ const getFoodTypeStyles = (foodType) => {
         border: "border-danger",
         categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
-    case "egg":
-      return {
-        icon: "fa-solid fa-egg",
-        textColor: "text-success", // Changed to green for category text
-        border: "gray-text",
-        categoryIcon: "fa-solid fa-utensils text-success me-1",
-      };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
     case "vegan":
       return {
         icon: "fa-solid fa-leaf text-success",

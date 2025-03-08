@@ -454,12 +454,14 @@ const TrackOrder = () => {
 
     fetchSearchedMenu();
   }, [debouncedSearchTerm, restaurantId, userId]);
-
+  
   const toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0)?.toUpperCase() + txt.substr(1)?.toLowerCase();
-    });
-  };
+    if (!str) return ""; // Return empty string if input is undefined or null
+    return str.replace(/\w\S*/g, (txt) => 
+       txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
+ };
+ 
 
   // Update the handleLikeClick function
   useEffect(() => {

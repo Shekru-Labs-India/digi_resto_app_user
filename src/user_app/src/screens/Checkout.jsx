@@ -33,6 +33,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
   const [serviceCharges, setServiceCharges] = useState(0);
+  const [totalWithServiceCharge,settotalWithServiceCharge]=useState(0);
   const [gstPercent, setGstPercent] = useState(0);
   const [tax, setTax] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -142,62 +143,74 @@ const Checkout = () => {
 
   const fetchCartDetails = () => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
-      if (storedCart) {
-        const cartData = JSON.parse(storedCart);
-        
-        // Calculate totals with safe number conversion
-        const total = cartData.order_items.reduce((sum, item) => {
-          const itemPrice = item.half_or_full === "half" && item.half_price ? 
-            Number(item.half_price) : 
-            Number(item.price || 0);
-          return sum + (itemPrice * item.quantity);
-        }, 0);
+        const storedCart = localStorage.getItem('restaurant_cart_data');
+        if (storedCart) {
+            const cartData = JSON.parse(storedCart);
 
-        const serviceChargesPercent = 5;
-        const gstPercent = 5;
-        const serviceCharges = (total * serviceChargesPercent) / 100;
-        const tax = (total * gstPercent) / 100;
-        const discount = 0;
-        const totalAfterDiscount = total - discount;
-        const grandTotal = totalAfterDiscount + serviceCharges + tax;
+            // Calculate total price of items
+            const total = cartData.order_items.reduce((sum, item) => {
+                const itemPrice = item.half_or_full === "half" && item.half_price 
+                    ? Number(item.half_price) 
+                    : Number(item.price || 0);
+                return sum + (itemPrice * item.quantity);
+            }, 0);
 
-        // Map items with safe price handling
-        const mappedItems = cartData.order_items.map(item => ({
-          ...item,
-          discountedPrice: item.offer ? 
-            Math.floor((item.half_or_full === "half" && item.half_price ? 
-              Number(item.half_price) : 
-              Number(item.price || 0)) * (1 - item.offer / 100)) 
-            : (item.half_or_full === "half" && item.half_price ? 
-              Number(item.half_price) : 
-              Number(item.price || 0)),
-          menu_cat_name: item.category_name || "Food",
-          menu_id: item.id,
-          quantity: item.quantity,
-          price: Number(item.price || 0),
-          half_price: Number(item.half_price || 0),
-          offer: item.offer || 0,
-          half_or_full: item.half_or_full || "full"
-        }));
+            const serviceChargesPercent = 5;
+            const gstPercent = 5;
+            const discount = 0; 
 
-        // Update all states
-        setCartItems(mappedItems);
-        setTotal(total);
-        setServiceChargesPercent(serviceChargesPercent);
-        setServiceCharges(serviceCharges);
-        setGstPercent(gstPercent);
-        setTax(tax);
-        setDiscountPercent(0);
-        setDiscount(discount);
-        setGrandTotal(grandTotal);
-        setTotalAfterDiscount(totalAfterDiscount);
-        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
-      }
+            const totalAfterDiscount = total - discount; // Step 1: Apply discount
+            const serviceCharges = (totalAfterDiscount * serviceChargesPercent) / 100; // Step 2: Calculate service charge
+            const totalWithServiceCharge = totalAfterDiscount + serviceCharges; // Add service charge
+            const tax = (totalWithServiceCharge * gstPercent) / 100; // Step 3: Calculate GST
+            const grandTotal = totalWithServiceCharge + tax; // Step 4: Final total
+
+            // Map items with safe price handling
+            const mappedItems = cartData.order_items.map(item => ({
+                ...item,
+                discountedPrice: item.offer
+                    ? Math.floor((item.half_or_full === "half" && item.half_price 
+                        ? Number(item.half_price) 
+                        : Number(item.price || 0)) * (1 - item.offer / 100))
+                    : (item.half_or_full === "half" && item.half_price 
+                        ? Number(item.half_price) 
+                        : Number(item.price || 0)),
+                menu_cat_name: item.category_name || "Food",
+                menu_id: item.id,
+                quantity: item.quantity,
+                price: Number(item.price || 0),
+                half_price: Number(item.half_price || 0),
+                offer: item.offer || 0,
+                half_or_full: item.half_or_full || "full"
+            }));
+
+            // Update state with calculated values
+            setCartItems(mappedItems);
+            setTotal(total);
+            setTotalAfterDiscount(totalAfterDiscount);
+            setServiceCharges(serviceCharges);
+            setGstPercent(gstPercent);
+            settotalWithServiceCharge(totalWithServiceCharge);
+            setServiceChargesPercent(serviceChargesPercent);
+            setTax(tax);
+            setDiscountPercent(0);
+            setDiscount(discount);
+            setGrandTotal(grandTotal);
+            setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
+
+            // Console log for debugging
+            console.log("Total:", total);
+            console.log("Total After Discount:", totalAfterDiscount);
+            console.log("Service Charges:", serviceCharges);
+            console.log("Total with Service Charge:", totalWithServiceCharge);
+            console.log("GST:", tax);
+            console.log("Grand Total:", grandTotal);
+        }
     } catch (error) {
-      console.error('Error fetching cart details:', error);
+        console.error('Error fetching cart details:', error);
     }
-  };
+};
+
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -1204,6 +1217,7 @@ action:'save',
       setDiscount(0);
       setGrandTotal(0);
       setTotalAfterDiscount(0);
+      settotalWithServiceCharge(0);
       
       // Use the clearCart function from CartContext
       clearCart();

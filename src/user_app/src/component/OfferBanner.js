@@ -316,7 +316,7 @@ const OfferBanner = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourites" : "Added to favourites"
+          isFavorite ? "Item has been removed from your favourites." : "Item has been added to your favourites."
         );
       }
     } catch (error) {

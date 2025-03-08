@@ -722,13 +722,13 @@ const ProductCard = ({ isVegOnly }) => {
           border: "border-danger",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg text-grey",
-          border: "gray-text",
-          textColor: "text-success", // Changed to green for category name
-          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
-        };
+        case "egg":
+          return {
+            icon: "fa-solid fa-egg gray-text", // Gray icon
+            border: "gray-text",
+            textColor: "text-success", // green text
+            categoryIcon: "fa-solid fa-utensils text-success me-1",
+          };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
