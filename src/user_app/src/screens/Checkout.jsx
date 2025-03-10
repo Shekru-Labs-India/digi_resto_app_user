@@ -33,7 +33,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
   const [serviceCharges, setServiceCharges] = useState(0);
-  const [totalWithServiceCharge,settotalWithServiceCharge]=useState(0);
+  const [totalWithServiceCharge, settotalWithServiceCharge] = useState(0);
   const [gstPercent, setGstPercent] = useState(0);
   const [tax, setTax] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -49,7 +49,7 @@ const Checkout = () => {
     orderNumber: "",
     orderStatus: "",
   });
-  
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -76,30 +76,30 @@ const Checkout = () => {
 
   useEffect(() => {
     let mounted = true;
-    
+
     const checkAuthStatus = () => {
       const userData = JSON.parse(localStorage.getItem("userData") || "{}");
       const newUserId = userData?.user_id;
-      
+
       if (!newUserId && mounted) {
         // Clear auth data and cart
         const keysToRemove = [
-          "user_id", 
-          "userData", 
-          "cartItems", 
-          "access_token", 
-          "customerName", 
-          "mobile"
+          "user_id",
+          "userData",
+          "cartItems",
+          "access_token",
+          "customerName",
+          "mobile",
         ];
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-        
+        keysToRemove.forEach((key) => localStorage.removeItem(key));
+
         // Show login popup and navigate home
         showLoginPopup();
         const restaurantCode = localStorage.getItem("restaurantCode");
         const tableNumber = localStorage.getItem("tableNumber");
         const sectionId = localStorage.getItem("sectionId");
         navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
-        
+
         setCurrentUserId(null);
       }
     };
@@ -120,8 +120,7 @@ const Checkout = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
       userData?.user_id || localStorage.getItem("user_id");
-    const currentCustomerType =
-      userData?.role || localStorage.getItem("role");
+    const currentCustomerType = userData?.role || localStorage.getItem("role");
 
     setIsLoggedIn(!!currentCustomerId);
     setUser_id(currentCustomerId);
@@ -143,74 +142,86 @@ const Checkout = () => {
 
   const fetchCartDetails = () => {
     try {
-        const storedCart = localStorage.getItem('restaurant_cart_data');
-        if (storedCart) {
-            const cartData = JSON.parse(storedCart);
+      const storedCart = localStorage.getItem("restaurant_cart_data");
+      if (storedCart) {
+        const cartData = JSON.parse(storedCart);
 
-            // Calculate total price of items
-            const total = cartData.order_items.reduce((sum, item) => {
-                const itemPrice = item.half_or_full === "half" && item.half_price 
-                    ? Number(item.half_price) 
-                    : Number(item.price || 0);
-                return sum + (itemPrice * item.quantity);
-            }, 0);
+        // Calculate total price of items
+        const total = cartData.order_items.reduce((sum, item) => {
+          const itemPrice =
+            item.half_or_full === "half" && item.half_price
+              ? Number(item.half_price)
+              : Number(item.price || 0);
+          return sum + itemPrice * item.quantity;
+        }, 0);
 
-            const serviceChargesPercent = 5;
-            const gstPercent = 5;
-            const discount = 0; 
+        // Fetch these values from API response or use default values
+        const discountPercent = 10; // Example value, should be from API
+        const serviceChargesPercent = 2; // Example value, should be from API
+        const gstPercent = 4; // Example value, should be from API
 
-            const totalAfterDiscount = total - discount; // Step 1: Apply discount
-            const serviceCharges = (totalAfterDiscount * serviceChargesPercent) / 100; // Step 2: Calculate service charge
-            const totalWithServiceCharge = totalAfterDiscount + serviceCharges; // Add service charge
-            const tax = (totalWithServiceCharge * gstPercent) / 100; // Step 3: Calculate GST
-            const grandTotal = totalWithServiceCharge + tax; // Step 4: Final total
+        // Calculate discount amount
+        const discount = (total * discountPercent) / 100;
+        const totalAfterDiscount = total - discount; // Step 1: Apply discount
 
-            // Map items with safe price handling
-            const mappedItems = cartData.order_items.map(item => ({
-                ...item,
-                discountedPrice: item.offer
-                    ? Math.floor((item.half_or_full === "half" && item.half_price 
-                        ? Number(item.half_price) 
-                        : Number(item.price || 0)) * (1 - item.offer / 100))
-                    : (item.half_or_full === "half" && item.half_price 
-                        ? Number(item.half_price) 
-                        : Number(item.price || 0)),
-                menu_cat_name: item.category_name || "Food",
-                menu_id: item.id,
-                quantity: item.quantity,
-                price: Number(item.price || 0),
-                half_price: Number(item.half_price || 0),
-                offer: item.offer || 0,
-                half_or_full: item.half_or_full || "full"
-            }));
+        // Calculate service charges
+        const serviceChargesAmount =
+          (totalAfterDiscount * serviceChargesPercent) / 100; // Step 2: Calculate service charge
+        const grand_total = totalAfterDiscount + serviceChargesAmount; // Step 3: Add service charge
 
-            // Update state with calculated values
-            setCartItems(mappedItems);
-            setTotal(total);
-            setTotalAfterDiscount(totalAfterDiscount);
-            setServiceCharges(serviceCharges);
-            setGstPercent(gstPercent);
-            settotalWithServiceCharge(totalWithServiceCharge);
-            setServiceChargesPercent(serviceChargesPercent);
-            setTax(tax);
-            setDiscountPercent(0);
-            setDiscount(discount);
-            setGrandTotal(grandTotal);
-            setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
+        // Calculate GST
+        const gstAmount = (grand_total * gstPercent) / 100; // Step 4: Calculate GST
 
-            // Console log for debugging
-            console.log("Total:", total);
-            console.log("Total After Discount:", totalAfterDiscount);
-            console.log("Service Charges:", serviceCharges);
-            console.log("Total with Service Charge:", totalWithServiceCharge);
-            console.log("GST:", tax);
-            console.log("Grand Total:", grandTotal);
-        }
+        // Final grand total
+        const grandTotal = grand_total + gstAmount; // Step 5: Final total
+
+        // Map items with safe price handling
+        const mappedItems = cartData.order_items.map((item) => ({
+          ...item,
+          discountedPrice: item.offer
+            ? Math.floor(
+                (item.half_or_full === "half" && item.half_price
+                  ? Number(item.half_price)
+                  : Number(item.price || 0)) *
+                  (1 - item.offer / 100)
+              )
+            : item.half_or_full === "half" && item.half_price
+            ? Number(item.half_price)
+            : Number(item.price || 0),
+          menu_cat_name: item.category_name || "Food",
+          menu_id: item.id,
+          quantity: item.quantity,
+          price: Number(item.price || 0),
+          half_price: Number(item.half_price || 0),
+          offer: item.offer || 0,
+          half_or_full: item.half_or_full || "full",
+        }));
+
+        // Update state with calculated values
+        setCartItems(mappedItems);
+        setTotal(total);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setServiceCharges(serviceChargesAmount);
+        setGstPercent(gstPercent);
+        setServiceChargesPercent(serviceChargesPercent);
+        setTax(gstAmount);
+        setDiscountPercent(discountPercent);
+        setDiscount(discount);
+        setGrandTotal(grandTotal);
+        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
+
+        // Console log for debugging
+        console.log("Total:", total);
+        console.log("Total After Discount:", totalAfterDiscount);
+        console.log("Service Charges Amount:", serviceChargesAmount);
+        console.log("Grand Total (Before GST):", grand_total);
+        console.log("GST Amount:", gstAmount);
+        console.log("Final Grand Total:", grandTotal);
+      }
     } catch (error) {
-        console.error('Error fetching cart details:', error);
+      console.error("Error fetching cart details:", error);
     }
-};
-
+  };
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -237,7 +248,7 @@ const Checkout = () => {
   const handlePlaceOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
 
       if (!userData?.user_id) {
         // window.showToast("error", "Please login to place order");
@@ -271,13 +282,11 @@ const Checkout = () => {
         localStorage.removeItem("mobile");
         showLoginPopup();
         setIsProcessing(false);
-                const restaurantCode = localStorage.getItem("restaurantCode");
-                const tableNumber = localStorage.getItem("tableNumber");
-                const sectionId = localStorage.getItem("sectionId");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
 
-                navigate(
-                  `/user_app/${restaurantCode}/${tableNumber}/${sectionId}`
-                );
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         return;
       }
 
@@ -292,7 +301,8 @@ const Checkout = () => {
             orderStatus: data.order_status,
             orderId: data.order_id,
             orderType: data.order_type,
-            grand_total: data.grand_total
+            grand_total: data.grand_total,
+            grandTotal: data.grandTotal,
           });
           setShowExistingOrderModal(true);
         } else {
@@ -300,19 +310,18 @@ const Checkout = () => {
           setShowOrderTypeModal(true);
         }
       }
-      
-      if(data.st === 2){
+
+      if (data.st === 2) {
         setShowOrderTypeModal(true);
         // setShowExistingOrderModal(false);
         // setShowNewOrderModal(true);
-      }
-      else {
+      } else {
         throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
       setIsProcessing(false);
       // window.showToast("error", "Failed to process order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -330,7 +339,9 @@ const Checkout = () => {
     try {
       setIsProcessing(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+      const storedCart = JSON.parse(
+        localStorage.getItem("restaurant_cart_data")
+      );
 
       if (!storedCart?.order_items) {
         window.showToast("error", "No items in checkout");
@@ -341,18 +352,20 @@ const Checkout = () => {
       const requestBody = {
         user_id: userData.user_id,
         outlet_id: restaurantId,
-       tables: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
-action:'save',
+        tables: [
+          localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
+        ],
+        action: "save",
 
         // table_number: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: storedCart.order_items.map(item => ({
+        order_items: storedCart.order_items.map((item) => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
           comment: item.comment || "",
-          half_or_full: item.half_or_full || "full"
-        }))
+          half_or_full: item.half_or_full || "full",
+        })),
       };
 
       const response = await fetch(
@@ -363,7 +376,7 @@ action:'save',
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -374,13 +387,11 @@ action:'save',
         localStorage.removeItem("access_token");
         localStorage.removeItem("customerName");
         localStorage.removeItem("mobile");
-                const restaurantCode = localStorage.getItem("restaurantCode");
-                const tableNumber = localStorage.getItem("tableNumber");
-                const sectionId = localStorage.getItem("sectionId");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
 
-                navigate(
-                  `/user_app/${restaurantCode}/${tableNumber}/${sectionId}`
-                );
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         showLoginPopup();
         return;
       }
@@ -392,7 +403,7 @@ action:'save',
         setNewOrderNumber(data.order_number);
         clearCartData();
         setShowOrderTypeModal(false);
-        
+
         // Small delay to ensure toast is visible
         setTimeout(() => {
           navigate("/user_app/MyOrder/");
@@ -402,7 +413,7 @@ action:'save',
       }
     } catch (error) {
       window.showToast("error", error.message || "Failed to create order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -414,20 +425,26 @@ action:'save',
     localStorage.removeItem("cartId"); // Clear cart ID from localStorage
     setCartItems([]); // Clear cart items state if you're using it
   };
-//   useEffect(() => {
-//     if (!userData?.user_id || userData.role === 'guest') {
-//         clearCartData();
-      
-//     }
-// }, [userData]);
+  //   useEffect(() => {
+  //     if (!userData?.user_id || userData.role === 'guest') {
+  //         clearCartData();
 
-  const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
+  //     }
+  // }, [userData]);
+
+  const handleOrderAction = async (
+    orderStatus,
+    orderType,
+    paymentMethod = null
+  ) => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const tableNumber = localStorage.getItem("tableNumber") || "1";
-      console.log(tableNumber+"current table number");
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
-      
+      console.log(tableNumber + "current table number");
+      const storedCart = JSON.parse(
+        localStorage.getItem("restaurant_cart_data")
+      );
+
       if (!existingOrderDetails.orderNumber) {
         throw new Error("Invalid order number");
       }
@@ -437,7 +454,9 @@ action:'save',
         user_id: userData.user_id,
         order_status: orderStatus,
         outlet_id: restaurantId,
-        table_number:[localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
+        table_number: [
+          localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
+        ],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map((item) => ({
@@ -460,7 +479,7 @@ action:'save',
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -486,15 +505,15 @@ action:'save',
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
-        
+
         // Show success message
         window.showToast("success", "Order processed successfully");
-        
+
         // Navigate to MyOrder page after a short delay
         setTimeout(() => {
-          navigate('/user_app/MyOrder');
+          navigate("/user_app/MyOrder");
         }, 500);
-        
+
         if (data.data?.new_order_number) {
           setNewOrderNumber(data.data.new_order_number);
           setShowPopup(true);
@@ -504,14 +523,16 @@ action:'save',
       }
     } catch (error) {
       window.showToast("error", error.message || "Failed to process order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const handleAddToExistingOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+      const storedCart = JSON.parse(
+        localStorage.getItem("restaurant_cart_data")
+      );
 
       if (!storedCart?.order_items || !existingOrderDetails.orderId) {
         window.showToast("error", "Failed to add items to order");
@@ -540,7 +561,7 @@ action:'save',
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -566,13 +587,16 @@ action:'save',
         window.showToast("success", "Items added to order successfully");
         clearCartData();
         setShowExistingOrderModal(false);
-        navigate('/user_app/MyOrder');
+        navigate("/user_app/MyOrder");
       } else {
         throw new Error(data.msg || "Failed to add items to order");
       }
     } catch (error) {
-      window.showToast("error", error.message || "Failed to add items to order");
-      console.error('Error:', error);
+      window.showToast(
+        "error",
+        error.message || "Failed to add items to order"
+      );
+      console.error("Error:", error);
     }
   };
 
@@ -723,7 +747,11 @@ action:'save',
       const data = await response.json();
 
       if (data.st === 1) {
-        await handleOrderAction("paid", existingOrderDetails.orderType, "phonepe");
+        await handleOrderAction(
+          "paid",
+          existingOrderDetails.orderType,
+          "phonepe"
+        );
         setProcessingPaymentMethod("");
         setShowPaymentOptions(true);
       } else {
@@ -796,7 +824,9 @@ action:'save',
         setProcessingPaymentMethod("");
         setShowPaymentOptions(true);
       } else {
-        throw new Error(data.msg || "Failed to generate Google Pay payment link");
+        throw new Error(
+          data.msg || "Failed to generate Google Pay payment link"
+        );
       }
     } catch (error) {
       window.showToast("error", "Google Pay payment initiation failed");
@@ -804,10 +834,15 @@ action:'save',
     }
   };
 
-  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
     try {
       await handleOrderAction("paid", existingOrderDetails.orderType, method);
-      
+
       if (paymentUrl) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
@@ -821,7 +856,7 @@ action:'save',
         setProcessing(false);
         // Navigate to MyOrder page after a short delay
         setTimeout(() => {
-          navigate('/user_app/MyOrder');
+          navigate("/user_app/MyOrder");
         }, 500);
       }
     } catch (error) {
@@ -882,17 +917,14 @@ action:'save',
 
   const fetchCoupons = async () => {
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_coupons`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ outlet_id: restaurantId }),
-        }
-      );
+      const response = await fetch(`${config.apiDomain}/user_api/get_coupons`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ outlet_id: restaurantId }),
+      });
 
       if (response.status === 401) {
         localStorage.removeItem("user_id");
@@ -932,6 +964,7 @@ action:'save',
     gst_amount: 0,
     gst_percent: 0,
     total_after_discount: 0,
+    grandTotal: 0,
     order_items: [],
   });
 
@@ -1012,24 +1045,27 @@ action:'save',
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    const storedCart = localStorage.getItem('restaurant_cart_data');
-    
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedCart = localStorage.getItem("restaurant_cart_data");
+
     if (storedCart) {
       try {
         const cartData = JSON.parse(storedCart);
         // Filter items that match the current restaurant ID
         if (cartData.order_items) {
-          cartData.order_items = cartData.order_items.filter(item => 
-            item.outlet_id === userData?.restaurantId
+          cartData.order_items = cartData.order_items.filter(
+            (item) => item.outlet_id === userData?.restaurantId
           );
           // Save filtered cart back to localStorage
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(cartData)
+          );
           // Update cart items state
           setCartItems(cartData.order_items);
         }
       } catch (error) {
-        console.error('Error parsing cart data:', error);
+        console.error("Error parsing cart data:", error);
         setCartItems([]);
       }
     }
@@ -1038,7 +1074,7 @@ action:'save',
   const fetchCheckoutDetails = async () => {
     try {
       setLoading(true);
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (!storedCart) {
         setError("Add menus to order first");
         return;
@@ -1046,7 +1082,7 @@ action:'save',
 
       const cartData = JSON.parse(storedCart);
       const response = await axios.post(
-        `${config.apiDomain}/user_api/get_checkout_detail`, 
+        `${config.apiDomain}/user_api/get_checkout_detail`,
         {
           order_items: cartData.order_items,
           outlet_id: userData.restaurantId,
@@ -1063,7 +1099,7 @@ action:'save',
         setCartItems(cartData.order_items);
       }
     } catch (err) {
-      console.error('Error fetching checkout details:', err);
+      console.error("Error fetching checkout details:", err);
     } finally {
       setLoading(false);
     }
@@ -1076,12 +1112,15 @@ action:'save',
 
   const incrementQuantity = async (menuItem) => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.map(item => {
+        const updatedItems = cartData.order_items.map((item) => {
           // Check both menu_id and portion size
-          if (item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full) {
+          if (
+            item.menu_id === menuItem.menu_id &&
+            item.half_or_full === menuItem.half_or_full
+          ) {
             // Check if quantity would exceed 20
             if (item.quantity >= 20) {
               window.showToast("info", "Maximum quantity limit reached (20)");
@@ -1091,36 +1130,44 @@ action:'save',
           }
           return item;
         });
-        
+
         const updatedCart = { ...cartData, order_items: updatedItems };
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        localStorage.setItem(
+          "restaurant_cart_data",
+          JSON.stringify(updatedCart)
+        );
         await fetchCheckoutDetails(); // Fetch updated totals
       }
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
     }
   };
 
   const decrementQuantity = async (menuItem) => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        let updatedItems = cartData.order_items.map(item => 
-          // Check both menu_id and portion size
-          item.menu_id === menuItem.menu_id && 
-          item.half_or_full === menuItem.half_or_full && 
-          item.quantity > 1
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        ).filter(item => item.quantity > 0);
-        
+        let updatedItems = cartData.order_items
+          .map((item) =>
+            // Check both menu_id and portion size
+            item.menu_id === menuItem.menu_id &&
+            item.half_or_full === menuItem.half_or_full &&
+            item.quantity > 1
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0);
+
         const updatedCart = { ...cartData, order_items: updatedItems };
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        localStorage.setItem(
+          "restaurant_cart_data",
+          JSON.stringify(updatedCart)
+        );
         await fetchCheckoutDetails(); // Fetch updated totals
       }
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
     }
   };
 
@@ -1129,29 +1176,36 @@ action:'save',
     e.preventDefault();
     e.stopPropagation();
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        
+
         // Update to check both menuId and portion size
-        const updatedItems = cartData.order_items.filter(item => 
-          !(item.menu_id === menuId && item.half_or_full === portionSize)
+        const updatedItems = cartData.order_items.filter(
+          (item) =>
+            !(item.menu_id === menuId && item.half_or_full === portionSize)
         );
-        
+
         if (updatedItems.length === 0) {
           setCartItems([]);
           setCheckoutDetails(null);
           const updatedCart = { ...cartData, order_items: updatedItems };
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(updatedCart)
+          );
         } else {
           const updatedCart = { ...cartData, order_items: updatedItems };
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(updatedCart)
+          );
         }
-        
+
         await fetchCheckoutDetails();
       }
     } catch (error) {
-      console.error('Error removing item:', error);
+      console.error("Error removing item:", error);
     }
   };
 
@@ -1164,7 +1218,8 @@ action:'save',
     gst_amount: 0,
     discount_percent: 0,
     discount_amount: 0,
-    grand_total: 0
+    grand_total: 0,
+    grandTotal: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1172,7 +1227,7 @@ action:'save',
   const handleCheckout = async () => {
     try {
       setLoading(true);
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (!storedCart) return;
 
       const cartData = JSON.parse(storedCart);
@@ -1195,7 +1250,7 @@ action:'save',
         handlePlaceOrder();
       }
     } catch (error) {
-      console.error('Error during checkout:', error);
+      console.error("Error during checkout:", error);
       window.showToast("error", "Failed to process checkout");
     } finally {
       setLoading(false);
@@ -1205,11 +1260,11 @@ action:'save',
   const handleClearCart = async () => {
     try {
       // Clear cart from localStorage
-      localStorage.removeItem('restaurant_cart_data');
-      
+      localStorage.removeItem("restaurant_cart_data");
+
       // Clear cart items state
       setCartItems([]);
-      
+
       // Reset all totals
       setTotal(0);
       setServiceCharges(0);
@@ -1218,23 +1273,21 @@ action:'save',
       setGrandTotal(0);
       setTotalAfterDiscount(0);
       settotalWithServiceCharge(0);
-      
+
       // Use the clearCart function from CartContext
       clearCart();
 
       window.showToast("success", "Checkout cleared successfully");
-      
+
       // Optional: Navigate to menu after clearing
       // navigate("/user_app/Menu");
-
     } catch (error) {
-      console.error('Error clearing cart:', error);
+      console.error("Error clearing cart:", error);
       window.showToast("error", "Failed to clear checkout");
     }
   };
 
   // If user is not logged in, show login prompt
- 
 
   return (
     <div className="page-wrapper full-height">
@@ -1605,7 +1658,13 @@ action:'save',
                             <div className="col-5 text-end px-0">
                               <button
                                 className="btn"
-                                onClick={(e) => handleRemoveItem(e, item.menu_id, item.half_or_full)}
+                                onClick={(e) =>
+                                  handleRemoveItem(
+                                    e,
+                                    item.menu_id,
+                                    item.half_or_full
+                                  )
+                                }
                                 style={{
                                   padding: "4px 8px",
                                 }}
@@ -1729,13 +1788,13 @@ action:'save',
                     </div>
                   </div>
 
-                  <div className="col-12 pt-0">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="font_size_14 gray-text">
-                        Total after discount
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14 gray-text">
+                       Subtotal
                       </span>
-                      <span className="font_size_14 gray-text">
-                        +₹{checkoutDetails.total_bill_with_discount}
+                      <span className="pe-2 font_size_14 gray-text">
+                        ₹{checkoutDetails.total_bill_with_discount}
                       </span>
                     </div>
                   </div>
@@ -1743,10 +1802,8 @@ action:'save',
                   <div className="col-12 pt-0 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        Service Charges{" "}
-                        <span className="gray-text small-number">
-                          ({checkoutDetails.service_charges_percent}%)
-                        </span>
+                        Service Charges (
+                        {checkoutDetails.service_charges_percent}%)
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
                         +₹{checkoutDetails.service_charges_amount}
@@ -1754,89 +1811,38 @@ action:'save',
                     </div>
                   </div>
 
+            
+                  {/* <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14  gray-text">
+                        Grand Total (Before GST)
+                      </span>
+                      <span className="pe-2 font_size_14 fw-semibold">
+                        ₹{checkoutDetails.grand_total}
+                      </span>
+                    </div>
+                  </div> */}
+
                   <div className="col-12 mb-0 py-1 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        GST{" "}
-                        <span className="gray-text small-number">
-                          ({checkoutDetails.gst_percent}%)
-                        </span>
+                        GST ({checkoutDetails.gst_percent}%)
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
                         +₹{checkoutDetails.gst_amount}
                       </span>
                     </div>
-
-                    {/* <div className="col-12 mb-0 py-1">
-                      <div className="row align-items-center justify-content-center">
-                        <div className="col-1 text-center">
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{ height: "25px", width: "25px" }}
-                          >
-                            <i
-                              className="fa-solid fa-list font_size_14 cursor-pointer"
-                              onClick={() => {
-                                setShowCouponModal(true);
-                                fetchCoupons();
-                              }}
-                            ></i>
-                          </div>
-                        </div>
-                        <div className="col-8 d-flex align-items-center px-3">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm rounded-pill border-primary"
-                            placeholder="Enter coupon code"
-                            value={selectedCoupon}
-                            onChange={(e) => setSelectedCoupon(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-3 d-flex align-items-center ps-1">
-                          <button
-                            className="btn btn-sm btn-primary rounded-pill w-100"
-                            onClick={handleApplyCoupon}
-                          >
-                            Apply
-                          </button>
-                        </div>
-                        {couponError && (
-                          <div className="col-12 text-center">
-                            <div className="text-danger small mt-1">
-                              {couponError}
-                            </div>
-                          </div>
-                        )}
-                        {appliedCoupon && (
-                          <div className="col-12">
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              <span className="text-success">
-                                <i className="fa-solid fa-check-circle me-1"></i>
-                                Coupon {appliedCoupon.code} applied
-                              </span>
-                              <button
-                                className="btn btn-link text-danger p-0 small"
-                                onClick={() => {
-                                  setAppliedCoupon(null);
-                                  setCouponCode("");
-                                }}
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div> */}
-
-                    <hr className="p-0  text-primary mb-2 mt-1" />
                   </div>
+
+                  <hr className="p-0 text-primary mb-2 mt-1" />
 
                   <div className="col-12 px-2">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                      <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                      <span className="ps-2 fs-6 fw-semibold">
+                        Final Grand Total
+                      </span>
                       <span className="pe-2 fs-6 fw-semibold">
-                        ₹{checkoutDetails.grand_total}
+                        ₹{checkoutDetails.final_grand_total}
                       </span>
                     </div>
                   </div>

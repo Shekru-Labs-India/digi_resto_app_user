@@ -291,7 +291,7 @@ const TrackOrder = () => {
               order_id: parsedOrderItems.order_id,
               order_number: order_number,
               total_total: parsedOrderItems.total_total,
-              grand_total: parsedOrderItems.grand_total,
+              final_grand_total: parsedOrderItems.final_grand_total,
               created_at: parsedOrderItems.created_at,
               order_status: "placed",
             },
@@ -454,14 +454,14 @@ const TrackOrder = () => {
 
     fetchSearchedMenu();
   }, [debouncedSearchTerm, restaurantId, userId]);
-  
+
   const toTitleCase = (str) => {
     if (!str) return ""; // Return empty string if input is undefined or null
-    return str.replace(/\w\S*/g, (txt) => 
-       txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    return str.replace(
+      /\w\S*/g,
+      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
     );
- };
- 
+  };
 
   // Update the handleLikeClick function
   useEffect(() => {
@@ -1327,22 +1327,26 @@ const TrackOrder = () => {
       }
 
       const { order_details, menu_details } = orderDetails;
-      const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_name =
+        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
       const outlet_address = localStorage.getItem("outlet_address") || "-";
       const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
       const website_url = "https://menumitra.com";
-      const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
+      const customerName =
+        localStorage.getItem("customerName") ||
+        order_details.customer_name ||
+        "Guest";
 
       // Create a hidden container with specific dimensions
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '-9999px';
-      container.style.width = '800px';
-      container.style.margin = '0';
-      container.style.padding = '60px';
-      container.style.fontSize = '16px';
-      container.style.backgroundColor = '#ffffff';
+      const container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "-9999px";
+      container.style.width = "800px";
+      container.style.margin = "0";
+      container.style.padding = "60px";
+      container.style.fontSize = "16px";
+      container.style.backgroundColor = "#ffffff";
       document.body.appendChild(container);
 
       container.innerHTML = `
@@ -1486,37 +1490,39 @@ const TrackOrder = () => {
 
       try {
         // Wait for all images to load
-        const images = container.getElementsByTagName('img');
-        await Promise.all(Array.from(images).map(img => {
-          return new Promise((resolve) => {
-            if (img.complete) {
-              resolve();
-            } else {
-              img.onload = resolve;
-              img.onerror = resolve;
-            }
-          });
-        }));
+        const images = container.getElementsByTagName("img");
+        await Promise.all(
+          Array.from(images).map((img) => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = resolve;
+                img.onerror = resolve;
+              }
+            });
+          })
+        );
 
         // Generate PDF with exact same configuration as MyOrder.js
         const canvas = await html2canvas(container, {
           scale: 3,
           width: 800,
           height: container.offsetHeight,
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
           windowWidth: 800,
           windowHeight: container.offsetHeight,
           logging: false,
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
         });
 
         // Create PDF with A4 dimensions
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
         const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'pt',
-          format: 'a4'
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4",
         });
 
         // Calculate dimensions to fit A4 while maintaining aspect ratio
@@ -1524,7 +1530,7 @@ const TrackOrder = () => {
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         // Add image with proper scaling
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
         pdf.save(`invoice-${order_details.order_number}.pdf`);
 
         window.showToast("success", "Invoice downloaded successfully");
@@ -2043,7 +2049,7 @@ const TrackOrder = () => {
                                   <div className="ps-2 font_size_14 fw-medium">
                                     {menu.menu_name}
                                     <span className="ms-2 font_size_10 text-capitalize text-dark">
-                                      ({toTitleCase(menu.half_or_full)})
+                                      {/* ({toTitleCase}) */}
                                     </span>
                                   </div>
                                 </div>
@@ -2258,7 +2264,7 @@ const TrackOrder = () => {
                       <span className="pe-2  fw-semibold fs-6">
                         ₹
                         {parseFloat(
-                          orderDetails.order_details.grand_total
+                          orderDetails.order_details.final_grand_total
                         ).toFixed(2) || 0}
                       </span>
                     </div>

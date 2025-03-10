@@ -74,7 +74,7 @@ function Saving() {
   return (
     <div className="page-wrapper full-height">
       <Header title="Savings" />
-      <main className="page-content space-top p-b70">
+      <main className="page-content space-top p-b70 ">
         <div className="container px-3">
           <HotelNameAndTable
             restaurantName={restaurantName}
@@ -118,21 +118,20 @@ function Saving() {
                           {expandedOutlet === index && (
                            <div className="mt-2">
                            <div className="menu-info d-flex justify-content-between">
-                             <div className="halo-icon">
-                               <i className="fa-light fa-user-clock"></i>
+                             <div>
+                               <i className="fa-solid fa-user-clock pe-2 gray-text font_size_12"></i>
                                <span className="gray-text font_size_12">
                                  Visited Count: {outlet.visitedCount}
                                </span>
                              </div>
-                             <div className="halo-icon">
-                               <i className="fa-light fa-piggy-bank"></i>
+                             <div>
+                               <i className="fa-solid fa-piggy-bank pe-2 gray-text font_size_12"></i>
                                <span className="gray-text font_size_12">
                                  Total Savings: ₹{outlet.totalSavings}
                                </span>
                              </div>
                            </div>
                          </div>
-                         
                           )}
                         </div>
                       ))}

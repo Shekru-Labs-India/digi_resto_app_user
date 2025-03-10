@@ -197,7 +197,7 @@ const AddToCartUI = ({
                             checked={portionSize === "full"}
                             onChange={() => setPortionSize("full")}
                           />
-                          <label className="form-check-label">Full</label>
+                          <label className="form-check-label">Price</label>
                         </div>
                         <span>₹{prices.fullPrice}</span>
                       </div>
@@ -206,7 +206,7 @@ const AddToCartUI = ({
                           className="d-flex justify-content-between align-items-center"
                           onClick={() => setPortionSize("half")}
                         >
-                          <div className="form-check">
+                          {/* <div className="form-check">
                             <input
                               type="radio"
                               className="form-check-input"
@@ -214,8 +214,8 @@ const AddToCartUI = ({
                               onChange={() => setPortionSize("half")}
                             />
                             <label className="form-check-label">Half</label>
-                          </div>
-                          <span>₹{prices.halfPrice}</span>
+                          </div> */}
+                          {/* <span>₹{prices.halfPrice}</span> */}
                         </div>
                       )}
                     </div>
