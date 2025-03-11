@@ -1640,7 +1640,7 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="text-end">
                     <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total.toFixed(2)}
+                      ₹{order_details.final_grand_total.toFixed(2)}
                     </span>
 
                     {/* Conditionally render the line-through price */}
@@ -1877,7 +1877,7 @@ const TrackOrder = () => {
                           <>
                             Pay{" "}
                             <span className="fs-4 mx-1">
-                              ₹{order_details.grand_total.toFixed(2)}
+                              ₹{order_details.final_grand_total.toFixed(2)}
                             </span>{" "}
                             via
                             <span className="ms-2">Other UPI Apps</span>
@@ -2168,126 +2168,171 @@ const TrackOrder = () => {
           )}
         </main>
 
-        {userId && orderDetails && (
-          <div className="container mb-4 pt-0 z-3">
-            <div className="card mt-2 p-0 mb-3 ">
-              <div className="card-body mx-auto rounded-4 p-0">
-                <div className="row p-1">
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 font_size_14 fw-semibold">
-                        Total
-                      </span>
-                      <span className="pe-2 font_size_14 fw-semibold">
-                        ₹
-                        {parseFloat(
-                          orderDetails.order_details.total_bill_amount || 0
-                        ).toFixed(2)}
-                      </span>
-                    </div>
-                    <hr className="p-0 m-0 text-primary w-100" />
-                  </div>
-                  <div className="col-12 mb-0 pt-0 ">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        Discount{" "}
-                        <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        -₹
-                        {parseFloat(
-                          orderDetails.order_details.discount_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-12 pt-0">
-                    {orderDetails.order_details.discount_amount > 0 && (
-                      <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
-                        <span className="font_size_14 gray-text">
-                          Total after discount
-                        </span>
-                        <span className="font_size_14 gray-text">
-                          +₹
-                          {parseFloat(
-                            orderDetails.order_details.total_bill_with_discount
-                          ).toFixed(2) || 0}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-12 pt-0">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 pt-1 gray-text">
-                        Service Charges
-                        <span className="gray-text small-number">
-                          (
-                          {orderDetails.order_details.service_charges_percent ||
-                            0}
-                          % )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        +₹
-                        {parseFloat(
-                          orderDetails.order_details.service_charges_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-12 mb-0 py-1">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        GST{" "}
-                        <span className="gray-text small-number">
-                          {" "}
-                          ({orderDetails.order_details.gst_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14  text-start gray-text">
-                        +₹
-                        {parseFloat(
-                          orderDetails.order_details.gst_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
+        {userId &&
+          orderDetails &&
+          (() => {
+            const details = orderDetails.order_details || {};
 
-                  <div>
-                    <hr className=" p-0 m-0 text-primary w-100" />
-                  </div>
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
-                      <span className="ps-2 fw-semibold fs-6">Grand Total</span>
-                      <span className="pe-2  fw-semibold fs-6">
-                        ₹
-                        {parseFloat(
-                          orderDetails.order_details.final_grand_total
-                        ).toFixed(2) || 0}
-                      </span>
+            // Extract values safely
+            const totalBillAmount = Number(details.total_bill_amount || 0);
+            const discountAmount = Number(details.discount_amount || 0);
+            const specialDiscount = Number(details.special_discount || 0);
+            const charges = Number(details.charges || 0);
+            const serviceChargesPercent = Number(
+              details.service_charges_percent || 0
+            );
+            const gstPercent = Number(details.gst_percent || 0);
+            const tip = Number(details.tip || 0);
+
+            // Calculations
+            const totalBillWithDiscount = totalBillAmount - discountAmount;
+            const subtotal = totalBillWithDiscount - specialDiscount + charges;
+            const serviceChargesAmount =
+              (subtotal * serviceChargesPercent) / 100;
+            const grandTotal = subtotal + serviceChargesAmount;
+            const gstAmount = (grandTotal * gstPercent) / 100;
+            let finalGrandTotal = grandTotal + gstAmount;
+
+            if (tip > 0) {
+              finalGrandTotal += tip;
+            }
+
+            return (
+              <div className="container mb-4 pt-0 z-3">
+                <div className="card mt-2 p-0 mb-3">
+                  <div className="card-body mx-auto rounded-4 p-0">
+                    <div className="row p-1">
+                      {/* Total */}
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span className="ps-2 font_size_14 fw-semibold">
+                            Total
+                          </span>
+                          <span className="pe-2 font_size_14 fw-semibold">
+                            ₹{totalBillAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <hr className="p-0 m-0 text-primary w-100" />
+                      </div>
+
+                      {/* Discount */}
+                      <div className="col-12 mb-0 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Discount{" "}
+                            <span className="gray-text small-number">
+                              ({details.discount_percent || 0}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            -₹{discountAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
+                          <span className="font_size_14 gray-text">
+                            Special Discount
+                          </span>
+                          <span className="font_size_14 gray-text">
+                            -₹{(specialDiscount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Extra Charges */}
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Extra Charges{}
+                            <span className="gray-text small-number">
+                              {/* ({charges.toFixed(2)}% ) */}
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{charges.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Subtotal */}
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Subtotal
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            ₹{subtotal.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Service Charges */}
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Service Charges{" "}
+                            <span className="gray-text small-number">
+                              ({serviceChargesPercent}% )
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{serviceChargesAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* GST Charges */}
+                      <div className="col-12 mb-0 py-1">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            GST Charges{" "}
+                            <span className="gray-text small-number">
+                              ({gstPercent}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{gstAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <hr className="p-0 m-0 text-primary w-100" />
+                      </div>
+
+                      {/* Final Grand Total */}
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
+                          <span className="ps-2 fw-semibold fs-6">
+                            Final Grand Total
+                          </span>
+                          <span className="pe-2 fw-semibold fs-6">
+                            ₹{finalGrandTotal.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {orderStatus === "paid" && (
-              <div className="d-flex justify-content-end">
-                <button
-                  className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
-                  onClick={() => generatePDF(orderDetails)}
-                >
-                  <i className="fa-solid fa-download me-2"></i>
-                  Invoice &nbsp;
-                </button>
-              </div>
-            )}
+                {orderStatus === "paid" && (
+                  <div className="d-flex justify-content-end">
+                    <button
+                      className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
+                      onClick={() => generatePDF(orderDetails)}
+                    >
+                      <i className="fa-solid fa-download me-2"></i>
+                      Invoice &nbsp;
+                    </button>
+                  </div>
+                )}
 
-            <RestaurantSocials />
-          </div>
-        )}
+                <RestaurantSocials />
+              </div>
+            );
+          })()}
 
         <Bottom></Bottom>
       </div>

@@ -52,6 +52,7 @@ function Saving() {
             visitedCount: outlet.order_count || 0,
             totalSavings:
               (outlet.regular_discount || 0) + (outlet.special_discount || 0),
+            complementaryCount: outlet.complementary_count || 0, // ✅ Added
           }));
 
           setOutletStats(formattedData);
@@ -78,7 +79,8 @@ function Saving() {
         <div className="container px-3">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.customer_type?.tableNumber || "1"}/>
+            tableNumber={userData?.customer_type?.tableNumber || "1"}
+          />
         </div>
         <div className="container pt-3">
           <div className="custom-card my-2 rounded-4 shadow-sm">
@@ -116,22 +118,30 @@ function Saving() {
                             ></i>
                           </div>
                           {expandedOutlet === index && (
-                           <div className="mt-2">
-                           <div className="menu-info d-flex justify-content-between">
-                             <div>
-                               <i className="fa-solid fa-user-clock pe-2 gray-text font_size_12"></i>
-                               <span className="gray-text font_size_12">
-                                 Visited Count: {outlet.visitedCount}
-                               </span>
-                             </div>
-                             <div>
-                               <i className="fa-solid fa-piggy-bank pe-2 gray-text font_size_12"></i>
-                               <span className="gray-text font_size_12">
-                                 Total Savings: ₹{outlet.totalSavings}
-                               </span>
-                             </div>
-                           </div>
-                         </div>
+                            <div className="mt-2">
+                              <div className="menu-info d-flex flex-wrap justify-content-between gap-2">
+                                <div className="d-flex align-items-center">
+                                  <i className="fa-solid fa-user-clock pe-1 gray-text font_size_12"></i>
+                                  <span className="gray-text font_size_12">
+                                    Visited: {outlet.visitedCount}
+                                  </span>
+                                </div>
+
+                                <div className="d-flex align-items-center">
+                                  <i className="fa-solid fa-piggy-bank pe-1 gray-text font_size_12"></i>
+                                  <span className="gray-text font_size_12">
+                                    Savings: ₹{outlet.totalSavings}
+                                  </span>
+                                </div>
+
+                                <div className="d-flex align-items-center">
+                                  <i className="fa-solid fa-gift pe-1 gray-text font_size_12"></i>
+                                  <span className="gray-text font_size_12">
+                                    Complementary: {outlet.complementaryCount}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           )}
                         </div>
                       ))}

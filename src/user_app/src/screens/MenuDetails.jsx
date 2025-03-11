@@ -487,7 +487,7 @@ const MenuDetails = () => {
         restaurantId
       );
 
-      window.showToast("success", "Item has been added to your checkout");
+      window.showToast("success", `${productDetails.name || "Item"} is added.`);
 
       setShowModal(false);
       setTimeout(() => {

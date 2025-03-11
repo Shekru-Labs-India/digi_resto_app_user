@@ -305,7 +305,7 @@ const Search = () => {
 
       if (success) {
         setShowModal(false);
-        window.showToast("success", `${selectedMenu.name} is added.`);
+        window.showToast("success", `${selectedMenu.menu_name || selectedMenu.name || "Item"} is added.`);
         // Dispatch event to update cart UI
         window.dispatchEvent(new CustomEvent('cartUpdated'));
       } else {
