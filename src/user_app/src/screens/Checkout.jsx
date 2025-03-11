@@ -302,7 +302,7 @@ const Checkout = () => {
             orderId: data.order_id,
             orderType: data.order_type,
             grand_total: data.grand_total,
-            grandTotal: data.grandTotal,
+            grandTotal: data.final_grand_total,
           });
           setShowExistingOrderModal(true);
         } else {

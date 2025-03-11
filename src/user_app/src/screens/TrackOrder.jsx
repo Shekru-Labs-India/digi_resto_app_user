@@ -2245,10 +2245,7 @@ const TrackOrder = () => {
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 pt-1 gray-text">
-                            Extra Charges{}
-                            <span className="gray-text small-number">
-                              {/* ({charges.toFixed(2)}% ) */}
-                            </span>
+                            Extra Charges
                           </span>
                           <span className="pe-2 font_size_14 gray-text">
                             +₹{charges.toFixed(2)}
@@ -2274,7 +2271,7 @@ const TrackOrder = () => {
                           <span className="ps-2 font_size_14 pt-1 gray-text">
                             Service Charges{" "}
                             <span className="gray-text small-number">
-                              ({serviceChargesPercent}% )
+                              ({serviceChargesPercent}%)
                             </span>
                           </span>
                           <span className="pe-2 font_size_14 gray-text">
@@ -2297,6 +2294,20 @@ const TrackOrder = () => {
                           </span>
                         </div>
                       </div>
+
+                      {/* Tip (Only show if tip is greater than 0) */}
+                      {tip > 0 && (
+                        <div className="col-12 pt-0">
+                          <div className="d-flex justify-content-between align-items-center py-0">
+                            <span className="ps-2 font_size_14 pt-1 gray-text">
+                              Tip Amount
+                            </span>
+                            <span className="pe-2 font_size_14 gray-text">
+                              +₹{tip.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
 
                       <div>
                         <hr className="p-0 m-0 text-primary w-100" />

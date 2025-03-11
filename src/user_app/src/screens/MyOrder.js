@@ -19,7 +19,6 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import MenuMitra from "../assets/logos/menumitra_logo_128.png";
 
-
 const titleCase = (str) => {
   if (!str) return "";
   return str
@@ -34,7 +33,6 @@ const calculateOriginalPrice = (grandTotal) => {
   const originalPrice = (numericTotal / 0.6).toFixed(2); // 40% discount means price is 60% of original
   return originalPrice;
 };
-
 
 // Add generatePDF utility function
 
@@ -55,7 +53,7 @@ const MyOrder = () => {
   const [activeOrders, setActiveOrders] = useState({
     placed: [],
     cooking: [],
-    served: []
+    served: [],
   });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
@@ -83,20 +81,24 @@ const MyOrder = () => {
       }
 
       const { order_details, menu_details } = orderData;
-      const outlet_name = localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_name =
+        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
       const outlet_address = localStorage.getItem("outlet_address") || "-";
       const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
       const website_url = "https://menumitra.com";
-      const customerName = localStorage.getItem("customerName") || order_details.customer_name || "Guest";
+      const customerName =
+        localStorage.getItem("customerName") ||
+        order_details.customer_name ||
+        "Guest";
 
       // Create a temporary container in the actual DOM
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '-9999px';
+      const container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "-9999px";
       document.body.appendChild(container);
 
-      const content = document.createElement('div');
+      const content = document.createElement("div");
       content.style.width = "800px";
       content.style.padding = "60px";
       content.style.fontSize = "16px";
@@ -152,50 +154,72 @@ const MyOrder = () => {
               .join("")}
           </table>
 
-          <div style="border-top: 1px solid #ddd; margin-top: 20px;">
-            <div style="text-align: right; margin-top: 10px;">
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(
-                2
-              )}</p>
-              ${
-                order_details.discount_percent > 0
-                  ? `<p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Discount (${
-                      order_details.discount_percent
-                    }%):</span> -₹${
-                      order_details.discount_amount?.toFixed(2) || "-"
-                    }</p>`
-                  : ""
-              }
-              ${
-                order_details.special_discount
-                  ? `<p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
-                      order_details.special_discount?.toFixed(2) || "-"
-                    }</p>`
-                  : ""
-              }
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Total after Discount:</span> ₹${
-                order_details.total_bill_with_discount?.toFixed(2) || "-"
-              }</p>
-              ${
-                order_details.charges > 0
-                  ? `<p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
-                      order_details.charges?.toFixed(2) || "-"
-                    }</p>`
-                  : ""
-              }
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">Service Charges (${
-                order_details.service_charges_percent || ""
-              }%):</span> +₹${
-        order_details.service_charges_amount?.toFixed(2) || "-"
-      }</p>
-              <p style="margin: 5px 0; font-size: 15px;"><span style="font-weight: bold;">GST (${
-                order_details.gst_percent || ""
-              }%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}</p>
-              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${order_details.final_grand_total?.toFixed(
-                2
-              )}</p>
-            </div>
-          </div>
+          ${
+            order_details.total_bill_amount
+              ? `<div style="border-top: 2px solid #ddd; margin-top: 20px;">
+                <div style="text-align: right; margin-top: 10px;">
+                  <p><strong>Total:</strong> ₹${order_details.total_bill_amount?.toFixed(
+                    2
+                  )}</p>
+                  
+                  ${
+                    order_details.discount_percent > 0
+                      ? `<p>Discount (${
+                          order_details.discount_percent
+                        }%): <span style="color: red;">-₹${order_details.discount_amount?.toFixed(
+                          2
+                        )}</span></p>`
+                      : ""
+                  }
+                  ${
+                    order_details.special_discount
+                      ? `<p>Special Discount: <span style="color: red;">-₹${order_details.special_discount?.toFixed(
+                          2
+                        )}</span></p>`
+                      : ""
+                  }
+                  ${
+                    order_details.charges > 0
+                      ? `<p>Extra Charges: <span style="color: green;">+₹${order_details.charges?.toFixed(
+                          2
+                        )}</span></p>`
+                      : ""
+                  }
+          
+                  <p><strong>Subtotal:</strong> ₹${order_details.subtotal?.toFixed(
+                    2
+                  )}</p>
+          
+                  <p>Service Charges (${
+                    order_details.service_charges_percent || ""
+                  }%): 
+                    <span style="color: green;">+₹${order_details.service_charges_amount?.toFixed(
+                      2
+                    )}</span>
+                  </p>
+          
+                  <p>GST (${order_details.gst_percent || ""}%): 
+                    <span style="color: green;">+₹${order_details.gst_amount?.toFixed(
+                      2
+                    )}</span>
+                  </p>
+          
+                  ${
+                    order_details.tip > 0
+                      ? `<p>Tip: <span style="color: green;">+₹${order_details.tip?.toFixed(
+                          2
+                        )}</span></p>`
+                      : ""
+                  }
+          
+                  <p><strong>Grand Total:</strong> ₹${order_details.final_grand_total?.toFixed(
+                    2
+                  )}</p>
+                </div>
+              </div>`
+              : ""
+          }
+          
 
           <div style="display: flex; justify-content: space-between; margin-top: 30px;">
             <div>
@@ -205,11 +229,9 @@ const MyOrder = () => {
               <p style="margin: 5px 0;">► ${outlet_mobile}</p>
             </div>
             <div style="text-align: right;">
-              <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
-              <p style="margin: 5px 0; text-transform: uppercase;">${
-                order_details.payment_method || ""
-              }</p>
-            </div>
+        <p style="font-weight: bold;">Payment Method</p>
+        <p>${order_details.payment_method || ""}</p>
+      </div>
           </div>
 
           <div style="text-align: center; margin-top: 40px;">
@@ -228,40 +250,42 @@ const MyOrder = () => {
       `;
 
       // Wait for images to load
-      const images = content.getElementsByTagName('img');
-      await Promise.all(Array.from(images).map(img => {
-        return new Promise((resolve, reject) => {
-          if (img.complete) {
-            resolve();
-          } else {
-            img.onload = resolve;
-            img.onerror = resolve; // Continue even if image fails to load
-          }
-        });
-      }));
+      const images = content.getElementsByTagName("img");
+      await Promise.all(
+        Array.from(images).map((img) => {
+          return new Promise((resolve, reject) => {
+            if (img.complete) {
+              resolve();
+            } else {
+              img.onload = resolve;
+              img.onerror = resolve; // Continue even if image fails to load
+            }
+          });
+        })
+      );
 
       try {
         const canvas = await html2canvas(content, {
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
           windowWidth: 800,
           windowHeight: content.offsetHeight,
-          logging: false
+          logging: false,
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
         const pdf = new jsPDF({
           orientation: "portrait",
           unit: "pt",
-          format: "a4"
+          format: "a4",
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
         await pdf.save(`invoice-${order_details.order_number}.pdf`);
 
         window.showToast("success", "Invoice downloaded successfully");
@@ -284,10 +308,12 @@ const MyOrder = () => {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
       const sectionId = localStorage.getItem("sectionId");
-      console.log('MyOrder: Fetching active orders');
-      
+      console.log("MyOrder: Fetching active orders");
+
       if (!userData?.user_id || !restaurantId) {
-        console.log('MyOrder: Missing user_id or restaurantId, skipping active orders fetch');
+        console.log(
+          "MyOrder: Missing user_id or restaurantId, skipping active orders fetch"
+        );
         setLoading(false);
         return;
       }
@@ -325,44 +351,52 @@ const MyOrder = () => {
       }
 
       const data = await response.json();
-      console.log('MyOrder: Received active orders:', data);
+      console.log("MyOrder: Received active orders:", data);
 
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
         if (orders?.length > 0) {
           // Group orders by their status
-          const placedOrders = orders?.filter(o => o.status === "placed") || [];
-          const cookingOrders = orders?.filter(o => o.status === "cooking") || [];
-          const servedOrders = orders?.filter(o => o.status === "served") || [];
+          const placedOrders =
+            orders?.filter((o) => o.status === "placed") || [];
+          const cookingOrders =
+            orders?.filter((o) => o.status === "cooking") || [];
+          const servedOrders =
+            orders?.filter((o) => o.status === "served") || [];
 
           const activeOrders = {
             placed: placedOrders,
             cooking: cookingOrders,
-            served: servedOrders
+            served: servedOrders,
           };
 
           // Update localStorage
-          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+          const existingOrders = JSON.parse(
+            localStorage.getItem("allOrderList") || "{}"
+          );
           const updatedOrders = {
             ...existingOrders,
             placed: placedOrders,
-            ongoing: [...cookingOrders, ...servedOrders]
+            ongoing: [...cookingOrders, ...servedOrders],
           };
-          
+
           localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-          console.log('MyOrder: Updated localStorage with active orders:', updatedOrders);
+          console.log(
+            "MyOrder: Updated localStorage with active orders:",
+            updatedOrders
+          );
 
           setActiveOrders(activeOrders);
         } else {
-          console.log('MyOrder: No active orders found');
+          console.log("MyOrder: No active orders found");
           setActiveOrders({ placed: [], cooking: [], served: [] });
         }
       } else {
-        console.log('MyOrder: No valid active orders in response');
+        console.log("MyOrder: No valid active orders in response");
         setActiveOrders({ placed: [], cooking: [], served: [] });
       }
     } catch (error) {
-      console.error('MyOrder: Error fetching active orders:', error);
+      console.error("MyOrder: Error fetching active orders:", error);
       setActiveOrders({ placed: [], cooking: [], served: [] });
     } finally {
       setLoading(false);
@@ -373,10 +407,10 @@ const MyOrder = () => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
-      console.log('MyOrder: Fetching orders for user:', userData?.user_id);
-      
+      console.log("MyOrder: Fetching orders for user:", userData?.user_id);
+
       if (!userData?.user_id || !restaurantId) {
-        console.log('MyOrder: Missing user_id or restaurantId, skipping fetch');
+        console.log("MyOrder: Missing user_id or restaurantId, skipping fetch");
         setLoading(false);
         return;
       }
@@ -417,7 +451,7 @@ const MyOrder = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('MyOrder: Received orders data:', data);
+        console.log("MyOrder: Received orders data:", data);
 
         if (data.st === 1 && data.lists) {
           const mappedData = {};
@@ -428,28 +462,36 @@ const MyOrder = () => {
           }
 
           // Save to localStorage
-          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-          console.log('MyOrder: Existing orders in localStorage:', existingOrders);
-          
+          const existingOrders = JSON.parse(
+            localStorage.getItem("allOrderList") || "{}"
+          );
+          console.log(
+            "MyOrder: Existing orders in localStorage:",
+            existingOrders
+          );
+
           const updatedOrders = {
             ...existingOrders,
-            ...mappedData
+            ...mappedData,
           };
-          
+
           localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-          console.log('MyOrder: Updated localStorage with new orders:', updatedOrders);
+          console.log(
+            "MyOrder: Updated localStorage with new orders:",
+            updatedOrders
+          );
 
           setOrders(mappedData);
         } else {
-          console.log('MyOrder: No valid lists in response');
+          console.log("MyOrder: No valid lists in response");
           setOrders({});
         }
       } else {
-        console.error('MyOrder: API request failed');
+        console.error("MyOrder: API request failed");
         setOrders({});
       }
     } catch (error) {
-      console.error('MyOrder: Error fetching orders:', error);
+      console.error("MyOrder: Error fetching orders:", error);
       setOrders({});
     } finally {
       setLoading(false);
@@ -546,8 +588,10 @@ const MyOrder = () => {
   return (
     <div className="page-wrapper">
       {isGenerating && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" 
-             style={{ background: 'rgba(255, 255, 255, 0.8)', zIndex: 9999 }}>
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+          style={{ background: "rgba(255, 255, 255, 0.8)", zIndex: 9999 }}
+        >
           <div className="text-center">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
@@ -558,15 +602,16 @@ const MyOrder = () => {
       )}
       <Header
         title="Orders"
-        count={
-          Object.values(activeOrders).reduce((total, orders) => total + orders?.length, 0)
-        }
+        count={Object.values(activeOrders).reduce(
+          (total, orders) => total + orders?.length,
+          0
+        )}
       />
 
       <main className="page-content space-top p-b70">
         {/* {isNonProductionDomain() && <Notice />} */}
         <div className="container px-3 py-0 mb-0">
-        <HotelNameAndTable
+          <HotelNameAndTable
             restaurantName={restaurantName}
             tableNumber={role?.tableNumber || "1"}
           />
@@ -604,51 +649,55 @@ const MyOrder = () => {
               status="served"
               setActiveOrders={setActiveOrders}
               fetchOrders={fetchActiveOrders}
-              fetchCompletedAndCancelledOrders={fetchCompletedAndCancelledOrders}
+              fetchCompletedAndCancelledOrders={
+                fetchCompletedAndCancelledOrders
+              }
               generatePDF={generatePDF}
             />
           ))}
 
-{isLoggedIn && (
-          <div className="nav nav-tabs nav-fill" role="tablist">
-            {["completed", "cancelled"]?.map((tab) => (
-              <div
-                key={tab}
-                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab === "completed" && (
-                  <i className="far fa-check-circle text-success me-2 fs-5"></i>
-                )}
-                {tab === "cancelled" && (
-                  <i className="far fa-times-circle text-danger me-2 fs-5"></i>
-                )}
-                {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
-              </div>
-            ))}
-          </div>
-)}
+          {isLoggedIn && (
+            <div className="nav nav-tabs nav-fill" role="tablist">
+              {["completed", "cancelled"]?.map((tab) => (
+                <div
+                  key={tab}
+                  className={`nav-link px-0 ${
+                    activeTab === tab ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab === "completed" && (
+                    <i className="far fa-check-circle text-success me-2 fs-5"></i>
+                  )}
+                  {tab === "cancelled" && (
+                    <i className="far fa-times-circle text-danger me-2 fs-5"></i>
+                  )}
+                  {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
+                </div>
+              ))}
+            </div>
+          )}
 
           {!isLoggedIn && (
-  <div
-  className="container overflow-hidden d-flex justify-content-center align-items-center"
-  style={{ height: "68vh" }}
->
-  <div className="m-b20 dz-flex-box text-center">
-    <div className="dz-cart-about">
-      <div className="mb-3">
-        <button
-          className="btn btn-outline-primary rounded-pill"
-          onClick={showLoginPopup}
-        >
-          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
-        </button>
-      </div>
-      <span>Please login to access order</span>
-    </div>
-  </div>
-  </div>
-)}
+            <div
+              className="container overflow-hidden d-flex justify-content-center align-items-center"
+              style={{ height: "68vh" }}
+            >
+              <div className="m-b20 dz-flex-box text-center">
+                <div className="dz-cart-about">
+                  <div className="mb-3">
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={showLoginPopup}
+                    >
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                    </button>
+                  </div>
+                  <span>Please login to access order</span>
+                </div>
+              </div>
+            </div>
+          )}
           <Bottom />
         </div>
 
@@ -751,7 +800,6 @@ export const OrderCard = ({
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const timeoutRef = useRef({});
   const { showLoginPopup } = usePopup();
-  
 
   const [customerName, setCustomerName] = useState("");
   const titleCase = (str) => {
@@ -886,7 +934,6 @@ export const OrderCard = ({
       const data = await response.json();
 
       if (data.st === 1) {
-        
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
@@ -905,7 +952,6 @@ export const OrderCard = ({
         fetchOrders();
         fetchCompletedAndCancelledOrders();
         setShowCompleteModal(false); // Close the modal
-        
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
@@ -970,7 +1016,7 @@ export const OrderCard = ({
           };
         });
         fetchOrders();
-        
+
         setShowCompleteModal(false); // Close the modal
       } else {
         console.clear();
@@ -985,9 +1031,11 @@ export const OrderCard = ({
   const handleCancelReasonChange = (e) => {
     const value = e.target.value;
     setCancelReason(value);
-    
+
     if (value.trim().length > 0 && value.trim().length < 3) {
-      setCancelReasonError("Cancellation reason should be at least 3 characters long.");
+      setCancelReasonError(
+        "Cancellation reason should be at least 3 characters long."
+      );
     } else {
       setCancelReasonError("");
     }
@@ -1000,7 +1048,9 @@ export const OrderCard = ({
     }
 
     if (cancelReason.trim().length < 3) {
-      setCancelReasonError("Cancellation reason should be at least 3 characters long.");
+      setCancelReasonError(
+        "Cancellation reason should be at least 3 characters long."
+      );
       return;
     }
 
@@ -1055,7 +1105,10 @@ export const OrderCard = ({
         }));
         setActiveTab("cancelled");
       } else if (data.st === 2) {
-        window.showToast("error", data.msg || "Unable to cancel order at this time.");
+        window.showToast(
+          "error",
+          data.msg || "Unable to cancel order at this time."
+        );
       } else {
         console.clear();
         window.showToast("error", data.msg || "Failed to cancel the order.");
@@ -1067,27 +1120,30 @@ export const OrderCard = ({
   };
 
   const handleOrderClick = (orderNumber, orderId) => {
-    console.log('MyOrder: Attempting to navigate to TrackOrder');
-    console.log('MyOrder: Order Number:', orderNumber);
-    console.log('MyOrder: Order ID:', orderId);
-    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
-    
+    console.log("MyOrder: Attempting to navigate to TrackOrder");
+    console.log("MyOrder: Order Number:", orderNumber);
+    console.log("MyOrder: Order ID:", orderId);
+    console.log(
+      "MyOrder: Navigation path:",
+      `/user_app/TrackOrder/${orderNumber}`
+    );
+
     // Log the current state of allOrderList
     const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
-    
+    console.log("MyOrder: Current allOrderList in localStorage:", allOrders);
+
     try {
       // Store orderId in localStorage before navigation
-      localStorage.setItem('current_order_id', orderId?.toString());
-      navigate(`/user_app/TrackOrder/${orderNumber}`, { 
-        state: { 
+      localStorage.setItem("current_order_id", orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, {
+        state: {
           orderId: orderId,
-          from: 'order_card' 
-        } 
+          from: "order_card",
+        },
       });
-      console.log('MyOrder: Navigation initiated successfully');
+      console.log("MyOrder: Navigation initiated successfully");
     } catch (error) {
-      console.error('MyOrder: Navigation failed:', error);
+      console.error("MyOrder: Navigation failed:", error);
     }
   };
 
@@ -1168,12 +1224,7 @@ export const OrderCard = ({
 
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        setIsProcessingGPay,
-        "gpay"
-      );
+      await initiatePayment("gpay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
       console.clear();
       window.showToast(
@@ -1247,7 +1298,6 @@ export const OrderCard = ({
           }
           setProcessing(false);
         }, 3000);
-       
       } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
@@ -1416,9 +1466,9 @@ export const OrderCard = ({
                   <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                   {order.section_name
                     ? `${titleCase(order.section_name)}${
-                        order.order_type?.toLowerCase() === "drive-through" || 
-                        order.order_type?.toLowerCase() === "parcel" 
-                          ? "" 
+                        order.order_type?.toLowerCase() === "drive-through" ||
+                        order.order_type?.toLowerCase() === "parcel"
+                          ? ""
                           : ` - ${order.table_number}`
                       }`
                     : "Dine In"}
@@ -1441,10 +1491,9 @@ export const OrderCard = ({
               <span className="text-info font_size_14 fw-semibold">
                 ₹{order.final_grand_total.toFixed(2)}
               </span>
-              {order.grand_total !== (
-                order.grand_total / (1 - order.discount_percent / 100) ||
-                order.grand_total
-              ) && (
+              {order.grand_total !==
+                (order.grand_total / (1 - order.discount_percent / 100) ||
+                  order.grand_total) && (
                 <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                   ₹
                   {(
@@ -1675,7 +1724,9 @@ export const OrderCard = ({
                     </label>
                     <textarea
                       id="cancelReason"
-                      className={`form-control border ${cancelReasonError ? 'border-danger' : 'border-primary'}`}
+                      className={`form-control border ${
+                        cancelReasonError ? "border-danger" : "border-primary"
+                      }`}
                       rows="3"
                       value={cancelReason}
                       onChange={handleCancelReasonChange}
@@ -1806,7 +1857,14 @@ export const OrderCard = ({
   );
 };
 
-const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generatePDF }) => {
+const OrdersTab = ({
+  orders,
+  type,
+  activeTab,
+  setOrders,
+  setActiveTab,
+  generatePDF,
+}) => {
   const [checkedItems, setCheckedItems] = useState({});
   const navigate = useNavigate();
   const { showLoginPopup } = usePopup();
@@ -1850,27 +1908,30 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
   };
 
   const handleOrderClick = (orderNumber, orderId) => {
-    console.log('MyOrder: Attempting to navigate to TrackOrder');
-    console.log('MyOrder: Order Number:', orderNumber);
-    console.log('MyOrder: Order ID:', orderId);
-    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
-    
+    console.log("MyOrder: Attempting to navigate to TrackOrder");
+    console.log("MyOrder: Order Number:", orderNumber);
+    console.log("MyOrder: Order ID:", orderId);
+    console.log(
+      "MyOrder: Navigation path:",
+      `/user_app/TrackOrder/${orderNumber}`
+    );
+
     // Log the current state of allOrderList
     const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
-    
+    console.log("MyOrder: Current allOrderList in localStorage:", allOrders);
+
     try {
       // Store orderId in localStorage before navigation
-      localStorage.setItem('current_order_id', orderId?.toString());
-      navigate(`/user_app/TrackOrder/${orderNumber}`, { 
-        state: { 
+      localStorage.setItem("current_order_id", orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, {
+        state: {
           orderId: orderId,
-          from: 'orders_tab' 
-        } 
+          from: "orders_tab",
+        },
       });
-      console.log('MyOrder: Navigation initiated successfully');
+      console.log("MyOrder: Navigation initiated successfully");
     } catch (error) {
-      console.error('MyOrder: Navigation failed:', error);
+      console.error("MyOrder: Navigation failed:", error);
     }
   };
 
@@ -2083,9 +2144,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
                               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                               {order.section_name
                                 ? `${titleCase(order.section_name)}${
-                                    order.order_type?.toLowerCase() === "drive-through" || 
-                                    order.order_type?.toLowerCase() === "parcel" 
-                                      ? "" 
+                                    order.order_type?.toLowerCase() ===
+                                      "drive-through" ||
+                                    order.order_type?.toLowerCase() === "parcel"
+                                      ? ""
                                       : ` - ${order.table_number}`
                                   }`
                                 : "Dine In"}
@@ -2105,25 +2167,25 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
                           </div>
                         </div>
                         <div className="col-6 text-end">
-  <span className="text-info font_size_14 fw-semibold">
-    ₹{order.grand_total.toFixed(2)}
-  </span>
+                          <span className="text-info font_size_14 fw-semibold">
+                            ₹{order.final_grand_total.toFixed(2)}
+                          </span>
 
-  {/* Conditionally render the line-through price */}
-  {order.grand_total !==
-    (order.grand_total / (1 - order.discount_percent / 100) ||
-      order.grand_total) && (
-    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-      ₹
-      {(
-        order.grand_total /
-          (1 - order.discount_percent / 100) ||
-        order.grand_total
-      ).toFixed(2)}
-    </span>
-  )}
-</div>
-
+                          {/* Conditionally render the line-through price */}
+                          {order.grand_total !==
+                            (order.grand_total /
+                              (1 - order.discount_percent / 100) ||
+                              order.grand_total) && (
+                            <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                              ₹
+                              {(
+                                order.grand_total /
+                                  (1 - order.discount_percent / 100) ||
+                                order.grand_total
+                              ).toFixed(2)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -2141,9 +2203,16 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
                             </div>
                             <div className="col-6 pe-0 d-flex justify-content-end align-items-center gap-2">
                               {activeTab === "completed" && (
-                                <button 
+                                <button
                                   className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
-                                  onClick={() => handleDownloadInvoice(order, navigate, showLoginPopup, generatePDF)}
+                                  onClick={() =>
+                                    handleDownloadInvoice(
+                                      order,
+                                      navigate,
+                                      showLoginPopup,
+                                      generatePDF
+                                    )
+                                  }
                                 >
                                   <i className="fa-solid fa-download me-2"></i>
                                   Invoice
@@ -2196,11 +2265,14 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab, generateP
   );
 };
 
-export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) => {
+export const TimeRemaining = ({
+  orderId,
+  completedTimers = new Set(),
+  order,
+}) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
   const timerRef = useRef(null);
-  
 
   useEffect(() => {
     if (completedTimers?.has(orderId)) {
@@ -2214,16 +2286,23 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
       const [time, period] = timeStr.split(" ");
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
-      
+
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
-      
-      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
-      
+
+      const orderDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hrs,
+        parseInt(minutes),
+        parseInt(seconds)
+      );
+
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
-      
+
       return orderDate.getTime();
     };
 
@@ -2276,7 +2355,6 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
-  
 
   useEffect(() => {
     const getOrderTimeInMs = (timeStr) => {
@@ -2285,16 +2363,23 @@ export const CircularCountdown = ({
       const [time, period] = timeStr.split(" ");
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
-      
+
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
-      
-      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
-      
+
+      const orderDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hrs,
+        parseInt(minutes),
+        parseInt(seconds)
+      );
+
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
-      
+
       return orderDate.getTime();
     };
 
@@ -2344,9 +2429,11 @@ export const CircularCountdown = ({
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.user_id || localStorage.getItem("user_id");
+      const currentCustomerId =
+        userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
-      const sectionId = userData?.sectionId || localStorage.getItem("sectionId");
+      const sectionId =
+        userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
 
@@ -2368,7 +2455,7 @@ export const CircularCountdown = ({
       );
 
       const data = await response.json();
-      
+
       // Handle the ongoing/placed orders update
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
@@ -2382,12 +2469,12 @@ export const CircularCountdown = ({
 
         if (orders?.length > 0) {
           // Group orders by their status
-          const placedOrders = orders?.filter(o => o.status === "placed");
-          const ongoingOrders = orders?.filter(o => o.status === "ongoing");
+          const placedOrders = orders?.filter((o) => o.status === "placed");
+          const ongoingOrders = orders?.filter((o) => o.status === "ongoing");
 
           orderList = {
             placed: placedOrders,
-            ongoing: ongoingOrders
+            ongoing: ongoingOrders,
           };
         }
 
@@ -2413,27 +2500,33 @@ export const CircularCountdown = ({
           );
 
           const allOrdersData = await allOrdersResponse.json();
-          
+
           if (allOrdersData.st === 1) {
             // Update localStorage with new order lists
-            localStorage.setItem("allOrderList", JSON.stringify(allOrdersData.data));
-            
+            localStorage.setItem(
+              "allOrderList",
+              JSON.stringify(allOrdersData.data)
+            );
+
             // If order was cancelled, move it to cancelled list
             if (order.status === "cancelled") {
               const cancelledOrders = allOrdersData.data.cancelled || {};
-              const today = new Date().toISOString().split('T')[0];
-              
+              const today = new Date().toISOString().split("T")[0];
+
               if (!cancelledOrders[today]) {
                 cancelledOrders[today] = [];
               }
               cancelledOrders[today].push(order);
-              
+
               // Update cancelled orders in localStorage
               const updatedAllOrders = {
                 ...allOrdersData.data,
-                cancelled: cancelledOrders
+                cancelled: cancelledOrders,
               };
-              localStorage.setItem("allOrderList", JSON.stringify(updatedAllOrders));
+              localStorage.setItem(
+                "allOrderList",
+                JSON.stringify(updatedAllOrders)
+              );
             }
           }
         }
@@ -2489,7 +2582,12 @@ export const CircularCountdown = ({
 };
 
 // Add this function to fetch single order details and generate PDF
-const handleDownloadInvoice = async (order, navigate, showLoginPopup, generatePDF) => {
+const handleDownloadInvoice = async (
+  order,
+  navigate,
+  showLoginPopup,
+  generatePDF
+) => {
   try {
     const response = await fetch(
       `${config.apiDomain}/user_api/get_order_details`,
@@ -2533,7 +2631,6 @@ const handleDownloadInvoice = async (order, navigate, showLoginPopup, generatePD
     }
 
     await generatePDF(data.lists);
-
   } catch (error) {
     console.error("Error generating invoice:", error);
     window.showToast("error", "Failed to generate invoice");
