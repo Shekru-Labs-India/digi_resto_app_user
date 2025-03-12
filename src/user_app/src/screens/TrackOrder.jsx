@@ -1453,7 +1453,7 @@ const TrackOrder = () => {
                 }%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}
               </p>
               <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
-                order_details.final_grand_total?.toFixed(2) || "-"
+                order_details.grand_total?.toFixed(2) || "-"
               }</p>
             </div>
           </div>
@@ -1640,7 +1640,7 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="text-end">
                     <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.final_grand_total.toFixed(2)}
+                      ₹{order_details.grand_total.toFixed(2)}
                     </span>
 
                     {/* Conditionally render the line-through price */}

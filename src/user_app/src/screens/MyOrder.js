@@ -1489,7 +1489,7 @@ export const OrderCard = ({
             </div>
             <div className="col-6 text-end">
               <span className="text-info font_size_14 fw-semibold">
-                ₹{order.final_grand_total.toFixed(2)}
+                ₹{order.grand_total.toFixed(2)}
               </span>
               {order.grand_total !==
                 (order.grand_total / (1 - order.discount_percent / 100) ||
@@ -2168,7 +2168,7 @@ const OrdersTab = ({
                         </div>
                         <div className="col-6 text-end">
                           <span className="text-info font_size_14 fw-semibold">
-                            ₹{order.final_grand_total.toFixed(2)}
+                            ₹{order.grand_total.toFixed(2)}
                           </span>
 
                           {/* Conditionally render the line-through price */}
