@@ -72,203 +72,157 @@ const MyOrder = () => {
     setRole(userData?.role);
   }, []);
 
-  const generatePDF = async (orderData) => {
-    try {
-      setIsGenerating(true); // Start loading
+  const generatePDF = (orderData) => {
+    const { order_details, menu_details } = orderData;
+    const outlet_name = localStorage.getItem("outlet_name") || "Outlet Name";
+    const outlet_address = localStorage.getItem("outlet_address") || "Outlet Address";
+    const outlet_mobile = localStorage.getItem("mobile") || "Outlet Mobile";
+    const website_url = localStorage.getItem("website_url") || "https://menumitra.com";
 
-      if (!orderData?.order_details) {
-        throw new Error("Order details not found");
-      }
-
-      const { order_details, menu_details } = orderData;
-      const outlet_name =
-        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
-      const outlet_address = localStorage.getItem("outlet_address") || "-";
-      const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
-      const website_url = "https://menumitra.com";
-      const customerName =
-        localStorage.getItem("customerName") ||
-        order_details.customer_name ||
-        "Guest";
-
-      // Create a temporary container in the actual DOM
-      const container = document.createElement("div");
-      container.style.position = "absolute";
-      container.style.left = "-9999px";
-      container.style.top = "-9999px";
-      document.body.appendChild(container);
-
-      const content = document.createElement("div");
-      content.style.width = "800px";
-      content.style.padding = "60px";
-      content.style.fontSize = "16px";
-      content.style.margin = "0";
-      content.style.backgroundColor = "#ffffff";
-      container.appendChild(content);
-
-      content.innerHTML = `
-  <div style="max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <div style="display: flex; align-items: center;">
-        <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
-        <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+    const content = document.createElement('div');
+    content.innerHTML = `
+    <div style="max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+      <!-- Header Section -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; align-items: center;">
+          <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
+          <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+        </div>
+        <span style="color: #d9534f; font-size: 20px; font-weight: bold;">Invoice</span>
       </div>
-      <span style="color: #d9534f; font-size: 20px; font-weight: normal;">Invoice</span>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-      <div>
-        <p style="margin: 0; font-weight: bold;">Hello, ${order_details.customer_name || "Customer"}</p>
-        <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
+  
+      <!-- Customer Info -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+        <div>
+          <p style="margin: 0; font-weight: bold;">Hello, ${order_details.customerName}</p>
+          <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 0;">Bill no: <strong>${order_details.order_number}</strong></p>
+          <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
+        </div>
       </div>
-      <div style="text-align: right;">
-        <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
-        <p style="margin: 5px 0 0 0; color: #666;">${order_details.date || ""} ${order_details.time || ""}</p>
-      </div>
-    </div>
-
-    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-      <tr>
-        <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Item</th>
-        <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
-        <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
-      </tr>
-      ${menu_details
-        .map(
-          (item) => `
-        <tr>
-          <td style="padding: 8px 0; color: #d9534f;">${item.menu_name}</td>
-          <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
-          <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(2)}</td>
+  
+      <!-- Items Table -->
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="background-color: #f8f8f8;">
+          <th style="text-align: left; padding: 10px; border-bottom: 2px solid #ddd;">Item</th>
+          <th style="text-align: center; padding: 10px; border-bottom: 2px solid #ddd;">Quantity</th>
+          <th style="text-align: right; padding: 10px; border-bottom: 2px solid #ddd;">Price</th>
         </tr>
-      `
-        )
-        .join("")}
-    </table>
+        ${menu_details
+          .map(
+            (item) => `
+          <tr>
+            <td style="padding: 8px; color: #d9534f;">${item.menu_name}</td>
+            <td style="text-align: center; padding: 8px;">${item.quantity}</td>
+            <td style="text-align: right; padding: 8px;">₹ ${item.price.toFixed(2)}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </table>
+  
+      <!-- Billing Summary -->
+<div style="border-top: 2px solid #ddd; margin-top: 20px;">
+  <div style="text-align: right; margin-top: 10px;">
+    <!-- Total -->
+    ${order_details.total_bill_amount ? `<p><strong>Total:</strong> ₹${order_details.total_bill_amount.toFixed(2)}</p>` : ""}
 
-    ${order_details.total_bill_amount
-      ? `<div style="border-top: 2px solid #ddd; margin-top: 20px;">
-        <div style="text-align: right; margin-top: 10px;">
-          <p><strong>Total:</strong> ₹${order_details.total_bill_amount.toFixed(2)}</p>
+    <!-- Discount -->
+    ${order_details.discount_percent > 0 ? 
+      `<p>Discount (${order_details.discount_percent}%): <span style="color: red;">-₹${order_details.discount_amount.toFixed(2)}</span></p>` 
+      : ""}
 
-          ${
-            order_details.discount_percent > 0
-              ? `<p><strong>Discount (${order_details.discount_percent}%):</strong> <span style="color: red;">-₹${order_details.discount_amount.toFixed(2)}</span></p>`
-              : ""
-          }
-          ${
-            order_details.special_discount
-              ? `<p><strong>Special Discount:</strong> <span style="color: red;">-₹${order_details.special_discount.toFixed(2)}</span></p>`
-              : ""
-          }
-          ${
-            order_details.charges > 0
-              ? `<p><strong>Extra Charges:</strong> <span style="color: green;">+₹${order_details.charges.toFixed(2)}</span></p>`
-              : ""
-          }
-          <p><strong>Subtotal:</strong> ₹${order_details.subtotal.toFixed(2)}</p>
+    <!-- Special Discount -->
+    ${order_details.special_discount ? 
+      `<p>Special Discount: <span style="color: red;">-₹${order_details.special_discount.toFixed(2)}</span></p>` 
+      : ""}
 
-          <p><strong>Service Charges (${order_details.service_charges_percent || ""}%):</strong>
-            <span style="color: green;">+₹${order_details.service_charges_amount.toFixed(2)}</span>
-          </p>
+    <!-- Subtotal -->
+    ${order_details.total_bill_with_discount ? 
+      `<p><strong>Subtotal:</strong> ₹${order_details.total_bill_with_discount.toFixed(2)}</p>` 
+      : ""}
 
-          <p><strong>GST (${order_details.gst_percent || ""}%):</strong>
-            <span style="color: green;">+₹${order_details.gst_amount.toFixed(2)}</span>
-          </p>
+    <!-- Extra Charges -->
+    ${order_details.charges > 0 ? 
+      `<p>Extra Charges: <span style="color: green;">+₹${order_details.charges.toFixed(2)}</span></p>` 
+      : ""}
 
-          ${
-            order_details.tip > 0
-              ? `<p><strong>Tip:</strong> <span style="color: green;">+₹${order_details.tip.toFixed(2)}</span></p>`
-              : ""
-          }
+    <!-- Service Charges -->
+    ${order_details.service_charges_amount ? 
+      `<p>Service Charges (${order_details.service_charges_percent || ""}%): <span style="color: green;">+₹${order_details.service_charges_amount.toFixed(2)}</span></p>` 
+      : ""}
 
-          <p><strong>Grand Total:</strong> ₹${order_details.final_grand_total.toFixed(2)}</p>
-        </div>
-      </div>`
-      : ""
-    }
+    <!-- GST -->
+    ${order_details.gst_amount ? 
+      `<p>GST (${order_details.gst_percent || ""}%): <span style="color: green;">+₹${order_details.gst_amount.toFixed(2)}</span></p>` 
+      : ""}
 
-    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-      <div>
-        <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
-        <p style="margin: 5px 0;">► ${order_details.customer_name || outlet_name}</p>
-        <p style="margin: 5px 0;">► ${order_details.customer_address || outlet_address}</p>
-        <p style="margin: 5px 0;">► ${order_details.customer_mobile || outlet_mobile}</p>
-      </div>
-      <div style="text-align: right;">
-        <p style="font-weight: bold;">Payment Method</p>
-        <p>${order_details.payment_method || "Cash"}</p>
-      </div>
-    </div>
+    <!-- Tip -->
+    ${order_details.tip ? 
+      `<p>Tip: <span style="color: green;">+₹${order_details.tip.toFixed(2)}</span></p>` 
+      : ""}
 
-    <div style="text-align: center; margin-top: 40px;">
-      <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
-      <div style="margin: 20px 0;">
-        <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-          <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
-          <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
-        </div>
-      </div>
-      <p style="margin: 3px 0; color: #666; font-size: 13px;">info@menumitra.com</p>
-      <p style="margin: 3px 0; color: #666; font-size: 13px;">+91 9172530151</p>
-      <p style="margin: 3px 0; color: #666; font-size: 13px;">${website_url}</p>
-    </div>
+    <!-- Grand Total -->
+    ${order_details.final_grand_total ? 
+      `<p><strong>Grand Total:</strong> ₹${(order_details.final_grand_total + (order_details.tip || 0)).toFixed(2)}</p>` 
+      : ""}
   </div>
-`;
+</div>
 
 
-      // Wait for images to load
-      const images = content.getElementsByTagName("img");
-      await Promise.all(
-        Array.from(images).map((img) => {
-          return new Promise((resolve, reject) => {
-            if (img.complete) {
-              resolve();
-            } else {
-              img.onload = resolve;
-              img.onerror = resolve; // Continue even if image fails to load
-            }
-          });
-        })
-      );
+      <!-- Footer Section -->
+      <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+        <div>
+          <p style="font-weight: bold;">Billing Information</p>
+          <p>► ${outlet_name}</p>
+          <p>► ${outlet_address}</p>
+          <p>► ${outlet_mobile}</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="font-weight: bold;">Payment Method</p>
+          <p>${order_details.payment_method || ""}</p>
+        </div>
+      </div>
+  
+      <!-- Closing Message -->
+      <div style="text-align: center; margin-top: 40px;">
+        <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
+        <div style="margin: 20px 0;">
+          <div style="display: inline-flex; align-items: center; justify-content: center;">
+            <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
+            <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+          </div>
+        </div>
+        <p style="color: #666; font-size: 13px;">info@menumitra.com</p>
+        <p style="color: #666; font-size: 13px;">+91 9172530151</p>
+        <p style="color: #666; font-size: 13px;">${website_url}</p>
+      </div>
+    </div>
+  `;
+  
 
-      try {
-        const canvas = await html2canvas(content, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-          windowWidth: 800,
-          windowHeight: content.offsetHeight,
-          logging: false,
-        });
+    document.body.appendChild(content);
 
-        const imgData = canvas.toDataURL("image/jpeg", 1.0);
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: "a4",
-        });
+    html2canvas(content, { scale: 2 }).then(canvas => {
+      document.body.removeChild(content);
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const imgData = canvas.toDataURL('image/jpeg', 0.6);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-        await pdf.save(`invoice-${order_details.order_number}.pdf`);
+      pdf.addImage(imgData, 'JPEG', 0, 10, pdfWidth, pdfHeight);
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
 
-        window.showToast("success", "Invoice downloaded successfully");
-      } finally {
-        // Clean up
-        if (document.body.contains(container)) {
-          document.body.removeChild(container);
-        }
-        setIsGenerating(false);
-      }
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      window.showToast("error", "Failed to generate invoice");
-      setIsGenerating(false);
-    }
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${order_details.order_number}.pdf`;      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   };
 
   const fetchActiveOrders = async () => {
@@ -2136,7 +2090,7 @@ const OrdersTab = ({
                         </div>
                         <div className="col-6 text-end">
                           <span className="text-info font_size_14 fw-semibold">
-                            ₹{order.grand_total.toFixed(2)}
+                            ₹{order.final_grand_total.toFixed(2)}
                           </span>
 
                           {/* Conditionally render the line-through price */}

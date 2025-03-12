@@ -8,12 +8,12 @@ import ProductCart from "../component/ProductCart";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import NearbyArea from "../component/NearbyArea";
-import { usePopup } from '../context/PopupContext';
+import { usePopup } from "../context/PopupContext";
 import OrdersPlacedOngoing from "./OrdersPlacedOngoing";
 import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
-import config  from "../component/config";
+import config from "../component/config";
 const HomeScreen = () => {
   const { restaurantCode, table_number } = useParams();
   const tableNumber = localStorage.getItem("tableNumber");
@@ -34,7 +34,8 @@ const HomeScreen = () => {
     return localStorage.getItem("isVegOnly") === "true" || false;
   });
 
-  const [showRestaurantDisabledModal, setShowRestaurantDisabledModal] = useState(null)
+  const [showRestaurantDisabledModal, setShowRestaurantDisabledModal] =
+    useState(null);
 
   const restaurantStatus = localStorage.getItem("restaurantStatus");
 
@@ -68,11 +69,11 @@ const HomeScreen = () => {
     }
   }, [restaurantId, restaurantDetails, table_number]);
 
-  useEffect(()=>{
-    if(restaurantStatus !== true){
-      setShowRestaurantDisabledModal(false)
+  useEffect(() => {
+    if (restaurantStatus !== true) {
+      setShowRestaurantDisabledModal(false);
     }
-  },[restaurantStatus])
+  }, [restaurantStatus]);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -100,36 +101,39 @@ const HomeScreen = () => {
     );
   };
 
-    //call waiter
+  //call waiter
   const callWaiter = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
+      const userData = JSON.parse(localStorage.getItem("userData"));
       if (!userData?.user_id) {
         showLoginPopup();
         return;
       }
 
-      const response = await fetch(`${config.apiDomain}/common_api/call_waiter`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({
-          outlet_id: restaurantId,
-          user_id: userData.user_id
-        })
-      });
+      const response = await fetch(
+        `${config.apiDomain}/common_api/call_waiter`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            outlet_id: restaurantId,
+            user_id: userData.user_id,
+          }),
+        }
+      );
 
       const data = await response.json();
       if (data.st === 1) {
-        alert('Waiter has been called successfully!' || data.msg);
+        alert("Waiter has been called successfully!" || data.msg);
       } else {
-        alert('Failed to call waiter. Please try again.' || data.msg);
+        alert("Failed to call waiter. Please try again." || data.msg);
       }
     } catch (error) {
-      console.error('Error calling waiter:', error);
-      alert('Failed to call waiter. Please try again.');
+      console.error("Error calling waiter:", error);
+      alert("Failed to call waiter. Please try again.");
     }
   };
 
@@ -142,12 +146,17 @@ const HomeScreen = () => {
             style={{ zIndex: 1040, position: "relative" }}
           >
             <div className="d-flex align-items-center">
-              <Link to="/" className="d-flex align-items-center">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <img src={logo} alt="logo" width="40" height="40" />
                 <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
                   MenuMitra
                 </span>
-              </Link>
+              </a>
             </div>
             <div className="right-content gap-1">
               <span className=""> </span>
@@ -314,15 +323,17 @@ const HomeScreen = () => {
           </ul>
           <div className="align-bottom border-top">
             <div className="d-flex justify-content-center py-0">
-              <Link to="/">
-                {" "}
-                <div className="d-flex align-items-center mt-4 mb-0">
-                  <img src={logo} alt="logo" width="40" height="40" />
-                  <div className="text-dark mb-0 mt-1 ms-2 fw-semibold font_size_18">
-                    MenuMitra
-                  </div>
-                </div>
-              </Link>
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
             </div>
             <div className="text-center text-md-center gray-text font_size_12 pb-5">
               <div className="my-4">
@@ -385,8 +396,7 @@ const HomeScreen = () => {
             <div className="mb-3">
               <NearbyArea />
               <div className="pb-2">
-              <RestaurantSocials />
-
+                <RestaurantSocials />
               </div>
             </div>
           </div>
