@@ -1640,7 +1640,7 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="text-end">
                     <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total.toFixed(2)}
+                      ₹{order_details.final_grand_total.toFixed(2)}
                     </span>
 
                     {/* Conditionally render the line-through price */}
@@ -2300,7 +2300,7 @@ const TrackOrder = () => {
                         <div className="col-12 pt-0">
                           <div className="d-flex justify-content-between align-items-center py-0">
                             <span className="ps-2 font_size_14 pt-1 gray-text">
-                              Tip Amount
+                              Tip 
                             </span>
                             <span className="pe-2 font_size_14 gray-text">
                               +₹{tip.toFixed(2)}

@@ -441,7 +441,7 @@ const OrderCard = ({
               </div>
               <div className="col-6 text-end">
                 <span className="text-info font_size_14 fw-semibold">
-                  ₹{order.grand_total.toFixed(2)}
+                  ₹{order.final_grand_total.toFixed(2)}
                 </span>
                 {order.discount_percent > 0 && (
                   <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
