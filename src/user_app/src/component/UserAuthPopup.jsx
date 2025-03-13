@@ -519,21 +519,19 @@ const UserAuthPopup = () => {
                 className="header-content d-flex justify-content-center"
                 style={{ zIndex: 1040, position: "relative" }}
               >
-                <div className="mb-3">
-                  <Link
-                    to="/"
-                    className="d-flex align-items-center text-decoration-none"
-                  >
-                    <img
-                      src={logo}
-                      alt="logo"
-                      width="40"
-                      height="40"
-                      className="me-2"
-                    />
-                    <span className="text-dark fw-bolder">MenuMitra</span>
-                  </Link>
-                </div>
+               <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
               </div>
               <div className="text-center mb-4">
                 <h4 className="text-dark">Verify OTP</h4>
@@ -622,17 +620,19 @@ const UserAuthPopup = () => {
                 className="header-content d-flex justify-content-center"
                 style={{ zIndex: 1040, position: "relative" }}
               >
-                <div className="mb-3">
-                  <Link
-                    to="/"
-                    className="d-flex align-items-center text-decoration-none"
-                  >
-                    <img src={logo} alt="logo" width="40" height="40" />
-                    <span className="text-dark mb-0 ms-2 fw-bolder">
-                      MenuMitra
-                    </span>
-                  </Link>
-                </div>
+                 <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
               </div>
               <div className="form-group mb-3">
                 <label className="form-label d-flex justify-content-start">
@@ -755,17 +755,19 @@ const UserAuthPopup = () => {
               className="header-content d-flex justify-content-center"
               style={{ zIndex: 1040, position: "relative" }}
             >
-              <div className="mb-3">
-                <Link
-                  to="/"
-                  className="d-flex align-items-center justify-content-center"
-                >
-                  <img src={logo} alt="logo" width="40" height="40" />
-                  <span className="text-dark mb-0 ms-2 fw-bolder">
-                    MenuMitra
-                  </span>
-                </Link>
-              </div>
+               <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
             </div>
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="form-group mb-3">

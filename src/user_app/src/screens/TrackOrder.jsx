@@ -1397,67 +1397,97 @@ const TrackOrder = () => {
               .join("")}
           </table>
 
-          <div style="border-top: 1px solid #ddd; margin-top: 20px;">
-            <div style="text-align: right; margin-top: 10px;">
-              <p style="margin: 5px 0; font-size: 15px;">
-                <span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount?.toFixed(
-                  2
-                )}
-              </p>
-              ${
-                order_details.discount_percent > 0
-                  ? `
-                <p style="margin: 5px 0; font-size: 15px;">
-                  <span style="font-weight: bold;">Discount (${
-                    order_details.discount_percent
-                  }%):</span> -₹${
-                      order_details.discount_amount?.toFixed(2) || "-"
-                    }
-                </p>
-              `
-                  : ""
-              }
-              ${
-                order_details.special_discount
-                  ? `
-                <p style="margin: 5px 0; font-size: 15px;">Special Discount: -₹${
-                  order_details.special_discount?.toFixed(2) || "-"
-                }</p>
-              `
-                  : ""
-              }
-              <p style="margin: 5px 0; font-size: 15px;">
-                <span style="font-weight: bold;">Total after Discount:</span> ₹${
-                  order_details.total_bill_with_discount?.toFixed(2) || "-"
-                }
-              </p>
-              ${
-                order_details.charges > 0
-                  ? `
-                <p style="margin: 5px 0; font-size: 15px;">Extra Charges: +₹${
-                  order_details.charges?.toFixed(2) || "-"
-                }</p>
-              `
-                  : ""
-              }
-              <p style="margin: 5px 0; font-size: 15px;">
-                <span style="font-weight: bold;">Service Charges (${
-                  order_details.service_charges_percent || ""
-                }%):</span> +₹${
-        order_details.service_charges_amount?.toFixed(2) || "-"
-      }
-              </p>
-              <p style="margin: 5px 0; font-size: 15px;">
-                <span style="font-weight: bold;">GST (${
-                  order_details.gst_percent || ""
-                }%):</span> +₹${order_details.gst_amount?.toFixed(2) || "-"}
-              </p>
-              <p style="margin: 5px 0; font-size: 15px; font-weight: bold;">Grand Total: ₹${
-                order_details.grand_total?.toFixed(2) || "-"
-              }</p>
-            </div>
-          </div>
+          <!-- Billing Summary -->
+<div style="border-top: 2px solid #ddd; margin-top: 20px;">
+  <div style="text-align: right; margin-top: 10px;">
+    <!-- Total -->
+    ${
+      order_details.total_bill_amount
+        ? `<span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
 
+    <!-- Discount -->
+    ${
+      order_details.discount_percent > 0
+        ? `<span style="font-weight: bold;">Discount:</span>(${
+            order_details.discount_percent
+          }%): <span style="color: red;">-₹${order_details.discount_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- Special Discount -->
+    ${
+      order_details.special_discount
+        ? `<span style="font-weight: bold;">Special Discount:</span><span style="color: red;">-₹${order_details.special_discount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- Subtotal -->
+    ${
+      order_details.total_bill_with_discount
+        ? `<span style="font-weight: bold;">Subtotal:</span> ₹${order_details.total_bill_with_discount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+
+    <!-- Extra Charges -->
+    ${
+      order_details.charges > 0
+        ? `<span style="font-weight: bold;">Extra Charges:</span><span style="color: green;">+₹${order_details.charges.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- Service Charges -->
+    ${
+      order_details.service_charges_amount
+        ? `<span style="font-weight: bold;">Service Charges (${
+            order_details.service_charges_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.service_charges_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- GST -->
+    ${
+      order_details.gst_amount
+        ? `<span style="font-weight: bold;">GST (${
+            order_details.gst_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.gst_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+<!-- Tip -->
+${
+  order_details.tip && order_details.tip > 0
+    ? `<span style="font-weight: bold;">Tip:</span><span style="color: green;">+₹${order_details.tip.toFixed(
+        2
+      )}</span></br>`
+    : ""
+}
+
+
+    <!-- Grand Total -->
+    ${
+      order_details.final_grand_total
+        ? `<span style="font-weight: bold;">Grand Total:</span> ₹${order_details.final_grand_total.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+  </div>
+</div>
           <div style="display: flex; justify-content: space-between; margin-top: 30px;">
             <div>
               <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>

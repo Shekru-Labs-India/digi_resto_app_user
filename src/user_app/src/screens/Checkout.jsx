@@ -75,46 +75,38 @@ const Checkout = () => {
   );
 
   useEffect(() => {
-    let mounted = true;
-
     const checkAuthStatus = () => {
       const userData = JSON.parse(localStorage.getItem("userData") || "{}");
       const newUserId = userData?.user_id;
 
-      if (!newUserId && mounted) {
-        // Clear auth data and cart
-        const keysToRemove = [
-          "user_id",
-          "userData",
-          "cartItems",
-          "access_token",
-          "customerName",
-          "mobile",
-        ];
-        keysToRemove.forEach((key) => localStorage.removeItem(key));
-
-        // Show login popup and navigate home
-        showLoginPopup();
-        const restaurantCode = localStorage.getItem("restaurantCode");
-        const tableNumber = localStorage.getItem("tableNumber");
-        const sectionId = localStorage.getItem("sectionId");
-        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
-
-        setCurrentUserId(null);
+      if (!newUserId) {
+        setIsLoggedIn(false); // Only update state, do NOT trigger popup here
+      } else {
+        setIsLoggedIn(true);
       }
     };
 
-    // Initial check
+    // Initial auth check
     checkAuthStatus();
 
-    // Set up interval to check auth status
-    const authCheckInterval = setInterval(checkAuthStatus, 1000);
+    // Listen for storage changes (in case login status changes in another tab)
+    const handleStorageChange = () => checkAuthStatus();
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      mounted = false;
-      clearInterval(authCheckInterval);
+      window.removeEventListener("storage", handleStorageChange);
     };
-  }, [currentUserId, navigate, showLoginPopup]);
+  }, []);
+
+  // 🔹 Only trigger popup when user clicks login button
+  const handleLogin = () => {
+    console.log("Login button clicked! Showing login popup...");
+    if (typeof showLoginPopup === "function") {
+      showLoginPopup();
+    } else {
+      console.error("showLoginPopup is not defined!");
+    }
+  };
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -1917,24 +1909,21 @@ const Checkout = () => {
             )}
 
             {!isLoggedIn && (
-              <div
-                className="container overflow-hidden d-flex justify-content-center align-items-center"
-                style={{ height: "68vh" }}
-              >
-                <div className="m-b20 dz-flex-box text-center">
-                  <div className="dz-cart-about">
-                    <div className="mb-3">
-                      <button
-                        className="btn btn-outline-primary rounded-pill"
-                        onClick={showLoginPopup}
-                      >
-                        <i className="fa-solid fa-lock me-2 fs-6"></i> Login
-                      </button>
-                    </div>
-                    <span>Please login to access checkout</span>
-                  </div>
-                </div>
-              </div>
+             <div
+             className="container overflow-hidden d-flex justify-content-center align-items-center"
+             style={{ height: "68vh" }}
+           >
+             <div className="m-b20 dz-flex-box text-center">
+               <div className="dz-cart-about">
+                 <div className="mb-3">
+                   <button className="btn btn-outline-primary rounded-pill" onClick={handleLogin}>
+                     <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                   </button>
+                 </div>
+                 <span>Please login to access checkout</span>
+               </div>
+             </div>
+           </div>
             )}
           </div>
         </div>
