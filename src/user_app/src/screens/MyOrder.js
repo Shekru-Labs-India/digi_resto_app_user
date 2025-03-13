@@ -1517,15 +1517,9 @@ export const OrderCard = ({
               <span className="text-info font_size_14 fw-semibold">
                 ₹{order.final_grand_total.toFixed(2)}
               </span>
-              {order.grand_total !==
-                (order.grand_total / (1 - order.discount_percent / 100) ||
-                  order.grand_total) && (
+              {order.grand_total !== order.total_bill_amount && (
                 <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                  ₹
-                  {(
-                    order.grand_total / (1 - order.discount_percent / 100) ||
-                    order.grand_total
-                  ).toFixed(2)}
+                  ₹{order.total_bill_amount.toFixed(2)}
                 </span>
               )}
             </div>

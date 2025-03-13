@@ -1428,15 +1428,7 @@ const TrackOrder = () => {
           )}</span></br>`
         : ""
     }
-    <!-- Extra Charges -->
-    ${
-      order_details.charges > 0
-        ? `<span style="font-weight: bold;">Extra Charges:</span><span style="color: green;">+₹${order_details.charges.toFixed(
-            2
-          )}</span></br>`
-        : ""
-    }
- 
+
     <!-- Subtotal -->
     ${
       order_details.total_bill_with_discount
@@ -1672,18 +1664,10 @@ ${
                     </span>
 
                     {/* Conditionally render the line-through price */}
-                    {order_details.grand_total !==
-                      (order_details.grand_total /
-                        (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total) && (
-                      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                        ₹
-                        {(
-                          order_details.grand_total /
-                            (1 - order_details.discount_percent / 100) ||
-                          order_details.grand_total
-                        ).toFixed(2)}
-                      </span>
+                    {order_details.grand_total !== order_details.total_bill_amount && (
+                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                  ₹{order_details.total_bill_amount.toFixed(2)}
+                </span>
                     )}
                   </div>
                 </div>
