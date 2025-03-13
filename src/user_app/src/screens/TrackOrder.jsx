@@ -1428,16 +1428,6 @@ const TrackOrder = () => {
           )}</span></br>`
         : ""
     }
-
-    <!-- Subtotal -->
-    ${
-      order_details.total_bill_with_discount
-        ? `<span style="font-weight: bold;">Subtotal:</span> ₹${order_details.total_bill_with_discount.toFixed(
-            2
-          )}</br>`
-        : ""
-    }
-
     <!-- Extra Charges -->
     ${
       order_details.charges > 0
@@ -1446,7 +1436,15 @@ const TrackOrder = () => {
           )}</span></br>`
         : ""
     }
-
+ 
+    <!-- Subtotal -->
+    ${
+      order_details.total_bill_with_discount
+        ? `<span style="font-weight: bold;">Subtotal:</span> ₹${order_details.total_bill_with_discount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
     <!-- Service Charges -->
     ${
       order_details.service_charges_amount

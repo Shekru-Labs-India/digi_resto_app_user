@@ -1641,9 +1641,9 @@ const Checkout = () => {
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
-                                <span className="ms-2 font_size_10 text-capitalize text-dark">
+                                {/* <span className="ms-2 font_size_10 text-capitalize text-dark">
                                   ({item.half_or_full || "full"})
-                                </span>
+                                </span> */}
                               </span>
                             </div>
 
@@ -1843,7 +1843,7 @@ const Checkout = () => {
             )}
 
             {cartItems.length > 0 && (
-              <div className="text-center mt-3">
+              <div className="text-center  mt-3">
                 <button
                   onClick={handlePlaceOrder}
                   className="btn btn-success rounded-pill text-white px-4 py-2"
