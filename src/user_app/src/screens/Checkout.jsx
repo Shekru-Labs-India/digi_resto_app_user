@@ -347,7 +347,7 @@ const Checkout = () => {
         tables: [
           localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
         ],
-        action: "save",
+        action: "create_order",
 
         // table_number: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
         section_id: userData?.sectionId || "1",
@@ -432,15 +432,35 @@ const Checkout = () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const tableNumber = localStorage.getItem("tableNumber") || "1";
-      console.log(tableNumber + "current table number");
-      const storedCart = JSON.parse(
-        localStorage.getItem("restaurant_cart_data")
-      );
-
+      console.log(tableNumber + " current table number");
+      const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data"));
+  
       if (!existingOrderDetails.orderNumber) {
         throw new Error("Invalid order number");
       }
+  
+      // Merge new cart items with existing order items
+      const updatedOrderItems = [...existingOrderDetails.order_items];
 
+      storedCart.order_items.forEach((newItem) => {
+        const existingItem = updatedOrderItems.find(
+          (item) => item.menu_id === newItem.menu_id && item.half_or_full === newItem.half_or_full
+        );
+  
+        if (existingItem) {
+          // If item already exists, increase the quantity
+          existingItem.quantity += newItem.quantity;
+        } else {
+          // If item doesn't exist, add it to the order
+          updatedOrderItems.push({
+            menu_id: newItem.menu_id,
+            quantity: newItem.quantity,
+            comment: newItem.comment || "",
+            half_or_full: newItem.half_or_full || "full",
+          });
+        }
+      });
+  
       const requestBody = {
         order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
@@ -451,18 +471,13 @@ const Checkout = () => {
         ],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: storedCart.order_items.map((item) => ({
-          menu_id: item.menu_id,
-          quantity: item.quantity,
-          comment: item.comment || "",
-          half_or_full: item.half_or_full || "full",
-        })),
+        order_items: updatedOrderItems, // Updated order items with merged quantities
       };
-
+  
       if (orderStatus === "paid" && paymentMethod) {
         requestBody.payment_method = paymentMethod;
       }
-
+  
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
@@ -474,7 +489,7 @@ const Checkout = () => {
           body: JSON.stringify(requestBody),
         }
       );
-
+  
       if (response.status === 401) {
         localStorage.removeItem("user_id");
         localStorage.removeItem("userData");
@@ -485,27 +500,27 @@ const Checkout = () => {
         const restaurantCode = localStorage.getItem("restaurantCode");
         const tableNumber = localStorage.getItem("tableNumber");
         const sectionId = localStorage.getItem("sectionId");
-
+  
         navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         showLoginPopup();
         return;
       }
-
+  
       const data = await response.json();
-
+  
       if (data.st === 1) {
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
-
+  
         // Show success message
         window.showToast("success", "Order processed successfully");
-
+  
         // Navigate to MyOrder page after a short delay
         setTimeout(() => {
           navigate("/user_app/MyOrder");
         }, 500);
-
+  
         if (data.data?.new_order_number) {
           setNewOrderNumber(data.data.new_order_number);
           setShowPopup(true);
@@ -518,6 +533,7 @@ const Checkout = () => {
       console.error("Error:", error);
     }
   };
+  
 
   const handleAddToExistingOrder = async () => {
     try {
