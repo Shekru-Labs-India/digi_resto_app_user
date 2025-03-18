@@ -98,6 +98,7 @@ const AddToCartUI = ({
     };
     handleConfirmAddToCart(productWithQuantity);
   };
+  
 
   if (!showModal || isPriceFetching) return null;
 

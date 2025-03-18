@@ -910,47 +910,46 @@ const TrackOrder = () => {
     const validateOrder = () => {
       console.log("TrackOrder: Starting order validation");
       try {
-        const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-  
-        if (!allOrders || Object.keys(allOrders).length === 0) {
-          console.error("TrackOrder: No orders found in localStorage.");
-          setLoading(false);
-          window.showToast("error", "Order not found");
-          navigate("/user_app/Index");
-          return false;
+        // First check state or localStorage for orderId
+        if (state?.orderId || localStorage.getItem("current_order_id")) {
+          console.log("TrackOrder: Order ID found, validation successful");
+          return true;
         }
-  
-        let orderList = [...(allOrders.ongoing || []), ...(allOrders.placed || [])];
-  
-        let existingOrder = orderList.find((order) => order.order_number === order_number);
-  
-        if (!existingOrder) {
-          console.error("TrackOrder: Order not found.");
-          setLoading(false);
-          window.showToast("error", "Order not found");
-          navigate("/user_app/Index");
-          return false;
-        }
-  
-        // Get cart items to merge (if applicable)
-        const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data")) || { order_items: [] };
-  
-        // Merge order items (avoid duplicates)
-        storedCart.order_items.forEach((newItem) => {
-          const existingItem = existingOrder.order_items.find(
-            (item) => item.menu_id === newItem.menu_id && item.half_or_full === newItem.half_or_full
+
+        const allOrders = JSON.parse(
+          localStorage.getItem("allOrderList") || "{}"
+        );
+        let orderFound = false;
+
+        // Check ongoing orders
+        if (allOrders.ongoing?.length > 0) {
+          orderFound = allOrders.ongoing.some(
+            (order) => order.order_number === order_number
           );
-  
-          if (existingItem) {
-            existingItem.quantity += newItem.quantity; // Update quantity
-          } else {
-            existingOrder.order_items.push(newItem); // Add new item
-          }
-        });
-  
-        // Update localStorage with merged order
-        localStorage.setItem("allOrderList", JSON.stringify(allOrders));
-  
+        }
+
+        // Check placed orders
+        if (!orderFound && allOrders.placed?.length > 0) {
+          orderFound = allOrders.placed.some(
+            (order) => order.order_number === order_number
+          );
+        }
+
+        // Check completed and cancelled orders
+        if (!orderFound) {
+          orderFound = [
+            ...Object.values(allOrders.completed || {}).flat(),
+            ...Object.values(allOrders.cancelled || {}).flat(),
+          ].some((order) => order.order_number === order_number);
+        }
+
+        if (!orderFound) {
+          setLoading(false);
+          window.showToast("error", "Order not found");
+          navigate("/user_app/Index");
+          return false;
+        }
+
         return true;
       } catch (error) {
         console.error("TrackOrder: Error during order validation:", error);
@@ -960,12 +959,11 @@ const TrackOrder = () => {
         return false;
       }
     };
-  
+
     if (order_number) {
       validateOrder();
     }
   }, [order_number, navigate, state]);
-  
 
   // Update the loading condition in the return statement
   if (loading && !orderDetails) {
@@ -1667,9 +1665,9 @@ ${
 
                     {/* Conditionally render the line-through price */}
                     {order_details.grand_total !== order_details.total_bill_amount && (
-                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                  ₹{order_details.total_bill_amount.toFixed(2)}
-                </span>
+                      <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                        ₹{order_details.total_bill_amount.toFixed(2)}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -2314,7 +2312,7 @@ ${
                         <div className="col-12 pt-0">
                           <div className="d-flex justify-content-between align-items-center py-0">
                             <span className="ps-2 font_size_14 pt-1 gray-text">
-                              Tip 
+                              Tip
                             </span>
                             <span className="pe-2 font_size_14 gray-text">
                               +₹{tip.toFixed(2)}

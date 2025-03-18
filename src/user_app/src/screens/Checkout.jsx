@@ -1708,20 +1708,20 @@ const Checkout = () => {
                         </div>
                         <div className="row">
                           <div className="col-8 text-start">
-                            {item.offer ? (
-                              <>
-                                <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.discountedPrice.toFixed(2)}
-                                </span>
-                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹{item.price.toFixed(2)}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                ₹{item.price}
-                              </span>
-                            )}
+                          {item.offer ? (
+      <>
+        <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+          ₹{item.discountedPrice ? item.discountedPrice.toFixed(2) : "0.00"}
+        </span>
+        <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+          ₹{item.price ? item.price.toFixed(2) : "0.00"}
+        </span>
+      </>
+    ) : (
+      <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+        ₹{item.price ? item.price.toFixed(2) : "0.00"}
+      </span>
+    )}
                           </div>
                           <div className="col-4 d-flex justify-content-end pe-3">
                             <div className="dz-stepper style-3">
