@@ -88,16 +88,51 @@ const AddToCartUI = ({
   }, [showModal, productDetails?.menu_id, restaurantId]);
 
   const handleConfirmWithQuantity = () => {
+    // Ensure we have product details
+    if (!productDetails) {
+      console.error("Error: Product details missing");
+      return;
+    }
+  
+    // Get the existing cart from localStorage
+    const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data")) || { order_items: [] };
+  
+    // Check if the item already exists in the cart
+    const existingItemIndex = storedCart.order_items.findIndex(
+      (item) =>
+        item.menu_id === productDetails.menu_id &&
+        item.half_or_full === portionSize
+    );
+  
+    let newQuantity = quantity;
+  
+    if (existingItemIndex !== -1) {
+      // Get existing quantity
+      const existingItem = storedCart.order_items[existingItemIndex];
+      const updatedQuantity = existingItem.quantity + quantity;
+  
+      // If quantity exceeds 20, limit it
+      if (updatedQuantity > 20) {
+        newQuantity = 20 - existingItem.quantity;
+        if (newQuantity <= 0) {
+          window.showToast("info", "Maximum quantity limit (20) reached.");
+          return; // Prevent adding more
+        }
+      }
+    }
+  
     // Create a new product object with quantity
     const productWithQuantity = {
       ...productDetails,
-      quantity: quantity,
+      quantity: newQuantity,
       comment: comment,
       half_or_full: portionSize,
       price: portionSize === "half" ? prices.halfPrice : prices.fullPrice,
     };
+  
     handleConfirmAddToCart(productWithQuantity);
   };
+  
   
 
   if (!showModal || isPriceFetching) return null;
