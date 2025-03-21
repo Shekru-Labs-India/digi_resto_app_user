@@ -137,7 +137,16 @@ const Checkout = () => {
       const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-
+  
+        // Ensure total quantity of each item does not exceed 20
+        cartData.order_items = cartData.order_items.map((item) => ({
+          ...item,
+          quantity: Math.min(item.quantity, 20), // Ensure max 20 quantity
+        }));
+  
+        // Save the updated cart back to localStorage (optional)
+        localStorage.setItem("restaurant_cart_data", JSON.stringify(cartData));
+  
         // Calculate total price of items
         const total = cartData.order_items.reduce((sum, item) => {
           const itemPrice =
@@ -146,27 +155,26 @@ const Checkout = () => {
               : Number(item.price || 0);
           return sum + itemPrice * item.quantity;
         }, 0);
-
-        // Fetch these values from API response or use default values
-        const discountPercent = 10; // Example value, should be from API
-        const serviceChargesPercent = 2; // Example value, should be from API
-        const gstPercent = 4; // Example value, should be from API
-
+  
+        // Fetch values from API response or use default values
+        const discountPercent = 10; 
+        const serviceChargesPercent = 2; 
+        const gstPercent = 4; 
+  
         // Calculate discount amount
         const discount = (total * discountPercent) / 100;
-        const totalAfterDiscount = total - discount; // Step 1: Apply discount
-
+        const totalAfterDiscount = total - discount; 
+  
         // Calculate service charges
-        const serviceChargesAmount =
-          (totalAfterDiscount * serviceChargesPercent) / 100; // Step 2: Calculate service charge
-        const grand_total = totalAfterDiscount + serviceChargesAmount; // Step 3: Add service charge
-
+        const serviceChargesAmount = (totalAfterDiscount * serviceChargesPercent) / 100; 
+        const grand_total = totalAfterDiscount + serviceChargesAmount; 
+  
         // Calculate GST
-        const gstAmount = (grand_total * gstPercent) / 100; // Step 4: Calculate GST
-
+        const gstAmount = (grand_total * gstPercent) / 100; 
+  
         // Final grand total
-        const grandTotal = grand_total + gstAmount; // Step 5: Final total
-
+        const grandTotal = grand_total + gstAmount; 
+  
         // Map items with safe price handling
         const mappedItems = cartData.order_items.map((item) => ({
           ...item,
@@ -188,7 +196,7 @@ const Checkout = () => {
           offer: item.offer || 0,
           half_or_full: item.half_or_full || "full",
         }));
-
+  
         // Update state with calculated values
         setCartItems(mappedItems);
         setTotal(total);
@@ -200,8 +208,8 @@ const Checkout = () => {
         setDiscountPercent(discountPercent);
         setDiscount(discount);
         setGrandTotal(grandTotal);
-        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
-
+        setCartId(cartData.cart_id || Date.now()); 
+  
         // Console log for debugging
         console.log("Total:", total);
         console.log("Total After Discount:", totalAfterDiscount);
@@ -214,6 +222,7 @@ const Checkout = () => {
       console.error("Error fetching cart details:", error);
     }
   };
+  
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -535,62 +544,76 @@ const Checkout = () => {
   };
   
 
-  const handleAddToExistingOrder = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(
-        localStorage.getItem("restaurant_cart_data")
+const handleAddToExistingOrder = async () => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data"));
+
+    if (!storedCart?.order_items || !existingOrderDetails.orderId) {
+      window.showToast("error", "Failed to add items to order");
+      return;
+    }
+
+    // Fetch existing order details (if stored locally)
+    const existingOrder = JSON.parse(localStorage.getItem("existing_order")) || { order_items: [] };
+
+    // Create a new updated order list
+    let updatedOrderItems = [];
+
+    for (const item of storedCart.order_items) {
+      const existingItem = existingOrder.order_items.find(
+        (orderItem) =>
+          orderItem.menu_id === item.menu_id &&
+          orderItem.half_or_full === item.half_or_full
       );
 
-      if (!storedCart?.order_items || !existingOrderDetails.orderId) {
-        window.showToast("error", "Failed to add items to order");
-        return;
+      const existingQuantity = existingItem ? existingItem.quantity : 0;
+      const newTotalQuantity = existingQuantity + item.quantity;
+
+      if (newTotalQuantity > 20) {
+        window.showToast("info", `Cannot add more than 20 for ${item.menu_id}`);
+        return; // Prevent adding more if quantity exceeds 20
       }
 
-      // Prepare request body with exact structure needed by the API
-      const requestBody = {
-        order_id: existingOrderDetails.orderId,
-        user_id: userData.user_id,
-        outlet_id: restaurantId,
-        order_items: storedCart.order_items.map((item) => ({
-          menu_id: item.menu_id,
-          quantity: item.quantity,
-          half_or_full: item.half_or_full || "full",
-          comment: item.comment || "",
-        })),
-      };
+      updatedOrderItems.push({
+        menu_id: item.menu_id,
+        quantity: item.quantity,
+        half_or_full: item.half_or_full || "full",
+        comment: item.comment || "",
+      });
+    }
 
-      // Make API call to add items to existing order
-      const response = await fetch(
-        `${config.apiDomain}/user_api/add_to_existing_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+    // Prepare request body
+    const requestBody = {
+      order_id: existingOrderDetails.orderId,
+      user_id: userData.user_id,
+      outlet_id: restaurantId,
+      order_items: updatedOrderItems,
+    };
 
+    // Make API call
+    const response = await fetch(`${config.apiDomain}/user_api/add_to_existing_order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+  
       if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
+        // Handle unauthorized user (redirect & clear localStorage)
+        localStorage.clear();
         const restaurantCode = localStorage.getItem("restaurantCode");
         const tableNumber = localStorage.getItem("tableNumber");
         const sectionId = localStorage.getItem("sectionId");
-
         navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
         showLoginPopup();
         return;
       }
-
+  
       const data = await response.json();
-
+  
       if (data.st === 1) {
         window.showToast("success", "Items added to order successfully");
         clearCartData();
@@ -600,13 +623,11 @@ const Checkout = () => {
         throw new Error(data.msg || "Failed to add items to order");
       }
     } catch (error) {
-      window.showToast(
-        "error",
-        error.message || "Failed to add items to order"
-      );
+      window.showToast("error", error.message || "Failed to add items to order");
       console.error("Error:", error);
     }
   };
+  
 
   const closePopup = () => {
     setShowPopup(false);
@@ -1091,7 +1112,7 @@ const Checkout = () => {
       const cartData = JSON.parse(storedCart);
       const response = await axios.post(
         `${config.apiDomain}/user_api/get_checkout_detail`,
-        {
+        {  
           order_items: cartData.order_items,
           outlet_id: userData.restaurantId,
         },

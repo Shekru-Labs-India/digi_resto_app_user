@@ -103,6 +103,18 @@ const TrackOrder = () => {
   };
 
   const handleMenuItemClick = (menu) => {
+    const existingOrder = JSON.parse(
+      localStorage.getItem("existing_order")
+    ) || { order_items: [] };
+    const existingOrderItem = existingOrder.order_items.find(
+      (item) => item.menu_id === menu.menu_id
+    );
+
+    if (existingOrderItem && existingOrderItem.quantity >= 20) {
+      window.showToast("info", "Cannot add more. Maximum limit of 20 reached.");
+      return;
+    }
+
     navigate(`/user_app/ProductDetails/${menu.menu_id}`, {
       state: {
         menu_cat_id: menu.menu_cat_id,
@@ -543,7 +555,6 @@ const TrackOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
@@ -566,6 +577,7 @@ const TrackOrder = () => {
         // Update order details
         setOrderDetails((prevDetails) => {
           if (!prevDetails?.menu_details) return prevDetails;
+
           return {
             ...prevDetails,
             menu_details: prevDetails.menu_details.map((item) =>
@@ -1569,6 +1581,90 @@ ${
     }
   };
 
+  // Add this helper function to check cooking quantity
+  const checkCookingQuantity = async (menuId, halfOrFull) => {
+    try {
+      // Fetch current order details
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_order_details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            order_id: orderDetails.order_id,
+            section_id: userData?.sectionId || "1",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch order details");
+      }
+
+      const data = await response.json();
+      const menuItems = data.lists?.menu_details || [];
+
+      // Get total cooking quantity for this menu item
+      const cookingQuantity = menuItems.reduce((total, item) => {
+        if (
+          item.menu_id === menuId &&
+          item.half_or_full === halfOrFull &&
+          item.status === "cooking"
+        ) {
+          return total + item.quantity;
+        }
+        return total;
+      }, 0);
+
+      return cookingQuantity;
+    } catch (error) {
+      console.error("Error checking cooking quantity:", error);
+      return 0;
+    }
+  };
+
+  // Modify the increment quantity function
+  const handleIncrementQuantity = async (menu) => {
+    try {
+      const cookingQuantity = await checkCookingQuantity(
+        menu.menu_id,
+        menu.half_or_full
+      );
+
+      if (cookingQuantity >= 20) {
+        window.showToast(
+          "info",
+          `Cannot add more. Menu ${menu.menu_name} already has maximum quantity (20) in cooking status`
+        );
+        return;
+      }
+
+      if (cookingQuantity + menu.quantity >= 20) {
+        window.showToast(
+          "info",
+          `Cannot add more. Total quantity would exceed maximum limit of 20. Current cooking quantity: ${cookingQuantity}`
+        );
+        return;
+      }
+
+      // Proceed with increment if within limits
+      setOrderDetails((prevDetails) => ({
+        ...prevDetails,
+        menu_details: prevDetails.menu_details.map((item) =>
+          item.menu_id === menu.menu_id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        ),
+      }));
+    } catch (error) {
+      console.error("Error incrementing quantity:", error);
+      window.showToast("error", "Failed to update quantity");
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1664,7 +1760,8 @@ ${
                     </span>
 
                     {/* Conditionally render the line-through price */}
-                    {order_details.grand_total !== order_details.total_bill_amount && (
+                    {order_details.grand_total !==
+                      order_details.total_bill_amount && (
                       <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                         ₹{order_details.total_bill_amount.toFixed(2)}
                       </span>

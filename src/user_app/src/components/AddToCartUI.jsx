@@ -3,6 +3,53 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import config from "../component/config";
+
+// Add this helper function at the top of your component
+const checkExistingOrderQuantities = async (menuId, portionSize) => {
+  try {
+    const response = await fetch(
+      `${config.apiDomain}/user_api/get_active_orders`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          restaurant_id: localStorage.getItem("restaurantId"),
+          table_number: localStorage.getItem("tableNumber"),
+        }),
+      } 
+    );
+
+    if (!response.ok) return 0;
+
+    const data = await response.json();
+    const activeOrders = data.lists || [];
+
+    // Sum quantities from placed and cooking status
+    return activeOrders.reduce((total, order) => {
+      const menuItems = order.menu_details || [];
+      return (
+        total +
+        menuItems.reduce((menuTotal, item) => {
+          if (
+            item.menu_id === menuId &&
+            item.half_or_full === portionSize &&
+            ["placed", "cooking"].includes(item.status?.toLowerCase())
+          ) {
+            return menuTotal + item.quantity;
+          }
+          return menuTotal;
+        }, 0)
+      );
+    }, 0);
+  } catch (error) {
+    console.error("Error checking existing orders:", error);
+    return 0;
+  }
+};
 
 const AddToCartUI = ({
   showModal,
@@ -24,15 +71,15 @@ const AddToCartUI = ({
   const [commentError, setCommentError] = useState("");
 
   const handleQuantityChange = (action) => {
-    setQuantity(prev => {
-      if (action === 'increment') {
+    setQuantity((prev) => {
+      if (action === "increment") {
         if (prev >= 20) {
           window.showToast("info", "Maximum quantity limit reached (20)");
           return prev;
         }
         return prev + 1;
       }
-      if (action === 'decrement' && prev > 1) return prev - 1;
+      if (action === "decrement" && prev > 1) return prev - 1;
       return prev;
     });
   };
@@ -44,40 +91,43 @@ const AddToCartUI = ({
     const validPattern = /^[a-zA-Z0-9\-\/\s.]*$/u;
 
     if (!validPattern.test(value)) {
-        setCommentError("Only letters, numbers, dashes (-), slashes (/), dots (.) are allowed.");
-        return; // Stop further execution
+      setCommentError(
+        "Only letters, numbers, dashes (-), slashes (/), dots (.) are allowed."
+      );
+      return; // Stop further execution
     }
 
     setComment(value); // ✅ Update state only if valid
 
     if (value.length < 5) {
-        setCommentError("Comment should be between 5 and 30 characters.");
+      setCommentError("Comment should be between 5 and 30 characters.");
     } else if (value.length > 30) {
-        setCommentError("Comment should be between 5 and 30 characters.");
+      setCommentError("Comment should be between 5 and 30 characters.");
     } else {
-        setCommentError(""); // ✅ No errors
+      setCommentError(""); // ✅ No errors
     }
-};
-
-  
+  };
 
   const checkAuthAndFetchPrices = async () => {
     if (!showModal || !productDetails?.menu_id) return;
-    
+
     setIsPriceFetching(true);
-    const priceData = await fetchMenuPrices(restaurantId, productDetails.menu_id);
-    
-    if (priceData?.error === 'unauthorized') {
+    const priceData = await fetchMenuPrices(
+      restaurantId,
+      productDetails.menu_id
+    );
+
+    if (priceData?.error === "unauthorized") {
       setShowModal(false);
       return false;
     }
-    
+
     if (priceData) {
       setPrices(priceData);
       setIsPriceFetching(false);
       return true;
     }
-    
+
     return false;
   };
 
@@ -87,53 +137,66 @@ const AddToCartUI = ({
     }
   }, [showModal, productDetails?.menu_id, restaurantId]);
 
-  const handleConfirmWithQuantity = () => {
-    // Ensure we have product details
-    if (!productDetails) {
-      console.error("Error: Product details missing");
-      return;
-    }
-  
-    // Get the existing cart from localStorage
-    const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data")) || { order_items: [] };
-  
-    // Check if the item already exists in the cart
-    const existingItemIndex = storedCart.order_items.findIndex(
-      (item) =>
-        item.menu_id === productDetails.menu_id &&
-        item.half_or_full === portionSize
-    );
-  
-    let newQuantity = quantity;
-  
-    if (existingItemIndex !== -1) {
-      // Get existing quantity
-      const existingItem = storedCart.order_items[existingItemIndex];
-      const updatedQuantity = existingItem.quantity + quantity;
-  
-      // If quantity exceeds 20, limit it
-      if (updatedQuantity > 20) {
-        newQuantity = 20 - existingItem.quantity;
-        if (newQuantity <= 0) {
-          window.showToast("info", "Maximum quantity limit (20) reached.");
-          return; // Prevent adding more
-        }
+  // Modify the handleConfirmWithQuantity function
+  const handleConfirmWithQuantity = async () => {
+    try {
+      if (!productDetails) {
+        console.error("Error: Product details missing");
+        return;
       }
+
+      // Check existing quantities in placed/cooking orders
+      const existingOrderQuantity = await checkExistingOrderQuantities(
+        productDetails.menu_id,
+        portionSize
+      );
+
+      if (existingOrderQuantity >= 20) {
+        window.showToast(
+          "info",
+          `Cannot add more. Menu ${productDetails.menu_name} already has maximum quantity (20) in placed/cooking status`
+        );
+        return;
+      }
+
+      // Get cart data
+      const storedCart = JSON.parse(
+        localStorage.getItem("restaurant_cart_data")
+      ) || { order_items: [] };
+
+      // Check cart quantities
+      const existingCartItem = storedCart.order_items.find(
+        (item) =>
+          item.menu_id === productDetails.menu_id &&
+          item.half_or_full === portionSize
+      );
+
+      const cartQuantity = existingCartItem ? existingCartItem.quantity : 0;
+      const totalQuantity = existingOrderQuantity + cartQuantity + quantity;
+
+      if (totalQuantity > 20) {
+        window.showToast(
+          "info",
+          `Cannot add ${quantity} more. Total quantity would exceed limit of 20. Current quantity in placed/cooking: ${existingOrderQuantity}`
+        );
+        return;
+      }
+
+      // Create product object with quantity
+      const productWithQuantity = {
+        ...productDetails,
+        quantity: quantity,
+        comment: comment,
+        half_or_full: portionSize,
+        price: portionSize === "half" ? prices.halfPrice : prices.fullPrice,
+      };
+
+      handleConfirmAddToCart(productWithQuantity);
+    } catch (error) {
+      console.error("Error handling quantity confirmation:", error);
+      window.showToast("error", "Failed to process request");
     }
-  
-    // Create a new product object with quantity
-    const productWithQuantity = {
-      ...productDetails,
-      quantity: newQuantity,
-      comment: comment,
-      half_or_full: portionSize,
-      price: portionSize === "half" ? prices.halfPrice : prices.fullPrice,
-    };
-  
-    handleConfirmAddToCart(productWithQuantity);
   };
-  
-  
 
   if (!showModal || isPriceFetching) return null;
 
@@ -262,29 +325,51 @@ const AddToCartUI = ({
             <hr className="my-4" />
             <div className="modal-body px-3 pt-2 pb-3">
               <div className="d-flex justify-content-center">
-                <div className="d-flex align-items-center" style={{ gap: "12px" }}>
-                  <div className="d-flex align-items-center justify-content-between" style={{ background: "#e9ecef", borderRadius: "50px", width: "130px", padding: "4px 8px", height: "48px" }}>
-                    <button 
+                <div
+                  className="d-flex align-items-center"
+                  style={{ gap: "12px" }}
+                >
+                  <div
+                    className="d-flex align-items-center justify-content-between"
+                    style={{
+                      background: "#e9ecef",
+                      borderRadius: "50px",
+                      width: "130px",
+                      padding: "4px 8px",
+                      height: "48px",
+                    }}
+                  >
+                    <button
                       className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "32px", height: "30px", minWidth: "32px", padding: "0" }}
+                      style={{
+                        width: "32px",
+                        height: "30px",
+                        minWidth: "32px",
+                        padding: "0",
+                      }}
                       type="button"
-                      onClick={() => handleQuantityChange('decrement')}
+                      onClick={() => handleQuantityChange("decrement")}
                     >
                       <i className="fa-solid fa-minus text-white"></i>
                     </button>
-                    <input 
+                    <input
                       readOnly
                       className="form-control text-center border-0 p-0 bg-transparent"
-                      type="text" 
-                      value={quantity} 
+                      type="text"
+                      value={quantity}
                       name="quantity"
                       style={{ width: "38px", minWidth: "38px" }}
                     />
-                    <button 
+                    <button
                       className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-                      style={{ width: "32px", height: "32px", minWidth: "32px", padding: "0" }}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        minWidth: "32px",
+                        padding: "0",
+                      }}
                       type="button"
-                      onClick={() => handleQuantityChange('increment')}
+                      onClick={() => handleQuantityChange("increment")}
                     >
                       <i className="fa-solid fa-plus text-white"></i>
                     </button>
@@ -294,7 +379,8 @@ const AddToCartUI = ({
                     className="btn btn-primary rounded-pill px-4 d-flex align-items-center"
                     onClick={handleConfirmWithQuantity}
                     disabled={
-                      isPriceFetching || (!prices.halfPrice && !prices.fullPrice)
+                      isPriceFetching ||
+                      (!prices.halfPrice && !prices.fullPrice)
                     }
                   >
                     <span className="me-1">+</span>
