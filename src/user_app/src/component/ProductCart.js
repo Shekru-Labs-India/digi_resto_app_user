@@ -722,13 +722,13 @@ const ProductCard = ({ isVegOnly }) => {
           border: "border-danger",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-        case "egg":
-          return {
-            icon: "fa-solid fa-egg gray-text", // Gray icon
-            border: "gray-text",
-            textColor: "text-success", // green text
-            categoryIcon: "fa-solid fa-utensils text-success me-1",
-          };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg gray-text", // Gray icon
+          border: "gray-text",
+          textColor: "text-success", // green text
+          categoryIcon: "fa-solid fa-utensils text-success me-1",
+        };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
@@ -1086,29 +1086,29 @@ const ProductCard = ({ isVegOnly }) => {
                         {menu.name}
                       </div>
                     )}
-                    {menu.spicy_index && (
-                      <div className="row mt-1">
-                        <div className="col-9 pe-1">
-                          <div>
-                            {renderSpicyLevel(menu.spicy_index)}
-                            <div className="price-wrapper d-flex align-items-baseline mt-1">
-                              <span className="font_size_14 me-2 text-info fw-semibold">
-                                ₹{menu.price}
+
+                    <div className="row mt-1">
+                      <div className="col-9 pe-1">
+                        <div>
+                          {menu.spicy_index && (
+                            <>{renderSpicyLevel(menu.spicy_index)}</>
+                          )}
+                          <div className="price-wrapper d-flex align-items-baseline mt-1">
+                            <span className="font_size_14 me-2 text-info fw-semibold">
+                              ₹{menu.price}
+                            </span>
+                            {menu.oldPrice !== 0 && menu.oldPrice !== null && (
+                              <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
+                                ₹{menu.oldPrice}
                               </span>
-                              {menu.oldPrice !== 0 &&
-                                menu.oldPrice !== null && (
-                                  <span className="gray-text text-decoration-line-through font_size_12 fw-normal">
-                                    ₹{menu.oldPrice}
-                                  </span>
-                                )}
-                            </div>
+                            )}
                           </div>
                         </div>
-                        <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
-                          {renderCartIcon(menu)}
-                        </div>
                       </div>
-                    )}
+                      <div className="col-3 d-flex justify-content-end align-items-end mb-1 pe-2 ps-0">
+                        {renderCartIcon(menu)}
+                      </div>
+                    </div>
                   </div>
                 </Link>
               </div>
