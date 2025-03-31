@@ -69,7 +69,7 @@ const QRScanner = () => {
     <div>
       {isNonProductionDomain() && <Notice />}
       <div className="container-fluid  d-flex flex-column align-items-center vh-100 ">
-        <Link to="/">
+        <Link to="/OrderTypeScreen">
           {" "}
           <div className="d-flex align-items-center mt-4 mb-3">
             <img src={logo} alt="logo" width="40" height="40" />

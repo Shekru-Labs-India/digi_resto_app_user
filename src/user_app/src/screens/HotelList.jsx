@@ -42,7 +42,7 @@ const response = await fetch(
             return {
               ...outlets,
               code,
-              section_id: sectionId,
+              section_id: sectionId, 
               table_no: tableNo,
             };
           });
@@ -92,18 +92,19 @@ const response = await fetch(
   };
 
   const handleHotelClick = (outlets) => {
-    if (outlets.is_outlet_filled !== true) {
+    if (!outlets.is_outlet_filled) {
       navigate("/user_app/Index");
     } else {
       localStorage.setItem("sectionId", outlets.section_id);
       localStorage.setItem("restaurantCode", outlets.code);
       localStorage.setItem("tableNumber", outlets.table_no);
-      console.log(`Navigating to /user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`);
-      navigate(
-        `/user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`
-      );
+  
+      const url = `/user_app/${outlets.code}/s${outlets.section_id}/t${outlets.table_no}`;
+      console.log(`Navigating to ${url}`);
+      navigate(url);
     }
   };
+  
 
   return (
     <div className="page-wrapper">
