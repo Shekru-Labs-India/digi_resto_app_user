@@ -27,6 +27,7 @@ import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
 import { PopupProvider } from "./context/PopupContext";
 import Saving from "./screens/Saving";
+import ErrorPage from "./screens/ErrorPage";
 
 function App() {
   const { restaurantCode } = useParams();
@@ -47,7 +48,7 @@ function App() {
             <div className="user-app-root">
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
-                
+
                 <Route
                   path=":restaurantCode/:table_number/:section_id"
                   element={<HomeScreen />}
@@ -76,6 +77,7 @@ function App() {
                   path="TrackOrder/:order_number"
                   element={<TrackOrder />}
                 />
+                <Route path="error" element={<ErrorPage />} />
                 <Route path="/restaurant/" element={<RestaurantDetails />} />
                 <Route path="" element={<Navigate to="Index" replace />} />
                 <Route path="*" element={<Navigate to="Index" replace />} />
