@@ -21,6 +21,7 @@ function OrderTypeModal() {
   const handleOrderTypeSelection = (type) => {
     // Here you can handle the order type selection
     console.log("Selected order type:", type);
+    localStorage.setItem("orderType", type);
     // Add your logic here to process the selected order type
     closeModal();
   };
@@ -33,6 +34,21 @@ function OrderTypeModal() {
 
   return (
     <>
+      {/* Background blur overlay */}
+      <div 
+        style={{ 
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(5px)",
+          WebkitBackdropFilter: "blur(5px)",
+          zIndex: 1040
+        }}
+      ></div>
+      
       <div
         className="modal fade show"
         id="exampleModalCenter"
@@ -50,11 +66,11 @@ function OrderTypeModal() {
             </div>
             <div className="modal-body">
               <div className="row g-3">
-                {["Counter", "Drive Through", "Delivery", "Parcel"].map(
+                {["Counter", "Drive-Through", "Delivery", "Parcel"].map(
                   (type) => (
                     <div className="col-6" key={type}>
                       <button
-                        className="btn btn-outline-primary w-100 py-3"
+                        className="btn btn-outline-primary w-100 py-3 fs-6 px-2"
                         onClick={() =>
                           handleOrderTypeSelection(type.toLowerCase())
                         }
