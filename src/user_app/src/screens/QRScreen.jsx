@@ -77,43 +77,7 @@ const QRScanner = () => {
               MenuMitra
             </div>
           </div>
-        </Link>
-
-        {/* {!showCamera && (
-        <button
-          className="btn btn-primary my-3 rounded-pill"
-          onClick={handleScanButtonClick}
-        >
-          <i className="ri-qr-scan-2-line pe-2 fs-4"></i> Scan QR
-        </button>
-      )} */}
-
-        {/* {showCamera && (
-        <div
-          className="position-relative w-75 mb-4 rounded-5"
-          style={{ maxWidth: "300px", aspectRatio: "1 / 1" }}
-        >
-          <video
-            ref={videoRef}
-            className="w-100 h-100 rounded-5 mt-2"
-            style={{ objectFit: "cover" }}
-          />
-          <img
-            src={OverlayIcon}
-            alt="Overlay"
-            className="position-absolute start-0 w-75 h-75"
-            style={{
-              pointerEvents: "none",
-              top: "50%",
-              left: "50%",
-              transform: "translate(16%, -46%)",
-              filter: "invert(35%) sepia(100%) saturate(1000%) hue-rotate(90deg) brightness(90%) contrast(90%)",
-            }}
-          />
-        </div>
-      )} */}
-
-        <div className="container px-0 ">
+        </Link>        <div className="container px-0 ">
           <HotelList />
         </div>
       </div>

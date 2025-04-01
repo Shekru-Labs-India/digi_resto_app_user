@@ -28,6 +28,7 @@ import { CartProvider } from "./context/CartContext";
 import { PopupProvider } from "./context/PopupContext";
 import Saving from "./screens/Saving";
 import ErrorPage from "./screens/ErrorPage";
+import OrderTypeModal from "./components/OrderTypeModal";
 
 function App() {
   const { restaurantCode } = useParams();
@@ -78,6 +79,7 @@ function App() {
                   element={<TrackOrder />}
                 />
                 <Route path="error" element={<ErrorPage />} />
+                <Route path="OrderTypeModal" element={<OrderTypeModal />} />
                 <Route path="/restaurant/" element={<RestaurantDetails />} />
                 <Route path="" element={<Navigate to="Index" replace />} />
                 <Route path="*" element={<Navigate to="Index" replace />} />
