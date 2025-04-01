@@ -31,8 +31,13 @@ export const SidebarToggler = () => {
   const sectionId = localStorage.getItem("sectionId");
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData?.restaurantCode) {
+    // Try to get restaurantCode from multiple sources
+    const storedCode = localStorage.getItem("restaurantCode");
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    
+    if (storedCode) {
+      setRestaurantCode(storedCode);
+    } else if (userData?.restaurantCode) {
       setRestaurantCode(userData.restaurantCode);
     }
   }, []);
@@ -208,47 +213,29 @@ export const SidebarToggler = () => {
         </div>
         <ul className="nav navbar-nav">
           <li>
-            <NavLink
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              to={`/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`}
-              onClick={(e) => handleClick(e, `/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`)}
-            >
-              <span className="dz-icon icon-sm">
-                <i className="fa-solid fa-house fs-3"></i>
-              </span>
-              <span className="font_size_16 fw-medium">Home</span>
-              {/* <div className="ms-5 ps-5">
-                <div
-                  className={`  border ${
-                    isVegOnly ? "border-success" : "border-danger"
-                  } p-1`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleVegNonVeg();
-                  }}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "24px", // Adjust height
-                    width: "24px", // Adjust width
-                    backgroundColor: "#d4e3dd",
-                  }}
-                >
-                  {isVegOnly ? (
-                    <i
-                      className="fa-solid fa-circle text-success"
-                      style={{ fontSize: "16px" }} // Adjust icon size
-                    ></i>
-                  ) : (
-                    <i
-                      className="fa-solid fa-play fa-rotate-270 text-danger"
-                      style={{ fontSize: "16px" }} // Adjust icon size
-                    ></i>
-                  )}
-                </div>
-              </div> */}
-            </NavLink>
+            {restaurantCode ? (
+              <NavLink
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                to={`/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`}
+                onClick={(e) => handleClick(e, `/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`)}
+              >
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-house fs-3"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Home</span>
+              </NavLink>
+            ) : (
+              <Link
+                className="nav-link"
+                to="/user_app/Index"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-house fs-3"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Home</span>
+              </Link>
+            )}
           </li>
           <li>
             <NavLink
