@@ -1,29 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import qr_scan from "../assets/qr_scan.gif";
 
 function ErrorPage() {
+  const location = useLocation();
+  const [errorMessage, setErrorMessage] = useState(
+    "Table having issue. Rescan the QR Code again!"
+  );
+
+  useEffect(() => {
+    if (location.state && location.state.errorMessage) {
+      setErrorMessage(location.state.errorMessage);
+    }
+  }, [location]);
+
   return (
     <>
-      {/* <header class="header header-fixed style-3">
-		<div class="header-content">
-			
-			<div class="mid-content"><h5 class="title">Error</h5></div>
-			<div class="right-content"></div>
-		</div>
-	</header> */}
-
-      <div class="page-content space-top">
-        <div class="container">
-          <div class="error-page">
-            <div class="icon-bx">
-              <i className="fas fa-exclamation-triangle fa-4x text-warning"></i>
+      <div className="page-content space-top">
+        <div className="container">
+          <div className="error-page">
+            <div className="icon-bx">
+              <div className="d-flex justify-content-center align-items-center mt-5 mb-3">
+                <img
+                  src={qr_scan}
+                  alt="Scan QR Code"
+                  className="img-fluid rounded shadow-sm"
+                  style={{
+                    maxWidth: "220px",
+                    width: "auto",
+                    maxHeight: "220px",
+                  }}
+                />
+              </div>
             </div>
-            <div class="clearfix">
-              <h2 class="title text-primary">Sorry</h2>
-              <p>Table having issue rescan the QR Code again!.</p>
+            <div className="clearfix">
+              {/* <h2 className="title text-primary">Sorry</h2> */}
+              <p>{errorMessage}</p>
             </div>
-          </div>
-          <div class="error-img">
-            <img src="assets/images/error.png" alt="" />
           </div>
         </div>
       </div>
@@ -31,4 +44,4 @@ function ErrorPage() {
   );
 }
 
-export default ErrorPage
+export default ErrorPage;
