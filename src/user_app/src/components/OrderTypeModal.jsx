@@ -9,8 +9,8 @@ function OrderTypeModal() {
         return "fa-box";
       case "delivery":
         return "fa-truck";
-      case "dining":
-        return "fa-utensils";
+      case "counter":
+        return "fa-cash-register";
       case "drive through":
         return "fa-car";
       default:
@@ -50,7 +50,7 @@ function OrderTypeModal() {
             </div>
             <div className="modal-body">
               <div className="row g-3">
-                {["Dining", "Drive Through", "Delivery", "Parcel"].map(
+                {["Counter", "Drive Through", "Delivery", "Parcel"].map(
                   (type) => (
                     <div className="col-6" key={type}>
                       <button

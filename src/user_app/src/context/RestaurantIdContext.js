@@ -22,113 +22,119 @@ export const RestaurantIdProvider = ({ children }) => {
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
-    const path = location.pathname;
-    const match = path.match(/\/user_app\/(\d{6})(?:\/([^\/]+))(?:\/(\d+))?/);
+      const path = location.pathname;
+      const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
 
-    if (match) {
-      const [, code, table, section] = match;
-      setRestaurantCode(code);
-      
-      if (table) {
-        // First get restaurant details to get restaurant_id
-        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ 
-            outlet_code: code,
-            section_id: section 
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.st === 1) {
-              const { outlet_id } = data.outlet_details;
-              
-              // Now validate the table
-              return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-                },
-                body: JSON.stringify({
-                  outlet_id:outlet_id,
-                  section_id: section || null,
-                  table_number: table,
-                }),
-              });
-            } else {
-              throw new Error('Failed to get restaurant details');
-            }
+      if (match) {
+        const [, code, section, table] = match;
+
+        // Add this logging
+        console.log(
+          `outlet::${code}, section:${section || "undefined"}, table:${
+            table || "undefined"
+          }`
+        );
+        setRestaurantCode(code);
+
+        if (table) {
+          // First get restaurant details to get restaurant_id
+          fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            body: JSON.stringify({
+              outlet_code: code,
+              section_id: section,
+            }),
           })
-          .then(response => response.json())
-          .then((data) => {
-            if (data.st === 1 && data.is_table_exists) {
-              // Table exists, set the table number
-              setTableNumber(table);
-              // window.showToast("info", `You are at Table Number ${table}`);
-              localStorage.setItem("tableNumber", table);
-            } else {
-              // Table doesn't exist, navigate to HotelList
-              // navigate("/user_app/HotelList");
-            // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
-            console.log("Table not exists");
-            }
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.st === 1) {
+                const { outlet_id } = data.outlet_details;
+
+                // Now validate the table
+                return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+                  },
+                  body: JSON.stringify({
+                    outlet_id: outlet_id,
+                    section_id: section || null,
+                    table_number: table,
+                  }),
+                });
+              } else {
+                throw new Error("Failed to get restaurant details");
+              }
+            })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.st === 1 && data.is_table_exists) {
+                // Table exists, set the table number
+                setTableNumber(table);
+                // window.showToast("info", `You are at Table Number ${table}`);
+                localStorage.setItem("tableNumber", table);
+              } else {
+                // Table doesn't exist, navigate to HotelList
+                // navigate("/user_app/HotelList");
+                // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
+                console.log("Table not exists");
+              }
+            })
+            .catch((error) => {
+              // console.clear();
+              navigate("/user_app/Index");
+            });
+        }
+
+        if (section) {
+          setSectionId(section);
+          localStorage.setItem("sectionId", section);
+
+          fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            body: JSON.stringify({ outlet_code: code, section_id: section }),
           })
-          .catch((error) => {
-            console.clear();
-            navigate("/user_app/Index");
-            
-          });
-      }
-
-      if (section) {
-        setSectionId(section);
-        localStorage.setItem("sectionId", section);
-        
-        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({ outlet_code: code, section_id: section }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.st === 1) {
-              const sectionDetails = data.sections.find(
-                (s) => s.section_id.toString() === section
-              );
-              if (sectionDetails) {
-                const sectionName = sectionDetails.section_name;
-                localStorage.setItem("sectionName", sectionName);
-
-                const userData = JSON.parse(
-                  localStorage.getItem("userData") || "{}"
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.st === 1) {
+                const sectionDetails = data.sections.find(
+                  (s) => s.section_id.toString() === section
                 );
-                if (Object.keys(userData).length > 0) {
-                  const updatedUserData = {
-                    ...userData,
-                    sectionId: section,
-                    section_name: sectionName,
-                  };
-                  localStorage.setItem(
-                    "userData",
-                    JSON.stringify(updatedUserData)
+                if (sectionDetails) {
+                  const sectionName = sectionDetails.section_name;
+                  localStorage.setItem("sectionName", sectionName);
+
+                  const userData = JSON.parse(
+                    localStorage.getItem("userData") || "{}"
                   );
+                  if (Object.keys(userData).length > 0) {
+                    const updatedUserData = {
+                      ...userData,
+                      sectionId: section,
+                      section_name: sectionName,
+                    };
+                    localStorage.setItem(
+                      "userData",
+                      JSON.stringify(updatedUserData)
+                    );
+                  }
                 }
               }
-            }
-          })
-          .catch((error) => {
-            console.clear();
-          });
+            })
+            .catch((error) => {
+              // console.clear();
+            });
+        }
       }
-    }
   }, [location, navigate]);
 
   useEffect(() => {
@@ -140,16 +146,22 @@ export const RestaurantIdProvider = ({ children }) => {
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
       // Get code from localStorage if not provided
       const storedCode = localStorage.getItem("restaurantCode");
+      const urlPattern = /\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/;
       const currentUrl = window.location.pathname;
-      const urlPattern = /\/user_app\/(\d{6})(?:\/(\d+))?(?:\/(\d+))?/;
       const match = currentUrl.match(urlPattern);
-
+      console.log("---------"+match);
+      console.log("---------");
       let extractedCode = null;
       let extractedTableNumber = null;
       let extractedSectionId = null;
 
       if (match) {
-        [, extractedCode, extractedTableNumber, extractedSectionId] = match;
+          [, extractedCode, extractedSectionId, extractedTableNumber] = match;
+          console.log(
+            `outlet::${extractedCode}, section:${
+              extractedSectionId || "undefined"
+            }, table:${extractedTableNumber || "undefined"}`
+          );
       }
 
       // If we only have outlet code in URL, don't use fallbacks for table and section
@@ -311,7 +323,7 @@ export const RestaurantIdProvider = ({ children }) => {
 
           localStorage.setItem("restaurantStatus", false);
         } else {
-          console.clear();
+          // console.clear();
         }
       } catch (error) {
         console.error("Error fetching restaurant details:", error);
