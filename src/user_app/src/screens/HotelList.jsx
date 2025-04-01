@@ -34,10 +34,15 @@ const response = await fetch(
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.outlets.map((outlets) => {
-            const code = outlets.resto_url.split("user_app/")[1]?.split("/")[0];
-            const urlParts = outlets.resto_url.split("/");
-            const sectionId = urlParts[urlParts.length - 1];
-            const tableNo = urlParts[urlParts.length - 2];
+            // Use regex to extract parts from URL
+            const codeMatch = outlets.resto_url.match(/\/o(\d+)/);
+            const sectionMatch = outlets.resto_url.match(/\/s(\d+)/);
+            const tableMatch = outlets.resto_url.match(/\/t(\d+)/);
+            
+            // Extract just the numeric parts without prefixes
+            const code = codeMatch ? codeMatch[1] : "";
+            const sectionId = sectionMatch ? sectionMatch[1] : "";
+            const tableNo = tableMatch ? tableMatch[1] : "";
 
             return {
               ...outlets,
@@ -95,11 +100,13 @@ const response = await fetch(
     if (!outlets.is_outlet_filled) {
       navigate("/user_app/Index");
     } else {
+      // Store clean values (without prefixes) in localStorage
       localStorage.setItem("sectionId", outlets.section_id);
       localStorage.setItem("restaurantCode", outlets.code);
       localStorage.setItem("tableNumber", outlets.table_no);
   
-      const url = `/user_app/${outlets.code}/s${outlets.section_id}/t${outlets.table_no}`;
+      // Construct URL with proper prefixes
+      const url = `/user_app/o${outlets.code}/s${outlets.section_id}/t${outlets.table_no}`;
       console.log(`Navigating to ${url}`);
       navigate(url);
     }

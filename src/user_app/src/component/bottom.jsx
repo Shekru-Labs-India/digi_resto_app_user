@@ -16,8 +16,9 @@ const Bottom = () => {
   );
 
   const isHomePath = (pathname) => {
+    const cleanRestaurantCode = restaurantCode ? restaurantCode.replace(/^o/, '') : '';
     const homePathPattern = new RegExp(
-      `^/user_app/${restaurantCode}(?:/\\d+)?(?:/\\d+)?$`
+      `^/user_app/o${cleanRestaurantCode}(?:/s\\d+)?(?:/t\\d+)?$`
     );
     return homePathPattern.test(pathname);
   };
@@ -26,7 +27,11 @@ const Bottom = () => {
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
+          to={`/user_app/o${restaurantCode ? restaurantCode.replace(/^o/, '') : ''}${
+            sectionId ? `/s${sectionId.replace(/^s/, '')}` : ''
+          }${
+            tableNumber ? `/t${tableNumber.replace(/^t/, '')}` : ''
+          }`}
           className={`nav-link d-flex flex-column align-items-center ${
             isHomePath(location.pathname) ? "active" : ""
           }`}

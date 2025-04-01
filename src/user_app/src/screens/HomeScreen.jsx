@@ -226,7 +226,7 @@ const HomeScreen = () => {
             <li>
               <Link
                 className="nav-link active"
-                to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
+                to={`/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`}
                 onClick={(e) => {
                   e.preventDefault();
                   toggleSidebar();

@@ -210,8 +210,8 @@ export const SidebarToggler = () => {
           <li>
             <NavLink
               className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              to={`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`}
-              onClick={(e) => handleClick(e, `/user_app/${restaurantCode}/${tableNumber}/${sectionId}`)}
+              to={`/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`}
+              onClick={(e) => handleClick(e, `/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`)}
             >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-house fs-3"></i>

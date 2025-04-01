@@ -21,120 +21,146 @@ export const RestaurantIdProvider = ({ children }) => {
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
+  // Helper function to strip prefixes
+  const stripPrefix = (value, prefix) => {
+    if (!value) return value;
+    return value.toString().replace(new RegExp(`^${prefix}`), '');
+  };
+
   useEffect(() => {
-      const path = location.pathname;
-      const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
+    
+    // Only validate and redirect for URLs that are trying to be restaurant URLs
+    // but have incorrect format
+    if (!match && path.includes('/user_app/o')) {
+      // URL has restaurant prefix but doesn't match pattern
+      let errorMessage = "URL having issue. Rescan the QR Code again!";
+      
+      // We can still provide specific error messages
+      if (path.match(/\/o\d+/) === null) {
+        errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
+      } else if (path.match(/\/s\d+/) === null && path.includes('/s')) {
+        errorMessage = "Section having issue. Rescan the QR Code again!";
+      } else if (path.match(/\/t\d+/) === null && path.includes('/t')) {
+        errorMessage = "Table having issue. Rescan the QR Code again!";
+      }
+      
+      navigate("/user_app/error", { state: { errorMessage } });
+      return;
+    }
+    
+    // Continue with normal matching behavior
+    if (match) {
+      const [, code, section, table] = match;
+      
+      // Strip any prefixes that might have been included
+      const cleanCode = stripPrefix(code, 'o');
+      const cleanSection = section ? stripPrefix(section, 's') : section;
+      const cleanTable = table ? stripPrefix(table, 't') : table;
+      
+      console.log(`outlet::${cleanCode}, section:${cleanSection || "undefined"}, table:${cleanTable || "undefined"}`);
+      setRestaurantCode(cleanCode);
 
-      if (match) {
-        const [, code, section, table] = match;
+      if (cleanTable) {
+        // First get restaurant details to get restaurant_id
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            outlet_code: cleanCode,
+            section_id: cleanSection,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const { outlet_id } = data.outlet_details;
 
-        // Add this logging
-        console.log(
-          `outlet::${code}, section:${section || "undefined"}, table:${
-            table || "undefined"
-          }`
-        );
-        setRestaurantCode(code);
-
-        if (table) {
-          // First get restaurant details to get restaurant_id
-          fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-            },
-            body: JSON.stringify({
-              outlet_code: code,
-              section_id: section,
-            }),
+              // Now validate the table
+              return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+                },
+                body: JSON.stringify({
+                  outlet_id: outlet_id,
+                  section_id: cleanSection || null,
+                  table_number: cleanTable,
+                }),
+              });
+            } else {
+              throw new Error("Failed to get restaurant details");
+            }
           })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.st === 1) {
-                const { outlet_id } = data.outlet_details;
-
-                // Now validate the table
-                return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-                  },
-                  body: JSON.stringify({
-                    outlet_id: outlet_id,
-                    section_id: section || null,
-                    table_number: table,
-                  }),
-                });
-              } else {
-                throw new Error("Failed to get restaurant details");
-              }
-            })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.st === 1 && data.is_table_exists) {
-                // Table exists, set the table number
-                setTableNumber(table);
-                // window.showToast("info", `You are at Table Number ${table}`);
-                localStorage.setItem("tableNumber", table);
-              } else {
-                // Table doesn't exist, navigate to HotelList
-                // navigate("/user_app/HotelList");
-                // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
-                console.log("Table not exists");
-              }
-            })
-            .catch((error) => {
-              // console.clear();
-              navigate("/user_app/Index");
-            });
-        }
-
-        if (section) {
-          setSectionId(section);
-          localStorage.setItem("sectionId", section);
-
-          fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-            body: JSON.stringify({ outlet_code: code, section_id: section }),
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1 && data.is_table_exists) {
+              // Table exists, set the table number
+              setTableNumber(cleanTable);
+              // window.showToast("info", `You are at Table Number ${table}`);
+              localStorage.setItem("tableNumber", cleanTable);
+            } else {
+              // Table doesn't exist, navigate to HotelList
+              // navigate("/user_app/HotelList");
+              // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
+              console.log("Table not exists");
+            }
           })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.st === 1) {
-                const sectionDetails = data.sections.find(
-                  (s) => s.section_id.toString() === section
+          .catch((error) => {
+            // console.clear();
+            navigate("/user_app/Index");
+          });
+      }
+
+      if (cleanSection) {
+        setSectionId(cleanSection);
+        localStorage.setItem("sectionId", cleanSection);
+
+        fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ outlet_code: cleanCode, section_id: cleanSection }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.st === 1) {
+              const sectionDetails = data.sections.find(
+                (s) => s.section_id.toString() === cleanSection
+              );
+              if (sectionDetails) {
+                const sectionName = sectionDetails.section_name;
+                localStorage.setItem("sectionName", sectionName);
+
+                const userData = JSON.parse(
+                  localStorage.getItem("userData") || "{}"
                 );
-                if (sectionDetails) {
-                  const sectionName = sectionDetails.section_name;
-                  localStorage.setItem("sectionName", sectionName);
-
-                  const userData = JSON.parse(
-                    localStorage.getItem("userData") || "{}"
+                if (Object.keys(userData).length > 0) {
+                  const updatedUserData = {
+                    ...userData,
+                    sectionId: cleanSection,
+                    section_name: sectionName,
+                  };
+                  localStorage.setItem(
+                    "userData",
+                    JSON.stringify(updatedUserData)
                   );
-                  if (Object.keys(userData).length > 0) {
-                    const updatedUserData = {
-                      ...userData,
-                      sectionId: section,
-                      section_name: sectionName,
-                    };
-                    localStorage.setItem(
-                      "userData",
-                      JSON.stringify(updatedUserData)
-                    );
-                  }
                 }
               }
-            })
-            .catch((error) => {
-              // console.clear();
-            });
-        }
+            }
+          })
+          .catch((error) => {
+            // console.clear();
+          });
       }
+    }
   }, [location, navigate]);
 
   useEffect(() => {
@@ -144,8 +170,12 @@ export const RestaurantIdProvider = ({ children }) => {
     }
   
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
+      // Strip any prefixes from passed parameters
+      const cleanRestaurantCode = stripPrefix(restaurantCode, 'o');
+      const cleanSectionId = stripPrefix(sectionId, 's');
+      
       // Get code from localStorage if not provided
-      const storedCode = localStorage.getItem("restaurantCode");
+      const storedCode = stripPrefix(localStorage.getItem("restaurantCode"), 'o');
       const urlPattern = /\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/;
       const currentUrl = window.location.pathname;
       const match = currentUrl.match(urlPattern);
@@ -157,6 +187,11 @@ export const RestaurantIdProvider = ({ children }) => {
 
       if (match) {
           [, extractedCode, extractedSectionId, extractedTableNumber] = match;
+          // Strip any prefixes that might be in the match
+          extractedCode = stripPrefix(extractedCode, 'o');
+          extractedSectionId = extractedSectionId ? stripPrefix(extractedSectionId, 's') : null;
+          extractedTableNumber = extractedTableNumber ? stripPrefix(extractedTableNumber, 't') : null;
+          
           console.log(
             `outlet::${extractedCode}, section:${
               extractedSectionId || "undefined"
@@ -168,8 +203,8 @@ export const RestaurantIdProvider = ({ children }) => {
       const isOutletOnlyUrl = match && !match[2] && !match[3];
       
       // Use extracted values, but only use fallbacks if we're not in outlet-only mode
-      const finalCode = extractedCode || restaurantCode || storedCode;
-      const finalSectionId = isOutletOnlyUrl ? null : (extractedSectionId || sectionId || localStorage.getItem("sectionId"));
+      const finalCode = extractedCode || cleanRestaurantCode || storedCode;
+      const finalSectionId = isOutletOnlyUrl ? null : (extractedSectionId || cleanSectionId || stripPrefix(localStorage.getItem("sectionId"), 's'));
 
       // Only update table number if explicitly in URL
       if (extractedTableNumber) {
@@ -190,12 +225,12 @@ export const RestaurantIdProvider = ({ children }) => {
         finalSectionId
       });
 
-      const sectionIdfromLocal = localStorage.getItem("sectionId");
+      const sectionIdfromLocal = stripPrefix(localStorage.getItem("sectionId"), 's');
       console.log(sectionIdfromLocal);
       // Debug log
       // alert(sectionIdfromLocal);
       console.log("Restaurant code being used:", {
-        providedCode: restaurantCode,
+        providedCode: cleanRestaurantCode,
         storedCode: storedCode,
         finalCode: finalCode,
         // sectionId: sectionId,
@@ -237,7 +272,7 @@ export const RestaurantIdProvider = ({ children }) => {
 
           localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
-          localStorage.setItem("restaurantCode", finalCode);
+          localStorage.setItem("restaurantCode", finalCode); // Store clean code
           localStorage.setItem("restaurantStatus", account_status);
           localStorage.setItem("isRestaurantOpen", is_open);
           localStorage.setItem("sectionName", section_name);
@@ -250,7 +285,7 @@ export const RestaurantIdProvider = ({ children }) => {
               restaurantId: outlet_id,
               restaurantName: name,
               restaurantCode: finalCode,
-              sectionId: sectionId,
+              sectionId: finalSectionId,
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
@@ -337,8 +372,8 @@ export const RestaurantIdProvider = ({ children }) => {
   useEffect(() => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
-    const storedRestaurantCode = localStorage.getItem("restaurantCode");
-    const storedSectionId = localStorage.getItem("sectionId");
+    const storedRestaurantCode = stripPrefix(localStorage.getItem("restaurantCode"), 'o');
+    const storedSectionId = stripPrefix(localStorage.getItem("sectionId"), 's');
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
@@ -347,18 +382,24 @@ export const RestaurantIdProvider = ({ children }) => {
   }, []);
 
   const updateRestaurantCode = (code) => {
-    setRestaurantCode(code);
-    localStorage.setItem("restaurantCode", code);
+    // Strip any 'o' prefix if present
+    const cleanCode = stripPrefix(code, 'o');
+    setRestaurantCode(cleanCode);
+    localStorage.setItem("restaurantCode", cleanCode);
   };
 
   const updateTableNumber = (number) => {
-    setTableNumber(number);
-    localStorage.setItem("tableNumber", number);
+    // Strip any 't' prefix if present
+    const cleanNumber = stripPrefix(number, 't');
+    setTableNumber(cleanNumber);
+    localStorage.setItem("tableNumber", cleanNumber);
   };
 
   const updateSectionId = (id) => {
-    setSectionId(id);
-    localStorage.setItem("sectionId", id);
+    // Strip any 's' prefix if present
+    const cleanId = stripPrefix(id, 's');
+    setSectionId(cleanId);
+    localStorage.setItem("sectionId", cleanId);
   };
 
   return (
