@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import config from "../component/config"
+import OrderTypeModal from "../components/OrderTypeModal";
 const RestaurantIdContext = createContext();
 
 export const useRestaurantId = () => {
@@ -17,6 +18,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [sectionName, setSectionName] = useState("")
   const [socials, setSocials] = useState([]);
   const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
@@ -28,29 +30,75 @@ export const RestaurantIdProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // This useEffect is responsible for URL validation and parameter extraction
+    // URL validation takes precedence over localStorage values
+    // If a URL is malformed, we redirect to the error page before any data fetching occurs
+    // This ensures that invalid URLs are never processed, even if localStorage contains valid values
     const path = location.pathname;
-    const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
     
-    // Only validate and redirect for URLs that are trying to be restaurant URLs
-    // but have incorrect format
-    if (!match && path.includes('/user_app/o')) {
-      // URL has restaurant prefix but doesn't match pattern
-      let errorMessage = "URL having issue. Rescan the QR Code again!";
-      
-      // We can still provide specific error messages
-      if (path.match(/\/o\d+/) === null) {
-        errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
-      } else if (path.match(/\/s\d+/) === null && path.includes('/s')) {
-        errorMessage = "Section having issue. Rescan the QR Code again!";
-      } else if (path.match(/\/t\d+/) === null && path.includes('/t')) {
-        errorMessage = "Table having issue. Rescan the QR Code again!";
+    // Check if path contains 'user_app/' and then do validation
+    if (path.includes('/user_app/')) {
+      // Check for old URL format (without prefixes) and redirect to error page
+      const oldFormatPattern = /^\/user_app\/\d+\/\d+\/\d+$/;
+      if (oldFormatPattern.test(path)) {
+        navigate("/user_app/error", { 
+          state: { 
+            errorMessage: "URL format has changed. Please use the new format with proper prefixes (o, s, t)." 
+          } 
+        });
+        return;
       }
       
-      navigate("/user_app/error", { state: { errorMessage } });
-      return;
+      // Valid URL pattern - strict matching for restaurant URLs
+      const validUrlPattern = /^\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?$/;
+      
+      // Only validate restaurant-specific URLs
+      if (path.includes('/user_app/o')) {
+        // Check for bad prefixes - this will catch "oa", "ss", "tr", etc.
+        const badOutletPattern = /\/user_app\/o[^\/\d][^\/]*/;
+        const badSectionPattern = /\/s[^\/\d][^\/]*/;
+        const badTablePattern = /\/t[^\/\d][^\/]*/;
+        
+        // URL has 'o' prefix but doesn't match valid pattern
+        if (!validUrlPattern.test(path)) {
+          console.log("Invalid URL format detected:", path);
+          let errorMessage = "URL having issue. Rescan the QR Code again!";
+          
+          // Check specifically which part has an error
+          if (badOutletPattern.test(path)) {
+            errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
+          } else if (badSectionPattern.test(path)) {
+            errorMessage = "Section having issue. Rescan the QR Code again!";
+          } else if (badTablePattern.test(path)) {
+            errorMessage = "Table having issue. Rescan the QR Code again!";
+          } else if (!path.match(/\/o\d+/)) {
+            errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
+          } else if (path.includes('/s') && !path.match(/\/s\d+/)) {
+            errorMessage = "Section having issue. Rescan the QR Code again!";
+          } else if (path.includes('/t') && !path.match(/\/t\d+/)) {
+            errorMessage = "Table having issue. Rescan the QR Code again!";
+          }
+          
+          // Always navigate to error page for invalid restaurant URLs
+          navigate("/user_app/error", { state: { errorMessage } });
+          return;
+        }
+        
+        // Check if this is an outlet-only URL (no section/table)
+        // Pattern for outlet-only URL: /user_app/o123456/
+        const outletOnlyPattern = /^\/user_app\/o\d+\/?$/;
+        if (outletOnlyPattern.test(path)) {
+          // This is an outlet-only URL, show the order type selection modal
+          console.log("Outlet-only URL detected, showing order type modal");
+          setShowOrderTypeModal(true);
+          // We'll still continue with processing to set the restaurantCode
+        }
+      }
     }
     
-    // Continue with normal matching behavior
+    // Continue with normal regex match for valid URLs
+    const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
+    
     if (match) {
       const [, code, section, table] = match;
       
@@ -163,6 +211,15 @@ export const RestaurantIdProvider = ({ children }) => {
     }
   }, [location, navigate]);
 
+  // Handle order type selection
+  const handleOrderTypeSelection = (orderType) => {
+    // Save the selected order type to localStorage
+    localStorage.setItem("orderType", orderType);
+    // Hide the modal
+    setShowOrderTypeModal(false);
+    console.log(`Order type selected: ${orderType}`);
+  };
+
   useEffect(() => {
     if (!sectionId) {
       console.warn("Section ID is null or undefined. Skipping API call.");
@@ -176,15 +233,20 @@ export const RestaurantIdProvider = ({ children }) => {
       
       // Get code from localStorage if not provided
       const storedCode = stripPrefix(localStorage.getItem("restaurantCode"), 'o');
-      const urlPattern = /\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/;
+      
+      // Validate URL patterns first
       const currentUrl = window.location.pathname;
+      const urlPattern = /\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/;
       const match = currentUrl.match(urlPattern);
+      
       console.log("---------"+match);
       console.log("---------");
+      
       let extractedCode = null;
       let extractedTableNumber = null;
       let extractedSectionId = null;
 
+      // Prioritize URL parameters over localStorage if available
       if (match) {
           [, extractedCode, extractedSectionId, extractedTableNumber] = match;
           // Strip any prefixes that might be in the match
@@ -205,6 +267,13 @@ export const RestaurantIdProvider = ({ children }) => {
       // Use extracted values, but only use fallbacks if we're not in outlet-only mode
       const finalCode = extractedCode || cleanRestaurantCode || storedCode;
       const finalSectionId = isOutletOnlyUrl ? null : (extractedSectionId || cleanSectionId || stripPrefix(localStorage.getItem("sectionId"), 's'));
+      
+      // Validate that we have a restaurant code before proceeding
+      if (!finalCode) {
+        console.error("No valid restaurant code found in URL or localStorage");
+        // Don't redirect here as it might create redirect loops
+        return;
+      }
 
       // Only update table number if explicitly in URL
       if (extractedTableNumber) {
@@ -418,6 +487,12 @@ export const RestaurantIdProvider = ({ children }) => {
       }}
     >
       {children}
+      {showOrderTypeModal && (
+        <OrderTypeModal 
+          onSelect={handleOrderTypeSelection}
+          onClose={() => setShowOrderTypeModal(false)}
+        />
+      )}
     </RestaurantIdContext.Provider>
   );
 };
