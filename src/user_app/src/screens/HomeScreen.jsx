@@ -16,6 +16,7 @@ import { APP_VERSION } from "../component/config";
 import config from "../component/config";
 import OrderTypeModal from "../components/OrderTypeModal";
 const HomeScreen = () => {
+  const { isOutletOnlyUrl } = useRestaurantId();
   const { restaurantCode, table_number } = useParams();
   const tableNumber = localStorage.getItem("tableNumber");
   const sectionId = localStorage.getItem("sectionId");
@@ -140,7 +141,7 @@ const HomeScreen = () => {
 
   return (
     <div>
-      <OrderTypeModal />
+      {isOutletOnlyUrl && <OrderTypeModal />}
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
           <div

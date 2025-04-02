@@ -56,6 +56,10 @@ function App() {
                 />
                 <Route
                   path=":restaurantCode"
+                  element={<HomeScreen />}
+                />
+                <Route
+                  path=":restaurantCode"
                   element={<ValidateAndNavigate />}
                 />
                 <Route path="AllOrderList" element={<AllOrderList />} />

@@ -19,6 +19,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [socials, setSocials] = useState([]);
   const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
   const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [isOutletOnlyUrl, setIsOutletOnlyUrl] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
@@ -59,36 +60,16 @@ export const RestaurantIdProvider = ({ children }) => {
         const badSectionPattern = /\/s[^\/\d][^\/]*/;
         const badTablePattern = /\/t[^\/\d][^\/]*/;
         
-        // URL has 'o' prefix but doesn't match valid pattern
-        if (!validUrlPattern.test(path)) {
-          console.log("Invalid URL format detected:", path);
-          let errorMessage = "URL having issue. Rescan the QR Code again!";
-          
-          // Check specifically which part has an error
-          if (badOutletPattern.test(path)) {
-            errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
-          } else if (badSectionPattern.test(path)) {
-            errorMessage = "Section having issue. Rescan the QR Code again!";
-          } else if (badTablePattern.test(path)) {
-            errorMessage = "Table having issue. Rescan the QR Code again!";
-          } else if (!path.match(/\/o\d+/)) {
-            errorMessage = "Restaurant code is invalid. Rescan the QR Code again!";
-          } else if (path.includes('/s') && !path.match(/\/s\d+/)) {
-            errorMessage = "Section having issue. Rescan the QR Code again!";
-          } else if (path.includes('/t') && !path.match(/\/t\d+/)) {
-            errorMessage = "Table having issue. Rescan the QR Code again!";
-          }
-          
-          // Always navigate to error page for invalid restaurant URLs
-          navigate("/user_app/error", { state: { errorMessage } });
-          return;
-        }
-        
         // Check if this is an outlet-only URL (no section/table)
         // Pattern for outlet-only URL: /user_app/o123456/
         const outletOnlyPattern = /^\/user_app\/o\d+\/?$/;
-        if (outletOnlyPattern.test(path)) {
-          // This is an outlet-only URL, show the order type selection modal
+        
+        // Set the isOutletOnlyUrl state
+        const isOutletOnly = outletOnlyPattern.test(path);
+        setIsOutletOnlyUrl(isOutletOnly);
+        
+        if (isOutletOnly) {
+          // This is an outlet-only URL, show the order type modal
           console.log("Outlet-only URL detected, showing order type modal");
           setShowOrderTypeModal(true);
           // We'll still continue with processing to set the restaurantCode
@@ -110,6 +91,11 @@ export const RestaurantIdProvider = ({ children }) => {
       console.log(`outlet::${cleanCode}, section:${cleanSection || "undefined"}, table:${cleanTable || "undefined"}`);
       setRestaurantCode(cleanCode);
 
+      // Determine if this is an outlet-only URL
+      const isOutletOnly = !section && !table;
+      setIsOutletOnlyUrl(isOutletOnly);
+      console.log("++++++++++isOutletOnly+++++++++++++",isOutletOnly);
+      
       if (cleanTable) {
         // First get restaurant details to get restaurant_id
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
@@ -262,7 +248,12 @@ export const RestaurantIdProvider = ({ children }) => {
       }
 
       // If we only have outlet code in URL, don't use fallbacks for table and section
-      const isOutletOnlyUrl = match && !match[2] && !match[3];
+      const urlHasOnlyOutlet = match && !match[2] && !match[3];
+      
+      // Make sure we're consistent with the state
+      if (urlHasOnlyOutlet !== isOutletOnlyUrl) {
+        setIsOutletOnlyUrl(urlHasOnlyOutlet);
+      }
       
       // Use extracted values, but only use fallbacks if we're not in outlet-only mode
       const finalCode = extractedCode || cleanRestaurantCode || storedCode;
@@ -435,7 +426,7 @@ export const RestaurantIdProvider = ({ children }) => {
     };
   
     fetchRestaurantDetails(restaurantCode, sectionId);
-  }, [restaurantCode, sectionId, navigate]);
+  }, [restaurantCode, sectionId, navigate, isOutletOnlyUrl]);
   
 
   useEffect(() => {
@@ -479,6 +470,7 @@ export const RestaurantIdProvider = ({ children }) => {
         restaurantCode,
         tableNumber,
         sectionId,
+        isOutletOnlyUrl,
         updateRestaurantCode,
         updateTableNumber,
         updateSectionId,
@@ -488,7 +480,7 @@ export const RestaurantIdProvider = ({ children }) => {
     >
       {children}
       {showOrderTypeModal && (
-        <OrderTypeModal 
+        <OrderTypeModal
           onSelect={handleOrderTypeSelection}
           onClose={() => setShowOrderTypeModal(false)}
         />
