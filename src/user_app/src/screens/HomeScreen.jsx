@@ -16,7 +16,7 @@ import { APP_VERSION } from "../component/config";
 import config from "../component/config";
 
 const HomeScreen = () => {
-  const { isOutletOnlyUrl } = useRestaurantId();
+  // const { isOutletOnlyUrl } = useRestaurantId();
   const { restaurantCode, table_number } = useParams();
   const tableNumber = localStorage.getItem("tableNumber");
   const sectionId = localStorage.getItem("sectionId");

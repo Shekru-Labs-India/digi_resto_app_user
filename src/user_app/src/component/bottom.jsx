@@ -7,7 +7,7 @@ import config from "./config";
 
 const Bottom = () => {
   const location = useLocation();
-  const { restaurantCode } = useRestaurantId();
+  const { restaurantCode, isOutletOnlyUrl } = useRestaurantId();
   const { cartItems } = useCart();
   const tableNumber = localStorage.getItem("tableNumber");
   const sectionId = localStorage.getItem("sectionId");
@@ -23,15 +23,36 @@ const Bottom = () => {
     return homePathPattern.test(pathname);
   };
 
+  // Function to generate the correct home URL based on isOutletOnlyUrl
+  const getHomeUrl = () => {
+    const cleanRestaurantCode = restaurantCode ? restaurantCode.replace(/^o/, '') : '';
+    const currentPath = location.pathname;
+    
+    // Get saved isOutletOnlyUrl value from localStorage (more reliable across navigation)
+    const savedIsOutletOnly = localStorage.getItem("isOutletOnlyUrl") === "true";
+    
+    // Check if the current URL is directly an outlet-only URL
+    const currentIsOutletOnly = /^\/user_app\/o\d+\/?$/.test(currentPath);
+    
+    // Use saved value or current URL check or context value (in order of reliability)
+    if (savedIsOutletOnly || currentIsOutletOnly || isOutletOnlyUrl) {
+      // If we're in outlet-only mode, return URL with just the outlet code
+      return `/user_app/o${cleanRestaurantCode}`;
+    } else {
+      // Otherwise include section and table if available
+      return `/user_app/o${cleanRestaurantCode}${
+        sectionId ? `/s${sectionId.replace(/^s/, '')}` : ''
+      }${
+        tableNumber ? `/t${tableNumber.replace(/^t/, '')}` : ''
+      }`;
+    }
+  };
+
   return (
     <div className="menubar-area footer-fixed">
       <div className="toolbar-inner menubar-nav">
         <Link
-          to={`/user_app/o${restaurantCode ? restaurantCode.replace(/^o/, '') : ''}${
-            sectionId ? `/s${sectionId.replace(/^s/, '')}` : ''
-          }${
-            tableNumber ? `/t${tableNumber.replace(/^t/, '')}` : ''
-          }`}
+          to={getHomeUrl()}
           className={`nav-link d-flex flex-column align-items-center ${
             isHomePath(location.pathname) ? "active" : ""
           }`}

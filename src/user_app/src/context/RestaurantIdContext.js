@@ -39,6 +39,25 @@ export const RestaurantIdProvider = ({ children }) => {
     
     // Check if path contains 'user_app/' and then do validation
     if (path.includes('/user_app/')) {
+      // Check for outlet code in the URL
+      const outletMatch = path.match(/\/user_app\/o(\d+)/);
+      if (outletMatch) {
+        const currentOutletCode = outletMatch[1];
+        const previousOutletCode = localStorage.getItem("currentOutletCode");
+        
+        // If this is a different outlet code than before
+        if (previousOutletCode && previousOutletCode !== currentOutletCode) {
+          console.log("Switching to new outlet, clearing orderType and seen_modal state");
+          localStorage.removeItem("orderType");
+          
+          // Clear all seen_modal keys for previous outlet
+          localStorage.removeItem(`seen_modal_${previousOutletCode}`);
+        }
+        
+        // Save current outlet code
+        localStorage.setItem("currentOutletCode", currentOutletCode);
+      }
+      
       // Check for old URL format (without prefixes) and redirect to error page
       const oldFormatPattern = /^\/user_app\/\d+\/\d+\/\d+$/;
       if (oldFormatPattern.test(path)) {
@@ -64,20 +83,40 @@ export const RestaurantIdProvider = ({ children }) => {
         // Pattern for outlet-only URL: /user_app/o123456/
         const outletOnlyPattern = /^\/user_app\/o\d+\/?$/;
         
+        // Get the previous isOutletOnlyUrl state to detect transitions
+        const wasOutletOnly = isOutletOnlyUrl;
+        
         // Set the isOutletOnlyUrl state
         const isOutletOnly = outletOnlyPattern.test(path);
         setIsOutletOnlyUrl(isOutletOnly);
-        if(isOutletOnly === true){
-          console.log("Outlet-only URL detected, showing order type modal");
-        } else {
-          localStorage.setItem("orderType", "dine-in");
-        }
+        
+        // Save to localStorage to maintain state across navigation
+        localStorage.setItem("isOutletOnlyUrl", isOutletOnly);
         
         if (isOutletOnly) {
-          // This is an outlet-only URL, show the order type modal
-          console.log("Outlet-only URL detected, showing order type modal");
-          setShowOrderTypeModal(true);
-          // We'll still continue with processing to set the restaurantCode
+          // Extract outlet code from path for tracking selection state
+          const match = path.match(/\/user_app\/o(\d+)/);
+          if (match) {
+            const outletCode = match[1];
+            const seenModalKey = `seen_modal_${outletCode}`;
+            
+            // Check if user has seen the modal for this specific outlet code
+            const hasSeenModal = localStorage.getItem(seenModalKey) === "true";
+            
+            if (!hasSeenModal && !localStorage.getItem("orderType")) {
+              // First visit to this outlet-only URL and no order type selected
+              console.log("First visit to outlet-only URL, showing order type modal");
+              setShowOrderTypeModal(true);
+            } else {
+              console.log("User has already seen modal for this outlet or has orderType set");
+              setShowOrderTypeModal(false);
+            }
+          }
+        } else {
+          // If it's not an outlet-only URL, ensure orderType is set to dine-in
+          if (!localStorage.getItem("orderType")) {
+            localStorage.setItem("orderType", "dine-in");
+          }
         }
       }
     }
@@ -206,9 +245,32 @@ export const RestaurantIdProvider = ({ children }) => {
   const handleOrderTypeSelection = (orderType) => {
     // Save the selected order type to localStorage
     localStorage.setItem("orderType", orderType);
+    
+    // Mark that user has seen the modal for this outlet code
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/o(\d+)/);
+    if (match) {
+      const outletCode = match[1];
+      localStorage.setItem(`seen_modal_${outletCode}`, "true");
+    }
+    
     // Hide the modal
     setShowOrderTypeModal(false);
     console.log(`Order type selected: ${orderType}`);
+  };
+
+  // Function to handle closing the modal without selection
+  const handleCloseModal = () => {
+    // Mark that user has seen the modal for this outlet code
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/o(\d+)/);
+    if (match) {
+      const outletCode = match[1];
+      localStorage.setItem(`seen_modal_${outletCode}`, "true");
+    }
+    
+    // Hide the modal
+    setShowOrderTypeModal(false);
   };
 
   useEffect(() => {
@@ -484,10 +546,10 @@ export const RestaurantIdProvider = ({ children }) => {
       }}
     >
       {children}
-      {showOrderTypeModal && (
+      {showOrderTypeModal && !localStorage.getItem("orderType") && (
         <OrderTypeModal
           onSelect={handleOrderTypeSelection}
-          onClose={() => setShowOrderTypeModal(false)}
+          onClose={handleCloseModal}
         />
       )}
     </RestaurantIdContext.Provider>
