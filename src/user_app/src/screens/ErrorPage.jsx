@@ -20,14 +20,15 @@ function ErrorPage() {
         <div className="container">
           <div className="error-page">
             <div className="icon-bx">
-              <div className="d-flex justify-content-center align-items-center mt-5 mb-3">
+              <div className="d-flex justify-content-center align-items-center mb-3">
                 <img
                   src={qr_scan}
                   alt="Scan QR Code"
                   className="img-fluid rounded shadow-sm"
+                  loading="lazy"
                   style={{
                     maxWidth: "220px",
-                    width: "auto",
+                    width: "220px",
                     maxHeight: "220px",
                   }}
                 />
