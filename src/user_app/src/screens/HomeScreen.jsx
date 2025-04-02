@@ -14,7 +14,7 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
 import config from "../component/config";
-import OrderTypeModal from "../components/OrderTypeModal";
+
 const HomeScreen = () => {
   const { isOutletOnlyUrl } = useRestaurantId();
   const { restaurantCode, table_number } = useParams();
@@ -141,7 +141,6 @@ const HomeScreen = () => {
 
   return (
     <div>
-      {isOutletOnlyUrl && <OrderTypeModal />}
       <div className="page-wrapper">
         <header className="header header-fixed style-3 shadow-sm">
           <div

@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
-function OrderTypeModal() {
-  const [isOpen, setIsOpen] = useState(true);
-
+function OrderTypeModal({ onSelect, onClose }) {
   const getOrderTypeIcon = (type) => {
     switch (type.toLowerCase()) {
       case "parcel":
@@ -19,18 +17,13 @@ function OrderTypeModal() {
   };
 
   const handleOrderTypeSelection = (type) => {
-    // Here you can handle the order type selection
     console.log("Selected order type:", type);
-    localStorage.setItem("orderType", type);
-    // Add your logic here to process the selected order type
-    closeModal();
+    
+    // Call the onSelect prop directly without internal state change
+    if (onSelect) {
+      onSelect(type);
+    }
   };
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
-  if (!isOpen) return null;
 
   return (
     <>
@@ -60,8 +53,8 @@ function OrderTypeModal() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Please select your order type</h5>
-              <button className="btn-close" data-bs-dismiss="modal">
-                {/* <i className="fa-solid fa-xmark" /> */}
+              <button className="btn-close" onClick={onClose} data-bs-dismiss="modal">
+                <i className="fa-solid fa-xmark" />
               </button>
             </div>
             <div className="modal-body">
