@@ -182,16 +182,26 @@ export const RestaurantIdProvider = ({ children }) => {
               setTableNumber(cleanTable);
               // window.showToast("info", `You are at Table Number ${table}`);
               localStorage.setItem("tableNumber", cleanTable);
+            } else if (data.st === 2 || !data.is_table_exists) {
+              // Table doesn't exist or error response, navigate to error page
+              navigate("/user_app/error", { 
+                state: { 
+                  errorMessage: data.msg || "Table not found. Please check the table number and try again." 
+                } 
+              });
+              console.log("Table not exists or error occurred");
             } else {
-              // Table doesn't exist, navigate to HotelList
-              // navigate("/user_app/HotelList");
-              // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
-              console.log("Table not exists");
+              // Other error scenarios
+              console.error("Unexpected response:", data);
             }
           })
           .catch((error) => {
             // console.clear();
-            navigate("/user_app/Index");
+            navigate("/user_app/error", {
+              state: {
+                errorMessage: error.message || "Network error. Unable to verify table information."
+              }
+            });
           });
       }
 
@@ -486,14 +496,34 @@ export const RestaurantIdProvider = ({ children }) => {
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
 
-          // navigate("/user_app/Index");
+          // Navigate to error page with proper message
+          navigate("/user_app/error", { 
+            state: { 
+              errorMessage: data.msg || "Restaurant not found. Please check the restaurant code and try again." 
+            } 
+          });
 
           localStorage.setItem("restaurantStatus", false);
         } else {
-          // console.clear();
+          // Other error response
+          console.error("Unexpected API response:", data);
+          
+          // Navigate to error page for unexpected errors
+          navigate("/user_app/error", { 
+            state: { 
+              errorMessage: data.msg || "Something went wrong. Please try again later." 
+            } 
+          });
         }
       } catch (error) {
         console.error("Error fetching restaurant details:", error);
+        
+        // Navigate to error page for network errors
+        navigate("/user_app/error", { 
+          state: { 
+            errorMessage: "Network error. Please check your connection and try again." 
+          } 
+        });
       }
     };
   
