@@ -67,6 +67,11 @@ export const RestaurantIdProvider = ({ children }) => {
         // Set the isOutletOnlyUrl state
         const isOutletOnly = outletOnlyPattern.test(path);
         setIsOutletOnlyUrl(isOutletOnly);
+        if(isOutletOnly === true){
+          console.log("Outlet-only URL detected, showing order type modal");
+        } else {
+          localStorage.setItem("orderType", "dine-in");
+        }
         
         if (isOutletOnly) {
           // This is an outlet-only URL, show the order type modal
