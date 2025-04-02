@@ -7,7 +7,9 @@ import config from "../component/config";
 import { isNonProductionDomain } from "../component/config";
 
 const HotelNameAndTable = ({ restaurantName }) => {
-
+  // Get isOutletOnlyUrl from context to determine display mode
+  const { isOutletOnlyUrl } = useRestaurantId();
+  
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
   const tableNumber = localStorage.getItem("tableNumber");
@@ -24,6 +26,10 @@ const HotelNameAndTable = ({ restaurantName }) => {
   const sectionName =
     JSON.parse(localStorage.getItem("userData"))?.sectionName ||
     localStorage.getItem("sectionName");
+  
+  // Get orderType from localStorage
+  const orderType = localStorage.getItem("orderType");
+    
   useEffect(() => {
     // Store both sectionId and sectionName in localStorage
     if (sectionId) {
@@ -79,8 +85,16 @@ const HotelNameAndTable = ({ restaurantName }) => {
         <div className="d-flex align-items-center font_size_12">
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
-            {titleCase(sectionName)}
-            {displayTableNumber && <> - {tableNumber}</>}
+            {isOutletOnlyUrl ? (
+              // For outlet-only URLs, show the order type
+              <>{orderType?.toUpperCase() || ""}</>
+            ) : (
+              // For section/table URLs, show section name and table number
+              <>
+                {titleCase(sectionName || "")}
+                {displayTableNumber && <> - {tableNumber}</>}
+              </>
+            )}
           </span>
         </div>
         </div>
