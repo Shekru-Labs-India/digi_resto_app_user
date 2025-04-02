@@ -274,10 +274,8 @@ export const RestaurantIdProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!sectionId) {
-      console.warn("Section ID is null or undefined. Skipping API call.");
-      return; // Do not execute the API call if sectionId is not available
-    }
+    // We'll fetch restaurant details even if sectionId is null (for outlet-only URLs)
+    // Do not skip the API call for outlet-only URLs
   
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
       // Strip any prefixes from passed parameters
@@ -365,6 +363,16 @@ export const RestaurantIdProvider = ({ children }) => {
       });
 
       try {
+        // Prepare request body based on whether we have a section ID
+        const requestBody = {
+          outlet_code: finalCode,
+        };
+        
+        // Only include section_id in the payload if it's not null
+        if (finalSectionId) {
+          requestBody.section_id = finalSectionId;
+        }
+        
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
           {
@@ -373,10 +381,7 @@ export const RestaurantIdProvider = ({ children }) => {
               "Content-Type": "application/json",
               // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-            body: JSON.stringify({
-              outlet_code: finalCode,
-              section_id: finalSectionId, //section id switched to local storage
-            }),
+            body: JSON.stringify(requestBody),
           }
         );
 
