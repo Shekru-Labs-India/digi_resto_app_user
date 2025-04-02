@@ -9,7 +9,7 @@ function OrderTypeModal({ onSelect, onClose }) {
         return "fa-truck";
       case "counter":
         return "fa-cash-register";
-      case "drive through":
+      case "drive-through":
         return "fa-car";
       default:
         return "fa-question";
@@ -53,9 +53,6 @@ function OrderTypeModal({ onSelect, onClose }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Please select your order type</h5>
-              <button className="btn-close" onClick={onClose} data-bs-dismiss="modal">
-                <i className="fa-solid fa-xmark" />
-              </button>
             </div>
             <div className="modal-body">
               <div className="row g-3">

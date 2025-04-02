@@ -250,9 +250,9 @@ const Checkout = () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const storedCart = localStorage.getItem("restaurant_cart_data");
+      const savedOrderType = localStorage.getItem("orderType");
 
       if (!userData?.user_id) {
-        // window.showToast("error", "Please login to place order");
         return;
       }
 
@@ -306,22 +306,28 @@ const Checkout = () => {
             grandTotal: data.final_grand_total,
           });
           setShowExistingOrderModal(true);
+        } else if (savedOrderType) {
+          // No existing order and we have a saved order type - create order directly
+          handleCreateOrder(savedOrderType);
         } else {
-          // No existing order - show order type selection
+          // No existing order and no saved order type - show order type selection
           setShowOrderTypeModal(true);
         }
       }
 
       if (data.st === 2) {
-        setShowOrderTypeModal(true);
-        // setShowExistingOrderModal(false);
-        // setShowNewOrderModal(true);
+        if (savedOrderType) {
+          // We have a saved order type - create order directly
+          handleCreateOrder(savedOrderType);
+        } else {
+          // No saved order type - show order type selection
+          setShowOrderTypeModal(true);
+        }
       } else {
         throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
       setIsProcessing(false);
-      // window.showToast("error", "Failed to process order");
       console.error("Error:", error);
     }
   };
@@ -636,9 +642,17 @@ const handleAddToExistingOrder = async () => {
   };
 
   const handleOrderActionClick = (actionType) => {
+    const savedOrderType = localStorage.getItem("orderType");
     setPendingOrderAction(actionType);
-    setShowExistingOrderModal(false);
-    setShowOrderTypeModal(true);
+    
+    if (savedOrderType) {
+      // If we have a saved order type, use it directly
+      handleOrderAction(actionType, savedOrderType);
+    } else {
+      // Otherwise show the modal to select order type
+      setShowExistingOrderModal(false);
+      setShowOrderTypeModal(true);
+    }
   };
 
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
@@ -1330,7 +1344,7 @@ const handleAddToExistingOrder = async () => {
           />
         </div>
 
-        {showOrderTypeModal && (
+        {/* {showOrderTypeModal && !localStorage.getItem("orderType") && (
           <div className="popup-overlay">
             <div className="modal-dialog w-75">
               <div className="modal-content">
@@ -1350,7 +1364,7 @@ const handleAddToExistingOrder = async () => {
 
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
-                    {/* Parcel Option */}
+                  
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1365,7 +1379,7 @@ const handleAddToExistingOrder = async () => {
                       </div>
                     </div>
 
-                    {/* Drive-Through Option */}
+              
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1382,7 +1396,7 @@ const handleAddToExistingOrder = async () => {
                       </div>
                     </div>
 
-                    {/* Dine-in Option */}
+               
                     <div className="col-12 mb-3">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1408,7 +1422,7 @@ const handleAddToExistingOrder = async () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {showPaymentOptions && (
           <div className="popup-overlay">
