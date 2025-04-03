@@ -675,7 +675,7 @@ const TrackOrder = () => {
           });
 
           // Set rating if it exists
-          if (lists.order_details.rating) {
+          if (lists.order_details.rating && parseInt(lists.order_details.rating) > 0) {
             setSelectedRating(parseInt(lists.order_details.rating));
             setHasRated(true);
           }
@@ -2461,39 +2461,115 @@ ${
                 {orderStatus === "paid" && (
                   <div className="card mb-4">
                     <div className="card-body">
-                      <h5 className="card-title text-center mb-3">
+                      <h5 className="card-title text-center mb-4">
                         {hasRated ? 'Your Rating' : 'How was your order?'}
                       </h5>
-                      <div className="d-flex justify-content-center gap-4">
-                        <button 
-                          className={`btn ${parseInt(selectedRating) === 1 ? 'btn-danger' : 'btn-outline-secondary'} rounded-circle p-3`}
-                          onClick={() => handleRating(1)}
-                          aria-label="Rate as poor"
-                        >
-                          <i className="fa-solid fa-face-frown text-danger" style={{ fontSize: '1.8rem' }}></i>
-
-                        </button>
-                        <button 
-                          className={`btn ${parseInt(selectedRating) === 3 ? 'btn-warning' : 'btn-outline-secondary'} rounded-circle p-3`}
-                          onClick={() => handleRating(3)}
-                          aria-label="Rate as good"
-                        >
-                          <i className="fa-solid fa-face-smile text-warning" style={{ fontSize: '1.8rem' }}></i>
-               
-                        </button>
-                        <button 
-                          className={`btn ${parseInt(selectedRating) === 5 ? 'btn-success' : 'btn-outline-secondary'} rounded-circle p-3`}
-                          onClick={() => handleRating(5)}
-                          aria-label="Rate as excellent"
-                        >
-                          <i className="fa-solid fa-face-laugh-beam text-success" style={{ fontSize: '1.8rem' }}></i>
-                       
-                        </button>
+                      
+                      <div className="d-flex justify-content-center gap-5 mb-4">
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-1" 
+                            name="rating" 
+                            value="1" 
+                            checked={parseInt(selectedRating) === 1}
+                            onChange={() => handleRating(1)} 
+                          />
+                          <label 
+                            htmlFor="rating-1" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 1 ? 'bg-danger bg-opacity-25 shadow-sm border border-danger' : 'border-0'}`}
+                            aria-label="Rate as poor"
+                            style={{
+                              transition: 'transform 0.2s ease',
+                              transform: parseInt(selectedRating) === 1 ? 'scale(1.2)' : 'scale(1)'
+                            }}
+                            onMouseOver={(e) => {
+                              if (parseInt(selectedRating) !== 1) {
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                              }
+                            }}
+                            onMouseOut={(e) => {
+                              if (parseInt(selectedRating) !== 1) {
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }
+                            }}
+                          >
+                            <i className="fa-solid fa-face-frown text-danger fs-2"></i>
+                          </label>
+                        </div>
+                        
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-3" 
+                            name="rating" 
+                            value="3" 
+                            checked={parseInt(selectedRating) === 3}
+                            onChange={() => handleRating(3)} 
+                          />
+                          <label 
+                            htmlFor="rating-3" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 3 ? 'bg-warning bg-opacity-25 shadow-sm border border-warning' : 'border-0'}`}
+                            aria-label="Rate as good"
+                            style={{
+                              transition: 'transform 0.2s ease',
+                              transform: parseInt(selectedRating) === 3 ? 'scale(1.2)' : 'scale(1)'
+                            }}
+                            onMouseOver={(e) => {
+                              if (parseInt(selectedRating) !== 3) {
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                              }
+                            }}
+                            onMouseOut={(e) => {
+                              if (parseInt(selectedRating) !== 3) {
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }
+                            }}
+                          >
+                            <i className="fa-solid fa-face-smile text-warning fs-2"></i>
+                          </label>
+                        </div>
+                        
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-5" 
+                            name="rating" 
+                            value="5" 
+                            checked={parseInt(selectedRating) === 5}
+                            onChange={() => handleRating(5)} 
+                          />
+                          <label 
+                            htmlFor="rating-5" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 5 ? 'bg-success bg-opacity-25 shadow-sm border border-success' : 'border-0'}`}
+                            aria-label="Rate as excellent"
+                            style={{
+                              transition: 'transform 0.2s ease',
+                              transform: parseInt(selectedRating) === 5 ? 'scale(1.2)' : 'scale(1)'
+                            }}
+                            onMouseOver={(e) => {
+                              if (parseInt(selectedRating) !== 5) {
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                              }
+                            }}
+                            onMouseOut={(e) => {
+                              if (parseInt(selectedRating) !== 5) {
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }
+                            }}
+                          >
+                            <i className="fa-solid fa-face-laugh-beam text-success fs-2"></i>
+                          </label>
+                        </div>
                       </div>
-                      {selectedRating > 0 && (
-                        <div className="text-center mt-3 text-success">
+                      
+                      {hasRated && (
+                        <div className="text-center mt-3 font_size_14 text-success">
                           <i className="fa-solid fa-check-circle me-2"></i>
-                          {hasRated ? 'Thank you for your feedback!' : 'Rating submitted successfully!'}
+                          Thank you for your feedback!
                         </div>
                       )}
                     </div>
