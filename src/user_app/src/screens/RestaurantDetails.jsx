@@ -24,6 +24,10 @@ function RestaurantDetails() {
     veg_nonveg: "",
     image: null,
   });
+  // Get restaurantName from context
+  const { restaurantName } = useRestaurantId();
+  // Get userData from localStorage
+  const [userData, setUserData] = useState(null);
   const [countDetails, setCountDetails] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
   const [menuList, setMenuList] = useState([]);
@@ -37,6 +41,13 @@ function RestaurantDetails() {
   const navigate = useNavigate();
  // const [restaurantId, setRestaurantId] = useState(localStorage.getItem("restaurantId") || "");
 
+  useEffect(() => {
+    // Load user data from localStorage
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setUserData(storedUserData);
+    }
+  }, []);
   
  useEffect(() => {
   const fetchRestaurantDetails = async () => {
@@ -347,14 +358,13 @@ useEffect(() => {
 
   return (
     <div>
-     
       <Header title="Restaurant Details" />
 
       <div className="container pb-0">
         <div className="pt-5">
           <HotelNameAndTable
-            restaurantName={restaurantDetails.name || ""}
-            tableNumber={"1"}
+            restaurantName={restaurantName}
+            tableNumber={userData?.tableNumber || "1"}
           />
         </div>
 
