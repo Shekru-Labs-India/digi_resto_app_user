@@ -6,14 +6,15 @@ import Notice from "../component/Notice";
 import { isNonProductionDomain } from "../component/config";
 import OrderTypeModal from "./OrderTypeModal";
 
-const HotelNameAndTable = ({ restaurantName }) => {
+const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => {
   // Get isOutletOnlyUrl from context to determine display mode
   const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
   const [showLocalOrderTypeModal, setShowLocalOrderTypeModal] = useState(false);
   
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
-  const tableNumber = localStorage.getItem("tableNumber");
+  // Use prop tableNumber if provided, otherwise get from localStorage
+  const tableNumber = propTableNumber || localStorage.getItem("tableNumber");
   // Get table number from context, localStorage, or userData
   const displayTableNumber =
     tableNumber ||
@@ -28,7 +29,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
     JSON.parse(localStorage.getItem("userData"))?.sectionName ||
     localStorage.getItem("sectionName");
   
-  // Get orderType from localStorage
+  // Get orderType from localStorage - use for outlet-only URLs
   const orderType = localStorage.getItem("orderType");
     
   useEffect(() => {
@@ -81,6 +82,12 @@ const HotelNameAndTable = ({ restaurantName }) => {
     setShowLocalOrderTypeModal(false);
   };
 
+  // Check if using outlet-only URL flow
+  // If isOutletOnlyUrl comes from context, use it directly; otherwise check localStorage
+  const useOutletOnly = typeof isOutletOnlyUrl === 'boolean' ? 
+    isOutletOnlyUrl : 
+    localStorage.getItem("isOutletOnlyUrl") === "true";
+
   return (
     <>
       {isNonProductionDomain() && <Notice />}
@@ -100,14 +107,14 @@ const HotelNameAndTable = ({ restaurantName }) => {
         <div className="d-flex align-items-center font_size_12" onClick={handleOrderTypeModal} style={{ cursor: "pointer" }}>
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
-            {isOutletOnlyUrl ? (
+            {useOutletOnly ? (
               // For outlet-only URLs, show the order type
               <>{orderType?.toUpperCase() || ""}</>
             ) : (
               // For section/table URLs, show section name and table number
               <>
                 {titleCase(sectionName || "")}
-                {displayTableNumber && <> - {tableNumber}</>}
+                {displayTableNumber && <> - {displayTableNumber}</>}
               </>
             )}
           </span>
@@ -127,6 +134,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
 
 HotelNameAndTable.propTypes = {
   restaurantName: PropTypes.string.isRequired,
+  tableNumber: PropTypes.string,
 };
 
 export default HotelNameAndTable;
