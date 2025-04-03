@@ -1,6 +1,9 @@
 import React from "react";
 
 function OrderTypeModal({ onSelect, onClose }) {
+  // Get the current order type from localStorage
+  const currentOrderType = localStorage.getItem("orderType");
+
   const getOrderTypeIcon = (type) => {
     switch (type.toLowerCase()) {
       case "parcel":
@@ -25,6 +28,13 @@ function OrderTypeModal({ onSelect, onClose }) {
     }
   };
 
+  // Add close button handler
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <>
       {/* Background blur overlay */}
@@ -40,6 +50,7 @@ function OrderTypeModal({ onSelect, onClose }) {
           WebkitBackdropFilter: "blur(5px)",
           zIndex: 1040
         }}
+        onClick={handleClose}
       ></div>
       
       <div
@@ -53,25 +64,31 @@ function OrderTypeModal({ onSelect, onClose }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Please select your order type</h5>
+              <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
             </div>
             <div className="modal-body">
               <div className="row g-3">
                 {["Counter", "Drive-Through", "Delivery", "Parcel"].map(
-                  (type) => (
-                    <div className="col-6" key={type}>
-                      <button
-                        className="btn btn-outline-primary w-100 py-3 fs-6 px-2"
-                        onClick={() =>
-                          handleOrderTypeSelection(type.toLowerCase())
-                        }
-                      >
-                        <i
-                          className={`fa-solid ${getOrderTypeIcon(type)} me-2`}
-                        ></i>
-                        {type}
-                      </button>
-                    </div>
-                  )
+                  (type) => {
+                    // Check if this type is the current one
+                    const isSelected = currentOrderType === type.toLowerCase();
+                    return (
+                      <div className="col-6" key={type}>
+                        <button
+                          className={`btn ${isSelected ? 'btn-primary' : 'btn-outline-primary'} w-100 py-3 fs-6 px-2`}
+                          onClick={() =>
+                            handleOrderTypeSelection(type.toLowerCase())
+                          }
+                        >
+                          <i
+                            className={`fa-solid ${getOrderTypeIcon(type.toLowerCase())} me-2`}
+                          ></i>
+                          {type}
+                          {/* {isSelected && <span className="ms-2">✓</span>} */}
+                        </button>
+                      </div>
+                    );
+                  }
                 )}
               </div>
             </div>

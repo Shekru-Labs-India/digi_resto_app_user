@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useNavigate } from "react-router-dom";
 import Notice from "../component/Notice";
-import config from "../component/config";
 import { isNonProductionDomain } from "../component/config";
+import OrderTypeModal from "./OrderTypeModal";
 
 const HotelNameAndTable = ({ restaurantName }) => {
   // Get isOutletOnlyUrl from context to determine display mode
-  const { isOutletOnlyUrl } = useRestaurantId();
+  const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
+  const [showLocalOrderTypeModal, setShowLocalOrderTypeModal] = useState(false);
   
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
@@ -66,6 +67,20 @@ const HotelNameAndTable = ({ restaurantName }) => {
 
   const displayName = restaurantName ? restaurantName.toUpperCase() : "";
 
+  const handleOrderTypeModal = () => {
+    // Always use local modal to avoid the localStorage check in context
+    setShowLocalOrderTypeModal(true);
+  };
+
+  const handleOrderTypeSelection = (type) => {
+    localStorage.setItem("orderType", type);
+    setShowLocalOrderTypeModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowLocalOrderTypeModal(false);
+  };
+
   return (
     <>
       {isNonProductionDomain() && <Notice />}
@@ -82,7 +97,7 @@ const HotelNameAndTable = ({ restaurantName }) => {
           </span>
         </div>
 
-        <div className="d-flex align-items-center font_size_12">
+        <div className="d-flex align-items-center font_size_12" onClick={handleOrderTypeModal} style={{ cursor: "pointer" }}>
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
             {isOutletOnlyUrl ? (
@@ -99,6 +114,13 @@ const HotelNameAndTable = ({ restaurantName }) => {
         </div>
         </div>
       </div>
+      
+      {showLocalOrderTypeModal && (
+        <OrderTypeModal 
+          onSelect={handleOrderTypeSelection} 
+          onClose={handleCloseModal} 
+        />
+      )}
     </>
   );
 };

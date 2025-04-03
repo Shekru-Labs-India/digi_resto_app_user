@@ -578,6 +578,7 @@ export const RestaurantIdProvider = ({ children }) => {
         updateSectionId,
         setRestaurantCode,
         socials,
+        setShowOrderTypeModal,
       }}
     >
       {children}
