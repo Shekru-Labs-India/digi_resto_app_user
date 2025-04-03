@@ -85,8 +85,8 @@ function App() {
                 <Route path="error" element={<ErrorPage />} />
                 <Route path="OrderTypeModal" element={<OrderTypeModal />} />
                 <Route path="/restaurant/" element={<RestaurantDetails />} />
-                <Route path="" element={<Navigate to="Index" replace />} />
-                <Route path="*" element={<Navigate to="Index" replace />} />
+                <Route path="" element={<Navigate to="error" replace />} />
+                <Route path="*" element={<Navigate to="error" replace />} />
               </Routes>
             </div>
           </CartProvider>
