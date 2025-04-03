@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
@@ -16,6 +16,7 @@ import { renderSpicyLevel } from "./config";
 import AddToCartUI from "../components/AddToCartUI";
 
 const OfferBanner = () => {
+  const { t: tableParam } = useParams();
   const [userData, setUserData] = useState(null);
   const { restaurantName } = useRestaurantId();
   const [menuItems, setMenuItems] = useState([]);
@@ -490,7 +491,7 @@ const OfferBanner = () => {
       <div className="m-0">
         <HotelNameAndTable
           restaurantName={restaurantName}
-          tableNumber={userData?.tableNumber || "1"}
+          tableNumber={tableParam}
         />
       </div>
       {menuItems.length > 0 && (
