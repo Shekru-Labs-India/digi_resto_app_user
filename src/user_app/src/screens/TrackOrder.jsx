@@ -1070,6 +1070,12 @@ const TrackOrder = () => {
   };
 
   const handleRating = async (rating) => {
+    // If rating was already submitted, don't allow changes
+    if (hasRated) {
+      window.showToast("info", "You've already rated this order");
+      return;
+    }
+    
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/rating_to_order`,
@@ -1108,6 +1114,7 @@ const TrackOrder = () => {
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setSelectedRating(rating);
+        setHasRated(true); // Mark as rated
         toast.current?.show({
           severity: "success",
           summary: "Success",
@@ -2455,12 +2462,13 @@ ${
                   <div className="card mb-4">
                     <div className="card-body">
                       <h5 className="card-title text-center mb-3">
-                        {selectedRating > 0 ? 'Your Rating' : 'How was your order?'}
+                        {hasRated ? 'Your Rating' : 'How was your order?'}
                       </h5>
                       <div className="d-flex justify-content-center gap-4">
                         <button 
                           className={`btn ${parseInt(selectedRating) === 2 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
                           onClick={() => handleRating(2)}
+                          aria-label="Rate as disappointed"
                         >
                           <span style={{ fontSize: '2rem' }}>😞</span>
                           <div className="mt-2 font_size_12">Disappointed</div>
@@ -2468,6 +2476,7 @@ ${
                         <button 
                           className={`btn ${parseInt(selectedRating) === 4 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
                           onClick={() => handleRating(4)}
+                          aria-label="Rate as satisfied"
                         >
                           <span style={{ fontSize: '2rem' }}>😊</span>
                           <div className="mt-2 font_size_12">Satisfied</div>
@@ -2475,6 +2484,7 @@ ${
                         <button 
                           className={`btn ${parseInt(selectedRating) === 5 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
                           onClick={() => handleRating(5)}
+                          aria-label="Rate as delighted"
                         >
                           <span style={{ fontSize: '2rem' }}>😍</span>
                           <div className="mt-2 font_size_12">Delighted</div>
@@ -2483,7 +2493,7 @@ ${
                       {selectedRating > 0 && (
                         <div className="text-center mt-3 text-success">
                           <i className="fa-solid fa-check-circle me-2"></i>
-                          Thank you for your feedback!
+                          {hasRated ? 'Thank you for your feedback!' : 'Rating submitted successfully!'}
                         </div>
                       )}
                     </div>
