@@ -2466,28 +2466,28 @@ ${
                       </h5>
                       <div className="d-flex justify-content-center gap-4">
                         <button 
-                          className={`btn ${parseInt(selectedRating) === 2 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
-                          onClick={() => handleRating(2)}
-                          aria-label="Rate as disappointed"
+                          className={`btn ${parseInt(selectedRating) === 1 ? 'btn-danger' : 'btn-outline-secondary'} rounded-circle p-3`}
+                          onClick={() => handleRating(1)}
+                          aria-label="Rate as poor"
                         >
-                          <span style={{ fontSize: '2rem' }}>😞</span>
-                          <div className="mt-2 font_size_12">Disappointed</div>
+                          <i className="fa-solid fa-face-frown text-danger" style={{ fontSize: '1.8rem' }}></i>
+
                         </button>
                         <button 
-                          className={`btn ${parseInt(selectedRating) === 4 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
-                          onClick={() => handleRating(4)}
-                          aria-label="Rate as satisfied"
+                          className={`btn ${parseInt(selectedRating) === 3 ? 'btn-warning' : 'btn-outline-secondary'} rounded-circle p-3`}
+                          onClick={() => handleRating(3)}
+                          aria-label="Rate as good"
                         >
-                          <span style={{ fontSize: '2rem' }}>😊</span>
-                          <div className="mt-2 font_size_12">Satisfied</div>
+                          <i className="fa-solid fa-face-smile text-warning" style={{ fontSize: '1.8rem' }}></i>
+               
                         </button>
                         <button 
-                          className={`btn ${parseInt(selectedRating) === 5 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
+                          className={`btn ${parseInt(selectedRating) === 5 ? 'btn-success' : 'btn-outline-secondary'} rounded-circle p-3`}
                           onClick={() => handleRating(5)}
-                          aria-label="Rate as delighted"
+                          aria-label="Rate as excellent"
                         >
-                          <span style={{ fontSize: '2rem' }}>😍</span>
-                          <div className="mt-2 font_size_12">Delighted</div>
+                          <i className="fa-solid fa-face-laugh-beam text-success" style={{ fontSize: '1.8rem' }}></i>
+                       
                         </button>
                       </div>
                       {selectedRating > 0 && (
