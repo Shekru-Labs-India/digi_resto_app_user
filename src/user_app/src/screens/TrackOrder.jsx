@@ -676,7 +676,8 @@ const TrackOrder = () => {
 
           // Set rating if it exists
           if (lists.order_details.rating) {
-            setSelectedRating(lists.order_details.rating);
+            setSelectedRating(parseInt(lists.order_details.rating));
+            setHasRated(true);
           }
 
           // Handle order status
@@ -2446,6 +2447,46 @@ ${
                       <i className="fa-solid fa-download me-2"></i>
                       Invoice &nbsp;
                     </button>
+                  </div>
+                )}
+
+                {/* Order Rating Component - Only show for paid orders */}
+                {orderStatus === "paid" && (
+                  <div className="card mb-4">
+                    <div className="card-body">
+                      <h5 className="card-title text-center mb-3">
+                        {selectedRating > 0 ? 'Your Rating' : 'How was your order?'}
+                      </h5>
+                      <div className="d-flex justify-content-center gap-4">
+                        <button 
+                          className={`btn ${parseInt(selectedRating) === 2 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
+                          onClick={() => handleRating(2)}
+                        >
+                          <span style={{ fontSize: '2rem' }}>😞</span>
+                          <div className="mt-2 font_size_12">Disappointed</div>
+                        </button>
+                        <button 
+                          className={`btn ${parseInt(selectedRating) === 4 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
+                          onClick={() => handleRating(4)}
+                        >
+                          <span style={{ fontSize: '2rem' }}>😊</span>
+                          <div className="mt-2 font_size_12">Satisfied</div>
+                        </button>
+                        <button 
+                          className={`btn ${parseInt(selectedRating) === 5 ? 'btn-primary' : 'btn-outline-secondary'} rounded-circle p-2`}
+                          onClick={() => handleRating(5)}
+                        >
+                          <span style={{ fontSize: '2rem' }}>😍</span>
+                          <div className="mt-2 font_size_12">Delighted</div>
+                        </button>
+                      </div>
+                      {selectedRating > 0 && (
+                        <div className="text-center mt-3 text-success">
+                          <i className="fa-solid fa-check-circle me-2"></i>
+                          Thank you for your feedback!
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
