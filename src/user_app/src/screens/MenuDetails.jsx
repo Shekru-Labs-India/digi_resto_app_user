@@ -112,6 +112,7 @@ const isItemInCart = (menuId) => {
 };
 
 const MenuDetails = () => {
+  const { menuId: menuIdString, t: tableParam } = useParams();
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -122,7 +123,6 @@ const MenuDetails = () => {
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
-  const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
   const { cartItems } = useCart();
@@ -731,7 +731,7 @@ const MenuDetails = () => {
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || "1"}
+                tableNumber={tableParam}
               />
             </div>
           </div>

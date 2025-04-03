@@ -3,8 +3,10 @@ import Bottom from "../component/bottom";
 import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useRestaurantId } from "../context/RestaurantIdContext";
+import { useParams } from "react-router-dom";
 
 function Saving() {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const { restaurantId, restaurantName } = useRestaurantId();
   const userData = JSON.parse(localStorage.getItem("userData"));
   const user_id = userData?.user_id || localStorage.getItem("user_id");
@@ -79,7 +81,7 @@ function Saving() {
         <div className="container px-3">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.customer_type?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
         <div className="container pt-3">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Bottom from "../component/bottom";
 import defaultImg from "../assets/MenuDefault.png";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -10,6 +10,7 @@ import HotelNameAndTable from '../components/HotelNameAndTable';
 import config from "../component/config"
 import RestaurantSocials from "../components/RestaurantSocials";
 const Category = () => {
+  const { t: tableParam } = useParams();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const { restaurantId: contextRestaurantId, restaurantName } = useRestaurantId();
@@ -126,7 +127,7 @@ const Category = () => {
           <div className="container px-3 py-0">
             <HotelNameAndTable
               restaurantName={restaurantName}
-              tableNumber={tableNumber}
+              tableNumber={tableParam}
             />
           </div>
 

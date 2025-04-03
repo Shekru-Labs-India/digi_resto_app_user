@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import images from "../assets/MenuDefault.png";
 import Bottom from "../component/bottom";
 import "../assets/css/toast.css";
@@ -13,6 +13,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 const Search = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -802,7 +803,7 @@ const Search = () => {
         <div className="container py-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={role?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
 

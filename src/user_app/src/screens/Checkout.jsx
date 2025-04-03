@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/toast.css";
@@ -25,6 +25,7 @@ const Checkout = () => {
   const [availableTables, setAvailableTables] = useState(0);
 
   const location = useLocation();
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   // const [cartItems, setCartItems] = useState([]);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -1340,7 +1341,7 @@ const handleAddToExistingOrder = async () => {
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
 

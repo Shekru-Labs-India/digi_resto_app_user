@@ -11,9 +11,10 @@ import img from "../assets/MenuDefault.png";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { usePopup } from "../context/PopupContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 
 function RestaurantDetails() {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [restaurantId, setRestaurantId] = useState(localStorage.getItem("restaurantId") || "");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [restaurantDetails, setRestaurantDetails] = useState({
@@ -364,7 +365,7 @@ useEffect(() => {
         <div className="pt-5">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -17,6 +17,7 @@ import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 
 const Wishlist = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const [hasFavorites, setHasFavorites] = useState(false);
@@ -507,7 +508,7 @@ const Wishlist = () => {
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={role?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
         {isLoading ? (

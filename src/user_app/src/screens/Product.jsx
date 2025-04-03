@@ -28,6 +28,7 @@ const toTitleCase = (text) => {
 };
 
 const Product = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -59,7 +60,6 @@ const Product = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
-  const { table_number } = useParams();
   const location = useLocation();
 
   const [showModal, setShowModal] = useState(false);
@@ -809,7 +809,7 @@ const Product = () => {
         <div className="container pb-0 pt-0 p-t50">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
           <div className="d-flex justify-content-between mb-3 pt-1">
             <div className="me-2 w-100" style={{ height: "40px" }}>

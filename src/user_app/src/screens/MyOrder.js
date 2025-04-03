@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
@@ -37,6 +37,7 @@ const calculateOriginalPrice = (grandTotal) => {
 // Add generatePDF utility function
 
 const MyOrder = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
@@ -639,7 +640,7 @@ ${
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={role?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
           {activeOrders.placed?.map((order) => (
             <OrderCard
