@@ -2459,13 +2459,13 @@ ${
 
                 {/* Order Rating Component - Only show for paid orders */}
                 {orderStatus === "paid" && (
-                  <div className="card mb-4">
+                  <div className=" mb-4">
                     <div className="card-body">
-                      <h5 className="card-title text-center mb-4">
+                      <div className="card-title text-center mb-4">
                         {hasRated ? 'Your Rating' : 'How was your order?'}
-                      </h5>
+                      </div>
                       
-                      <div className="d-flex justify-content-center gap-5 mb-4">
+                      <div className="d-flex justify-content-center gap-1 mb-4">
                         <div className="text-center">
                           <input 
                             type="radio" 
@@ -2478,24 +2478,17 @@ ${
                           />
                           <label 
                             htmlFor="rating-1" 
-                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 1 ? 'bg-danger bg-opacity-25 shadow-sm border border-danger' : 'border-0'}`}
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 1 ? 'bg-danger bg-opacity-10' : ''}`}
                             aria-label="Rate as poor"
-                            style={{
-                              transition: 'transform 0.2s ease',
-                              transform: parseInt(selectedRating) === 1 ? 'scale(1.2)' : 'scale(1)'
-                            }}
-                            onMouseOver={(e) => {
-                              if (parseInt(selectedRating) !== 1) {
-                                e.currentTarget.style.transform = 'scale(1.1)';
-                              }
-                            }}
-                            onMouseOut={(e) => {
-                              if (parseInt(selectedRating) !== 1) {
-                                e.currentTarget.style.transform = 'scale(1)';
-                              }
-                            }}
+                            style={{border: 'none', outline: 'none'}}
                           >
-                            <i className="fa-solid fa-face-frown text-danger fs-2"></i>
+                            <i 
+                              className="fa-solid fa-face-frown text-danger fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 1 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
                           </label>
                         </div>
                         
@@ -2511,24 +2504,17 @@ ${
                           />
                           <label 
                             htmlFor="rating-3" 
-                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 3 ? 'bg-warning bg-opacity-25 shadow-sm border border-warning' : 'border-0'}`}
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 3 ? 'bg-warning bg-opacity-10' : ''}`}
                             aria-label="Rate as good"
-                            style={{
-                              transition: 'transform 0.2s ease',
-                              transform: parseInt(selectedRating) === 3 ? 'scale(1.2)' : 'scale(1)'
-                            }}
-                            onMouseOver={(e) => {
-                              if (parseInt(selectedRating) !== 3) {
-                                e.currentTarget.style.transform = 'scale(1.1)';
-                              }
-                            }}
-                            onMouseOut={(e) => {
-                              if (parseInt(selectedRating) !== 3) {
-                                e.currentTarget.style.transform = 'scale(1)';
-                              }
-                            }}
+                            style={{border: 'none', outline: 'none'}}
                           >
-                            <i className="fa-solid fa-face-smile text-warning fs-2"></i>
+                            <i 
+                              className="fa-solid fa-face-smile text-warning fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 3 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
                           </label>
                         </div>
                         
@@ -2544,24 +2530,17 @@ ${
                           />
                           <label 
                             htmlFor="rating-5" 
-                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 5 ? 'bg-success bg-opacity-25 shadow-sm border border-success' : 'border-0'}`}
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 5 ? 'bg-success bg-opacity-10' : ''}`}
                             aria-label="Rate as excellent"
-                            style={{
-                              transition: 'transform 0.2s ease',
-                              transform: parseInt(selectedRating) === 5 ? 'scale(1.2)' : 'scale(1)'
-                            }}
-                            onMouseOver={(e) => {
-                              if (parseInt(selectedRating) !== 5) {
-                                e.currentTarget.style.transform = 'scale(1.1)';
-                              }
-                            }}
-                            onMouseOut={(e) => {
-                              if (parseInt(selectedRating) !== 5) {
-                                e.currentTarget.style.transform = 'scale(1)';
-                              }
-                            }}
+                            style={{border: 'none', outline: 'none'}}
                           >
-                            <i className="fa-solid fa-face-laugh-beam text-success fs-2"></i>
+                            <i 
+                              className="fa-solid fa-face-laugh-beam text-success fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 5 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
                           </label>
                         </div>
                       </div>
