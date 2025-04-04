@@ -67,7 +67,7 @@ const TrackOrder = () => {
 
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
-  const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
+  const { restaurantId, isOutletOnlyUrl } = useRestaurantId(); // Add isOutletOnlyUrl
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
@@ -620,6 +620,16 @@ const TrackOrder = () => {
 
     try {
       setLoading(true);
+      
+      const requestBody = {
+        order_id: orderId,
+      };
+      
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
+      }
+      
       const response = await fetch(
         `${config.apiDomain}/user_api/get_order_details`,
         {
@@ -628,10 +638,7 @@ const TrackOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            order_id: orderId,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -1593,6 +1600,15 @@ ${
   const checkCookingQuantity = async (menuId, halfOrFull) => {
     try {
       // Fetch current order details
+      const requestBody = {
+        order_id: orderDetails.order_id,
+      };
+      
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && (userData?.sectionId || "1")) {
+        requestBody.section_id = userData?.sectionId || "1";
+      }
+      
       const response = await fetch(
         `${config.apiDomain}/user_api/get_order_details`,
         {
@@ -1601,10 +1617,7 @@ ${
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            order_id: orderDetails.order_id,
-            section_id: userData?.sectionId || "1",
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
