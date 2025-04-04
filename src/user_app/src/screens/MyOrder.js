@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -42,7 +42,7 @@ const MyOrder = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  const { restaurantName, restaurantId } = useRestaurantId();
+  const { restaurantName, restaurantId, isOutletOnlyUrl } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("completed");
   const [orders, setOrders] = useState({});
@@ -345,6 +345,16 @@ ${
         return;
       }
 
+      const requestBody = {
+        user_id: userData.user_id,
+        outlet_id: localStorage.getItem("outlet_id"),
+      };
+
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
+      }
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
@@ -353,11 +363,7 @@ ${
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            outlet_id: localStorage.getItem("outlet_id"),
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
@@ -1490,15 +1496,18 @@ export const OrderCard = ({
             <div className="col-9 text-end">
               <div className="font_size_12 gray-text font_size_12 text-nowrap">
                 <span className="fw-medium gray-text">
-                  <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                  {order.section_name
-                    ? `${titleCase(order.section_name)}${
+                  {order.section_name && (
+                    <>
+                      <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                      {`${titleCase(order.section_name)}${
                         order.order_type?.toLowerCase() === "drive-through" ||
                         order.order_type?.toLowerCase() === "parcel"
                           ? ""
                           : ` - ${order.table_number}`
-                      }`
-                    : "Dine In"}
+                      }`}
+                    </>
+                  )}
+
                 </span>
               </div>
             </div>
@@ -2376,6 +2385,7 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
+  const { isOutletOnlyUrl } = useRestaurantId();
 
   useEffect(() => {
     const getOrderTimeInMs = (timeStr) => {
@@ -2457,6 +2467,16 @@ export const CircularCountdown = ({
         userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
+      
+      const requestBody = {
+        user_id: currentCustomerId,
+        outlet_id: localStorage.getItem("outlet_id"),
+      };
+
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
+      }
 
       // First update the order status in ongoing/placed orders
       const response = await fetch(
@@ -2467,11 +2487,7 @@ export const CircularCountdown = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: currentCustomerId,
-            outlet_id: localStorage.getItem("outlet_id"),
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
