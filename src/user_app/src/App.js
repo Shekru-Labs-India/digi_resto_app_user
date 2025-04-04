@@ -86,7 +86,7 @@ function App() {
                 <Route path="OrderTypeModal" element={<OrderTypeModal />} />
                 <Route path="/restaurant/" element={<RestaurantDetails />} />
                 <Route path="" element={<Navigate to="error" replace />} />
-                <Route
+                {/* <Route
                   path=":restaurantCode/s:section_id"
                   element={<Navigate to="/user_app/error" replace />}
                 />
@@ -145,7 +145,7 @@ function App() {
                 <Route
                   path="s/:section_id/:restaurantCode"
                   element={<Navigate to="/user_app/error" replace />}
-                />
+                /> */}
                 <Route path="*" element={<Navigate to="error" replace />} />
               </Routes>
             </div>

@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext, useRef } from "r
 import { useNavigate, useLocation } from "react-router-dom";
 import config from "../component/config"
 import OrderTypeModal from "../components/OrderTypeModal";
+import { URL_PATTERNS, stripPrefix, extractUrlParams, validateUrlPath } from "../utils/urlValidator";
 const RestaurantIdContext = createContext();
 
 export const useRestaurantId = () => {
@@ -24,22 +25,20 @@ export const RestaurantIdProvider = ({ children }) => {
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
-  // Helper function to strip prefixes
-  const stripPrefix = (value, prefix) => {
-    if (!value) return value;
-    return value.toString().replace(new RegExp(`^${prefix}`), '');
-  };
-
   useEffect(() => {
     // This useEffect is responsible for URL validation and parameter extraction
-    // URL validation takes precedence over localStorage values
-    // If a URL is malformed, we redirect to the error page before any data fetching occurs
-    // This ensures that invalid URLs are never processed, even if localStorage contains valid values
     const path = location.pathname;
     
-    // Check if path contains 'user_app/' and then do validation
-    if (path.includes('/user_app/')) {
-      // Check for outlet code in the URL
+    // Validate URL format first
+    const errorMessage = validateUrlPath(path);
+    if (errorMessage) {
+      navigate("/user_app/error", { state: { errorMessage } });
+      return;
+    }
+    
+    // Continue processing valid URLs
+    if (path.includes('/user_app/o')) {
+      // Extract outlet code for modal tracking
       const outletMatch = path.match(/\/user_app\/o(\d+)/);
       if (outletMatch) {
         const currentOutletCode = outletMatch[1];
@@ -49,8 +48,6 @@ export const RestaurantIdProvider = ({ children }) => {
         if (previousOutletCode && previousOutletCode !== currentOutletCode) {
           console.log("Switching to new outlet, clearing orderType and seen_modal state");
           localStorage.removeItem("orderType");
-          
-          // Clear all seen_modal keys for previous outlet
           localStorage.removeItem(`seen_modal_${previousOutletCode}`);
         }
         
@@ -58,72 +55,36 @@ export const RestaurantIdProvider = ({ children }) => {
         localStorage.setItem("currentOutletCode", currentOutletCode);
       }
       
-      // Check for old URL format (without prefixes) and redirect to error page
-      const oldFormatPattern = /^\/user_app\/\d+\/\d+\/\d+$/;
-      if (oldFormatPattern.test(path)) {
-        navigate("/user_app/error", { 
-          state: { 
-            errorMessage: "URL format has changed. Please use the new format with proper prefixes (o, s, t)." 
-          } 
-        });
-        return;
-      }
+      // IMPORTANT: Use the imported utility to determine if this is an outlet-only URL
+      const isOutletOnly = URL_PATTERNS.outletOnlyPattern.test(path);
+      console.log("Is outlet only URL:", isOutletOnly, path);
+      setIsOutletOnlyUrl(isOutletOnly);
+      localStorage.setItem("isOutletOnlyUrl", isOutletOnly.toString());
       
-      // Valid URL pattern - strict matching for restaurant URLs
-      const validUrlPattern = /^\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?$/;
-      
-      // Only validate restaurant-specific URLs
-      if (path.includes('/user_app/o')) {
-        // Check for bad prefixes - this will catch "oa", "ss", "tr", etc.
-        const badOutletPattern = /\/user_app\/o[^\/\d][^\/]*/;
-        const badSectionPattern = /\/s[^\/\d][^\/]*/;
-        const badTablePattern = /\/t[^\/\d][^\/]*/;
-        
-        // Check if this is an outlet-only URL (no section/table)
-        // Pattern for outlet-only URL: /user_app/o123456/
-        const outletOnlyPattern = /^\/user_app\/o\d+\/?$/;
-        
-        // Get the previous isOutletOnlyUrl state to detect transitions
-        const wasOutletOnly = isOutletOnlyUrl;
-        
-        // Set the isOutletOnlyUrl state
-        const isOutletOnly = outletOnlyPattern.test(path);
-        setIsOutletOnlyUrl(isOutletOnly);
-        
-        // Save to localStorage to maintain state across navigation
-        localStorage.setItem("isOutletOnlyUrl", isOutletOnly);
-        
-        if (isOutletOnly) {
-          // Extract outlet code from path for tracking selection state
-          const match = path.match(/\/user_app\/o(\d+)/);
-          if (match) {
-            const outletCode = match[1];
-            const seenModalKey = `seen_modal_${outletCode}`;
-            
-            // Check if user has seen the modal for this specific outlet code
-            const hasSeenModal = localStorage.getItem(seenModalKey) === "true";
-            
-            if (!hasSeenModal && !localStorage.getItem("orderType")) {
-              // First visit to this outlet-only URL and no order type selected
-              console.log("First visit to outlet-only URL, showing order type modal");
-              setShowOrderTypeModal(true);
-            } else {
-              console.log("User has already seen modal for this outlet or has orderType set");
-              setShowOrderTypeModal(false);
-            }
+      if (isOutletOnly) {
+        if (outletMatch) {
+          const outletCode = outletMatch[1];
+          const seenModalKey = `seen_modal_${outletCode}`;
+          const hasSeenModal = localStorage.getItem(seenModalKey) === "true";
+          
+          if (!hasSeenModal && !localStorage.getItem("orderType")) {
+            console.log("First visit to outlet-only URL, showing order type modal");
+            setShowOrderTypeModal(true);
+          } else {
+            console.log("User has already seen modal for this outlet or has orderType set");
+            setShowOrderTypeModal(false);
           }
-        } else {
-          // If it's not an outlet-only URL, ensure orderType is set to dine-in
-          if (!localStorage.getItem("orderType")) {
-            localStorage.setItem("orderType", "dine-in");
-          }
+        }
+      } else {
+        // If it's not an outlet-only URL, ensure orderType is set to dine-in
+        if (!localStorage.getItem("orderType")) {
+          localStorage.setItem("orderType", "dine-in");
         }
       }
     }
     
-    // Continue with normal regex match for valid URLs
+    // Extract URL parameters for valid URLs
     const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
-    
     if (match) {
       const [, code, section, table] = match;
       
@@ -135,11 +96,7 @@ export const RestaurantIdProvider = ({ children }) => {
       console.log(`outlet::${cleanCode}, section:${cleanSection || "undefined"}, table:${cleanTable || "undefined"}`);
       setRestaurantCode(cleanCode);
 
-      // Determine if this is an outlet-only URL
-      const isOutletOnly = !section && !table;
-      setIsOutletOnlyUrl(isOutletOnly);
-      console.log("++++++++++isOutletOnly+++++++++++++",isOutletOnly);
-      
+      // Continue with the existing table validation logic
       if (cleanTable) {
         // First get restaurant details to get restaurant_id
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
@@ -325,8 +282,9 @@ export const RestaurantIdProvider = ({ children }) => {
       // If we only have outlet code in URL, don't use fallbacks for table and section
       const urlHasOnlyOutlet = match && !match[2] && !match[3];
       
-      // Make sure we're consistent with the state
-      if (urlHasOnlyOutlet !== isOutletOnlyUrl) {
+      // Make sure we're consistent with the state - get from localStorage if available
+      const storedIsOutletOnly = localStorage.getItem("isOutletOnlyUrl") === "true";
+      if (urlHasOnlyOutlet !== isOutletOnlyUrl && !storedIsOutletOnly) {
         setIsOutletOnlyUrl(urlHasOnlyOutlet);
       }
       
