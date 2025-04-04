@@ -21,6 +21,7 @@ export const RestaurantIdProvider = ({ children }) => {
   const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
   const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
   const [isOutletOnlyUrl, setIsOutletOnlyUrl] = useState(false);
+  const [orderType, setOrderType] = useState(localStorage.getItem("orderType") || "");
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
@@ -58,16 +59,35 @@ export const RestaurantIdProvider = ({ children }) => {
       // IMPORTANT: Use the imported utility to determine if this is an outlet-only URL
       const isOutletOnly = URL_PATTERNS.outletOnlyPattern.test(path);
       console.log("Is outlet only URL:", isOutletOnly, path);
+      
+      // Store previous URL type to detect transitions
+      const prevIsOutletOnly = localStorage.getItem("isOutletOnlyUrl") === "true";
+      
+      // Update current URL type
       setIsOutletOnlyUrl(isOutletOnly);
       localStorage.setItem("isOutletOnlyUrl", isOutletOnly.toString());
       
+      // CASE 1: URL is outlet only - show popup to choose orderType if needed
       if (isOutletOnly) {
         if (outletMatch) {
           const outletCode = outletMatch[1];
           const seenModalKey = `seen_modal_${outletCode}`;
           const hasSeenModal = localStorage.getItem(seenModalKey) === "true";
+          const currentOrderType = localStorage.getItem("orderType");
           
-          if (!hasSeenModal && !localStorage.getItem("orderType")) {
+          // CASE 4: Coming from non-outlet-only URL to outlet-only URL
+          // If we're now in outlet-only URL and orderType is set to dine-in from previous page
+          // Clear it and show the popup again
+          if (!prevIsOutletOnly && currentOrderType === "dine-in") {
+            console.log("Navigating from section/table URL to outlet-only URL, clearing dine-in orderType");
+            localStorage.removeItem("orderType");
+            // Update state to reflect localStorage change
+            setOrderType("");
+            localStorage.removeItem(seenModalKey);
+            setShowOrderTypeModal(true);
+          }
+          // Original case 1 logic
+          else if (!hasSeenModal && !currentOrderType) {
             console.log("First visit to outlet-only URL, showing order type modal");
             setShowOrderTypeModal(true);
           } else {
@@ -75,10 +95,22 @@ export const RestaurantIdProvider = ({ children }) => {
             setShowOrderTypeModal(false);
           }
         }
-      } else {
-        // If it's not an outlet-only URL, ensure orderType is set to dine-in
-        if (!localStorage.getItem("orderType")) {
+      } 
+      // CASE 2 & 3: URL is not outlet only, or navigating from outlet-only to section/table URL
+      else {
+        // For CASE 3: If we're transitioning from outlet-only to section/table URL, force update to dine-in
+        if (prevIsOutletOnly) {
+          console.log("Transitioning from outlet-only to table/section URL, setting orderType to dine-in");
           localStorage.setItem("orderType", "dine-in");
+          // Update state to reflect localStorage change
+          setOrderType("dine-in");
+        }
+        // For CASE 2: If it's not an outlet-only URL, ensure orderType is set to dine-in when not already set
+        else if (!localStorage.getItem("orderType")) {
+          console.log("Non-outlet URL and no orderType set, defaulting to dine-in");
+          localStorage.setItem("orderType", "dine-in");
+          // Update state to reflect localStorage change
+          setOrderType("dine-in");
         }
       }
     }
@@ -212,6 +244,8 @@ export const RestaurantIdProvider = ({ children }) => {
   const handleOrderTypeSelection = (orderType) => {
     // Save the selected order type to localStorage
     localStorage.setItem("orderType", orderType);
+    // Update the state so all components will re-render
+    setOrderType(orderType);
     
     // Mark that user has seen the modal for this outlet code
     const path = location.pathname;
@@ -522,6 +556,32 @@ export const RestaurantIdProvider = ({ children }) => {
     localStorage.setItem("sectionId", cleanId);
   };
 
+  // Add a function to update orderType
+  const updateOrderType = (orderType) => {
+    localStorage.setItem("orderType", orderType);
+    // Update the state so all components will re-render
+    setOrderType(orderType);
+    console.log(`Order type updated: ${orderType}`);
+  };
+
+  // Create a listener for localStorage changes
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "orderType") {
+        // Update state when localStorage changes from another component
+        setOrderType(e.newValue || "");
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      // Clean up
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   return (
     <RestaurantIdContext.Provider
       value={{
@@ -531,16 +591,18 @@ export const RestaurantIdProvider = ({ children }) => {
         tableNumber,
         sectionId,
         isOutletOnlyUrl,
+        orderType,
         updateRestaurantCode,
         updateTableNumber,
         updateSectionId,
+        updateOrderType,
         setRestaurantCode,
         socials,
         setShowOrderTypeModal,
       }}
     >
       {children}
-      {showOrderTypeModal && !localStorage.getItem("orderType") && (
+      {showOrderTypeModal && (
         <OrderTypeModal
           onSelect={handleOrderTypeSelection}
           onClose={handleCloseModal}

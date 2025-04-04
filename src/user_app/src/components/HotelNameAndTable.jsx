@@ -7,8 +7,8 @@ import { isNonProductionDomain } from "../component/config";
 import OrderTypeModal from "./OrderTypeModal";
 
 const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => {
-  // Get isOutletOnlyUrl from context to determine display mode
-  const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
+  // Get context values including the orderType state
+  const { isOutletOnlyUrl, setShowOrderTypeModal, updateOrderType, orderType: contextOrderType } = useRestaurantId();
   const [showLocalOrderTypeModal, setShowLocalOrderTypeModal] = useState(false);
   
   // const { tableNumber } = useRestaurantId();
@@ -29,9 +29,11 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
     JSON.parse(localStorage.getItem("userData"))?.sectionName ||
     localStorage.getItem("sectionName");
   
-  // Get orderType from localStorage - use for outlet-only URLs
-  const orderType = localStorage.getItem("orderType");
-    
+  // Use orderType from context instead of localStorage for immediate UI updates
+  const orderType = contextOrderType;
+
+  // No need for local state and storage event listener when using context
+
   useEffect(() => {
     // Store both sectionId and sectionName in localStorage
     if (sectionId) {
@@ -74,7 +76,13 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
   };
 
   const handleOrderTypeSelection = (type) => {
-    localStorage.setItem("orderType", type);
+    if (updateOrderType) {
+      // Use the context function which updates both localStorage and context state
+      updateOrderType(type);
+    } else {
+      // Fallback to direct localStorage update
+      localStorage.setItem("orderType", type);
+    }
     setShowLocalOrderTypeModal(false);
   };
 
