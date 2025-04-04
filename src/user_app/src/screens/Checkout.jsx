@@ -440,11 +440,7 @@ const Checkout = () => {
   //     }
   // }, [userData]);
 
-  const handleOrderAction = async (
-    orderStatus,
-    orderType,
-    paymentMethod = null
-  ) => {
+  const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
       const tableNumber = localStorage.getItem("tableNumber") || "1";
@@ -455,28 +451,7 @@ const Checkout = () => {
         throw new Error("Invalid order number");
       }
   
-      // Merge new cart items with existing order items
-      const updatedOrderItems = [...existingOrderDetails.order_items];
-
-      storedCart.order_items.forEach((newItem) => {
-        const existingItem = updatedOrderItems.find(
-          (item) => item.menu_id === newItem.menu_id && item.half_or_full === newItem.half_or_full
-        );
-  
-        if (existingItem) {
-          // If item already exists, increase the quantity
-          existingItem.quantity += newItem.quantity;
-        } else {
-          // If item doesn't exist, add it to the order
-          updatedOrderItems.push({
-            menu_id: newItem.menu_id,
-            quantity: newItem.quantity,
-            comment: newItem.comment || "",
-            half_or_full: newItem.half_or_full || "full",
-          });
-        }
-      });
-  
+      // Remove the problematic spread operation and simplify
       const requestBody = {
         order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
@@ -487,7 +462,12 @@ const Checkout = () => {
         ],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: updatedOrderItems, // Updated order items with merged quantities
+        order_items: storedCart.order_items.map(item => ({
+          menu_id: item.menu_id,
+          quantity: item.quantity,
+          comment: item.comment || "",
+          half_or_full: item.half_or_full || "full",
+        }))
       };
   
       if (orderStatus === "paid" && paymentMethod) {
@@ -562,10 +542,25 @@ const handleAddToExistingOrder = async () => {
     }
 
     // Fetch existing order details (if stored locally)
-    const existingOrder = JSON.parse(localStorage.getItem("existing_order")) || { order_items: [] };
+    const existingOrder = JSON.parse(
+      localStorage.getItem("existing_order")
+    ) || { order_items: [] };
 
-    // Create a new updated order list
-    let updatedOrderItems = [];
+    // Initialize with empty array if not present
+    // Completely replace line 459 and surrounding code
+    // Merge new cart items with existing order items
+    const updatedOrderItems = [];
+
+    // No need to spread existingOrderDetails.order_items since it doesn't exist
+    // Just process storedCart.order_items directly
+    storedCart.order_items.forEach((newItem) => {
+      updatedOrderItems.push({
+        menu_id: newItem.menu_id,
+        quantity: newItem.quantity,
+        comment: newItem.comment || "",
+        half_or_full: newItem.half_or_full || "full",
+      });
+    });
 
     for (const item of storedCart.order_items) {
       const existingItem = existingOrder.order_items.find(
@@ -599,37 +594,40 @@ const handleAddToExistingOrder = async () => {
     };
 
     // Make API call
-    const response = await fetch(`${config.apiDomain}/user_api/add_to_existing_order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-      body: JSON.stringify(requestBody),
-    });
-  
-      if (response.status === 401) {
-        // Handle unauthorized user (redirect & clear localStorage)
-        localStorage.clear();
-        const restaurantCode = localStorage.getItem("restaurantCode");
-        const tableNumber = localStorage.getItem("tableNumber");
-        const sectionId = localStorage.getItem("sectionId");
-        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
-        showLoginPopup();
-        return;
+    const response = await fetch(
+      `${config.apiDomain}/user_api/add_to_existing_order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify(requestBody),
       }
-  
-      const data = await response.json();
-  
-      if (data.st === 1) {
-        window.showToast("success", "Items added to order successfully");
-        clearCartData();
-        setShowExistingOrderModal(false);
-        navigate("/user_app/MyOrder");
-      } else {
-        throw new Error(data.msg || "Failed to add items to order");
-      }
-    } catch (error) {
+    );
+
+    if (response.status === 401) {
+      // Handle unauthorized user (redirect & clear localStorage)
+      localStorage.clear();
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+      showLoginPopup();
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.st === 1) {
+      window.showToast("success", "Items added to order successfully");
+      clearCartData();
+      setShowExistingOrderModal(false);
+      navigate("/user_app/MyOrder");
+    } else {
+      throw new Error(data.msg || "Failed to add items to order");
+    }
+  } catch (error) {
       window.showToast("error", error.message || "Failed to add items to order");
       console.error("Error:", error);
     }
