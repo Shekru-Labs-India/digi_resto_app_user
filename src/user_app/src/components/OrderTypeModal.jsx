@@ -70,7 +70,7 @@ function OrderTypeModal({ onSelect, onClose }) {
             </div>
             <div className="modal-body">
               <div className="row g-3">
-                {["Dine-in", "Counter", "Drive-Through", "Delivery", "Parcel"].map(
+                {["Counter", "Drive-Through", "Delivery", "Parcel"].map(
                   (type) => {
                     // Check if this type is the current one
                     const isSelected = currentOrderType === type.toLowerCase();
@@ -86,7 +86,6 @@ function OrderTypeModal({ onSelect, onClose }) {
                             className={`fa-solid ${getOrderTypeIcon(type.toLowerCase())} me-2`}
                           ></i>
                           {type}
-                          {isSelected && <span className="ms-2">✓</span>}
                         </button>
                       </div>
                     );
