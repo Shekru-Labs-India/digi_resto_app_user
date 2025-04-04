@@ -698,6 +698,14 @@ const TrackOrder = () => {
             status === "completed" ||
               ["cancle", "cancelled", "canceled"].includes(status)
           );
+        } else if (data.st === 2) {
+          // Handle status code 2 gracefully
+          console.log("TrackOrder: API returned status 2:", data);
+          window.showToast("info", data.msg || "Order details not available");
+          // Navigate back if needed
+          setTimeout(() => {
+            navigate(-1);
+          }, 5000);
         } else {
           console.error("TrackOrder: Invalid response format:", data);
           window.showToast("error", "Failed to fetch order details");
@@ -996,7 +1004,28 @@ const TrackOrder = () => {
     );
   }
 
-  const { order_details, menu_details } = orderDetails;
+  // Add safety check to prevent destructuring null
+  if (!orderDetails || !orderDetails.order_details) {
+    // If we get here, it means the API returned successfully but with no data
+    // Let's navigate back and show a message
+    setTimeout(() => {
+      navigate(-1);
+    }, 5000);
+    
+    return (
+      <div className="page-wrapper full-height pb-5">
+        <Header title="Order Details" />
+        <div className="container mt-5 text-center">
+          <div className="alert alert-info">
+            <i className="fa-solid fa-circle-info me-2"></i>
+            Order details not available. Redirecting...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { order_details, menu_details = [] } = orderDetails;
 
   // Add the standardized rating function
   const renderStarRating = (rating) => {
@@ -1626,21 +1655,33 @@ ${
       }
 
       const data = await response.json();
-      const menuItems = data.lists?.menu_details || [];
+      
+      // Handle different response statuses
+      if (data.st === 1) {
+        const menuItems = data.lists?.menu_details || [];
 
-      // Get total cooking quantity for this menu item
-      const cookingQuantity = menuItems.reduce((total, item) => {
-        if (
-          item.menu_id === menuId &&
-          item.half_or_full === halfOrFull &&
-          item.status === "cooking"
-        ) {
-          return total + item.quantity;
-        }
-        return total;
-      }, 0);
+        // Get total cooking quantity for this menu item
+        const cookingQuantity = menuItems.reduce((total, item) => {
+          if (
+            item.menu_id === menuId &&
+            item.half_or_full === halfOrFull &&
+            item.status === "cooking"
+          ) {
+            return total + item.quantity;
+          }
+          return total;
+        }, 0);
 
-      return cookingQuantity;
+        return cookingQuantity;
+      } else if (data.st === 2) {
+        // Gracefully handle status 2 response
+        console.log("checkCookingQuantity: API returned status 2:", data);
+        window.showToast("info", data.msg || "Could not check quantity");
+        return 0; // Return 0 as default value
+      } else {
+        console.error("Invalid response format:", data);
+        return 0;
+      }
     } catch (error) {
       console.error("Error checking cooking quantity:", error);
       return 0;
@@ -2300,6 +2341,7 @@ ${
 
         {userId &&
           orderDetails &&
+          orderDetails.order_details &&
           (() => {
             const details = orderDetails.order_details || {};
 
