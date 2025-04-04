@@ -15,7 +15,7 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 
 function RestaurantDetails() {
   const { t: tableParam } = useParams(); // Extract table number from URL params
-  const [restaurantId, setRestaurantId] = useState(localStorage.getItem("restaurantId") || "");
+  const [restaurantId, setRestaurantId] = useState(localStorage.getItem("outlet_id") || "");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [restaurantDetails, setRestaurantDetails] = useState({
     name: "",
