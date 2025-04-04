@@ -104,7 +104,11 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
           </span>
         </div>
 
-        <div className="d-flex align-items-center font_size_12" onClick={handleOrderTypeModal} style={{ cursor: "pointer" }}>
+        <div 
+          className="d-flex align-items-center font_size_12" 
+          onClick={useOutletOnly ? handleOrderTypeModal : undefined} 
+          style={{ cursor: useOutletOnly ? "pointer" : "default" }}
+        >
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
             {useOutletOnly ? (
