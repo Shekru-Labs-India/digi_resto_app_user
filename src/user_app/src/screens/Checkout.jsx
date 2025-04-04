@@ -457,10 +457,6 @@ const Checkout = () => {
         user_id: userData.user_id,
         order_status: orderStatus,
         outlet_id: restaurantId,
-        table_number: [
-          localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
-        ],
-        section_id: userData?.sectionId || "1",
         order_type: orderType,
         order_items: storedCart.order_items.map(item => ({
           menu_id: item.menu_id,
@@ -469,6 +465,17 @@ const Checkout = () => {
           half_or_full: item.half_or_full || "full",
         }))
       };
+  
+      // Check if it's an outlet-only URL before adding table_number and section_id
+      const isOutletOnlyUrl = localStorage.getItem("isOutletOnlyUrl") === "true";
+      
+      // Only include table_number and section_id if it's NOT an outlet-only URL
+      if (!isOutletOnlyUrl) {
+        requestBody.table_number = [
+          localStorage.getItem("tableNumber") || userData?.tableNumber || null,
+        ];
+        requestBody.section_id = userData?.sectionId || localStorage.getItem("sectionId") || null;
+      }
   
       if (orderStatus === "paid" && paymentMethod) {
         requestBody.payment_method = paymentMethod;
@@ -592,6 +599,15 @@ const handleAddToExistingOrder = async () => {
       outlet_id: restaurantId,
       order_items: updatedOrderItems,
     };
+
+    // Check if it's an outlet-only URL before adding table_number and section_id
+    const isOutletOnlyUrl = localStorage.getItem("isOutletOnlyUrl") === "true";
+    
+    // Only include table_number and section_id if it's NOT an outlet-only URL
+    if (!isOutletOnlyUrl) {
+      requestBody.table_number = localStorage.getItem("tableNumber") || userData?.tableNumber || null;
+      requestBody.section_id = userData?.sectionId || localStorage.getItem("sectionId") || null;
+    }
 
     // Make API call
     const response = await fetch(
