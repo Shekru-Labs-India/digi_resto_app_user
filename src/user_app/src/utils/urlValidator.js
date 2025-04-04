@@ -86,6 +86,23 @@ export const validateUrlPath = (path) => {
   // If it doesn't include the user_app path at all, don't validate further
   if (!path.includes('/user_app/')) return null;
   
+  // Special check for URLs with non-numeric characters in section part but without 's' prefix
+  // This handles cases like /user_app/225827/2fddhg16/t16
+  if (path.startsWith('/user_app/') && !path.startsWith('/user_app/o')) {
+    const segments = path.split('/').filter(Boolean);
+    if (segments.length >= 3 && segments[0] === 'user_app') {
+      // Check if section part (segments[2]) contains non-numeric characters but is not prefixed with 's'
+      if (segments.length >= 3 && !segments[2].startsWith('s') && /[a-zA-Z]/.test(segments[2])) {
+        return "Invalid URL format. Section identifiers must be numeric only.";
+      }
+      
+      // Check if table part (segments[3]) contains non-numeric characters but is not prefixed with 't'
+      if (segments.length >= 4 && !segments[3].startsWith('t') && /[a-zA-Z]/.test(segments[3])) {
+        return "Invalid URL format. Table identifiers must be numeric only.";
+      }
+    }
+  }
+  
   // Check for table format with non-numeric characters
   if (URL_PATTERNS.invalidTableFormatPattern.test(path)) {
     return "Invalid table format. Table numbers must be numeric only.";
@@ -138,4 +155,48 @@ export const validateUrlPath = (path) => {
 // Helper to check if a URL is an outlet-only URL
 export const isOutletOnlyUrl = (path) => {
   return URL_PATTERNS.outletOnlyPattern.test(path);
-}; 
+};
+
+// This can be used for testing the URL validator
+// Uncomment and use in a development environment to verify patterns
+/*
+export const testUrlValidator = () => {
+  const testUrls = [
+    // Valid URLs
+    { url: '/user_app/o622050/', expected: null, desc: 'Valid outlet-only URL' },
+    { url: '/user_app/o622050/s144/t1', expected: null, desc: 'Valid URL with section and table' },
+    { url: '/user_app/o622050/t1', expected: null, desc: 'Valid URL with outlet and table only' },
+    
+    // Invalid URLs
+    { url: '/user_app/622050/144/1', expected: 'error', desc: 'URL without prefixes' },
+    { url: '/user_app/622050/s144/t1', expected: 'error', desc: 'URL with missing outlet prefix' },
+    { url: '/user_app/o62abc50/s144/t1', expected: 'error', desc: 'URL with invalid characters in outlet' },
+    { url: '/user_app/o622050/s1abc44/t1', expected: 'error', desc: 'URL with invalid characters in section' },
+    { url: '/user_app/o622050/s144/t1abc', expected: 'error', desc: 'URL with invalid characters in table' },
+    { url: '/user_app/225827/2fddhg16/t16', expected: 'error', desc: 'URL with missing outlet prefix and invalid section' },
+    { url: '/user_app/225827/144/1abc', expected: 'error', desc: 'URL with missing prefixes and invalid table' },
+  ];
+  
+  console.log('===== URL VALIDATOR TEST =====');
+  testUrls.forEach(test => {
+    const error = validateUrlPath(test.url);
+    const result = error === null ? 'VALID' : 'INVALID';
+    const expected = test.expected === null ? 'VALID' : 'INVALID';
+    const pass = (result === expected) ? '✅ PASS' : '❌ FAIL';
+    
+    console.log(`${pass} | ${test.desc} | ${test.url}`);
+    if (result !== expected) {
+      console.log(`  Expected: ${expected}, Got: ${result}, Error: ${error}`);
+    }
+    
+    // Also test outlet-only detection for valid URLs
+    if (error === null) {
+      const isOutletOnly = isOutletOnlyUrl(test.url);
+      console.log(`  Is outlet-only: ${isOutletOnly}`);
+    }
+  });
+  console.log('===== END TEST =====');
+  
+  return 'Test complete';
+};
+*/ 
