@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 import qr_scan from "../assets/qr_scan.gif";
 
 function ErrorPage() {
   const location = useLocation();
+  const { setShowOrderTypeModal } = useRestaurantId();
   const [errorMessage, setErrorMessage] = useState(
     "Table having issue. Rescan the QR Code again!"
   );
@@ -12,7 +14,10 @@ function ErrorPage() {
     if (location.state && location.state.errorMessage) {
       setErrorMessage(location.state.errorMessage);
     }
-  }, [location]);
+    
+    // Close OrderTypeModal if it's open when navigating to the error page
+    setShowOrderTypeModal(false);
+  }, [location, setShowOrderTypeModal]);
 
   return (
     <>
