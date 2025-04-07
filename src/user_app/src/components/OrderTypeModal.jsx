@@ -27,6 +27,28 @@ function OrderTypeModal({ onSelect, onClose }) {
     // Call the onSelect prop directly without internal state change
     if (onSelect) {
       onSelect(type);
+      //clean up local storage for section_id and table_number
+      localStorage.removeItem("sectionId");
+      localStorage.removeItem("tableNumber");
+
+      // Clean up sectionId and section_name from userData in localStorage
+      const userDataStr = localStorage.getItem("userData");
+      if (userDataStr) {
+        try {
+          const userData = JSON.parse(userDataStr);
+          if (userData) {
+            // Remove section-related properties
+            delete userData.sectionId;
+            delete userData.section_name;
+            
+            // Save updated userData back to localStorage
+            localStorage.setItem("userData", JSON.stringify(userData));
+            console.log("Cleaned section data from userData");
+          }
+        } catch (error) {
+          console.error("Error updating userData:", error);
+        }
+      }
     }
   };
 

@@ -458,7 +458,7 @@ ${
       };
       
       // Only add section_id if not outletOnly
-      if (!outletOnly && userData.sectionId) {
+      if (!outletOnly) {
         payload.section_id = userData.sectionId;
       }
 

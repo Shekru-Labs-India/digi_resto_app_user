@@ -125,8 +125,14 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
             ) : (
               // For section/table URLs, show section name and table number
               <>
-                {titleCase(sectionName || "")}
-                {displayTableNumber && <> - {displayTableNumber}</>}
+                {sectionId === null ? (
+                  orderType?.toUpperCase() || ""
+                ) : (
+                  <>
+                    {titleCase(sectionName === null ? "" : sectionName || "")}
+                    {displayTableNumber && <> - {displayTableNumber}</>}
+                  </>
+                )}
               </>
             )}
           </span>
