@@ -138,8 +138,19 @@ const CircularCountdown = ({
       const currentUserId = userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
       const sectionId = order.section_id;
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
 
       if (!currentUserId || !restaurantId) return;
+
+      const payload = {
+        user_id: currentUserId,
+        restaurant_id: restaurantId,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
@@ -149,11 +160,7 @@ const CircularCountdown = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: currentUserId,
-            restaurant_id: restaurantId,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -415,15 +422,19 @@ const OrderCard = ({
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
                   <span className="fw-medium gray-text">
-                    <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                    {order.section_name
-                      ? `${titleCase(order.section_name)}${
-                          order.order_type?.toLowerCase() === "drive-through" || 
-                          order.order_type?.toLowerCase() === "parcel" 
-                            ? "" 
+                    {order.section_name && (
+                      <>
+                        <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                        {`${titleCase(order.section_name)}${
+                          order.order_type?.toLowerCase() === "drive-through" ||
+                          order.order_type?.toLowerCase() === "parcel" ||
+                          order.order_type?.toLowerCase() === "counter" ||
+                          order.order_type?.toLowerCase() === "delivery"
+                            ? ""
                             : ` - ${order.table_number}`
-                        }`
-                      : "Dine In"}
+                        }`}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -524,6 +535,7 @@ const OrdersPlacedOngoing = () => {
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     const sectionId = userData?.sectionId || localStorage.getItem("sectionId") || "";
     const outletId = localStorage.getItem("outlet_id");
+    const outletOnly = localStorage.getItem("outletOnly") === "true";
 
     // Early return if missing data
     if (!userData?.user_id || !outletId) {
@@ -536,6 +548,16 @@ const OrdersPlacedOngoing = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
+      const payload = {
+        user_id: userData.user_id,
+        outlet_id: outletId
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
         {
@@ -544,11 +566,7 @@ const OrdersPlacedOngoing = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            outlet_id: outletId,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(payload),
           signal: controller.signal
         }
       );

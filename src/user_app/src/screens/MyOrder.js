@@ -1501,13 +1501,14 @@ export const OrderCard = ({
                       <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                       {`${titleCase(order.section_name)}${
                         order.order_type?.toLowerCase() === "drive-through" ||
-                        order.order_type?.toLowerCase() === "parcel"
+                        order.order_type?.toLowerCase() === "parcel" ||
+                        order.order_type?.toLowerCase() === "counter" ||
+                        order.order_type?.toLowerCase() === "delivery"
                           ? ""
                           : ` - ${order.table_number}`
                       }`}
                     </>
                   )}
-
                 </span>
               </div>
             </div>
@@ -2176,7 +2177,12 @@ const OrdersTab = ({
                                 ? `${titleCase(order.section_name)}${
                                     order.order_type?.toLowerCase() ===
                                       "drive-through" ||
-                                    order.order_type?.toLowerCase() === "parcel"
+                                    order.order_type?.toLowerCase() ===
+                                      "parcel" ||
+                                    order.order_type?.toLowerCase() ===
+                                      "counter" ||
+                                    order.order_type?.toLowerCase() ===
+                                      "delivery"
                                       ? ""
                                       : ` - ${order.table_number}`
                                   }`
