@@ -1796,7 +1796,7 @@ ${
                       <i className="fa-solid fa-utensils"></i>
                     )}
                     <span className="ms-2">
-                      {order_details.order_type || "Dine In"}
+                      {order_details.order_type.toUpperCase() || "Dine In"}
                     </span>
                   </span>
                 </div>

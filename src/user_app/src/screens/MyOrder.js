@@ -2181,7 +2181,7 @@ const OrdersTab = ({
                               <i className="fa-solid fa-utensils"></i>
                             )}
                             <span className="ms-2">
-                              {order.order_type || "Dine In"}
+                              {order.order_type.toUpperCase() || "Dine In"}
                             </span>
                           </span>
                         </div>
