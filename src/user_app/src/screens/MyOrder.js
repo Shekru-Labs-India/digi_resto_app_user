@@ -448,6 +448,20 @@ ${
         return;
       }
 
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
+      
+      const payload = {
+        outlet_id: localStorage.getItem("outlet_id"),
+        order_status: activeTab === "cancelled" ? "cancle" : activeTab,
+        user_id: userData.user_id,
+        role: userData.role,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && userData.sectionId) {
+        payload.section_id = userData.sectionId;
+      }
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_completed_and_cancle_order_list`,
         {
@@ -456,13 +470,7 @@ ${
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            order_status: activeTab === "cancelled" ? "cancle" : activeTab,
-            user_id: userData.user_id,
-            role: userData.role,
-            section_id: userData.sectionId,
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -572,6 +580,18 @@ ${
   // Add this function to fetch order details when needed
   const fetchOrderDetailsForPDF = async (order) => {
     try {
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
+      const sectionId = localStorage.getItem("sectionId");
+      
+      const payload = {
+        order_id: order.order_id,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
+
       const response = await fetch(
         `${config.apiDomain}/user_api/get_order_details`,
         {
@@ -580,10 +600,7 @@ ${
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            order_id: order.order_id,
-            section_id: localStorage.getItem("sectionId"),
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
