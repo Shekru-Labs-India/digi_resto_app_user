@@ -307,7 +307,7 @@ const HomeScreen = () => {
                 <span className="  font_size_16 fw-medium ">Profile</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 className="nav-link active"
                 to="#"
@@ -321,7 +321,7 @@ const HomeScreen = () => {
                 </span>
                 <span className=" font_size_16 fw-medium  ">Call Waiter</span>
               </Link>
-            </li>
+            </li> */}
           </ul>
           <div className="align-bottom border-top">
             <div className="d-flex justify-content-center py-0">

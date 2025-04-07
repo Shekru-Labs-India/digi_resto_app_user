@@ -344,7 +344,7 @@ export const SidebarToggler = () => {
               <span className="font_size_16 fw-medium">Profile</span>
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <Link
               className="nav-link"
               to="#"
@@ -358,7 +358,7 @@ export const SidebarToggler = () => {
               </span>
               <span className="font_size_16 fw-medium">Call Waiter</span>
             </Link>
-          </li>
+          </li> */}
         </ul>
         {/* <div className="dz-mode mt-4 me-4">
           <div className="theme-btn" onClick={toggleTheme}>
