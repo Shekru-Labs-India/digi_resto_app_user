@@ -1393,6 +1393,15 @@ const TrackOrder = () => {
         localStorage.getItem("customerName") ||
         order_details.customer_name ||
         "Guest";
+      
+      // Add current date and time for PDF generation timestamp
+      const now = new Date();
+      const generationDate = now.toLocaleDateString();
+      const generationTime = now.toLocaleTimeString([], { 
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true 
+      }).replace('am', 'AM').replace('pm', 'PM');
 
       // Create a hidden container with specific dimensions
       const container = document.createElement("div");
@@ -1425,7 +1434,7 @@ const TrackOrder = () => {
               <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
               <p style="margin: 5px 0 0 0; color: #666;">${
                 order_details.date || ""
-              } ${order_details.time || ""}</p>
+              } ${generationTime || ""}</p>
             </div>
           </div>
 
