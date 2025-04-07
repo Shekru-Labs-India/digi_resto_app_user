@@ -1802,16 +1802,20 @@ ${
                 </div>
                 <div className="col-6 text-end">
                   <div className="font_size_12 gray-text font_size_12 text-nowrap">
-                    <span className="fw-medium gray-text">
-                      <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                      {`${titleCase(order_details.section_name)}${
-                        order_details.order_type?.toLowerCase() ===
-                          "drive-through" ||
-                        order_details.order_type?.toLowerCase() === "parcel"
-                          ? ""
-                          : ` - ${order_details.table_number}`
-                      }`}
-                    </span>
+                    {!["counter", "drive-through", "delivery", "parcel"].includes(order_details.order_type?.toLowerCase()) ? (
+                      <span className="fw-medium gray-text">
+                        <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                        {`${titleCase(order_details.section_name)}${
+                          order_details.order_type?.toLowerCase() ===
+                            "drive-through" ||
+                          order_details.order_type?.toLowerCase() === "parcel"
+                            ? ""
+                            : ` - ${order_details.table_number}`
+                        }`}
+                      </span>
+                    ) : (
+                      <span className="fw-medium gray-text"></span>
+                    )}
                   </div>
                 </div>
               </div>
