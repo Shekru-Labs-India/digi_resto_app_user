@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import qr_scan from "../assets/qr_scan.gif";
+import { useRestaurantId } from "../context/RestaurantIdContext";
 
 function ErrorPage() {
   const location = useLocation();
@@ -14,6 +15,13 @@ function ErrorPage() {
     }
     
   }, [location]);
+
+  // TAKE CONTEXT FORM RESTAURANT ID CONTEXT FOR HIDING THE ORDER TYPE MODAL
+  const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
+
+  if (isOutletOnlyUrl) {
+   setShowOrderTypeModal(false);
+  }
 
   return (
     <>
