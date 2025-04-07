@@ -6,6 +6,9 @@ export const URL_PATTERNS = {
   // Valid URL pattern for restaurant URLs with proper prefixes
   validUrlPattern: /^\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?(?:\/)?$/,
   
+  // NEW: Pattern for direct /o[outlet] URLs without /user_app/ prefix
+  directOutletPattern: /^\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?(?:\/)?$/,
+  
   // Pattern to detect old format without prefixes
   // Example: /user_app/123/456/789
   oldFormatPattern: /^\/user_app\/\d+\/\d+\/\d+$/,
@@ -71,6 +74,11 @@ export const extractUrlParams = (path) => {
 
 // Validate URL path and return error message if invalid
 export const validateUrlPath = (path) => {
+  // NEW: Handle direct /o[outlet] URLs without /user_app/ prefix
+  if (URL_PATTERNS.directOutletPattern.test(path)) {
+    return "Invalid URL format. URLs should include '/user_app/' prefix.";
+  }
+
   // Check for completely wrong base path but with outlet structure
   if (URL_PATTERNS.wrongBasePathWithStructure.test(path)) {
     return "Incorrect application path. The URL should begin with '/user_app/'.";

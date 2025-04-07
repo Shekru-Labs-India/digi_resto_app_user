@@ -156,6 +156,9 @@ const AppContent = () => {
       {/* </Route> */}
       <Route path="/" element={<ErrorPage />} />
 
+      {/* New route for direct /o[number] patterns */}
+      <Route path="/o:outletCode/*" element={<ErrorPage />} />
+
       <Route path="/user_app/*" element={<UserApp />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

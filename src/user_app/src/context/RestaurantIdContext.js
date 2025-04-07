@@ -30,6 +30,16 @@ export const RestaurantIdProvider = ({ children }) => {
     // This useEffect is responsible for URL validation and parameter extraction
     const path = location.pathname;
     
+    // Check for direct outlet patterns without /user_app/ prefix
+    if (path.match(/^\/o\d+/)) {
+      navigate("/user_app/error", { 
+        state: { 
+          errorMessage: "Invalid URL format. URLs should include '/user_app/' prefix." 
+        } 
+      });
+      return;
+    }
+    
     // Validate URL format first
     const errorMessage = validateUrlPath(path);
     if (errorMessage) {

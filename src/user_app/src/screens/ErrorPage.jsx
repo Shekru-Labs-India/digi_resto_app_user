@@ -9,20 +9,26 @@ function ErrorPage() {
     "Table having issue. Rescan the QR Code again!"
   );
 
+  // Get context values safely with defaults
+  const restaurantContext = useRestaurantId() || {};
+  const { isOutletOnlyUrl, setShowOrderTypeModal } = restaurantContext;
+
   useEffect(() => {
+    // Only try to set show order type modal if the context values exist
+    if (isOutletOnlyUrl !== undefined && setShowOrderTypeModal) {
       if (isOutletOnlyUrl) {
         setShowOrderTypeModal(false);
       }
+    }
 
     if (location.state && location.state.errorMessage) {
       setErrorMessage(location.state.errorMessage);
     }
     
-  }, [location]);
+  }, [location, isOutletOnlyUrl, setShowOrderTypeModal]);
 
   // TAKE CONTEXT FORM RESTAURANT ID CONTEXT FOR HIDING THE ORDER TYPE MODAL
-  const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
-
+  // Moved the destructuring to above to safely handle undefined values
 
   return (
     <>
