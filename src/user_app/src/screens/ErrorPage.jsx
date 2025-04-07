@@ -10,6 +10,10 @@ function ErrorPage() {
   );
 
   useEffect(() => {
+      if (isOutletOnlyUrl) {
+        setShowOrderTypeModal(false);
+      }
+
     if (location.state && location.state.errorMessage) {
       setErrorMessage(location.state.errorMessage);
     }
@@ -19,9 +23,6 @@ function ErrorPage() {
   // TAKE CONTEXT FORM RESTAURANT ID CONTEXT FOR HIDING THE ORDER TYPE MODAL
   const { isOutletOnlyUrl, setShowOrderTypeModal } = useRestaurantId();
 
-  if (isOutletOnlyUrl) {
-   setShowOrderTypeModal(false);
-  }
 
   return (
     <>
