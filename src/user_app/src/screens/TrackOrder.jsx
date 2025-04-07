@@ -1009,8 +1009,9 @@ const TrackOrder = () => {
     // If we get here, it means the API returned successfully but with no data
     // Let's navigate back and show a message
     setTimeout(() => {
-      navigate(-1);
-    }, 5000);
+      // navigate(-1);
+      navigate("/user_app/MyOrder");
+    }, 2000);
     
     return (
       <div className="page-wrapper full-height pb-5">
