@@ -2187,6 +2187,7 @@ const OrdersTab = ({
                         </div>
                         <div className="col-6 text-end">
                           <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                          {!["counter", "drive-through", "delivery", "parcel"].includes(order.order_type?.toLowerCase()) ? (
                             <span className="fw-medium gray-text">
                               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                               {order.section_name
@@ -2204,6 +2205,11 @@ const OrdersTab = ({
                                   }`
                                 : "Dine In"}
                             </span>
+                          ) : (
+                            <span className="fw-medium gray-text">
+                             
+                            </span>
+                          )}
                           </div>
                         </div>
                       </div>
