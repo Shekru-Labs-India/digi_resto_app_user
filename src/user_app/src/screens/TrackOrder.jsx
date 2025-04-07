@@ -1494,7 +1494,14 @@ const TrackOrder = () => {
           )}</span></br>`
         : ""
     }
-
+    <!-- Extra Charges -->
+    ${
+      order_details.charges > 0
+        ? `<span style="font-weight: bold;">Extra Charges:</span><span style="color: green;">+₹${order_details.charges.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
     <!-- Subtotal -->
     ${
       order_details.total_bill_with_discount
