@@ -43,7 +43,11 @@ export const URL_PATTERNS = {
   
   // Pattern for outlet-only URL (no section/table)
   // Example: /user_app/o123 or /user_app/o123/
-  outletOnlyPattern: /^\/user_app\/o\d+\/?$/
+  outletOnlyPattern: /^\/user_app\/o\d+\/?$/,
+  
+  // NEW: Pattern to catch invalid extra slash after section or table prefix
+  // Example: /user_app/225827/s/12 or /user_app/o225827/s/12
+  extraSlashAfterPrefixPattern: /\/user_app\/(?:o)?(?:\d+)\/s\/|\/user_app\/(?:o)?(?:\d+)(?:\/s\d+)?\/t\//
 };
 
 // Helper to strip prefixes
@@ -85,6 +89,12 @@ export const validateUrlPath = (path) => {
   
   // If it doesn't include the user_app path at all, don't validate further
   if (!path.includes('/user_app/')) return null;
+  
+  // NEW: Check for extra slash after section or table prefix
+  // This catches patterns like /user_app/225827/s/12 or /user_app/225827/s/t
+  if (URL_PATTERNS.extraSlashAfterPrefixPattern.test(path)) {
+    return "Invalid URL format. Section or table identifiers must not have an extra slash after the prefix.";
+  }
   
   // Special check for URLs with non-numeric characters in section part but without 's' prefix
   // This handles cases like /user_app/225827/2fddhg16/t16
