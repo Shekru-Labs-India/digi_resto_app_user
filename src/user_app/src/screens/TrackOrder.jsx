@@ -1540,7 +1540,6 @@ ${
               <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
               <p style="margin: 5px 0;">► ${outlet_name}</p>
               <p style="margin: 5px 0;">► ${outlet_address}</p>
-              <p style="margin: 5px 0;">► ${outlet_mobile}</p>
             </div>
             <div style="text-align: right;">
               <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
