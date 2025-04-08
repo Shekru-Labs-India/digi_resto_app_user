@@ -1819,7 +1819,7 @@ const handleAddToExistingOrder = async () => {
                     <hr className="p-0 m-0 text-primary" />
                   </div>
 
-                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                  <div className="col-12 mb-0 pt-0 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
                         Discount{" "}
@@ -1844,11 +1844,15 @@ const handleAddToExistingOrder = async () => {
                     </div>
                   </div>
 
-                  <div className="col-12 pt-0 px-2">
+
+
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        Service Charges (
-                        {checkoutDetails.service_charges_percent}%)
+                      Service Charges{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.service_charges_percent}%)
+                        </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
                         +₹{checkoutDetails.service_charges_amount}
@@ -1868,18 +1872,22 @@ const handleAddToExistingOrder = async () => {
                     </div>
                   </div> */}
 
-                  <div className="col-12 mb-0 py-1 px-2">
+
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        GST ({checkoutDetails.gst_percent}%)
+                      GST{" "}
+                        <span className="gray-text small-number">
+                          ({checkoutDetails.gst_percent}%)
+                        </span>
                       </span>
                       <span className="pe-2 font_size_14 gray-text">
                         +₹{checkoutDetails.gst_amount}
                       </span>
                     </div>
+                  <hr className="p-0 m-0 text-primary" />
                   </div>
 
-                  <hr className="p-0 text-primary mb-2 mt-1" />
 
                   <div className="col-12 px-2">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
