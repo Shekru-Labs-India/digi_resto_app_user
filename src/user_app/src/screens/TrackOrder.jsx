@@ -1857,29 +1857,29 @@ ${
                     {orderDetails.order_details.order_status === "paid" && (
                       <div className="menu-info d-flex align-items-center gray-text">
                         <span className="me-2">
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "card" && (
                             <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "cash" && (
                             <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "phonepay" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "gpay" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "upi" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
                         </span>
                         <span className="font_size_12 gray-text text-capitalize">
-                          {orderDetails.order_details.payment_method}
+                          {orderDetails.order_details.payment_method.toUpperCase()}
                         </span>
                       </div>
                     )}
