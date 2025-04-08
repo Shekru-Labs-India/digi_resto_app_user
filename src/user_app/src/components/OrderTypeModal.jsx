@@ -91,13 +91,13 @@ function OrderTypeModal({ onSelect, onClose }) {
               <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              <div className="row g-3">
-                {["Counter", "Drive-Through", "Delivery", "Parcel"].map(
-                  (type) => {
-                    // Check if this type is the current one
-                    const isSelected = currentOrderType === type.toLowerCase();
-                    return (
-                      <div className="col-6" key={type}>
+              {["Counter", "Drive-Through", "Delivery", "Parcel"].map(
+                (type) => {
+                  // Check if this type is the current one
+                  const isSelected = currentOrderType === type.toLowerCase();
+                  return (
+                    <div className="row mb-3" key={type}>
+                      <div className="col-12">
                         <button
                           className={`btn ${isSelected ? 'btn-primary' : 'btn-outline-primary'} w-100 py-3 fs-6 px-2`}
                           onClick={() =>
@@ -110,10 +110,10 @@ function OrderTypeModal({ onSelect, onClose }) {
                           {type}
                         </button>
                       </div>
-                    );
-                  }
-                )}
-              </div>
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
         </div>
