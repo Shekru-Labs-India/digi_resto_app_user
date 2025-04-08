@@ -1553,7 +1553,7 @@ export const OrderCard = ({
               <span className="text-info font_size_14 fw-semibold">
                 ₹{order.final_grand_total.toFixed(2)}
               </span>
-              {order.grand_total !== order.total_bill_amount && (
+              {order.discount_amount > 0 && (
                 <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                   ₹{order.total_bill_amount.toFixed(2)}
                 </span>

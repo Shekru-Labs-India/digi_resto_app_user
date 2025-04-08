@@ -1842,8 +1842,7 @@ ${
                     </span>
 
                     {/* Conditionally render the line-through price */}
-                    {order_details.grand_total !==
-                      order_details.total_bill_amount && (
+                    {order_details.discount_amount > 0 && (
                       <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
                         ₹{order_details.total_bill_amount.toFixed(2)}
                       </span>
