@@ -95,6 +95,17 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
   const useOutletOnly = typeof isOutletOnlyUrl === 'boolean' ? 
     isOutletOnlyUrl : 
     localStorage.getItem("isOutletOnlyUrl") === "true";
+    
+  console.log("isOutletOnlyUrl value:", useOutletOnly); // Debug log
+    
+  // Define a proper event handler function
+  const handleLocationClick = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Location clicked, useOutletOnly:", useOutletOnly);
+    
+    // Always show modal - we'll fix the logic issue
+    handleOrderTypeModal();
+  };
 
   return (
     <>
@@ -114,8 +125,8 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
 
         <div 
           className="d-flex align-items-center font_size_12" 
-          onClick={useOutletOnly ? handleOrderTypeModal : undefined} 
-          style={{ cursor: useOutletOnly ? "pointer" : "default" }}
+          onClick={handleLocationClick}
+          style={{ cursor: "pointer" }}
         >
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
