@@ -554,20 +554,7 @@ const handleAddToExistingOrder = async () => {
     ) || { order_items: [] };
 
     // Initialize with empty array if not present
-    // Completely replace line 459 and surrounding code
-    // Merge new cart items with existing order items
     const updatedOrderItems = [];
-
-    // No need to spread existingOrderDetails.order_items since it doesn't exist
-    // Just process storedCart.order_items directly
-    storedCart.order_items.forEach((newItem) => {
-      updatedOrderItems.push({
-        menu_id: newItem.menu_id,
-        quantity: newItem.quantity,
-        comment: newItem.comment || "",
-        half_or_full: newItem.half_or_full || "full",
-      });
-    });
 
     for (const item of storedCart.order_items) {
       const existingItem = existingOrder.order_items.find(
