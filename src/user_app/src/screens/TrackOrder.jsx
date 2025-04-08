@@ -2407,6 +2407,7 @@ ${
                       </div>
 
                       {/* Discount */}
+                      {discountAmount > 0 && (
                       <div className="col-12 mb-0 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 gray-text">
@@ -2420,7 +2421,10 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
+                      {/* Special Discount */}
+                      {specialDiscount > 0 && (
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
                           <span className="font_size_14 gray-text">
@@ -2431,8 +2435,10 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
                       {/* Extra Charges */}
+                      {charges > 0 && (
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 pt-1 gray-text">
@@ -2443,8 +2449,10 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
                       {/* Subtotal */}
+                      {subtotal > 0 && (
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1">
                           <span className="ps-2 font_size_14 gray-text">
@@ -2455,8 +2463,10 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
                       {/* Service Charges */}
+                      {serviceChargesAmount > 0 && (
                       <div className="col-12 pt-0">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 pt-1 gray-text">
@@ -2470,8 +2480,10 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
                       {/* GST Charges */}
+                      {gstAmount > 0 && (
                       <div className="col-12 mb-0 py-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 gray-text">
@@ -2485,6 +2497,7 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
 
                       {/* Tip (Only show if tip is greater than 0) */}
                       {tip > 0 && (
@@ -2505,6 +2518,7 @@ ${
                       </div>
 
                       {/* Final Grand Total */}
+                      {finalGrandTotal > 0 && (
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
                           <span className="ps-2 fw-semibold fs-6">
@@ -2515,6 +2529,7 @@ ${
                           </span>
                         </div>
                       </div>
+                      )}
                     </div>
                   </div>
                 </div>
