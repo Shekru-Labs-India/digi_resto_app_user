@@ -208,8 +208,8 @@ const NearbyArea = () => {
         };
         case "egg":
           return {
-            icon: "fa-solid fa-egg",
-            textColor: "text-success", // Changed to green for category name
+            icon: "fa-solid fa-egg gray-text",
+            // textColor: "text-success", // Changed to green for category name
             categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
           };
       case "vegan":
