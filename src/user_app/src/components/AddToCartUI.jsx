@@ -199,6 +199,7 @@ const AddToCartUI = ({
   };
 
   if (!showModal || isPriceFetching) return null;
+  const isDarkMode = localStorage.getItem("isDarkMode") === "true";
 
   return (
     <>
@@ -330,9 +331,9 @@ const AddToCartUI = ({
                   style={{ gap: "12px" }}
                 >
                   <div
-                    className="d-flex align-items-center justify-content-between"
+                    className={`d-flex align-items-center justify-content-between `}
                     style={{
-                      background: "#e9ecef",
+                      background: isDarkMode ? "#335347" : "#e9ecef",
                       borderRadius: "50px",
                       width: "130px",
                       padding: "4px 8px",
