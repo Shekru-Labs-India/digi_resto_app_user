@@ -125,12 +125,12 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
 
         <div 
           className="d-flex align-items-center font_size_12" 
-          onClick={handleLocationClick}
-          style={{ cursor: "pointer" }}
+          onClick={localStorage.getItem("isOutletOnlyUrl") === "true" ? handleOrderTypeModal : undefined}
+          style={{ cursor: localStorage.getItem("isOutletOnlyUrl") === "true" ? "pointer" : "default" }}
         >
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
-            {useOutletOnly ? (
+            {localStorage.getItem("isOutletOnlyUrl") === "true" ? (
               // For outlet-only URLs, show the order type
               <>{orderType?.toUpperCase() || ""}</>
             ) : (
