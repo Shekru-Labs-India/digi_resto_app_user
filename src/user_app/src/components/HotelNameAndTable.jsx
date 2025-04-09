@@ -109,7 +109,7 @@ const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => 
 
   return (
     <>
-      {isNonProductionDomain() && <Notice />}
+      {/* {isNonProductionDomain() && <Notice />} */}
       <div className="container p-0">
         <div className="d-flex justify-content-between align-items-center my-2">
         <div className="d-flex align-items-center font_size_14">
