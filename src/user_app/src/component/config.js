@@ -1,6 +1,12 @@
 const config = {
-  // apiDomain: "https://men4u.xyz",
-   apiDomain: "https://menusmitra.xyz"
+  apiDomain: (() => {
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('user.menumitra.com')) {
+      return "https://menusmitra.xyz";
+    } else {
+      return "https://men4u.xyz";
+    }
+  })()
 };
 
 export default config;
