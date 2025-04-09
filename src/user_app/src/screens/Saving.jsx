@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useParams } from "react-router-dom";
+import config from "../component/config";
 
 function Saving() {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -30,7 +31,10 @@ function Saving() {
 
     const requestBody = JSON.stringify({ user_id: String(user_id) });
 
-    fetch("https://men4u.xyz/user_api/get_user_count", {
+    console.log("🔹 API URL:", `${config.apiDomain}/user_api/get_user_count`);
+    console.log("🔹 Request Body:", requestBody);
+
+    fetch(`${config.apiDomain}/user_api/get_user_count`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,12 +43,14 @@ function Saving() {
       body: requestBody,
     })
       .then((response) => {
+        console.log("🔹 API Response Status:", response.status);
         if (!response.ok) {
           throw new Error(`Server error: ${response.status}`);
         }
         return response.json();
       })
       .then((data) => {
+        console.log("🔹 API Response Data:", data);
         if (data?.st === 1 && data?.msg === "success" && data?.data) {
           const outletData = data.data.Outlet_wise_data || {};
 
