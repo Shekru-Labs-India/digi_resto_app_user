@@ -80,23 +80,23 @@ export const extractUrlParams = (path) => {
 export const validateUrlPath = (path) => {
   // NEW: Handle direct /o[outlet] URLs without /user_app/ prefix
   if (URL_PATTERNS.directOutletPattern.test(path)) {
-    return "Invalid URL format. URLs should include '/user_app/' prefix.";
+    return "Invalid QR code. Please scan again.";
   }
 
   // Check for completely wrong base path but with outlet structure
   if (URL_PATTERNS.wrongBasePathWithStructure.test(path)) {
-    return "Incorrect application path. The URL should begin with '/user_app/'.";
+    return "Incorrect link. Please scan the QR code again to access the restaurant menu.";
   }
   
   // First check if the path uses a similar but incorrect base path
   if (URL_PATTERNS.similarBasePath.test(path) && !URL_PATTERNS.correctBasePath.test(path)) {
-    return "Incorrect application path. Did you mean '/user_app/'?";
+    return "Incorrect link. Please scan the QR code again to view the menu.";
   }
   
   // Check for any URL that has outlet-like format but doesn't have user_app
   // This needs to come after the specific wrong base path checks
   if (path.match(/^\/[^\/]+\/o\d+/) && !path.startsWith('/user_app/')) {
-    return "Incorrect application path. The URL should begin with '/user_app/'.";
+    return "Incorrect link. Please scan the QR code again to access the restaurant menu.";
   }
   
   // If it doesn't include the user_app path at all, don't validate further
@@ -111,7 +111,7 @@ export const validateUrlPath = (path) => {
   // NEW: Check for extra slash after section or table prefix
   // This catches patterns like /user_app/225827/s/12 or /user_app/225827/s/t
   if (URL_PATTERNS.extraSlashAfterPrefixPattern.test(path)) {
-    return "Invalid URL format. Section or table identifiers must not have an extra slash after the prefix.";
+    return "Link error. Please scan the QR code again or ask restaurant staff for assistance.";
   }
   
   // Special check for URLs with non-numeric characters in section part but without 's' prefix
