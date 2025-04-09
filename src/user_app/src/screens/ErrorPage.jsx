@@ -6,7 +6,7 @@ import { useRestaurantId } from "../context/RestaurantIdContext";
 function ErrorPage() {
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState(
-    "Table having issue. Rescan the QR Code again!"
+    "Sorry, this link appears to be incorrect. Please scan the QR code again or ask for assistance."
   );
 
   // Get context values safely with defaults
@@ -52,7 +52,7 @@ function ErrorPage() {
             </div>
             <div className="clearfix">
               {/* <h2 className="title text-primary">Sorry</h2> */}
-              <p>{errorMessage}</p>
+              <p className="p-5">{errorMessage}</p>
             </div>
           </div>
         </div>
