@@ -2,9 +2,19 @@ import React from 'react';
 
 function Notice() {
   return (
-    <div className="badge bg-info d-block text-center text-bold bd-announcement p-1">
-      TESTING APP
-    </div>
+    <div
+    className="badge bg-primary rounded-0 text-center py-1"
+    style={{ 
+      position: "relative",
+      left: "50%",
+      right: "50%",
+      marginLeft: "-50vw",
+      marginRight: "-50vw",
+      width: "100vw"
+    }}
+  >
+    TESTING
+  </div>
     // <div></div>
   );
 }

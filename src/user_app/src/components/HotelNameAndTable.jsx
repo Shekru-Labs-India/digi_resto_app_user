@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useNavigate } from "react-router-dom";
 import Notice from "../component/Notice";
-import { isNonProductionDomain } from "../component/config";
+import { isNonProductionDomain, shouldShowNotice } from "../component/config";
 import OrderTypeModal from "./OrderTypeModal";
 
 const HotelNameAndTable = ({
@@ -118,7 +118,7 @@ const HotelNameAndTable = ({
 
   return (
     <>
-      {/* {isNonProductionDomain() && <Notice />} */}
+      {shouldShowNotice() && <Notice />}
       {/* <div
         className="badge bg-primary rounded-0 text-center py-1"
         style={{ 

@@ -4,9 +4,10 @@ import HotelList from "./HotelList";
 // import OverlayIcon from "../assets/google lens.svg";
 import logo from "../assets/logos/menumitra_logo_128.png";
 
+
 import { Link } from "react-router-dom";
 import Notice from "../component/Notice";
-import { isNonProductionDomain } from "../component/config";
+import { shouldShowNotice } from "../component/config";
 const QRScanner = () => {
   const [scannedResult, setScannedResult] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
@@ -67,7 +68,7 @@ const QRScanner = () => {
 
   return (
     <div>
-      {/* {isNonProductionDomain() && <Notice />} */}
+            {shouldShowNotice() && <Notice />}
       <div className="container-fluid  d-flex flex-column align-items-center vh-100 ">
         <Link to="/OrderTypeScreen">
           {" "}

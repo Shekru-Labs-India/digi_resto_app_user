@@ -7,7 +7,7 @@ import Sidebar, { SidebarToggler } from "../component/Sidebar";
 import { usePopup } from '../context/PopupContext';
 import Header from "../components/Header";
 import { APP_VERSION } from "../component/config";
-import { isNonProductionDomain } from "../component/config";
+import { isNonProductionDomain, shouldShowNotice } from "../component/config";
 import Notice from "../component/Notice";
 
 
@@ -67,7 +67,7 @@ const Profile = () => {
       <>
         <main className="page-content space-top">
           <Header title="Profile" />
-          {/* {isNonProductionDomain() && <Notice />} */}
+          {shouldShowNotice() && <Notice />}
           <div className="container">
             <div className="profile-area">
               <div className="main-profile">

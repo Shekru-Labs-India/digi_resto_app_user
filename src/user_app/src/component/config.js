@@ -11,8 +11,11 @@ const config = {
 
 export default config;
 
-
-
+// Function to determine if Notice should be shown
+export const shouldShowNotice = () => {
+  const currentUrl = window.location.href;
+  return !currentUrl.includes('user.menumitra.com');
+};
 
 export const APP_VERSION = "1.0.0";
 
@@ -23,8 +26,6 @@ export const APP_CONFIG = {
   environment: process.env.NODE_ENV,
 };
 
-
-
 export const PRODUCTION_DOMAIN = "menumitra.com";
 // Helper function to check if we're on production domain
 export const isNonProductionDomain = () => {
@@ -34,13 +35,6 @@ export const isNonProductionDomain = () => {
     currentDomain !== `www.${PRODUCTION_DOMAIN}`
   );
 };
-
-
-
-
-
-
-
 
 // Helper function to get spicy level styles
 export const getSpicyLevelStyle = (spicyIndex) => {
