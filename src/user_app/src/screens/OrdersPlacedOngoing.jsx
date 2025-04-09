@@ -413,12 +413,14 @@ const OrderCard = ({
               </div> */}
             </div>
             <div className="row">
-              <div className="col-3 text-start pe-0">
-                <span className="font_size_12 gray-text font_size_12 text-nowrap">
-                  {getOrderTypeIcon(order.order_type)}
-                  <span className="ms-2">{order.order_type || "Dine In"}</span>
-                </span>
-              </div>
+            <div className="col-3 text-start pe-0">
+              <span className="font_size_12 gray-text font_size_12 text-nowrap">
+                {getOrderTypeIcon(order.order_type) || (
+                  <i className="fa-solid fa-utensils"></i>
+                )}
+                <span className="ms-2">{order.order_type || "Dine In"}</span>
+              </span>
+            </div>
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
                   <span className="fw-medium gray-text">
