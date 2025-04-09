@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import "../assets/css/style.css";
-
 import Bottom from "../component/bottom";
 import OfferBanner from "../component/OfferBanner";
 import ProductCart from "../component/ProductCart";
@@ -14,6 +13,47 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
 import config from "../component/config";
+
+// Add styles for dark mode toggle animation
+const styles = {
+  toggleWrapper: {
+    position: 'relative',
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background-color 0.3s ease',
+    backgroundColor: 'transparent'
+  },
+  icon: {
+    position: 'absolute',
+    fontSize: '1.2rem',
+    transition: 'all 0.3s ease',
+    color: '#666'
+  },
+  sunIcon: {
+    opacity: 1,
+    transform: 'scale(1) rotate(0)',
+  },
+  moonIcon: {
+    opacity: 0,
+    transform: 'scale(0.5) rotate(-30deg)',
+  },
+  iconDark: {
+    color: '#fff'
+  },
+  sunIconHidden: {
+    opacity: 0,
+    transform: 'scale(0.5) rotate(30deg)'
+  },
+  moonIconVisible: {
+    opacity: 1,
+    transform: 'scale(1) rotate(0)'
+  }
+};
 
 const HomeScreen = () => {
   // const { isOutletOnlyUrl } = useRestaurantId();
@@ -209,16 +249,27 @@ const HomeScreen = () => {
                 {userData?.mobile}
               </div>
               <div className="dz-mode mt-3 me-4">
-                <div className="theme-btn" onClick={toggleTheme}>
+                <div 
+                  style={styles.toggleWrapper}
+                  onClick={toggleTheme}
+                >
                   <i
-                    className={`fa-solid ${
-                      isDarkMode ? "fa-sun" : "fa-moon"
-                    } sun`}
+                    className="fa-solid fa-sun"
+                    style={{
+                      ...styles.icon,
+                      ...styles.sunIcon,
+                      ...(isDarkMode ? styles.sunIconHidden : {}),
+                      ...(isDarkMode ? styles.iconDark : {})
+                    }}
                   ></i>
                   <i
-                    className={`fa-solid ${
-                      isDarkMode ? "fa-moon" : "fa-sun"
-                    } moon`}
+                    className="fa-solid fa-moon"
+                    style={{
+                      ...styles.icon,
+                      ...styles.moonIcon,
+                      ...(isDarkMode ? styles.moonIconVisible : {}),
+                      ...(isDarkMode ? styles.iconDark : {})
+                    }}
                   ></i>
                 </div>
               </div>
