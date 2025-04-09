@@ -126,14 +126,14 @@ export const validateUrlPath = (path) => {
       
       // Check if table part (segments[3]) contains non-numeric characters but is not prefixed with 't'
       if (segments.length >= 4 && !segments[3].startsWith('t') && /[a-zA-Z]/.test(segments[3])) {
-        return "Invalid URL format. Table identifiers must be numeric only.";
+        return "Table having issue. Rescan the QR Code again!";
       }
     }
   }
   
   // Check for table format with non-numeric characters
   if (URL_PATTERNS.invalidTableFormatPattern.test(path)) {
-    return "Invalid table format. Table numbers must be numeric only.";
+    return "Table having issue. Rescan the QR Code again!";
   }
   
   // Check for old URL format without any prefixes but has 3 parts
@@ -153,7 +153,7 @@ export const validateUrlPath = (path) => {
   
   // Check for missing outlet prefix in an outlet-only URL
   if (URL_PATTERNS.missingOutletPrefixPattern.test(path) && !path.includes('/user_app/o')) {
-    return "Missing outlet prefix. Please use the format: /user_app/o[outlet-number]";
+    return "Sorry, this link appears to be incomplete. Please scan the QR code again or ask restaurant staff for assistance";
   }
   
   // Only validate restaurant-specific URLs
