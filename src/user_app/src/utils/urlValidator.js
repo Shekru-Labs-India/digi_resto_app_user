@@ -50,7 +50,11 @@ export const URL_PATTERNS = {
   
   // NEW: Pattern to catch invalid extra slash after section or table prefix
   // Example: /user_app/225827/s/12 or /user_app/o225827/s/12
-  extraSlashAfterPrefixPattern: /\/user_app\/(?:o)?(?:\d+)\/s\/|\/user_app\/(?:o)?(?:\d+)(?:\/s\d+)?\/t\//
+  extraSlashAfterPrefixPattern: /\/user_app\/(?:o)?(?:\d+)\/s\/|\/user_app\/(?:o)?(?:\d+)(?:\/s\d+)?\/t\//,
+
+  // NEW: Pattern to detect missing table number after /t
+  // Example: /user_app/o225827/s202/t
+  missingTableNumberPattern: /^\/user_app\/o\d+(?:\/s\d+)?\/t\/?$/
 };
 
 // Helper to strip prefixes
@@ -97,6 +101,12 @@ export const validateUrlPath = (path) => {
   
   // If it doesn't include the user_app path at all, don't validate further
   if (!path.includes('/user_app/')) return null;
+
+  // NEW: Check for missing table number after /t
+  // This needs to be checked before other table-related validations
+  if (URL_PATTERNS.missingTableNumberPattern.test(path)) {
+    return "Table having issue. Rescan the QR Code again!";
+  }
   
   // NEW: Check for extra slash after section or table prefix
   // This catches patterns like /user_app/225827/s/12 or /user_app/225827/s/t
