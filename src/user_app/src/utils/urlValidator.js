@@ -121,7 +121,7 @@ export const validateUrlPath = (path) => {
     if (segments.length >= 3 && segments[0] === 'user_app') {
       // Check if section part (segments[2]) contains non-numeric characters but is not prefixed with 's'
       if (segments.length >= 3 && !segments[2].startsWith('s') && /[a-zA-Z]/.test(segments[2])) {
-        return "Invalid URL format. Section identifiers must be numeric only.";
+        return "Outlet having issue. Rescan the QR Code again!";
       }
       
       // Check if table part (segments[3]) contains non-numeric characters but is not prefixed with 't'
@@ -138,7 +138,7 @@ export const validateUrlPath = (path) => {
   
   // Check for old URL format without any prefixes but has 3 parts
   if (URL_PATTERNS.allPrefixesMissingPattern.test(path)) {
-    return "The link format has changed. Please use the format: /user_app/o[outlet]/s[section]/t[table]";
+    return "This QR code link is outdated. Please scan the new QR code on your table or ask restaurant staff for assistance.";
   }
   
   // Check for old URL format (without prefixes)
