@@ -1898,7 +1898,7 @@ ${
                   <>
                     <div className="card-body text-center bg-success rounded-4 text-white">
                       <span className="fs-6 fw-medium h-100">
-                        Your delicious order has been served
+                        Your delicious order has been completed
                       </span>
                     </div>
                     {/* <div className="d-flex justify-content-center pt-3 gray-text">
