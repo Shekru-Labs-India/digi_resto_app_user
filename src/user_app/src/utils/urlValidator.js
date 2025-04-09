@@ -154,7 +154,7 @@ export const validateUrlPath = (path) => {
   // Check for missing outlet prefix in an outlet-only URL
   if (URL_PATTERNS.missingOutletPrefixPattern.test(path) && !path.includes('/user_app/o')) {
     return "Sorry, this link appears to be incomplete. Please scan the QR code again or ask restaurant staff for assistance";
-  }
+  } 
   
   // Only validate restaurant-specific URLs
   if (path.includes('/user_app/o')) {
