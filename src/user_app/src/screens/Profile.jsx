@@ -67,7 +67,7 @@ const Profile = () => {
       <>
         <main className="page-content space-top">
           <Header title="Profile" />
-          {isNonProductionDomain() && <Notice />}
+          {/* {isNonProductionDomain() && <Notice />} */}
           <div className="container">
             <div className="profile-area">
               <div className="main-profile">

@@ -119,7 +119,7 @@ const HotelNameAndTable = ({
   return (
     <>
       {/* {isNonProductionDomain() && <Notice />} */}
-      <div
+      {/* <div
         className="badge bg-primary rounded-0 text-center py-1"
         style={{ 
           position: "relative",
@@ -131,7 +131,7 @@ const HotelNameAndTable = ({
         }}
       >
         TESTING APP
-      </div>
+      </div> */}
       <div className="container p-0">
         <div className="d-flex justify-content-between align-items-center my-2">
           <div className="d-flex align-items-center font_size_14">
