@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import Bottom from "../component/bottom";
@@ -15,6 +15,9 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { isNonProductionDomain } from "../component/config";
 import Notice from "../component/Notice";
 import HotelNameAndTable from "../components/HotelNameAndTable";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import MenuMitra from "../assets/logos/menumitra_logo_128.png";
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -31,12 +34,15 @@ const calculateOriginalPrice = (grandTotal) => {
   return originalPrice;
 };
 
+// Add generatePDF utility function
+
 const MyOrder = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const location = useLocation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("isDarkMode") === "true";
   });
-  const { restaurantName, restaurantId } = useRestaurantId();
+  const { restaurantName, restaurantId, isOutletOnlyUrl } = useRestaurantId();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("completed");
   const [orders, setOrders] = useState({});
@@ -48,10 +54,11 @@ const MyOrder = () => {
   const [activeOrders, setActiveOrders] = useState({
     placed: [],
     cooking: [],
-    served: []
+    served: [],
   });
   const [completedTimers, setCompletedTimers] = useState(new Set());
   const { showLoginPopup } = usePopup();
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     if (location.state?.activeTab) {
@@ -66,17 +73,294 @@ const MyOrder = () => {
     setRole(userData?.role);
   }, []);
 
+  const generatePDF = async (orderDetails) => {
+    try {
+      if (!orderDetails?.order_details) {
+        window.showToast("error", "Order details not found");
+        return;
+      }
+
+      const { order_details, menu_details } = orderDetails;
+      const outlet_name =
+        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_address = localStorage.getItem("outlet_address") || "-";
+      const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
+      const website_url = "https://menumitra.com";
+      const customerName =
+        localStorage.getItem("customerName") ||
+        order_details.customer_name ||
+        "Guest";
+
+              // Add current date and time for PDF generation timestamp
+      const now = new Date();
+      const generationDate = now.toLocaleDateString();
+      const generationTime = now.toLocaleTimeString([], { 
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true 
+      }).replace('am', 'AM').replace('pm', 'PM');
+
+      // Create a hidden container with specific dimensions
+      const container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "-9999px";
+      container.style.width = "800px";
+      container.style.margin = "0";
+      container.style.padding = "60px";
+      container.style.fontSize = "16px";
+      container.style.backgroundColor = "#ffffff";
+      document.body.appendChild(container);
+
+      container.innerHTML = `
+        <div style="padding: 20px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center;">
+              <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
+              <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+            </div>
+            <span style="color: #d9534f; font-size: 20px; font-weight: normal;">Invoice</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+            <div>
+              <p style="margin: 0; font-weight: bold;">Hello, ${customerName}</p>
+              <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
+              <p style="margin: 5px 0 0 0; color: #666;">${
+                order_details.date || ""
+              } ${generationTime || ""}</p>
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Item</th>
+              <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
+              <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
+            </tr>
+            ${menu_details
+              .map(
+                (item) => `
+              <tr>
+                <td style="padding: 8px 0; color: #d9534f;">${
+                  item.menu_name
+                }</td>
+                <td style="text-align: center; padding: 8px 0;">${
+                  item.quantity
+                }</td>
+                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(
+                  2
+                )}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </table>
+
+          <!-- Billing Summary -->
+<div style="border-top: 2px solid #ddd; margin-top: 20px;">
+  <div style="text-align: right; margin-top: 10px;">
+    <!-- Total -->
+    ${
+      order_details.total_bill_amount
+        ? `<span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+
+    <!-- Discount -->
+    ${
+      order_details.discount_percent > 0
+        ? `<span style="font-weight: bold;">Discount:</span>(${
+            order_details.discount_percent
+          }%): <span style="color: red;">-₹${order_details.discount_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- Special Discount -->
+    ${
+      order_details.special_discount
+        ? `<span style="font-weight: bold;">Special Discount:</span><span style="color: red;">-₹${order_details.special_discount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+    <!-- Extra Charges -->
+    ${
+      order_details.charges > 0
+        ? `<span style="font-weight: bold;">Extra Charges:</span><span style="color: green;">+₹${order_details.charges.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+    <!-- Subtotal -->
+    ${
+      order_details.total_bill_with_discount
+        ? `<span style="font-weight: bold;">Subtotal:</span> ₹${order_details.total_bill_with_discount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+    <!-- Service Charges -->
+    ${
+      order_details.service_charges_amount
+        ? `<span style="font-weight: bold;">Service Charges (${
+            order_details.service_charges_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.service_charges_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- GST -->
+    ${
+      order_details.gst_amount
+        ? `<span style="font-weight: bold;">GST (${
+            order_details.gst_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.gst_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+<!-- Tip -->
+${
+  order_details.tip && order_details.tip > 0
+    ? `<span style="font-weight: bold;">Tip:</span><span style="color: green;">+₹${order_details.tip.toFixed(
+        2
+      )}</span></br>`
+    : ""
+}
+
+
+    <!-- Grand Total -->
+    ${
+      order_details.final_grand_total
+        ? `<span style="font-weight: bold;">Grand Total:</span> ₹${order_details.final_grand_total.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+  </div>
+</div>
+          <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <div>
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
+              <p style="margin: 5px 0;">► ${outlet_name}</p>
+              <p style="margin: 5px 0;">► ${outlet_address}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
+              <p style="margin: 5px 0; text-transform: uppercase;">${
+                order_details.payment_method || ""
+              }</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 40px;">
+            <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
+            <div style="margin: 20px 0;">
+              <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
+                <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+              </div>
+            </div>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">info@menumitra.com</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">+91 9172530151</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">${website_url}</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        // Wait for all images to load
+        const images = container.getElementsByTagName("img");
+        await Promise.all(
+          Array.from(images).map((img) => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = resolve;
+                img.onerror = resolve;
+              }
+            });
+          })
+        );
+
+        // Generate PDF with exact same configuration as MyOrder.js
+        const canvas = await html2canvas(container, {
+          scale: 3,
+          width: 800,
+          height: container.offsetHeight,
+          backgroundColor: "#ffffff",
+          windowWidth: 800,
+          windowHeight: container.offsetHeight,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        // Create PDF with A4 dimensions
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4",
+        });
+
+        // Calculate dimensions to fit A4 while maintaining aspect ratio
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        // Add image with proper scaling
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`invoice-${order_details.order_number}.pdf`);
+
+        window.showToast("success", "Invoice downloaded successfully");
+      } catch (error) {
+        console.error("PDF generation error:", error);
+        window.showToast("error", "Failed to generate invoice");
+      } finally {
+        // Clean up: Remove the temporary container
+        if (document.body.contains(container)) {
+          document.body.removeChild(container);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      window.showToast("error", "Failed to generate invoice");
+    }
+  };
+
   const fetchActiveOrders = async () => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
       const sectionId = localStorage.getItem("sectionId");
-      console.log('MyOrder: Fetching active orders');
-      
+      console.log("MyOrder: Fetching active orders");
+
       if (!userData?.user_id || !restaurantId) {
-        console.log('MyOrder: Missing user_id or restaurantId, skipping active orders fetch');
+        console.log(
+          "MyOrder: Missing user_id or restaurantId, skipping active orders fetch"
+        );
         setLoading(false);
         return;
+      }
+
+      const requestBody = {
+        user_id: userData.user_id,
+        outlet_id: localStorage.getItem("outlet_id"),
+      };
+
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
       }
 
       const response = await fetch(
@@ -87,53 +371,73 @@ const MyOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            outlet_id: localStorage.getItem("outlet_id"),
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
+
       const data = await response.json();
-      console.log('MyOrder: Received active orders:', data);
+      console.log("MyOrder: Received active orders:", data);
 
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
         if (orders?.length > 0) {
           // Group orders by their status
-          const placedOrders = orders?.filter(o => o.status === "placed") || [];
-          const cookingOrders = orders?.filter(o => o.status === "cooking") || [];
-          const servedOrders = orders?.filter(o => o.status === "served") || [];
+          const placedOrders =
+            orders?.filter((o) => o.status === "placed") || [];
+          const cookingOrders =
+            orders?.filter((o) => o.status === "cooking") || [];
+          const servedOrders =
+            orders?.filter((o) => o.status === "served") || [];
 
           const activeOrders = {
             placed: placedOrders,
             cooking: cookingOrders,
-            served: servedOrders
+            served: servedOrders,
           };
 
           // Update localStorage
-          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
+          const existingOrders = JSON.parse(
+            localStorage.getItem("allOrderList") || "{}"
+          );
           const updatedOrders = {
             ...existingOrders,
             placed: placedOrders,
-            ongoing: [...cookingOrders, ...servedOrders]
+            ongoing: [...cookingOrders, ...servedOrders],
           };
-          
+
           localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-          console.log('MyOrder: Updated localStorage with active orders:', updatedOrders);
+          console.log(
+            "MyOrder: Updated localStorage with active orders:",
+            updatedOrders
+          );
 
           setActiveOrders(activeOrders);
         } else {
-          console.log('MyOrder: No active orders found');
+          console.log("MyOrder: No active orders found");
           setActiveOrders({ placed: [], cooking: [], served: [] });
         }
       } else {
-        console.log('MyOrder: No valid active orders in response');
+        console.log("MyOrder: No valid active orders in response");
         setActiveOrders({ placed: [], cooking: [], served: [] });
       }
     } catch (error) {
-      console.error('MyOrder: Error fetching active orders:', error);
+      console.error("MyOrder: Error fetching active orders:", error);
       setActiveOrders({ placed: [], cooking: [], served: [] });
     } finally {
       setLoading(false);
@@ -144,12 +448,26 @@ const MyOrder = () => {
     try {
       setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
-      console.log('MyOrder: Fetching orders for user:', userData?.user_id);
-      
+      console.log("MyOrder: Fetching orders for user:", userData?.user_id);
+
       if (!userData?.user_id || !restaurantId) {
-        console.log('MyOrder: Missing user_id or restaurantId, skipping fetch');
+        console.log("MyOrder: Missing user_id or restaurantId, skipping fetch");
         setLoading(false);
         return;
+      }
+
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
+      
+      const payload = {
+        outlet_id: localStorage.getItem("outlet_id"),
+        order_status: activeTab === "cancelled" ? "cancle" : activeTab,
+        user_id: userData.user_id,
+        role: userData.role,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly) {
+        payload.section_id = userData.sectionId;
       }
 
       const response = await fetch(
@@ -160,19 +478,29 @@ const MyOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            order_status: activeTab === "cancelled" ? "cancle" : activeTab,
-            user_id: userData.user_id,
-            role: userData.role,
-            section_id: userData.sectionId,
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
-        console.log('MyOrder: Received orders data:', data);
+        console.log("MyOrder: Received orders data:", data);
 
         if (data.st === 1 && data.lists) {
           const mappedData = {};
@@ -183,28 +511,36 @@ const MyOrder = () => {
           }
 
           // Save to localStorage
-          const existingOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-          console.log('MyOrder: Existing orders in localStorage:', existingOrders);
-          
+          const existingOrders = JSON.parse(
+            localStorage.getItem("allOrderList") || "{}"
+          );
+          console.log(
+            "MyOrder: Existing orders in localStorage:",
+            existingOrders
+          );
+
           const updatedOrders = {
             ...existingOrders,
-            ...mappedData
+            ...mappedData,
           };
-          
+
           localStorage.setItem("allOrderList", JSON.stringify(updatedOrders));
-          console.log('MyOrder: Updated localStorage with new orders:', updatedOrders);
+          console.log(
+            "MyOrder: Updated localStorage with new orders:",
+            updatedOrders
+          );
 
           setOrders(mappedData);
         } else {
-          console.log('MyOrder: No valid lists in response');
+          console.log("MyOrder: No valid lists in response");
           setOrders({});
         }
       } else {
-        console.error('MyOrder: API request failed');
+        console.error("MyOrder: API request failed");
         setOrders({});
       }
     } catch (error) {
-      console.error('MyOrder: Error fetching orders:', error);
+      console.error("MyOrder: Error fetching orders:", error);
       setOrders({});
     } finally {
       setLoading(false);
@@ -237,28 +573,10 @@ const MyOrder = () => {
   };
 
   const calculateOrderCount = (orders) => {
-    if (!orders) return 0;
-
     try {
-      return Object.values(orders).reduce((acc, curr) => {
-        if (!curr) return acc;
-
-        // Handle canceled orders which might be under 'cancle' key
-        if (curr.cancle) {
-          return acc + (Array.isArray(curr.cancle) ? curr.cancle?.length : 0);
-        }
-
-        // Handle regular orders
-        if (Array.isArray(curr)) {
-          return acc + curr?.length;
-        }
-        if (typeof curr === "object") {
-          return (
-            acc +
-            Object.values(curr).reduce((sum, val) => {
-              return sum + (Array.isArray(val) ? val?.length : 0);
-            }, 0)
-          );
+      return orders?.reduce((acc, order) => {
+        if (order?.menu_details) {
+          acc += order.menu_details.length;
         }
         return acc;
       }, 0);
@@ -267,22 +585,93 @@ const MyOrder = () => {
     }
   };
 
+  // Add this function to fetch order details when needed
+  const fetchOrderDetailsForPDF = async (order) => {
+    try {
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
+      const sectionId = localStorage.getItem("sectionId");
+      
+      const payload = {
+        order_id: order.order_id,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
+
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_order_details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
+        return;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.st === 1 && data.lists) {
+          await generatePDF(data.lists);
+        } else {
+          window.showToast("error", "Failed to generate invoice");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      window.showToast("error", "Failed to generate invoice");
+    }
+  };
 
   return (
     <div className="page-wrapper">
+      {isGenerating && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+          style={{ background: "rgba(255, 255, 255, 0.8)", zIndex: 9999 }}
+        >
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-2">Generating PDF...</p>
+          </div>
+        </div>
+      )}
       <Header
-        title="My Order"
-        count={
-          Object.values(activeOrders).reduce((total, orders) => total + orders?.length, 0)
-        }
+        title="Orders"
+        count={Object.values(activeOrders).reduce(
+          (total, orders) => total + orders?.length,
+          0
+        )}
       />
 
       <main className="page-content space-top p-b70">
         {/* {isNonProductionDomain() && <Notice />} */}
         <div className="container px-3 py-0 mb-0">
-        <HotelNameAndTable
+          <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={role?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
           {activeOrders.placed?.map((order) => (
             <OrderCard
@@ -294,6 +683,7 @@ const MyOrder = () => {
               setCompletedTimers={setCompletedTimers}
               setActiveTab={setActiveTab}
               fetchOrders={fetchActiveOrders}
+              generatePDF={generatePDF}
             />
           ))}
 
@@ -305,6 +695,7 @@ const MyOrder = () => {
               status="cooking"
               setActiveOrders={setActiveOrders}
               fetchOrders={fetchActiveOrders}
+              generatePDF={generatePDF}
             />
           ))}
 
@@ -316,50 +707,55 @@ const MyOrder = () => {
               status="served"
               setActiveOrders={setActiveOrders}
               fetchOrders={fetchActiveOrders}
-              fetchCompletedAndCancelledOrders={fetchCompletedAndCancelledOrders}
+              fetchCompletedAndCancelledOrders={
+                fetchCompletedAndCancelledOrders
+              }
+              generatePDF={generatePDF}
             />
           ))}
 
-{isLoggedIn && (
-          <div className="nav nav-tabs nav-fill" role="tablist">
-            {["completed", "cancelled"]?.map((tab) => (
-              <div
-                key={tab}
-                className={`nav-link px-0 ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab === "completed" && (
-                  <i className="far fa-check-circle text-success me-2 fs-5"></i>
-                )}
-                {tab === "cancelled" && (
-                  <i className="far fa-times-circle text-danger me-2 fs-5"></i>
-                )}
-                {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
-              </div>
-            ))}
-          </div>
-)}
+          {isLoggedIn && (
+            <div className="nav nav-tabs nav-fill" role="tablist">
+              {["completed", "cancelled"]?.map((tab) => (
+                <div
+                  key={tab}
+                  className={`nav-link px-0 ${
+                    activeTab === tab ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab === "completed" && (
+                    <i className="far fa-check-circle text-success me-2 fs-5"></i>
+                  )}
+                  {tab === "cancelled" && (
+                    <i className="far fa-times-circle text-danger me-2 fs-5"></i>
+                  )}
+                  {tab.charAt(0)?.toUpperCase() + tab.slice(1)}
+                </div>
+              ))}
+            </div>
+          )}
 
           {!isLoggedIn && (
-  <div
-  className="container overflow-hidden d-flex justify-content-center align-items-center"
-  style={{ height: "68vh" }}
->
-  <div className="m-b20 dz-flex-box text-center">
-    <div className="dz-cart-about">
-      <div className="mb-3">
-        <button
-          className="btn btn-outline-primary rounded-pill"
-          onClick={showLoginPopup}
-        >
-          <i className="fa-solid fa-lock me-2 fs-6"></i> Login
-        </button>
-      </div>
-      <span>Please login to access order</span>
-    </div>
-  </div>
-  </div>
-)}
+            <div
+              className="container overflow-hidden d-flex justify-content-center align-items-center"
+              style={{ height: "68vh" }}
+            >
+              <div className="m-b20 dz-flex-box text-center">
+                <div className="dz-cart-about">
+                  <div className="mb-3">
+                    <button
+                      className="btn btn-outline-primary rounded-pill"
+                      onClick={showLoginPopup}
+                    >
+                      <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                    </button>
+                  </div>
+                  <span>Please login to access order</span>
+                </div>
+              </div>
+            </div>
+          )}
           <Bottom />
         </div>
 
@@ -407,6 +803,7 @@ const MyOrder = () => {
                         activeTab={activeTab}
                         setOrders={setOrders}
                         setActiveTab={setActiveTab}
+                        generatePDF={generatePDF}
                       />
                     </div>
                     <div
@@ -446,9 +843,11 @@ export const OrderCard = ({
   setActiveTab,
   fetchCompletedAndCancelledOrders,
   setCompletedTimers = () => {},
+  generatePDF,
 }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [cancelReasonError, setCancelReasonError] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const navigate = useNavigate();
@@ -458,6 +857,7 @@ export const OrderCard = ({
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
   const timeoutRef = useRef({});
+  const { showLoginPopup } = usePopup();
 
   const [customerName, setCustomerName] = useState("");
   const titleCase = (str) => {
@@ -502,6 +902,22 @@ export const OrderCard = ({
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -553,6 +969,22 @@ export const OrderCard = ({
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -560,7 +992,6 @@ export const OrderCard = ({
       const data = await response.json();
 
       if (data.st === 1) {
-        
         window.showToast("success", data.msg);
 
         // Update the state to remove the order from "ongoing"
@@ -579,7 +1010,6 @@ export const OrderCard = ({
         fetchOrders();
         fetchCompletedAndCancelledOrders();
         setShowCompleteModal(false); // Close the modal
-        
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
@@ -607,6 +1037,22 @@ export const OrderCard = ({
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -628,7 +1074,7 @@ export const OrderCard = ({
           };
         });
         fetchOrders();
-        
+
         setShowCompleteModal(false); // Close the modal
       } else {
         console.clear();
@@ -640,12 +1086,28 @@ export const OrderCard = ({
     }
   };
 
+  const handleCancelReasonChange = (e) => {
+    const value = e.target.value;
+    setCancelReason(value);
+
+    if (value.trim().length > 0 && value.trim().length < 3) {
+      setCancelReasonError(
+        "Cancellation reason should be at least 3 characters long."
+      );
+    } else {
+      setCancelReasonError("");
+    }
+  };
+
   const handleConfirmCancel = async () => {
-    // Check if the cancel reason is provided
     if (!cancelReason.trim()) {
-      window.showToast(
-        "warning",
-        "Please select a reason to cancel the order."
+      setCancelReasonError("Please select a reason to cancel the order.");
+      return;
+    }
+
+    if (cancelReason.trim().length < 3) {
+      setCancelReasonError(
+        "Cancellation reason should be at least 3 characters long."
       );
       return;
     }
@@ -667,6 +1129,22 @@ export const OrderCard = ({
         }
       );
 
+      if (response.status === 401) {
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        setShowCancelModal(false);
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -677,14 +1155,18 @@ export const OrderCard = ({
         window.showToast("success", data.msg);
         setShowCancelModal(false);
         fetchOrders();
-        // Update the state to remove the canceled order
         setActiveOrders((prevOrders) => ({
           placed: prevOrders.placed?.filter(
             (o) => o.order_id !== order.order_id
           ),
-          ongoing: prevOrders.ongoing, // Keep ongoing orders unchanged
+          ongoing: prevOrders.ongoing,
         }));
         setActiveTab("cancelled");
+      } else if (data.st === 2) {
+        window.showToast(
+          "error",
+          data.msg || "Unable to cancel order at this time."
+        );
       } else {
         console.clear();
         window.showToast("error", data.msg || "Failed to cancel the order.");
@@ -695,20 +1177,31 @@ export const OrderCard = ({
     }
   };
 
-  const handleOrderClick = (orderNumber) => {
-    console.log('MyOrder: Attempting to navigate to TrackOrder');
-    console.log('MyOrder: Order Number:', orderNumber);
-    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
-    
+  const handleOrderClick = (orderNumber, orderId) => {
+    console.log("MyOrder: Attempting to navigate to TrackOrder");
+    console.log("MyOrder: Order Number:", orderNumber);
+    console.log("MyOrder: Order ID:", orderId);
+    console.log(
+      "MyOrder: Navigation path:",
+      `/user_app/TrackOrder/${orderNumber}`
+    );
+
     // Log the current state of allOrderList
     const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
-    
+    console.log("MyOrder: Current allOrderList in localStorage:", allOrders);
+
     try {
-      navigate(`/user_app/TrackOrder/${orderNumber}`);
-      console.log('MyOrder: Navigation initiated successfully');
+      // Store orderId in localStorage before navigation
+      localStorage.setItem("current_order_id", orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, {
+        state: {
+          orderId: orderId,
+          from: "order_card",
+        },
+      });
+      console.log("MyOrder: Navigation initiated successfully");
     } catch (error) {
-      console.error('MyOrder: Navigation failed:', error);
+      console.error("MyOrder: Navigation failed:", error);
     }
   };
 
@@ -789,12 +1282,7 @@ export const OrderCard = ({
 
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${order.order_id}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        setIsProcessingGPay,
-        "gpay"
-      );
+      await initiatePayment("gpay", paymentUrl, setIsProcessingGPay, "gpay");
     } catch (error) {
       console.clear();
       window.showToast(
@@ -827,6 +1315,22 @@ export const OrderCard = ({
       }
     );
 
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+      showLoginPopup();
+      return;
+    }
+
     if (response.ok) {
       fetchCompletedAndCancelledOrders();
       setActiveOrders((prevOrders) => {
@@ -852,7 +1356,6 @@ export const OrderCard = ({
           }
           setProcessing(false);
         }, 3000);
-       
       } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
@@ -976,7 +1479,10 @@ export const OrderCard = ({
       <div className="custom-card my-2 rounded-4 shadow-sm">
         <div
           className="card-body py-2"
-          onClick={() => handleOrderClick(order.order_number)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOrderClick(order.order_number, order.order_id);
+          }}
         >
           <div className="row align-items-center">
             <div className="col-4">
@@ -1015,12 +1521,19 @@ export const OrderCard = ({
             <div className="col-9 text-end">
               <div className="font_size_12 gray-text font_size_12 text-nowrap">
                 <span className="fw-medium gray-text">
-                  <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                  {order.section_name
-                    ? `${titleCase(order.section_name)} - ${
-                        order.table_number
-                      }`
-                    : "Dine In"}
+                  {order.section_name && (
+                    <>
+                      <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                      {`${titleCase(order.section_name)}${
+                        order.order_type?.toLowerCase() === "drive-through" ||
+                        order.order_type?.toLowerCase() === "parcel" ||
+                        order.order_type?.toLowerCase() === "counter" ||
+                        order.order_type?.toLowerCase() === "delivery"
+                          ? ""
+                          : ` - ${order.table_number}`
+                      }`}
+                    </>
+                  )}
                 </span>
               </div>
             </div>
@@ -1038,18 +1551,11 @@ export const OrderCard = ({
             </div>
             <div className="col-6 text-end">
               <span className="text-info font_size_14 fw-semibold">
-                ₹{order.grand_total.toFixed(2)}
+                ₹{order.final_grand_total.toFixed(2)}
               </span>
-              {order.grand_total !== (
-                order.grand_total / (1 - order.discount_percent / 100) ||
-                order.grand_total
-              ) && (
+              {order.discount_amount > 0 && (
                 <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                  ₹
-                  {(
-                    order.grand_total / (1 - order.discount_percent / 100) ||
-                    order.grand_total
-                  ).toFixed(2)}
+                  ₹{order.total_bill_amount.toFixed(2)}
                 </span>
               )}
             </div>
@@ -1274,12 +1780,19 @@ export const OrderCard = ({
                     </label>
                     <textarea
                       id="cancelReason"
-                      className="form-control border border-primary"
+                      className={`form-control border ${
+                        cancelReasonError ? "border-danger" : "border-primary"
+                      }`}
                       rows="3"
                       value={cancelReason}
-                      onChange={(e) => setCancelReason(e.target.value)}
+                      onChange={handleCancelReasonChange}
                       placeholder="Enter your reason here..."
                     ></textarea>
+                    {cancelReasonError && (
+                      <div className="text-danger font_size_12 mt-1">
+                        {cancelReasonError}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="modal-body">
@@ -1367,7 +1880,7 @@ export const OrderCard = ({
                   </div>
                 </div>
                 <hr className="my-4" />
-                <div className=" ">
+                <div className="">
                   <div className="container d-flex justify-content-between">
                     <span className="col-3">
                       <button
@@ -1400,17 +1913,24 @@ export const OrderCard = ({
   );
 };
 
-const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
-  const navigate = useNavigate();
-  // const [activeTab, setActiveTab] = useState("ongoing");
+const OrdersTab = ({
+  orders,
+  type,
+  activeTab,
+  setOrders,
+  setActiveTab,
+  generatePDF,
+}) => {
   const [checkedItems, setCheckedItems] = useState({});
+  const navigate = useNavigate();
+  const { showLoginPopup } = usePopup();
   const [expandAll, setExpandAll] = useState(false);
   const { restaurantId } = useRestaurantId();
   const [timeLeft, setTimeLeft] = useState(90);
-
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [completedTimers, setCompletedTimers] = useState(new Set());
 
   useEffect(() => {
     if (orders && Object.keys(orders)?.length > 0) {
@@ -1427,7 +1947,6 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
 
     setExpandAll(false);
   }, [orders, type]);
-  const [completedTimers, setCompletedTimers] = useState(new Set());
 
   const handleOrderMore = (orderId) => {
     navigate("/user_app/Menu", {
@@ -1444,20 +1963,31 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
     }));
   };
 
-  const handleOrderClick = (orderNumber) => {
-    console.log('MyOrder: Attempting to navigate to TrackOrder');
-    console.log('MyOrder: Order Number:', orderNumber);
-    console.log('MyOrder: Navigation path:', `/user_app/TrackOrder/${orderNumber}`);
-    
+  const handleOrderClick = (orderNumber, orderId) => {
+    console.log("MyOrder: Attempting to navigate to TrackOrder");
+    console.log("MyOrder: Order Number:", orderNumber);
+    console.log("MyOrder: Order ID:", orderId);
+    console.log(
+      "MyOrder: Navigation path:",
+      `/user_app/TrackOrder/${orderNumber}`
+    );
+
     // Log the current state of allOrderList
     const allOrders = JSON.parse(localStorage.getItem("allOrderList") || "{}");
-    console.log('MyOrder: Current allOrderList in localStorage:', allOrders);
-    
+    console.log("MyOrder: Current allOrderList in localStorage:", allOrders);
+
     try {
-      navigate(`/user_app/TrackOrder/${orderNumber}`);
-      console.log('MyOrder: Navigation initiated successfully');
+      // Store orderId in localStorage before navigation
+      localStorage.setItem("current_order_id", orderId?.toString());
+      navigate(`/user_app/TrackOrder/${orderNumber}`, {
+        state: {
+          orderId: orderId,
+          from: "orders_tab",
+        },
+      });
+      console.log("MyOrder: Navigation initiated successfully");
     } catch (error) {
-      console.error('MyOrder: Navigation failed:', error);
+      console.error("MyOrder: Navigation failed:", error);
     }
   };
 
@@ -1622,7 +2152,10 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                   >
                     <div
                       className="card-body py-2"
-                      onClick={() => handleOrderClick(order.order_number)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOrderClick(order.order_number, order.order_id);
+                      }}
                     >
                       {/* Card body content remains the same */}
                       <div className="row align-items-center">
@@ -1657,20 +2190,35 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                               <i className="fa-solid fa-utensils"></i>
                             )}
                             <span className="ms-2">
-                              {order.order_type || "Dine In"}
+                              {order.order_type.toUpperCase() || "Dine In"}
                             </span>
                           </span>
                         </div>
                         <div className="col-6 text-end">
                           <div className="font_size_12 gray-text font_size_12 text-nowrap">
+                          {!["counter", "drive-through", "delivery", "parcel"].includes(order.order_type?.toLowerCase()) ? (
                             <span className="fw-medium gray-text">
                               <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
                               {order.section_name
-                                ? `${titleCase(order.section_name)} - ${
-                                    order.table_number
+                                ? `${titleCase(order.section_name)}${
+                                    order.order_type?.toLowerCase() ===
+                                      "drive-through" ||
+                                    order.order_type?.toLowerCase() ===
+                                      "parcel" ||
+                                    order.order_type?.toLowerCase() ===
+                                      "counter" ||
+                                    order.order_type?.toLowerCase() ===
+                                      "delivery"
+                                      ? ""
+                                      : ` - ${order.table_number}`
                                   }`
                                 : "Dine In"}
                             </span>
+                          ) : (
+                            <span className="fw-medium gray-text">
+                             
+                            </span>
+                          )}
                           </div>
                         </div>
                       </div>
@@ -1686,46 +2234,62 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
                           </div>
                         </div>
                         <div className="col-6 text-end">
-  <span className="text-info font_size_14 fw-semibold">
-    ₹{order.grand_total.toFixed(2)}
-  </span>
+                          <span className="text-info font_size_14 fw-semibold">
+                            ₹{order.final_grand_total.toFixed(2)}
+                          </span>
 
-  {/* Conditionally render the line-through price */}
-  {order.grand_total !==
-    (order.grand_total / (1 - order.discount_percent / 100) ||
-      order.grand_total) && (
-    <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-      ₹
-      {(
-        order.grand_total /
-          (1 - order.discount_percent / 100) ||
-        order.grand_total
-      ).toFixed(2)}
-    </span>
-  )}
-</div>
-
+                          {/* Conditionally render the line-through price */}
+                          {order.grand_total !==
+                            (order.grand_total /
+                              (1 - order.discount_percent / 100) ||
+                              order.grand_total) && (
+                            <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                              ₹
+                              {(
+                                order.grand_total /
+                                  (1 - order.discount_percent / 100) ||
+                                order.grand_total
+                              ).toFixed(2)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3">
+                    <div className="card-footer bg-transparent border-top-0 pt-0 px-3 pe-0">
                       {activeTab === "completed" && (
                         <div className="container py-0">
-                          <div className="row">
-                            <div className="col-7 ps-0">
+                          <div className="row align-items-center">
+                            <div className="col-6 ps-0">
                               <div className="text-start text-nowrap">
                                 <span className="text-success">
                                   <i className="far fa-check-circle me-1"></i>
-                                  Completed
+                                  Paid
                                 </span>
                               </div>
                             </div>
-                            <div className="col-5 pe-0 font_size_14 text-end">
-                              {order.payment_method && (
+                            <div className="col-6 pe-0 d-flex justify-content-end align-items-center gap-2">
+                              {activeTab === "completed" && (
+                                <button
+                                  className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
+                                  onClick={() =>
+                                    handleDownloadInvoice(
+                                      order,
+                                      navigate,
+                                      showLoginPopup,
+                                      generatePDF
+                                    )
+                                  }
+                                >
+                                  <i className="fa-solid fa-download me-2"></i>
+                                  Invoice
+                                </button>
+                              )}
+                              {/* {order.payment_method && (
                                 <div className="border border-success rounded-pill py-0 px-1 font_size_12 text-center text-nowrap text-success">
                                   {order.payment_method}
                                 </div>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         </div>
@@ -1768,7 +2332,11 @@ const OrdersTab = ({ orders, type, activeTab, setOrders, setActiveTab }) => {
   );
 };
 
-export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) => {
+export const TimeRemaining = ({
+  orderId,
+  completedTimers = new Set(),
+  order,
+}) => {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isExpired, setIsExpired] = useState(false);
   const timerRef = useRef(null);
@@ -1785,16 +2353,23 @@ export const TimeRemaining = ({ orderId, completedTimers = new Set(), order }) =
       const [time, period] = timeStr.split(" ");
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
-      
+
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
-      
-      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
-      
+
+      const orderDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hrs,
+        parseInt(minutes),
+        parseInt(seconds)
+      );
+
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
-      
+
       return orderDate.getTime();
     };
 
@@ -1847,6 +2422,7 @@ export const CircularCountdown = ({
   const [timeLeft, setTimeLeft] = useState(90);
   const [isCompleted, setIsCompleted] = useState(false);
   const timerRef = useRef(null);
+  const { isOutletOnlyUrl } = useRestaurantId();
 
   useEffect(() => {
     const getOrderTimeInMs = (timeStr) => {
@@ -1855,16 +2431,23 @@ export const CircularCountdown = ({
       const [time, period] = timeStr.split(" ");
       const [hours, minutes, seconds] = time.split(":");
       let hrs = parseInt(hours);
-      
+
       if (period === "PM" && hrs !== 12) hrs += 12;
       if (period === "AM" && hrs === 12) hrs = 0;
-      
-      const orderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, parseInt(minutes), parseInt(seconds));
-      
+
+      const orderDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hrs,
+        parseInt(minutes),
+        parseInt(seconds)
+      );
+
       if (orderDate > now) {
         orderDate.setDate(orderDate.getDate() - 1);
       }
-      
+
       return orderDate.getTime();
     };
 
@@ -1914,11 +2497,23 @@ export const CircularCountdown = ({
 
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const currentCustomerId = userData?.user_id || localStorage.getItem("user_id");
+      const currentCustomerId =
+        userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
-      const sectionId = userData?.sectionId || localStorage.getItem("sectionId");
+      const sectionId =
+        userData?.sectionId || localStorage.getItem("sectionId");
 
       if (!currentCustomerId || !restaurantId) return;
+      
+      const requestBody = {
+        user_id: currentCustomerId,
+        outlet_id: localStorage.getItem("outlet_id"),
+      };
+
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
+      }
 
       // First update the order status in ongoing/placed orders
       const response = await fetch(
@@ -1929,16 +2524,12 @@ export const CircularCountdown = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: currentCustomerId,
-            outlet_id: localStorage.getItem("outlet_id"),
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
       const data = await response.json();
-      
+
       // Handle the ongoing/placed orders update
       if (response.ok && data.st === 1) {
         const orders = data.data || [];
@@ -1952,12 +2543,12 @@ export const CircularCountdown = ({
 
         if (orders?.length > 0) {
           // Group orders by their status
-          const placedOrders = orders?.filter(o => o.status === "placed");
-          const ongoingOrders = orders?.filter(o => o.status === "ongoing");
+          const placedOrders = orders?.filter((o) => o.status === "placed");
+          const ongoingOrders = orders?.filter((o) => o.status === "ongoing");
 
           orderList = {
             placed: placedOrders,
-            ongoing: ongoingOrders
+            ongoing: ongoingOrders,
           };
         }
 
@@ -1983,31 +2574,35 @@ export const CircularCountdown = ({
           );
 
           const allOrdersData = await allOrdersResponse.json();
-          
+
           if (allOrdersData.st === 1) {
             // Update localStorage with new order lists
-            localStorage.setItem("allOrderList", JSON.stringify(allOrdersData.data));
-            
+            localStorage.setItem(
+              "allOrderList",
+              JSON.stringify(allOrdersData.data)
+            );
+
             // If order was cancelled, move it to cancelled list
             if (order.status === "cancelled") {
               const cancelledOrders = allOrdersData.data.cancelled || {};
-              const today = new Date().toISOString().split('T')[0];
-              
+              const today = new Date().toISOString().split("T")[0];
+
               if (!cancelledOrders[today]) {
                 cancelledOrders[today] = [];
               }
               cancelledOrders[today].push(order);
-              
+
               // Update cancelled orders in localStorage
               const updatedAllOrders = {
                 ...allOrdersData.data,
-                cancelled: cancelledOrders
+                cancelled: cancelledOrders,
               };
-              localStorage.setItem("allOrderList", JSON.stringify(updatedAllOrders));
+              localStorage.setItem(
+                "allOrderList",
+                JSON.stringify(updatedAllOrders)
+              );
             }
           }
-        } else {
-          setActiveOrders({ placed: [], ongoing: [] });
         }
       } else {
         setActiveOrders({ placed: [], ongoing: [] });
@@ -2058,6 +2653,62 @@ export const CircularCountdown = ({
       <div className="timer-text-overlay text-dark">{timeLeft}s</div>
     </div>
   );
+};
+
+// Add this function to fetch single order details and generate PDF
+const handleDownloadInvoice = async (
+  order,
+  navigate,
+  showLoginPopup,
+  generatePDF
+) => {
+  try {
+    const response = await fetch(
+      `${config.apiDomain}/user_api/get_order_details`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          order_id: order.order_id,
+          section_id: localStorage.getItem("sectionId"),
+        }),
+      }
+    );
+
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
+      showLoginPopup();
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch order details");
+    }
+
+    const data = await response.json();
+    if (data.st !== 1 || !data.lists) {
+      throw new Error("Invalid order data received");
+    }
+
+    await generatePDF(data.lists);
+  } catch (error) {
+    console.error("Error generating invoice:", error);
+    window.showToast("error", "Failed to generate invoice");
+  }
 };
 
 export default MyOrder;

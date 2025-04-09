@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import Bottom from "../component/bottom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import "../assets/css/toast.css";
@@ -25,6 +25,7 @@ const Checkout = () => {
   const [availableTables, setAvailableTables] = useState(0);
 
   const location = useLocation();
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   // const [cartItems, setCartItems] = useState([]);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -33,6 +34,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
   const [serviceChargesPercent, setServiceChargesPercent] = useState(0);
   const [serviceCharges, setServiceCharges] = useState(0);
+  const [totalWithServiceCharge, settotalWithServiceCharge] = useState(0);
   const [gstPercent, setGstPercent] = useState(0);
   const [tax, setTax] = useState(0);
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -48,7 +50,7 @@ const Checkout = () => {
     orderNumber: "",
     orderStatus: "",
   });
-  
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -68,12 +70,50 @@ const Checkout = () => {
     return cartId ? parseInt(cartId, 10) : null;
   };
 
+  // Track user authentication status
+  const [currentUserId, setCurrentUserId] = useState(
+    JSON.parse(localStorage.getItem("userData"))?.user_id || null
+  );
+
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const newUserId = userData?.user_id;
+
+      if (!newUserId) {
+        setIsLoggedIn(false); // Only update state, do NOT trigger popup here
+      } else {
+        setIsLoggedIn(true);
+      }
+    };
+
+    // Initial auth check
+    checkAuthStatus();
+
+    // Listen for storage changes (in case login status changes in another tab)
+    const handleStorageChange = () => checkAuthStatus();
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  // 🔹 Only trigger popup when user clicks login button
+  const handleLogin = () => {
+    console.log("Login button clicked! Showing login popup...");
+    if (typeof showLoginPopup === "function") {
+      showLoginPopup();
+    } else {
+      console.error("showLoginPopup is not defined!");
+    }
+  };
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentCustomerId =
       userData?.user_id || localStorage.getItem("user_id");
-    const currentCustomerType =
-      userData?.role || localStorage.getItem("role");
+    const currentCustomerType = userData?.role || localStorage.getItem("role");
 
     setIsLoggedIn(!!currentCustomerId);
     setUser_id(currentCustomerId);
@@ -95,62 +135,95 @@ const Checkout = () => {
 
   const fetchCartDetails = () => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        
-        // Calculate totals with safe number conversion
-        const total = cartData.order_items.reduce((sum, item) => {
-          const itemPrice = item.half_or_full === "half" && item.half_price ? 
-            Number(item.half_price) : 
-            Number(item.price || 0);
-          return sum + (itemPrice * item.quantity);
-        }, 0);
-
-        const serviceChargesPercent = 5;
-        const gstPercent = 5;
-        const serviceCharges = (total * serviceChargesPercent) / 100;
-        const tax = (total * gstPercent) / 100;
-        const discount = 0;
-        const totalAfterDiscount = total - discount;
-        const grandTotal = totalAfterDiscount + serviceCharges + tax;
-
-        // Map items with safe price handling
-        const mappedItems = cartData.order_items.map(item => ({
+  
+        // Ensure total quantity of each item does not exceed 20
+        cartData.order_items = cartData.order_items.map((item) => ({
           ...item,
-          discountedPrice: item.offer ? 
-            Math.floor((item.half_or_full === "half" && item.half_price ? 
-              Number(item.half_price) : 
-              Number(item.price || 0)) * (1 - item.offer / 100)) 
-            : (item.half_or_full === "half" && item.half_price ? 
-              Number(item.half_price) : 
-              Number(item.price || 0)),
+          quantity: Math.min(item.quantity, 20), // Ensure max 20 quantity
+        }));
+  
+        // Save the updated cart back to localStorage (optional)
+        localStorage.setItem("restaurant_cart_data", JSON.stringify(cartData));
+  
+        // Calculate total price of items
+        const total = cartData.order_items.reduce((sum, item) => {
+          const itemPrice =
+            item.half_or_full === "half" && item.half_price
+              ? Number(item.half_price)
+              : Number(item.price || 0);
+          return sum + itemPrice * item.quantity;
+        }, 0);
+  
+        // Fetch values from API response or use default values
+        const discountPercent = 10; 
+        const serviceChargesPercent = 2; 
+        const gstPercent = 4; 
+  
+        // Calculate discount amount
+        const discount = (total * discountPercent) / 100;
+        const totalAfterDiscount = total - discount; 
+  
+        // Calculate service charges
+        const serviceChargesAmount = (totalAfterDiscount * serviceChargesPercent) / 100; 
+        const grand_total = totalAfterDiscount + serviceChargesAmount; 
+  
+        // Calculate GST
+        const gstAmount = (grand_total * gstPercent) / 100; 
+  
+        // Final grand total
+        const grandTotal = grand_total + gstAmount; 
+  
+        // Map items with safe price handling
+        const mappedItems = cartData.order_items.map((item) => ({
+          ...item,
+          discountedPrice: item.offer
+            ? Math.floor(
+                (item.half_or_full === "half" && item.half_price
+                  ? Number(item.half_price)
+                  : Number(item.price || 0)) *
+                  (1 - item.offer / 100)
+              )
+            : item.half_or_full === "half" && item.half_price
+            ? Number(item.half_price)
+            : Number(item.price || 0),
           menu_cat_name: item.category_name || "Food",
           menu_id: item.id,
           quantity: item.quantity,
           price: Number(item.price || 0),
           half_price: Number(item.half_price || 0),
           offer: item.offer || 0,
-          half_or_full: item.half_or_full || "full"
+          half_or_full: item.half_or_full || "full",
         }));
-
-        // Update all states
+  
+        // Update state with calculated values
         setCartItems(mappedItems);
         setTotal(total);
-        setServiceChargesPercent(serviceChargesPercent);
-        setServiceCharges(serviceCharges);
+        setTotalAfterDiscount(totalAfterDiscount);
+        setServiceCharges(serviceChargesAmount);
         setGstPercent(gstPercent);
-        setTax(tax);
-        setDiscountPercent(0);
+        setServiceChargesPercent(serviceChargesPercent);
+        setTax(gstAmount);
+        setDiscountPercent(discountPercent);
         setDiscount(discount);
         setGrandTotal(grandTotal);
-        setTotalAfterDiscount(totalAfterDiscount);
-        setCartId(cartData.cart_id || Date.now()); // Generate temporary cart ID if none exists
+        setCartId(cartData.cart_id || Date.now()); 
+  
+        // Console log for debugging
+        console.log("Total:", total);
+        console.log("Total After Discount:", totalAfterDiscount);
+        console.log("Service Charges Amount:", serviceChargesAmount);
+        console.log("Grand Total (Before GST):", grand_total);
+        console.log("GST Amount:", gstAmount);
+        console.log("Final Grand Total:", grandTotal);
       }
     } catch (error) {
-      console.error('Error fetching cart details:', error);
+      console.error("Error fetching cart details:", error);
     }
   };
+  
 
   useEffect(() => {
     const storedRestaurantCode = localStorage.getItem("restaurantCode");
@@ -177,10 +250,10 @@ const Checkout = () => {
   const handlePlaceOrder = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
+      const savedOrderType = localStorage.getItem("orderType");
 
       if (!userData?.user_id) {
-        window.showToast("error", "Please login to place order");
         return;
       }
 
@@ -202,6 +275,23 @@ const Checkout = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        setIsProcessing(false);
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        return;
+      }
+
       const data = await response.json();
       setIsProcessing(false);
 
@@ -213,27 +303,33 @@ const Checkout = () => {
             orderStatus: data.order_status,
             orderId: data.order_id,
             orderType: data.order_type,
-            grand_total: data.grand_total
+            grand_total: data.grand_total,
+            grandTotal: data.final_grand_total,
           });
           setShowExistingOrderModal(true);
+        } else if (savedOrderType) {
+          // No existing order and we have a saved order type - create order directly
+          handleCreateOrder(savedOrderType);
         } else {
-          // No existing order - show order type selection
+          // No existing order and no saved order type - show order type selection
           setShowOrderTypeModal(true);
         }
       }
-      
-      if(data.st === 2){
-        setShowOrderTypeModal(true);
-        // setShowExistingOrderModal(false);
-        // setShowNewOrderModal(true);
-      }
-      else {
+
+      if (data.st === 2) {
+        if (savedOrderType) {
+          // We have a saved order type - create order directly
+          handleCreateOrder(savedOrderType);
+        } else {
+          // No saved order type - show order type selection
+          setShowOrderTypeModal(true);
+        }
+      } else {
         throw new Error(data.msg || "Failed to check order status");
       }
     } catch (error) {
       setIsProcessing(false);
-      // window.showToast("error", "Failed to process order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -251,7 +347,9 @@ const Checkout = () => {
     try {
       setIsProcessing(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+      const storedCart = JSON.parse(
+        localStorage.getItem("restaurant_cart_data")
+      );
 
       if (!storedCart?.order_items) {
         window.showToast("error", "No items in checkout");
@@ -262,18 +360,20 @@ const Checkout = () => {
       const requestBody = {
         user_id: userData.user_id,
         outlet_id: restaurantId,
-       tables: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
-action:'save',
+        tables: [
+          localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
+        ],
+        action: "create_order",
 
         // table_number: [localStorage.getItem("tableNumber") || userData?.tableNumber || "1"],
         section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: storedCart.order_items.map(item => ({
+        order_items: storedCart.order_items.map((item) => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
           comment: item.comment || "",
-          half_or_full: item.half_or_full || "full"
-        }))
+          half_or_full: item.half_or_full || "full",
+        })),
       };
 
       const response = await fetch(
@@ -284,9 +384,25 @@ action:'save',
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -295,7 +411,7 @@ action:'save',
         setNewOrderNumber(data.order_number);
         clearCartData();
         setShowOrderTypeModal(false);
-        
+
         // Small delay to ensure toast is visible
         setTimeout(() => {
           navigate("/user_app/MyOrder/");
@@ -305,7 +421,7 @@ action:'save',
       }
     } catch (error) {
       window.showToast("error", error.message || "Failed to create order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -317,42 +433,54 @@ action:'save',
     localStorage.removeItem("cartId"); // Clear cart ID from localStorage
     setCartItems([]); // Clear cart items state if you're using it
   };
-//   useEffect(() => {
-//     if (!userData?.user_id || userData.role === 'guest') {
-//         clearCartData();
-      
-//     }
-// }, [userData]);
+  //   useEffect(() => {
+  //     if (!userData?.user_id || userData.role === 'guest') {
+  //         clearCartData();
+
+  //     }
+  // }, [userData]);
 
   const handleOrderAction = async (orderStatus, orderType, paymentMethod = null) => {
     try {
       const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
-      
+      const tableNumber = localStorage.getItem("tableNumber") || "1";
+      console.log(tableNumber + " current table number");
+      const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data"));
+  
       if (!existingOrderDetails.orderNumber) {
         throw new Error("Invalid order number");
       }
-
+  
+      // Remove the problematic spread operation and simplify
       const requestBody = {
         order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
         order_status: orderStatus,
         outlet_id: restaurantId,
-        table_number: userData?.tableNumber || "1",
-        section_id: userData?.sectionId || "1",
         order_type: orderType,
-        order_items: storedCart.order_items.map((item) => ({
+        order_items: storedCart.order_items.map(item => ({
           menu_id: item.menu_id,
           quantity: item.quantity,
           comment: item.comment || "",
           half_or_full: item.half_or_full || "full",
-        })),
+        }))
       };
-
+  
+      // Check if it's an outlet-only URL before adding table_number and section_id
+      const isOutletOnlyUrl = localStorage.getItem("isOutletOnlyUrl") === "true";
+      
+      // Only include table_number and section_id if it's NOT an outlet-only URL
+      if (!isOutletOnlyUrl) {
+        requestBody.table_number = [
+          localStorage.getItem("tableNumber") || userData?.tableNumber || null,
+        ];
+        requestBody.section_id = userData?.sectionId || localStorage.getItem("sectionId") || null;
+      }
+  
       if (orderStatus === "paid" && paymentMethod) {
         requestBody.payment_method = paymentMethod;
       }
-
+  
       const response = await fetch(
         `${config.apiDomain}/user_api/complete_or_cancle_existing_order_create_new_order`,
         {
@@ -361,25 +489,41 @@ action:'save',
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
         }
       );
-
+  
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+  
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+  
       const data = await response.json();
-
+  
       if (data.st === 1) {
         setShowOrderTypeModal(false);
         setPendingOrderAction(null);
         clearCartData();
-        
+  
         // Show success message
         window.showToast("success", "Order processed successfully");
-        
+  
         // Navigate to MyOrder page after a short delay
         setTimeout(() => {
-          navigate('/user_app/MyOrder');
+          navigate("/user_app/MyOrder");
         }, 500);
-        
+  
         if (data.data?.new_order_number) {
           setNewOrderNumber(data.data.new_order_number);
           setShowPopup(true);
@@ -389,61 +533,109 @@ action:'save',
       }
     } catch (error) {
       window.showToast("error", error.message || "Failed to process order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
+  
 
-  const handleAddToExistingOrder = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("userData"));
-      const storedCart = JSON.parse(localStorage.getItem('restaurant_cart_data'));
+const handleAddToExistingOrder = async () => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedCart = JSON.parse(localStorage.getItem("restaurant_cart_data"));
 
-      if (!storedCart?.order_items || !existingOrderDetails.orderId) {
-        window.showToast("error", "Failed to add items to order");
-        return;
-      }
+    if (!storedCart?.order_items || !existingOrderDetails.orderId) {
+      window.showToast("error", "Failed to add items to order");
+      return;
+    }
 
-      // Prepare request body with exact structure needed by the API
-      const requestBody = {
-        order_id: existingOrderDetails.orderId,
-        user_id: userData.user_id,
-        outlet_id: restaurantId,
-        order_items: storedCart.order_items.map((item) => ({
-          menu_id: item.menu_id,
-          quantity: item.quantity,
-          half_or_full: item.half_or_full || "full",
-          comment: item.comment || "",
-        })),
-      };
+    // Fetch existing order details (if stored locally)
+    const existingOrder = JSON.parse(
+      localStorage.getItem("existing_order")
+    ) || { order_items: [] };
 
-      // Make API call to add items to existing order
-      const response = await fetch(
-        `${config.apiDomain}/user_api/add_to_existing_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify(requestBody)
-        }
+    // Initialize with empty array if not present
+    const updatedOrderItems = [];
+
+    for (const item of storedCart.order_items) {
+      const existingItem = existingOrder.order_items.find(
+        (orderItem) =>
+          orderItem.menu_id === item.menu_id &&
+          orderItem.half_or_full === item.half_or_full
       );
 
-      const data = await response.json();
+      const existingQuantity = existingItem ? existingItem.quantity : 0;
+      const newTotalQuantity = existingQuantity + item.quantity;
 
-      if (data.st === 1) {
-        window.showToast("success", "Items added to order successfully");
-        clearCartData();
-        setShowExistingOrderModal(false);
-        navigate('/user_app/MyOrder');
-      } else {
-        throw new Error(data.msg || "Failed to add items to order");
+      if (newTotalQuantity > 20) {
+        window.showToast("info", `Cannot add more than 20 for ${item.menu_id}`);
+        return; // Prevent adding more if quantity exceeds 20
       }
-    } catch (error) {
+
+      updatedOrderItems.push({
+        menu_id: item.menu_id,
+        quantity: item.quantity,
+        half_or_full: item.half_or_full || "full",
+        comment: item.comment || "",
+      });
+    }
+
+    // Prepare request body
+    const requestBody = {
+      order_id: existingOrderDetails.orderId,
+      user_id: userData.user_id,
+      outlet_id: restaurantId,
+      order_items: updatedOrderItems,
+    };
+
+    // Check if it's an outlet-only URL before adding table_number and section_id
+    const isOutletOnlyUrl = localStorage.getItem("isOutletOnlyUrl") === "true";
+    
+    // Only include table_number and section_id if it's NOT an outlet-only URL
+    if (!isOutletOnlyUrl) {
+      requestBody.table_number = localStorage.getItem("tableNumber") || userData?.tableNumber || null;
+      requestBody.section_id = userData?.sectionId || localStorage.getItem("sectionId") || null;
+    }
+
+    // Make API call
+    const response = await fetch(
+      `${config.apiDomain}/user_api/add_to_existing_order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    if (response.status === 401) {
+      // Handle unauthorized user (redirect & clear localStorage)
+      localStorage.clear();
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+      showLoginPopup();
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.st === 1) {
+      window.showToast("success", "Items added to order successfully");
+      clearCartData();
+      setShowExistingOrderModal(false);
+      navigate("/user_app/MyOrder");
+    } else {
+      throw new Error(data.msg || "Failed to add items to order");
+    }
+  } catch (error) {
       window.showToast("error", error.message || "Failed to add items to order");
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
+  
 
   const closePopup = () => {
     setShowPopup(false);
@@ -452,9 +644,17 @@ action:'save',
   };
 
   const handleOrderActionClick = (actionType) => {
+    const savedOrderType = localStorage.getItem("orderType");
     setPendingOrderAction(actionType);
-    setShowExistingOrderModal(false);
-    setShowOrderTypeModal(true);
+    
+    if (savedOrderType) {
+      // If we have a saved order type, use it directly
+      handleOrderAction(actionType, savedOrderType);
+    } else {
+      // Otherwise show the modal to select order type
+      setShowExistingOrderModal(false);
+      setShowOrderTypeModal(true);
+    }
   };
 
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
@@ -486,19 +686,49 @@ action:'save',
       const paymentUrl = `upi://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "upi",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "upi"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_upi_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "upi",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "upi"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction("paid", existingOrderDetails.orderType, "upi");
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(data.msg || "Failed to generate UPI payment link");
+      }
     } catch (error) {
       window.showToast("error", "UPI payment initiation failed");
       setProcessingPaymentMethod("");
@@ -525,19 +755,53 @@ action:'save',
       const paymentUrl = `phonepe://pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "phonepay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "phonepe"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_phonepe_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "phonepay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "phonepe"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction(
+          "paid",
+          existingOrderDetails.orderType,
+          "phonepe"
+        );
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(data.msg || "Failed to generate PhonePe payment link");
+      }
     } catch (error) {
       window.showToast("error", "PhonePe payment initiation failed");
       setProcessingPaymentMethod("");
@@ -564,29 +828,66 @@ action:'save',
       const paymentUrl = `gpay://upi/pay?pa=${upiId}&pn=${encodedRestaurantName}&tr=${existingOrderDetails.orderNumber}&tn=${transactionNote}&am=${amount}&cu=INR&mc=1234`;
       console.log(paymentUrl);
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "gpay"
+      const response = await fetch(
+        `${config.apiDomain}/user_api/generate_googlepay_payment_link`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            amount: amount,
+            transactionNote: transactionNote,
+            restaurantName: encodedRestaurantName,
+            upiId: upiId,
+            paymentUrl: paymentUrl,
+          }),
+        }
       );
 
-      await initiatePayment(
-        "gpay",
-        paymentUrl,
-        () => setProcessingPaymentMethod(""),
-        "gpay"
-      );
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.st === 1) {
+        await handleOrderAction("paid", existingOrderDetails.orderType, "gpay");
+        setProcessingPaymentMethod("");
+        setShowPaymentOptions(true);
+      } else {
+        throw new Error(
+          data.msg || "Failed to generate Google Pay payment link"
+        );
+      }
     } catch (error) {
       window.showToast("error", "Google Pay payment initiation failed");
       setProcessingPaymentMethod("");
     }
   };
 
-  const initiatePayment = async (method, paymentUrl, setProcessing, timeoutKey) => {
+  const initiatePayment = async (
+    method,
+    paymentUrl,
+    setProcessing,
+    timeoutKey
+  ) => {
     try {
       await handleOrderAction("paid", existingOrderDetails.orderType, method);
-      
+
       if (paymentUrl) {
         window.location.href = paymentUrl;
         timeoutRef.current[timeoutKey] = setTimeout(() => {
@@ -600,7 +901,7 @@ action:'save',
         setProcessing(false);
         // Navigate to MyOrder page after a short delay
         setTimeout(() => {
-          navigate('/user_app/MyOrder');
+          navigate("/user_app/MyOrder");
         }, 500);
       }
     } catch (error) {
@@ -661,19 +962,30 @@ action:'save',
 
   const fetchCoupons = async () => {
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_all_coupons_by_restaurant_id`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: restaurantId,
-          }),
-        }
-      );
+      const response = await fetch(`${config.apiDomain}/user_api/get_coupons`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ outlet_id: restaurantId }),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
       if (data.st === 1) {
@@ -697,6 +1009,7 @@ action:'save',
     gst_amount: 0,
     gst_percent: 0,
     total_after_discount: 0,
+    grandTotal: 0,
     order_items: [],
   });
 
@@ -708,22 +1021,36 @@ action:'save',
 
     try {
       const response = await fetch(
-        `${config.apiDomain}/user_api/verify_coupon`,
+        `${config.apiDomain}/user_api/apply_coupon`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: restaurantId,
             coupon_name: selectedCoupon,
             total_price: checkoutDetails.total_bill_amount,
-            
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -763,24 +1090,27 @@ action:'save',
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    const storedCart = localStorage.getItem('restaurant_cart_data');
-    
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const storedCart = localStorage.getItem("restaurant_cart_data");
+
     if (storedCart) {
       try {
         const cartData = JSON.parse(storedCart);
         // Filter items that match the current restaurant ID
         if (cartData.order_items) {
-          cartData.order_items = cartData.order_items.filter(item => 
-            item.outlet_id === userData?.restaurantId
+          cartData.order_items = cartData.order_items.filter(
+            (item) => item.outlet_id === userData?.restaurantId
           );
           // Save filtered cart back to localStorage
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(cartData));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(cartData)
+          );
           // Update cart items state
           setCartItems(cartData.order_items);
         }
       } catch (error) {
-        console.error('Error parsing cart data:', error);
+        console.error("Error parsing cart data:", error);
         setCartItems([]);
       }
     }
@@ -789,7 +1119,7 @@ action:'save',
   const fetchCheckoutDetails = async () => {
     try {
       setLoading(true);
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (!storedCart) {
         setError("Add menus to order first");
         return;
@@ -797,8 +1127,8 @@ action:'save',
 
       const cartData = JSON.parse(storedCart);
       const response = await axios.post(
-        `${config.apiDomain}/user_api/get_checkout_detail`, 
-        {
+        `${config.apiDomain}/user_api/get_checkout_detail`,
+        {  
           order_items: cartData.order_items,
           outlet_id: userData.restaurantId,
         },
@@ -814,7 +1144,7 @@ action:'save',
         setCartItems(cartData.order_items);
       }
     } catch (err) {
-      console.error('Error fetching checkout details:', err);
+      console.error("Error fetching checkout details:", err);
     } finally {
       setLoading(false);
     }
@@ -827,12 +1157,15 @@ action:'save',
 
   const incrementQuantity = async (menuItem) => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        const updatedItems = cartData.order_items.map(item => {
+        const updatedItems = cartData.order_items.map((item) => {
           // Check both menu_id and portion size
-          if (item.menu_id === menuItem.menu_id && item.half_or_full === menuItem.half_or_full) {
+          if (
+            item.menu_id === menuItem.menu_id &&
+            item.half_or_full === menuItem.half_or_full
+          ) {
             // Check if quantity would exceed 20
             if (item.quantity >= 20) {
               window.showToast("info", "Maximum quantity limit reached (20)");
@@ -842,36 +1175,44 @@ action:'save',
           }
           return item;
         });
-        
+
         const updatedCart = { ...cartData, order_items: updatedItems };
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        localStorage.setItem(
+          "restaurant_cart_data",
+          JSON.stringify(updatedCart)
+        );
         await fetchCheckoutDetails(); // Fetch updated totals
       }
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
     }
   };
 
   const decrementQuantity = async (menuItem) => {
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        let updatedItems = cartData.order_items.map(item => 
-          // Check both menu_id and portion size
-          item.menu_id === menuItem.menu_id && 
-          item.half_or_full === menuItem.half_or_full && 
-          item.quantity > 1
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        ).filter(item => item.quantity > 0);
-        
+        let updatedItems = cartData.order_items
+          .map((item) =>
+            // Check both menu_id and portion size
+            item.menu_id === menuItem.menu_id &&
+            item.half_or_full === menuItem.half_or_full &&
+            item.quantity > 1
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0);
+
         const updatedCart = { ...cartData, order_items: updatedItems };
-        localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+        localStorage.setItem(
+          "restaurant_cart_data",
+          JSON.stringify(updatedCart)
+        );
         await fetchCheckoutDetails(); // Fetch updated totals
       }
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
     }
   };
 
@@ -880,29 +1221,36 @@ action:'save',
     e.preventDefault();
     e.stopPropagation();
     try {
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
-        
+
         // Update to check both menuId and portion size
-        const updatedItems = cartData.order_items.filter(item => 
-          !(item.menu_id === menuId && item.half_or_full === portionSize)
+        const updatedItems = cartData.order_items.filter(
+          (item) =>
+            !(item.menu_id === menuId && item.half_or_full === portionSize)
         );
-        
+
         if (updatedItems.length === 0) {
           setCartItems([]);
           setCheckoutDetails(null);
           const updatedCart = { ...cartData, order_items: updatedItems };
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(updatedCart)
+          );
         } else {
           const updatedCart = { ...cartData, order_items: updatedItems };
-          localStorage.setItem('restaurant_cart_data', JSON.stringify(updatedCart));
+          localStorage.setItem(
+            "restaurant_cart_data",
+            JSON.stringify(updatedCart)
+          );
         }
-        
+
         await fetchCheckoutDetails();
       }
     } catch (error) {
-      console.error('Error removing item:', error);
+      console.error("Error removing item:", error);
     }
   };
 
@@ -915,7 +1263,8 @@ action:'save',
     gst_amount: 0,
     discount_percent: 0,
     discount_amount: 0,
-    grand_total: 0
+    grand_total: 0,
+    grandTotal: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -923,7 +1272,7 @@ action:'save',
   const handleCheckout = async () => {
     try {
       setLoading(true);
-      const storedCart = localStorage.getItem('restaurant_cart_data');
+      const storedCart = localStorage.getItem("restaurant_cart_data");
       if (!storedCart) return;
 
       const cartData = JSON.parse(storedCart);
@@ -946,7 +1295,7 @@ action:'save',
         handlePlaceOrder();
       }
     } catch (error) {
-      console.error('Error during checkout:', error);
+      console.error("Error during checkout:", error);
       window.showToast("error", "Failed to process checkout");
     } finally {
       setLoading(false);
@@ -956,11 +1305,11 @@ action:'save',
   const handleClearCart = async () => {
     try {
       // Clear cart from localStorage
-      localStorage.removeItem('restaurant_cart_data');
-      
+      localStorage.removeItem("restaurant_cart_data");
+
       // Clear cart items state
       setCartItems([]);
-      
+
       // Reset all totals
       setTotal(0);
       setServiceCharges(0);
@@ -968,23 +1317,22 @@ action:'save',
       setDiscount(0);
       setGrandTotal(0);
       setTotalAfterDiscount(0);
-      
+      settotalWithServiceCharge(0);
+
       // Use the clearCart function from CartContext
       clearCart();
 
       window.showToast("success", "Checkout cleared successfully");
-      
+
       // Optional: Navigate to menu after clearing
       // navigate("/user_app/Menu");
-
     } catch (error) {
-      console.error('Error clearing cart:', error);
+      console.error("Error clearing cart:", error);
       window.showToast("error", "Failed to clear checkout");
     }
   };
 
   // If user is not logged in, show login prompt
- 
 
   return (
     <div className="page-wrapper full-height">
@@ -994,11 +1342,11 @@ action:'save',
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
 
-        {showOrderTypeModal && (
+        {/* {showOrderTypeModal && !localStorage.getItem("orderType") && (
           <div className="popup-overlay">
             <div className="modal-dialog w-75">
               <div className="modal-content">
@@ -1018,7 +1366,7 @@ action:'save',
 
                 <div className="modal-body py-2 px-3">
                   <div className="row g-3">
-                    {/* Parcel Option */}
+                  
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1033,7 +1381,7 @@ action:'save',
                       </div>
                     </div>
 
-                    {/* Drive-Through Option */}
+              
                     <div className="col-6">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1050,7 +1398,7 @@ action:'save',
                       </div>
                     </div>
 
-                    {/* Dine-in Option */}
+               
                     <div className="col-12 mb-3">
                       <div
                         className="card h-100 border rounded-4 cursor-pointer"
@@ -1076,7 +1424,7 @@ action:'save',
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {showPaymentOptions && (
           <div className="popup-overlay">
@@ -1346,16 +1694,22 @@ action:'save',
                             <div className="col-7 pe-0">
                               <span className="mb-0 fw-medium ps-2 font_size_14">
                                 {item.menu_name}
-                                <span className="ms-2 font_size_10 text-capitalize text-dark">
+                                {/* <span className="ms-2 font_size_10 text-capitalize text-dark">
                                   ({item.half_or_full || "full"})
-                                </span>
+                                </span> */}
                               </span>
                             </div>
 
                             <div className="col-5 text-end px-0">
                               <button
                                 className="btn"
-                                onClick={(e) => handleRemoveItem(e, item.menu_id, item.half_or_full)}
+                                onClick={(e) =>
+                                  handleRemoveItem(
+                                    e,
+                                    item.menu_id,
+                                    item.half_or_full
+                                  )
+                                }
                                 style={{
                                   padding: "4px 8px",
                                 }}
@@ -1391,20 +1745,20 @@ action:'save',
                         </div>
                         <div className="row">
                           <div className="col-8 text-start">
-                            {item.offer ? (
-                              <>
-                                <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                  ₹{item.discountedPrice.toFixed(2)}
-                                </span>
-                                <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
-                                  ₹{item.price.toFixed(2)}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
-                                ₹{item.price}
-                              </span>
-                            )}
+                          {item.offer ? (
+      <>
+        <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+          ₹{item.discountedPrice ? item.discountedPrice.toFixed(2) : "0.00"}
+        </span>
+        <span className="gray-text font_size_12 fw-normal text-decoration-line-through">
+          ₹{item.price ? item.price.toFixed(2) : "0.00"}
+        </span>
+      </>
+    ) : (
+      <span className="ms-2 me-2 text-info font_size_14 fw-semibold">
+        ₹{item.price ? item.price.toFixed(2) : "0.00"}
+      </span>
+    )}
                           </div>
                           <div className="col-4 d-flex justify-content-end pe-3">
                             <div className="dz-stepper style-3">
@@ -1465,7 +1819,7 @@ action:'save',
                     <hr className="p-0 m-0 text-primary" />
                   </div>
 
-                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
+                  <div className="col-12 mb-0 pt-0 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
                         Discount{" "}
@@ -1479,21 +1833,23 @@ action:'save',
                     </div>
                   </div>
 
-                  <div className="col-12 pt-0">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="font_size_14 gray-text">
-                        Total after discount
+                  <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14 gray-text">
+                       Subtotal
                       </span>
-                      <span className="font_size_14 gray-text">
-                        +₹{checkoutDetails.total_bill_with_discount}
+                      <span className="pe-2 font_size_14 gray-text">
+                        ₹{checkoutDetails.total_bill_with_discount}
                       </span>
                     </div>
                   </div>
 
-                  <div className="col-12 pt-0 px-2">
+
+
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        Service Charges{" "}
+                      Service Charges{" "}
                         <span className="gray-text small-number">
                           ({checkoutDetails.service_charges_percent}%)
                         </span>
@@ -1504,10 +1860,23 @@ action:'save',
                     </div>
                   </div>
 
-                  <div className="col-12 mb-0 py-1 px-2">
+            
+                  {/* <div className="col-12 px-2">
+                    <div className="d-flex justify-content-between align-items-center py-1">
+                      <span className="ps-2 font_size_14  gray-text">
+                        Grand Total (Before GST)
+                      </span>
+                      <span className="pe-2 font_size_14 fw-semibold">
+                        ₹{checkoutDetails.grand_total}
+                      </span>
+                    </div>
+                  </div> */}
+
+
+                  <div className="col-12 mb-0 pt-0 pb-1 px-2">
                     <div className="d-flex justify-content-between align-items-center py-0">
                       <span className="ps-2 font_size_14 gray-text">
-                        GST{" "}
+                      GST{" "}
                         <span className="gray-text small-number">
                           ({checkoutDetails.gst_percent}%)
                         </span>
@@ -1516,77 +1885,17 @@ action:'save',
                         +₹{checkoutDetails.gst_amount}
                       </span>
                     </div>
-
-                    {/* <div className="col-12 mb-0 py-1">
-                      <div className="row align-items-center justify-content-center">
-                        <div className="col-1 text-center">
-                          <div
-                            className="border border-1 rounded-circle bg-white opacity-75 d-flex justify-content-center align-items-center"
-                            style={{ height: "25px", width: "25px" }}
-                          >
-                            <i
-                              className="fa-solid fa-list font_size_14 cursor-pointer"
-                              onClick={() => {
-                                setShowCouponModal(true);
-                                fetchCoupons();
-                              }}
-                            ></i>
-                          </div>
-                        </div>
-                        <div className="col-8 d-flex align-items-center px-3">
-                          <input
-                            type="text"
-                            className="form-control form-control-sm rounded-pill border-primary"
-                            placeholder="Enter coupon code"
-                            value={selectedCoupon}
-                            onChange={(e) => setSelectedCoupon(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-3 d-flex align-items-center ps-1">
-                          <button
-                            className="btn btn-sm btn-primary rounded-pill w-100"
-                            onClick={handleApplyCoupon}
-                          >
-                            Apply
-                          </button>
-                        </div>
-                        {couponError && (
-                          <div className="col-12 text-center">
-                            <div className="text-danger small mt-1">
-                              {couponError}
-                            </div>
-                          </div>
-                        )}
-                        {appliedCoupon && (
-                          <div className="col-12">
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              <span className="text-success">
-                                <i className="fa-solid fa-check-circle me-1"></i>
-                                Coupon {appliedCoupon.code} applied
-                              </span>
-                              <button
-                                className="btn btn-link text-danger p-0 small"
-                                onClick={() => {
-                                  setAppliedCoupon(null);
-                                  setCouponCode("");
-                                }}
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div> */}
-
-                    <hr className="p-0  text-primary mb-2 mt-1" />
+                  <hr className="p-0 m-0 text-primary" />
                   </div>
+
 
                   <div className="col-12 px-2">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
-                      <span className="ps-2 fs-6 fw-semibold">Grand Total</span>
+                      <span className="ps-2 fs-6 fw-semibold">
+                        Final Grand Total
+                      </span>
                       <span className="pe-2 fs-6 fw-semibold">
-                        ₹{checkoutDetails.grand_total}
+                        ₹{checkoutDetails.final_grand_total}
                       </span>
                     </div>
                   </div>
@@ -1595,7 +1904,7 @@ action:'save',
             )}
 
             {cartItems.length > 0 && (
-              <div className="text-center mt-3">
+              <div className="text-center  mt-3">
                 <button
                   onClick={handlePlaceOrder}
                   className="btn btn-success rounded-pill text-white px-4 py-2"
@@ -1661,29 +1970,26 @@ action:'save',
             )}
 
             {!isLoggedIn && (
-              <div
-                className="container overflow-hidden d-flex justify-content-center align-items-center"
-                style={{ height: "68vh" }}
-              >
-                <div className="m-b20 dz-flex-box text-center">
-                  <div className="dz-cart-about">
-                    <div className="mb-3">
-                      <button
-                        className="btn btn-outline-primary rounded-pill"
-                        onClick={showLoginPopup}
-                      >
-                        <i className="fa-solid fa-lock me-2 fs-6"></i> Login
-                      </button>
-                    </div>
-                    <span>Please login to access checkout</span>
-                  </div>
-                </div>
-              </div>
+             <div
+             className="container overflow-hidden d-flex justify-content-center align-items-center"
+             style={{ height: "68vh" }}
+           >
+             <div className="m-b20 dz-flex-box text-center">
+               <div className="dz-cart-about">
+                 <div className="mb-3">
+                   <button className="btn btn-outline-primary rounded-pill" onClick={handleLogin}>
+                     <i className="fa-solid fa-lock me-2 fs-6"></i> Login
+                   </button>
+                 </div>
+                 <span>Please login to access checkout</span>
+               </div>
+             </div>
+           </div>
             )}
           </div>
         </div>
 
-        <div className="container py-0">
+        <div className="container py-0 mb-2">
           {/* <NearbyArea /> */}
           {/* <RestaurantSocials /> */}
           <RestaurantSocials />

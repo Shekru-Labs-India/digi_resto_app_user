@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import images from "../assets/MenuDefault.png";
 import Swiper from "swiper/bundle";
@@ -16,6 +16,7 @@ import { renderSpicyLevel } from "./config";
 import AddToCartUI from "../components/AddToCartUI";
 
 const OfferBanner = () => {
+  const { t: tableParam } = useParams();
   const [userData, setUserData] = useState(null);
   const { restaurantName } = useRestaurantId();
   const [menuItems, setMenuItems] = useState([]);
@@ -130,10 +131,10 @@ const OfferBanner = () => {
     }
   }, [restaurantId, customerId]);
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
 
-    if (notes && (notes.length < 5 || notes.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -147,15 +148,13 @@ const OfferBanner = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
     try {
       const success = await addToCart({
         ...selectedMenu,
-        quantity: 1,
-        notes: notes,
-        half_or_full: portionSize,
-        price: selectedPrice,
+        quantity: productWithQuantity.quantity,
+        notes: productWithQuantity.comment,
+        half_or_full: productWithQuantity.half_or_full,
+        price: productWithQuantity.price,
         menu_name: selectedMenu.menu_name || selectedMenu.name
       }, restaurantId);
 
@@ -289,6 +288,17 @@ const OfferBanner = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setMenuItems((prevItems) =>
@@ -307,7 +317,7 @@ const OfferBanner = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourites" : "Added to favourites"
+          isFavorite ? "Item has been removed from your favourites." : "Item has been added to your favourites."
         );
       }
     } catch (error) {
@@ -355,13 +365,24 @@ const OfferBanner = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        setIsPriceFetching(false);
+        return;
+      }
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -470,7 +491,7 @@ const OfferBanner = () => {
       <div className="m-0">
         <HotelNameAndTable
           restaurantName={restaurantName}
-          tableNumber={userData?.tableNumber || "1"}
+          tableNumber={tableParam}
         />
       </div>
       {menuItems.length > 0 && (

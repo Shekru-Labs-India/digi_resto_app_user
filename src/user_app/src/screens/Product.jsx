@@ -28,6 +28,7 @@ const toTitleCase = (text) => {
 };
 
 const Product = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Initialize state from local storage
     return localStorage.getItem("isDarkMode") === "true";
@@ -59,7 +60,6 @@ const Product = () => {
   const { cartItems, addToCart, isMenuItemInCart } = useCart();
   const [cartItemsCount, setCartItemsCount] = useState(cartItems.length);
 
-  const { table_number } = useParams();
   const location = useLocation();
 
   const [showModal, setShowModal] = useState(false);
@@ -287,6 +287,17 @@ const Product = () => {
         }),
       });
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
@@ -410,13 +421,23 @@ const Product = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
       if (response.ok && data.st === 1) {
@@ -459,27 +480,16 @@ const Product = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
-    // if (!userData?.customer_id || userData.customer_type === 'guest') {
-    //   showLoginPopup();
-    //   return;
-    // }
 
     if (!selectedMenu) return;
 
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
       );
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available");
       return;
     }
 
@@ -497,10 +507,10 @@ const Product = () => {
       await addToCart(
         {
           ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
           restaurant_id: restaurantId,
         },
         restaurantId
@@ -512,14 +522,9 @@ const Product = () => {
       setComment("");
       setPortionSize("full");
       setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.clear();
-      window.showToast(
-        "error",
-        error.message || "Failed to add item to checkout. Please try again."
-      );
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
@@ -612,6 +617,19 @@ const Product = () => {
           }
         );
 
+        if (response.status === 401) {
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("userData");
+          localStorage.removeItem("cartItems");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("customerName");
+          localStorage.removeItem("mobile");
+          showLoginPopup();
+          setIsMagicLoading(false);
+          setShowAIModal(false);
+          return;
+        }
+
         const data = await response.json();
 
         if (data.st === 1 && magicProcessRef.current) {
@@ -683,7 +701,7 @@ const Product = () => {
         return {
           icon: "fa-solid fa-egg",
           border: "gray-text",
-          textColor: "gray-text", // Changed to green for category name
+          textColor: "text-success", // Changed to green for category name
           categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
         };
       case "vegan":
@@ -791,7 +809,7 @@ const Product = () => {
         <div className="container pb-0 pt-0 p-t50">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={userData?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
           <div className="d-flex justify-content-between mb-3 pt-1">
             <div className="me-2 w-100" style={{ height: "40px" }}>
@@ -1154,7 +1172,9 @@ const Product = () => {
             )}
           </div>
 
-          <RestaurantSocials />
+          <div className="container py-0 mb-2">
+            <RestaurantSocials />
+          </div>
         </div>
       </main>
 

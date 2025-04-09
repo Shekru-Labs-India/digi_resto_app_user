@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import UserApp from './user_app/src/App';
 
 import QRScanner from './user_app/src/screens/QRScreen';
+import ErrorPage from './user_app/src/screens/ErrorPage';
 
 // Toast functionality (keeping this in main App.js since it's used globally)
 window.hideToast = function() {
@@ -153,7 +154,10 @@ const AppContent = () => {
         <Route path="request_data_removal" element={<Website currentPath="/request_data_removal" />} />
         */}
       {/* </Route> */}
-      <Route path="/" element={<QRScanner />} />
+      <Route path="/" element={<ErrorPage />} />
+
+      {/* New route for direct /o[number] patterns */}
+      <Route path="/o:outletCode/*" element={<ErrorPage />} />
 
       <Route path="/user_app/*" element={<UserApp />} />
       <Route path="*" element={<Navigate to="/" replace />} />

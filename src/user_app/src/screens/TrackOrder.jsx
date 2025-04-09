@@ -15,6 +15,10 @@ import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { renderSpicyLevel } from "../component/config";
 import { usePopup } from "../context/PopupContext";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import MenuMitra from "../assets/logos/menumitra_logo_128.png";
+
 const TrackOrder = () => {
   const titleCase = (str) => {
     if (!str) return "";
@@ -25,15 +29,19 @@ const TrackOrder = () => {
       .join(" ");
   };
 
-  const [customerName, setCustomerName] = useState("");
+  const { state } = useLocation();
+  const { order_number } = useParams();
 
-  useEffect(() => {
-    const customerName = localStorage.getItem("customerName");
-    setCustomerName(customerName);
-  }, []);
+  // Get orderId from multiple sources with fallback
+  const orderId = state?.orderId || localStorage.getItem("current_order_id");
+
+  console.log("TrackOrder: Component mounted");
+  console.log("TrackOrder: State from navigation:", state);
+  console.log("TrackOrder: OrderId from state:", orderId);
+  console.log("TrackOrder: Order number from params:", order_number);
+
+  const [customerName, setCustomerName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const timeoutRef = useRef({});
-  // Move these hooks to the top with other state declarations
   const [hasGoogleReview, setHasGoogleReview] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,13 +49,25 @@ const TrackOrder = () => {
   const [selectedRating, setSelectedRating] = useState("");
   const [hasRated, setHasRated] = useState(false);
   const navigate = useNavigate();
-  const { order_number } = useParams();
   const [isProcessingUPI, setIsProcessingUPI] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const timeoutRef = useRef({});
+
+  // Clean up localStorage on unmount
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("current_order_id");
+    };
+  }, []);
+
+  useEffect(() => {
+    const customerName = localStorage.getItem("customerName");
+    setCustomerName(customerName);
+  }, []);
 
   const [isProcessingPhonePe, setIsProcessingPhonePe] = useState(false);
   const [isProcessingGPay, setIsProcessingGPay] = useState(false);
-  const { restaurantId } = useRestaurantId(); // Assuming this context provides restaurant ID
+  const { restaurantId, isOutletOnlyUrl } = useRestaurantId(); // Add isOutletOnlyUrl
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const displayCartItems = orderDetails ? orderDetails.menu_details : [];
   const [cartDetails, setCartDetails] = useState(null);
@@ -83,6 +103,18 @@ const TrackOrder = () => {
   };
 
   const handleMenuItemClick = (menu) => {
+    const existingOrder = JSON.parse(
+      localStorage.getItem("existing_order")
+    ) || { order_items: [] };
+    const existingOrderItem = existingOrder.order_items.find(
+      (item) => item.menu_id === menu.menu_id
+    );
+
+    if (existingOrderItem && existingOrderItem.quantity >= 20) {
+      window.showToast("info", "Cannot add more. Maximum limit of 20 reached.");
+      return;
+    }
+
     navigate(`/user_app/ProductDetails/${menu.menu_id}`, {
       state: {
         menu_cat_id: menu.menu_cat_id,
@@ -271,7 +303,7 @@ const TrackOrder = () => {
               order_id: parsedOrderItems.order_id,
               order_number: order_number,
               total_total: parsedOrderItems.total_total,
-              grand_total: parsedOrderItems.grand_total,
+              final_grand_total: parsedOrderItems.final_grand_total,
               created_at: parsedOrderItems.created_at,
               order_status: "placed",
             },
@@ -436,9 +468,11 @@ const TrackOrder = () => {
   }, [debouncedSearchTerm, restaurantId, userId]);
 
   const toTitleCase = (str) => {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0)?.toUpperCase() + txt.substr(1)?.toLowerCase();
-    });
+    if (!str) return ""; // Return empty string if input is undefined or null
+    return str.replace(
+      /\w\S*/g,
+      (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
   };
 
   // Update the handleLikeClick function
@@ -521,7 +555,6 @@ const TrackOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             restaurant_id: currentRestaurantId,
             menu_id: menu.menu_id,
@@ -544,6 +577,7 @@ const TrackOrder = () => {
         // Update order details
         setOrderDetails((prevDetails) => {
           if (!prevDetails?.menu_details) return prevDetails;
+
           return {
             ...prevDetails,
             menu_details: prevDetails.menu_details.map((item) =>
@@ -579,8 +613,23 @@ const TrackOrder = () => {
   const fetchOrderDetails = async (orderNumber) => {
     const sectionId = localStorage.getItem("sectionId") || "";
 
+    console.log("TrackOrder: Fetching order details");
+    console.log("TrackOrder: Order Number:", orderNumber);
+    console.log("TrackOrder: Order ID:", orderId);
+    console.log("TrackOrder: Section ID:", sectionId);
+
     try {
       setLoading(true);
+      
+      const requestBody = {
+        order_id: orderId,
+      };
+      
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && sectionId) {
+        requestBody.section_id = sectionId;
+      }
+      
       const response = await fetch(
         `${config.apiDomain}/user_api/get_order_details`,
         {
@@ -589,18 +638,33 @@ const TrackOrder = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            order_number: orderNumber,
-            user_id: userId,
-            role: role,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
+      if (response.status === 401) {
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("current_order_id");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+
+        return;
+      }
+
       if (response.ok) {
-        const { lists } = await response.json();
-        if (lists) {
+        const data = await response.json();
+        console.log("TrackOrder: API Response:", data);
+
+        if (data.st === 1 && data.lists) {
+          const { lists } = data;
           // Format menu items
           const formattedMenu = lists.menu_details.map((item) => ({
             ...item,
@@ -618,8 +682,9 @@ const TrackOrder = () => {
           });
 
           // Set rating if it exists
-          if (lists.order_details.rating) {
-            setSelectedRating(lists.order_details.rating);
+          if (lists.order_details.rating && parseInt(lists.order_details.rating) > 0) {
+            setSelectedRating(parseInt(lists.order_details.rating));
+            setHasRated(true);
           }
 
           // Handle order status
@@ -633,10 +698,25 @@ const TrackOrder = () => {
             status === "completed" ||
               ["cancle", "cancelled", "canceled"].includes(status)
           );
+        } else if (data.st === 2) {
+          // Handle status code 2 gracefully
+          console.log("TrackOrder: API returned status 2:", data);
+          window.showToast("info", data.msg || "Order details not available");
+          // Navigate back if needed
+          setTimeout(() => {
+            navigate(-1);
+          }, 5000);
+        } else {
+          console.error("TrackOrder: Invalid response format:", data);
+          window.showToast("error", "Failed to fetch order details");
         }
       }
     } catch (error) {
-      console.clear();
+      console.error("TrackOrder: Error fetching order details:", error);
+      window.showToast(
+        "error",
+        "An error occurred while fetching order details"
+      );
     } finally {
       setLoading(false);
     }
@@ -854,147 +934,50 @@ const TrackOrder = () => {
     }
   }, [order_number, restaurantId, userId]);
 
-  // useEffect(() => {
-  //   const checkOrderExists = () => {
-  //     try {
-  //       const allOrders = JSON.parse(
-  //         localStorage.getItem("allOrderList") || "{}"
-  //       );
-
-  //       // Check placed orders
-  //       if (
-  //         allOrders.placed?.some((order) => order.order_number === order_number)
-  //       ) {
-  //         return true;
-  //       }
-
-  //       // Check ongoing orders
-  //       if (
-  //         allOrders.ongoing?.some(
-  //           (order) => order.order_number === order_number
-  //         )
-  //       ) {
-  //         return true;
-  //       }
-
-  //       // Check completed orders (date-wise grouping)
-  //       if (allOrders.completed) {
-  //         const exists = Object.values(allOrders.completed).some((dateOrders) =>
-  //           dateOrders.some((order) => order.order_number === order_number)
-  //         );
-  //         if (exists) return true;
-  //       }
-
-  //       // Check cancelled orders (handle both spellings and structures)
-  //       if (
-  //         allOrders.cancelled?.some(
-  //           (order) => order.order_number === order_number
-  //         ) ||
-  //         allOrders.canceled?.some(
-  //           (order) => order.order_number === order_number
-  //         ) ||
-  //         allOrders.cancle?.some((order) => order.order_number === order_number)
-  //       ) {
-  //         return true;
-  //       }
-
-  //       // If order not found anywhere
-  //       window.showToast("error", "Order not found");
-  //       navigate("/user_app/Index");
-  //       return false;
-  //     } catch (error) {
-  //       console.clear();
-  //     }
-  //   };
-
-  //   if (order_number && !orderDetails) {
-  //     checkOrderExists();
-  //   }
-  // }, [order_number, navigate, orderDetails]);
-
-  // Add this check right after the component declarations
   useEffect(() => {
     const validateOrder = () => {
       console.log("TrackOrder: Starting order validation");
       try {
+        // First check state or localStorage for orderId
+        if (state?.orderId || localStorage.getItem("current_order_id")) {
+          console.log("TrackOrder: Order ID found, validation successful");
+          return true;
+        }
+
         const allOrders = JSON.parse(
           localStorage.getItem("allOrderList") || "{}"
-        );
-        console.log(
-          "TrackOrder: Retrieved allOrders from localStorage:",
-          allOrders
         );
         let orderFound = false;
 
         // Check ongoing orders
         if (allOrders.ongoing?.length > 0) {
-          console.log("TrackOrder: Checking ongoing orders");
           orderFound = allOrders.ongoing.some(
             (order) => order.order_number === order_number
           );
-          console.log("TrackOrder: Order found in ongoing?", orderFound);
-        }
-
-        // Check completed orders (date-wise grouping)
-        if (!orderFound && allOrders.completed) {
-          console.log("TrackOrder: Checking completed orders");
-          orderFound = Object.values(allOrders.completed).some((dateOrders) =>
-            dateOrders.some((order) => order.order_number === order_number)
-          );
-          console.log("TrackOrder: Order found in completed?", orderFound);
         }
 
         // Check placed orders
         if (!orderFound && allOrders.placed?.length > 0) {
-          console.log("TrackOrder: Checking placed orders");
           orderFound = allOrders.placed.some(
             (order) => order.order_number === order_number
           );
-          console.log("TrackOrder: Order found in placed?", orderFound);
         }
 
-        // Check cancelled orders - handle both date-wise and array formats
+        // Check completed and cancelled orders
         if (!orderFound) {
-          console.log("TrackOrder: Checking cancelled orders");
-          // First check if cancelled orders are date-wise grouped
-          const cancelTypes = ["cancelled", "canceled", "cancle"];
-          for (const type of cancelTypes) {
-            if (allOrders[type]) {
-              console.log(`TrackOrder: Checking ${type} orders`);
-              // If it's an array, check directly
-              if (Array.isArray(allOrders[type])) {
-                orderFound = allOrders[type].some(
-                  (order) => order.order_number === order_number
-                );
-              }
-              // If it's date-wise grouped, check each date group
-              else {
-                orderFound = Object.values(allOrders[type]).some(
-                  (dateOrders) =>
-                    Array.isArray(dateOrders) &&
-                    dateOrders.some(
-                      (order) => order.order_number === order_number
-                    )
-                );
-              }
-              console.log(`TrackOrder: Order found in ${type}?`, orderFound);
-              if (orderFound) break;
-            }
-          }
+          orderFound = [
+            ...Object.values(allOrders.completed || {}).flat(),
+            ...Object.values(allOrders.cancelled || {}).flat(),
+          ].some((order) => order.order_number === order_number);
         }
 
-        // If order is not found in any category
         if (!orderFound) {
-          console.log(
-            "TrackOrder: Order not found in any category, redirecting to Index"
-          );
           setLoading(false);
           window.showToast("error", "Order not found");
           navigate("/user_app/Index");
           return false;
         }
 
-        console.log("TrackOrder: Order validation successful");
         return true;
       } catch (error) {
         console.error("TrackOrder: Error during order validation:", error);
@@ -1008,7 +991,7 @@ const TrackOrder = () => {
     if (order_number) {
       validateOrder();
     }
-  }, [order_number, navigate]);
+  }, [order_number, navigate, state]);
 
   // Update the loading condition in the return statement
   if (loading && !orderDetails) {
@@ -1021,7 +1004,29 @@ const TrackOrder = () => {
     );
   }
 
-  const { order_details, menu_details } = orderDetails;
+  // Add safety check to prevent destructuring null
+  if (!orderDetails || !orderDetails.order_details) {
+    // If we get here, it means the API returned successfully but with no data
+    // Let's navigate back and show a message
+    setTimeout(() => {
+      // navigate(-1);
+      navigate("/user_app/MyOrder");
+    }, 2000);
+    
+    return (
+      <div className="page-wrapper full-height pb-5">
+        <Header title="Order Details" />
+        <div className="container mt-5 text-center">
+          <div className="alert alert-info">
+            <i className="fa-solid fa-circle-info me-2"></i>
+            Order details not available. Redirecting...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { order_details, menu_details = [] } = orderDetails;
 
   // Add the standardized rating function
   const renderStarRating = (rating) => {
@@ -1102,6 +1107,12 @@ const TrackOrder = () => {
   };
 
   const handleRating = async (rating) => {
+    // If rating was already submitted, don't allow changes
+    if (hasRated) {
+      window.showToast("info", "You've already rated this order");
+      return;
+    }
+    
     try {
       const response = await fetch(
         `${config.apiDomain}/user_api/rating_to_order`,
@@ -1121,9 +1132,26 @@ const TrackOrder = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        const restaurantCode = localStorage.getItem("restaurantCode");
+        const tableNumber = localStorage.getItem("tableNumber");
+        const sectionId = localStorage.getItem("sectionId");
+
+        navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setSelectedRating(rating);
+        setHasRated(true); // Mark as rated
         toast.current?.show({
           severity: "success",
           summary: "Success",
@@ -1172,26 +1200,41 @@ const TrackOrder = () => {
 
   const handlePayment = async (method) => {
     try {
-      setIsProcessing(true); // Add method-specific state if needed
+      setIsProcessing(true);
+      console.log("TrackOrder: Initiating payment");
+      console.log("TrackOrder: Payment method:", method);
+      console.log("TrackOrder: Order ID:", orderId);
+
       const response = await axios.post(
         `${config.apiDomain}/user_api/complete_order`,
+        {
+          outlet_id: localStorage.getItem("outlet_id"),
+          order_id: orderId,
+          payment_method: method,
+        },
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          outlet_id: localStorage.getItem("outlet_id"),
-
-          order_id: orderDetails?.order_details?.order_id,
-          payment_method: method,
         }
       );
-      window.showToast("success", "Payment successful!");
-      setShowCompleteModal(false);
-      fetchOrderDetails(order_number);
+
+      console.log("TrackOrder: Payment response:", response.data);
+
+      if (response.data.st === 1) {
+        window.showToast("success", "Payment successful!");
+        setShowCompleteModal(false);
+        await fetchOrderDetails(order_number);
+      } else {
+        throw new Error(response.data.msg || "Payment failed");
+      }
     } catch (error) {
-      console.error(error);
-      window.showToast("error", "Payment failed. Please try again.");
+      console.error("TrackOrder: Payment error:", error);
+      window.showToast(
+        "error",
+        error.message || "Payment failed. Please try again."
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -1306,16 +1349,400 @@ const TrackOrder = () => {
         },
         body: JSON.stringify({
           outlet_id: localStorage.getItem("outlet_id"),
-
           order_id: orderDetails?.order_details?.order_id,
           payment_method: method,
         }),
       }
     );
 
+    if (response.status === 401) {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customerName");
+      localStorage.removeItem("mobile");
+      const restaurantCode = localStorage.getItem("restaurantCode");
+      const tableNumber = localStorage.getItem("tableNumber");
+      const sectionId = localStorage.getItem("sectionId");
+
+      navigate(`/user_app/${restaurantCode}/${tableNumber}/${sectionId}`);
+      showLoginPopup();
+      return;
+    }
+
     if (response.ok) {
     }
   };
+
+  // Add generatePDF function before return statement
+  const generatePDF = async (orderDetails) => {
+    try {
+      if (!orderDetails?.order_details) {
+        window.showToast("error", "Order details not found");
+        return;
+      }
+
+      const { order_details, menu_details } = orderDetails;
+      const outlet_name =
+        localStorage.getItem("outlet_name") || order_details.outlet_name || "";
+      const outlet_address = localStorage.getItem("outlet_address") || "-";
+      const outlet_mobile = localStorage.getItem("outlet_mobile") || "-";
+      const website_url = "https://menumitra.com";
+      const customerName =
+        localStorage.getItem("customerName") ||
+        order_details.customer_name ||
+        "Guest";
+      
+      // Add current date and time for PDF generation timestamp
+      const now = new Date();
+      const generationDate = now.toLocaleDateString();
+      const generationTime = now.toLocaleTimeString([], { 
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true 
+      }).replace('am', 'AM').replace('pm', 'PM');
+
+      // Create a hidden container with specific dimensions
+      const container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "-9999px";
+      container.style.width = "800px";
+      container.style.margin = "0";
+      container.style.padding = "60px";
+      container.style.fontSize = "16px";
+      container.style.backgroundColor = "#ffffff";
+      document.body.appendChild(container);
+
+      container.innerHTML = `
+        <div style="padding: 20px; max-width: 100%; margin: auto; font-family: Arial, sans-serif;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center;">
+              <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 35px; height: 35px;" />
+              <span style="font-size: 20px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+            </div>
+            <span style="color: #d9534f; font-size: 20px; font-weight: normal;">Invoice</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+            <div>
+              <p style="margin: 0; font-weight: bold;">Hello, ${customerName}</p>
+              <p style="margin: 5px 0 0 0; color: #333;">Thank you for shopping from our store and for your order.</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0;">Bill no: ${order_details.order_number}</p>
+              <p style="margin: 5px 0 0 0; color: #666;">${
+                order_details.date || ""
+              } ${generationTime || ""}</p>
+            </div>
+          </div>
+
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Item</th>
+              <th style="text-align: center; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Quantity</th>
+              <th style="text-align: right; padding: 8px 0; border-bottom: 1px solid #ddd; color: #333;">Price</th>
+            </tr>
+            ${menu_details
+              .map(
+                (item) => `
+              <tr>
+                <td style="padding: 8px 0; color: #d9534f;">${
+                  item.menu_name
+                }</td>
+                <td style="text-align: center; padding: 8px 0;">${
+                  item.quantity
+                }</td>
+                <td style="text-align: right; padding: 8px 0;">₹ ${item.price.toFixed(
+                  2
+                )}</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </table>
+
+          <!-- Billing Summary -->
+<div style="border-top: 2px solid #ddd; margin-top: 20px;">
+  <div style="text-align: right; margin-top: 10px;">
+    <!-- Total -->
+    ${
+      order_details.total_bill_amount
+        ? `<span style="font-weight: bold;">Total:</span> ₹${order_details.total_bill_amount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+
+    <!-- Discount -->
+    ${
+      order_details.discount_percent > 0
+        ? `<span style="font-weight: bold;">Discount:</span>(${
+            order_details.discount_percent
+          }%): <span style="color: red;">-₹${order_details.discount_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- Special Discount -->
+    ${
+      order_details.special_discount
+        ? `<span style="font-weight: bold;">Special Discount:</span><span style="color: red;">-₹${order_details.special_discount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+    <!-- Extra Charges -->
+    ${
+      order_details.charges > 0
+        ? `<span style="font-weight: bold;">Extra Charges:</span><span style="color: green;">+₹${order_details.charges.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+    <!-- Subtotal -->
+    ${
+      order_details.total_bill_with_discount
+        ? `<span style="font-weight: bold;">Subtotal:</span> ₹${order_details.total_bill_with_discount.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+    <!-- Service Charges -->
+    ${
+      order_details.service_charges_amount
+        ? `<span style="font-weight: bold;">Service Charges (${
+            order_details.service_charges_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.service_charges_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+
+    <!-- GST -->
+    ${
+      order_details.gst_amount
+        ? `<span style="font-weight: bold;">GST (${
+            order_details.gst_percent || ""
+          }%):</span> <span style="color: green;">+₹${order_details.gst_amount.toFixed(
+            2
+          )}</span></br>`
+        : ""
+    }
+<!-- Tip -->
+${
+  order_details.tip && order_details.tip > 0
+    ? `<span style="font-weight: bold;">Tip:</span><span style="color: green;">+₹${order_details.tip.toFixed(
+        2
+      )}</span></br>`
+    : ""
+}
+
+
+    <!-- Grand Total -->
+    ${
+      order_details.final_grand_total
+        ? `<span style="font-weight: bold;">Grand Total:</span> ₹${order_details.final_grand_total.toFixed(
+            2
+          )}</br>`
+        : ""
+    }
+  </div>
+</div>
+          <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            <div>
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Billing Information</p>
+              <p style="margin: 5px 0;">► ${outlet_name}</p>
+              <p style="margin: 5px 0;">► ${outlet_address}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0 0 10px 0; font-weight: bold;">Payment Method</p>
+              <p style="margin: 5px 0; text-transform: uppercase;">${
+                order_details.payment_method || ""
+              }</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 40px;">
+            <p style="font-style: italic; margin-bottom: 20px;">Have a nice day.</p>
+            <div style="margin: 20px 0;">
+              <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <img src="${MenuMitra}" alt="MenuMitra Logo" style="width: 25px; height: 25px;" />
+                <span style="font-size: 16px; font-weight: bold; margin-left: 8px;">MenuMitra</span>
+              </div>
+            </div>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">info@menumitra.com</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">+91 9172530151</p>
+            <p style="margin: 3px 0; color: #666; font-size: 13px;">${website_url}</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        // Wait for all images to load
+        const images = container.getElementsByTagName("img");
+        await Promise.all(
+          Array.from(images).map((img) => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = resolve;
+                img.onerror = resolve;
+              }
+            });
+          })
+        );
+
+        // Generate PDF with exact same configuration as MyOrder.js
+        const canvas = await html2canvas(container, {
+          scale: 3,
+          width: 800,
+          height: container.offsetHeight,
+          backgroundColor: "#ffffff",
+          windowWidth: 800,
+          windowHeight: container.offsetHeight,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        // Create PDF with A4 dimensions
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "pt",
+          format: "a4",
+        });
+
+        // Calculate dimensions to fit A4 while maintaining aspect ratio
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        // Add image with proper scaling
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`invoice-${order_details.order_number}.pdf`);
+
+        window.showToast("success", "Invoice downloaded successfully");
+      } catch (error) {
+        console.error("PDF generation error:", error);
+        window.showToast("error", "Failed to generate invoice");
+      } finally {
+        // Clean up: Remove the temporary container
+        if (document.body.contains(container)) {
+          document.body.removeChild(container);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      window.showToast("error", "Failed to generate invoice");
+    }
+  };
+
+  // Add this helper function to check cooking quantity
+  const checkCookingQuantity = async (menuId, halfOrFull) => {
+    try {
+      // Fetch current order details
+      const requestBody = {
+        order_id: orderDetails.order_id,
+      };
+      
+      // Only include section_id if it's not an outlet-only URL
+      if (!isOutletOnlyUrl && (userData?.sectionId || "1")) {
+        requestBody.section_id = userData?.sectionId || "1";
+      }
+      
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_order_details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch order details");
+      }
+
+      const data = await response.json();
+      
+      // Handle different response statuses
+      if (data.st === 1) {
+        const menuItems = data.lists?.menu_details || [];
+
+        // Get total cooking quantity for this menu item
+        const cookingQuantity = menuItems.reduce((total, item) => {
+          if (
+            item.menu_id === menuId &&
+            item.half_or_full === halfOrFull &&
+            item.status === "cooking"
+          ) {
+            return total + item.quantity;
+          }
+          return total;
+        }, 0);
+
+        return cookingQuantity;
+      } else if (data.st === 2) {
+        // Gracefully handle status 2 response
+        console.log("checkCookingQuantity: API returned status 2:", data);
+        window.showToast("info", data.msg || "Could not check quantity");
+        return 0; // Return 0 as default value
+      } else {
+        console.error("Invalid response format:", data);
+        return 0;
+      }
+    } catch (error) {
+      console.error("Error checking cooking quantity:", error);
+      return 0;
+    }
+  };
+
+  // Modify the increment quantity function
+  const handleIncrementQuantity = async (menu) => {
+    try {
+      const cookingQuantity = await checkCookingQuantity(
+        menu.menu_id,
+        menu.half_or_full
+      );
+
+      if (cookingQuantity >= 20) {
+        window.showToast(
+          "info",
+          `Cannot add more. Menu ${menu.menu_name} already has maximum quantity (20) in cooking status`
+        );
+        return;
+      }
+
+      if (cookingQuantity + menu.quantity >= 20) {
+        window.showToast(
+          "info",
+          `Cannot add more. Total quantity would exceed maximum limit of 20. Current cooking quantity: ${cookingQuantity}`
+        );
+        return;
+      }
+
+      // Proceed with increment if within limits
+      setOrderDetails((prevDetails) => ({
+        ...prevDetails,
+        menu_details: prevDetails.menu_details.map((item) =>
+          item.menu_id === menu.menu_id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        ),
+      }));
+    } catch (error) {
+      console.error("Error incrementing quantity:", error);
+      window.showToast("error", "Failed to update quantity");
+    }
+  };
+
   return (
     <>
       <div className="page-wrapper full-height pb-5">
@@ -1376,17 +1803,26 @@ const TrackOrder = () => {
                       <i className="fa-solid fa-utensils"></i>
                     )}
                     <span className="ms-2">
-                      {order_details.order_type || "Dine In"}
+                      {order_details.order_type.toUpperCase() || "Dine In"}
                     </span>
                   </span>
                 </div>
                 <div className="col-6 text-end">
                   <div className="font_size_12 gray-text font_size_12 text-nowrap">
-                    <span className="fw-medium gray-text">
-                      <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                      {titleCase(order_details.section_name)} -{" "}
-                      {order_details.table_number}
-                    </span>
+                    {!["counter", "drive-through", "delivery", "parcel"].includes(order_details.order_type?.toLowerCase()) ? (
+                      <span className="fw-medium gray-text">
+                        <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                        {`${titleCase(order_details.section_name)}${
+                          order_details.order_type?.toLowerCase() ===
+                            "drive-through" ||
+                          order_details.order_type?.toLowerCase() === "parcel"
+                            ? ""
+                            : ` - ${order_details.table_number}`
+                        }`}
+                      </span>
+                    ) : (
+                      <span className="fw-medium gray-text"></span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1402,21 +1838,13 @@ const TrackOrder = () => {
                 <div className="col-6">
                   <div className="text-end">
                     <span className="text-info font_size_14 fw-semibold">
-                      ₹{order_details.grand_total.toFixed(2)}
+                      ₹{order_details.final_grand_total.toFixed(2)}
                     </span>
 
                     {/* Conditionally render the line-through price */}
-                    {order_details.grand_total !==
-                      (order_details.grand_total /
-                        (1 - order_details.discount_percent / 100) ||
-                        order_details.grand_total) && (
+                    {order_details.discount_amount > 0 && (
                       <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                        ₹
-                        {(
-                          order_details.grand_total /
-                            (1 - order_details.discount_percent / 100) ||
-                          order_details.grand_total
-                        ).toFixed(2)}
+                        ₹{order_details.total_bill_amount.toFixed(2)}
                       </span>
                     )}
                   </div>
@@ -1429,29 +1857,29 @@ const TrackOrder = () => {
                     {orderDetails.order_details.order_status === "paid" && (
                       <div className="menu-info d-flex align-items-center gray-text">
                         <span className="me-2">
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "card" && (
                             <i className="fas fa-credit-card font_size_12"></i> // FontAwesome card icon
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "cash" && (
                             <i className="fas fa-money-bill-wave font_size_12"></i> // FontAwesome cash icon
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "phonepay" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "gpay" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
-                          {orderDetails.order_details.payment_method ===
+                          {orderDetails.order_details.payment_method.toLowerCase() ===
                             "upi" && (
                             <i className="fas fa-wallet font_size_12 "></i> // FontAwesome wallet icon for UPI
                           )}
                         </span>
                         <span className="font_size_12 gray-text text-capitalize">
-                          {orderDetails.order_details.payment_method}
+                          {orderDetails.order_details.payment_method.toUpperCase()}
                         </span>
                       </div>
                     )}
@@ -1470,7 +1898,7 @@ const TrackOrder = () => {
                   <>
                     <div className="card-body text-center bg-success rounded-4 text-white">
                       <span className="fs-6 fw-medium h-100">
-                        Your delicious order has been served
+                        Your delicious order has been completed
                       </span>
                     </div>
                     {/* <div className="d-flex justify-content-center pt-3 gray-text">
@@ -1548,19 +1976,19 @@ const TrackOrder = () => {
                   </div>
                 ) : orderStatus === "paid" ? (
                   <div className="card-body text-center bg-info rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order has been paid. Thank you!
                     </span>
                   </div>
                 ) : orderStatus === "served" ? (
                   <div className="card-body text-center bg-primary rounded-4 text-white">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order has been served. Enjoy your meal!
                     </span>
                   </div>
                 ) : orderStatus === "cooking" ? (
                   <div className="card-body text-center bg-warning rounded-4 text-dark">
-                    <span className="fs-6 fw-medium h-100">
+                    <span className="fs-6 fw-medium h-100 text-white">
                       Order is being cooked. Please wait patiently.
                     </span>
                   </div>
@@ -1639,7 +2067,7 @@ const TrackOrder = () => {
                           <>
                             Pay{" "}
                             <span className="fs-4 mx-1">
-                              ₹{order_details.grand_total.toFixed(2)}
+                              ₹{order_details.final_grand_total.toFixed(2)}
                             </span>{" "}
                             via
                             <span className="ms-2">Other UPI Apps</span>
@@ -1810,6 +2238,9 @@ const TrackOrder = () => {
                                 <div className="col-10">
                                   <div className="ps-2 font_size_14 fw-medium">
                                     {menu.menu_name}
+                                    <span className="ms-2 font_size_10 text-capitalize text-dark">
+                                      {/* ({toTitleCase}) */}
+                                    </span>
                                   </div>
                                 </div>
                                 {orderStatus === "placed" &&
@@ -1927,236 +2358,296 @@ const TrackOrder = () => {
           )}
         </main>
 
-        {userId && orderDetails && (
-          <div className="container mb-4 pt-0 z-3">
-            <div className="card mt-2 p-0 mb-3 ">
-              <div className="card-body mx-auto rounded-4 p-0">
-                <div className="row p-1">
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1">
-                      <span className="ps-2 font_size_14 fw-semibold">
-                        Total
-                      </span>
-                      <span className="pe-2 font_size_14 fw-semibold">
-                        ₹
-                        {parseFloat(
-                          orderDetails.order_details.total_bill_amount || 0
-                        ).toFixed(2)}
-                      </span>
-                    </div>
-                    <hr className="p-0 m-0 text-primary w-100" />
-                  </div>
-                  <div className="col-12 mb-0 pt-0 ">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        Discount{" "}
-                        <span className="gray-text small-number">
-                          ({orderDetails.order_details.discount_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        -₹
-                        {parseFloat(
-                          orderDetails.order_details.discount_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-12 pt-0">
-                    {orderDetails.order_details.discount_amount > 0 && (
-                      <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
-                        <span className="font_size_14 gray-text">
-                          Total after discount
-                        </span>
-                        <span className="font_size_14 gray-text">
-                          +₹
-                          {parseFloat(
-                            orderDetails.order_details.total_bill_with_discount
-                          ).toFixed(2) || 0}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="col-12 pt-0">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 pt-1 gray-text">
-                        Service Charges
-                        <span className="gray-text small-number">
-                          (
-                          {orderDetails.order_details.service_charges_percent ||
-                            0}
-                          % )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14 gray-text">
-                        +₹
-                        {parseFloat(
-                          orderDetails.order_details.service_charges_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-12 mb-0 py-1">
-                    <div className="d-flex justify-content-between align-items-center py-0">
-                      <span className="ps-2 font_size_14 gray-text">
-                        GST{" "}
-                        <span className="gray-text small-number">
-                          {" "}
-                          ({orderDetails.order_details.gst_percent || 0}% )
-                        </span>
-                      </span>
-                      <span className="pe-2 font_size_14  text-start gray-text">
-                        +₹
-                        {parseFloat(
-                          orderDetails.order_details.gst_amount
-                        ).toFixed(2) || 0}
-                      </span>
-                    </div>
-                  </div>
+        {userId &&
+          orderDetails &&
+          orderDetails.order_details &&
+          (() => {
+            const details = orderDetails.order_details || {};
 
-                  <div>
-                    <hr className=" p-0 m-0 text-primary w-100" />
-                  </div>
-                  <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
-                      <span className="ps-2 fw-semibold fs-6">Grand Total</span>
-                      <span className="pe-2  fw-semibold fs-6">
-                        ₹
-                        {parseFloat(
-                          orderDetails.order_details.grand_total
-                        ).toFixed(2) || 0}
-                      </span>
+            // Extract values safely
+            const totalBillAmount = Number(details.total_bill_amount || 0);
+            const discountAmount = Number(details.discount_amount || 0);
+            const specialDiscount = Number(details.special_discount || 0);
+            const charges = Number(details.charges || 0);
+            const serviceChargesPercent = Number(
+              details.service_charges_percent || 0
+            );
+            const gstPercent = Number(details.gst_percent || 0);
+            const tip = Number(details.tip || 0);
+
+            // Calculations
+            const totalBillWithDiscount = totalBillAmount - discountAmount;
+            const subtotal = totalBillWithDiscount - specialDiscount + charges;
+            const serviceChargesAmount =
+              (subtotal * serviceChargesPercent) / 100;
+            const grandTotal = subtotal + serviceChargesAmount;
+            const gstAmount = (grandTotal * gstPercent) / 100;
+            let finalGrandTotal = grandTotal + gstAmount;
+
+            if (tip > 0) {
+              finalGrandTotal += tip;
+            }
+
+            return (
+              <div className="container mb-4 pt-0 z-3">
+                <div className="card mt-2 p-0 mb-3">
+                  <div className="card-body mx-auto rounded-4 p-0">
+                    <div className="row p-1">
+                      {/* Total */}
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span className="ps-2 font_size_14 fw-semibold">
+                            Total
+                          </span>
+                          <span className="pe-2 font_size_14 fw-semibold">
+                            ₹{totalBillAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <hr className="p-0 m-0 text-primary w-100" />
+                      </div>
+
+                      {/* Discount */}
+                      {discountAmount > 0 && (
+                      <div className="col-12 mb-0 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Discount{" "}
+                            <span className="gray-text small-number">
+                              ({details.discount_percent || 0}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            -₹{discountAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Special Discount */}
+                      {specialDiscount > 0 && (
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0 px-2 mt-1">
+                          <span className="font_size_14 gray-text">
+                            Special Discount
+                          </span>
+                          <span className="font_size_14 gray-text">
+                            -₹{(specialDiscount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Extra Charges */}
+                      {charges > 0 && (
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Extra Charges
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{charges.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Subtotal */}
+                      {subtotal > 0 && (
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1">
+                          <span className="ps-2 font_size_14 gray-text">
+                            Subtotal
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            ₹{subtotal.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Service Charges */}
+                      {serviceChargesAmount > 0 && (
+                      <div className="col-12 pt-0">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 pt-1 gray-text">
+                            Service Charges{" "}
+                            <span className="gray-text small-number">
+                              ({serviceChargesPercent}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{serviceChargesAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* GST Charges */}
+                      {gstAmount > 0 && (
+                      <div className="col-12 mb-0 py-1">
+                        <div className="d-flex justify-content-between align-items-center py-0">
+                          <span className="ps-2 font_size_14 gray-text">
+                            GST Charges{" "}
+                            <span className="gray-text small-number">
+                              ({gstPercent}%)
+                            </span>
+                          </span>
+                          <span className="pe-2 font_size_14 gray-text">
+                            +₹{gstAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Tip (Only show if tip is greater than 0) */}
+                      {tip > 0 && (
+                        <div className="col-12 pt-0">
+                          <div className="d-flex justify-content-between align-items-center py-0">
+                            <span className="ps-2 font_size_14 pt-1 gray-text">
+                              Tip
+                            </span>
+                            <span className="pe-2 font_size_14 gray-text">
+                              +₹{tip.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <hr className="p-0 m-0 text-primary w-100" />
+                      </div>
+
+                      {/* Final Grand Total */}
+                      {finalGrandTotal > 0 && (
+                      <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
+                          <span className="ps-2 fw-semibold fs-6">
+                            Final Grand Total
+                          </span>
+                          <span className="pe-2 fw-semibold fs-6">
+                            ₹{finalGrandTotal.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {orderStatus === "paid" && (
-              <div className="d-flex justify-content-end">
-                {orderDetails?.order_details?.invoice_url ? (
-                  <a
-                    href={orderDetails.order_details.invoice_url}
-                    download={`invoice_${orderDetails.order_details.order_number}.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12">
+                {orderStatus === "paid" && (
+                  <div className="d-flex justify-content-end">
+                    <button
+                      className="btn btn-light py-1 px-2 mb-2 me-2 rounded-pill font_size_12"
+                      onClick={() => generatePDF(orderDetails)}
+                    >
                       <i className="fa-solid fa-download me-2"></i>
                       Invoice &nbsp;
                     </button>
-                  </a>
-                ) : (
-                  <></>
+                  </div>
                 )}
+
+                {/* Order Rating Component - Only show for paid orders */}
+                {orderStatus === "paid" && (
+                  <div className=" mb-4">
+                    <div className="card-body">
+                      <div className="card-title text-center mb-4">
+                        {hasRated ? 'Your Rating' : 'How was your order?'}
+                      </div>
+                      
+                      <div className="d-flex justify-content-center gap-1 mb-4">
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-1" 
+                            name="rating" 
+                            value="1" 
+                            checked={parseInt(selectedRating) === 1}
+                            onChange={() => handleRating(1)} 
+                          />
+                          <label 
+                            htmlFor="rating-1" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 1 ? 'bg-danger bg-opacity-10' : ''}`}
+                            aria-label="Rate as poor"
+                            style={{border: 'none', outline: 'none'}}
+                          >
+                            <i 
+                              className="fa-solid fa-face-frown text-danger fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 1 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
+                          </label>
+                        </div>
+                        
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-3" 
+                            name="rating" 
+                            value="3" 
+                            checked={parseInt(selectedRating) === 3}
+                            onChange={() => handleRating(3)} 
+                          />
+                          <label 
+                            htmlFor="rating-3" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 3 ? 'bg-warning bg-opacity-10' : ''}`}
+                            aria-label="Rate as good"
+                            style={{border: 'none', outline: 'none'}}
+                          >
+                            <i 
+                              className="fa-solid fa-face-smile text-warning fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 3 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
+                          </label>
+                        </div>
+                        
+                        <div className="text-center">
+                          <input 
+                            type="radio" 
+                            className="btn-check" 
+                            id="rating-5" 
+                            name="rating" 
+                            value="5" 
+                            checked={parseInt(selectedRating) === 5}
+                            onChange={() => handleRating(5)} 
+                          />
+                          <label 
+                            htmlFor="rating-5" 
+                            className={`btn rounded-circle p-3 ${parseInt(selectedRating) === 5 ? 'bg-success bg-opacity-10' : ''}`}
+                            aria-label="Rate as excellent"
+                            style={{border: 'none', outline: 'none'}}
+                          >
+                            <i 
+                              className="fa-solid fa-face-laugh-beam text-success fs-2"
+                              style={{
+                                transition: 'transform 0.2s ease',
+                                transform: parseInt(selectedRating) === 5 ? 'scale(1.3)' : 'scale(1)'
+                              }}
+                            ></i>
+                          </label>
+                        </div>
+                      </div>
+                      
+                      {hasRated && (
+                        <div className="text-center mt-3 font_size_14 text-success">
+                          <i className="fa-solid fa-check-circle me-2"></i>
+                          Thank you for your feedback!
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <RestaurantSocials />
               </div>
-            )}
-            {orderStatus === "paid" && (
-              <div className="d-flex flex-column align-items-center mt-4">
-                <div className="d-flex justify-content-center gap-5 mb-2">
-                  {/* Bad Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="bad-rating"
-                      value="1"
-                      checked={selectedRating === "1"}
-                      onChange={() => handleRating("1")}
-                    />
-                    <label htmlFor="bad-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-frown ${
-                          selectedRating === "1"
-                            ? "text-danger"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Bad</span>
-                    </label>
-                  </div>
-
-                  {/* Okay Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="okay-rating"
-                      value="3"
-                      checked={selectedRating === "3"}
-                      onChange={() => handleRating("3")}
-                    />
-                    <label htmlFor="okay-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-meh ${
-                          selectedRating === "3"
-                            ? "text-warning"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Okay</span>
-                    </label>
-                  </div>
-
-                  {/* Good Rating */}
-                  <div className="text-center">
-                    <input
-                      type="radio"
-                      className="btn-check"
-                      name="rating"
-                      id="good-rating"
-                      value="5"
-                      checked={selectedRating === "5"}
-                      onChange={() => handleRating("5")}
-                    />
-                    <label htmlFor="good-rating" style={{ cursor: "pointer" }}>
-                      <i
-                        className={`fa-solid fa-face-smile ${
-                          selectedRating === "5"
-                            ? "text-success"
-                            : "text-secondary"
-                        }`}
-                        style={{ fontSize: "3em" }}
-                      ></i>
-                      <span className="d-block mt-1">Good</span>
-                    </label>
-                  </div>
-                </div>
-                {selectedRating !== "0" ? (
-                  <div className="text-center mt-2">
-                    <span className="font_size_12 text-success">
-                      Thanks for your feedback! You can change your rating
-                      anytime.
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-center mt-2">
-                    <span className="font_size_12 text-secondary">
-                      Please rate your experience.
-                    </span>
-                  </div>
-                )}
-
-                {hasGoogleReview && (
-                  <div
-                    className="btn btn-sm btn-success rounded-pill px-5 py-3 mt-4"
-                    onClick={handleRateOnGoogle}
-                  >
-                    <i className="fa-solid fa-star me-2"></i>
-                    Rate us on Google
-                  </div>
-                )}
-              </div>
-            )}
-
-            <RestaurantSocials />
-          </div>
-        )}
+            );
+          })()}
 
         <Bottom></Bottom>
       </div>

@@ -131,57 +131,43 @@ const NearbyArea = () => {
   }, [restaurantId, customerId]);
 
   // 3. Modify handleConfirmAddToCart to remove unnecessary API call
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     if (!selectedMenu) return;
     
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
       );
       return;
     }
- 
 
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id) {
-      return;
-    }
-
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
+      showLoginPopup();
       return;
     }
 
     try {
-      await addToCart(
-        {
-          ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
-          outlet_id: restaurantId,
-        },
-        restaurantId
-      );
+      const success = await addToCart({
+        ...selectedMenu,
+        quantity: productWithQuantity.quantity,
+        comment: productWithQuantity.comment,
+        half_or_full: productWithQuantity.half_or_full,
+        price: productWithQuantity.price,
+        menu_name: selectedMenu.menu_name || selectedMenu.name
+      }, restaurantId);
 
-      window.showToast("success", `${selectedMenu.name} is added.`);
-
-      setShowModal(false);
-      setComment("");
-      setPortionSize("full");
-      setSelectedMenu(null);
-
-      window.dispatchEvent(new Event("cartUpdated"));
+      if (success) {
+        setShowModal(false);
+        window.showToast("success", `${selectedMenu.name} is added.`);
+        // Dispatch event to update cart UI
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+      } else {
+        window.showToast("error", "Failed to add item to cart");
+      }
     } catch (error) {
-      console.clear();
-      window.showToast(
-        "error",
-        "Failed to add item to cart. Please try again."
-      );
+      window.showToast("error", "Failed to add item to cart");
     }
   };
 
@@ -220,13 +206,12 @@ const NearbyArea = () => {
           textColor: "text-success",
           categoryIcon: "fa-solid fa-utensils text-success me-1",
         };
-      case "egg":
-        return {
-          icon: "fa-solid fa-egg",
-          border: "gray-text",
-          textColor: "gray-text",
-          categoryIcon: "fa-solid fa-utensils text-success me-1",
-        };
+        case "egg":
+          return {
+            icon: "fa-solid fa-egg gray-text",
+            // textColor: "text-success", // Changed to green for category name
+            categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+          };
       case "vegan":
         return {
           icon: "fa-solid fa-leaf text-success",
@@ -318,6 +303,17 @@ const NearbyArea = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setMenuItems((prevItems) =>
@@ -336,7 +332,7 @@ const NearbyArea = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Removed from favourites" : "Added to favourites"
+          isFavorite ? "Item has been removed from your favourites." : "Item has been added to your favourites."
         );
       }
     } catch (error) {
@@ -391,6 +387,18 @@ const NearbyArea = () => {
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        setIsPriceFetching(false);
+        return;
+      }
 
       const data = await response.json();
       if (response.ok && data.st === 1) {

@@ -27,6 +27,8 @@ import { RestaurantIdProvider } from "./context/RestaurantIdContext";
 import { CartProvider } from "./context/CartContext";
 import { PopupProvider } from "./context/PopupContext";
 import Saving from "./screens/Saving";
+import ErrorPage from "./screens/ErrorPage";
+import OrderTypeModal from "./components/OrderTypeModal";
 
 function App() {
   const { restaurantCode } = useParams();
@@ -47,9 +49,13 @@ function App() {
             <div className="user-app-root">
               <Routes>
                 <Route path="Index" element={<QRScreen />} />
-                
+
                 <Route
                   path=":restaurantCode/:table_number/:section_id"
+                  element={<HomeScreen />}
+                />
+                <Route
+                  path=":restaurantCode"
                   element={<HomeScreen />}
                 />
                 <Route
@@ -76,9 +82,71 @@ function App() {
                   path="TrackOrder/:order_number"
                   element={<TrackOrder />}
                 />
+                <Route path="error" element={<ErrorPage />} />
+                <Route path="OrderTypeModal" element={<OrderTypeModal />} />
                 <Route path="/restaurant/" element={<RestaurantDetails />} />
-                <Route path="" element={<Navigate to="Index" replace />} />
-                <Route path="*" element={<Navigate to="Index" replace />} />
+                <Route path="" element={<Navigate to="error" replace />} />
+                {/* <Route
+                  path=":restaurantCode/s:section_id"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/t"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/:section_id/t"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/s/:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="o/:section_id/:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/t/:section_id"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="o:restaurantCode/:section_id"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/s:section_id/t:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":restaurantCode/s/:section_id"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path=":section_id/:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="s/:section_id/t/:table_number"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="t/:table_number/s/:section_id"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="t/:table_number/:restaurantCode"
+                  element={<Navigate to="/user_app/error" replace />}
+                />
+                <Route
+                  path="s/:section_id/:restaurantCode"
+                  element={<Navigate to="/user_app/error" replace />}
+                /> */}
+                <Route path="*" element={<Navigate to="error" replace />} />
               </Routes>
             </div>
           </CartProvider>

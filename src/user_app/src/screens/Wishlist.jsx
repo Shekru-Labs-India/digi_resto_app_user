@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Bottom from "../component/bottom";
 import SigninButton from "../constants/SigninButton";
 import { useRestaurantId } from "../context/RestaurantIdContext";
@@ -17,6 +17,7 @@ import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 
 const Wishlist = () => {
+  const { t: tableParam } = useParams(); // Extract table number from URL params
   const [checkedItems, setCheckedItems] = useState({});
   const [expandAll, setExpandAll] = useState(false);
   const [hasFavorites, setHasFavorites] = useState(false);
@@ -228,6 +229,17 @@ const Wishlist = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
@@ -275,7 +287,7 @@ const Wishlist = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     if (!userData?.user_id || userData.role === "guest") {
       showLoginPopup();
@@ -284,7 +296,7 @@ const Wishlist = () => {
 
     if (!selectedMenu) return;
 
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -292,21 +304,14 @@ const Wishlist = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available.");
-      return;
-    }
-
     try {
       await addToCart(
         {
           ...selectedMenu,
-          quantity: 1,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
         },
         restaurantId
       );
@@ -353,23 +358,38 @@ const Wishlist = () => {
     const userId = userData?.user_id;
   
     if (!userId || !menuId || !outletId) {
-      window.showToast("error", "Missing required information");
+      // window.showToast("error", "Missing required information");
+      showLoginPopup();
       return;
     }
   
     try {
-      const response = await fetch(`${config.apiDomain}/user_api/remove_favourite_menu`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({
-          outlet_id: outletId,
-          menu_id: menuId,
-          user_id: userId, // Use userId from userData
-        }),
-      });
+      const response = await fetch(
+        `${config.apiDomain}/user_api/remove_favourite_menu`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({
+            outlet_id: outletId,
+            menu_id: menuId,
+            user_id: userId,
+          }),
+        }
+      );
+  
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
   
       const data = await response.json();
   
@@ -488,7 +508,7 @@ const Wishlist = () => {
         <div className="container px-3 py-0 mb-0">
           <HotelNameAndTable
             restaurantName={restaurantName}
-            tableNumber={role?.tableNumber || "1"}
+            tableNumber={tableParam}
           />
         </div>
         {isLoading ? (

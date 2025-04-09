@@ -26,6 +26,8 @@ const Profile = () => {
     localStorage.removeItem("userData");
     localStorage.removeItem("cartItems");
     localStorage.removeItem("access_token");
+    localStorage.removeItem("customerName");
+    localStorage.removeItem("mobile");
     
     showLoginPopup();
   };
@@ -110,7 +112,7 @@ const Profile = () => {
                       className="border border-2 d-flex align-items-center justify-content-center h-100 p-3 text-decoration-none"
                     >
                       <i className="fa-solid fa-clock-rotate-left me-2 fs-5"></i>
-                      <span className="font_size_14">My Order</span>
+                      <span className="font_size_14">Orders</span>
                     </Link>
                   </li>
                   {/* <li className="col-6">
@@ -295,16 +297,18 @@ const Profile = () => {
         </div> */}
         <div className="align-bottom border-top mt-4 p-b30">
           <div className="d-flex justify-content-center py-0">
-            <Link to="/">
-              {" "}
-              <div className="d-flex align-items-center mt-4 mb-0">
-                <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
-                  MenuMitra
-                </div>
-              </div>
-            </Link>
-          </div>
+                        <a
+                          href="https://menumitra.com/"
+                          className="d-flex align-items-center"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img src={logo} alt="logo" width="40" height="40" />
+                          <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                            MenuMitra
+                          </span>
+                        </a>
+                      </div>
           <div className="text-center text-md-center gray-text font_size_12 pb-5">
             <div className="my-4">
               <div className="text-center d-flex justify-content-center">

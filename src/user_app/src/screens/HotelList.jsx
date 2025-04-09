@@ -16,7 +16,7 @@ const navigate = useNavigate();
      // Store the hardcoded access token in localStorage
 // localStorage.setItem(
 //   "access_token",
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTcxOTA3LCJpYXQiOjE3MzgzOTkxMDcsImp0aSI6ImMyYzRhNGZmNzg1NjQxM2I5YjFkYjIwNGE5Y2VkZDVjIiwidXNlcl9pZCI6MjYyfQ.Mh31YiIqG6txiTbGeC4oYE6Wt0Vc8g3sW8I87voWKG4"
+//   ""
 // );
 
 // Fetch API request using the stored token
@@ -34,15 +34,20 @@ const response = await fetch(
         const data = await response.json();
         if (data.st === 1) {
           const formattedHotels = data.outlets.map((outlets) => {
-            const code = outlets.resto_url.split("user_app/")[1]?.split("/")[0];
-            const urlParts = outlets.resto_url.split("/");
-            const sectionId = urlParts[urlParts.length - 1];
-            const tableNo = urlParts[urlParts.length - 2];
+            // Use regex to extract parts from URL
+            const codeMatch = outlets.resto_url.match(/\/o(\d+)/);
+            const sectionMatch = outlets.resto_url.match(/\/s(\d+)/);
+            const tableMatch = outlets.resto_url.match(/\/t(\d+)/);
+            
+            // Extract just the numeric parts without prefixes
+            const code = codeMatch ? codeMatch[1] : "";
+            const sectionId = sectionMatch ? sectionMatch[1] : "";
+            const tableNo = tableMatch ? tableMatch[1] : "";
 
             return {
               ...outlets,
               code,
-              section_id: sectionId,
+              section_id: sectionId, 
               table_no: tableNo,
             };
           });
@@ -92,18 +97,21 @@ const response = await fetch(
   };
 
   const handleHotelClick = (outlets) => {
-    if (outlets.is_outlet_filled !== true) {
-      navigate("/user_app/HotelList");
+    if (!outlets.is_outlet_filled) {
+      navigate("/user_app/Index");
     } else {
+      // Store clean values (without prefixes) in localStorage
       localStorage.setItem("sectionId", outlets.section_id);
       localStorage.setItem("restaurantCode", outlets.code);
       localStorage.setItem("tableNumber", outlets.table_no);
-      console.log(`Navigating to /user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`);
-      navigate(
-        `/user_app/${outlets.code}/${outlets.table_no}/${outlets.section_id}`
-      );
+  
+      // Construct URL with proper prefixes
+      const url = `/user_app/o${outlets.code}/s${outlets.section_id}/t${outlets.table_no}`;
+      console.log(`Navigating to ${url}`);
+      navigate(url);
     }
   };
+  
 
   return (
     <div className="page-wrapper">

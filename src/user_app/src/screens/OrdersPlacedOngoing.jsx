@@ -2,6 +2,7 @@ import React, { useState, useEffect , useRef} from 'react';
 import config from "../component/config";
 import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
+import { usePopup } from "../context/PopupContext";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -137,8 +138,19 @@ const CircularCountdown = ({
       const currentUserId = userData?.user_id || localStorage.getItem("user_id");
       const restaurantId = order.restaurant_id;
       const sectionId = order.section_id;
+      const outletOnly = localStorage.getItem("outletOnly") === "true";
 
       if (!currentUserId || !restaurantId) return;
+
+      const payload = {
+        user_id: currentUserId,
+        restaurant_id: restaurantId,
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
@@ -148,11 +160,7 @@ const CircularCountdown = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: currentUserId,
-            restaurant_id: restaurantId,
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -216,7 +224,7 @@ const OrderCard = ({
   setCompletedTimers = () => {},
 }) => {
   const navigate = useNavigate();
-
+  const { showLoginPopup } = usePopup();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -234,13 +242,23 @@ const OrderCard = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             order_id: order.order_id,
             restaurant_id: order.restaurant_id,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
 
       const data = await response.json();
 
@@ -283,6 +301,17 @@ const OrderCard = ({
         }),
       });
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
 
       if (data.st === 1) {
@@ -313,17 +342,17 @@ const OrderCard = ({
     
   
   const getOrderTypeIcon = (orderType) => {
-      switch (orderType?.toLowerCase()) {
-        case "parsel":
-          return <i className="fa-solid fa-hand-holding-heart"></i>;
-        case "drive-through":
-          return <i className="fa-solid fa-car-side"></i>;
-        case "dine-in":
-          return <i className="fa-solid fa-utensils"></i>;
-        default:
-          return null;
-      }
-    };
+    switch (orderType?.toLowerCase()) {
+      case "parcel":
+        return <i className="fa-solid fa-hand-holding-heart"></i>;
+      case "drive-through":
+        return <i className="fa-solid fa-car-side"></i>;
+      case "dine-in":
+        return <i className="fa-solid fa-utensils"></i>;
+      default:
+        return null;
+    }
+  };
 
   const handleOrderClick = (order) => {
     navigate(`/user_app/TrackOrder/${order.order_number}`);
@@ -334,9 +363,17 @@ const OrderCard = ({
       <Link
         to={`/user_app/TrackOrder/${order.order_number}`}
         className="text-decoration-none"
-        state={{
-          orderDetails: order,
-          orderNumber: order.order_number,
+        onClick={(e) => {
+          e.preventDefault();
+          // Store orderId in localStorage before navigation
+          localStorage.setItem('current_order_id', order.order_id?.toString());
+          navigate(`/user_app/TrackOrder/${order.order_number}`, {
+            state: {
+              orderId: order.order_id,
+              orderDetails: order,
+              from: 'orders_placed_ongoing'
+            }
+          });
         }}
       >
         <div className="custom-card my-2 rounded-4 shadow-sm">
@@ -377,17 +414,27 @@ const OrderCard = ({
             </div>
             <div className="row">
               <div className="col-3 text-start pe-0">
-                {/* <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i> */}
                 <span className="font_size_12 gray-text font_size_12 text-nowrap">
                   {getOrderTypeIcon(order.order_type)}
-                  <span className="ms-2">{order.order_type}</span>
+                  <span className="ms-2">{order.order_type || "Dine In"}</span>
                 </span>
               </div>
               <div className="col-9 text-end">
                 <div className="font_size_12 gray-text font_size_12 text-nowrap">
                   <span className="fw-medium gray-text">
-                    <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
-                    {titleCase(order.section_name)} - {order.table_number}
+                    {order.section_name && (
+                      <>
+                        <i className="fa-solid fa-location-dot ps-2 pe-1 font_size_12 gray-text"></i>
+                        {`${titleCase(order.section_name)}${
+                          order.order_type?.toLowerCase() === "drive-through" ||
+                          order.order_type?.toLowerCase() === "parcel" ||
+                          order.order_type?.toLowerCase() === "counter" ||
+                          order.order_type?.toLowerCase() === "delivery"
+                            ? ""
+                            : ` - ${order.table_number}`
+                        }`}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -405,17 +452,13 @@ const OrderCard = ({
               </div>
               <div className="col-6 text-end">
                 <span className="text-info font_size_14 fw-semibold">
-                  ₹{order.grand_total.toFixed(2)}
+                  ₹{order.final_grand_total.toFixed(2)}
                 </span>
-                {order.discount_percent > 0 && (
-                  <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
-                    ₹
-                    {(
-                      order.grand_total /
-                      (1 - order.discount_percent / 100)
-                    ).toFixed(2)}
-                  </span>
-                )}
+                {order.grand_total !== order.total_bill_amount && (
+                <span className="text-decoration-line-through ms-2 gray-text font_size_12 fw-normal">
+                  ₹{order.total_bill_amount.toFixed(2)}
+                </span>
+                    )}
               </div>
             </div>
           </div>
@@ -484,17 +527,36 @@ const OrdersPlacedOngoing = () => {
     JSON.parse(localStorage.getItem("userData"))?.sectionId ||
     localStorage.getItem("sectionId") ||
     "";
+  const { showLoginPopup } = usePopup();
+  const [currentRestaurntId, setCurrentRestaurantId] = useState(localStorage.getItem("outlet_id"));
 
   const fetchData = async () => {
-    // Check if we have required data before making the API call
-    if (!userData?.user_id || !userData?.restaurantId) {
+    // Get fresh data each time
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const sectionId = userData?.sectionId || localStorage.getItem("sectionId") || "";
+    const outletId = localStorage.getItem("outlet_id");
+    const outletOnly = localStorage.getItem("outletOnly") === "true";
+
+    // Early return if missing data
+    if (!userData?.user_id || !outletId) {
       setOrders({ placed: [], ongoing: [] });
       return;
     }
 
     try {
+      // Add timeout control
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const payload = {
+        user_id: userData.user_id,
+        outlet_id: outletId
+      };
+      
+      // Only add section_id if not outletOnly
+      if (!outletOnly && sectionId) {
+        payload.section_id = sectionId;
+      }
 
       const response = await fetch(
         `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
@@ -504,18 +566,31 @@ const OrdersPlacedOngoing = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            outlet_id: localStorage.getItem("outlet_id"),
-            section_id: sectionId,
-          }),
+          body: JSON.stringify(payload),
           signal: controller.signal
         }
       );
 
       clearTimeout(timeoutId);
 
-      // Handle all non-200 responses silently
+      // Handle unauthorized access
+      if (response.status === 401) {
+        // Clear all auth-related data
+        const keysToRemove = [
+          "user_id",
+          "userData",
+          "cartItems",
+          "access_token",
+          "customerName",
+          "mobile"
+        ];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        showLoginPopup();
+        setOrders({ placed: [], ongoing: [] });
+        return;
+      }
+
+      // Handle non-200 responses
       if (!response.ok) {
         setOrders({ placed: [], ongoing: [] });
         return;
@@ -523,20 +598,25 @@ const OrdersPlacedOngoing = () => {
 
       const data = await response.json();
 
-      // Check if data exists and has the expected structure
+      // Validate response data and current restaurant
       if (data?.st === 1 && Array.isArray(data.data)) {
-        const ordersData = data.data;
-        setOrders({
-          placed: ordersData.filter(order => order.status === 'placed'),
-          ongoing: ordersData.filter(order => order.status === 'cooking')
-        });
+        const currentOutletId = localStorage.getItem("outlet_id");
+        
+        // Only update if we're still on the same restaurant
+        if (outletId === currentOutletId) {
+          const ordersData = data.data;
+          setOrders({
+            placed: ordersData.filter(order => order.status === 'placed'),
+            ongoing: ordersData.filter(order => order.status === 'cooking')
+          });
+        }
       } else {
-        // Handle empty or invalid data structure silently
         setOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
-      // Handle all errors silently (including abort errors)
+      // Only log and clear orders for non-abort errors
       if (error.name !== 'AbortError') {
+        console.error('Error fetching orders:', error);
         setOrders({ placed: [], ongoing: [] });
       }
     }
@@ -544,20 +624,34 @@ const OrdersPlacedOngoing = () => {
 
   useEffect(() => {
     let mounted = true;
-
-    const loadData = async () => {
-      await fetchData();
+    
+    const checkRestaurantChange = () => {
+      const newRestaurantId = localStorage.getItem("outlet_id");
+      if (newRestaurantId !== currentRestaurntId && mounted) {
+        // Clear existing orders when restaurant changes
+        setOrders({ placed: [], ongoing: [] });
+        setCurrentRestaurantId(newRestaurantId);
+      }
     };
 
-    loadData();
+    // Initial fetch
+    fetchData();
+
+    // Set up intervals for restaurant checks and data refresh
+    const restaurantCheckInterval = setInterval(checkRestaurantChange, 1000);
+    const dataRefreshInterval = setInterval(() => {
+      if (mounted) {
+        fetchData();
+      }
+    }, 30000); // Refresh data every 30 seconds
 
     // Cleanup function
     return () => {
       mounted = false;
+      clearInterval(restaurantCheckInterval);
+      clearInterval(dataRefreshInterval);
     };
-  }, []);
-
-
+  }, [currentRestaurntId]); // Add currentRestaurantId as dependency
 
   return (
     <div>

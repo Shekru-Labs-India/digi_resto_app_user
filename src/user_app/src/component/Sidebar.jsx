@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import { usePopup } from '../context/PopupContext';
@@ -27,10 +27,17 @@ export const SidebarToggler = () => {
   });
 
   const [restaurantCode, setRestaurantCode] = useState('');
+  const tableNumber = localStorage.getItem("tableNumber");
+  const sectionId = localStorage.getItem("sectionId");
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData?.restaurantCode) {
+    // Try to get restaurantCode from multiple sources
+    const storedCode = localStorage.getItem("restaurantCode");
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    
+    if (storedCode) {
+      setRestaurantCode(storedCode);
+    } else if (userData?.restaurantCode) {
       setRestaurantCode(userData.restaurantCode);
     }
   }, []);
@@ -125,6 +132,13 @@ export const SidebarToggler = () => {
     }
   };
 
+  const handleClick = (e, path) => {
+    if (location.pathname === path) {
+      e.preventDefault();
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <>
       <div className="right-content gap-1">
@@ -199,51 +213,35 @@ export const SidebarToggler = () => {
         </div>
         <ul className="nav navbar-nav">
           <li>
-            <Link
-              className="nav-link active"
-              to={`/user_app/${restaurantCode}`}
-            >
-              <span className="dz-icon icon-sm">
-                <i className="fa-solid fa-house fs-3"></i>
-              </span>
-              <span className="font_size_16 fw-medium">Home</span>
-              {/* <div className="ms-5 ps-5">
-                <div
-                  className={`  border ${
-                    isVegOnly ? "border-success" : "border-danger"
-                  } p-1`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleVegNonVeg();
-                  }}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "24px", // Adjust height
-                    width: "24px", // Adjust width
-                    backgroundColor: "#d4e3dd",
-                  }}
-                >
-                  {isVegOnly ? (
-                    <i
-                      className="fa-solid fa-circle text-success"
-                      style={{ fontSize: "16px" }} // Adjust icon size
-                    ></i>
-                  ) : (
-                    <i
-                      className="fa-solid fa-play fa-rotate-270 text-danger"
-                      style={{ fontSize: "16px" }} // Adjust icon size
-                    ></i>
-                  )}
-                </div>
-              </div> */}
-            </Link>
+            {restaurantCode ? (
+              <NavLink
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                to={`/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`}
+                onClick={(e) => handleClick(e, `/user_app/o${restaurantCode?.replace(/^o/, '')}/s${sectionId?.replace(/^s/, '')}/t${tableNumber?.replace(/^t/, '')}`)}
+              >
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-house fs-3"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Home</span>
+              </NavLink>
+            ) : (
+              <Link
+                className="nav-link"
+                to="/user_app/Index"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <span className="dz-icon icon-sm">
+                  <i className="fa-solid fa-house fs-3"></i>
+                </span>
+                <span className="font_size_16 fw-medium">Home</span>
+              </Link>
+            )}
           </li>
           <li>
-            <Link
-              className="nav-link active d-flex align-items-center justify-content-between"
+            <NavLink
+              className={({ isActive }) => `nav-link d-flex align-items-center justify-content-between ${isActive ? 'active' : ''}`}
               to="/user_app/Menu"
+              onClick={(e) => handleClick(e, "/user_app/Menu")}
             >
               <div className="d-flex align-items-center">
                 <span className="dz-icon icon-sm">
@@ -272,65 +270,83 @@ export const SidebarToggler = () => {
                   <div className="toggle-button"></div>
                 </div>
               </div> */}
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Category">
+            <NavLink 
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Category"
+              onClick={(e) => handleClick(e, "/user_app/Category")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-layer-group fs-3"></i>
               </span>
-              <span className="  font_size_16 fw-medium">Category</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Category</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Wishlist">
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Wishlist"
+              onClick={(e) => handleClick(e, "/user_app/Wishlist")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-regular fa-heart fs-4"></i>
               </span>
-              <span className="  font_size_16  fw-medium">Favourite</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Favourite</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/MyOrder">
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/MyOrder"
+              onClick={(e) => handleClick(e, "/user_app/MyOrder")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-clock-rotate-left fs-4"></i>
               </span>
-              <span className="  font_size_16 fw-medium ">My Orders</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Orders</span>
+            </NavLink>
           </li>
           <li>
-          <Link className="nav-link active" to="/user_app/Checkout">
-                <span className="dz-icon icon-sm">
-                  <i className="fa-solid fa-check-to-slot fs-4"></i>
-                </span>
-                <span className=" font_size_16  fw-medium">Checkout</span>
-              </Link>
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Checkout"
+              onClick={(e) => handleClick(e, "/user_app/Checkout")}
+            >
+              <span className="dz-icon icon-sm">
+                <i className="fa-solid fa-check-to-slot fs-4"></i>
+              </span>
+              <span className="font_size_16 fw-medium">Checkout</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Search">
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Search"
+              onClick={(e) => handleClick(e, "/user_app/Search")}
+            >
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-magnifying-glass"></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Search</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Search</span>
+            </NavLink>
           </li>
           <li>
-            <Link className="nav-link active" to="/user_app/Profile">
+            <NavLink
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              to="/user_app/Profile"
+              onClick={(e) => handleClick(e, "/user_app/Profile")}
+            >
               <span className="dz-icon icon-sm">
-                <i
-                  className={
-                    userData?.user_id
-                      ? "fa-solid fa-user"
-                      : "fa-regular fa-user"
-                  }
-                ></i>
+                <i className={userData?.user_id ? "fa-solid fa-user" : "fa-regular fa-user"}></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Profile</span>
-            </Link>
+              <span className="font_size_16 fw-medium">Profile</span>
+            </NavLink>
           </li>
-          <li>
-            <Link 
-              className="nav-link active" 
+          {/* <li>
+            <Link
+              className="nav-link"
               to="#"
               onClick={(e) => {
                 e.preventDefault();
@@ -340,9 +356,9 @@ export const SidebarToggler = () => {
               <span className="dz-icon icon-sm">
                 <i className="fa-solid fa-bell fs-4"></i>
               </span>
-              <span className=" font_size_16 fw-medium  ">Call Waiter</span>
+              <span className="font_size_16 fw-medium">Call Waiter</span>
             </Link>
-          </li>
+          </li> */}
         </ul>
         {/* <div className="dz-mode mt-4 me-4">
           <div className="theme-btn" onClick={toggleTheme}>
@@ -429,17 +445,19 @@ export const SidebarToggler = () => {
           </div>
         </div> */}
         <div className="align-bottom border-top">
-          <div className="d-flex justify-content-center py-0">
-            <Link to="/">
-              {" "}
-              <div className="d-flex align-items-center mt-4 mb-0">
+        <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <img src={logo} alt="logo" width="40" height="40" />
-                <div className="text-dark mb-0 mt-1 fw-semibold font_size_18 ms-2">
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
                   MenuMitra
-                </div>
-              </div>
-            </Link>
-          </div>
+                </span>
+              </a>
+            </div>
           <div className="text-center text-md-center gray-text font_size_12 pb-5">
             <div className="my-4">
               <div className="text-center d-flex justify-content-center">

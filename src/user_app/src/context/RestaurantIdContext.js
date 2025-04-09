@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import config from "../component/config"
+import OrderTypeModal from "../components/OrderTypeModal";
+import { URL_PATTERNS, stripPrefix, extractUrlParams, validateUrlPath } from "../utils/urlValidator";
 const RestaurantIdContext = createContext();
 
 export const useRestaurantId = () => {
@@ -17,36 +19,144 @@ export const RestaurantIdProvider = ({ children }) => {
   const [sectionName, setSectionName] = useState("")
   const [socials, setSocials] = useState([]);
   const [sectionId, setSectionId] = useState(localStorage.getItem("sectionId"));
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [isOutletOnlyUrl, setIsOutletOnlyUrl] = useState(false);
+  const [orderType, setOrderType] = useState(localStorage.getItem("orderType") || "");
   const navigate = useNavigate();
   const location = useLocation();
   const lastFetchedCode = useRef(null);
 
   useEffect(() => {
+    // This useEffect is responsible for URL validation and parameter extraction
     const path = location.pathname;
-    const match = path.match(/\/user_app\/(\d{6})(?:\/([^\/]+))(?:\/(\d+))?/);
-
-    if (match) {
-      const [, code, table, section] = match;
-      setRestaurantCode(code);
+    
+    // Check for direct outlet patterns without /user_app/ prefix
+    if (path.match(/^\/o\d+/)) {
+      navigate("/user_app/error", { 
+        state: { 
+          errorMessage: "Invalid URL format. URLs should include '/user_app/' prefix." 
+        } 
+      });
+      return;
+    }
+    
+    // Validate URL format first
+    const errorMessage = validateUrlPath(path);
+    if (errorMessage) {
+      navigate("/user_app/error", { state: { errorMessage } });
+      return;
+    }
+    
+    // Continue processing valid URLs
+    if (path.includes('/user_app/o')) {
+      // Extract outlet code for modal tracking
+      const outletMatch = path.match(/\/user_app\/o(\d+)/);
+      if (outletMatch) {
+        const currentOutletCode = outletMatch[1];
+        const previousOutletCode = localStorage.getItem("currentOutletCode");
+        
+        // If this is a different outlet code than before
+        if (previousOutletCode && previousOutletCode !== currentOutletCode) {
+          console.log("Switching to new outlet, clearing orderType and seen_modal state");
+          localStorage.removeItem("orderType");
+          localStorage.removeItem(`seen_modal_${previousOutletCode}`);
+        }
+        
+        // Save current outlet code
+        localStorage.setItem("currentOutletCode", currentOutletCode);
+      }
       
-      if (table) {
+      // IMPORTANT: Use the imported utility to determine if this is an outlet-only URL
+      const isOutletOnly = URL_PATTERNS.outletOnlyPattern.test(path);
+      console.log("Is outlet only URL:", isOutletOnly, path);
+      
+      // Store previous URL type to detect transitions
+      const prevIsOutletOnly = localStorage.getItem("isOutletOnlyUrl") === "true";
+      
+      // Update current URL type
+      setIsOutletOnlyUrl(isOutletOnly);
+      localStorage.setItem("isOutletOnlyUrl", isOutletOnly.toString());
+      
+      // CASE 1: URL is outlet only - show popup to choose orderType if needed
+      if (isOutletOnly) {
+        if (outletMatch) {
+          const outletCode = outletMatch[1];
+          const seenModalKey = `seen_modal_${outletCode}`;
+          const hasSeenModal = localStorage.getItem(seenModalKey) === "true";
+          const currentOrderType = localStorage.getItem("orderType");
+          
+          // CASE 4: Coming from non-outlet-only URL to outlet-only URL
+          // If we're now in outlet-only URL and orderType is set to dine-in from previous page
+          // Clear it and show the popup again
+          if (!prevIsOutletOnly && currentOrderType === "dine-in") {
+            console.log("Navigating from section/table URL to outlet-only URL, clearing dine-in orderType");
+            localStorage.removeItem("orderType");
+            // Update state to reflect localStorage change
+            setOrderType("");
+            localStorage.removeItem(seenModalKey);
+            setShowOrderTypeModal(true);
+          }
+          // Original case 1 logic
+          else if (!hasSeenModal && !currentOrderType) {
+            console.log("First visit to outlet-only URL, showing order type modal");
+            setShowOrderTypeModal(true);
+          } else {
+            console.log("User has already seen modal for this outlet or has orderType set");
+            setShowOrderTypeModal(false);
+          }
+        }
+      } 
+      // CASE 2 & 3: URL is not outlet only, or navigating from outlet-only to section/table URL
+      else {
+        // For CASE 3: If we're transitioning from outlet-only to section/table URL, force update to dine-in
+        if (prevIsOutletOnly) {
+          console.log("Transitioning from outlet-only to table/section URL, setting orderType to dine-in");
+          localStorage.setItem("orderType", "dine-in");
+          // Update state to reflect localStorage change
+          setOrderType("dine-in");
+        }
+        // For CASE 2: If it's not an outlet-only URL, ensure orderType is set to dine-in when not already set
+        else if (!localStorage.getItem("orderType")) {
+          console.log("Non-outlet URL and no orderType set, defaulting to dine-in");
+          localStorage.setItem("orderType", "dine-in");
+          // Update state to reflect localStorage change
+          setOrderType("dine-in");
+        }
+      }
+    }
+    
+    // Extract URL parameters for valid URLs
+    const match = path.match(/\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/);
+    if (match) {
+      const [, code, section, table] = match;
+      
+      // Strip any prefixes that might have been included
+      const cleanCode = stripPrefix(code, 'o');
+      const cleanSection = section ? stripPrefix(section, 's') : section;
+      const cleanTable = table ? stripPrefix(table, 't') : table;
+      
+      console.log(`outlet::${cleanCode}, section:${cleanSection || "undefined"}, table:${cleanTable || "undefined"}`);
+      setRestaurantCode(cleanCode);
+
+      // Continue with the existing table validation logic
+      if (cleanTable) {
         // First get restaurant details to get restaurant_id
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-          //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+            //  'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({ 
-            outlet_code: code,
-            section_id: section || null 
+          body: JSON.stringify({
+            outlet_code: cleanCode,
+            section_id: cleanSection,
           }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.st === 1) {
               const { outlet_id } = data.outlet_details;
-              
+
               // Now validate the table
               return fetch(`${config.apiDomain}/user_api/is_table_exists`, {
                 method: "POST",
@@ -55,53 +165,62 @@ export const RestaurantIdProvider = ({ children }) => {
                   // 'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
                 },
                 body: JSON.stringify({
-                  outlet_id:outlet_id,
-                  section_id: section || null,
-                  table_number: table,
+                  outlet_id: outlet_id,
+                  section_id: cleanSection || null,
+                  table_number: cleanTable,
                 }),
               });
             } else {
-              throw new Error('Failed to get restaurant details');
+              throw new Error("Failed to get restaurant details");
             }
           })
-          .then(response => response.json())
+          .then((response) => response.json())
           .then((data) => {
             if (data.st === 1 && data.is_table_exists) {
               // Table exists, set the table number
-              setTableNumber(table);
+              setTableNumber(cleanTable);
               // window.showToast("info", `You are at Table Number ${table}`);
-              localStorage.setItem("tableNumber", table);
+              localStorage.setItem("tableNumber", cleanTable);
+            } else if (data.st === 2 || !data.is_table_exists) {
+              // Table doesn't exist or error response, navigate to error page
+              navigate("/user_app/error", { 
+                state: { 
+                  errorMessage: data.msg || "Table not found. Please check the table number and try again." 
+                } 
+              });
+              console.log("Table not exists or error occurred");
             } else {
-              // Table doesn't exist, navigate to HotelList
-              // navigate("/user_app/HotelList");
-            // window.showToast("info", `You are at Table Number ${table} and it is not exists`);
-            console.log("Table not exists");
+              // Other error scenarios
+              console.error("Unexpected response:", data);
             }
           })
           .catch((error) => {
-            console.clear();
-            navigate("/user_app/HotelList");
-            
+            // console.clear();
+            navigate("/user_app/error", {
+              state: {
+                errorMessage: error.message || "Network error. Unable to verify table information."
+              }
+            });
           });
       }
 
-      if (section) {
-        setSectionId(section);
-        localStorage.setItem("sectionId", section);
-        
+      if (cleanSection) {
+        setSectionId(cleanSection);
+        localStorage.setItem("sectionId", cleanSection);
+
         fetch(`${config.apiDomain}/user_api/get_restaurant_details_by_code`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-          //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            //  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-          body: JSON.stringify({ outlet_code: code, section_id: section }),
+          body: JSON.stringify({ outlet_code: cleanCode, section_id: cleanSection }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.st === 1) {
               const sectionDetails = data.sections.find(
-                (s) => s.section_id.toString() === section
+                (s) => s.section_id.toString() === cleanSection
               );
               if (sectionDetails) {
                 const sectionName = sectionDetails.section_name;
@@ -113,7 +232,7 @@ export const RestaurantIdProvider = ({ children }) => {
                 if (Object.keys(userData).length > 0) {
                   const updatedUserData = {
                     ...userData,
-                    sectionId: section,
+                    sectionId: cleanSection,
                     section_name: sectionName,
                   };
                   localStorage.setItem(
@@ -125,63 +244,184 @@ export const RestaurantIdProvider = ({ children }) => {
             }
           })
           .catch((error) => {
-            console.clear();
+            // console.clear();
           });
       }
     }
   }, [location, navigate]);
 
-  useEffect(() => {
-    if (!sectionId) {
-      console.warn("Section ID is null or undefined. Skipping API call.");
-      return; // Do not execute the API call if sectionId is not available
+  // Handle order type selection
+  const handleOrderTypeSelection = (orderType) => {
+    // Save the selected order type to localStorage
+    localStorage.setItem("orderType", orderType);
+    // Update the state so all components will re-render
+    setOrderType(orderType);
+    
+    // Mark that user has seen the modal for this outlet code
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/o(\d+)/);
+    if (match) {
+      const outletCode = match[1];
+      localStorage.setItem(`seen_modal_${outletCode}`, "true");
     }
+    
+    // Hide the modal
+    setShowOrderTypeModal(false);
+    console.log(`Order type selected: ${orderType}`);
+  };
+
+  // Function to handle closing the modal without selection
+  const handleCloseModal = () => {
+    // Mark that user has seen the modal for this outlet code
+    const path = location.pathname;
+    const match = path.match(/\/user_app\/o(\d+)/);
+    if (match) {
+      const outletCode = match[1];
+      localStorage.setItem(`seen_modal_${outletCode}`, "true");
+    }
+    
+    // Hide the modal
+    setShowOrderTypeModal(false);
+  };
+
+  useEffect(() => {
+    // We'll fetch restaurant details even if sectionId is null (for outlet-only URLs)
+    // Do not skip the API call for outlet-only URLs
   
     const fetchRestaurantDetails = async (restaurantCode, sectionId) => {
+      // Strip any prefixes from passed parameters
+      const cleanRestaurantCode = stripPrefix(restaurantCode, 'o');
+      const cleanSectionId = stripPrefix(sectionId, 's');
+      
       // Get code from localStorage if not provided
-      const storedCode = localStorage.getItem("restaurantCode");
-      const finalCode = restaurantCode || storedCode;
-  
+      const storedCode = stripPrefix(localStorage.getItem("restaurantCode"), 'o');
+      
+      // Validate URL patterns first
+      const currentUrl = window.location.pathname;
+      const urlPattern = /\/user_app\/o(\d+)(?:\/s(\d+))?(?:\/t(\d+))?/;
+      const match = currentUrl.match(urlPattern);
+      
+      console.log("---------"+match);
+      console.log("---------");
+      
+      let extractedCode = null;
+      let extractedTableNumber = null;
+      let extractedSectionId = null;
+
+      // Prioritize URL parameters over localStorage if available
+      if (match) {
+          [, extractedCode, extractedSectionId, extractedTableNumber] = match;
+          // Strip any prefixes that might be in the match
+          extractedCode = stripPrefix(extractedCode, 'o');
+          extractedSectionId = extractedSectionId ? stripPrefix(extractedSectionId, 's') : null;
+          extractedTableNumber = extractedTableNumber ? stripPrefix(extractedTableNumber, 't') : null;
+          
+          console.log(
+            `outlet::${extractedCode}, section:${
+              extractedSectionId || "undefined"
+            }, table:${extractedTableNumber || "undefined"}`
+          );
+      }
+
+      // If we only have outlet code in URL, don't use fallbacks for table and section
+      const urlHasOnlyOutlet = match && !match[2] && !match[3];
+      
+      // Make sure we're consistent with the state - get from localStorage if available
+      const storedIsOutletOnly = localStorage.getItem("isOutletOnlyUrl") === "true";
+      if (urlHasOnlyOutlet !== isOutletOnlyUrl && !storedIsOutletOnly) {
+        setIsOutletOnlyUrl(urlHasOnlyOutlet);
+      }
+      
+      // Use extracted values, but only use fallbacks if we're not in outlet-only mode
+      const finalCode = extractedCode || cleanRestaurantCode || storedCode;
+      const finalSectionId = isOutletOnlyUrl ? null : (extractedSectionId || cleanSectionId || stripPrefix(localStorage.getItem("sectionId"), 's'));
+      
+      // Validate that we have a restaurant code before proceeding
+      if (!finalCode) {
+        console.error("No valid restaurant code found in URL or localStorage");
+        // Don't redirect here as it might create redirect loops
+        return;
+      }
+
+      // Only update table number if explicitly in URL
+      if (extractedTableNumber) {
+        updateTableNumber(extractedTableNumber);
+      } else if (isOutletOnlyUrl) {
+        // Clear table number if we're in outlet-only mode
+        updateTableNumber("");
+        localStorage.removeItem("tableNumber");
+      }
+
       // Debug log
-      console.log('Restaurant code being used:', {
-        providedCode: restaurantCode,
+      console.log("URL parsing results:", {
+        isOutletOnlyUrl,
+        extractedCode,
+        extractedTableNumber,
+        extractedSectionId,
+        finalCode,
+        finalSectionId
+      });
+
+      const sectionIdfromLocal = stripPrefix(localStorage.getItem("sectionId"), 's');
+      console.log(sectionIdfromLocal);
+      // Debug log
+      // alert(sectionIdfromLocal);
+      console.log("Restaurant code being used:", {
+        providedCode: cleanRestaurantCode,
         storedCode: storedCode,
         finalCode: finalCode,
-        sectionId: sectionId,
+        // sectionId: sectionId,
+        sectionId: finalSectionId,
       });
-  
+
       try {
+        // Prepare request body based on whether we have a section ID
+        const requestBody = {
+          outlet_code: finalCode,
+        };
+        
+        // Only include section_id in the payload if it's not null
+        if (finalSectionId) {
+          requestBody.section_id = finalSectionId;
+        }
+        
         const response = await fetch(
           `${config.apiDomain}/user_api/get_restaurant_details_by_code`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-             // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-            body: JSON.stringify({
-              outlet_code: finalCode,
-              section_id: sectionId,
-            }),
+            body: JSON.stringify(requestBody),
           }
         );
-  
+
         const data = await response.json();
         if (data.st === 1) {
-          const { outlet_id, name, account_status, is_open, section_name } = data.outlet_details;
+          const {
+            outlet_id,
+            name,
+            account_status,
+            is_open,
+            section_name,
+            address,
+            mobile,
+          } = data.outlet_details;
           setRestaurantId(outlet_id);
           setRestaurantName(name);
           setRestaurantStatus(account_status);
           setIsRestaurantOpen(is_open);
           setSectionName(section_name);
-  
+
           localStorage.setItem("outlet_id", outlet_id);
           localStorage.setItem("restaurantName", name);
-          localStorage.setItem("restaurantCode", finalCode);
+          localStorage.setItem("restaurantCode", finalCode); // Store clean code
           localStorage.setItem("restaurantStatus", account_status);
           localStorage.setItem("isRestaurantOpen", is_open);
           localStorage.setItem("sectionName", section_name);
-  
+          localStorage.setItem("outlet_address", address);
+          localStorage.setItem("outlet_mobile", mobile);
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -189,11 +429,11 @@ export const RestaurantIdProvider = ({ children }) => {
               restaurantId: outlet_id,
               restaurantName: name,
               restaurantCode: finalCode,
-              sectionId: sectionId,
+              sectionId: finalSectionId,
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-  
+
           const socialsArray = [
             {
               id: "whatsapp",
@@ -232,18 +472,21 @@ export const RestaurantIdProvider = ({ children }) => {
               link: data.outlet_details.google_business_link || "",
             },
           ].filter((item) => item.link);
-  
-          localStorage.setItem("restaurantSocial", JSON.stringify(socialsArray));
+
+          localStorage.setItem(
+            "restaurantSocial",
+            JSON.stringify(socialsArray)
+          );
           setSocials(socialsArray);
         } else if (data.st === 2) {
           setRestaurantId(null);
           setRestaurantName("");
-  
+
           localStorage.removeItem("restaurantId");
           localStorage.removeItem("restaurantName");
           localStorage.removeItem("restaurantCode");
           localStorage.removeItem("restaurantSocial");
-  
+
           const userData = JSON.parse(localStorage.getItem("userData") || "{}");
           if (Object.keys(userData).length > 0) {
             const updatedUserData = {
@@ -254,27 +497,47 @@ export const RestaurantIdProvider = ({ children }) => {
             };
             localStorage.setItem("userData", JSON.stringify(updatedUserData));
           }
-  
-          navigate("/user_app/Index");
-  
+
+          // Navigate to error page with proper message
+          navigate("/user_app/error", { 
+            state: { 
+              errorMessage: data.msg || "Restaurant not found. Please check the restaurant code and try again." 
+            } 
+          });
+
           localStorage.setItem("restaurantStatus", false);
         } else {
-          console.clear();
+          // Other error response
+          console.error("Unexpected API response:", data);
+          
+          // Navigate to error page for unexpected errors
+          navigate("/user_app/error", { 
+            state: { 
+              errorMessage: data.msg || "Something went wrong. Please try again later." 
+            } 
+          });
         }
       } catch (error) {
-        console.error('Error fetching restaurant details:', error);
+        console.error("Error fetching restaurant details:", error);
+        
+        // Navigate to error page for network errors
+        navigate("/user_app/error", { 
+          state: { 
+            errorMessage: "Network error. Please check your connection and try again." 
+          } 
+        });
       }
     };
   
     fetchRestaurantDetails(restaurantCode, sectionId);
-  }, [restaurantCode, sectionId, navigate]);
+  }, [restaurantCode, sectionId, navigate, isOutletOnlyUrl]);
   
 
   useEffect(() => {
     const storedRestaurantId = localStorage.getItem("restaurantId");
     const storedRestaurantName = localStorage.getItem("restaurantName");
-    const storedRestaurantCode = localStorage.getItem("restaurantCode");
-    const storedSectionId = localStorage.getItem("sectionId");
+    const storedRestaurantCode = stripPrefix(localStorage.getItem("restaurantCode"), 'o');
+    const storedSectionId = stripPrefix(localStorage.getItem("sectionId"), 's');
 
     if (storedRestaurantId) setRestaurantId(storedRestaurantId);
     if (storedRestaurantName) setRestaurantName(storedRestaurantName);
@@ -283,19 +546,51 @@ export const RestaurantIdProvider = ({ children }) => {
   }, []);
 
   const updateRestaurantCode = (code) => {
-    setRestaurantCode(code);
-    localStorage.setItem("restaurantCode", code);
+    // Strip any 'o' prefix if present
+    const cleanCode = stripPrefix(code, 'o');
+    setRestaurantCode(cleanCode);
+    localStorage.setItem("restaurantCode", cleanCode);
   };
 
   const updateTableNumber = (number) => {
-    setTableNumber(number);
-    localStorage.setItem("tableNumber", number);
+    // Strip any 't' prefix if present
+    const cleanNumber = stripPrefix(number, 't');
+    setTableNumber(cleanNumber);
+    localStorage.setItem("tableNumber", cleanNumber);
   };
 
   const updateSectionId = (id) => {
-    setSectionId(id);
-    localStorage.setItem("sectionId", id);
+    // Strip any 's' prefix if present
+    const cleanId = stripPrefix(id, 's');
+    setSectionId(cleanId);
+    localStorage.setItem("sectionId", cleanId);
   };
+
+  // Add a function to update orderType
+  const updateOrderType = (orderType) => {
+    localStorage.setItem("orderType", orderType);
+    // Update the state so all components will re-render
+    setOrderType(orderType);
+    console.log(`Order type updated: ${orderType}`);
+  };
+
+  // Create a listener for localStorage changes
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "orderType") {
+        // Update state when localStorage changes from another component
+        setOrderType(e.newValue || "");
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      // Clean up
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <RestaurantIdContext.Provider
@@ -305,14 +600,24 @@ export const RestaurantIdProvider = ({ children }) => {
         restaurantCode,
         tableNumber,
         sectionId,
+        isOutletOnlyUrl,
+        orderType,
         updateRestaurantCode,
         updateTableNumber,
         updateSectionId,
+        updateOrderType,
         setRestaurantCode,
         socials,
+        setShowOrderTypeModal,
       }}
     >
       {children}
+      {showOrderTypeModal && (
+        <OrderTypeModal
+          onSelect={handleOrderTypeSelection}
+          onClose={handleCloseModal}
+        />
+      )}
     </RestaurantIdContext.Provider>
   );
 };

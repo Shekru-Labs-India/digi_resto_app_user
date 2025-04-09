@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRestaurantId } from './RestaurantIdContext';
 import config from "../component/config"
+import { usePopup } from './PopupContext';
+
 const MenuDataContext = createContext();
 
 export const MenuDataProvider = ({ children }) => {
     const { restaurantId } = useRestaurantId();
     const [menuData, setMenuData] = useState({ banners: [], featured: [], nearby: [] });
     const [loading, setLoading] = useState(true);
+    const { showLoginPopup } = usePopup();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,6 +41,16 @@ export const MenuDataProvider = ({ children }) => {
                   ),
                 ]);
 
+                // Check for 401 status in either response
+                if (bannerResponse.status === 401 || featuredResponse.status === 401) {
+                    localStorage.removeItem("user_id");
+                    localStorage.removeItem("userData");
+                    localStorage.removeItem("cartItems");
+                    localStorage.removeItem("access_token");
+                    showLoginPopup();
+                    return;
+                }
+
                 const bannerData = await bannerResponse.json();
                 const featuredData = await featuredResponse.json();
 
@@ -55,7 +68,7 @@ export const MenuDataProvider = ({ children }) => {
         };
 
         fetchData();
-    }, [restaurantId]);
+    }, [restaurantId, showLoginPopup]);
 
     return (
         <MenuDataContext.Provider value={{ menuData, loading }}>

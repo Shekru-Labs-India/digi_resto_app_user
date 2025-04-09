@@ -1,16 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useNavigate } from "react-router-dom";
 import Notice from "../component/Notice";
-import config from "../component/config";
 import { isNonProductionDomain } from "../component/config";
+import OrderTypeModal from "./OrderTypeModal";
 
-const HotelNameAndTable = ({ restaurantName }) => {
-
+const HotelNameAndTable = ({ restaurantName, tableNumber: propTableNumber }) => {
+  // Get context values including the orderType state
+  const { isOutletOnlyUrl, setShowOrderTypeModal, updateOrderType, orderType: contextOrderType } = useRestaurantId();
+  const [showLocalOrderTypeModal, setShowLocalOrderTypeModal] = useState(false);
+  
   // const { tableNumber } = useRestaurantId();
   const navigate = useNavigate();
-  const tableNumber = localStorage.getItem("tableNumber");
+  // Use prop tableNumber if provided, otherwise get from localStorage
+  const tableNumber = propTableNumber || localStorage.getItem("tableNumber");
   // Get table number from context, localStorage, or userData
   const displayTableNumber =
     tableNumber ||
@@ -24,6 +28,12 @@ const HotelNameAndTable = ({ restaurantName }) => {
   const sectionName =
     JSON.parse(localStorage.getItem("userData"))?.sectionName ||
     localStorage.getItem("sectionName");
+  
+  // Use orderType from context instead of localStorage for immediate UI updates
+  const orderType = contextOrderType;
+
+  // No need for local state and storage event listener when using context
+
   useEffect(() => {
     // Store both sectionId and sectionName in localStorage
     if (sectionId) {
@@ -60,6 +70,43 @@ const HotelNameAndTable = ({ restaurantName }) => {
 
   const displayName = restaurantName ? restaurantName.toUpperCase() : "";
 
+  const handleOrderTypeModal = () => {
+    // Always use local modal to avoid the localStorage check in context
+    setShowLocalOrderTypeModal(true);
+  };
+
+  const handleOrderTypeSelection = (type) => {
+    if (updateOrderType) {
+      // Use the context function which updates both localStorage and context state
+      updateOrderType(type);
+    } else {
+      // Fallback to direct localStorage update
+      localStorage.setItem("orderType", type);
+    }
+    setShowLocalOrderTypeModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowLocalOrderTypeModal(false);
+  };
+
+  // Check if using outlet-only URL flow
+  // If isOutletOnlyUrl comes from context, use it directly; otherwise check localStorage
+  const useOutletOnly = typeof isOutletOnlyUrl === 'boolean' ? 
+    isOutletOnlyUrl : 
+    localStorage.getItem("isOutletOnlyUrl") === "true";
+    
+  console.log("isOutletOnlyUrl value:", useOutletOnly); // Debug log
+    
+  // Define a proper event handler function
+  const handleLocationClick = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Location clicked, useOutletOnly:", useOutletOnly);
+    
+    // Always show modal - we'll fix the logic issue
+    handleOrderTypeModal();
+  };
+
   return (
     <>
       {isNonProductionDomain() && <Notice />}
@@ -76,21 +123,47 @@ const HotelNameAndTable = ({ restaurantName }) => {
           </span>
         </div>
 
-        <div className="d-flex align-items-center font_size_12">
+        <div 
+          className="d-flex align-items-center font_size_12" 
+          onClick={localStorage.getItem("isOutletOnlyUrl") === "true" ? handleOrderTypeModal : undefined}
+          style={{ cursor: localStorage.getItem("isOutletOnlyUrl") === "true" ? "pointer" : "default" }}
+        >
           <i className="fa-solid fa-location-dot me-2 gray-text font_size_12"></i>
           <span className="fw-medium gray-text">
-            {titleCase(sectionName)}
-            {displayTableNumber && <> - {tableNumber}</>}
+            {localStorage.getItem("isOutletOnlyUrl") === "true" ? (
+              // For outlet-only URLs, show the order type
+              <>{orderType?.toUpperCase() || ""}</>
+            ) : (
+              // For section/table URLs, show section name and table number
+              <>
+                {sectionId === null ? (
+                  orderType?.toUpperCase() || ""
+                ) : (
+                  <>
+                    {titleCase(sectionName === null ? "" : sectionName || "")}
+                    {displayTableNumber && <> - {displayTableNumber}</>}
+                  </>
+                )}
+              </>
+            )}
           </span>
         </div>
         </div>
       </div>
+      
+      {showLocalOrderTypeModal && (
+        <OrderTypeModal 
+          onSelect={handleOrderTypeSelection} 
+          onClose={handleCloseModal} 
+        />
+      )}
     </>
   );
 };
 
 HotelNameAndTable.propTypes = {
   restaurantName: PropTypes.string.isRequired,
+  tableNumber: PropTypes.string,
 };
 
 export default HotelNameAndTable;

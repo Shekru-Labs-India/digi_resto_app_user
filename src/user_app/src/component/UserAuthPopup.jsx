@@ -27,6 +27,9 @@ const UserAuthPopup = () => {
   const nameInputRef = useRef(null);
   const [isNameValid, setIsNameValid] = useState(false);
 
+  const [resendTimer, setResendTimer] = useState(15);
+  const [canResend, setCanResend] = useState(false);
+
   const handleNameChange = (e) => {
     let input = e.target.value;
 
@@ -81,6 +84,22 @@ const UserAuthPopup = () => {
         break;
     }
   }, [view]);
+
+  useEffect(() => {
+    let timer;
+    if (view === 'verify' && resendTimer > 0) {
+      timer = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [view, resendTimer]);
 
   const handleMobileChange = (e) => {
     let value = e.target.value.replace(/\D/g, "").slice(0, 10); // Remove non-digits and limit length to 10
@@ -460,6 +479,35 @@ const UserAuthPopup = () => {
     }
   }, [view]);
 
+  const handleResendOTP = async () => {
+    try {
+      setCanResend(false);
+      setResendTimer(15);
+      const response = await fetch(
+        `${config.apiDomain}/user_api/resend_otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mobile: mobile,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.st === 1) {
+        window.showToast("success", "OTP sent successfully");
+      } else {
+        window.showToast("error", data.msg || "Failed to resend OTP");
+        setCanResend(true);
+      }
+    } catch (error) {
+      window.showToast("error", "Failed to resend OTP");
+      setCanResend(true);
+    }
+  };
+
   const renderContent = () => {
     switch (view) {
       case "verify":
@@ -471,21 +519,19 @@ const UserAuthPopup = () => {
                 className="header-content d-flex justify-content-center"
                 style={{ zIndex: 1040, position: "relative" }}
               >
-                <div className="mb-3">
-                  <Link
-                    to="/"
-                    className="d-flex align-items-center text-decoration-none"
-                  >
-                    <img
-                      src={logo}
-                      alt="logo"
-                      width="40"
-                      height="40"
-                      className="me-2"
-                    />
-                    <span className="text-dark fw-bolder">MenuMitra</span>
-                  </Link>
-                </div>
+               <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
               </div>
               <div className="text-center mb-4">
                 <h4 className="text-dark">Verify OTP</h4>
@@ -524,6 +570,25 @@ const UserAuthPopup = () => {
                 ))}
               </div>
               {error && <div className="text-danger mb-3">{error}</div>}
+
+              {/* resend opt  */}
+              <div className="text-center mb-3">
+                <button
+                  className="btn btn-link text-primary text-decoration-none font_size_14"
+                  onClick={handleResendOTP}
+                  disabled={!canResend}
+                >
+                  {canResend ? (
+                    "Resend OTP"
+                  ) : (
+                    <>
+                      Resend OTP in {resendTimer}s
+                    </>
+                  )}
+                </button>
+              </div>
+
+              
               {loading ? (
                 <div className="text-center">{/* <LoaderGif /> */}</div>
               ) : (
@@ -555,17 +620,19 @@ const UserAuthPopup = () => {
                 className="header-content d-flex justify-content-center"
                 style={{ zIndex: 1040, position: "relative" }}
               >
-                <div className="mb-3">
-                  <Link
-                    to="/"
-                    className="d-flex align-items-center text-decoration-none"
-                  >
-                    <img src={logo} alt="logo" width="40" height="40" />
-                    <span className="text-dark mb-0 ms-2 fw-bolder">
-                      MenuMitra
-                    </span>
-                  </Link>
-                </div>
+                 <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
               </div>
               <div className="form-group mb-3">
                 <label className="form-label d-flex justify-content-start">
@@ -688,17 +755,19 @@ const UserAuthPopup = () => {
               className="header-content d-flex justify-content-center"
               style={{ zIndex: 1040, position: "relative" }}
             >
-              <div className="mb-3">
-                <Link
-                  to="/"
-                  className="d-flex align-items-center justify-content-center"
-                >
-                  <img src={logo} alt="logo" width="40" height="40" />
-                  <span className="text-dark mb-0 ms-2 fw-bolder">
-                    MenuMitra
-                  </span>
-                </Link>
-              </div>
+               <div className="d-flex justify-content-center py-0">
+              <a
+                href="https://menumitra.com/"
+                className="d-flex align-items-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={logo} alt="logo" width="40" height="40" />
+                <span className="text-dark mb-0 ms-2 fw-semibold font_size_18 ">
+                  MenuMitra
+                </span>
+              </a>
+            </div>
             </div>
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="form-group mb-3">

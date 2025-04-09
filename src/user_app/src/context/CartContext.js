@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import config from '../component/config';
+import { usePopup } from './PopupContext';
 
 const CartContext = createContext();
 
@@ -14,6 +15,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const { showLoginPopup } = usePopup();
 
   // Load cart data from localStorage on initial render
   useEffect(() => {
@@ -34,13 +36,23 @@ export const CartProvider = ({ children }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-
           body: JSON.stringify({
             outlet_id: localStorage.getItem("outlet_id"),
             menu_id: menuId,
           }),
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return { error: 'unauthorized' };
+      }
 
       const data = await response.json();
       
@@ -55,7 +67,8 @@ export const CartProvider = ({ children }) => {
       console.error('Error fetching menu prices:', error);
       return null;
     }
-  };
+  };  
+  //end of fetch menu prices
 
   const addToCart = async (menuItem, restaurantId) => {
     try {

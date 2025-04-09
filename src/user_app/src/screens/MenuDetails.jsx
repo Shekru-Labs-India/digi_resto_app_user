@@ -44,13 +44,13 @@ const getFoodTypeStyles = (foodType) => {
         border: "border-danger",
         categoryIcon: "fa-solid fa-utensils text-success me-1",
       };
-    case "egg":
-      return {
-        icon: "fa-solid fa-egg",
-        textColor: "gray-text", // Changed to green for category text
-        border: "gray-text",
-        categoryIcon: "fa-solid fa-utensils text-success me-1",
-      };
+      case "egg":
+        return {
+          icon: "fa-solid fa-egg",
+          border: "gray-text",
+          // textColor: "text-success", // Changed to green for category name
+          categoryIcon: "fa-solid fa-utensils text-success me-1", // Added for category
+        };
     case "vegan":
       return {
         icon: "fa-solid fa-leaf text-success",
@@ -112,6 +112,7 @@ const isItemInCart = (menuId) => {
 };
 
 const MenuDetails = () => {
+  const { menuId: menuIdString, t: tableParam } = useParams();
   const [productDetails, setProductDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -122,7 +123,6 @@ const MenuDetails = () => {
   const { restaurantName } = useRestaurantId();
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
-  const { menuId: menuIdString } = useParams();
   const menuId = parseInt(menuIdString, 10);
   const { restaurantId } = useRestaurantId();
   const { cartItems } = useCart();
@@ -399,6 +399,17 @@ const MenuDetails = () => {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok && data.st === 1) {
         // Calculate discounted prices if there's an offer
@@ -445,7 +456,7 @@ const MenuDetails = () => {
     setShowModal(true);
   };
 
-  const handleConfirmAddToCart = async () => {
+  const handleConfirmAddToCart = async (productWithQuantity) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const currentUserId = userData?.user_id;
     const currentRole = userData?.role;
@@ -454,7 +465,7 @@ const MenuDetails = () => {
       return;
     }
 
-    if (comment && (comment.length < 5 || comment.length > 30)) {
+    if (productWithQuantity.comment && (productWithQuantity.comment.length < 5 || productWithQuantity.comment.length > 30)) {
       window.showToast(
         "error",
         "Comment should be between 5 and 30 characters."
@@ -462,28 +473,21 @@ const MenuDetails = () => {
       return;
     }
 
-    const selectedPrice = portionSize === "half" ? halfPrice : fullPrice;
-
-    if (!selectedPrice) {
-      window.showToast("error", "Price information is not available");
-      return;
-    }
-
     try {
       await addToCart(
         {
           ...productDetails,
-          quantity,
-          comment,
-          half_or_full: portionSize,
-          price: selectedPrice,
+          quantity: productWithQuantity.quantity,
+          comment: productWithQuantity.comment,
+          half_or_full: productWithQuantity.half_or_full,
+          price: productWithQuantity.price,
           outlet_id: restaurantId,
           menu_cat_id: menu_cat_id,
         },
         restaurantId
       );
 
-      window.showToast("success", "Item has been added to your checkout");
+      window.showToast("success", `${productDetails.name || "Item"} is added.`);
 
       setShowModal(false);
       setTimeout(() => {
@@ -549,6 +553,17 @@ const MenuDetails = () => {
           user_id: userData.user_id,
         }),
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
 
       if (response.ok) {
         const data = await response.json();
@@ -716,7 +731,7 @@ const MenuDetails = () => {
             <div className="container py-0 my-0 ">
               <HotelNameAndTable
                 restaurantName={restaurantName}
-                tableNumber={userData?.tableNumber || "1"}
+                tableNumber={tableParam}
               />
             </div>
           </div>

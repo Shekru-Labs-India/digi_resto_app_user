@@ -11,10 +11,11 @@ import img from "../assets/MenuDefault.png";
 import RestaurantSocials from "../components/RestaurantSocials";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { usePopup } from "../context/PopupContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 
 function RestaurantDetails() {
-  const { restaurantId } = useRestaurantId();
+  const { t: tableParam } = useParams(); // Extract table number from URL params
+  const [restaurantId, setRestaurantId] = useState(localStorage.getItem("outlet_id") || "");
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [restaurantDetails, setRestaurantDetails] = useState({
     name: "",
@@ -24,6 +25,10 @@ function RestaurantDetails() {
     veg_nonveg: "",
     image: null,
   });
+  // Get restaurantName from context
+  const { restaurantName } = useRestaurantId();
+  // Get userData from localStorage
+  const [userData, setUserData] = useState(null);
   const [countDetails, setCountDetails] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
   const [menuList, setMenuList] = useState([]);
@@ -35,44 +40,69 @@ function RestaurantDetails() {
   const timeoutRef = useRef({});
   const { showLoginPopup } = usePopup();
   const navigate = useNavigate();
+ // const [restaurantId, setRestaurantId] = useState(localStorage.getItem("restaurantId") || "");
 
   useEffect(() => {
-    const fetchRestaurantDetails = async () => {
-      try {
-        const restaurantId = localStorage.getItem("restaurantId");
-        const response = await fetch(
-          `${config.apiDomain}/user_api/get_restaurant_details`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-            body: JSON.stringify({
-              outlet_id: localStorage.getItem("outlet_id"),
-            }),
-          }
-        );
-        const data = await response.json();
-
-        if (data.st === 1) {
-          setRestaurantDetails(data.outlet_details);
-          setCountDetails(data.count);
-          setCategoryList(data.categorys);
-          setMenuList(data.menu_list);
-          localStorage.setItem("restoUPI", data.restaurant_details.upi_id);
-        }
-      } catch (error) {
-        console.clear();
-      }
-    };
-
-    fetchRestaurantDetails();
+    // Load user data from localStorage
+    const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    if (storedUserData) {
+      setUserData(storedUserData);
+    }
   }, []);
+  
+ useEffect(() => {
+  const fetchRestaurantDetails = async () => {
+    if (!restaurantId) return;
 
-  useEffect(() => {
-    setFilteredMenus(menuList);
-  }, [menuList]);
+    try {
+      const response = await fetch(
+        `${config.apiDomain}/user_api/get_restaurant_details`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            outlet_id: localStorage.getItem("outlet_id"),
+          }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.st === 1) {
+        setRestaurantDetails(data.outlet_details);
+        setCountDetails(data.count);
+        setCategoryList(data.categorys);
+        setMenuList(data.menu_list);
+        localStorage.setItem("restoUPI", data.restaurant_details.upi_id);
+      }
+    } catch (error) {
+      console.error("Error fetching restaurant details:", error);
+    }
+  };
+
+  fetchRestaurantDetails();
+}, [restaurantId]); // ✅ Track restaurantId correctly
+
+// 🔹 Sync restaurantId when localStorage changes
+useEffect(() => {
+  const handleStorageChange = () => {
+    const updatedRestaurantId = localStorage.getItem("restaurantId");
+    if (updatedRestaurantId !== restaurantId) {
+      setRestaurantId(updatedRestaurantId);
+    }
+  };
+
+  window.addEventListener("storage", handleStorageChange);
+  return () => {
+    window.removeEventListener("storage", handleStorageChange);
+  };
+}, [restaurantId]);
+
+// ✅ Update filtered menu when menuList changes
+useEffect(() => {
+  setFilteredMenus(menuList);
+}, [menuList]);
 
   const totalMenuCount = menuList.length || 25;
 
@@ -264,6 +294,17 @@ function RestaurantDetails() {
         }
       );
 
+      if (response.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         if (data.st === 1) {
@@ -318,14 +359,13 @@ function RestaurantDetails() {
 
   return (
     <div>
-     
       <Header title="Restaurant Details" />
 
       <div className="container pb-0">
         <div className="pt-5">
           <HotelNameAndTable
-            restaurantName={restaurantDetails.name || ""}
-            tableNumber={"1"}
+            restaurantName={restaurantName}
+            tableNumber={tableParam}
           />
         </div>
 
@@ -722,7 +762,7 @@ function RestaurantDetails() {
           </Swiper>
         </div>
       </div>
-      <div className="container p-b65">
+      <div className="container p-b80">
         <RestaurantSocials />
       </div>
       <Bottom />
