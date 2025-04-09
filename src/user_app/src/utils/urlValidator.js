@@ -148,7 +148,7 @@ export const validateUrlPath = (path) => {
   
   // Check for missing outlet prefix but with section/table
   if (URL_PATTERNS.missingOutletPrefixWithSectionTablePattern.test(path)) {
-    return "Missing outlet prefix. Please use the format: /user_app/o[outlet-number]/s[section-number]/t[table-number]";
+    return "Sorry, this link appears to be incorrect. Please scan the QR code again or ask for assistance.";
   }
   
   // Check for missing outlet prefix in an outlet-only URL
