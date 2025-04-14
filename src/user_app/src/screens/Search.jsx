@@ -12,6 +12,8 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import HotelNameAndTable from "../components/HotelNameAndTable";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
+import api from "../services/apiService";
+
 const Search = () => {
   const { t: tableParam } = useParams(); // Extract table number from URL params
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -233,35 +235,13 @@ const Search = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
+      const response = await api.post("/user_api/get_full_half_price_of_menu", {
+        outlet_id: localStorage.getItem("outlet_id"),
+        menu_id: menuId,
+      });
 
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            menu_id: menuId,
-          }),
-        }
-      );
-
-      if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
-        showLoginPopup();
-        return;
-      }
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
+      const data = response.data;
+      if (data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
         if (data.menu_detail.half_price === null) {
@@ -271,7 +251,17 @@ const Search = () => {
         window.showToast("error", "Failed to fetch price information");
       }
     } catch (error) {
-      window.showToast("error", "Failed to fetch price information");
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+      } else {
+        window.showToast("error", "Failed to fetch price information");
+      }
     } finally {
       setIsPriceFetching(false);
     }

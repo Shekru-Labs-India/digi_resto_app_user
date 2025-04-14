@@ -3,7 +3,7 @@ import config from "../component/config";
 import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
 import { usePopup } from "../context/PopupContext";
-import { getDeviceToken } from "../services/apiService";
+import api from "../services/apiService";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -146,7 +146,6 @@ const CircularCountdown = ({
       const payload = {
         user_id: currentUserId,
         restaurant_id: restaurantId,
-        device_token: getDeviceToken(),
       };
       
       // Only add section_id if not outletOnly
@@ -154,20 +153,10 @@ const CircularCountdown = ({
         payload.section_id = sectionId;
       }
 
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await api.post("/user_api/get_ongoing_or_placed_order", payload);
 
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
+      const data = response.data;
+      if (data.st === 1) {
         const orders = data.data || [];
         if (orders.length > 0) {
           const status = orders[0]?.status;
@@ -236,74 +225,27 @@ const OrderCard = ({
 
   const handleCompleteOrder = async () => {
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/complete_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            order_id: order.order_id,
-            restaurant_id: order.restaurant_id,
-          }),
-        }
-      );
+      const response = await api.post("/user_api/complete_order", {
+        order_id: order.order_id,
+        restaurant_id: order.restaurant_id,
+      });
 
-      if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
-        showLoginPopup();
-        return;
-      }
-
-      const data = await response.json();
-
+      const data = response.data;
       if (data.st === 1) {
         window.showToast("success", data.msg);
-
         setOngoingOrPlacedOrders((prevOrders) => {
           const ongoing = Array.isArray(prevOrders.ongoing) ? prevOrders.ongoing : [];
           const placed = Array.isArray(prevOrders.placed) ? prevOrders.placed : [];
-
-          const updatedOngoing = ongoing.filter(
-            (o) => o.order_id !== order.order_id
-          );
-
           return {
             placed: placed,
-            ongoing: updatedOngoing,
+            ongoing: ongoing.filter((o) => o.order_id !== order.order_id),
           };
         });
       } else {
         window.showToast("error", data.msg || "Failed to complete the order.");
       }
     } catch (error) {
-      window.showToast("error", "An error occurred. Please try again later.");
-    }
-  };
-
-  const handleConfirmCancel = async () => {
-    try {
-      const response = await fetch(`${config.apiDomain}/user_api/cancle_order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({
-          restaurant_id: order.restaurant_id,
-          order_id: order.order_id,
-          note: cancelReason,
-        }),
-      });
-
-      if (response.status === 401) {
+      if (error.response?.status === 401) {
         localStorage.removeItem("user_id");
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
@@ -313,23 +255,27 @@ const OrderCard = ({
         showLoginPopup();
         return;
       }
+      window.showToast("error", "An error occurred. Please try again later.");
+    }
+  };
 
-      const data = await response.json();
+  const handleConfirmCancel = async () => {
+    try {
+      const response = await api.post("/user_api/cancle_order", {
+        restaurant_id: order.restaurant_id,
+        order_id: order.order_id,
+        note: cancelReason,
+      });
 
+      const data = response.data;
       if (data.st === 1) {
         window.showToast("success", data.msg);
         setShowCancelModal(false);
-
         setOngoingOrPlacedOrders((prevOrders) => {
           const ongoing = Array.isArray(prevOrders.ongoing) ? prevOrders.ongoing : [];
           const placed = Array.isArray(prevOrders.placed) ? prevOrders.placed : [];
-
-          const updatedPlaced = placed.filter(
-            (o) => o.order_id !== order.order_id
-          );
-
           return {
-            placed: updatedPlaced,
+            placed: placed.filter((o) => o.order_id !== order.order_id),
             ongoing: ongoing,
           };
         });
@@ -337,7 +283,16 @@ const OrderCard = ({
         window.showToast("error", data.msg || "Failed to cancel the order.");
       }
     } catch (error) {
-      console.clear();
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+        return;
+      }
       window.showToast("error", "An error occurred. Please try again later.");
     }
   };
@@ -535,79 +490,38 @@ const OrdersPlacedOngoing = () => {
   const [currentRestaurntId, setCurrentRestaurantId] = useState(localStorage.getItem("outlet_id"));
 
   const fetchData = async () => {
-    // Get fresh data each time
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     const sectionId = userData?.sectionId || localStorage.getItem("sectionId") || "";
     const outletId = localStorage.getItem("outlet_id");
     const outletOnly = localStorage.getItem("outletOnly") === "true";
 
-    // Early return if missing data
     if (!userData?.user_id || !outletId) {
       setOrders({ placed: [], ongoing: [] });
       return;
     }
 
     try {
-      // Add timeout control
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       const payload = {
         user_id: userData.user_id,
         outlet_id: outletId,
-        device_token: getDeviceToken(),
       };
       
-      // Only add section_id if not outletOnly
       if (!outletOnly && sectionId) {
         payload.section_id = sectionId;
       }
 
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_ongoing_or_placed_order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        }
-      );
+      const response = await api.post("/user_api/get_ongoing_or_placed_order", payload, {
+        signal: controller.signal
+      });
 
       clearTimeout(timeoutId);
 
-      // Handle unauthorized access
-      if (response.status === 401) {
-        // Clear all auth-related data
-        const keysToRemove = [
-          "user_id",
-          "userData",
-          "cartItems",
-          "access_token",
-          "customerName",
-          "mobile"
-        ];
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-        showLoginPopup();
-        setOrders({ placed: [], ongoing: [] });
-        return;
-      }
-
-      // Handle non-200 responses
-      if (!response.ok) {
-        setOrders({ placed: [], ongoing: [] });
-        return;
-      }
-
-      const data = await response.json();
-
-      // Validate response data and current restaurant
+      const data = response.data;
       if (data?.st === 1 && Array.isArray(data.data)) {
         const currentOutletId = localStorage.getItem("outlet_id");
-        
-        // Only update if we're still on the same restaurant
         if (outletId === currentOutletId) {
           const ordersData = data.data;
           setOrders({
@@ -619,7 +533,18 @@ const OrdersPlacedOngoing = () => {
         setOrders({ placed: [], ongoing: [] });
       }
     } catch (error) {
-      // Only log and clear orders for non-abort errors
+      if (error.response?.status === 401) {
+        const keysToRemove = [
+          "user_id",
+          "userData",
+          "cartItems",
+          "access_token",
+          "customerName",
+          "mobile"
+        ];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        showLoginPopup();
+      }
       if (error.name !== 'AbortError') {
         console.error('Error fetching orders:', error);
         setOrders({ placed: [], ongoing: [] });

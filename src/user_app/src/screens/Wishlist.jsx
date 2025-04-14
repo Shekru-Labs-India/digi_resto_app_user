@@ -15,6 +15,7 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import "../assets/css/toast.css";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
+import api from "../services/apiService";
 
 const Wishlist = () => {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -120,47 +121,39 @@ const Wishlist = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_favourite_list`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
+      const response = await api.post("/user_api/get_favourite_list", {
+        user_id: userData.user_id,
+        outlet_id: localStorage.getItem("outlet_id"),
+      });
 
-          body: JSON.stringify({
-            user_id: userData.user_id,
-            outlet_id: localStorage.getItem("outlet_id"),
-          }),
-        }
-      );
+      const data = response.data;
+      if (data.st === 1 && data.lists) {
+        setWishlistItems(data.lists);
+        setMenuList(data.lists);
+        setHasFavorites(Object.keys(data.lists).length > 0);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.st === 1 && data.lists) {
-          setWishlistItems(data.lists);
-          setMenuList(data.lists);
-          setHasFavorites(Object.keys(data.lists).length > 0);
-
-          const firstRestaurantName = Object.keys(data.lists)[0];
-          setCheckedItems({ [firstRestaurantName]: true });
-        } else {
-          setWishlistItems({});
-          setMenuList({});
-          setHasFavorites(false);
-        }
+        const firstRestaurantName = Object.keys(data.lists)[0];
+        setCheckedItems({ [firstRestaurantName]: true });
+      } else {
+        setWishlistItems({});
+        setMenuList({});
+        setHasFavorites(false);
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
       } else {
         console.clear();
         setWishlistItems({});
         setMenuList({});
         setHasFavorites(false);
       }
-    } catch (error) {
-      console.clear();
-      setWishlistItems({});
-      setMenuList({});
-      setHasFavorites(false);
     } finally {
       setIsLoading(false);
     }
@@ -214,34 +207,13 @@ const Wishlist = () => {
   const fetchHalfFullPrices = async (menuId) => {
     setIsPriceFetching(true);
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            menu_id: menuId,
-          }),
-        }
-      );
+      const response = await api.post("/user_api/get_full_half_price_of_menu", {
+        outlet_id: localStorage.getItem("outlet_id"),
+        menu_id: menuId,
+      });
 
-      if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
-        showLoginPopup();
-        return;
-      }
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
+      const data = response.data;
+      if (data.st === 1) {
         setHalfPrice(data.menu_detail.half_price);
         setFullPrice(data.menu_detail.full_price);
         if (data.menu_detail.half_price === null) {
@@ -255,8 +227,18 @@ const Wishlist = () => {
         );
       }
     } catch (error) {
-      console.clear();
-      window.showToast("error", "Failed to fetch price information");
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+      } else {
+        console.clear();
+        window.showToast("error", "Failed to fetch price information");
+      }
     } finally {
       setIsPriceFetching(false);
     }
@@ -358,42 +340,20 @@ const Wishlist = () => {
     const userId = userData?.user_id;
   
     if (!userId || !menuId || !outletId) {
-      // window.showToast("error", "Missing required information");
       showLoginPopup();
       return;
     }
   
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/remove_favourite_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: outletId,
-            menu_id: menuId,
-            user_id: userId,
-          }),
-        }
-      );
+      const response = await api.post("/user_api/remove_favourite_menu", {
+        outlet_id: outletId,
+        menu_id: menuId,
+        user_id: userId,
+      });
   
-      if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
-        showLoginPopup();
-        return;
-      }
+      const data = response.data;
   
-      const data = await response.json();
-  
-      if (response.ok && data.st === 1) {
+      if (data.st === 1) {
         setMenuList((prevMenuList) => {
           const updatedMenuList = { ...prevMenuList };
           updatedMenuList[restaurantName] = updatedMenuList[restaurantName].filter(
@@ -413,7 +373,17 @@ const Wishlist = () => {
         window.showToast("error", "Failed to remove item from favourites");
       }
     } catch (error) {
-      window.showToast("error", "An error occurred while removing the item");
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+      } else {
+        window.showToast("error", "An error occurred while removing the item");
+      }
     }
   };
   

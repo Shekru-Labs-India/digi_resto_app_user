@@ -62,7 +62,7 @@ apiClient.interceptors.request.use(
       config.params = {
         ...config.params || {},
         device_token: getDeviceToken(),
-        device_name: deviceName
+        // device_name: deviceName
       };
     } 
     // For POST, PUT, DELETE requests, add to the request body
@@ -70,12 +70,12 @@ apiClient.interceptors.request.use(
       // If data is FormData
       if (config.data instanceof FormData) {
         config.data.append('device_token', getDeviceToken());
-        config.data.append('device_name', deviceName);
+        // config.data.append('device_name', deviceName);
       } 
       // If data is JSON
       else if (typeof config.data === 'object') {
         config.data.device_token = getDeviceToken();
-        config.data.device_name = deviceName;
+        // config.data.device_name = deviceName;
       }
     }
     

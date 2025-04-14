@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import config from '../component/config';
 import { usePopup } from './PopupContext';
+import api from "../services/apiService";
 
 const CartContext = createContext();
 
@@ -28,22 +29,21 @@ export const CartProvider = ({ children }) => {
   // New function to fetch menu prices
   const fetchMenuPrices = async (restaurantId, menuId) => {
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/get_full_half_price_of_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: localStorage.getItem("outlet_id"),
-            menu_id: menuId,
-          }),
-        }
-      );
+      const response = await api.post("/user_api/get_full_half_price_of_menu", {
+        outlet_id: localStorage.getItem("outlet_id"),
+        menu_id: menuId,
+      });
 
-      if (response.status === 401) {
+      const data = response.data;
+      if (data.st === 1) {
+        return {
+          halfPrice: data.menu_detail.half_price,
+          fullPrice: data.menu_detail.full_price
+        };
+      }
+      throw new Error('Failed to fetch menu prices');
+    } catch (error) {
+      if (error.response?.status === 401) {
         localStorage.removeItem("user_id");
         localStorage.removeItem("userData");
         localStorage.removeItem("cartItems");
@@ -53,17 +53,6 @@ export const CartProvider = ({ children }) => {
         showLoginPopup();
         return { error: 'unauthorized' };
       }
-
-      const data = await response.json();
-      
-      if (data.st === 1) {
-        return {
-          halfPrice: data.menu_detail.half_price,
-          fullPrice: data.menu_detail.full_price
-        };
-      }
-      throw new Error('Failed to fetch menu prices');
-    } catch (error) {
       console.error('Error fetching menu prices:', error);
       return null;
     }
