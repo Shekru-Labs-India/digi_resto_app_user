@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { usePopup } from "../context/PopupContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import config from "./config";
+import {api, getDeviceName} from "../services/apiService";
 const UserAuthPopup = () => {
   const navigate = useNavigate();
   const { showPWAPopup, hideLoginPopup } = usePopup();
@@ -338,6 +339,7 @@ const UserAuthPopup = () => {
             otp:  enteredOtp, // Use stored OTP or entered OTP
             device_sessid: deviceSessId, 
             fcm_token: fcmToken, 
+            device_name: getDeviceName(),
 
           }),
         }
@@ -353,6 +355,7 @@ const UserAuthPopup = () => {
           mobile: data.customer_details.mobile,
           role: data.customer_details.role,
           access_token: data.customer_details.access_token,
+          device_token: data.customer_details.device_token,
         };
         localStorage.setItem("customerName", data.customer_details.name);
         localStorage.setItem("userData", JSON.stringify(userData));

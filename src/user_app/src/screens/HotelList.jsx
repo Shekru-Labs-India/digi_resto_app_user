@@ -4,6 +4,8 @@ import { Link ,useNavigate} from "react-router-dom";
 import config, { APP_VERSION } from "../component/config";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import Notice from "../component/Notice";
+import api from "../services/apiService";
+
 const HotelList = () => {
   const [hotels, setHotels] = useState([]);
   const [filteredHotels, setFilteredHotels] = useState([]);
@@ -13,25 +15,12 @@ const navigate = useNavigate();
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-     // Store the hardcoded access token in localStorage
-// localStorage.setItem(
-//   "access_token",
-//   ""
-// );
-
-// Fetch API request using the stored token
-const response = await fetch(
-  `${config.apiDomain}/user_api/get_all_restaurants`,
-  // {
-  //   headers: {
-  //     'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
-  //     'Content-Type': 'application/json'
-  //   }
-  // }
-);
-
+        // Using our new API service with automatic device_token handling
+        const response = await api.get("/user_api/get_all_restaurants", {
+          // Empty object will get device_token added by the interceptor
+        });
         
-        const data = await response.json();
+        const data = response.data;
         if (data.st === 1) {
           const formattedHotels = data.outlets.map((outlets) => {
             // Use regex to extract parts from URL

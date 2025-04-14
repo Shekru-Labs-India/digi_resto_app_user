@@ -13,6 +13,7 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import Notice from "../component/Notice";
 import { APP_VERSION } from "../component/config";
 import config from "../component/config";
+import api from "../services/apiService";
 
 // Add styles for dark mode toggle animation
 const styles = {
@@ -152,22 +153,12 @@ const HomeScreen = () => {
         return;
       }
 
-      const response = await fetch(
-        `${config.apiDomain}/common_api/call_waiter`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: restaurantId,
-            user_id: userData.user_id,
-          }),
-        }
-      );
+      const response = await api.post("/common_api/call_waiter", {
+        outlet_id: restaurantId,
+        user_id: userData.user_id,
+      });
 
-      const data = await response.json();
+      const data = response.data;
       if (data.st === 1) {
         alert("Waiter has been called successfully!" || data.msg);
       } else {

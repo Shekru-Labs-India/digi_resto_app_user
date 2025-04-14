@@ -3,6 +3,7 @@ import config from "../component/config";
 import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
 import { usePopup } from "../context/PopupContext";
+import { getDeviceToken } from "../services/apiService";
 
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
@@ -145,6 +146,7 @@ const CircularCountdown = ({
       const payload = {
         user_id: currentUserId,
         restaurant_id: restaurantId,
+        device_token: getDeviceToken(),
       };
       
       // Only add section_id if not outletOnly
@@ -552,7 +554,8 @@ const OrdersPlacedOngoing = () => {
 
       const payload = {
         user_id: userData.user_id,
-        outlet_id: outletId
+        outlet_id: outletId,
+        device_token: getDeviceToken(),
       };
       
       // Only add section_id if not outletOnly
