@@ -270,38 +270,15 @@ const OfferBanner = () => {
     const isFavorite = menuItem.is_favourite;
 
     try {
-      const response = await fetch(
-        `${config.apiDomain}/user_api/${
-          isFavorite ? "remove" : "save"
-        }_favourite_menu`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          body: JSON.stringify({
-            outlet_id: restaurantId,
-            menu_id: menuId,
-            user_id: userData.user_id,
-            role: userData.role,
-          }),
-        }
-      );
+      const response = await api.post(`/user_api/${isFavorite ? "remove" : "save"}_favourite_menu`, {
+        outlet_id: restaurantId,
+        menu_id: menuId,
+        user_id: userData.user_id,
+        role: userData.role,
+      });
 
-      if (response.status === 401) {
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("userData");
-        localStorage.removeItem("cartItems");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("customerName");
-        localStorage.removeItem("mobile");
-        showLoginPopup();
-        return;
-      }
-
-      const data = await response.json();
-      if (response.ok && data.st === 1) {
+      const data = response.data;
+      if (data.st === 1) {
         setMenuItems((prevItems) =>
           prevItems.map((item) =>
             item.menu_id === menuId
@@ -318,12 +295,24 @@ const OfferBanner = () => {
 
         window.showToast(
           "success",
-          isFavorite ? "Item has been removed from your favourites." : "Item has been added to your favourites."
+          isFavorite 
+            ? "Item has been removed from your favourites." 
+            : "Item has been added to your favourites."
         );
       }
     } catch (error) {
-      console.clear();
-      window.showToast("error", "Failed to update favorite status");
+      if (error.response?.status === 401) {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("userData");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customerName");
+        localStorage.removeItem("mobile");
+        showLoginPopup();
+      } else {
+        console.clear();
+        window.showToast("error", "Failed to update favorite status");
+      }
     }
   };
 
