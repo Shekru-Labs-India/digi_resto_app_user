@@ -13,6 +13,8 @@ import config from "../component/config";
 import axios from "axios";
 import RestaurantSocials from "../components/RestaurantSocials.jsx";
 import { usePopup } from "../context/PopupContext";
+import { getDeviceToken } from "../services/apiService";
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { restaurantId, restaurantName } = useRestaurantId();
@@ -271,6 +273,7 @@ const Checkout = () => {
           body: JSON.stringify({
             user_id: userData.user_id,
             outlet_id: restaurantId,
+            device_token: getDeviceToken(),
           }),
         }
       );
@@ -359,6 +362,7 @@ const Checkout = () => {
 
       const requestBody = {
         user_id: userData.user_id,
+        device_token: getDeviceToken(),
         outlet_id: restaurantId,
         tables: [
           localStorage.getItem("tableNumber") || userData?.tableNumber || "1",
@@ -453,6 +457,7 @@ const Checkout = () => {
   
       // Remove the problematic spread operation and simplify
       const requestBody = {
+        device_token: getDeviceToken(),
         order_number: existingOrderDetails.orderNumber,
         user_id: userData.user_id,
         order_status: orderStatus,
@@ -585,6 +590,7 @@ const handleAddToExistingOrder = async () => {
       user_id: userData.user_id,
       outlet_id: restaurantId,
       order_items: updatedOrderItems,
+      device_token: getDeviceToken(),
     };
 
     // Check if it's an outlet-only URL before adding table_number and section_id
@@ -1131,6 +1137,7 @@ const handleAddToExistingOrder = async () => {
         {  
           order_items: cartData.order_items,
           outlet_id: userData.restaurantId,
+          device_token: getDeviceToken(),
         },
         {
           headers: {
@@ -1281,6 +1288,7 @@ const handleAddToExistingOrder = async () => {
         {
           order_items: cartData.order_items,
           outlet_id: restaurantId,
+          device_token: getDeviceToken(),
         },
         {
           headers: {

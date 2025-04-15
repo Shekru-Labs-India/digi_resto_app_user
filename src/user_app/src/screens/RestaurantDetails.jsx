@@ -12,6 +12,7 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { usePopup } from "../context/PopupContext";
 import { useNavigate, Link, useParams } from "react-router-dom";
+import { getDeviceToken } from "../services/apiService";
 
 function RestaurantDetails() {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -289,7 +290,8 @@ useEffect(() => {
             restaurant_id: restaurantId,
             menu_id: menuId,
             user_id: userData.user_id,
-            role: userData.role
+            role: userData.role,
+            device_token: getDeviceToken(),
           }),
         }
       );

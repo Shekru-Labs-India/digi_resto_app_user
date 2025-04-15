@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import config from "../component/config"
 import { usePopup } from './PopupContext';
+import { getDeviceToken } from "../services/apiService";
 
 const FavoritesContext = createContext();
 
@@ -52,6 +53,7 @@ export const FavoritesProvider = ({ children }) => {
             user_id: user_id,
             outlet_id: restaurantId,
             menu_id: item.menu_id,
+            device_token: getDeviceToken(),
           }),
         }
       );

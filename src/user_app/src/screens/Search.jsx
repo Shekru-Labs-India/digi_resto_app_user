@@ -13,6 +13,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 const Search = () => {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -340,6 +341,7 @@ const Search = () => {
         menu_id: menuId,
         user_id: userData.user_id,
         role: userData.role,
+        device_token: getDeviceToken(),
       });
 
       const data = response.data;

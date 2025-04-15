@@ -5,6 +5,7 @@ import OrderGif from "./OrderGif";
 import LoaderGif from "./LoaderGIF";
 import config from "../component/config";
 import { usePopup } from "../context/PopupContext";
+import { getDeviceToken } from "../services/apiService";
 
 const EditProfile = () => {
   const [userData, setUserData] = useState({});
@@ -53,6 +54,7 @@ const EditProfile = () => {
           user_id: userData?.user_id || "",
           name: newName,
           mobile: newMobile,
+          device_token: getDeviceToken(),
         }),
       };
 

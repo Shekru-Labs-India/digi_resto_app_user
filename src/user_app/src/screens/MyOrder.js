@@ -18,6 +18,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import MenuMitra from "../assets/logos/menumitra_logo_128.png";
+import { getDeviceToken } from "../services/apiService";
 
 const titleCase = (str) => {
   if (!str) return "";
@@ -356,6 +357,7 @@ ${
       const requestBody = {
         user_id: userData.user_id,
         outlet_id: localStorage.getItem("outlet_id"),
+        device_token: getDeviceToken(),
       };
 
       // Only include section_id if it's not an outlet-only URL
@@ -463,6 +465,7 @@ ${
         order_status: activeTab === "cancelled" ? "cancle" : activeTab,
         user_id: userData.user_id,
         role: userData.role,
+        device_token: getDeviceToken(),
       };
       
       // Only add section_id if not outletOnly
@@ -593,6 +596,7 @@ ${
       
       const payload = {
         order_id: order.order_id,
+        device_token: getDeviceToken(),
       };
       
       // Only add section_id if not outletOnly
@@ -1125,6 +1129,7 @@ export const OrderCard = ({
             outlet_id: order.outlet_id,
             order_id: order.order_id,
             note: cancelReason,
+            device_token: getDeviceToken(),
           }),
         }
       );
@@ -2508,6 +2513,7 @@ export const CircularCountdown = ({
       const requestBody = {
         user_id: currentCustomerId,
         outlet_id: localStorage.getItem("outlet_id"),
+        device_token: getDeviceToken(),
       };
 
       // Only include section_id if it's not an outlet-only URL
@@ -2674,6 +2680,7 @@ const handleDownloadInvoice = async (
         body: JSON.stringify({
           order_id: order.order_id,
           section_id: localStorage.getItem("sectionId"),
+          device_token: getDeviceToken(),
         }),
       }
     );

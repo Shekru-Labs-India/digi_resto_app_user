@@ -17,6 +17,7 @@ import AI_Loading from "../assets/gif/AI_Loading.gif";
 import { renderSpicyLevel } from "./config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 // Convert strings to Title Case
 const toTitleCase = (text) => {
@@ -357,6 +358,7 @@ const ProductCard = ({ isVegOnly }) => {
             outlet_id: restaurantId,
             menu_id: menuId,
             user_id: userData.user_id,
+            device_token: getDeviceToken(),
           }),
         }
       );

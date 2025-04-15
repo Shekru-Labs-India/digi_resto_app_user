@@ -18,6 +18,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import MenuMitra from "../assets/logos/menumitra_logo_128.png";
+import { getDeviceToken } from "../services/apiService";
 
 const TrackOrder = () => {
   const titleCase = (str) => {
@@ -623,6 +624,7 @@ const TrackOrder = () => {
       
       const requestBody = {
         order_id: orderId,
+        device_token: getDeviceToken(),
       };
       
       // Only include section_id if it's not an outlet-only URL
@@ -1647,6 +1649,7 @@ ${
       // Fetch current order details
       const requestBody = {
         order_id: orderDetails.order_id,
+        device_token: getDeviceToken(),
       };
       
       // Only include section_id if it's not an outlet-only URL

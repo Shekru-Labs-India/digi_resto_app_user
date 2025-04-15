@@ -13,6 +13,7 @@ import config from "./config";
 import { renderSpicyLevel } from "./config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 const NearbyArea = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -290,6 +291,7 @@ const NearbyArea = () => {
         menu_id: menuId,
         user_id: userData.user_id,
         role: userData.role,
+        device_token: getDeviceToken(),
       });
 
       const data = response.data;

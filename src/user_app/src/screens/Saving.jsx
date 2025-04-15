@@ -5,6 +5,7 @@ import HotelNameAndTable from "../components/HotelNameAndTable";
 import { useRestaurantId } from "../context/RestaurantIdContext";
 import { useParams } from "react-router-dom";
 import config from "../component/config";
+import { getDeviceToken } from "../services/apiService";
 
 function Saving() {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -29,7 +30,9 @@ function Saving() {
     console.log("🔹 User ID:", user_id);
     console.log("🔹 Access Token:", access_token);
 
-    const requestBody = JSON.stringify({ user_id: String(user_id) });
+    const requestBody = JSON.stringify({ user_id: String(user_id),
+      device_token: getDeviceToken(),
+     });
 
     console.log("🔹 API URL:", `${config.apiDomain}/user_api/get_user_count`);
     console.log("🔹 Request Body:", requestBody);

@@ -14,6 +14,7 @@ import RestaurantSocials from "../components/RestaurantSocials";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 const storeToLocalStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
@@ -539,6 +540,7 @@ const MenuDetails = () => {
           outlet_id: localStorage.getItem("outlet_id"),
           menu_id: menuId,
           user_id: userData.user_id,
+          device_token: getDeviceToken(),
         }),
       });
 

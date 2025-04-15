@@ -15,6 +15,7 @@ import Notice from "./Notice";
 import { renderSpicyLevel } from "./config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 const OfferBanner = () => {
   const { t: tableParam } = useParams();
@@ -275,6 +276,7 @@ const OfferBanner = () => {
         menu_id: menuId,
         user_id: userData.user_id,
         role: userData.role,
+        device_token: getDeviceToken(),
       });
 
       const data = response.data;

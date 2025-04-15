@@ -16,6 +16,7 @@ import "../assets/css/toast.css";
 import { renderSpicyLevel } from "../component/config";
 import AddToCartUI from "../components/AddToCartUI";
 import api from "../services/apiService";
+import { getDeviceToken } from "../services/apiService";
 
 const Wishlist = () => {
   const { t: tableParam } = useParams(); // Extract table number from URL params
@@ -349,6 +350,7 @@ const Wishlist = () => {
         outlet_id: outletId,
         menu_id: menuId,
         user_id: userId,
+        device_token: getDeviceToken(),
       });
   
       const data = response.data;

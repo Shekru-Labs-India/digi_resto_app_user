@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import "../assets/css/Tab.css";
 import { usePopup } from "../context/PopupContext";
 import api from "../services/apiService";
-
+import { getDeviceToken } from "../services/apiService";
 // Define TimeRemaining component
 const TimeRemaining = ({ orderId, completedTimers = new Set() }) => {
   const [timeLeft, setTimeLeft] = useState(90);
@@ -265,6 +265,7 @@ const OrderCard = ({
         restaurant_id: order.restaurant_id,
         order_id: order.order_id,
         note: cancelReason,
+        device_token: getDeviceToken(),
       });
 
       const data = response.data;
