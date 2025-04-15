@@ -1130,6 +1130,7 @@ const TrackOrder = () => {
             user_id: userId,
             order_id: orderDetails?.order_details?.order_id,
             rating: rating,
+            device_token: getDeviceToken(),
           }),
         }
       );
