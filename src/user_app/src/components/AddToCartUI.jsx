@@ -177,7 +177,7 @@ const AddToCartUI = ({
       if (totalQuantity > 20) {
         window.showToast(
           "info",
-          `Cannot add ${quantity} more. Total quantity would exceed limit of 20. Current quantity in placed/cooking: ${existingOrderQuantity}`
+          `Cannot add ${quantity} more. Total quantity would exceed limit of 20.`
         );
         return;
       }

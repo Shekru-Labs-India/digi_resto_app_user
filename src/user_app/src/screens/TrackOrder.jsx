@@ -2526,7 +2526,7 @@ ${
                       <div className="col-12">
                         <div className="d-flex justify-content-between align-items-center py-1 fw-semibold pb-0 mb-0">
                           <span className="ps-2 fw-semibold fs-6">
-                            Final Grand Total
+                            Grand Total
                           </span>
                           <span className="pe-2 fw-semibold fs-6">
                             ₹{finalGrandTotal.toFixed(2)}

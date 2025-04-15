@@ -1900,7 +1900,7 @@ const handleAddToExistingOrder = async () => {
                   <div className="col-12 px-2">
                     <div className="d-flex justify-content-between align-items-center py-1 fw-medium pb-0 mb-0">
                       <span className="ps-2 fs-6 fw-semibold">
-                        Final Grand Total
+                        Grand Total
                       </span>
                       <span className="pe-2 fs-6 fw-semibold">
                         ₹{checkoutDetails.final_grand_total}
