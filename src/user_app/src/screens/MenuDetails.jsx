@@ -479,9 +479,9 @@ const MenuDetails = () => {
       window.showToast("success", `${productDetails.name || "Item"} is added.`);
 
       setShowModal(false);
-      setTimeout(() => {
-        navigate("/user_app/Menu");
-      }, 2000);
+      // setTimeout(() => {
+      //   navigate("/user_app/Menu");
+      // }, 2000);
     } catch (error) {
       console.clear();
       window.showToast("error", "Failed to add item to checkout");

@@ -52,17 +52,49 @@ export const getDeviceToken = () => {
   return deviceToken;
 };
 
+// Get device ID for web browsers
+export const getDeviceId = () => {
+  let deviceId = localStorage.getItem('device_id');
+  
+  if (!deviceId) {
+    // Generate a unique device ID using timestamp and random string
+    deviceId = `web_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('device_id', deviceId);
+  }
+  
+  return deviceId;
+};
+
+// Get device model/name for web browsers
+export const getDeviceModel = () => {
+  const platform = navigator.platform || 'Unknown';
+  const browserName = (() => {
+    const ua = navigator.userAgent;
+    if (ua.includes('Chrome')) return 'Chrome';
+    if (ua.includes('Firefox')) return 'Firefox';
+    if (ua.includes('Safari')) return 'Safari';
+    if (ua.includes('Edge')) return 'Edge';
+    if (ua.includes('Opera')) return 'Opera';
+    return 'Unknown';
+  })();
+  
+  return `${browserName} on ${platform}`;
+};
+
 // Add request interceptor to add device_token to all requests
 apiClient.interceptors.request.use(
   (config) => {
     const deviceName = getDeviceName();
+    const deviceId = getDeviceId();
+    const deviceModel = getDeviceModel();
     
     // For GET requests, add to query parameters
     if (config.method === 'get') {
       config.params = {
         ...config.params || {},
         device_token: getDeviceToken(),
-        // device_name: deviceName
+        device_id: deviceId,
+        device_model: deviceModel
       };
     } 
     // For POST, PUT, DELETE requests, add to the request body
@@ -70,12 +102,14 @@ apiClient.interceptors.request.use(
       // If data is FormData
       if (config.data instanceof FormData) {
         config.data.append('device_token', getDeviceToken());
-        // config.data.append('device_name', deviceName);
+        config.data.append('device_id', deviceId);
+        config.data.append('device_model', deviceModel);
       } 
       // If data is JSON
       else if (typeof config.data === 'object') {
         config.data.device_token = getDeviceToken();
-        // config.data.device_name = deviceName;
+        config.data.device_id = deviceId;
+        config.data.device_model = deviceModel;
       }
     }
     

@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { usePopup } from "../context/PopupContext";
 import logo from "../assets/logos/menumitra_logo_128.png";
 import config from "./config";
-import {api, getDeviceName} from "../services/apiService";
+import {api, getDeviceId, getDeviceModel} from "../services/apiService";
 const UserAuthPopup = () => {
   const navigate = useNavigate();
   const { showPWAPopup, hideLoginPopup } = usePopup();
@@ -339,7 +339,8 @@ const UserAuthPopup = () => {
             otp:  enteredOtp, // Use stored OTP or entered OTP
             device_sessid: deviceSessId, 
             fcm_token: fcmToken, 
-            device_name: getDeviceName(),
+            device_model: getDeviceModel(),
+            device_id: getDeviceId()
 
           }),
         }
