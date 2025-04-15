@@ -2490,7 +2490,7 @@ ${
                       <div className="col-12 mb-0 py-1">
                         <div className="d-flex justify-content-between align-items-center py-0">
                           <span className="ps-2 font_size_14 gray-text">
-                            GST Charges{" "}
+                            GST{" "}
                             <span className="gray-text small-number">
                               ({gstPercent}%)
                             </span>
