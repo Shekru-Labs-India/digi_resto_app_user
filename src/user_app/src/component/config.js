@@ -73,3 +73,10 @@ export const renderSpicyLevel = (spicyIndex) => {
     ></i>
   ));
 };
+
+// Helper function to determine if the notice banner should be shown
+export const shouldShowNotice = () => {
+  const currentUrl = window.location.href;
+  // Hide notice on user.menumitra.com, show it elsewhere (like local development)
+  return !currentUrl.includes('user.menumitra.com');
+};
