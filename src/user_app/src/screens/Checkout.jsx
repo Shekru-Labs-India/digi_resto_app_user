@@ -141,12 +141,6 @@ const Checkout = () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
   
-        // Ensure total quantity of each item does not exceed 20
-        cartData.order_items = cartData.order_items.map((item) => ({
-          ...item,
-          quantity: Math.min(item.quantity, 20), // Ensure max 20 quantity
-        }));
-  
         // Save the updated cart back to localStorage (optional)
         localStorage.setItem("restaurant_cart_data", JSON.stringify(cartData));
   
@@ -567,14 +561,6 @@ const handleAddToExistingOrder = async () => {
           orderItem.menu_id === item.menu_id &&
           orderItem.half_or_full === item.half_or_full
       );
-
-      const existingQuantity = existingItem ? existingItem.quantity : 0;
-      const newTotalQuantity = existingQuantity + item.quantity;
-
-      if (newTotalQuantity > 20) {
-        window.showToast("info", `Cannot add more than 20 for ${item.menu_id}`);
-        return; // Prevent adding more if quantity exceeds 20
-      }
 
       updatedOrderItems.push({
         menu_id: item.menu_id,
@@ -1168,16 +1154,10 @@ const handleAddToExistingOrder = async () => {
       if (storedCart) {
         const cartData = JSON.parse(storedCart);
         const updatedItems = cartData.order_items.map((item) => {
-          // Check both menu_id and portion size
           if (
             item.menu_id === menuItem.menu_id &&
             item.half_or_full === menuItem.half_or_full
           ) {
-            // Check if quantity would exceed 20
-            if (item.quantity >= 20) {
-              window.showToast("info", "Maximum quantity limit reached (20)");
-              return item;
-            }
             return { ...item, quantity: item.quantity + 1 };
           }
           return item;
@@ -1202,7 +1182,6 @@ const handleAddToExistingOrder = async () => {
         const cartData = JSON.parse(storedCart);
         let updatedItems = cartData.order_items
           .map((item) =>
-            // Check both menu_id and portion size
             item.menu_id === menuItem.menu_id &&
             item.half_or_full === menuItem.half_or_full &&
             item.quantity > 1
