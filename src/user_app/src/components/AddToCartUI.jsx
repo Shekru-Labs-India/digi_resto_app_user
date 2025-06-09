@@ -73,10 +73,6 @@ const AddToCartUI = ({
   const handleQuantityChange = (action) => {
     setQuantity((prev) => {
       if (action === "increment") {
-        if (prev >= 20) {
-          window.showToast("info", "Maximum quantity limit reached (20)");
-          return prev;
-        }
         return prev + 1;
       }
       if (action === "decrement" && prev > 1) return prev - 1;
@@ -145,20 +141,6 @@ const AddToCartUI = ({
         return;
       }
 
-      // Check existing quantities in placed/cooking orders
-      const existingOrderQuantity = await checkExistingOrderQuantities(
-        productDetails.menu_id,
-        portionSize
-      );
-
-      if (existingOrderQuantity >= 20) {
-        window.showToast(
-          "info",
-          `Cannot add more. Menu ${productDetails.menu_name} already has maximum quantity (20) in placed/cooking status`
-        );
-        return;
-      }
-
       // Get cart data
       const storedCart = JSON.parse(
         localStorage.getItem("restaurant_cart_data")
@@ -172,15 +154,6 @@ const AddToCartUI = ({
       );
 
       const cartQuantity = existingCartItem ? existingCartItem.quantity : 0;
-      const totalQuantity = existingOrderQuantity + cartQuantity + quantity;
-
-      if (totalQuantity > 20) {
-        window.showToast(
-          "info",
-          `Cannot add ${quantity} more. Total quantity would exceed limit of 20.`
-        );
-        return;
-      }
 
       // Create product object with quantity
       const productWithQuantity = {
